@@ -9,10 +9,10 @@ import { StageDrillDownDrawer } from './StageDrillDownDrawer';
 
 // ── Phase colour system ───────────────────────────────────────────────────────
 
-const PHASE_DEMAND   = 'var(--ds-background-information-bold, #0C66E4)';
-const PHASE_APPROVAL = 'var(--ds-background-warning-bold, #E2B203)';
-const PHASE_DELIVERY = 'var(--ds-background-discovery-bold, #5E4DB2)';
-const PHASE_CLOSURE  = 'var(--ds-background-success-bold, #1F845A)';
+const PHASE_DEMAND   = 'var(--ds-background-information-bold)';
+const PHASE_APPROVAL = 'var(--ds-background-warning-bold)';
+const PHASE_DELIVERY = 'var(--ds-background-discovery-bold)';
+const PHASE_CLOSURE  = 'var(--ds-background-success-bold)';
 
 function phaseColor(sortOrder: number): string {
   if (sortOrder <= 3) return PHASE_DEMAND;
@@ -77,7 +77,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
@@ -145,7 +145,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               height: 28,
               borderRadius: 4,
               overflow: 'hidden',
-              background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+              background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
             }}
           >
             {sorted.map(step => {
@@ -163,8 +163,8 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
-                    fontSize: 11,
+                    color: 'var(--ds-text-inverse)',
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     minWidth: 24,
@@ -186,8 +186,8 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               justifyContent: 'space-between',
               alignItems: 'center',
               marginTop: 6,
-              fontSize: 11,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              fontSize: 'var(--ds-font-size-100)',
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             }}
           >
             <span>
@@ -236,35 +236,35 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 onClick={() => { onStageClick(step.value); setOpenStage({ value: step.value, label: step.label }); }}
                 style={{
                   padding: '10px 8px',
-                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                   borderTop: `3px solid ${color}`,
                   borderRadius: 6,
                   textAlign: 'center',
                   cursor: 'pointer',
-                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                  background: token('elevation.surface', 'var(--ds-surface)'),
                   transition: 'background 120ms, border-color 120ms',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))');
+                  (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral))');
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
+                  (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface)');
                 }}
               >
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
-                    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+                    color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
                   }}
                 >
                   {num}
                 </div>
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 500,
-                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                     marginTop: 4,
                     minHeight: 28,
                     lineHeight: '14px',
@@ -275,9 +275,9 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 <div
                   data-testid={`stage-count-${step.value}`}
                   style={{
-                    fontSize: 20,
+                    fontSize: 'var(--ds-font-size-700)',
                     fontWeight: 700,
-                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                     marginTop: 6,
                     fontVariantNumeric: 'tabular-nums',
                   }}
@@ -294,13 +294,13 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     <span
                       style={{
                         display: 'inline-block',
-                        fontSize: 10,
+                        fontSize: 'var(--ds-font-size-50)',
                         lineHeight: '14px',
                         padding: '1px 6px',
                         borderRadius: 8,
                         fontWeight: 600,
-                        background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
-                        color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+                        background: token('color.background.danger', 'var(--ds-background-danger)'),
+                        color: token('color.text.danger', 'var(--ds-text-danger)'),
                       }}
                     >
                       {stalled} stuck
@@ -309,13 +309,13 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     <span
                       style={{
                         display: 'inline-block',
-                        fontSize: 10,
+                        fontSize: 'var(--ds-font-size-50)',
                         lineHeight: '14px',
                         padding: '1px 6px',
                         borderRadius: 8,
                         fontWeight: 600,
-                        background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'),
-                        color: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
+                        background: token('color.background.success', 'var(--ds-background-success)'),
+                        color: token('color.text.success', 'var(--ds-text-success)'),
                       }}
                     >
                       on track

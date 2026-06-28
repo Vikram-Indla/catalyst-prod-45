@@ -34,7 +34,7 @@ export default function TasksOverviewView() {
         flexDirection: 'column',
         flex: 1,
         minHeight: 0,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
       }}
     >
       <TasksPageHeader routeWord="Dashboard" />

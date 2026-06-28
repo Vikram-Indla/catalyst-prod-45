@@ -122,7 +122,7 @@ export function CreateReleaseModal({ isOpen, productId, onClose, onCreated }: Pr
         </div>
 
         {submitError && (
-          <div style={{ marginTop: 12, color: 'var(--ds-text-danger, #AE2A19)', fontSize: 14 }}>
+          <div style={{ marginTop: 12, color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-400)' }}>
             {submitError}
           </div>
         )}

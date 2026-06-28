@@ -86,7 +86,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 600,
           color: 'var(--fg-1)',
           margin: 0,
@@ -97,7 +97,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           onClick={() => navigate('/projecthub/calendar')}
           style={{
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
@@ -127,7 +127,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
             <div key={i} style={{
               flex: `0 0 ${100 / (totalMonths + 1)}%`,
               fontFamily: 'var(--cp-font-body)',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               color: 'var(--fg-4)',
               textTransform: 'uppercase',
@@ -193,7 +193,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                 <div style={{ width: 120, flexShrink: 0, paddingRight: 12 }}>
                   <div style={{
                     fontFamily: 'var(--cp-font-body)',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     color: 'var(--fg-1)',
                     whiteSpace: 'nowrap',
@@ -204,7 +204,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                   </div>
                   <div style={{
                     fontFamily: 'var(--cp-font-body)',
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     color: 'var(--fg-4)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -224,7 +224,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                       height: 20,
                       borderRadius: 4,
                       background: isCancelled
-                        ? 'var(--ds-text-subtlest, #94a3b8)'
+                        ? 'var(--ds-text-subtlest)'
                         : isAtRisk
                           ? `repeating-linear-gradient(135deg, ${release.color}, ${release.color} 4px, transparent 4px, transparent 8px)`
                           : release.color,
@@ -283,11 +283,11 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           left: tooltip.x,
           top: tooltip.y - 10,
           transform: 'translate(-50%, -100%)',
-          background: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-text)',
           color: 'var(--bg-app)',
           borderRadius: 8,
           padding: '8px 12px',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontFamily: 'var(--cp-font-body)',
           zIndex: 1000,
           whiteSpace: 'nowrap',

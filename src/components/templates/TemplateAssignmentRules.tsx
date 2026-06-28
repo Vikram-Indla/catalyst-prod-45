@@ -108,7 +108,7 @@ export function TemplateAssignmentRules({
                 className={`
                   flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all
                   ${isSelected 
-                    ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' 
+                    ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] bg-[var(--ds-background-selected)]' 
                     : 'border-slate-200 hover:border-slate-300'
                   }
                 `}
@@ -118,13 +118,13 @@ export function TemplateAssignmentRules({
                   <div 
                     className={`
                       w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
-                      ${isSelected ? 'bg-[var(--ds-background-information, #E9F2FF)]' : 'bg-slate-100'}
+                      ${isSelected ? 'bg-[var(--ds-background-information)]' : 'bg-slate-100'}
                     `}
                   >
-                    <Icon className={`w-5 h-5 ${isSelected ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' : 'text-slate-500'}`} />
+                    <Icon className={`w-5 h-5 ${isSelected ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' : 'text-slate-500'}`} />
                   </div>
                   <div>
-                    <div className={`font-medium ${isSelected ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' : 'text-slate-900'}`}>
+                    <div className={`font-medium ${isSelected ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' : 'text-slate-900'}`}>
                       {method.label}
                     </div>
                     <div className="text-sm text-slate-500">
@@ -183,7 +183,7 @@ export function TemplateAssignmentRules({
               <h4 className="font-medium text-slate-900">Algorithm Weights</h4>
               <button
                 onClick={normalizeWeights}
-                className="text-xs text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:underline"
+                className="text-xs text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:underline"
               >
                 Normalize to 100%
               </button>
@@ -278,8 +278,8 @@ export function TemplateAssignmentRules({
                   (rules.weights?.skill || 40) + 
                   (rules.weights?.history || 15) + 
                   (rules.weights?.availability || 15) === 100
-                    ? 'text-[var(--ds-chart-teal-bold, #0d9488)]'
-                    : 'text-[var(--ds-text-warning,#d97706)]'
+                    ? 'text-[var(--ds-chart-teal-bold)]'
+                    : 'text-[var(--ds-text-warning)]'
                 }`}>
                   {(rules.weights?.workload || 30) + 
                    (rules.weights?.skill || 40) + 

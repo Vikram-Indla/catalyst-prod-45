@@ -39,13 +39,13 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
-const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
-const BLUE = 'var(--ds-border-selected, #1868DB)';
-const BLUE_BG = 'var(--ds-background-selected, #E9F2FE)';
-const BLUE_TEXT = 'var(--ds-text-selected, #0C66E4)';
+const BORDER = 'var(--ds-border)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
+const SUBTLEST = 'var(--ds-text-subtlest)';
+const BLUE = 'var(--ds-border-selected)';
+const BLUE_BG = 'var(--ds-background-selected)';
+const BLUE_TEXT = 'var(--ds-text-selected)';
 
 type FixVersionOp = 'eq' | 'neq';
 
@@ -372,8 +372,8 @@ export function ReleaseWorkNavigatorPage({
   // (the canonical working scroll surface). Sibling-wrapper approaches
   // break JiraTable's internal-viewport scroll.
   const toolbar = (
-    <div style={{ padding: '24px 32px 12px', display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0, background: 'var(--ds-surface, #FFFFFF)' }}>
-      <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: TEXT }}>All work</h1>
+    <div style={{ padding: '24px 32px 12px', display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0, background: 'var(--ds-surface)' }}>
+      <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: TEXT }}>All work</h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <TabToggle value={state.mode} onChange={(m) => updateState({ mode: m })} />
         {state.mode === 'basic' ? (
@@ -459,8 +459,8 @@ export function ReleaseWorkNavigatorPage({
               placeholder='JQL — e.g. fixVersion = "Release 1.119"'
               style={{
                 flex: 1, minWidth: 280, height: 32, padding: '0 10px',
-                border: `1px solid ${BORDER}`, borderRadius: 3, fontSize: 14,
-                background: 'var(--ds-surface, #FFFFFF)', color: TEXT, fontFamily: 'inherit', outline: 'none',
+                border: `1px solid ${BORDER}`, borderRadius: 3, fontSize: 'var(--ds-font-size-400)',
+                background: 'var(--ds-surface)', color: TEXT, fontFamily: 'inherit', outline: 'none',
               }}
             />
           </div>
@@ -470,7 +470,7 @@ export function ReleaseWorkNavigatorPage({
           <button
             type="button"
             onClick={clearAll}
-            style={{ all: 'unset', cursor: 'pointer', fontSize: 14, color: BLUE_TEXT, fontWeight: 500, padding: '0 8px' }}
+            style={{ all: 'unset', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: BLUE_TEXT, fontWeight: 500, padding: '0 8px' }}
           >
             Clear filters
           </button>
@@ -514,7 +514,7 @@ export function ReleaseWorkNavigatorPage({
 function TabToggle({ value, onChange }: { value: 'basic' | 'jql'; onChange: (v: 'basic' | 'jql') => void }) {
   const itemStyle = (active: boolean): React.CSSProperties => ({
     all: 'unset', cursor: 'pointer', height: 22, padding: '0 10px',
-    fontSize: 14, fontWeight: 500,
+    fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
     color: active ? BLUE_TEXT : TEXT,
     background: active ? BLUE_BG : 'transparent',
     border: `1px solid ${active ? BLUE : 'transparent'}`,
@@ -528,7 +528,7 @@ function TabToggle({ value, onChange }: { value: 'basic' | 'jql'; onChange: (v: 
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 32, padding: '0 4px',
         border: `1px solid ${BORDER}`, borderRadius: 4,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         boxSizing: 'border-box',
       }}
     >
@@ -542,7 +542,7 @@ function SearchPill({ value, onChange }: { value: string; onChange: (v: string) 
   return (
     <div style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 10px',
-      border: `1px solid ${BORDER}`, borderRadius: 3, background: 'var(--ds-surface, #FFFFFF)',
+      border: `1px solid ${BORDER}`, borderRadius: 3, background: 'var(--ds-surface)',
       minWidth: 220,
     }}>
       <span style={{ color: SUBTLE, display: 'inline-flex' }}><SearchIcon label="" size="small" /></span>
@@ -550,7 +550,7 @@ function SearchPill({ value, onChange }: { value: string; onChange: (v: string) 
         value={value}
         onChange={(e) => onChange(e.currentTarget.value)}
         placeholder="Search work"
-        style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT, fontFamily: 'inherit' }}
+        style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT, fontFamily: 'inherit' }}
       />
     </div>
   );
@@ -628,17 +628,17 @@ function MultiChip({
           all: 'unset', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
           height: 32, padding: '0 10px', borderRadius: 3,
           border: `1px solid ${active ? BLUE : BORDER}`,
-          background: active ? BLUE_BG : 'var(--ds-surface, #FFFFFF)',
-          color: active ? BLUE_TEXT : TEXT, fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap',
+          background: active ? BLUE_BG : 'var(--ds-surface)',
+          color: active ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, whiteSpace: 'nowrap',
         }}
       >
         <span>{label}</span>
         {active && (
           <span style={{
             minWidth: 20, height: 20, padding: '0 6px', borderRadius: 3,
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
-            fontSize: 11, fontWeight: 700, lineHeight: '20px',
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-text-inverse)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, lineHeight: '20px',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             textAlign: 'center', boxSizing: 'border-box',
           }}>
@@ -653,7 +653,7 @@ function MultiChip({
           style={{
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999,
             minWidth: 260,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
@@ -665,7 +665,7 @@ function MultiChip({
               height: 30, padding: '0 8px',
               border: `1px solid ${searchFocused ? BLUE : BORDER}`,
               borderRadius: 3,
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--ds-surface)',
               boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               transition: 'border-color 80ms ease, box-shadow 80ms ease',
             }}>
@@ -677,13 +677,13 @@ function MultiChip({
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 placeholder={`Search ${label.toLowerCase()}`}
-                style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT, fontFamily: 'inherit' }}
+                style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT, fontFamily: 'inherit' }}
               />
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 260 }}>
             {filtered.length === 0 ? (
-              <div style={{ padding: '8px 12px', fontSize: 13, color: SUBTLEST }}>No matches</div>
+              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: SUBTLEST }}>No matches</div>
             ) : filtered.map((opt) => {
               const checked = value.includes(opt.id);
               return (
@@ -695,7 +695,7 @@ function MultiChip({
                     all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
                     background: checked ? BLUE_BG : 'transparent',
-                    color: checked ? BLUE_TEXT : TEXT, fontSize: 14,
+                    color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                   }}
                 >
                   <input type="checkbox" checked={checked} onChange={() => {}} />
@@ -793,7 +793,7 @@ function FixVersionChip({
     return options.filter((o) => o.toLowerCase().includes(q));
   }, [options, query]);
 
-  const chipBg = active ? BLUE_BG : (hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)');
+  const chipBg = active ? BLUE_BG : (hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'var(--ds-surface)');
   const chipBorder = active ? BLUE : BORDER;
   const chipText = active ? BLUE_TEXT : TEXT;
 
@@ -807,7 +807,7 @@ function FixVersionChip({
           display: 'inline-flex', alignItems: 'center', gap: 8,
           height: 32, padding: '0 6px 0 10px', borderRadius: 3,
           border: `1px solid ${chipBorder}`, background: chipBg, color: chipText,
-          fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap',
+          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, whiteSpace: 'nowrap',
         }}
       >
         <span style={{ fontWeight: 600 }}>Fix versions</span>
@@ -820,8 +820,8 @@ function FixVersionChip({
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 22, padding: '0 6px',
             border: `1px solid ${BORDER}`, borderRadius: 3,
-            background: 'var(--ds-surface, #FFFFFF)', color: TEXT,
-            fontSize: 13, fontWeight: 500,
+            background: 'var(--ds-surface)', color: TEXT,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
           }}
         >
           {opSymbol}
@@ -854,7 +854,7 @@ function FixVersionChip({
           style={{
             position: 'fixed', top: opPos.top, left: opPos.left, zIndex: 99999,
             minWidth: 160,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '4px 0',
@@ -871,7 +871,7 @@ function FixVersionChip({
                   all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
                   background: checked ? BLUE_BG : 'transparent',
-                  color: checked ? BLUE_TEXT : TEXT, fontSize: 14,
+                  color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                 }}
               >
                 <span style={{ width: 28 }}>{o === 'eq' ? '=' : '!='}</span>
@@ -888,7 +888,7 @@ function FixVersionChip({
           style={{
             position: 'fixed', top: valPos.top, left: valPos.left, zIndex: 99999,
             minWidth: 280, maxHeight: 360, overflowY: 'auto',
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '8px 0',
@@ -906,14 +906,14 @@ function FixVersionChip({
               style={{
                 width: '100%', boxSizing: 'border-box', height: 30, padding: '0 8px',
                 border: `1px solid ${searchFocused ? BLUE : BORDER}`, borderRadius: 3,
-                fontSize: 14, outline: 'none', fontFamily: 'inherit',
+                fontSize: 'var(--ds-font-size-400)', outline: 'none', fontFamily: 'inherit',
                 boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                 transition: 'border-color 80ms ease, box-shadow 80ms ease',
               }}
             />
           </div>
           {filtered.length === 0 ? (
-            <div style={{ padding: '8px 12px', fontSize: 13, color: SUBTLEST }}>No versions</div>
+            <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: SUBTLEST }}>No versions</div>
           ) : filtered.map((opt) => {
             const checked = value === opt;
             return (
@@ -925,7 +925,7 @@ function FixVersionChip({
                   all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
                   background: checked ? BLUE_BG : 'transparent',
-                  color: checked ? BLUE_TEXT : TEXT, fontSize: 14,
+                  color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                 }}
               >
                 <span>{opt}</span>

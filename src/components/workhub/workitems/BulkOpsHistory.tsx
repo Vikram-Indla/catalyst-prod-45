@@ -6,11 +6,11 @@ import { Clock, X } from '@/lib/atlaskit-icons';
 import { useBulkOpsLog } from '@/hooks/workhub/useBulkOpsLog';
 
 const OP_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
-  assign_release: { label: 'Assign Release', bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
-  assign_theme: { label: 'Assign Theme', bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bold, #0d9488)' },
-  change_status: { label: 'Change Status', bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #3B82F6)' },
-  change_release_id: { label: 'Assign Release', bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
-  change_theme_id: { label: 'Assign Theme', bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+  assign_release: { label: 'Assign Release', bg: 'var(--ds-background-information)', color: 'var(--ds-background-brand-bold-hovered)' },
+  assign_theme: { label: 'Assign Theme', bg: 'var(--ds-background-success)', color: 'var(--ds-chart-teal-bold)' },
+  change_status: { label: 'Change Status', bg: 'var(--ds-background-selected)', color: 'var(--ds-text-brand)' },
+  change_release_id: { label: 'Assign Release', bg: 'var(--ds-background-information)', color: 'var(--ds-background-brand-bold-hovered)' },
+  change_theme_id: { label: 'Assign Theme', bg: 'var(--ds-background-success)', color: 'var(--ds-chart-teal-bold)' },
 };
 
 function relativeTime(dateStr: string): string {
@@ -28,14 +28,14 @@ interface BulkOpsHistoryProps {
 export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
   const { data: entries = [], isLoading } = useBulkOpsLog();
 
-  const opConfig = (op: string) => OP_CONFIG[op] || { label: op, bg: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #44546F))' };
+  const opConfig = (op: string) => OP_CONFIG[op] || { label: op, bg: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtle, var(--ds-text-subtle))' };
 
   return (
     <div
       className="animate-in slide-in-from-top-2 duration-200 mb-4"
       style={{
-        background: 'var(--wh-surface, #fff)',
-        border: '1px solid var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
+        background: 'var(--wh-surface)',
+        border: '1px solid var(--wh-border, var(--cp-bg-sunken))',
         borderRadius: 'var(--wh-radius-lg, 12px)',
         maxHeight: 400,
         overflow: 'hidden',
@@ -44,21 +44,21 @@ export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--wh-border-light, #f1f5f9)' }}>
-        <span className="text-sm font-semibold" style={{ color: 'var(--wh-text-primary, #0f172a)', fontFamily: 'var(--cp-font-body)' }}>
+      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--wh-border-light)' }}>
+        <span className="text-sm font-semibold" style={{ color: 'var(--wh-text-primary)', fontFamily: 'var(--cp-font-body)' }}>
           Bulk Operations History
         </span>
         <button onClick={onClose} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
-          <X className="w-4 h-4" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
+          <X className="w-4 h-4" style={{ color: 'var(--wh-text-tertiary)' }} />
         </button>
       </div>
 
       {/* Entries */}
       <div className="overflow-y-auto flex-1" style={{ fontFamily: 'var(--cp-font-body)' }}>
         {isLoading ? (
-          <div className="p-4 text-center text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>Loading...</div>
+          <div className="p-4 text-center text-xs" style={{ color: 'var(--wh-text-tertiary)' }}>Loading...</div>
         ) : entries.length === 0 ? (
-          <div className="p-6 text-center text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+          <div className="p-6 text-center text-xs" style={{ color: 'var(--wh-text-tertiary)' }}>
             No bulk operations recorded yet.
           </div>
         ) : (
@@ -73,10 +73,10 @@ export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
             const moreCount = itemIds.length - 5;
 
             return (
-              <div key={entry.id} className="px-4 py-3" style={{ borderBottom: '1px solid var(--wh-border-light, #f1f5f9)' }}>
+              <div key={entry.id} className="px-4 py-3" style={{ borderBottom: '1px solid var(--wh-border-light)' }}>
                 <div className="flex items-center gap-2 mb-1">
-                  <Clock className="w-3 h-3" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-                  <span className="text-[11px]" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+                  <Clock className="w-3 h-3" style={{ color: 'var(--wh-text-tertiary)' }} />
+                  <span className="text-[11px]" style={{ color: 'var(--wh-text-tertiary)' }}>
                     {relativeTime(entry.performed_at)}
                   </span>
                   <span
@@ -86,11 +86,11 @@ export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
                     {cfg.label}
                   </span>
                 </div>
-                <div className="text-xs font-medium mb-1" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>
+                <div className="text-xs font-medium mb-1" style={{ color: 'var(--wh-text-primary)' }}>
                   Changed {count} item{count !== 1 ? 's' : ''} → {fieldChanged}: {String(newValue)}
                 </div>
                 {itemIds.length > 0 && (
-                  <div className="text-[11px]" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+                  <div className="text-[11px]" style={{ color: 'var(--wh-text-tertiary)' }}>
                     Items: {displayIds}{moreCount > 0 ? ` +${moreCount} more` : ''}
                   </div>
                 )}

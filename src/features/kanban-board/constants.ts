@@ -84,8 +84,8 @@ export const SIZES = {
 
 /** Jira label bar palette (cosmetic; labels carry no color in data). */
 export const LABEL_COLORS = [
-  'var(--ds-background-information-bold, #0C66E4)', '#00C7E6', 'var(--ds-background-success-bold, #1F845A)', '#FFC400', 'var(--ds-background-danger-bold, #C9372C)',
-  'var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text, #172B4D)',
+  'var(--ds-background-information-bold)', '#00C7E6', 'var(--ds-background-success-bold)', '#FFC400', 'var(--ds-background-danger-bold)',
+  'var(--ds-background-discovery-bold)', 'var(--ds-background-success-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-text)',
 ] as const;
 
 /**
@@ -126,12 +126,12 @@ export interface PriorityConfig {
 }
 
 export const PRIORITY_CONFIG: Record<string, PriorityConfig> = {
-  highest: { shape: 'up', color: 'var(--ds-background-danger-bold, #C9372C)', label: 'Highest' },
-  critical: { shape: 'up', color: 'var(--ds-background-danger-bold, #C9372C)', label: 'Critical' },
-  high: { shape: 'up', color: 'var(--ds-background-danger-bold, #E2483D)', label: 'High' },
-  medium: { shape: 'equal', color: 'var(--ds-background-warning-bold, #D97008)', label: 'Medium' },
-  low: { shape: 'down', color: 'var(--ds-background-success-bold, #388F4B)', label: 'Low' },
-  lowest: { shape: 'down', color: 'var(--ds-link, #357DE8)', label: 'Lowest' },
+  highest: { shape: 'up', color: 'var(--ds-background-danger-bold)', label: 'Highest' },
+  critical: { shape: 'up', color: 'var(--ds-background-danger-bold)', label: 'Critical' },
+  high: { shape: 'up', color: 'var(--ds-background-danger-bold)', label: 'High' },
+  medium: { shape: 'equal', color: 'var(--ds-background-warning-bold)', label: 'Medium' },
+  low: { shape: 'down', color: 'var(--ds-background-success-bold)', label: 'Low' },
+  lowest: { shape: 'down', color: 'var(--ds-link)', label: 'Lowest' },
 };
 
 export const DEFAULT_VISIBLE_FIELDS = {

@@ -64,8 +64,8 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           width,
           maxWidth: '90vw',
           height: '100vh',
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))',
           boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
           zIndex: 400,
           display: 'flex',
@@ -79,10 +79,10 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           className="flex items-center justify-between shrink-0"
           style={{
             padding: '16px 20px',
-            borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
+            borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))',
           }}
         >
-          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--catalyst-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--catalyst-text-primary, var(--cp-ink-1, var(--cp-ink-1)))' }}>
             {title}
           </span>
           <button
@@ -95,10 +95,10 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+              color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light)))',
               transition: 'background 150ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken)))'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X size={16} />

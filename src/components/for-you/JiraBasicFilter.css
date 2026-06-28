@@ -20,7 +20,7 @@
   padding: 6px 12px;
   height: 32px;
   background: transparent;
-  border: 1px solid var(--ds-surface-pressed, #DDDEE1);
+  border: 1px solid var(--ds-surface-pressed);
   border-radius: 3px;
   cursor: pointer;
   font-size: 14px;
@@ -32,7 +32,7 @@
 }
 .jf-trigger-btn:hover { background-color: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)); }
 .jf-trigger-btn--active {
-  background-color: var(--ds-background-information, #E9F2FF);
+  background-color: var(--ds-background-information);
   color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-trigger-icon { flex-shrink: 0; }
@@ -131,7 +131,7 @@
 }
 .jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06)); }
 .jf-tab--active {
-  background-color: var(--ds-background-information, #E9F2FF);
+  background-color: var(--ds-background-information);
   color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-tab:disabled { opacity: 0.4; cursor: default; }
@@ -206,7 +206,7 @@
 }
 .jf-category-item:hover:not(.jf-category-item--active) { background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)); }
 .jf-category-item--active {
-  background-color: var(--ds-background-information, #E9F2FF);
+  background-color: var(--ds-background-information);
   color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-category-item--active::before {
@@ -421,7 +421,7 @@
 .jf-avatar-initials-text {
   font-size: 9px;
   font-weight: 700;
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   line-height: 1;
   letter-spacing: -0.3px;
   text-transform: uppercase;
@@ -497,6 +497,6 @@
 
 /* DARK MODE OVERRIDES — added 2026-04-30 sweep */
 .dark .jira-basic-filter,
-.dark .jbf-input { background: var(--cp-bg-sunken, var(--ds-surface, #FFFFFF)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4))); border-color: var(--cp-border-default, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }
-.dark .jbf-chip { background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)); color: var(--cp-text-secondary, var(--ds-border, #DFE1E6)); }
-.dark .jbf-chip:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }
+.dark .jbf-input { background: var(--cp-bg-sunken, var(--ds-surface)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral))); border-color: var(--cp-border-default, var(--cp-ink-1, var(--ds-background-neutral))); }
+.dark .jbf-chip { background: var(--cp-bg-elevated, var(--ds-surface)); color: var(--cp-text-secondary, var(--ds-border)); }
+.dark .jbf-chip:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral))); }

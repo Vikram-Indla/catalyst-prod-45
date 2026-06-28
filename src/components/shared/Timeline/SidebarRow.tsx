@@ -556,15 +556,15 @@ export function SidebarRow({
           gap: 6,
           borderBottom: hideRowBorder
             ? "none"
-            : "1px solid var(--ds-border, #DFE1E6)",
+            : "1px solid var(--ds-border)",
           overflow: "hidden",
           cursor: "pointer",
           background: isSelected
-            ? "var(--ds-background-selected, #E9F2FE)"
+            ? "var(--ds-background-selected)"
             : (onSharedHover ? sharedHoveredKey === issue.issueKey : rowHovered)
-            ? "var(--cat-dep-row-hover, #F8F8F8)"
+            ? "var(--cat-dep-row-hover)"
             : tinted
-            ? "var(--cat-dep-row-bg, #F0F1F2)"
+            ? "var(--cat-dep-row-bg)"
             : "transparent",
           transition: "background 80ms ease",
           position: "relative",
@@ -601,7 +601,7 @@ export function SidebarRow({
         {(isLocated || isLocatedAncestor) && (
           <div
             aria-hidden
-            style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: "var(--cat-locate-bar, #F5803E)" }}
+            style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: "var(--cat-locate-bar)" }}
           />
         )}
 
@@ -626,7 +626,7 @@ export function SidebarRow({
                 width: 14,
                 height: 14,
                 cursor: "pointer",
-                accentColor: "var(--ds-background-selected-bold, #0052CC)",
+                accentColor: "var(--ds-background-selected-bold)",
                 margin: 0,
               }}
             />
@@ -650,10 +650,10 @@ export function SidebarRow({
             alignItems: "center",
             justifyContent: "center",
             color: isLocatedAncestor
-              ? "var(--ds-text, #172B4D)"
-              : "var(--ds-text-subtle, #44546F)",
+              ? "var(--ds-text)"
+              : "var(--ds-text-subtle)",
             background: isLocatedAncestor
-              ? "var(--cat-locate-accent-subtle, #E4D2F2)"
+              ? "var(--cat-locate-accent-subtle)"
               : "transparent",
             borderRadius: isLocatedAncestor ? 4 : 0,
             marginLeft: depth * 28,
@@ -728,9 +728,9 @@ export function SidebarRow({
             >
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
-                  color: "var(--ds-text, #172B4D)",
+                  color: "var(--ds-text)",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -742,9 +742,9 @@ export function SidebarRow({
               </span>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
-                  color: "var(--ds-text-subtlest, #626F86)",
+                  color: "var(--ds-text-subtlest)",
                   fontFamily: "var(--ds-font-family-body)",
                   flexShrink: 0,
                 }}
@@ -770,9 +770,9 @@ export function SidebarRow({
                     navigate(buildIssueDetailRoute(issue.issueKey));
                   }}
                   style={{
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 400,
-                    color: "var(--ds-link, #0C66E4)",
+                    color: "var(--ds-link)",
                     textDecoration: "underline",
                     whiteSpace: "nowrap",
                     lineHeight: 1.3,
@@ -791,11 +791,11 @@ export function SidebarRow({
               <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
                 <span
                   style={{
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: isLocated ? 500 : 400,
                     color: isLocated
-                      ? "var(--ds-text-inverse, #FFFFFF)"
-                      : "var(--ds-text, #172B4D)",
+                      ? "var(--ds-text-inverse)"
+                      : "var(--ds-text)",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -807,7 +807,7 @@ export function SidebarRow({
                     ...(isLocated
                       ? {
                           background:
-                            "var(--cat-locate-accent, #964AC0)",
+                            "var(--cat-locate-accent)",
                           padding: "1px 6px",
                           borderRadius: 3,
                         }
@@ -828,7 +828,7 @@ export function SidebarRow({
                 maxWidth: "100%",
                 height: 4,
                 borderRadius: 2,
-                background: "var(--ds-background-neutral, #DDDEE1)",
+                background: "var(--ds-background-neutral)",
                 overflow: "hidden",
               }}
             >
@@ -836,7 +836,7 @@ export function SidebarRow({
                 style={{
                   width: `${epicPct}%`,
                   height: "100%",
-                  background: "var(--ds-background-success-bold, #1F845A)",
+                  background: "var(--ds-background-success-bold)",
                 }}
               />
             </div>
@@ -868,8 +868,8 @@ export function SidebarRow({
         {(issue.startDate || issue.dueDate) && (
           <span
             style={{
-              fontSize: 11,
-              color: "var(--ds-text-subtle, #626F86)",
+              fontSize: 'var(--ds-font-size-100)',
+              color: "var(--ds-text-subtle)",
               fontFamily: "var(--ds-font-family-body)",
               whiteSpace: "nowrap",
               flexShrink: 0,
@@ -1122,16 +1122,16 @@ export function SidebarRow({
                 <div
                   style={{
                     height: 1,
-                    background: "var(--ds-border, #DFE1E6)",
+                    background: "var(--ds-border)",
                     margin: "4px 0",
                   }}
                 />
                 <div
                   style={{
                     padding: "4px 12px 2px",
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
-                    color: "var(--ds-text-subtlest, #626F86)",
+                    color: "var(--ds-text-subtlest)",
                     fontFamily: "var(--ds-font-family-body)",
                   }}
                 >
@@ -1166,11 +1166,11 @@ export function SidebarRow({
                         outline: "none",
                         border:
                           issue.epicColor === hex
-                            ? "2px solid var(--ds-border-selected, #0052CC)"
+                            ? "2px solid var(--ds-border-selected)"
                             : "2px solid transparent",
                         boxShadow:
                           issue.epicColor === hex
-                            ? "0 0 0 1.5px var(--ds-surface, #FFFFFF) inset"
+                            ? "0 0 0 1.5px var(--ds-surface) inset"
                             : "none",
                       }}
                     />
@@ -1188,15 +1188,15 @@ export function SidebarRow({
                         width: 20,
                         height: 20,
                         borderRadius: "50%",
-                        border: "1.5px dashed var(--ds-border, #DFE1E6)",
+                        border: "1.5px dashed var(--ds-border)",
                         background: "transparent",
                         cursor: "pointer",
                         padding: 0,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        color: "var(--ds-text-subtlest, #626F86)",
-                        fontSize: 12,
+                        color: "var(--ds-text-subtlest)",
+                        fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
                         outline: "none",
                       }}
@@ -1213,7 +1213,7 @@ export function SidebarRow({
               <div
                 style={{
                   height: 1,
-                  background: "var(--ds-border, #DFE1E6)",
+                  background: "var(--ds-border)",
                   margin: "4px 0",
                 }}
               />
@@ -1231,7 +1231,7 @@ export function SidebarRow({
               <div
                 style={{
                   height: 1,
-                  background: "var(--ds-border, #DFE1E6)",
+                  background: "var(--ds-border)",
                   margin: "4px 0",
                 }}
               />
@@ -1289,8 +1289,8 @@ export function SidebarRow({
                     style={{
                       padding: "8px 12px",
                       cursor: "pointer",
-                      fontSize: 13,
-                      color: "var(--ds-text-subtle, #44546F)",
+                      fontSize: 'var(--ds-font-size-300)',
+                      color: "var(--ds-text-subtle)",
                       fontFamily: "var(--ds-font-family-body)",
                       borderRadius: 3,
                     }}
@@ -1309,8 +1309,8 @@ export function SidebarRow({
                     <div
                       style={{
                         padding: "8px 12px",
-                        fontSize: 13,
-                        color: "var(--ds-text-subtlest, #626F86)",
+                        fontSize: 'var(--ds-font-size-300)',
+                        color: "var(--ds-text-subtlest)",
                         fontStyle: "italic",
                         fontFamily: "var(--ds-font-family-body)",
                       }}
@@ -1330,8 +1330,8 @@ export function SidebarRow({
                       style={{
                         padding: "8px 12px",
                         cursor: "pointer",
-                        fontSize: 13,
-                        color: "var(--ds-text, #172B4D)",
+                        fontSize: 'var(--ds-font-size-300)',
+                        color: "var(--ds-text)",
                         fontFamily: "var(--ds-font-family-body)",
                         borderRadius: 3,
                         display: "flex",
@@ -1351,8 +1351,8 @@ export function SidebarRow({
                       {issue.fixVersions.includes(v) && (
                         <span
                           style={{
-                            fontSize: 11,
-                            color: "var(--ds-text-subtlest, #626F86)",
+                            fontSize: 'var(--ds-font-size-100)',
+                            color: "var(--ds-text-subtlest)",
                             fontFamily: "var(--ds-font-family-body)",
                           }}
                         >
@@ -1391,21 +1391,21 @@ export function SidebarRow({
                       height: 36,
                       padding: "0 10px",
                       boxSizing: "border-box",
-                      border: "1px solid var(--ds-border-input, #DFE1E6)",
+                      border: "1px solid var(--ds-border-input)",
                       borderRadius: 3,
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       outline: "none",
                       fontFamily: "var(--ds-font-family-body)",
-                      color: "var(--ds-text, #172B4D)",
-                      background: "var(--ds-background-input, #FFFFFF)",
+                      color: "var(--ds-text)",
+                      background: "var(--ds-background-input)",
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor =
-                        "var(--ds-border-focused, #388BFF)";
+                        "var(--ds-border-focused)";
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor =
-                        "var(--ds-border-input, #DFE1E6)";
+                        "var(--ds-border-input)";
                     }}
                   />
                 </div>
@@ -1459,8 +1459,8 @@ export function SidebarRow({
                         <JiraIssueTypeIcon type={c.issueType} size={14} />
                         <span
                           style={{
-                            fontSize: 11,
-                            color: "var(--ds-text-subtlest, #626F86)",
+                            fontSize: 'var(--ds-font-size-100)',
+                            color: "var(--ds-text-subtlest)",
                             fontFamily: "var(--ds-font-family-body)",
                             flexShrink: 0,
                           }}
@@ -1469,8 +1469,8 @@ export function SidebarRow({
                         </span>
                         <span
                           style={{
-                            fontSize: 13,
-                            color: "var(--ds-text, #172B4D)",
+                            fontSize: 'var(--ds-font-size-300)',
+                            color: "var(--ds-text)",
                             fontFamily: "var(--ds-font-family-body)",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
@@ -1494,8 +1494,8 @@ export function SidebarRow({
                     <div
                       style={{
                         padding: "12px",
-                        fontSize: 13,
-                        color: "var(--ds-text-subtlest, #626F86)",
+                        fontSize: 'var(--ds-font-size-300)',
+                        color: "var(--ds-text-subtlest)",
                         fontStyle: "italic",
                         fontFamily: "var(--ds-font-family-body)",
                         textAlign: "center",
@@ -1533,16 +1533,16 @@ export function SidebarRow({
                     alignItems: "center",
                     gap: 6,
                     padding: "4px 8px",
-                    background: "var(--ds-background-neutral-subtle, #F7F8F9)",
+                    background: "var(--ds-background-neutral-subtle)",
                     borderRadius: 3,
                   }}
                 >
                   <JiraIssueTypeIcon type={issue.issueType} size={13} />
                   <span
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
-                      color: "var(--ds-text-subtle, #44546F)",
+                      color: "var(--ds-text-subtle)",
                       fontFamily: "var(--ds-font-family-body)",
                     }}
                   >
@@ -1550,8 +1550,8 @@ export function SidebarRow({
                   </span>
                   <span
                     style={{
-                      fontSize: 12,
-                      color: "var(--ds-text-subtlest, #626F86)",
+                      fontSize: 'var(--ds-font-size-200)',
+                      color: "var(--ds-text-subtlest)",
                       fontFamily: "var(--ds-font-family-body)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -1566,9 +1566,9 @@ export function SidebarRow({
                   <div style={{ marginBottom: 16 }}>
                     <div
                       style={{
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
-                        color: "var(--ds-text-subtle, #44546F)",
+                        color: "var(--ds-text-subtle)",
                         fontFamily: "var(--ds-font-family-body)",
                         marginBottom: 6,
                       }}
@@ -1593,14 +1593,14 @@ export function SidebarRow({
                             padding: "6px 0",
                             borderBottom:
                               idx < existingLinks.length - 1
-                                ? "1px solid var(--ds-border, #DFE1E6)"
+                                ? "1px solid var(--ds-border)"
                                 : "none",
                           }}
                         >
                           <span
                             style={{
-                              fontSize: 12,
-                              color: "var(--ds-text-subtle, #44546F)",
+                              fontSize: 'var(--ds-font-size-200)',
+                              color: "var(--ds-text-subtle)",
                               fontFamily: "var(--ds-font-family-body)",
                               minWidth: 90,
                             }}
@@ -1609,9 +1609,9 @@ export function SidebarRow({
                           </span>
                           <span
                             style={{
-                              fontSize: 13,
+                              fontSize: 'var(--ds-font-size-300)',
                               fontWeight: 500,
-                              color: "var(--ds-text, #172B4D)",
+                              color: "var(--ds-text)",
                               fontFamily: "var(--ds-font-family-body)",
                               flex: 1,
                             }}
@@ -1625,8 +1625,8 @@ export function SidebarRow({
                               background: "none",
                               border: "none",
                               cursor: "pointer",
-                              color: "var(--ds-text-danger, #AE2A19)",
-                              fontSize: 12,
+                              color: "var(--ds-text-danger)",
+                              fontSize: 'var(--ds-font-size-200)',
                               fontFamily: "var(--ds-font-family-body)",
                               padding: "2px 6px",
                               borderRadius: 3,
@@ -1643,9 +1643,9 @@ export function SidebarRow({
 
                 <div
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
-                    color: "var(--ds-text-subtle, #44546F)",
+                    color: "var(--ds-text-subtle)",
                     fontFamily: "var(--ds-font-family-body)",
                     marginBottom: 8,
                   }}
@@ -1666,12 +1666,12 @@ export function SidebarRow({
                     style={{
                       height: 36,
                       padding: "0 8px",
-                      border: "1px solid var(--ds-border-input, #DFE1E6)",
+                      border: "1px solid var(--ds-border-input)",
                       borderRadius: 3,
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       fontFamily: "var(--ds-font-family-body)",
-                      color: "var(--ds-text, #172B4D)",
-                      background: "var(--ds-background-input, #FFFFFF)",
+                      color: "var(--ds-text)",
+                      background: "var(--ds-background-input)",
                       cursor: "pointer",
                       outline: "none",
                     }}
@@ -1694,21 +1694,21 @@ export function SidebarRow({
                       height: 36,
                       padding: "0 10px",
                       boxSizing: "border-box",
-                      border: "1px solid var(--ds-border-input, #DFE1E6)",
+                      border: "1px solid var(--ds-border-input)",
                       borderRadius: 3,
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       fontFamily: "var(--ds-font-family-body)",
-                      color: "var(--ds-text, #172B4D)",
-                      background: "var(--ds-background-input, #FFFFFF)",
+                      color: "var(--ds-text)",
+                      background: "var(--ds-background-input)",
                       outline: "none",
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor =
-                        "var(--ds-border-focused, #388BFF)";
+                        "var(--ds-border-focused)";
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor =
-                        "var(--ds-border-input, #DFE1E6)";
+                        "var(--ds-border-input)";
                     }}
                   />
                   <Button
@@ -1750,7 +1750,7 @@ export function SidebarRow({
             style={{ position: "absolute", left: 0, right: 0, top: -4, height: 8, cursor: "pointer" }}
           />
           {dividerHover && (
-            <div aria-hidden style={{ position: "absolute", left: 0, right: 0, top: -1, height: 2, background: "var(--ds-border-selected, #0C66E4)", pointerEvents: "none" }} />
+            <div aria-hidden style={{ position: "absolute", left: 0, right: 0, top: -1, height: 2, background: "var(--ds-border-selected)", pointerEvents: "none" }} />
           )}
         </div>
       )}
@@ -1760,8 +1760,8 @@ export function SidebarRow({
             style={{
               position: "fixed", top: dividerRect.top - 14, left: dividerRect.left - 14 - 132,
               height: 28, display: "flex", alignItems: "center", padding: "0 10px",
-              background: "var(--ds-background-neutral-bold, #292A2E)", color: "var(--ds-text-inverse, #FFFFFF)",
-              borderRadius: 4, fontSize: 12, fontWeight: 500, whiteSpace: "nowrap",
+              background: "var(--ds-background-neutral-bold)", color: "var(--ds-text-inverse)",
+              borderRadius: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, whiteSpace: "nowrap",
               fontFamily: "var(--ds-font-family-body)", zIndex: 10000, pointerEvents: "none",
             }}
           >
@@ -1779,7 +1779,7 @@ export function SidebarRow({
             style={{
               position: "fixed", top: dividerRect.top - 10, left: dividerRect.left - 10,
               width: 22, height: 22, borderRadius: 4,
-              background: "var(--ds-background-selected-bold, #0C66E4)", color: "var(--ds-text-inverse, #FFFFFF)",
+              background: "var(--ds-background-selected-bold)", color: "var(--ds-text-inverse)",
               border: "none", display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer", zIndex: 10001,
             }}
@@ -1824,7 +1824,7 @@ export function SidebarRow({
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                background: "var(--ds-surface, #FFFFFF)",
+                background: "var(--ds-surface)",
                 border: "none",
                 borderRadius: 6,
                 boxShadow:
@@ -1848,11 +1848,11 @@ export function SidebarRow({
                     gap: 4,
                     height: 36,
                     padding: "0 8px",
-                    border: "1px solid var(--ds-border, #DFE1E6)",
+                    border: "1px solid var(--ds-border)",
                     borderRadius: 4,
                     background: typeLocked
-                      ? "var(--ds-background-disabled, #F1F2F4)"
-                      : "var(--ds-surface, #FFFFFF)",
+                      ? "var(--ds-background-disabled)"
+                      : "var(--ds-surface)",
                     cursor: typeLocked ? "not-allowed" : "pointer",
                     opacity: typeLocked ? 0.7 : 1,
                   }}
@@ -1867,7 +1867,7 @@ export function SidebarRow({
                     height="16"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="var(--ds-text-subtle, #44546F)"
+                    stroke="var(--ds-text-subtle)"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -1897,8 +1897,8 @@ export function SidebarRow({
                         gap: 8,
                         padding: "8px 12px",
                         cursor: "pointer",
-                        fontSize: 13,
-                        color: "var(--ds-text, #172B4D)",
+                        fontSize: 'var(--ds-font-size-300)',
+                        color: "var(--ds-text)",
                         fontFamily: "var(--ds-font-family-body)",
                       }}
                       onMouseEnter={(e) => {
@@ -1937,21 +1937,21 @@ export function SidebarRow({
                   minWidth: 0,
                   height: 36,
                   padding: "0 8px",
-                  border: "1px solid var(--cat-input-blur-border, #858585)",
+                  border: "1px solid var(--cat-input-blur-border)",
                   borderRadius: 4,
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   outline: "none",
-                  background: "var(--ds-background-input, #FFFFFF)",
-                  color: "var(--ds-text, #172B4D)",
+                  background: "var(--ds-background-input)",
+                  color: "var(--ds-text)",
                   fontFamily: "var(--ds-font-family-body)",
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor =
-                    "var(--ds-border-focused, #388BFF)";
+                    "var(--ds-border-focused)";
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor =
-                    "var(--cat-input-blur-border, #858585)";
+                    "var(--cat-input-blur-border)";
                 }}
               />
               {/* Create — grey/disabled → blue/enabled */}
@@ -1968,17 +1968,17 @@ export function SidebarRow({
                   padding: "0 12px",
                   border: "none",
                   borderRadius: 4,
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   flexShrink: 0,
                   fontFamily: "var(--ds-font-family-body)",
                   cursor: canCreate ? "pointer" : "not-allowed",
                   background: canCreate
-                    ? "var(--ds-background-brand-bold, #0C66E4)"
-                    : "var(--ds-background-neutral, #F1F2F4)",
+                    ? "var(--ds-background-brand-bold)"
+                    : "var(--ds-background-neutral)",
                   color: canCreate
-                    ? "var(--ds-text-inverse, #FFFFFF)"
-                    : "var(--ds-text-disabled, #8993A4)",
+                    ? "var(--ds-text-inverse)"
+                    : "var(--ds-text-disabled)",
                 }}
               >
                 Create
@@ -1991,8 +1991,8 @@ export function SidebarRow({
                     height: 18,
                     borderRadius: 3,
                     background: canCreate
-                      ? "var(--ds-background-brand-bold-hovered, #0055CC)"
-                      : "var(--ds-background-neutral-subtle, #F7F8F9)",
+                      ? "var(--ds-background-brand-bold-hovered)"
+                      : "var(--ds-background-neutral-subtle)",
                   }}
                 >
                   <svg
@@ -2021,7 +2021,7 @@ export function SidebarRow({
                 onClick={(e) => e.stopPropagation()}
                 style={{
                   height: ROW_H,
-                  background: "var(--cat-inline-create-bg, #dddee1)",
+                  background: "var(--cat-inline-create-bg)",
                 }}
               />
               {/* white card portaled to body so it spills past the sidebar into the calendar */}

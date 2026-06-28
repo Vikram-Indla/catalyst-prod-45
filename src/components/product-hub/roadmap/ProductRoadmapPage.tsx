@@ -178,12 +178,12 @@ export function ProductRoadmapPage() {
     return (
       <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: ink[1], margin: 0 }}>Product Roadmap</h1>
+          <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: ink[1], margin: 0 }}>Product Roadmap</h1>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3">
-          <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'var(--cp-danger-light, #FEF2F2)', border: `1px solid ${'var(--cp-danger-light, #FECACA)'}` }}>
-            <AlertCircle size={18} style={{ color: 'var(--ds-text-danger, #EF4444)' }} />
-            <span style={{ fontSize: 14, color: 'var(--cp-danger-text, #991B1B)', fontWeight: 500 }}>
+          <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'var(--cp-danger-light)', border: `1px solid ${'var(--cp-danger-light)'}` }}>
+            <AlertCircle size={18} style={{ color: 'var(--ds-text-danger)' }} />
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-danger-text)', fontWeight: 500 }}>
               Failed to load roadmap data: {(error as Error).message}
             </span>
           </div>
@@ -191,7 +191,7 @@ export function ProductRoadmapPage() {
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             style={{ border: `1px solid ${surface.border}`, color: ink[2], transition: 'background-color 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page)}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : surface.page)}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             <RefreshCw className="w-4 h-4" /> Retry
@@ -214,7 +214,7 @@ export function ProductRoadmapPage() {
               <button
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
                 style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: 'var(--cp-font-body)' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page)}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Download className="w-4 h-4" /> Export
@@ -223,7 +223,7 @@ export function ProductRoadmapPage() {
                 onClick={toggleFullscreen}
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
                 style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: 'var(--cp-font-body)' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page)}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Maximize2 className="w-4 h-4" /> Fullscreen
@@ -235,12 +235,12 @@ export function ProductRoadmapPage() {
 
       {isFullscreen && (
         <div className="flex items-center justify-between px-4 py-1.5" style={{ background: surface.page, borderBottom: `1px solid ${surface.border}` }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: ink[1] }}>Product Roadmap</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: ink[1] }}>Product Roadmap</span>
           <button
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             style={{ border: `1px solid ${surface.border}`, color: ink[2], transition: 'background-color 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.borderLight)}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : surface.borderLight)}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             <Minimize2 className="w-3.5 h-3.5" /> Exit
@@ -253,14 +253,14 @@ export function ProductRoadmapPage() {
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center flex-1 gap-4">
           <div style={{ fontSize: 48 }}>📋</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: ink[2] }}>No business requests on the roadmap yet</div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: ink[3], maxWidth: 360, textAlign: 'center' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: ink[2] }}>No business requests on the roadmap yet</div>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: ink[3], maxWidth: 360, textAlign: 'center' }}>
             Add your first business request from the product backlog to get started.
           </p>
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="inline-flex items-center gap-1.5 h-10 px-5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'opacity 0.15s ease' }}
+            style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', transition: 'opacity 0.15s ease' }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >

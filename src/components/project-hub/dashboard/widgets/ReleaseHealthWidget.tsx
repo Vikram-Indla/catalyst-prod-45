@@ -147,7 +147,7 @@ export default function ReleaseHealthWidget({
         background: 'transparent',
         border: 0,
         cursor: 'pointer',
-        color: token('color.link', 'var(--ds-link, #0C66E4)'),
+        color: token('color.link', 'var(--ds-link)'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -178,7 +178,7 @@ export default function ReleaseHealthWidget({
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -221,9 +221,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         overflow: 'hidden',
       }}
     >
@@ -231,12 +231,12 @@ function KpiHeadline({
       <KpiCell
         label="On track"
         value={onTrack}
-        accent={onTrack > 0 ? 'var(--ds-text-accent-green-bolder, #216E4E)' : undefined}
+        accent={onTrack > 0 ? 'var(--ds-text-accent-green-bolder)' : undefined}
       />
       <KpiCell
         label="At risk"
         value={atRisk}
-        accent={atRisk > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined}
+        accent={atRisk > 0 ? 'var(--ds-text-accent-red-bolder)' : undefined}
         last
       />
     </div>
@@ -262,7 +262,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 10px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
         minWidth: 0,
       }}
     >
@@ -298,10 +298,10 @@ function ReleaseRow({ release: rel }: { release: any }) {
   const isDone = pct >= 100;
   const atRisk = !!rel.atRisk;
   const fill = isDone
-    ? 'var(--ds-background-accent-green-bolder, #1F845A)'
+    ? 'var(--ds-background-accent-green-bolder)'
     : atRisk
-      ? 'var(--ds-background-accent-red-bolder, #C9372C)'
-      : 'var(--ds-background-accent-blue-bolder, #0C66E4)';
+      ? 'var(--ds-background-accent-red-bolder)'
+      : 'var(--ds-background-accent-blue-bolder)';
 
   return (
     <div
@@ -346,7 +346,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
             flex: 1,
             height: 14,
             borderRadius: 7,
-            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             overflow: 'hidden',
             position: 'relative',
           }}
@@ -367,7 +367,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
             minWidth: 44,
             textAlign: 'right',
             color: atRisk
-              ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
+              ? 'var(--ds-text-accent-red-bolder)'
               : token('color.text', '#292A2E'),
             fontVariantNumeric: 'tabular-nums',
           }}
@@ -383,7 +383,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -400,8 +400,8 @@ function ReleaseRow({ release: rel }: { release: any }) {
               alignItems: 'center',
               gap: 4,
               color: atRisk
-                ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-                : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
+                ? 'var(--ds-text-accent-red-bolder)'
+                : token('color.text.subtle', 'var(--ds-text-subtlest)'),
             }}
           >
             {atRisk && <AlertTriangle size={11} aria-hidden />}

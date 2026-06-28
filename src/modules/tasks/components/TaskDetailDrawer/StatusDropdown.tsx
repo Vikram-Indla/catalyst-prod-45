@@ -47,14 +47,14 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
 
   const getStatusColor = (slug: string, name?: string) => {
     const slugColors: Record<string, string> = {
-      backlog: 'var(--ds-text-subtlest, #94a3b8)',
-      planned: 'var(--ds-text-brand, #3b82f6)',
-      'in-progress': 'var(--ds-text-warning, #f59e0b)',
-      'in progress': 'var(--ds-text-warning, #f59e0b)',
-      review: 'var(--ds-background-discovery-bold, #6E5DC6)',
-      done: 'var(--ds-text-success, #16a34a)',
+      backlog: 'var(--ds-text-subtlest)',
+      planned: 'var(--ds-text-brand)',
+      'in-progress': 'var(--ds-text-warning)',
+      'in progress': 'var(--ds-text-warning)',
+      review: 'var(--ds-background-discovery-bold)',
+      done: 'var(--ds-text-success)',
     };
-    return slugColors[slug] || STATUS_COLORS[name || ''] || 'var(--ds-text-subtlest, #94a3b8)';
+    return slugColors[slug] || STATUS_COLORS[name || ''] || 'var(--ds-text-subtlest)';
   };
 
   const displayName = currentStatus?.name || 'Select status';
@@ -89,7 +89,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
             flexShrink: 0,
           }}
         />
-        <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+        <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: COLORS.textPrimary }}>
           {displayName}
         </span>
         <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
@@ -159,7 +159,7 @@ function DropdownItem({ value, color, isSelected, onClick }: { value: string; co
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>{value}</span>
       {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );

@@ -17,28 +17,28 @@ interface WorkstreamCardProps {
 }
 
 const COLORS = {
-  textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  textMuted: 'var(--ds-text-subtlest, #64748b)',
-  textLight: 'var(--ds-text-subtlest, #94a3b8)',
+  textPrimary: 'var(--ds-text)',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+  textMuted: 'var(--ds-text-subtlest)',
+  textLight: 'var(--ds-text-subtlest)',
   
-  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfaceHover: 'var(--ds-surface-sunken, #f8fafc)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfaceHover: 'var(--ds-surface-sunken)',
   
-  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken))',
+  borderDefault: 'var(--ds-text-disabled)',
   
-  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  danger: 'var(--ds-text-danger, #dc2626)',
-  warning: 'var(--ds-text-warning, #f59e0b)',
-  success: 'var(--ds-text-success, #16a34a)'
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  danger: 'var(--ds-text-danger)',
+  warning: 'var(--ds-text-warning)',
+  success: 'var(--ds-text-success)'
 };
 
 const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; label: string }> = {
-  'healthy': { color: COLORS.success, bgColor: 'var(--ds-background-success, #DFFCF0)', borderColor: 'var(--ds-background-success, #DFFCF0)', label: 'On Track' },
-  'at-risk': { color: COLORS.warning, bgColor: 'var(--ds-background-warning, #FFF7D6)', borderColor: 'var(--ds-background-warning, #FFF7D6)', label: 'At Risk' },
-  'critical': { color: COLORS.danger, bgColor: 'var(--ds-background-danger, #fef2f2)', borderColor: 'var(--ds-background-danger, #FFECEB)', label: 'Critical' },
-  'locked': { color: COLORS.textMuted, bgColor: 'var(--ds-surface-sunken, #f1f5f9)', borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', label: 'Locked' }
+  'healthy': { color: COLORS.success, bgColor: 'var(--ds-background-success)', borderColor: 'var(--ds-background-success)', label: 'On Track' },
+  'at-risk': { color: COLORS.warning, bgColor: 'var(--ds-background-warning)', borderColor: 'var(--ds-background-warning)', label: 'At Risk' },
+  'critical': { color: COLORS.danger, bgColor: 'var(--ds-background-danger)', borderColor: 'var(--ds-background-danger)', label: 'Critical' },
+  'locked': { color: COLORS.textMuted, bgColor: 'var(--ds-surface-sunken)', borderColor: 'var(--ds-border, var(--cp-bg-sunken))', label: 'Locked' }
 };
 
 export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
@@ -87,7 +87,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         {/* NAME */}
         <h3
           style={{
-            fontSize: '16px',
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 600,
             color: COLORS.textPrimary,
             margin: 0,
@@ -107,7 +107,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
             backgroundColor: healthConfig.bgColor,
             border: `1px solid ${healthConfig.borderColor}`,
             borderRadius: '6px',
-            fontSize: '12px',
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: healthConfig.color,
             flexShrink: 0
@@ -130,7 +130,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <label
           style={{
             display: 'block',
-            fontSize: '11px',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             color: COLORS.textMuted,
             textTransform: 'uppercase',
@@ -162,7 +162,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <div>
           <div
             style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600,
               color: COLORS.textPrimary,
               lineHeight: 1
@@ -172,7 +172,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           </div>
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: COLORS.textMuted,
               marginTop: '4px'
             }}
@@ -185,7 +185,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <div>
           <div
             style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600,
               color: (workstream.overdueCount || 0) > 0 ? COLORS.danger : COLORS.textPrimary,
               lineHeight: 1
@@ -195,7 +195,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           </div>
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: COLORS.textMuted,
               marginTop: '4px'
             }}
@@ -208,7 +208,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <div>
           <div
             style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600,
               color: COLORS.textPrimary,
               lineHeight: 1
@@ -218,7 +218,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           </div>
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: COLORS.textMuted,
               marginTop: '4px'
             }}
@@ -333,12 +333,12 @@ const MenuOption: React.FC<{
         width: '100%',
         padding: '10px 12px',
         backgroundColor: isHovered && !disabled
-          ? (danger ? 'var(--ds-background-danger, #fef2f2)' : 'var(--ds-surface-sunken, #f1f5f9)') 
+          ? (danger ? 'var(--ds-background-danger)' : 'var(--ds-surface-sunken)') 
           : 'transparent',
         border: 'none',
         borderRadius: '6px',
-        fontSize: '14px',
-        color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
+        fontSize: 'var(--ds-font-size-400)',
+        color: disabled ? 'var(--ds-text-subtlest)' : (danger ? 'var(--ds-text-danger)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))'),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',
         textAlign: 'left',

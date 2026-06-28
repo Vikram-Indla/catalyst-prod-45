@@ -28,29 +28,29 @@ export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }:
       icon: (color: string) => <CheckMarkIcon label="" size="small" primaryColor={color} />,
       count: passed,
       label: 'Passed',
-      bgColor: 'var(--ds-background-success, #DCFFF1)',
-      iconColor: 'var(--ds-chart-teal-bold, #0d9488)'
+      bgColor: 'var(--ds-background-success)',
+      iconColor: 'var(--ds-chart-teal-bold)'
     },
     {
       icon: (color: string) => <CloseIcon label="" size="small" primaryColor={color} />,
       count: failed,
       label: 'Failed',
-      bgColor: 'var(--ds-background-danger, #FFECEB)',
-      iconColor: 'var(--ds-text-danger, #ef4444)'
+      bgColor: 'var(--ds-background-danger)',
+      iconColor: 'var(--ds-text-danger)'
     },
     {
       icon: (color: string) => <WarningIcon label="" size="small" primaryColor={color} />,
       count: blocked,
       label: 'Blocked',
-      bgColor: 'var(--ds-background-warning, #FFF7D6)',
-      iconColor: 'var(--ds-text-warning, #d97706)'
+      bgColor: 'var(--ds-background-warning)',
+      iconColor: 'var(--ds-text-warning)'
     },
     {
       icon: (color: string) => <CircleIcon size={12} />,
       count: notRun,
       label: 'Not Run',
-      bgColor: 'var(--ds-surface-sunken, #f1f5f9)',
-      iconColor: 'var(--ds-text-subtlest, #64748b)'
+      bgColor: 'var(--ds-surface-sunken)',
+      iconColor: 'var(--ds-text-subtlest)'
     },
   ];
   
@@ -59,7 +59,7 @@ export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }:
       {isWinner && (
         <div 
           className="absolute -top-1 -right-1 text-lg z-10"
-          style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}
+          style={{ color: 'var(--ds-chart-teal-bold)' }}
         >
           ★
         </div>

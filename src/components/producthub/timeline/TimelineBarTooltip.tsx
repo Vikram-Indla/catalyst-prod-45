@@ -31,7 +31,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
         top: `${position.y}px`,
         zIndex: 9999,
         background: 'var(--bg-app)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         borderRadius: '12px',
         boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
         pointerEvents: 'none',
@@ -49,7 +49,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
               flexShrink: 0,
               padding: '2px 6px',
               borderRadius: '4px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               fontFamily: 'var(--cp-font-mono)',
               backgroundColor: 'var(--ds-background-information-bold, rgba(59,130,246,0.1))',
@@ -61,9 +61,9 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
           <SourceBadge source={request.source} />
           <span
             style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text)',
               lineHeight: '1.3',
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -84,7 +84,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
               alignItems: 'center',
               gap: '6px',
               padding: '2px 8px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               borderRadius: '12px',
               backgroundColor: statusCfg.bg,
@@ -99,7 +99,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
             }} />
             {statusCfg.label}
           </span>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', textTransform: 'capitalize' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest)', textTransform: 'capitalize' }}>
             {priority} Priority
           </span>
         </div>
@@ -108,8 +108,8 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
         {(startStr || endStr) && (
           <div
             style={{
-              fontSize: '11px',
-              color: 'var(--ds-text-subtlest, #626F86)',
+              fontSize: 'var(--ds-font-size-100)',
+              color: 'var(--ds-text-subtlest)',
               fontFamily: 'var(--cp-font-mono)',
               fontVariantNumeric: 'tabular-nums',
             }}
@@ -123,12 +123,12 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
         {/* Progress bar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #626F86)' }}>Progress</span>
-            <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>Progress</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums' }}>
               {request.progress}%
             </span>
           </div>
-          <div style={{ height: '4px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '9999px', overflow: 'hidden' }}>
+          <div style={{ height: '4px', backgroundColor: 'var(--ds-surface-sunken)', borderRadius: '9999px', overflow: 'hidden' }}>
             <div
               style={{
                 height: '100%',
@@ -147,7 +147,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
             alignItems: 'center',
             gap: '8px',
             paddingTop: '4px',
-            borderTop: '1px solid var(--ds-surface-sunken, #F7F8F9)',
+            borderTop: '1px solid var(--ds-surface-sunken)',
           }}>
             {request.assignee_name && (
               <>
@@ -159,7 +159,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '8px',
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: 'var(--bg-app)',
                     flexShrink: 0,
@@ -168,14 +168,14 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
                 >
                   {getInitialsFromName(request.assignee_name)}
                 </span>
-                <span style={{ fontSize: '12px', color: 'var(--ds-text, #172B4D)' }}>{request.assignee_name}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>{request.assignee_name}</span>
               </>
             )}
             {request.assignee_name && request.department_name && (
-              <span style={{ color: 'var(--ds-icon-subtle, #a1a1aa)' }}>·</span>
+              <span style={{ color: 'var(--ds-icon-subtle)' }}>·</span>
             )}
             {request.department_name && (
-              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)' }}>{request.department_name}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{request.department_name}</span>
             )}
           </div>
         )}

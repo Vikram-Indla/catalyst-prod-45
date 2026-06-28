@@ -245,7 +245,7 @@ export function TeamRoomSidebar({
                       background: active ? 'var(--nav-active-bg)' : 'transparent',
                       color: active ? 'var(--text-1)' : 'var(--text-2)',
                       fontWeight: active ? 600 : 500,
-                      fontSize: '14px',
+                      fontSize: 'var(--ds-font-size-400)',
                       fontFamily: 'inherit',
                       outline: 'none',
                     }}
@@ -273,7 +273,7 @@ export function TeamRoomSidebar({
                     <>
                       <span className="truncate text-left flex-1">{item.label}</span>
                       {'badge' in item && item.badge && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white rounded uppercase">
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white rounded uppercase">
                           {item.badge}
                         </span>
                       )}
@@ -304,7 +304,7 @@ export function TeamRoomSidebar({
                           alignItems: 'center',
                           gap: '12px',
                           padding: '8px 32px',
-                          fontSize: '14px',
+                          fontSize: 'var(--ds-font-size-400)',
                           fontWeight: 400,
                           border: 'none',
                           background: 'transparent',
@@ -334,7 +334,7 @@ export function TeamRoomSidebar({
                           alignItems: 'center',
                           gap: '12px',
                           padding: '8px 32px',
-                          fontSize: '14px',
+                          fontSize: 'var(--ds-font-size-400)',
                           fontWeight: 400,
                           border: 'none',
                           background: 'transparent',
@@ -364,7 +364,7 @@ export function TeamRoomSidebar({
                           alignItems: 'center',
                           gap: '12px',
                           padding: '8px 32px',
-                          fontSize: '14px',
+                          fontSize: 'var(--ds-font-size-400)',
                           fontWeight: 400,
                           border: 'none',
                           background: 'transparent',
@@ -401,7 +401,7 @@ export function TeamRoomSidebar({
                 border: 'none',
                 background: 'transparent',
                 color: 'var(--text-2)',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',

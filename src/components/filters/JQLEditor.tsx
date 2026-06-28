@@ -40,13 +40,13 @@ type TokenKind = 'kw' | 'op' | 'field' | 'str' | 'fn' | 'punct' | 'plain';
 interface SynToken { start: number; end: number; kind: TokenKind }
 
 const KIND_COLOR: Record<TokenKind, string> = {
-  kw:    'var(--ds-text-information, #0052CC)',
-  field: 'var(--ds-text-success, #006644)',
-  op:    'var(--ds-text-discovery, #403294)',
-  str:   'var(--ds-text-danger, #AE2A19)',
-  fn:    'var(--ds-text-selected, #0C66E4)',
-  punct: 'var(--ds-text-subtle, #42526E)',
-  plain: 'var(--ds-text, #172B4D)',
+  kw:    'var(--ds-text-information)',
+  field: 'var(--ds-text-success)',
+  op:    'var(--ds-text-discovery)',
+  str:   'var(--ds-text-danger)',
+  fn:    'var(--ds-text-selected)',
+  punct: 'var(--ds-text-subtle)',
+  plain: 'var(--ds-text)',
 };
 
 function syntaxTokenize(src: string): SynToken[] {
@@ -288,7 +288,7 @@ export function JQLEditor({
   const hasServerErrors = !validation.valid && validation.errors.length > 0;
   const borderBase  = (isInvalid || hasServerErrors)
     ? token('color.border.danger')
-    : `var(--ds-border, #DFE1E6)`;
+    : `var(--ds-border)`;
   const borderFocus = token('color.border.focused');
   const borderColor = focused ? borderFocus : borderBase;
 
@@ -300,7 +300,7 @@ export function JQLEditor({
   // Shared inline styles for textarea/input text
   const textStyle: React.CSSProperties = {
     fontFamily: 'var(--ds-font-family-code, monospace)',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     lineHeight: 1.5,
     color: singleLine ? token('color.text') : 'transparent',
     caretColor: token('color.text'),
@@ -319,7 +319,7 @@ export function JQLEditor({
             padding: '0 12px',
             height: 32,
             lineHeight: '32px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--ds-font-family-code, monospace)',
             whiteSpace: 'pre',
             overflow: 'hidden',
@@ -348,7 +348,7 @@ export function JQLEditor({
             ...textStyle,
             color: 'transparent',
             caretColor: token('color.text'),
-            background: `var(--ds-surface, #FFFFFF)`,
+            background: `var(--ds-surface)`,
             border: `2px solid ${borderColor}`,
             borderRadius: 3,
             outline: 'none',
@@ -384,7 +384,7 @@ export function JQLEditor({
             position: 'absolute',
             top: 0, left: 0, right: 0, bottom: 0,
             padding: '8px 12px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--ds-font-family-code, monospace)',
             lineHeight: 1.5,
             whiteSpace: 'pre-wrap',
@@ -417,7 +417,7 @@ export function JQLEditor({
             ...textStyle,
             color: 'transparent',
             caretColor: token('color.text'),
-            background: `var(--ds-surface, #FFFFFF)`,
+            background: `var(--ds-surface)`,
             border: `2px solid ${borderColor}`,
             borderRadius: 3,
             outline: 'none',
@@ -432,7 +432,7 @@ export function JQLEditor({
       </div>
 
       {showFilterCount && filterCount > 0 && (
-        <div style={{ marginTop: 4, fontSize: 12, color: token('color.text.subtlest') }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
           {filterCount} active {filterCount === 1 ? 'filter' : 'filters'}
           {validation.isChecking && (
             <span style={{ marginLeft: 8, color: token('color.text.subtlest') }}>Validating…</span>
@@ -444,7 +444,7 @@ export function JQLEditor({
         <div style={{ marginTop: 4 }}>
           {validation.errors.map((err, i) => (
             <div key={i} style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.danger'),
               display: 'flex',
               alignItems: 'flex-start',
@@ -461,8 +461,8 @@ export function JQLEditor({
         <div style={{ marginTop: 4 }}>
           {validation.warnings.map((w, i) => (
             <div key={i} style={{
-              fontSize: 12,
-              color: 'var(--ds-text-warning, #974F0C)',
+              fontSize: 'var(--ds-font-size-200)',
+              color: 'var(--ds-text-warning)',
               display: 'flex',
               alignItems: 'flex-start',
               gap: 4,

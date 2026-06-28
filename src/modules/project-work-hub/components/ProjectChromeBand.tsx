@@ -6,7 +6,7 @@
  *
  * Why this exists
  * ───────────────
- * Iter-3 of /jira-compare landed the page-chrome bg (var(--ds-background-selected, #E9F2FE)) and the
+ * Iter-3 of /jira-compare landed the page-chrome bg (var(--ds-background-selected)) and the
  * inner white card with its own padding/border. /regression then surfaced
  * three additional defects sharing one root cause:
  *
@@ -190,7 +190,7 @@ export function ProjectChromeBand({
         <h1
           style={{
             margin: 0,
-            fontSize: 20,
+            fontSize: 'var(--ds-font-size-700)',
             fontWeight: 653,
             // Apr 28, 2026 (jira-compare cycle 2 T1): explicit lineHeight
             // 24px. Without it the browser default (1.5 × 20 = 30px)
@@ -198,7 +198,7 @@ export function ProjectChromeBand({
             // Visual: header band looked vertically over-tall by 6px.
             lineHeight: '24px',
             letterSpacing: '-0.003em',
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -270,13 +270,13 @@ export function ProjectChromeBand({
                   alignItems: 'center',
                   height: 31,
                   padding: '0 12px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: active
-                    ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
-                    : token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
+                    ? token('color.text.selected', 'var(--ds-link)')
+                    : token('color.text.subtle', 'var(--ds-text-subtlest)'),
                   borderBottom: active
-                    ? `2px solid ${token('color.border.selected', 'var(--ds-link, #0C66E4)')}`
+                    ? `2px solid ${token('color.border.selected', 'var(--ds-link)')}`
                     : '2px solid transparent',
                   textDecoration: 'none',
                   cursor: 'pointer',
@@ -306,7 +306,7 @@ export function ProjectChromeBand({
                 padding: 0,
                 border: 'none',
                 background: 'transparent',
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 borderRadius: 3,
                 cursor: 'pointer',
               }}
@@ -317,7 +317,7 @@ export function ProjectChromeBand({
                 e.currentTarget.style.background = 'transparent';
               }}
             >
-              <span aria-hidden="true" style={{ fontSize: 16, fontWeight: 400, lineHeight: 1 }}>+</span>
+              <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 400, lineHeight: 1 }}>+</span>
             </button>
           )}
         </nav>

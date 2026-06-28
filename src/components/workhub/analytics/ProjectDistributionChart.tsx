@@ -20,7 +20,7 @@ export function ProjectDistributionChart({ data }: Props) {
     }}>
       <h3 style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 16, fontWeight: 600,
+        fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Project Distribution
@@ -29,13 +29,13 @@ export function ProjectDistributionChart({ data }: Props) {
       <ResponsiveContainer width="100%" height={data.length * 48 + 40}>
         <BarChart layout="vertical" data={data} margin={{ left: 60, right: 20, top: 5, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" tick={{ fontSize: 12 }} />
+          <XAxis type="number" tick={{ fontSize: 'var(--ds-font-size-200)' }} />
           <YAxis
             type="category" dataKey="name" width={50}
-            tick={{ fontSize: 12, fontFamily: 'monospace' }}
+            tick={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace' }}
           />
           <Tooltip content={<ChartTooltip />} />
-          <Bar dataKey="value" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" radius={[0, 4, 4, 0]} barSize={20} />
+          <Bar dataKey="value" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" radius={[0, 4, 4, 0]} barSize={20} />
         </BarChart>
       </ResponsiveContainer>
     </div>

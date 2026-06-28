@@ -14,13 +14,26 @@ import type { StatusCategory } from '@/constants/statusCategoryColors';
 import type { EntityKey } from '@/lib/workflow/canonical/contracts';
 import { resolveCanonicalVersion, resolveKeyInVersion, availableTransitions, type ResolvedVersion } from '@/lib/workflow/canonical/runtime';
 
-const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = { story: 'story', Story: 'story' };
+const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
+  story: 'story', Story: 'story',
+  epic: 'epic', Epic: 'epic',
+  feature: 'feature', Feature: 'feature',
+  subtask: 'subtask', 'sub-task': 'subtask', 'Sub-task': 'subtask',
+  defect: 'defect', Defect: 'defect', 'qa bug': 'defect',
+  release: 'release', Release: 'release',
+  business_request: 'business_request', 'Business Request': 'business_request',
+  product_milestone: 'product_milestone', 'Product Milestone': 'product_milestone',
+  task: 'task', Task: 'task',
+  sprint: 'sprint', Sprint: 'sprint',
+};
 
 export interface CanonicalWorkflowExtras {
   isCanonical: boolean;
   versionId: string | null;
   resolveStatusKey: (name: string | null | undefined) => string | null;
   labelForStatus: (name: string | null | undefined) => string;
+  /** True when the from→to transition (or the to-status) requires a reason. */
+  requiresReason: (fromName: string | null | undefined, toName: string | null | undefined) => boolean;
 }
 
 export function useCanonicalIssueWorkflow(
@@ -42,6 +55,7 @@ export function useCanonicalIssueWorkflow(
         ...legacy, isCanonical: false, versionId: null,
         resolveStatusKey: () => null,
         labelForStatus: (n: string | null | undefined) => n ?? '',
+        requiresReason: () => false,
       };
     }
     const v = canonical as ResolvedVersion;
@@ -74,6 +88,14 @@ export function useCanonicalIssueWorkflow(
       labelForStatus: (name: string | null | undefined) => {
         const k = resolveKeyInVersion(v, name);
         return (k && labelByKey.get(k)) || (name ?? '');
+      },
+      requiresReason: (fromName: string | null | undefined, toName: string | null | undefined) => {
+        const tk = resolveKeyInVersion(v, toName);
+        if (!tk) return false;
+        const fk = resolveKeyInVersion(v, fromName);
+        const t = v.transitions.find((x) => x.to_status_key === tk && (x.from_status_key === fk || x.from_status_key === null));
+        const st = v.statuses.find((s) => s.status_key === tk);
+        return !!(t?.requires_reason || st?.requires_reason);
       },
     } as IssueTypeWorkflowResult & CanonicalWorkflowExtras;
   }, [entityKey, canonical, legacy, isLoading]);

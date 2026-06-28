@@ -47,7 +47,7 @@ export const Interactive: VTStory = {
     return (
       <div style={{ padding: 24 }}>
         <ViewToggle currentView={view} onViewChange={setView} showTable />
-        <p style={{ marginTop: 16, color: 'var(--ds-text-subtle, #42526E)' }}>
+        <p style={{ marginTop: 16, color: 'var(--ds-text-subtle)' }}>
           Current view: <strong>{view}</strong>
         </p>
       </div>

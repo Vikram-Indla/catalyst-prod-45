@@ -107,15 +107,15 @@ export function MobileNavigationMenu() {
                       ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')
                       : 'transparent',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive
-                      ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))')
-                      : ('var(--cp-text-primary, #1E293B)'),
+                      ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary))')
+                      : ('var(--cp-text-primary)'),
                     fontFamily: 'var(--cp-font-body)',
                     textAlign: 'left',
                     transition: 'background 0.1s',
-                    borderLeft: isActive ? '3px solid var(--ds-background-information-bold, #3b82f6)' : '3px solid transparent',
+                    borderLeft: isActive ? '3px solid var(--ds-background-information-bold)' : '3px solid transparent',
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(0,0,0,0.04))';

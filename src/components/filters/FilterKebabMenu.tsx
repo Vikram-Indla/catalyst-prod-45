@@ -256,12 +256,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           background: 'none',
           border: 'none',
           textAlign: 'left',
-          fontSize: 14,
-          color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+          fontSize: 'var(--ds-font-size-400)',
+          color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
           cursor: disabled ? 'not-allowed' : 'pointer',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
+        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'); }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
       >
         {label}
@@ -269,7 +269,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
     );
   }
 
-  const divider = <div style={{ height: 1, background: token('color.border', 'var(--ds-border, #DFE1E6)'), margin: '4px 0' }} />;
+  const divider = <div style={{ height: 1, background: token('color.border', 'var(--ds-border)'), margin: '4px 0' }} />;
 
   return (
     <>
@@ -292,7 +292,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           border: 'none',
           borderRadius: 3,
           background: 'transparent',
-          color: token('color.icon.subtle', 'var(--ds-icon, #44546F)'),
+          color: token('color.icon.subtle', 'var(--ds-icon)'),
           cursor: 'pointer',
         }}
       >
@@ -309,10 +309,10 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             top: menuPos.top,
             left: menuPos.left,
             transform: 'translateX(-100%)',
-            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.25))'),
-            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             zIndex: 9999,
             minWidth: 180,
             padding: '4px 0',
@@ -411,7 +411,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <>
               {divider}
               {menuItem(
-                <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>Delete</span>,
+                <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)') }}>Delete</span>,
                 () => setDeleteOpen(true),
               )}
             </>
@@ -481,12 +481,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
               <ModalTitle appearance="danger">Delete filter</ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <p style={{ margin: 0, fontSize: 14, color: token('color.text') }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: token('color.text') }}>
                 Are you sure you want to delete{' '}
                 <strong>{filter.name}</strong>? This action cannot be undone.
               </p>
               {filter.used_by_board_ids.length > 0 && (
-                <p style={{ margin: '8px 0 0', fontSize: 13, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
+                <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-300)', color: token('color.text.warning', 'var(--ds-text-warning)') }}>
                   This filter is used by {filter.used_by_board_ids.length} board{filter.used_by_board_ids.length > 1 ? 's' : ''}. Deleting it will unlink those boards.
                 </p>
               )}
@@ -523,7 +523,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <ModalBody>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Board name
                   </label>
                   <Textfield
@@ -534,7 +534,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Board type
                   </label>
                   <Select
@@ -547,7 +547,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     menuPosition="fixed"
                   />
                 </div>
-                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                   The board will use the JQL from <strong>{filter.name}</strong> to populate its issues.
                 </p>
               </div>
@@ -608,7 +608,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <ModalBody>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Roadmap name
                   </label>
                   <Textfield
@@ -619,7 +619,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Date field
                   </label>
                   <Select
@@ -634,7 +634,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Group lanes by
                   </label>
                   <Select
@@ -649,12 +649,12 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     menuPosition="fixed"
                   />
                 </div>
-                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                   Issues come live from <strong>{filter.name}</strong>. Items without a date go into an
                   Unscheduled group. Access follows the filter visibility.
                 </p>
                 {roadmapError && (
-                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.danger', 'var(--ds-text-danger)') }}>
                     {roadmapError}
                   </p>
                 )}
@@ -686,7 +686,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <ModalBody>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Dashboard name
                   </label>
                   <Textfield
@@ -696,11 +696,11 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     placeholder="e.g. Q3 delivery dashboard"
                   />
                 </div>
-                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                   Metrics come live from <strong>{filter.name}</strong>. Access follows the filter visibility.
                 </p>
                 {dashboardError && (
-                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.danger', 'var(--ds-text-danger)') }}>
                     {dashboardError}
                   </p>
                 )}
@@ -744,7 +744,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <ModalBody>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, marginBottom: 4, color: token('color.text.subtle') }}>
                     Board name
                   </label>
                   <Textfield
@@ -754,7 +754,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     placeholder="e.g. Q2 delivery board"
                   />
                 </div>
-                <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                   Cards come live from <strong>{filter.name}</strong>.{' '}
                   {(projectBoards.data?.length ?? 0) > 0
                     ? "Columns are inherited from this project's board."
@@ -763,7 +763,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   Access follows the filter &mdash; anyone who can see the filter can see this board.
                 </p>
                 {filterProjectMismatch && (
-                  <p style={{ margin: 0, fontSize: 12, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), background: token('color.background.warning', 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))'), borderRadius: 4, padding: '8px 12px' }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.warning', 'var(--ds-text-warning)'), background: token('color.background.warning', 'var(--ds-background-warning, var(--ds-background-warning))'), borderRadius: 4, padding: '8px 12px' }}>
                     This filter is scoped to project <strong>{jqlProjectKey}</strong> but you&rsquo;re
                     in <strong>{projectKey?.toUpperCase()}</strong>. The board will use{' '}
                     <strong>{projectKey?.toUpperCase()}</strong> columns — cards from{' '}
@@ -771,7 +771,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   </p>
                 )}
                 {kanbanError && (
-                  <p style={{ margin: 0, fontSize: 13, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.danger', 'var(--ds-text-danger)') }}>
                     {kanbanError}
                   </p>
                 )}

@@ -51,7 +51,7 @@ export default function PaginationFooter({
   const atLast = page >= totalPages - 1;
   const showEnds = totalPages > 5;
 
-  const subtle = token('color.text.subtle', 'var(--ds-icon, #44546F)');
+  const subtle = token('color.text.subtle', 'var(--ds-icon)');
 
   const onKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // Arrow nav scoped to nav cluster only — does not steal global hotkeys.
@@ -86,7 +86,7 @@ export default function PaginationFooter({
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.4 : 1,
         color: subtle,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
       }}
     >
@@ -105,7 +105,7 @@ export default function PaginationFooter({
         justifyContent: 'flex-end',
         gap: 8,
         padding: '8px 16px',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         color: subtle,
       }}
     >
@@ -120,11 +120,11 @@ export default function PaginationFooter({
               onPageChange(0);
             }}
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               height: 24,
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               borderRadius: 3,
-              background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+              background: token('elevation.surface', 'var(--ds-surface)'),
               color: subtle,
               padding: '0 4px',
               cursor: 'pointer',

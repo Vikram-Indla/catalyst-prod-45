@@ -160,19 +160,19 @@ function cardToCanonicalIssue({ card, columnName }: CardContext): CanonicalBoard
    ═══════════════════════════════════════════════════════════════════════ */
 
 const CARD_TYPE_ICON: Record<CardType, { Icon: typeof Bookmark; color: string }> = {
-  Epic:       { Icon: Zap,         color: 'var(--ds-background-discovery-bold, #904EE2)' },
-  Feature:    { Icon: Layers,      color: 'var(--ds-background-success-bold, #1F845A)' },
-  Story:      { Icon: Bookmark,    color: 'var(--ds-background-success-bold, #1F845A)' },
-  Task:       { Icon: CheckSquare, color: 'var(--ds-background-information-bold, #1D7AFC)' },
-  Defect:     { Icon: Bug,         color: 'var(--ds-background-danger-bold, #C9372C)' },
-  Dependency: { Icon: Link2,       color: 'var(--ds-background-information-bold, #1D7AFC)' },
-  Risk:       { Icon: ShieldAlert, color: 'var(--ds-background-danger-bold, #C9372C)' },
+  Epic:       { Icon: Zap,         color: 'var(--ds-background-discovery-bold)' },
+  Feature:    { Icon: Layers,      color: 'var(--ds-background-success-bold)' },
+  Story:      { Icon: Bookmark,    color: 'var(--ds-background-success-bold)' },
+  Task:       { Icon: CheckSquare, color: 'var(--ds-background-information-bold)' },
+  Defect:     { Icon: Bug,         color: 'var(--ds-background-danger-bold)' },
+  Dependency: { Icon: Link2,       color: 'var(--ds-background-information-bold)' },
+  Risk:       { Icon: ShieldAlert, color: 'var(--ds-background-danger-bold)' },
 };
 
 export function resolveTeamProgramIcon(card: BoardIssue): ReactNode | null {
   const raw = (card as CanonicalBoardIssue).raw as KanbanCard | undefined;
   const type = raw?.work_item_type;
-  const entry = (type && CARD_TYPE_ICON[type]) || { Icon: CircleDashed, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
+  const entry = (type && CARD_TYPE_ICON[type]) || { Icon: CircleDashed, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' };
   const { Icon, color } = entry;
   return <Icon size={14} strokeWidth={2} style={{ color }} />;
 }

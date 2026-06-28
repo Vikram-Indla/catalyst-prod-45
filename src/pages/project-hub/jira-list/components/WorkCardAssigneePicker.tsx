@@ -145,8 +145,8 @@ export function WorkCardAssigneePicker({
           ) : currentAssigneeName ? (
             <div style={{
               width: 28, height: 28, borderRadius: '50%', background: fallbackColor,
-              color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 800, fontSize: 11,
+              color: 'var(--ds-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 800, fontSize: 'var(--ds-font-size-100)',
             }}>{fallbackInitials}</div>
           ) : (
             <UnassignedAvatar size={28} />

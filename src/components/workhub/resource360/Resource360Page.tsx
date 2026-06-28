@@ -84,7 +84,7 @@ export function Resource360Page() {
     padding: '6px 16px',
     borderRadius: 9999,
     border: 'none',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     cursor: 'pointer',
     background: active ? 'var(--cp-blue)' : 'var(--bg-1)',
@@ -98,7 +98,7 @@ export function Resource360Page() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div style={{ color: 'var(--fg-4)', fontSize: 14 }}>Loading resources...</div>
+        <div style={{ color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-400)' }}>Loading resources...</div>
       </div>
     );
   }
@@ -143,16 +143,16 @@ export function Resource360Page() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <kpi.icon style={{ width: 14, height: 14, color: 'var(--fg-4)' }} />
-              <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>{kpi.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>{kpi.label}</span>
             </div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
           </div>
         ))}
       </div>
 
       {/* Sort Bar */}
       <div style={{ padding: '0 24px 12px', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <span style={{ fontSize: 12, color: 'var(--fg-4)', fontWeight: 500 }}>Sort by:</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontWeight: 500 }}>Sort by:</span>
         {(['name', 'active', 'department'] as SortMode[]).map(mode => (
           <button key={mode} onClick={() => setSortBy(mode)} style={pillStyle(sortBy === mode)}>
             {mode === 'name' ? 'Name' : mode === 'active' ? 'Active Tasks' : 'Department'}
@@ -170,7 +170,7 @@ export function Resource360Page() {
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '8px 0', margin: '8px 0',
                 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
                     {dept} ({items.length})
                   </span>
                   <div style={{ flex: 1, height: 1, backgroundColor: 'var(--divider)' }} />
@@ -192,7 +192,7 @@ export function Resource360Page() {
           {sorted.length === 0 && (
             <div style={{
               textAlign: 'center', padding: '48px 0',
-              color: 'var(--fg-4)', fontSize: 14,
+              color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-400)',
             }}>
               No resources found in this department.
             </div>

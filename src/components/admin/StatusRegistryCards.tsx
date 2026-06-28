@@ -40,11 +40,11 @@ function StatusCard({
   return (
     <div
       style={{
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         borderTop: `3px solid ${catColor}`,
         borderRadius: 4,
         padding: 12,
-        background: status.is_default ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
+        background: status.is_default ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
@@ -61,11 +61,11 @@ function StatusCard({
               borderRadius: '50%',
               background: status.color,
               display: 'inline-block',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border)',
               flexShrink: 0,
             }}
           />
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text)' }}>
             {status.name}
           </span>
           {status.is_default && (
@@ -99,7 +99,7 @@ function StatusCard({
 
       {/* Category */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', minWidth: 70 }}>Category</span>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', minWidth: 70 }}>Category</span>
         <Lozenge appearance={categoryLozengeAppearance(status.category as StatusCategory)}>
           {STATUS_CATEGORY_LABELS[status.category as StatusCategory]}
         </Lozenge>
@@ -107,7 +107,7 @@ function StatusCard({
 
       {/* Types */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', minWidth: 70, paddingTop: 2 }}>For</span>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', minWidth: 70, paddingTop: 2 }}>For</span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {status.work_item_types.length === 0 ? (
             <Lozenge appearance="default">All types</Lozenge>
@@ -119,7 +119,7 @@ function StatusCard({
 
       {/* Consumers */}
       {consumers.length > 0 && (
-        <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
+        <div style={{ fontSize: 11, color: 'var(--ds-text-subtle)' }}>
           Used by {consumers.length} consumer{consumers.length !== 1 ? 's' : ''}
         </div>
       )}
@@ -151,7 +151,7 @@ export function StatusRegistryCards({
         style={{
           padding: 32,
           textAlign: 'center',
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest)',
           fontSize: 14,
         }}
       >

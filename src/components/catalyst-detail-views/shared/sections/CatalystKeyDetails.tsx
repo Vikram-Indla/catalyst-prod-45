@@ -30,7 +30,7 @@ import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 
 /* FieldRow — identical to the sidebar's FieldRow atom so rows line up
-   visually in both columns. 14/500/var(--ds-text-subtle, #44546F) label, 96px min label width,
+   visually in both columns. 14/500/var(--ds-text-subtle) label, 96px min label width,
    20px gap, 11px vertical padding.
    Exported so every CatalystView* can build type-specific FieldRows and
    pass them through `extraRows` — this keeps bug / incident / task
@@ -69,7 +69,7 @@ export function KeyDetailsFieldRow({
           Narrow containers (panel mode) shrink label to 120px via ResizeObserver. */}
       <Inline space={isNarrow ? 'space.200' : 'space.800'} alignBlock={alignBlock}>
         <span style={{
-          fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
+          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle)',
           minWidth: isNarrow ? 120 : 320, flexShrink: 0,
         }}>{label}</span>
         <div
@@ -207,7 +207,7 @@ export function CatalystKeyDetails({
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 24, height: 24, marginLeft: -4,
               background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-              color: 'var(--ds-text-subtle, #505258)', borderRadius: 3,
+              color: 'var(--ds-text-subtle)', borderRadius: 3,
               transition: 'background-color 150ms ease',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
@@ -221,7 +221,7 @@ export function CatalystKeyDetails({
         </Tooltip>
         <h2
           onClick={() => setCollapsed(!collapsed)}
-          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
+          style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text)', cursor: 'pointer' }}
         >
           Key details
         </h2>

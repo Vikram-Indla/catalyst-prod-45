@@ -68,7 +68,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            color: 'var(--ds-text-information, #0747A6)',
+            color: 'var(--ds-text-information)',
           }}
         >
           <span className="ttw-caty-pulse"><CatyPulseIcon size={14} /></span>
@@ -80,7 +80,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            color: 'var(--ds-text-success, #006644)',
+            color: 'var(--ds-text-success)',
           }}
         >
           <span style={{ fontSize: 9, fontWeight: 700, opacity: 0.7 }}>AR → EN</span>
@@ -91,7 +91,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
             style={{
               background: 'transparent',
               border: 'none',
-              color: 'var(--ds-link, #0052CC)',
+              color: 'var(--ds-link)',
               cursor: 'pointer',
               padding: 0,
               fontSize: 11,
@@ -116,7 +116,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
               background: 'transparent',
               border: 'none',
               borderRadius: 3,
-              color: 'var(--ds-text-subtlest, #626F86)',
+              color: 'var(--ds-text-subtlest)',
               cursor: 'pointer',
               padding: '2px 4px',
               fontSize: 12,

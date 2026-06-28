@@ -567,7 +567,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 onSelectionChange(newSelection);
               }
             }}
-            className="border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+            className="border-[var(--ds-border,var(--cp-ink-1))] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
           />
         </td>
       )}
@@ -657,7 +657,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
         // Light mode: subtle border
         "border-[var(--table-container-border)]",
         // Dark mode: very subtle border (darker than content, never bright)
-        "dark:border-[var(--ds-text, #172B4D)]",
+        "dark:border-[var(--ds-text)]",
         "shadow-[var(--shadow-elev-1)]"
       )}>
         {/* Request count header - subtle separation via background, minimal border */}
@@ -666,8 +666,8 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
           // Light mode: border visible
           "border-b border-[var(--table-header-border)]",
           // Dark mode: ultra-subtle border
-          "dark:border-b dark:border-[var(--ds-surface, #232323)]",
-          "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
+          "dark:border-b dark:border-[var(--ds-surface)]",
+          "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised)]"
         )}>
           <span className="text-sm text-[var(--table-text-secondary)]">
             <span className="font-semibold text-[var(--table-text-primary)]">{processedData.length}</span> {processedData.length === 1 ? 'request' : 'requests'}
@@ -693,8 +693,8 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 // Light mode: visible border
                 "border-b border-[var(--table-header-border)]",
                 // Dark mode: ultra-subtle or no border (rely on surface contrast)
-                "dark:border-b dark:border-[var(--ds-surface, #232323)]",
-                "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
+                "dark:border-b dark:border-[var(--ds-surface)]",
+                "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised)]"
               )}>
                 {enableDragDrop && (
                   <th className="py-3 px-2 w-8"></th>
@@ -708,7 +708,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                           onSelectionChange(checked ? processedData.map(row => row.id) : []);
                         }
                       }}
-                      className="border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+                      className="border-[var(--ds-border,var(--cp-ink-1))] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
                     />
                   </th>
                 )}
@@ -719,7 +719,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                       className={cn(
                         "py-3 px-4 text-left cursor-pointer transition-colors",
                         // NO column dividers in dark mode - content clarity over borders
-                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]"
+                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface)]"
                       )}
                       style={{ width: column.width }}
                     >
@@ -762,15 +762,15 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                                 // Light mode: subtle border
                                 "border-b border-[var(--table-row-border)]",
                                 // Dark mode: ultra-subtle divider (barely visible, never white)
-                                "dark:border-b dark:border-[var(--ds-surface, #232323)]",
+                                "dark:border-b dark:border-[var(--ds-surface)]",
                                 // Alternating row backgrounds for row distinction
                                 rowIndex % 2 === 0 
                                   ? "bg-[var(--table-row-bg)]" 
-                                  : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
+                                  : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay)]",
                                 // Hover: surface tint, NOT border highlight
-                                "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]",
+                                "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface)]",
                                 // Selected: surface elevation with subtle brand accent
-                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
+                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
                                 // Dragging state
                                 snapshot.isDragging && "bg-[var(--selection-row-bg)] shadow-lg"
                               )}
@@ -799,15 +799,15 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                         // Light mode: subtle border
                         "border-b border-[var(--table-row-border)]",
                         // Dark mode: ultra-subtle divider
-                        "dark:border-b dark:border-[var(--ds-surface, #232323)]",
+                        "dark:border-b dark:border-[var(--ds-surface)]",
                         // Alternating backgrounds for row separation
                         rowIndex % 2 === 0 
                           ? "bg-[var(--table-row-bg)]" 
-                          : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
+                          : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay)]",
                         // Hover: surface tint
-                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]",
+                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface)]",
                         // Selected: surface elevation
-                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
+                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
                       )}
                     >
                       {renderRowContent(row, rowIndex)}

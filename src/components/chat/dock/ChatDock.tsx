@@ -39,11 +39,11 @@ class ChatDirectoryErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: 24, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center' }}>
+        <div style={{ padding: 24, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center' }}>
           <span>Messages failed to load.</span>
           <button
             type="button"
-            style={{ fontSize: 12, cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '4px 10px' }}
             onClick={() => this.setState({ error: null })}
           >
             Retry
@@ -74,11 +74,11 @@ class ChatPaneErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span>This conversation failed to load.</span>
           <button
             type="button"
-            style={{ alignSelf: 'flex-start', fontSize: 12, cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
+            style={{ alignSelf: 'flex-start', fontSize: 'var(--ds-font-size-200)', cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '4px 10px' }}
             onClick={() => this.setState({ error: null })}
           >
             Retry
@@ -121,17 +121,17 @@ interface ChatDockProps {
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
-  onsite: "var(--ds-icon-success, #22A06B)",
-  remote: "var(--ds-icon-information, #0C66E4)",
-  away: "var(--ds-icon-disabled, #8590A2)",
-  on_leave: "var(--ds-icon-disabled, #8590A2)",
+  onsite: "var(--ds-icon-success)",
+  remote: "var(--ds-icon-information)",
+  away: "var(--ds-icon-disabled)",
+  on_leave: "var(--ds-icon-disabled)",
 };
 
 const TILE_PALETTE = [
-  "var(--ds-background-accent-purple-bolder, #6E5DC6)",
-  "var(--ds-background-accent-blue-bolder, #0C66E4)",
-  "var(--ds-background-accent-green-bolder, #22A06B)",
-  "var(--ds-background-accent-magenta-bolder, #CD519D)",
+  "var(--ds-background-accent-purple-bolder)",
+  "var(--ds-background-accent-blue-bolder)",
+  "var(--ds-background-accent-green-bolder)",
+  "var(--ds-background-accent-magenta-bolder)",
 ];
 
 function hashIndex(id: string, mod: number): number {
@@ -204,7 +204,7 @@ function tabDotColor(conversation: ChatConversation): string {
   if (conversation.kind === "channel") return "transparent";
   if (conversation.kind === "ticket")
     return PRESENCE_DOT.onsite.replace("success", "brand");
-  return "var(--ds-background-brand-bold, #0C66E4)";
+  return "var(--ds-background-brand-bold)";
 }
 
 export function ChatDock({

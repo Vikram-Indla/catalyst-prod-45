@@ -43,24 +43,24 @@ import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, TITLE, H_NUM } from '../dashb
  */
 const C = {
   todo: {
-    fill: 'var(--ds-background-accent-gray-bolder, #626F86)',
-    track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-subtle, #44546F)',
+    fill: 'var(--ds-background-accent-gray-bolder)',
+    track: 'var(--ds-background-neutral)',
+    label: 'var(--ds-text-subtle)',
   },
   inProgress: {
-    fill: 'var(--ds-background-accent-blue-bolder, #0C66E4)',
-    track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-accent-blue-bolder, #0055CC)',
+    fill: 'var(--ds-background-accent-blue-bolder)',
+    track: 'var(--ds-background-neutral)',
+    label: 'var(--ds-text-accent-blue-bolder)',
   },
   blocked: {
-    fill: 'var(--ds-background-accent-red-bolder, #C9372C)',
-    track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-accent-red-bolder, #AE2A19)',
+    fill: 'var(--ds-background-accent-red-bolder)',
+    track: 'var(--ds-background-neutral)',
+    label: 'var(--ds-text-accent-red-bolder)',
   },
   done: {
-    fill: 'var(--ds-background-accent-green-bolder, #1F845A)',
-    track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-accent-green-bolder, #216E4E)',
+    fill: 'var(--ds-background-accent-green-bolder)',
+    track: 'var(--ds-background-neutral)',
+    label: 'var(--ds-text-accent-green-bolder)',
   },
 } as const;
 
@@ -156,7 +156,7 @@ export default function ItemsByStatusWidget({
           }
           style={{
             background: 'transparent', border: 0, cursor: 'pointer',
-            ...SMALL, color: token('color.link', 'var(--ds-link, #0C66E4)'),
+            ...SMALL, color: token('color.link', 'var(--ds-link)'),
             padding: 0, display: 'flex', alignItems: 'center', gap: 4,
           }}
         >
@@ -172,7 +172,7 @@ export default function ItemsByStatusWidget({
               style={{
                 height: 24,
                 borderRadius: 4,
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -241,7 +241,7 @@ function KpiHeadline({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
       <span
@@ -268,14 +268,14 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         overflow: 'hidden',
       }}
     >
       {cell('Total', total)}
-      {cell('Done', `${donePct}%`, 'var(--ds-text-accent-green-bolder, #216E4E)')}
+      {cell('Done', `${donePct}%`, 'var(--ds-text-accent-green-bolder)')}
       {cell('Active', inProgress)}
       <div
         style={{
@@ -301,7 +301,7 @@ function KpiHeadline({
             lineHeight: 1.1,
             color:
               blocked > 0
-                ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
+                ? 'var(--ds-text-accent-red-bolder)'
                 : token('color.text', '#292A2E'),
           }}
         >
@@ -347,7 +347,7 @@ function BarRow({ bucket: b, total, onClick }: { bucket: Bucket; total: number; 
         cursor: onClick ? 'pointer' : 'default',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+        e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = 'transparent';
@@ -401,7 +401,7 @@ function BarRow({ bucket: b, total, onClick }: { bucket: Bucket; total: number; 
           textAlign: 'right',
           ...SMALL_STRONG,
           fontWeight: 500,
-          color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -432,8 +432,8 @@ function BlockedBreakdown({
   return (
     <div
       style={{
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
-        borderInlineStart: `3px solid var(--ds-border-accent-red, #C9372C)`,
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
+        borderInlineStart: `3px solid var(--ds-border-accent-red)`,
         borderRadius: token('border.radius', '4px'),
         padding: '10px 12px',
       }}
@@ -452,7 +452,7 @@ function BlockedBreakdown({
             fontWeight: 600,
             textTransform: 'none',
             letterSpacing: '0.04em',
-            color: 'var(--ds-text-accent-red-bolder, #AE2A19)',
+            color: 'var(--ds-text-accent-red-bolder)',
           }}
         >
           Blocked breakdown

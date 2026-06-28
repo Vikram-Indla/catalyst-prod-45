@@ -212,15 +212,15 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
       <DialogContent className={cn(
         'sm:max-w-[600px] max-h-[90vh] p-0 flex flex-col overflow-hidden',
         'bg-white dark:bg-[#141414] rounded-lg shadow-xl', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        'border border-gray-200 dark:border-[var(--ds-text, #172B4D)] [&>button]:hidden'
+        'border border-gray-200 dark:border-[var(--ds-text)] [&>button]:hidden'
       )}>
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-background-discovery-bold, #6E5DC6)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] via-[var(--ds-background-discovery-bold)] to-[var(--ds-text-brand)] flex-shrink-0" />
 
-        <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[var(--ds-text, #172B4D)] flex-shrink-0">
+        <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[var(--ds-text)] flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Box className="h-5 w-5 text-[var(--ds-background-discovery-bold, #8b5cf6)]" />
-              <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-[var(--ds-surface-sunken, #F7F8F9)]">
+              <Box className="h-5 w-5 text-[var(--ds-background-discovery-bold)]" />
+              <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-[var(--ds-surface-sunken)]">
                 Edit Epic {epic?.epic_key ? `— ${epic.epic_key}` : ''}
               </DialogTitle>
             </div>
@@ -350,9 +350,9 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[var(--ds-text, #172B4D)] bg-gray-50 dark:bg-[var(--ds-surface-raised,#1a1a1a)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[var(--ds-text)] bg-gray-50 dark:bg-[var(--ds-surface-raised)]">
           <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
-          <Button onClick={() => updateEpicMutation.mutate()} disabled={!isValid || updateEpicMutation.isPending} className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6">
+          <Button onClick={() => updateEpicMutation.mutate()} disabled={!isValid || updateEpicMutation.isPending} className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white px-6">
             {updateEpicMutation.isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>

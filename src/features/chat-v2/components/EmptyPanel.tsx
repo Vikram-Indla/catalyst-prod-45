@@ -36,7 +36,7 @@ export function EmptyPanel() {
       <p
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           margin: 0,
@@ -47,7 +47,7 @@ export function EmptyPanel() {
       <p
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--cv2-text-muted)',
           margin: 0,
           maxWidth: 320,

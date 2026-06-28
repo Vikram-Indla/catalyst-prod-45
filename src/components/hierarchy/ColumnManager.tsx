@@ -93,7 +93,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
           boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 100, padding: '8px 0',
           fontFamily: 'var(--cp-font-body)',
         }}>
-          <div style={{ padding: '4px 12px 8px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>
+          <div style={{ padding: '4px 12px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>
             Columns
           </div>
           {ALL_COLUMNS.map(col => {
@@ -105,7 +105,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                 disabled={col.alwaysVisible}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+                  padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: col.alwaysVisible ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
                   background: 'none', border: 'none', cursor: col.alwaysVisible ? 'default' : 'pointer',
                   textAlign: 'left', opacity: col.alwaysVisible ? 0.6 : 1,
                 }}
@@ -114,11 +114,11 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 4,
-                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid var(--ds-border, #DFE1E6)',
+                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid var(--ds-border)',
                   background: isVisible ? 'var(--cp-blue)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
-                  {isVisible && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={3} />}
+                  {isVisible && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" strokeWidth={3} />}
                 </div>
                 {col.label}
               </button>

@@ -47,7 +47,7 @@ export function TimelineSidebar({
                 background: release.id === 'unassigned' 
                   ? 'rgba(200, 204, 208, 0.15)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                   : 'var(--ds-background-success-bold, rgba(34, 197, 94, 0.1))',
-                color: release.id === 'unassigned' ? 'var(--ds-text-subtlest, #626F86)' : 'var(--ds-background-success-bold, #1F845A)'
+                color: release.id === 'unassigned' ? 'var(--ds-text-subtlest)' : 'var(--ds-background-success-bold)'
               }}
             >
               {release.version}
@@ -76,7 +76,7 @@ export function TimelineSidebar({
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
+                    <span className="text-xs font-mono text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]">
                       {feature.feature_id}
                     </span>
                     <span

@@ -152,91 +152,91 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     textDark: 'var(--cp-workstream-senaei-text-dark)',
   },
   'Senaie': {
-    primary: 'var(--ds-text, #14b8a6)',
-    light: 'var(--ds-surface, #ccfbf1)',
-    border: 'var(--ds-border, #5eead4)',
-    hex: 'var(--ds-text, #14b8a6)',
-    hexLight: 'var(--ds-surface, #ccfbf1)',
-    hexFill: 'var(--ds-surface, #ccfbf1)',
-    textPrimary: 'var(--ds-text, #0f766e)',
-    textDark: 'var(--ds-text, #115e59)',
+    primary: 'var(--ds-text)',
+    light: 'var(--ds-surface)',
+    border: 'var(--ds-border)',
+    hex: 'var(--ds-text)',
+    hexLight: 'var(--ds-surface)',
+    hexFill: 'var(--ds-surface)',
+    textPrimary: 'var(--ds-text)',
+    textDark: 'var(--ds-text)',
   },
   'Senaie Track': {
-    primary: 'var(--ds-text, #14b8a6)',
-    light: 'var(--ds-surface, #ccfbf1)',
-    border: 'var(--ds-border, #5eead4)',
-    hex: 'var(--ds-text, #14b8a6)',
-    hexLight: 'var(--ds-surface, #ccfbf1)',
-    hexFill: 'var(--ds-surface, #ccfbf1)',
-    textPrimary: 'var(--ds-text, #0f766e)',
-    textDark: 'var(--ds-text, #115e59)',
+    primary: 'var(--ds-text)',
+    light: 'var(--ds-surface)',
+    border: 'var(--ds-border)',
+    hex: 'var(--ds-text)',
+    hexLight: 'var(--ds-surface)',
+    hexFill: 'var(--ds-surface)',
+    textPrimary: 'var(--ds-text)',
+    textDark: 'var(--ds-text)',
   },
 
   // Stand-Alone — Gray palette (A6)
   'Stand-Alone': {
-    primary: 'var(--ds-text-subtle, #64748b)',      // Gray
-    light: 'var(--ds-border, #e2e8f0)',        // Slate-200 (REFINED)
-    border: 'var(--ds-border, #94a3b8)',       // Slate-400
-    hex: 'var(--ds-text-subtle, #64748b)',
-    hexLight: 'var(--ds-border, #e2e8f0)',
-    hexFill: 'var(--ds-border, #e2e8f0)',
-    textPrimary: 'var(--ds-text-subtle, #475569)',
-    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
+    primary: 'var(--ds-text-subtle)',      // Gray
+    light: 'var(--ds-border)',        // Slate-200 (REFINED)
+    border: 'var(--ds-border)',       // Slate-400
+    hex: 'var(--ds-text-subtle)',
+    hexLight: 'var(--ds-border)',
+    hexFill: 'var(--ds-border)',
+    textPrimary: 'var(--ds-text-subtle)',
+    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle)))',
   },
   'Stand-Alone Projects': {
-    primary: 'var(--ds-text-subtle, #64748b)',
-    light: 'var(--ds-border, #e2e8f0)',
-    border: 'var(--ds-border, #94a3b8)',
-    hex: 'var(--ds-text-subtle, #64748b)',
-    hexLight: 'var(--ds-border, #e2e8f0)',
-    hexFill: 'var(--ds-border, #e2e8f0)',
-    textPrimary: 'var(--ds-text-subtle, #475569)',
-    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
+    primary: 'var(--ds-text-subtle)',
+    light: 'var(--ds-border)',
+    border: 'var(--ds-border)',
+    hex: 'var(--ds-text-subtle)',
+    hexLight: 'var(--ds-border)',
+    hexFill: 'var(--ds-border)',
+    textPrimary: 'var(--ds-text-subtle)',
+    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle)))',
   },
   'Stand-Alone Projects Track': {
-    primary: 'var(--ds-text-subtle, #64748b)',
-    light: 'var(--ds-border, #e2e8f0)',
-    border: 'var(--ds-border, #94a3b8)',
-    hex: 'var(--ds-text-subtle, #64748b)',
-    hexLight: 'var(--ds-border, #e2e8f0)',
-    hexFill: 'var(--ds-border, #e2e8f0)',
-    textPrimary: 'var(--ds-text-subtle, #475569)',
-    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
+    primary: 'var(--ds-text-subtle)',
+    light: 'var(--ds-border)',
+    border: 'var(--ds-border)',
+    hex: 'var(--ds-text-subtle)',
+    hexLight: 'var(--ds-border)',
+    hexFill: 'var(--ds-border)',
+    textPrimary: 'var(--ds-text-subtle)',
+    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle)))',
   },
 
   // Tahommona — Orange palette (A7)
   'Tahommona': {
-    primary: 'var(--ds-text-warning, #f97316)',      // Orange
-    light: 'var(--ds-surface, #ffedd5)',        // Orange-200 (REFINED - 25% saturation)
-    border: 'var(--ds-border, #fdba74)',       // Orange-300
-    hex: 'var(--ds-text-warning, #f97316)',
-    hexLight: 'var(--ds-surface, #ffedd5)',
-    hexFill: 'var(--ds-surface, #ffedd5)',
-    textPrimary: 'var(--ds-text-warning, #c2410c)',  // Orange-700
-    textDark: 'var(--ds-text, #9a3412)',     // Orange-800
+    primary: 'var(--ds-text-warning)',      // Orange
+    light: 'var(--ds-surface)',        // Orange-200 (REFINED - 25% saturation)
+    border: 'var(--ds-border)',       // Orange-300
+    hex: 'var(--ds-text-warning)',
+    hexLight: 'var(--ds-surface)',
+    hexFill: 'var(--ds-surface)',
+    textPrimary: 'var(--ds-text-warning)',  // Orange-700
+    textDark: 'var(--ds-text)',     // Orange-800
   },
   'Tahommona Track': {
-    primary: 'var(--ds-text-warning, #f97316)',
-    light: 'var(--ds-surface, #ffedd5)',
-    border: 'var(--ds-border, #fdba74)',
-    hex: 'var(--ds-text-warning, #f97316)',
-    hexLight: 'var(--ds-surface, #ffedd5)',
-    hexFill: 'var(--ds-surface, #ffedd5)',
-    textPrimary: 'var(--ds-text-warning, #c2410c)',
-    textDark: 'var(--ds-text, #9a3412)',
+    primary: 'var(--ds-text-warning)',
+    light: 'var(--ds-surface)',
+    border: 'var(--ds-border)',
+    hex: 'var(--ds-text-warning)',
+    hexLight: 'var(--ds-surface)',
+    hexFill: 'var(--ds-surface)',
+    textPrimary: 'var(--ds-text-warning)',
+    textDark: 'var(--ds-text)',
   },
 };
 
 // Default for unknown workstreams — Gray (A6)
 export const DEFAULT_WORKSTREAM_COLOR: WorkstreamColorSet = {
-  primary: 'var(--ds-text-subtle, #64748b)',
-  light: 'var(--ds-border, #e2e8f0)',
-  border: 'var(--ds-border, #94a3b8)',
-  hex: 'var(--ds-text-subtle, #64748b)',
-  hexLight: 'var(--ds-border, #e2e8f0)',
-  hexFill: 'var(--ds-border, #e2e8f0)',
-  textPrimary: 'var(--ds-text-subtle, #475569)',
-  textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
+  primary: 'var(--ds-text-subtle)',
+  light: 'var(--ds-border)',
+  border: 'var(--ds-border)',
+  hex: 'var(--ds-text-subtle)',
+  hexLight: 'var(--ds-border)',
+  hexFill: 'var(--ds-border)',
+  textPrimary: 'var(--ds-text-subtle)',
+  textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle)))',
 };
 
 /**
@@ -250,24 +250,24 @@ export const DEFAULT_WORKSTREAM_COLOR: WorkstreamColorSet = {
  * E6: Done = Green #16a34a
  */
 export const STATUS_DOT_COLORS = {
-  backlog: 'var(--ds-border, #94a3b8)',     // Gray (E2)
-  planned: 'var(--ds-link, #3b82f6)',     // Blue (E3)
-  progress: 'var(--ds-text-warning, #f59e0b)',    // Amber (E4)
-  review: 'var(--ds-text-discovery, #8b5cf6)',      // Purple (E5)
-  done: 'var(--ds-text-success, #16a34a)',        // Green (E6)
+  backlog: 'var(--ds-border)',     // Gray (E2)
+  planned: 'var(--ds-link)',     // Blue (E3)
+  progress: 'var(--ds-text-warning)',    // Amber (E4)
+  review: 'var(--ds-text-discovery)',      // Purple (E5)
+  done: 'var(--ds-text-success)',        // Green (E6)
 } as const;
 
 // Status colors for completed tasks (legacy - for bar stripe)
 export const STATUS_COLORS = {
   completed: {
-    primary: 'var(--ds-text-success, #16a34a)',
-    light: 'var(--ds-surface, #dcfce7)',      // Green-200 (REFINED)
-    border: 'var(--ds-border, #86efac)',     // Green-300
-    hex: 'var(--ds-text-success, #16a34a)',
-    hexLight: 'var(--ds-surface, #dcfce7)',
-    hexFill: 'var(--ds-surface, #dcfce7)',
-    textPrimary: 'var(--ds-text-success, #15803d)',
-    textDark: 'var(--ds-text-success, #166534)',
+    primary: 'var(--ds-text-success)',
+    light: 'var(--ds-surface)',      // Green-200 (REFINED)
+    border: 'var(--ds-border)',     // Green-300
+    hex: 'var(--ds-text-success)',
+    hexLight: 'var(--ds-surface)',
+    hexFill: 'var(--ds-surface)',
+    textPrimary: 'var(--ds-text-success)',
+    textDark: 'var(--ds-text-success)',
   },
 };
 

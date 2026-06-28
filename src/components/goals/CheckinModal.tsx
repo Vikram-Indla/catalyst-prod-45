@@ -14,7 +14,7 @@ interface CheckinModalProps {
 }
 
 function progressBar(pct: number) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return (
     <div style={{ width: '100%', height: 6, background: 'var(--cp-bd-zone)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
@@ -80,8 +80,8 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
 
   if (!isOpen) return null;
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 13, border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
-  const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 4, display: 'block' };
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
+  const labelStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 4, display: 'block' };
 
   return (
     <>
@@ -102,7 +102,7 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
             <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--ds-background-information, rgba(37,99,235,0.08))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ClipboardCheck size={14} color="var(--cp-blue)" />
             </div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               Check-in: {kr?.kr_key} — {kr?.title || ''}
             </span>
           </div>
@@ -115,7 +115,7 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Current state */}
           <div style={{ background: 'var(--bg-1)', borderRadius: 8, padding: '10px 14px' }}>
-            <div style={{ fontSize: 12, color: 'var(--fg-3)', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginBottom: 4 }}>
               Current: <span style={{ fontWeight: 700, color: 'var(--fg-1)' }}>{kr?.current_value ?? 0}</span>
               {' / '}Target: <span style={{ fontWeight: 700, color: 'var(--fg-1)' }}>{kr?.target ?? 0}</span>
               {' '}({currentPct}%)
@@ -155,15 +155,15 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} style={{ padding: '7px 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={createCheckin.isPending}
             style={{
-              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: createCheckin.isPending ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)',
+              padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              background: createCheckin.isPending ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createCheckin.isPending ? 'not-allowed' : 'pointer',
             }}
           >

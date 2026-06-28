@@ -74,8 +74,8 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
 
   const kpis = [
     { label: 'TOTAL', value: String(totalCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
-    { label: 'CLOSURE', value: `${closurePct}%`, color: 'var(--sem-success)', bg: 'var(--cp-success-light, #F0FDF4)' },
-    { label: 'PENDING', value: String(pendingCount), color: 'var(--sem-danger)', bg: 'var(--cp-danger-light, #FEF2F2)' },
+    { label: 'CLOSURE', value: `${closurePct}%`, color: 'var(--sem-success)', bg: 'var(--cp-success-light)' },
+    { label: 'PENDING', value: String(pendingCount), color: 'var(--sem-danger)', bg: 'var(--cp-danger-light)' },
     { label: 'AVG AGE', value: `${avgAge}d`, color: 'var(--fg-1)', bg: 'var(--bg-app)' },
     { label: 'STALE', value: String(staleCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
   ];
@@ -89,7 +89,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       {/* Avatar */}
       <div style={{
         width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-background-brand-bold-hovered, #1D4ED8))',
+        background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-background-brand-bold-hovered))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
@@ -98,7 +98,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style'); }} />
         ) : null}
         <span style={{
-          fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           ...(summary.avatar_url ? { display: 'none' } : {}),
         }}>{initials}</span>
       </div>
@@ -106,10 +106,10 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       {/* Name + subtitle + release chips */}
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, gap: 4 }}>
         <span style={{
-          fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 800,
+          fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 800,
           color: 'var(--fg-1)', lineHeight: 1.2,
         }}>{summary.name}</span>
-        <span style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.3, fontWeight: 500 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', lineHeight: 1.3, fontWeight: 500 }}>
           {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
         {releaseChips.length > 0 && (
@@ -121,10 +121,10 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   padding: '2px 8px', borderRadius: 12,
-                  background: chip.overdue ? 'var(--cp-danger-light, #FEF2F2)' : 'var(--ds-background-selected, #EFF6FF)',
-                  border: `1px solid ${chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-border-selected, #B3D4FF)'}`,
-                  fontSize: 11, fontWeight: 600,
-                  color: chip.overdue ? 'var(--sem-danger, #B91C1C)' : 'var(--ds-text-brand, #1D4ED8)',
+                  background: chip.overdue ? 'var(--cp-danger-light)' : 'var(--ds-background-selected)',
+                  border: `1px solid ${chip.overdue ? 'var(--sem-danger)' : 'var(--ds-border-selected)'}`,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                  color: chip.overdue ? 'var(--sem-danger)' : 'var(--ds-text-brand)',
                   fontFamily: 'var(--cp-font-body)',
                   whiteSpace: 'nowrap', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis',
                   cursor: 'default',
@@ -132,11 +132,11 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
               >
                 <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{chip.name}</span>
                 <span style={{
-                  background: chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-                  color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 8, padding: '0 5px', fontSize: 10, fontWeight: 700,
+                  background: chip.overdue ? 'var(--sem-danger)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+                  color: 'var(--ds-text-inverse)', borderRadius: 8, padding: '0 5px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                 }}>{chip.count}</span>
                 {chip.daysLabel && (
-                  <span style={{ opacity: 0.75, fontSize: 10 }}>{chip.daysLabel}</span>
+                  <span style={{ opacity: 0.75, fontSize: 'var(--ds-font-size-50)' }}>{chip.daysLabel}</span>
                 )}
               </span>
             ))}
@@ -153,11 +153,11 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
             border: '1px solid var(--divider)',
           }}>
             <div style={{
-              fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700,
+              fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700,
               color: k.color, lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
             }}>{k.value}</div>
             <div style={{
-              fontSize: 10, color: 'var(--fg-3)', fontWeight: 700, marginTop: 2,
+              fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontWeight: 700, marginTop: 2,
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}>{k.label}</div>
           </div>

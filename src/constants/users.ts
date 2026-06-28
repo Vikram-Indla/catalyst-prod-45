@@ -7,16 +7,16 @@
 // AVATAR COLORS (10 colors, hash-based selection)
 // ============================================================
 export const AVATAR_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
-  'var(--ds-chart-teal-bold, #0d9488)', // Teal
-  'var(--ds-link, #0369a1)', // Sky-dark
-  'var(--ds-text-warning, #d97706)', // Amber
-  'var(--ds-link, #0C66E4)', // Cyan
-  'var(--ds-link-pressed, #1e40af)', // Blue-dark
-  'var(--ds-background-warning-bold, #b45309)', // Amber-dark
-  'var(--ds-chart-teal-bolder, #0f766e)', // Teal-dark
-  'var(--ds-text-subtle, #475569)', // Slate
-  'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'  // Slate-dark
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // Blue
+  'var(--ds-chart-teal-bold)', // Teal
+  'var(--ds-link)', // Sky-dark
+  'var(--ds-text-warning)', // Amber
+  'var(--ds-link)', // Cyan
+  'var(--ds-link-pressed)', // Blue-dark
+  'var(--ds-background-warning-bold)', // Amber-dark
+  'var(--ds-chart-teal-bolder)', // Teal-dark
+  'var(--ds-text-subtle)', // Slate
+  'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))'  // Slate-dark
 ];
 
 // ============================================================

@@ -21,10 +21,10 @@ function PropTypeChip({ type }: { type: string }) {
   return (
     <code
       style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontFamily: 'var(--ds-font-family-code)',
         background: token('color.background.neutral', '#091E420F'),
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
         padding: '1px 6px',
         borderRadius: 3,
         whiteSpace: 'nowrap' as const,
@@ -39,7 +39,7 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
   return (
     <tr
       style={{
-        borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
         verticalAlign: 'top',
       }}
     >
@@ -47,9 +47,9 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
         <span
           style={{
             fontFamily: 'var(--ds-font-family-code)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
           }}
         >
           {prop.name}
@@ -68,8 +68,8 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
       <td
         style={{
           padding: token('space.100', '8px'),
-          fontSize: 12,
-          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+          fontSize: 'var(--ds-font-size-200)',
+          color: token('color.text.subtle', 'var(--ds-icon)'),
           fontFamily: 'var(--ds-font-family-code)',
         }}
       >
@@ -78,8 +78,8 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
       <td
         style={{
           padding: token('space.100', '8px'),
-          fontSize: 13,
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          fontSize: 'var(--ds-font-size-300)',
+          color: token('color.text', 'var(--ds-text)'),
           lineHeight: '18px',
         }}
       >
@@ -96,21 +96,21 @@ function PropsTable({ props }: { props: ComponentPropSpec[] }) {
   const headerStyle: React.CSSProperties = {
     textAlign: 'left',
     padding: token('space.100', '8px'),
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
-    color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+    color: token('color.text.subtle', 'var(--ds-icon)'),
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
-    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
     whiteSpace: 'nowrap' as const,
   };
 
   const sectionLabelStyle: React.CSSProperties = {
     padding: '4px 8px',
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
-    color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
-    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+    color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
+    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
     letterSpacing: '0.06em',
     textTransform: 'uppercase' as const,
   };
@@ -118,12 +118,12 @@ function PropsTable({ props }: { props: ComponentPropSpec[] }) {
   return (
     <div
       style={{
-        border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
         borderRadius: 6,
         overflow: 'hidden',
       }}
     >
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
         <thead>
           <tr>
             <th style={headerStyle}>Prop</th>
@@ -181,12 +181,12 @@ function CodeBlock({ code }: { code: string }) {
           margin: 0,
           padding: token('space.200', '16px'),
           paddingRight: 80,
-          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-          border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+          border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
           borderRadius: 6,
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontFamily: 'var(--ds-font-family-code)',
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          color: token('color.text', 'var(--ds-text)'),
           overflowX: 'auto',
           whiteSpace: 'pre',
           lineHeight: '20px',
@@ -221,7 +221,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
         flexDirection: 'column',
         gap: token('space.300', '24px'),
         paddingTop: token('space.300', '24px'),
-        borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
       }}
     >
       {/* ── Header bar ──────────────────────────────────────────────────────── */}
@@ -231,11 +231,11 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
           {spec.atlaskit_package && (
             <code
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 padding: '2px 8px',
                 borderRadius: 3,
                 background: token('color.background.neutral', '#091E420F'),
-                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                color: token('color.text.subtle', 'var(--ds-icon)'),
                 fontFamily: 'var(--ds-font-family-code)',
               }}
             >
@@ -248,8 +248,8 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
               target="_blank"
               rel="noreferrer"
               style={{
-                color: token('color.link', 'var(--ds-link, #0C66E4)'),
-                fontSize: 12,
+                color: token('color.link', 'var(--ds-link)'),
+                fontSize: 'var(--ds-font-size-200)',
                 textDecoration: 'none',
               }}
             >
@@ -260,8 +260,8 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
             <a
               href={`vscode://file/${REPO_ROOT}/${filePath}`}
               style={{
-                color: token('color.link', 'var(--ds-link, #0C66E4)'),
-                fontSize: 12,
+                color: token('color.link', 'var(--ds-link)'),
+                fontSize: 'var(--ds-font-size-200)',
                 textDecoration: 'none',
                 fontFamily: 'var(--ds-font-family-code)',
               }}
@@ -290,11 +290,11 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
             style={{
               padding: token('space.150', '12px'),
               borderLeft: `3px solid ${token('color.border.information', '#1D9BF0')}`,
-              background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
+              background: token('color.background.information', 'var(--ds-background-selected)'),
               borderRadius: '0 4px 4px 0',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               lineHeight: '20px',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
             }}
           >
             {spec.data_contract}
@@ -311,12 +311,12 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
           <div
             style={{
               padding: token('space.150', '12px'),
-              background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-              border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+              background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
               borderRadius: 6,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               lineHeight: '20px',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
             }}
           >
             {spec.architecture}
@@ -332,7 +332,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
           </div>
           <div
             style={{
-              border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`,
+              border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold)')}`,
               borderRadius: 6,
               overflow: 'hidden',
             }}
@@ -345,12 +345,12 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
                   alignItems: 'flex-start',
                   gap: 10,
                   padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
-                  borderTop: i > 0 ? `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}` : undefined,
-                  background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
+                  borderTop: i > 0 ? `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold)')}` : undefined,
+                  background: token('color.background.warning', 'var(--ds-background-warning)'),
                 }}
               >
-                <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>⚠</span>
-                <span style={{ fontSize: 13, lineHeight: '20px', color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', flexShrink: 0, marginTop: 1 }}>⚠</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: '20px', color: token('color.text.warning', 'var(--ds-text-warning)') }}>
                   {c}
                 </span>
               </div>

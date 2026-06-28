@@ -49,19 +49,19 @@ interface RequestListPanelProps {
 
 // Status dot colors - QA spec colors matching Catalyst V5
 const STATUS_DOT_COLORS: Record<string, string> = {
-  new_demand: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',      // Blue
-  new_request: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',     // Blue
-  draft: 'bg-[var(--ds-text-subtlest, #626F86)]',           // Gray
-  in_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',       // Blue
-  ea_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',       // Blue
-  analyse: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',         // Blue
-  approved: 'bg-[var(--ds-icon-information, #1D7AFC)]',        // Teal
-  ready_to_implement: 'bg-[var(--ds-icon-information, #1D7AFC)]', // Teal
-  implement: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',       // Blue
-  closed: 'bg-[var(--ds-icon-information, #1D7AFC)]',          // Teal
-  completed: 'bg-[var(--ds-icon-information, #1D7AFC)]',       // Teal
-  rejected: 'bg-[var(--ds-text-danger,#ef4444)]',        // Red
-  on_hold: 'bg-[var(--ds-text-warning,#d97706)]',         // Orange
+  new_demand: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',      // Blue
+  new_request: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',     // Blue
+  draft: 'bg-[var(--ds-text-subtlest)]',           // Gray
+  in_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',       // Blue
+  ea_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',       // Blue
+  analyse: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',         // Blue
+  approved: 'bg-[var(--ds-icon-information)]',        // Teal
+  ready_to_implement: 'bg-[var(--ds-icon-information)]', // Teal
+  implement: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',       // Blue
+  closed: 'bg-[var(--ds-icon-information)]',          // Teal
+  completed: 'bg-[var(--ds-icon-information)]',       // Teal
+  rejected: 'bg-[var(--ds-text-danger)]',        // Red
+  on_hold: 'bg-[var(--ds-text-warning)]',         // Orange
 };
 
 // Format status for display
@@ -200,12 +200,12 @@ export function RequestListPanel({
                       )}
 
                       {(request.autoPriority === 'High' || request.autoPriority === 'high') && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] border border-[var(--ds-background-danger, rgba(239,68,68,0.2))]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger)] border border-[var(--ds-background-danger, rgba(239,68,68,0.2))]">
                           HIGH
                         </span>
                       )}
                       {(request.autoPriority === 'Critical' || request.autoPriority === 'critical') && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] border border-[var(--ds-background-danger, rgba(239,68,68,0.2))]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger)] border border-[var(--ds-background-danger, rgba(239,68,68,0.2))]">
                           CRITICAL
                         </span>
                       )}

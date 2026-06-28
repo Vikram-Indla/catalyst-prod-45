@@ -199,7 +199,7 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
         display: "flex",
         alignItems: "center",
         gap: 8,
-        color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+        color: "var(--ds-text-subtlest, var(--cp-text-secondary))",
       }}
     >
       <Spinner size="small" label="Loading editor" />
@@ -221,9 +221,9 @@ function AtlaskitRendererPlaceholder({ plain }: { plain: string }) {
       className="cv-desc-body"
       // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
       style={{
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 400,
-        color: "var(--ds-text, #292A2E)",
+        color: "var(--ds-text)",
         lineHeight: "24px",
         fontFamily:
           '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
@@ -258,12 +258,12 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
        canonical ADF renderer). The legacy '.adf-description-content'
        selector is retained defensively in case any stale prerender DOM
        sneaks in; safe to drop in a future pass. */
-    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: var(--ds-text, #292A2E); line-height: 1.3; }
-    .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: var(--ds-text, #292A2E); line-height: 1.3; }
-    .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, #292A2E); line-height: 1.4; }
-    .cv-desc-body h4, .adf-description-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, #292A2E); }
-    .cv-desc-body h5, .adf-description-content h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: var(--ds-text, #292A2E); }
-    .cv-desc-body h6, .adf-description-content h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: var(--ds-text-subtle, #5E6C84); text-transform: uppercase; }
+    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: var(--ds-text); line-height: 1.3; }
+    .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: var(--ds-text); line-height: 1.3; }
+    .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text); line-height: 1.4; }
+    .cv-desc-body h4, .adf-description-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text); }
+    .cv-desc-body h5, .adf-description-content h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: var(--ds-text); }
+    .cv-desc-body h6, .adf-description-content h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: var(--ds-text-subtle); text-transform: uppercase; }
     .cv-desc-body ol, .cv-desc-body ul,
     .adf-description-content ol, .adf-description-content ul { margin: 4px 0 8px; padding-left: 24px; }
     .cv-desc-body li, .adf-description-content li { margin-bottom: 4px; }
@@ -274,12 +274,12 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .cv-desc-body ol ol, .adf-description-content ol ol { list-style-type: lower-alpha; }
     .cv-desc-body ol ol ol, .adf-description-content ol ol ol { list-style-type: lower-roman; }
     .cv-desc-body table, .adf-description-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-    .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); font-weight: 600; text-align: left; }
+    .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); font-weight: 600; text-align: left; }
     .cv-desc-body th, .cv-desc-body td,
-    .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); padding: 8px 12px; font-size: 14px; vertical-align: top; }
-    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle, #5E6C84); }
-    .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
-    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
+    .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); padding: 8px 12px; font-size: 14px; vertical-align: top; }
+    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle); }
+    .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
+    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
     .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
 
@@ -326,9 +326,9 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       padding-left: 0 !important;
       margin-left: 0 !important;
     }
-    .cv-desc-body a, .adf-description-content a { color: var(--ds-link, var(--cp-primary-60, #0052CC)); text-decoration: none; }
+    .cv-desc-body a, .adf-description-content a { color: var(--ds-link, var(--cp-primary-60)); text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
-    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); margin: 16px 0; }
+    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
 
     /* Bidi — Jira parity. Applying \`unicode-bidi: plaintext\` to every text
@@ -511,7 +511,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       left: 50%;
       transform: translateX(-50%);
       background: var(--ds-text, rgb(23, 43, 77));
-      color: var(--ds-text-inverse, #FFFFFF);
+      color: var(--ds-text-inverse);
       padding: 4px 8px;
       border-radius: 3px;
       font-size: 12px;
@@ -540,8 +540,8 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       opacity: 1;
     }
     .cv-desc-edit-btn:hover {
-      color: var(--ds-text, #172B4D) !important;
-      background: var(--ds-surface-sunken, #F4F5F7) !important;
+      color: var(--ds-text) !important;
+      background: var(--ds-surface-sunken) !important;
     }
 
     /* @-mention chip styling now lives EXCLUSIVELY in
@@ -830,10 +830,10 @@ export function CatalystDescriptionSection({
             /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88). // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                TreeWalker text-node probe confirmed h2 is the direct parent of the "Description"
                text node at 14px/500. Differs from Key details/Subtasks/LWI/Activity (all 16px/653). */
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             lineHeight: "20px",
-            color: "var(--ds-text-subtle, #505258)",
+            color: "var(--ds-text-subtle)",
             fontFamily:
               '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}
@@ -852,16 +852,16 @@ export function CatalystDescriptionSection({
               padding: "4px 6px",
               borderRadius: 4,
               color:
-                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                "var(--ds-text-subtlest, var(--cp-text-secondary))",
               display: "flex",
               alignItems: "center",
               transition:
                 "opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "var(--ds-text, #292A2E)";
+              e.currentTarget.style.color = "var(--ds-text)";
               e.currentTarget.style.background =
-                "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                "var(--ds-surface-sunken, var(--cp-bg-sunken))";
               prefetchEpicEditor();
             }}
             onFocus={() => {
@@ -869,7 +869,7 @@ export function CatalystDescriptionSection({
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color =
-                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))";
+                "var(--ds-text-subtlest, var(--cp-text-secondary))";
               e.currentTarget.style.background = "none";
             }}
           >
@@ -918,8 +918,8 @@ export function CatalystDescriptionSection({
             if (issue) startTransition(() => setEditing(true));
           }}
           style={{
-            fontSize: 14,
-            color: "var(--ds-text-subtlest, #97A0AF)",
+            fontSize: 'var(--ds-font-size-400)',
+            color: "var(--ds-text-subtlest)",
             fontStyle: "normal",
             minHeight: 40,
             cursor: issue ? "pointer" : "default",
@@ -930,7 +930,7 @@ export function CatalystDescriptionSection({
           onMouseEnter={(e) => {
             if (issue) {
               e.currentTarget.style.background =
-                "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                "var(--ds-surface-sunken, var(--cp-bg-sunken))";
               prefetchEpicEditor();
             }
           }}
@@ -958,7 +958,7 @@ export function CatalystDescriptionSection({
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background =
-                "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                "var(--ds-surface-sunken, var(--cp-bg-sunken))";
               prefetchEpicEditor();
             }}
             onPointerDown={() => {
@@ -984,9 +984,9 @@ export function CatalystDescriptionSection({
                 className="cv-desc-body"
                 dir="auto"
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
-                  color: "var(--ds-text, #292A2E)",
+                  color: "var(--ds-text)",
                   lineHeight: "24px",
                   fontFamily:
                     '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',

@@ -80,21 +80,21 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <SearchIconCore label="" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+            <SearchIconCore label="" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
             <input
               type="text"
               placeholder="Search list"
               value={search}
               onChange={e => onSearchChange(e.target.value)}
-              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]"
+              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]"
               style={{ borderColor: 'var(--divider)', fontFamily: 'var(--cp-font-body)' }}
             />
             {search && (
               <button
                 onClick={() => onSearchChange('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"
               >
-                <CrossIconCore label="" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+                <CrossIconCore label="" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
               </button>
             )}
           </div>
@@ -134,7 +134,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={filterRef} className="relative">
             <button
               onClick={() => setFilterOpen(!filterOpen)}
-              className={`h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors ${hasActiveFilters ? 'bg-[var(--cp-blue-wash)]' : ''}`}
+              className={`h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors ${hasActiveFilters ? 'bg-[var(--cp-blue-wash)]' : ''}`}
               style={{
                 borderColor: hasActiveFilters ? 'var(--cp-blue)' : 'var(--divider)',
                 color: hasActiveFilters ? 'var(--cp-blue)' : 'var(--fg-2)',
@@ -144,7 +144,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               <FilterIconCore label="" style={{ color: 'inherit' }} />
               Filter
               {hasActiveFilters && (
-                <span className="w-4 h-4 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[9px] flex items-center justify-center font-bold">
+                <span className="w-4 h-4 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white text-[9px] flex items-center justify-center font-bold">
                   {activeFilterChips.length}
                 </span>
               )}
@@ -168,7 +168,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={groupRef} className="relative">
             <button
               onClick={() => setGroupOpen(!groupOpen)}
-              className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
+              className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors"
               style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}
             >
               Group: {GROUP_OPTIONS.find(o => o.value === groupBy)?.label}
@@ -183,11 +183,11 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                   <button
                     key={o.value}
                     onClick={() => { onGroupByChange(o.value); setGroupOpen(false); }}
-                    className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors flex items-center justify-between"
+                    className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken)] transition-colors flex items-center justify-between"
                     style={{ color: 'var(--fg-1)', fontWeight: groupBy === o.value ? 600 : 400 }}
                   >
                     {o.label}
-                    {groupBy === o.value && <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">✓</span>}
+                    {groupBy === o.value && <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]">✓</span>}
                   </button>
                 ))}
               </div>
@@ -198,7 +198,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={colRef} className="relative">
             <button
               onClick={() => setColSettingsOpen(!colSettingsOpen)}
-              className="h-[30px] w-[30px] flex items-center justify-center rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
+              className="h-[30px] w-[30px] flex items-center justify-center rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors"
               style={{ borderColor: 'var(--divider)', color: 'var(--fg-3)' }}
               title="Column settings"
             >
@@ -221,7 +221,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               style={{ color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
             >
               {chip.label}: {chip.value}
-              <button onClick={chip.remove} className="hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]"><CrossIconCore label="" style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} /></button>
+              <button onClick={chip.remove} className="hover:text-[var(--ds-text-danger,var(--cp-danger))]"><CrossIconCore label="" style={{ color: 'var(--ds-text-danger, var(--cp-danger))' }} /></button>
             </span>
           ))}
           <button
@@ -289,13 +289,13 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
       {/* Flagged */}
       <FilterSection title="Flagged">
         {(['any', 'yes', 'no'] as const).map(v => (
-          <label key={v} className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
+          <label key={v} className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken)]">
             <input
               type="radio"
               name="flagged"
               checked={filters.flagged === v}
               onChange={() => onChange({ ...filters, flagged: v })}
-              className="accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+              className="accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
             />
             <span className="text-[11px] capitalize" style={{ color: 'var(--fg-2)' }}>{v}</span>
           </label>
@@ -309,13 +309,13 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
           { value: 'overdue', label: 'Overdue' },
           { value: 'this_week', label: 'This week' },
         ] as const).map(o => (
-          <label key={o.value} className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
+          <label key={o.value} className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken)]">
             <input
               type="radio"
               name="dueDate"
               checked={filters.dueDate === o.value}
               onChange={() => onChange({ ...filters, dueDate: o.value })}
-              className="accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+              className="accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
             />
             <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{o.label}</span>
           </label>
@@ -338,8 +338,8 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 
 function CheckboxItem({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
-      <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
+    <label className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken)]">
+      <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
       <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{label}</span>
     </label>
   );
@@ -385,15 +385,15 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
           onDragStart={() => handleDragStart(i)}
           onDragOver={(e) => handleDragOver(e, i)}
           onDragEnd={() => setDragIdx(null)}
-          className="flex items-center gap-2 px-3 py-1.5 cursor-move hover:bg-[var(--ds-surface-sunken,#F8FAFC)]"
+          className="flex items-center gap-2 px-3 py-1.5 cursor-move hover:bg-[var(--ds-surface-sunken)]"
         >
-          <MenuIcon label="" primaryColor="var(--ds-text-disabled, #CBD5E1)" size="small" className="shrink-0" />
+          <MenuIcon label="" primaryColor="var(--ds-text-disabled)" size="small" className="shrink-0" />
           <label className="flex items-center gap-2 flex-1 cursor-pointer">
             <input
               type="checkbox"
               checked={col.visible}
               onChange={() => toggleVisibility(col.key)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
             />
             <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{col.label || col.key}</span>
           </label>

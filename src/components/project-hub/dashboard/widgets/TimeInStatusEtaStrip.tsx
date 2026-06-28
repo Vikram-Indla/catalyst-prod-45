@@ -67,10 +67,10 @@ export function TimeInStatusEtaStrip({
 
   const isOver = state === 'over' || state === 'overdue';
   const color = isOver
-    ? 'var(--ds-text-accent-red, #AE2A19)'
-    : 'var(--ds-text-subtle, #42526E)';
+    ? 'var(--ds-text-accent-red)'
+    : 'var(--ds-text-subtle)';
 
-  const arrowColor = 'var(--ds-text-subtlest, #6B778C)';
+  const arrowColor = 'var(--ds-text-subtlest)';
 
   return (
     <div
@@ -81,7 +81,7 @@ export function TimeInStatusEtaStrip({
         alignItems: 'center',
         gap: 4,
         marginTop: 1,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '14px',
         fontWeight: 500,
         fontFamily: 'Atlassian Sans, -apple-system, system-ui, sans-serif',
@@ -103,7 +103,7 @@ export function TimeInStatusEtaStrip({
           <span
             style={{
               fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
               fontWeight: isOver ? 653 : 500,
             }}
           >

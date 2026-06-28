@@ -70,7 +70,7 @@ export function CapacityAvatar({
         style={{
           backgroundColor: safeAvatarUrl ? 'transparent' : 'var(--cp-blue-wash)',
           color: 'var(--cp-blue)',
-          border: '2px solid var(--ds-background-information-bold, #0C66E4)',
+          border: '2px solid var(--ds-background-information-bold)',
           boxShadow: '0 1px 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
         }}
       >

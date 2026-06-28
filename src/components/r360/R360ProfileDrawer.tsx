@@ -394,8 +394,8 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, fontFamily: 'var(--cp-font-body)' }}>
         <RefreshCw size={20} color={INK4} />
-        <span style={{ fontSize: 13, color: INK2 }}>Failed to load — retry</span>
-        <button onClick={onClose} style={{ fontSize: 12, color: BRAND, background: 'none', border: 'none', cursor: 'pointer' }}>Close</button>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK2 }}>Failed to load — retry</span>
+        <button onClick={onClose} style={{ fontSize: 'var(--ds-font-size-200)', color: BRAND, background: 'none', border: 'none', cursor: 'pointer' }}>Close</button>
       </div>
     );
   }
@@ -416,17 +416,17 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             background: BRAND, color: 'var(--bg-app)',
-            fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
+            fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
             padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
             transition: 'background 100ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = BRAND; }}
         >
           <ChevronLeft size={16} /> Resources
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 11, color: MUTED }}>Data: {dataAge}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED }}>Data: {dataAge}</span>
           <button
             onClick={onClose}
             style={{
@@ -460,19 +460,19 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
               width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
               background: 'linear-gradient(135deg, var(--fg-2), var(--fg-2))',
               display: resource?.avatar_url ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)', fontSize: 17, fontWeight: 700,
+              color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700,
             }}>
               {getInitials(resourceName || '?')}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: INK4, flexWrap: 'wrap', marginTop: 2 }}>
+              <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: INK4, flexWrap: 'wrap', marginTop: 2 }}>
                 <span>{resourceRole || '—'}</span>
                 {deptName && <><span>·</span><span>{deptName}</span></>}
                 {resourceRid && <><span>·</span><span style={{
-                  background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 4,
+                  background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)', borderRadius: 4,
                   padding: '2px 7px', fontFamily: 'var(--cp-font-mono)',
-                  fontSize: 11, fontWeight: 700, color: BRAND,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
               </div>
               {/* P2-05: Skills chips */}
@@ -480,7 +480,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                   {(resource.skills as string[]).map((skill: string) => (
                     <span key={skill} style={{
-                      fontSize: 11, fontWeight: 500,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                       background: 'var(--bg-3)', color: 'var(--fg-2)',
                       border: '0.75px solid var(--divider)',
                       borderRadius: 4, padding: '2px 6px',
@@ -501,7 +501,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
           const isActive = activeTab === t.key;
           return (
             <button key={t.key} onClick={() => handleTabChange(t.key)} style={{
-              fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: isActive ? 600 : 500,
+              fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: isActive ? 600 : 500,
               color: isActive ? BRAND : INK4, padding: '0 14px', height: 38,
               border: 'none', borderBottom: `2px solid ${isActive ? BRAND : 'transparent'}`,
               background: 'transparent', cursor: 'pointer',

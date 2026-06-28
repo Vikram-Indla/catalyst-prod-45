@@ -242,7 +242,7 @@ function Toolbar(props: ActivityHeaderProps) {
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: 'var(--cv2-text-link, #1D9BD1)',
+                    color: 'var(--cv2-text-link)',
                     fontFamily: 'inherit',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
@@ -328,7 +328,7 @@ function CheckboxButton({
           width: 32,
           padding: 0,
           background: 'transparent',
-          color: filled ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-text-subtle)',
+          color: filled ? 'var(--cv2-accent)' : 'var(--cv2-text-subtle)',
           border: 'none',
           cursor: 'pointer',
         }}
@@ -348,7 +348,7 @@ function CheckboxButton({
           width: 22,
           padding: 0,
           background: 'transparent',
-          color: filled ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-text-subtle)',
+          color: filled ? 'var(--cv2-accent)' : 'var(--cv2-text-subtle)',
           border: 'none',
           borderLeft: '1px solid var(--cv2-border)',
           cursor: 'pointer',
@@ -372,14 +372,14 @@ function CheckboxGlyph({ filled, indeterminate }: { filled: boolean; indetermina
     return (
       <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
         <rect x="1" y="1" width="12" height="12" rx="2" fill="currentColor" />
-        <rect x="3.5" y="6.2" width="7" height="1.6" rx="0.8" fill="var(--ds-surface, #FFFFFF)" />
+        <rect x="3.5" y="6.2" width="7" height="1.6" rx="0.8" fill="var(--ds-surface)" />
       </svg>
     );
   }
   return (
     <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
       <rect x="1" y="1" width="12" height="12" rx="2" fill="currentColor" />
-      <path d="M3.6 7.1l2.4 2.4 4.4-4.6" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3.6 7.1l2.4 2.4 4.4-4.6" fill="none" stroke="var(--ds-surface)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -609,7 +609,7 @@ function SelectModeMenu({
             background: 'transparent',
             border: 'none',
             fontFamily: 'inherit',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--cv2-text)',
             cursor: 'pointer',
           }}
@@ -698,7 +698,7 @@ function FilterPopover({
           padding: '0 14px 8px',
         }}
       >
-        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>Filter by</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>Filter by</span>
         <button
           type="button"
           aria-label="Close filter"
@@ -852,7 +852,7 @@ function FilterRowItem({
           width: 16, height: 16, padding: 0,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           background: 'transparent', border: 'none', cursor: 'pointer',
-          color: checked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-text-subtle)',
+          color: checked ? 'var(--cv2-accent)' : 'var(--cv2-text-subtle)',
           flex: '0 0 auto',
         }}
       >
@@ -866,7 +866,7 @@ function FilterRowItem({
           alignItems: 'center',
           gap: 8,
           color: 'var(--cv2-text)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           minWidth: 0,
         }}
       >
@@ -1019,8 +1019,8 @@ function TabBtn({
             padding: '0 6px',
             borderRadius: 9,
             background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text, #FFFFFF)',
-            fontSize: 11,
+            color: 'var(--cv2-unread-text)',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
           }}
         >
@@ -1071,7 +1071,7 @@ function ToggleChip({
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 6,
         fontFamily: 'inherit',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         cursor: 'pointer',
       }}

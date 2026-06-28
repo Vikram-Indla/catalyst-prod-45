@@ -72,7 +72,7 @@ function ColumnLabel({ name, count }: { name: string; count?: number }) {
         borderBottom: `1px solid ${tk.border}`,
         background: tk.headerBg,
         borderRadius: 4,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         letterSpacing: '0.04em',
         color: tk.textPrimary,
@@ -82,7 +82,7 @@ function ColumnLabel({ name, count }: { name: string; count?: number }) {
       {typeof count === 'number' && (
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 500,
             background: tk.surfaceAlt,
             color: tk.textMuted,
@@ -230,7 +230,7 @@ export const CardsInsideColumns: StoryObj = {
                     padding: '24px 12px',
                     textAlign: 'center',
                     color: tk.textMuted,
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                   }}
                 >
                   No items

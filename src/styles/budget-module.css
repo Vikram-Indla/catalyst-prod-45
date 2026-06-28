@@ -4,10 +4,10 @@
  * Version: 8.0 - Production Ready
  * 
  * DESIGN TOKENS FROM SPECIFICATION:
- * - Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) (buttons, active states)
- * - Insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), Cosourced: var(--ds-chart-teal-bold, #0d9488), Outsourced: var(--ds-text-warning, #d97706)
- * - Licenses: var(--ds-background-discovery-bold, #7c3aed)
- * - Text: var(--ds-text, #0f172a) primary, var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) secondary, var(--ds-text-subtlest, #64748b) muted
+ * - Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) (buttons, active states)
+ * - Insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), Cosourced: var(--ds-chart-teal-bold), Outsourced: var(--ds-text-warning)
+ * - Licenses: var(--ds-background-discovery-bold)
+ * - Text: var(--ds-text) primary, var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2))) secondary, var(--ds-text-subtlest) muted
  * - 5px solid top borders on cards, font-mono for values
  */
 
@@ -15,69 +15,69 @@
   /* ============================================
      V8 PRIMARY COLORS
      ============================================ */
-  --budget-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --budget-primary-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  --budget-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --budget-primary-dark: var(--ds-background-brand-bold-hovered);
   --budget-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  --budget-primary-bg: var(--ds-background-selected, #eff6ff);
+  --budget-primary-bg: var(--ds-background-selected);
 
   /* ============================================
      V8 BUDGET TYPE COLORS — PER SPEC
      ============================================ */
-  --budget-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));      /* Blue */
-  --budget-insourced-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  --budget-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));      /* Blue */
+  --budget-insourced-dark: var(--ds-background-brand-bold-hovered);
   --budget-insourced-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   
-  --budget-cosourced: var(--ds-chart-teal-bold, #0d9488);      /* Teal */
-  --budget-cosourced-dark: var(--ds-chart-teal-bolder, #0f766e);
+  --budget-cosourced: var(--ds-chart-teal-bold);      /* Teal */
+  --budget-cosourced-dark: var(--ds-chart-teal-bolder);
   --budget-cosourced-light: var(--ds-background-success, rgba(13, 148, 136, 0.1));
   
-  --budget-outsourced: var(--ds-text-warning, #d97706);     /* Amber */
-  --budget-outsourced-dark: var(--ds-background-warning-bold, #b45309);
+  --budget-outsourced: var(--ds-text-warning);     /* Amber */
+  --budget-outsourced-dark: var(--ds-background-warning-bold);
   --budget-outsourced-light: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
   
-  --budget-licenses: var(--ds-background-discovery-bold, #7C3AED);       /* Violet */
-  --budget-licenses-dark: var(--ds-background-discovery-bold, #6d28d9);
+  --budget-licenses: var(--ds-background-discovery-bold);       /* Violet */
+  --budget-licenses-dark: var(--ds-background-discovery-bold);
   --budget-licenses-light: var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.1));
 
   /* ============================================
      V8 SEMANTIC COLORS
      ============================================ */
-  --budget-success: var(--quality-high, var(--ds-background-success-bold, #059669));
+  --budget-success: var(--quality-high, var(--ds-background-success-bold));
   --budget-success-light: rgba(5, 150, 105, 0.1);
-  --budget-warning: var(--ds-text-warning, #d97706);
+  --budget-warning: var(--ds-text-warning);
   --budget-warning-light: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
-  --budget-danger: var(--ds-text-danger, #dc2626);
+  --budget-danger: var(--ds-text-danger);
   --budget-danger-light: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.1));
-  --budget-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  --budget-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 
   /* ============================================
      V8 NEUTRALS (WCAG AA COMPLIANT)
      ============================================ */
-  --slate-900: var(--ds-text, #0f172a);
-  --slate-800: var(--ds-text, #172B4D);
-  --slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --slate-600: var(--ds-text-subtle, #475569);
-  --slate-500: var(--ds-text-subtlest, #64748b);
-  --slate-400: var(--ds-text-subtlest, #94a3b8);
-  --slate-300: var(--ds-text-disabled, #cbd5e1);
-  --slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --slate-100: var(--ds-surface-sunken, #f1f5f9);
-  --slate-50: var(--ds-surface-sunken, #f8fafc);
-  --white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --slate-900: var(--ds-text);
+  --slate-800: var(--ds-text);
+  --slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --slate-600: var(--ds-text-subtle);
+  --slate-500: var(--ds-text-subtlest);
+  --slate-400: var(--ds-text-subtlest);
+  --slate-300: var(--ds-text-disabled);
+  --slate-200: var(--ds-border, var(--cp-bg-sunken));
+  --slate-100: var(--ds-surface-sunken);
+  --slate-50: var(--ds-surface-sunken);
+  --white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 
-  --budget-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --budget-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --budget-text-primary: var(--ds-text, #0f172a);
-  --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --budget-text-muted: var(--ds-text-subtlest, #64748b);
-  --budget-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --budget-border-strong: var(--ds-text-disabled, #cbd5e1);
+  --budget-bg-page: var(--ds-surface-sunken);
+  --budget-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --budget-text-primary: var(--ds-text);
+  --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --budget-text-muted: var(--ds-text-subtlest);
+  --budget-border: var(--ds-border, var(--cp-bg-sunken));
+  --budget-border-strong: var(--ds-text-disabled);
 
   /* Legacy aliases for compatibility */
-  --budget-bg: var(--ds-surface-sunken, #f8fafc);
-  --budget-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --budget-text: var(--ds-text, #0f172a);
-  --budget-border-light: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  --budget-bg: var(--ds-surface-sunken);
+  --budget-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --budget-text: var(--ds-text);
+  --budget-border-light: var(--ds-border, var(--cp-bg-sunken));
 
   /* ============================================
      V8 SHADOWS
@@ -115,58 +115,58 @@
 .dark .budget-module,
 .dark .budget-module , [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
-  --slate-900: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
-  --slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --slate-700: var(--fg-2, var(--ds-text-subtlest, #626F86));
-  --slate-600: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
-  --slate-500: var(--ds-text-subtlest, #626F86);
+  --slate-900: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --slate-800: var(--ds-text, var(--cp-bg-neutral));
+  --slate-700: var(--fg-2, var(--ds-text-subtlest));
+  --slate-600: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
+  --slate-500: var(--ds-text-subtlest);
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
-  --slate-300: var(--ds-border-bold, #454545);
-  --slate-200: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --slate-100: var(--ds-border, var(--cp-ink-1, #292929));
-  --slate-50: var(--ds-surface-overlay, #1F1F1F);
-  --white: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  --slate-300: var(--ds-border-bold);
+  --slate-200: var(--ds-border, var(--cp-ink-1));
+  --slate-100: var(--ds-border, var(--cp-ink-1));
+  --slate-50: var(--ds-surface-overlay);
+  --white: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
 
   /* Surfaces + text */
-  --budget-bg-page: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --budget-bg-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
-  --budget-text-secondary: var(--fg-2, var(--ds-text-subtlest, #626F86));
-  --budget-text-muted: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
-  --budget-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --budget-border-strong: var(--ds-border-bold, #454545);
+  --budget-bg-page: var(--cp-bg-page, var(--ds-surface));
+  --budget-bg-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --budget-text-secondary: var(--fg-2, var(--ds-text-subtlest));
+  --budget-text-muted: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
+  --budget-border: var(--ds-border, var(--cp-ink-1));
+  --budget-border-strong: var(--ds-border-bold);
 
   /* Legacy aliases */
-  --budget-bg: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --budget-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --budget-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
-  --budget-border-light: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --budget-bg: var(--cp-bg-page, var(--ds-surface));
+  --budget-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --budget-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --budget-border-light: var(--ds-border, var(--cp-ink-1));
 
   /* Primary surfaces used in info/expanded rows */
   --budget-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
   --budget-primary-light: var(--ds-background-information-bold, rgba(59,130,246,0.12));
 
   /* Semantic — darkened for dark bg */
-  --budget-success: var(--ds-background-success, #DFFCF0);
+  --budget-success: var(--ds-background-success);
   --budget-success-light: var(--ds-background-success-bold, rgba(74,222,128,0.12));
-  --budget-warning: var(--ds-background-warning, #FFF7D6);
+  --budget-warning: var(--ds-background-warning);
   --budget-warning-light: var(--ds-background-warning, rgba(253,230,138,0.10));
-  --budget-danger: var(--ds-border-danger, #FCA5A5);
+  --budget-danger: var(--ds-border-danger);
   --budget-danger-light: var(--ds-background-danger, rgba(239,68,68,0.10));
-  --budget-info: var(--ds-text-brand, #60A5FA);
+  --budget-info: var(--ds-text-brand);
 
   /* Budget type colors — lightened for dark bg */
-  --budget-insourced: var(--ds-text-brand, #60A5FA);
-  --budget-insourced-dark: var(--ds-text-brand, #3B82F6);
+  --budget-insourced: var(--ds-text-brand);
+  --budget-insourced-dark: var(--ds-text-brand);
   --budget-insourced-light: var(--ds-background-information-bold, rgba(59,130,246,0.10));
-  --budget-cosourced: var(--ds-background-success, #DCFFF1);
-  --budget-cosourced-dark: var(--ds-background-success, #DCFFF1);
+  --budget-cosourced: var(--ds-background-success);
+  --budget-cosourced-dark: var(--ds-background-success);
   --budget-cosourced-light: var(--ds-background-success, rgba(13,148,136,0.10));
-  --budget-outsourced: var(--ds-background-warning, #FFF7D6);
-  --budget-outsourced-dark: var(--ds-background-warning-bold, #E2B203);
+  --budget-outsourced: var(--ds-background-warning);
+  --budget-outsourced-dark: var(--ds-background-warning-bold);
   --budget-outsourced-light: var(--ds-background-warning, rgba(217,119,6,0.10));
-  --budget-licenses: var(--ds-background-discovery, #F3F0FF);
-  --budget-licenses-dark: var(--ds-background-discovery-bold, #8b5cf6);
+  --budget-licenses: var(--ds-background-discovery);
+  --budget-licenses-dark: var(--ds-background-discovery-bold);
   --budget-licenses-light: var(--ds-background-discovery-bold, rgba(124,58,237,0.10));
 
   /* Shadows — suppressed */
@@ -410,16 +410,16 @@
 }
 
 .budget-module .summary-card.insourced::before { 
-  background: linear-gradient(90deg, var(--budget-insourced) 0%, var(--ds-text-brand, #3b82f6) 100%); 
+  background: linear-gradient(90deg, var(--budget-insourced) 0%, var(--ds-text-brand) 100%); 
 }
 .budget-module .summary-card.cosourced::before { 
-  background: linear-gradient(90deg, var(--ds-chart-teal-bolder, #0f766e) 0%, var(--budget-cosourced) 100%); 
+  background: linear-gradient(90deg, var(--ds-chart-teal-bolder) 0%, var(--budget-cosourced) 100%); 
 }
 .budget-module .summary-card.outsourced::before { 
-  background: linear-gradient(90deg, var(--budget-outsourced) 0%, var(--ds-text-warning, #f59e0b) 100%); 
+  background: linear-gradient(90deg, var(--budget-outsourced) 0%, var(--ds-text-warning) 100%); 
 }
 .budget-module .summary-card.licenses::before { 
-  background: linear-gradient(90deg, var(--budget-licenses) 0%, var(--ds-background-discovery, #F3F0FF) 100%); 
+  background: linear-gradient(90deg, var(--budget-licenses) 0%, var(--ds-background-discovery) 100%); 
 }
 
 /* Ring effect when expanded */
@@ -690,7 +690,7 @@
   font-family: var(--budget-font-mono);
   color: white;
   flex-shrink: 0;
-  background: var(--ds-text-subtle, #475569); /* slate-600 - CONSISTENT */
+  background: var(--ds-text-subtle); /* slate-600 - CONSISTENT */
 }
 
 /* Legacy support for old assignment-icon class */
@@ -707,14 +707,14 @@
   font-family: var(--budget-font-mono);
   color: white;
   flex-shrink: 0;
-  background: var(--ds-text-subtle, #475569); /* slate-600 - CONSISTENT */
+  background: var(--ds-text-subtle); /* slate-600 - CONSISTENT */
 }
 
 /* Remove old type-based icon colors - now all consistent */
 .budget-module .assignment-icon.insourced,
 .budget-module .assignment-icon.cosourced,
 .budget-module .assignment-icon.outsourced { 
-  background: var(--ds-text-subtle, #475569); /* All same: slate-600 */
+  background: var(--ds-text-subtle); /* All same: slate-600 */
 }
 
 .budget-module .assignment-info {
@@ -779,19 +779,19 @@
 }
 
 .budget-module .type-badge.insourced { 
-  background: var(--ds-background-information, #E9F2FF); /* blue-100 */
-  color: var(--ds-background-brand-bold-hovered, #1d4ed8); /* blue-700 */
-  border-color: var(--ds-background-information-bold, #0C66E4); /* blue-300 */
+  background: var(--ds-background-information); /* blue-100 */
+  color: var(--ds-background-brand-bold-hovered); /* blue-700 */
+  border-color: var(--ds-background-information-bold); /* blue-300 */
 }
 .budget-module .type-badge.cosourced { 
-  background: var(--ds-background-success, #DCFFF1); /* teal-100 */
-  color: var(--ds-chart-teal-bolder, #0f766e); /* teal-700 */
-  border-color: var(--ds-background-success, #DCFFF1); /* teal-300 */
+  background: var(--ds-background-success); /* teal-100 */
+  color: var(--ds-chart-teal-bolder); /* teal-700 */
+  border-color: var(--ds-background-success); /* teal-300 */
 }
 .budget-module .type-badge.outsourced { 
-  background: var(--ds-background-warning, #FFF7D6); /* amber-100 */
-  color: var(--ds-background-warning-bold, #b45309); /* amber-700 */
-  border-color: var(--ds-background-warning, #FFF7D6); /* amber-300 */
+  background: var(--ds-background-warning); /* amber-100 */
+  color: var(--ds-background-warning-bold); /* amber-700 */
+  border-color: var(--ds-background-warning); /* amber-300 */
 }
 
 /* ============================================
@@ -812,27 +812,27 @@
 
 /* In Progress - Blue */
 .budget-module .status-badge.in-progress { 
-  background: var(--ds-background-information, #E9F2FF); /* blue-100 */
-  color: var(--ds-background-brand-bold-hovered, #1d4ed8); /* blue-700 */
+  background: var(--ds-background-information); /* blue-100 */
+  color: var(--ds-background-brand-bold-hovered); /* blue-700 */
 }
 
 /* Completed - Slate (MUST have badge styling, not plain text) */
 .budget-module .status-badge.completed { 
-  background: var(--ds-surface-sunken, #f1f5f9) !important; /* slate-100 */
-  color: var(--ds-text-subtle, #475569) !important; /* slate-600 */
+  background: var(--ds-surface-sunken) !important; /* slate-100 */
+  color: var(--ds-text-subtle) !important; /* slate-600 */
 }
 
 /* On Hold - Amber */
 .budget-module .status-badge.on-hold { 
-  background: var(--ds-background-warning, #FFF7D6); /* amber-100 */
-  color: var(--ds-background-warning-bold, #b45309); /* amber-700 */
+  background: var(--ds-background-warning); /* amber-100 */
+  color: var(--ds-background-warning-bold); /* amber-700 */
 }
 
 /* Not Started / Yet to Start - Light slate */
 .budget-module .status-badge.yet-to-start,
 .budget-module .status-badge.not-started { 
-  background: var(--ds-surface-sunken, #f1f5f9); /* slate-100 */
-  color: var(--ds-text-subtlest, #64748b); /* slate-500 */
+  background: var(--ds-surface-sunken); /* slate-100 */
+  color: var(--ds-text-subtlest); /* slate-500 */
 }
 
 /* Payment Badge - V8 QA: Clear red for unpaid, green for on-track */
@@ -847,15 +847,15 @@
 
 .budget-module .payment-badge.na { 
   background: transparent;
-  color: var(--ds-text-subtlest, #94a3b8); /* slate-400 */
+  color: var(--ds-text-subtlest); /* slate-400 */
 }
 .budget-module .payment-badge.on-track { 
-  background: var(--ds-background-success, #dcfce7); /* green-100 */
-  color: var(--ds-text-success, #216E4E); /* green-800 */
+  background: var(--ds-background-success); /* green-100 */
+  color: var(--ds-text-success); /* green-800 */
 }
 .budget-module .payment-badge.unpaid { 
-  background: var(--ds-background-danger, #FFECEB); /* red-100 */
-  color: var(--ds-text-danger, #AE2A19); /* red-700 */
+  background: var(--ds-background-danger); /* red-100 */
+  color: var(--ds-text-danger); /* red-700 */
   font-weight: 700;
 }
 
@@ -866,9 +866,9 @@
   font-weight: 600;
 }
 
-.budget-module .cost-cell.insourced { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); }
-.budget-module .cost-cell.cosourced { color: var(--ds-chart-teal-bold, #0d9488); }
-.budget-module .cost-cell.outsourced { color: var(--ds-text-warning, #d97706); }
+.budget-module .cost-cell.insourced { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); }
+.budget-module .cost-cell.cosourced { color: var(--ds-chart-teal-bold); }
+.budget-module .cost-cell.outsourced { color: var(--ds-text-warning); }
 .budget-module .cost-cell.muted { color: var(--budget-text-muted); }
 
 /* ============================================
@@ -920,7 +920,7 @@
    ============================================ */
 .budget-module .quality-panel {
   background: var(--budget-warning-light);
-  border: 2px solid var(--ds-background-warning-bold, #E2B203);
+  border: 2px solid var(--ds-background-warning-bold);
   border-radius: var(--budget-radius-md);
   padding: 14px 16px;
   margin-bottom: 16px;
@@ -939,13 +939,13 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--ds-text-warning, #974F0C);
+  color: var(--ds-text-warning);
 }
 
 .budget-module .quality-toggle {
   font-size: 11px;
   font-weight: 600;
-  color: var(--ds-text-warning, #974F0C);
+  color: var(--ds-text-warning);
   cursor: pointer;
   text-decoration: underline;
   background: none;
@@ -964,7 +964,7 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 400;
-  color: var(--ds-text-warning, #974F0C);
+  color: var(--ds-text-warning);
 }
 
 /* ============================================
@@ -1118,7 +1118,7 @@
 /* Alert Panel */
 .budget-module .exec-alert {
   background: var(--budget-danger-light);
-  border: 1px solid var(--ds-background-danger, #FFECEB);
+  border: 1px solid var(--ds-background-danger);
   border-radius: var(--budget-radius-xl);
   padding: 16px 20px;
   margin-bottom: 24px;
@@ -1127,7 +1127,7 @@
 .budget-module .exec-alert-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--ds-text-danger, #991b1b);
+  color: var(--ds-text-danger);
   margin-bottom: 8px;
 }
 
@@ -1208,7 +1208,7 @@
 }
 
 .budget-module .exec-summary-btn:hover {
-  background: var(--budget-primary-dark); /* per H1.2: var(--ds-background-brand-bold-hovered, #1d4ed8) */
+  background: var(--budget-primary-dark); /* per H1.2: var(--ds-background-brand-bold-hovered) */
   transform: translateY(-1px);
   box-shadow: var(--budget-shadow-md);
 }
@@ -1333,23 +1333,23 @@
 
 /* Parent row expansion indicator - blue left border */
 .budget-module tbody tr.expanded-parent {
-  background: var(--ds-background-selected, #eff6ff) !important; /* blue-50 */
-  border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  background: var(--ds-background-selected) !important; /* blue-50 */
+  border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
 }
 
 .budget-module tbody tr.expanded-parent:hover {
-  background: var(--ds-background-selected, #eff6ff) !important;
+  background: var(--ds-background-selected) !important;
 }
 
 /* Chevron rotation for expanded state */
 .budget-module .expand-chevron {
   transition: transform 0.2s ease;
-  color: var(--ds-text-subtlest, #94a3b8); /* slate-400 */
+  color: var(--ds-text-subtlest); /* slate-400 */
 }
 
 .budget-module .expand-chevron.expanded {
   transform: rotate(90deg);
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); /* blue-600 */
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); /* blue-600 */
 }
 
 .budget-module .expanded-row td {

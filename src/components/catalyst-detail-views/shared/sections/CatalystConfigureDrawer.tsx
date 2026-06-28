@@ -96,21 +96,21 @@ export function CatalystConfigureDrawer({
         <div style={{
           paddingBottom: 16,
           marginBottom: 16,
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         }}>
           <h2 style={{
             margin: 0,
-            fontSize: 20,
+            fontSize: 'var(--ds-font-size-700)',
             fontWeight: 600,
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
             lineHeight: '24px',
           }}>
             Configure issue layout
           </h2>
           <p style={{
             margin: '8px 0 0',
-            fontSize: 14,
-            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+            fontSize: 'var(--ds-font-size-400)',
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             lineHeight: '20px',
           }}>
             Pin fields to make them easier to find in the right sidebar.
@@ -120,9 +120,9 @@ export function CatalystConfigureDrawer({
         {/* Pinned fields section */}
         <div style={{ marginBottom: 24 }}>
           <div style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
-            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
             marginBottom: 8,
@@ -133,10 +133,10 @@ export function CatalystConfigureDrawer({
           {pinnedFields.length === 0 ? (
             <div style={{
               padding: '12px 16px',
-              background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
               borderRadius: 4,
-              fontSize: 14,
-              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+              fontSize: 'var(--ds-font-size-400)',
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
               textAlign: 'center',
             }}>
               No pinned fields yet — pin a field below to show it at the top of the sidebar.
@@ -162,9 +162,9 @@ export function CatalystConfigureDrawer({
         {/* Available to pin */}
         <div>
           <div style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
-            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
             marginBottom: 8,
@@ -183,10 +183,10 @@ export function CatalystConfigureDrawer({
             {visibleFields.filter((f) => !pinnedFields.includes(f.id)).length === 0 && (
               <div style={{
                 padding: '12px 16px',
-                background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
                 borderRadius: 4,
-                fontSize: 14,
-                color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                fontSize: 'var(--ds-font-size-400)',
+                color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                 textAlign: 'center',
               }}>
                 All available fields are pinned.
@@ -217,15 +217,15 @@ function FieldConfigRow({
         justifyContent: 'space-between',
         padding: '10px 12px',
         borderRadius: 4,
-        background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+        background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
         transition: 'background 0.1s',
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-border, #DFE1E6)'); }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-border)'); }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'); }}
     >
       <span style={{
-        fontSize: 14,
-        color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+        fontSize: 'var(--ds-font-size-400)',
+        color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
         fontWeight: 400,
       }}>
         {label}
@@ -239,11 +239,11 @@ function FieldConfigRow({
           gap: 4,
           height: 28,
           padding: '0 10px',
-          border: `1px solid ${isPinned ? token('color.border.brand', 'var(--cp-primary-60, #0052CC)') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          border: `1px solid ${isPinned ? token('color.border.brand', 'var(--cp-primary-60)') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           borderRadius: 3,
-          background: isPinned ? token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)') : 'transparent',
-          color: isPinned ? 'var(--ds-text-inverse, #FFFFFF)' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-          fontSize: 12,
+          background: isPinned ? token('color.background.brand.bold', 'var(--cp-primary-60)') : 'transparent',
+          color: isPinned ? 'var(--ds-text-inverse)' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',
           fontFamily: 'inherit',
@@ -251,7 +251,7 @@ function FieldConfigRow({
           flexShrink: 0,
         }}
         onMouseEnter={(e) => {
-          if (!isPinned) e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-border, #DFE1E6)');
+          if (!isPinned) e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-border)');
         }}
         onMouseLeave={(e) => {
           if (!isPinned) e.currentTarget.style.background = 'transparent';

@@ -68,7 +68,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       {/* Name */}
       <div style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 16, fontWeight: 600,
+        fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
         color: 'var(--fg-1)',
       }}>
         {theme.name}
@@ -77,7 +77,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       {/* Description */}
       {theme.description && (
         <div style={{
-          fontSize: 12, color: 'var(--fg-3)',
+          fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           overflow: 'hidden', lineHeight: '1.5',
         }}>
@@ -86,21 +86,21 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       )}
 
       {/* Item breakdown */}
-      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
         {hasItems || theme.epic_count > 0 || theme.story_count > 0 || theme.subtask_count > 0 ? (
           <>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)' }} />
               E {theme.epic_count}
             </span>
-            <span style={{ color: 'var(--ds-text-disabled, #cbd5e1)' }}>·</span>
+            <span style={{ color: 'var(--ds-text-disabled)' }}>·</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
               S {theme.story_count}
             </span>
-            <span style={{ color: 'var(--ds-text-disabled, #cbd5e1)' }}>·</span>
+            <span style={{ color: 'var(--ds-text-disabled)' }}>·</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ds-background-discovery-bold, #6366f1)' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ds-background-discovery-bold)' }} />
               ST {theme.subtask_count}
             </span>
           </>
@@ -110,7 +110,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       </div>
 
       {/* Date range */}
-      <div style={{ fontSize: 12, color: 'var(--fg-4)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
         {dateRange || <span style={{ fontStyle: 'italic' }}>No dates set</span>}
       </div>
 
@@ -128,7 +128,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
               transition: 'width 400ms ease',
             }} />
           </div>
-          <div style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 4, textAlign: 'right' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginTop: 4, textAlign: 'right' }}>
             {theme.done_items}/{theme.total_items} done
           </div>
         </div>

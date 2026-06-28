@@ -17,43 +17,43 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 
 /* ── Constants ── */
-const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', MDT: 'var(--ds-text, #3F3F46)' };
-const getAvatarColor = (key: string) => PROJECT_COLORS[key] || 'var(--ds-text-subtle, var(--ds-icon, #44546F))';
+const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', MDT: 'var(--ds-text)' };
+const getAvatarColor = (key: string) => PROJECT_COLORS[key] || 'var(--ds-text-subtle, var(--ds-icon))';
 
 /* ── Small component for live ticket count badge ── */
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #374151)', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
+    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
       {count ?? '…'}
     </span>
   );
 }
 
 const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
-  HIGH:     { bg: 'var(--ds-surface, #FEF3C7)', color: 'var(--ds-text, #92400E)' },
-  CRITICAL: { bg: 'var(--ds-surface, #FEF3C7)', color: 'var(--ds-text, #92400E)' },
-  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #374151)' },
-  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #374151)' },
+  HIGH:     { bg: 'var(--ds-surface)', color: 'var(--ds-text)' },
+  CRITICAL: { bg: 'var(--ds-surface)', color: 'var(--ds-text)' },
+  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
-  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
-  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
-  'In Progress': { bg: 'var(--ds-text, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'In Review':   { bg: 'var(--ds-text, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Resolved':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Closed':      { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  'In Progress': { bg: 'var(--ds-text)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'In Review':   { bg: 'var(--ds-text)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Done':        { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Resolved':    { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Closed':      { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
-  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' };
+  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' };
   return (
     <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 4,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color, lineHeight: '16px', height: 20,
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
       maxWidth: 130,
@@ -213,7 +213,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               padding: 0,
               display: 'flex',
               flexDirection: 'column',
-              borderLeft: '0.75px solid var(--ds-border, #E5E7EB)',
+              borderLeft: '0.75px solid var(--ds-border)',
               boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
               background: 'var(--bg-app)',
               outline: 'none',
@@ -222,17 +222,17 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         <SheetTitle className="sr-only">Import from Jira</SheetTitle>
         <SheetDescription className="sr-only">Import Jira tickets into Req Assist</SheetDescription>
         {/* HEADER */}
-        <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid var(--ds-border, #E5E7EB)', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid var(--ds-border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16, fontWeight: 650, color: 'var(--ds-text, #111827)', fontFamily: 'var(--cp-font-heading)' }}>Import from Jira</span>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: 'var(--ds-text)', fontFamily: 'var(--cp-font-heading)' }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '2px 8px' }}>AI-Assisted Import</span>
-            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Step {step} of 2</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '2px 8px' }}>AI-Assisted Import</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Step {step} of 2</span>
             <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
               <X size={16} />
             </button>
           </div>
-          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>Connected via Catalyst integration</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>Connected via Catalyst integration</span>
         </div>
 
         {/* BODY */}
@@ -272,31 +272,31 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         </div>
 
         {/* FOOTER */}
-        <div style={{ height: 64, borderTop: '0.75px solid var(--ds-border, #E5E7EB)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ height: 64, borderTop: '0.75px solid var(--ds-border)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           {step === 1 ? (
             <>
-              <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Cancel</button>
+              <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Cancel</button>
               <button
                 onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets([]); } }}
                 disabled={!selectedProject}
                 style={{
-                  background: selectedProject ? 'var(--cp-blue)' : 'var(--ds-border, #93C5FD)', color: 'var(--bg-app)',
+                  background: selectedProject ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
-                  fontSize: 13, fontWeight: 600, cursor: selectedProject ? 'pointer' : 'not-allowed',
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: selectedProject ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)', opacity: selectedProject ? 1 : 0.6,
                 }}
               >Next: Select Tickets →</button>
             </>
           ) : (
             <>
-              <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>← Back</button>
+              <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>← Back</button>
               <button
                 onClick={handleImport}
                 disabled={selectedTickets.length === 0 || importMutation.isPending}
                 style={{
-                  background: selectedTickets.length > 0 ? 'var(--cp-blue)' : 'var(--ds-border, #93C5FD)', color: 'var(--bg-app)',
+                  background: selectedTickets.length > 0 ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
-                  fontSize: 13, fontWeight: 600,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                   cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)', opacity: selectedTickets.length > 0 ? 1 : 0.6,
                   display: 'flex', alignItems: 'center', gap: 6,
@@ -341,9 +341,9 @@ function Step1({
     <>
       {/* Section label */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)' }}>SELECT PROJECT</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)' }}>SELECT PROJECT</span>
         {projects.length > 0 && (
-          <button onClick={onSyncAll} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={onSyncAll} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
             <RefreshCw size={14} className={syncingKey ? 'animate-spin' : ''} />
             Sync All
           </button>
@@ -358,8 +358,8 @@ function Step1({
       ) : projects.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
           <Inbox size={32} style={{ color: 'var(--fg-4)' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-subtle, #374151)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No projects connected yet</span>
-          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Add your first Jira project below</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No projects connected yet</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Add your first Jira project below</span>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -370,24 +370,24 @@ function Step1({
                 key={p.project_key}
                 onClick={() => onSelect(p.project_key)}
                 style={{
-                  height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid var(--ds-border, #E5E7EB)',
+                  height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid var(--ds-border)',
                   borderRadius: 6, background: selected ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--bg-app)',
                   padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 12,
                   cursor: 'pointer', width: '100%', textAlign: 'left',
                   transition: 'background 0.1s',
                 }}
                 onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.02))'; }}
-                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'; }}
               >
                 {/* Avatar */}
                 <div style={{
                   width: 32, height: 32, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: getAvatarColor(p.project_key), color: 'var(--bg-app)', fontSize: 13, fontWeight: 700, fontFamily: 'var(--cp-font-body)',
+                  background: getAvatarColor(p.project_key), color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, fontFamily: 'var(--cp-font-body)',
                 }}>
                   {p.project_key}
                 </div>
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #111827)', fontFamily: 'var(--cp-font-body)', flex: 1 }}>
-                  {p.project_name} <span style={{ fontSize: 12, color: 'var(--fg-3)', fontWeight: 400 }}>({p.project_key})</span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', fontFamily: 'var(--cp-font-body)', flex: 1 }}>
+                  {p.project_name} <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontWeight: 400 }}>({p.project_key})</span>
                 </span>
                 <ProjectTicketCountBadge projectKey={p.project_key} />
                 <button
@@ -405,9 +405,9 @@ function Step1({
       {/* ADD PROJECT SECTION */}
       <div style={{ marginTop: 24, position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral, #F3F4F6)' }} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app)', padding: '0 8px' }}>ADD PROJECT</span>
-          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral, #F3F4F6)' }} />
+          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral)' }} />
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-4)', textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app)', padding: '0 8px' }}>ADD PROJECT</span>
+          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral)' }} />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
@@ -415,9 +415,9 @@ function Step1({
             onChange={e => onAddInput(e.target.value.toUpperCase())}
             placeholder="Project key (e.g. SEN, MDT)"
             style={{
-              flex: 1, height: 50, border: '0.75px solid var(--ds-border, #E5E7EB)', borderRadius: 4,
-              padding: '8px 12px', fontSize: 13, fontFamily: 'var(--cp-font-mono)',
-              outline: 'none', color: 'var(--ds-text, #111827)',
+              flex: 1, height: 50, border: '0.75px solid var(--ds-border)', borderRadius: 4,
+              padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-mono)',
+              outline: 'none', color: 'var(--ds-text)',
             }}
             onKeyDown={e => { if (e.key === 'Enter') onVerify(); }}
           />
@@ -425,9 +425,9 @@ function Step1({
             onClick={onVerify}
             disabled={!addInput.trim() || verifyState === 'loading'}
             style={{
-              background: addInput.trim() ? 'var(--cp-blue)' : 'var(--ds-border, #93C5FD)', color: 'var(--bg-app)',
+              background: addInput.trim() ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
               border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
-              fontSize: 13, fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
               fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
               opacity: addInput.trim() ? 1 : 0.6,
             }}
@@ -441,27 +441,27 @@ function Step1({
           {verifyState === 'loading' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Loader2 size={14} className="animate-spin" style={{ color: 'var(--fg-3)' }} />
-              <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Verifying with Jira...</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Verifying with Jira...</span>
             </div>
           )}
           {verifyState === 'success' && verifyResult && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <CheckCircle size={14} style={{ color: 'var(--sem-success)' }} />
-              <span style={{ fontSize: 13, color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)' }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)' }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
             </div>
           )}
           {verifyState === 'not_found' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
-              <span style={{ fontSize: 13, color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-body)' }}>Project not found. Check the key and try again.</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-body)' }}>Project not found. Check the key and try again.</span>
             </div>
           )}
           {verifyState === 'not_configured' && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--ds-surface, #FEF3C7)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--ds-surface)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
               <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
               <div>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, #92400E)', fontFamily: 'var(--cp-font-body)' }}>Jira integration not configured. Go to Settings → Integrations. </span>
-                <a href="/settings/integrations" style={{ fontSize: 13, color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: 'var(--cp-font-body)' }}>Go to Settings →</a>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontFamily: 'var(--cp-font-body)' }}>Jira integration not configured. Go to Settings → Integrations. </span>
+                <a href="/settings/integrations" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: 'var(--cp-font-body)' }}>Go to Settings →</a>
               </div>
             </div>
           )}
@@ -504,13 +504,13 @@ function Step2({
 
   return (
     <>
-      <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
         {projectName} · Showing tickets with attachments only
       </div>
-      <div style={{ fontSize: 12, color: 'var(--fg-3)', margin: '8px 0 4px 0', fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', margin: '8px 0 4px 0', fontFamily: 'var(--cp-font-body)' }}>
         Showing {pdfIssueCount} of {totalIssueCount} issues — PDF attachments only
       </div>
-      <div style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 16, fontFamily: 'var(--cp-font-mono)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginBottom: 16, fontFamily: 'var(--cp-font-mono)' }}>
         {syncLabel}
       </div>
 
@@ -523,20 +523,20 @@ function Step2({
             onChange={e => onSearch(e.target.value)}
             placeholder="Search tickets..."
             style={{
-              width: '100%', height: 50, border: '0.75px solid var(--ds-border, #E5E7EB)', borderRadius: 4,
-              padding: '0 12px 0 32px', fontSize: 13, fontFamily: 'var(--cp-font-body)',
-              outline: 'none', color: 'var(--ds-text, #111827)',
+              width: '100%', height: 50, border: '0.75px solid var(--ds-border)', borderRadius: 4,
+              padding: '0 12px 0 32px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)',
+              outline: 'none', color: 'var(--ds-text)',
             }}
           />
         </div>
         <button
           onClick={onPdfToggle}
           style={{
-            height: 50, borderRadius: 6, padding: '8px 12px', fontSize: 13, fontWeight: 600,
+            height: 50, borderRadius: 6, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
-            background: pdfOnly ? 'var(--ds-text, #0C66E4)' : 'var(--ds-background-neutral, #F3F4F6)',
-            color: pdfOnly ? 'var(--bg-app)' : 'var(--ds-text-subtle, #374151)',
-            border: `0.75px solid ${pdfOnly ? 'var(--ds-border, #BFDBFE)' : 'var(--ds-border, #E5E7EB)'}`,
+            background: pdfOnly ? 'var(--ds-text)' : 'var(--ds-background-neutral)',
+            color: pdfOnly ? 'var(--bg-app)' : 'var(--ds-text-subtle)',
+            border: `0.75px solid ${pdfOnly ? 'var(--ds-border)' : 'var(--ds-border)'}`,
           }}
         >PDF Only</button>
         <button onClick={onSync} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
@@ -548,14 +548,14 @@ function Step2({
       {loading || syncing ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {[1, 2, 3].map(i => (
-            <div key={i} className="animate-pulse" style={{ height: 50, background: 'var(--ds-background-neutral, #F3F4F6)', borderRadius: 4 }} />
+            <div key={i} className="animate-pulse" style={{ height: 50, background: 'var(--ds-background-neutral)', borderRadius: 4 }} />
           ))}
         </div>
       ) : tickets.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
           <RefreshCw size={32} style={{ color: 'var(--fg-3)' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #111827)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No tickets found</span>
-          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No tickets found</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
             No Jira tickets with attachments were found for this project. Tickets must have at least one attachment to appear here.
           </span>
           <button
@@ -563,7 +563,7 @@ function Step2({
             disabled={syncing}
             style={{
               marginTop: 12, height: 32, borderRadius: 6, padding: '0 16px',
-              fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
               color: 'var(--cp-blue)', background: 'transparent', border: '1px solid var(--cp-blue)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
             }}
@@ -575,7 +575,7 @@ function Step2({
       ) : (
         <>
           {/* Table header */}
-          <div style={{ display: 'flex', alignItems: 'center', height: 50, background: 'var(--ds-surface-sunken, #F9FAFB)', borderBottom: '0.75px solid var(--ds-border, #E5E7EB)', position: 'sticky', top: 0, zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: 50, background: 'var(--ds-surface-sunken)', borderBottom: '0.75px solid var(--ds-border)', position: 'sticky', top: 0, zIndex: 1 }}>
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <input
                 type="checkbox"
@@ -593,7 +593,7 @@ function Step2({
             ].map(col => (
               <div key={col.label} style={{
                 width: col.w, flex: col.w ? undefined : 1,
-                padding: '10px 12px', fontSize: 11, fontWeight: 700, color: 'var(--fg-3)',
+                padding: '10px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)',
                 textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)',
               }}>{col.label}</div>
             ))}
@@ -612,7 +612,7 @@ function Step2({
                 className="group"
                 style={{
                   display: 'flex', alignItems: 'center', height: 50,
-                  borderBottom: '0.75px solid var(--ds-background-neutral, #F3F4F6)',
+                  borderBottom: '0.75px solid var(--ds-background-neutral)',
                   cursor: 'pointer',
                   background: checked ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'transparent',
                   transition: 'background 0.1s',
@@ -628,8 +628,8 @@ function Step2({
                     style={{ width: 16, height: 16, cursor: 'pointer', accentColor: 'var(--cp-blue)', opacity: 1 }}
                   />
                 </div>
-                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? 'var(--fg-4)' : 'var(--ds-text-subtle, #374151)', fontFamily: 'var(--cp-font-mono)' }}>{t.ticket_key}</div>
-                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: muted ? 'var(--fg-4)' : 'var(--ds-text, #111827)', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div style={{ width: 96, padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: muted ? 'var(--fg-4)' : 'var(--ds-text-subtle)', fontFamily: 'var(--cp-font-mono)' }}>{t.ticket_key}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: muted ? 'var(--fg-4)' : 'var(--ds-text)', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
                 <div style={{ width: 88, padding: '8px 12px', opacity: muted ? 0.4 : 1 }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
@@ -641,14 +641,14 @@ function Step2({
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--ds-text, #0C66E4)', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-text)', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
                   ) : imported ? (
                     <>
-                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--ds-background-neutral, #F3F4F6)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
+                      <span className="group-hover:hidden" style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-background-neutral)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
                       <button
                         className="hidden group-hover:inline-flex"
                         onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}
-                        style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap' }}
+                        style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap' }}
                         onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                         onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                       >↻ Re-import</button>
@@ -660,7 +660,7 @@ function Step2({
           })}
 
           {/* Footer */}
-          <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ padding: '8px 0', marginTop: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
             {selectedTickets.length} of {tickets.length} tickets selected
           </div>
         </>

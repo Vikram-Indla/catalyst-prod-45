@@ -19,14 +19,14 @@ import { useIsDark } from '@/components/strategy/themes/useIsDark';
 
 // Dark mode tokens
 const DK = {
-  bg: 'var(--ds-surface, #0A0A0A)',
+  bg: 'var(--ds-surface)',
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  hover: 'var(--ds-surface-overlay, #1F1F1F)',
+  border: 'var(--ds-border, var(--cp-ink-1))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1))',
+  hover: 'var(--ds-surface-overlay)',
 };
 
 export default function GoalsKeyResultsPage() {
@@ -121,10 +121,10 @@ export default function GoalsKeyResultsPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
         <CatalystPageHeader title="Goals & Key Results" />
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${isDark ? DK.border : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04))' }}>
+          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${isDark ? DK.border : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04))' }}>
             <Download size={14} /> Export
           </button>
-          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-background-brand-bold-hovered, #1D4ED8))', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,0.18))' }}>
+          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-background-brand-bold-hovered))', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,0.18))' }}>
             <Plus size={15} strokeWidth={2.5} /> New Goal
           </button>
         </div>

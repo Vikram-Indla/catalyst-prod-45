@@ -235,7 +235,7 @@ export function DangerConfirmModal({
           maxWidth: 'calc(100vw - 48px)',
           // Phase 12 (2026-04-29): reverted to Atlaskit token. Phase 11
           // loaded the dark theme — elevation.surface.overlay flips natively.
-          background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+          background: token('elevation.surface.overlay', 'var(--ds-surface)'),
           borderRadius: 8,
           boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
           display: 'flex',
@@ -265,18 +265,18 @@ export function DangerConfirmModal({
               justifyContent: 'center',
               width: 24,
               height: 24,
-              color: token('color.icon.danger', 'var(--ds-background-danger-bold, #C9372C)'),
+              color: token('color.icon.danger', 'var(--ds-background-danger-bold)'),
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" fill="currentColor" />
               <path
                 d="M12 6.75v6"
-                stroke={token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')}
+                stroke={token('color.text.inverse', 'var(--ds-surface)')}
                 strokeWidth="2"
                 strokeLinecap="round"
               />
-              <circle cx="12" cy="16.25" r="1.1" fill={token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')} />
+              <circle cx="12" cy="16.25" r="1.1" fill={token('color.text.inverse', 'var(--ds-surface)')} />
             </svg>
           </span>
           <h1
@@ -288,7 +288,7 @@ export function DangerConfirmModal({
               lineHeight: '24px',
               fontWeight: 600,
               letterSpacing: '-0.003em',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
             }}
           >
             {title}
@@ -302,7 +302,7 @@ export function DangerConfirmModal({
               margin: 0,
               fontSize: 14,
               lineHeight: '20px',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
             }}
           >
             {description}
@@ -314,7 +314,7 @@ export function DangerConfirmModal({
                 marginBottom: 0,
                 fontSize: 13,
                 lineHeight: '18px',
-                color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtle)'),
               }}
             >
               {hint}
@@ -328,7 +328,7 @@ export function DangerConfirmModal({
                   display: 'block',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: token('color.text', 'var(--ds-text)'),
                   marginBottom: 6,
                 }}
               >

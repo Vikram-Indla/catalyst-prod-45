@@ -142,12 +142,12 @@ export function TicketBreadcrumbs({
   const isSprintCrumb = itemType === 'Sprint / Iteration' || itemType === 'Sprint';
   const isReleaseCrumb = itemType === 'Release';
   const sprintGlyph = (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ds-icon-warning, #B38600)' }}>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ds-icon-warning)' }}>
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" />
     </svg>
   );
   const releaseGlyph = (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ds-icon-information, #1868DB)' }}>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ds-icon-information)' }}>
       <path d="M16.5 9.4 7.55 4.24M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
       <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
       <line x1="12" y1="22.08" x2="12" y2="12"/>
@@ -176,10 +176,10 @@ export function TicketBreadcrumbs({
           follows AdsThemeProvider automatically. */}
       <style>{`
         .tk-breadcrumbs {
-          /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/var(--ds-text-subtle, #42526E)).
-             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses var(--ds-text-subtle, var(--ds-text-subtle, #42526E)) (blue-grey, more visual
+          /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/var(--ds-text-subtle)).
+             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses var(--ds-text-subtle, var(--ds-text-subtle)) (blue-grey, more visual
              weight). Overriding the token here means all var(--ds-text-subtle) children resolve correctly. */
-          --ds-text-subtle: var(--ds-text-subtle, #42526E);
+          --ds-text-subtle: var(--ds-text-subtle);
         }
         .tk-breadcrumbs nav > ol,
         .tk-breadcrumbs ol[role="list"],
@@ -201,7 +201,7 @@ export function TicketBreadcrumbs({
         .tk-breadcrumbs li > span {
           font-size: 14px;
           font-weight: 400;
-          color: var(--ds-text-subtle, #505258);
+          color: var(--ds-text-subtle);
         }
         .tk-breadcrumbs a,
         .tk-breadcrumbs button,
@@ -212,7 +212,7 @@ export function TicketBreadcrumbs({
           font-family: var(--cp-font-body);
           font-size: 14px;
           font-weight: 400;
-          color: var(--ds-text-subtle, #505258);
+          color: var(--ds-text-subtle);
           line-height: 20px;
           padding: 2px 4px;
           border-radius: 3px;
@@ -221,7 +221,7 @@ export function TicketBreadcrumbs({
            are 14px/400/var(--ds-text-subtle, rgb(80,82,88)) — grey at rest for ALL items including
            anchor links. No blue link colour at rest (muted text is Jira UX). */
         .tk-breadcrumbs a:hover {
-          color: var(--ds-link, #1868DB);
+          color: var(--ds-link);
           text-decoration: underline;
         }
         .tk-breadcrumbs button {

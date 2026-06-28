@@ -13,14 +13,14 @@ interface LabelsFilterProps {
 }
 
 const COLORS = {
-  textPrimary: 'var(--ds-text, #0f172a)',
-  textMuted: 'var(--ds-text-subtlest, #64748b)',
-  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
-  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
-  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  accentLight: 'var(--ds-background-information, #E9F2FF)'
+  textPrimary: 'var(--ds-text)',
+  textMuted: 'var(--ds-text-subtlest)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfaceHover: 'var(--ds-surface-sunken)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken))',
+  borderDefault: 'var(--ds-text-disabled)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  accentLight: 'var(--ds-background-information)'
 };
 
 export const LabelsFilter: React.FC<LabelsFilterProps> = ({
@@ -70,7 +70,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
           backgroundColor: selectedCount > 0 ? COLORS.accentLight : COLORS.surfaceCard,
           border: `1px solid ${selectedCount > 0 ? COLORS.accent : COLORS.borderDefault}`,
           borderRadius: '8px',
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           color: selectedCount > 0 ? COLORS.accent : COLORS.textMuted,
           cursor: 'pointer',
@@ -89,9 +89,9 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: COLORS.accent,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderRadius: '9px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600
             }}
           >
@@ -133,14 +133,14 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
               borderBottom: `1px solid ${COLORS.borderLight}`
             }}
           >
-            <span style={{ fontSize: '13px', fontWeight: 600, color: COLORS.textPrimary }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: COLORS.textPrimary }}>
               Filter by Labels
             </span>
             {selectedCount > 0 && (
               <button
                 onClick={clearAll}
                 style={{
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   color: COLORS.accent,
                   background: 'none',
                   border: 'none',
@@ -188,12 +188,12 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
                       flexShrink: 0
                     }}
                   />
-                  <span style={{ flex: 1, fontSize: '14px', color: COLORS.textPrimary }}>
+                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>
                     {label.name}
                   </span>
                   <span
                     style={{
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       color: COLORS.textMuted,
                       backgroundColor: COLORS.surfaceHover,

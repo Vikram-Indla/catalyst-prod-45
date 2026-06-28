@@ -56,9 +56,9 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
   // Contract ring styles helper
   const getRingStyle = (status: string) => {
     const ringStyles: Record<string, string> = {
-      healthy: 'ring-[var(--ds-chart-teal-bold, #0d9488)]',
-      warning: 'ring-[var(--ds-text-warning, #974F0C)]',
-      critical: 'ring-[var(--ds-text-danger, #be123c)]',
+      healthy: 'ring-[var(--ds-chart-teal-bold)]',
+      warning: 'ring-[var(--ds-text-warning)]',
+      critical: 'ring-[var(--ds-text-danger)]',
       expired: 'ring-muted-foreground/40',
       permanent: 'ring-muted-foreground/30'
     };
@@ -156,10 +156,10 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             </Tooltip>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-[14px] text-[var(--ds-text,#0f172a)] dark:text-foreground truncate">{value}</span>
+                <span className="font-semibold text-[14px] text-[var(--ds-text)] dark:text-foreground truncate">{value}</span>
                 {/* Online indicator */}
                 {isOnline && (
-                  <span className="w-2 h-2 rounded-full bg-[var(--quality-high, #059669)] flex-shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-[var(--quality-high)] flex-shrink-0" />
                 )}
               </div>
               {/* Location label */}
@@ -190,10 +190,10 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       render: (_: any, row: ResourceMetric) => {
         const vendor = row.vendor_name;
         if (!vendor) {
-          return <span className="text-[13px] text-[var(--ds-text-subtle,#475569)]">-</span>;
+          return <span className="text-[13px] text-[var(--ds-text-subtle)]">-</span>;
         }
         return (
-          <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">{vendor}</span>
+          <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))]">{vendor}</span>
         );
       },
     },
@@ -223,7 +223,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         if (resourceAllocations.length === 0) {
           return (
-            <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#475569)]">No assignments this month</span>
+            <span className="text-[13px] font-medium text-[var(--ds-text-subtle)]">No assignments this month</span>
           );
         }
 
@@ -235,15 +235,15 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               const now = new Date();
               const startDate = new Date(alloc.start_date);
               const isCommitted = startDate <= now;
-              const accentColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
-              const pctColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-warning, #974F0C)';
+              const accentColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-warning)'; // Blue for committed, Amber for forecast
+              const pctColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-warning)';
 
               return (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))]"
                   style={{
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    border: '1px solid var(--ds-border)',
                     borderLeftWidth: '3px',
                     borderLeftColor: accentColor,
                   }}
@@ -256,7 +256,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               );
             })}
             {resourceAllocations.length > 3 && (
-              <span className="text-[11px] text-[var(--ds-text-subtlest,#64748b)]">+{resourceAllocations.length - 3} more</span>
+              <span className="text-[11px] text-[var(--ds-text-subtlest)]">+{resourceAllocations.length - 3} more</span>
             )}
           </div>
         );
@@ -269,7 +269,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
@@ -292,13 +292,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         // Department-specific colors from style guide
         const deptStyles: Record<string, { bg: string; text: string }> = {
-          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' },
-          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #6d28d9))' },
+          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, var(--ds-chart-green-bold))' },
+          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))' },
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-          'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high, #059669)' },
+          'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high)' },
         };
 
-        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #44546F))' };
+        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, var(--ds-text-subtle))' };
 
         return (
           <span
@@ -320,7 +320,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const endDate = row.contract_end_date;
 
         if (!endDate) {
-          return <span className="text-[13px] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">Permanent</span>;
+          return <span className="text-[13px] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))]">Permanent</span>;
         }
 
         const endDateObj = new Date(endDate);
@@ -341,13 +341,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             : `Expired ${Math.abs(daysRemaining)} days ago`;
 
         // Calculate status based on days remaining - Catalyst V1 style guide
-        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))))
+        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2))))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {
-          critical: 'var(--ds-text-danger, #AE2A19)',
-          warning: 'var(--ds-text-warning, #974F0C)',
-          safe: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-          expired: 'var(--ds-text-subtlest, #64748b)',
+          critical: 'var(--ds-text-danger)',
+          warning: 'var(--ds-text-warning)',
+          safe: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+          expired: 'var(--ds-text-subtlest)',
         };
 
         return (
@@ -374,7 +374,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           {/* Edit */}
           <button
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0f172a)] hover:bg-[var(--ds-surface-sunken,#f1f5f9)] transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle)] hover:text-[var(--ds-text)] hover:bg-[var(--ds-surface-sunken)] transition-colors"
             title="Edit resource"
           >
             <Pencil className="w-4 h-4" />
@@ -382,7 +382,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           {/* Delete */}
           <button
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0f172a)] hover:bg-[var(--ds-surface-sunken,#f1f5f9)] transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle)] hover:text-[var(--ds-text)] hover:bg-[var(--ds-surface-sunken)] transition-colors"
             title="Remove from Capacity Planner"
           >
             <Trash2 className="w-4 h-4" />

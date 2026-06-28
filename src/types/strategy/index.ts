@@ -63,11 +63,11 @@ export interface DrawerProps {
 // ── Status Color Mapping ──
 
 export const STATUS_COLORS: Record<OkrStatus, string> = {
-  on_track: 'var(--catalyst-success, var(--cp-teal-60, #0D9488))',
-  at_risk: 'var(--catalyst-warning, var(--cp-warning, #D97706))',
-  off_track: 'var(--catalyst-danger, #EF4444)',
-  not_started: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-  completed: 'var(--catalyst-success, var(--cp-teal-60, #0D9488))',
+  on_track: 'var(--catalyst-success, var(--cp-teal-60))',
+  at_risk: 'var(--catalyst-warning, var(--cp-warning))',
+  off_track: 'var(--catalyst-danger)',
+  not_started: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light)))',
+  completed: 'var(--catalyst-success, var(--cp-teal-60))',
 };
 
 export const STATUS_LABELS: Record<OkrStatus, string> = {
@@ -79,18 +79,18 @@ export const STATUS_LABELS: Record<OkrStatus, string> = {
 };
 
 export const THEME_COLORS: Record<string, string> = {
-  'Digital Transformation': 'var(--ds-link, #2563eb)',
-  'Workforce Development': 'var(--cp-teal-60, #0D9488)',
-  'Supply Chain Excellence': 'var(--cp-warning, #D97706)',
-  'Sustainability & ESG': 'var(--cp-success, #16A34A)',
+  'Digital Transformation': 'var(--ds-link)',
+  'Workforce Development': 'var(--cp-teal-60)',
+  'Supply Chain Excellence': 'var(--cp-warning)',
+  'Sustainability & ESG': 'var(--cp-success)',
 };
 
 export const WORKSTREAM_COLORS: Record<string, string> = {
-  senaie: 'var(--ds-icon-information, #1D7AFC)',
-  catalyst: 'var(--ds-background-discovery-bold, #8b5cf6)',
-  tahommona: 'var(--ds-background-discovery-bold, #6366f1)',
-  delivery: 'var(--ds-background-warning-bold, #f97316)',
-  mim: 'var(--ds-background-accent-magenta-bolder, #ec4899)',
-  standalone: 'var(--ds-background-success-bold, #1F845A)',
-  dataai: 'var(--ds-background-accent-teal-bolder, #14b8a6)',
+  senaie: 'var(--ds-icon-information)',
+  catalyst: 'var(--ds-background-discovery-bold)',
+  tahommona: 'var(--ds-background-discovery-bold)',
+  delivery: 'var(--ds-background-warning-bold)',
+  mim: 'var(--ds-background-accent-magenta-bolder)',
+  standalone: 'var(--ds-background-success-bold)',
+  dataai: 'var(--ds-background-accent-teal-bolder)',
 };

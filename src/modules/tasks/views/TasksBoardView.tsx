@@ -280,7 +280,7 @@ export default function TasksBoardView() {
   // ── Render ──────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div style={{ padding: 16, color: 'var(--ds-text-danger, #AE2A19)' }}>
+      <div style={{ padding: 16, color: 'var(--ds-text-danger)' }}>
         Error loading board.
       </div>
     );
@@ -293,7 +293,7 @@ export default function TasksBoardView() {
         flexDirection: 'column',
         flex: 1,
         minHeight: 0,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
       }}
     >
       {/* ── Page header (breadcrumb + H1) ──────────────────────────────── */}

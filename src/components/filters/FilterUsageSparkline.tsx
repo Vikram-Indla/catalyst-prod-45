@@ -24,7 +24,7 @@ export function FilterUsageSparkline({
 }: Props) {
   if (!data.length || data.every(d => d === 0)) {
     return (
-      <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
         {totalCount !== undefined ? `${totalCount} uses` : '—'}
       </span>
     );
@@ -49,7 +49,7 @@ export function FilterUsageSparkline({
         <polyline
           points={pts}
           fill="none"
-          stroke={`var(--ds-chart-blue-bold, #1868DB)`}
+          stroke={`var(--ds-chart-blue-bold)`}
           strokeWidth={1.5}
           strokeLinejoin="round"
           strokeLinecap="round"
@@ -58,11 +58,11 @@ export function FilterUsageSparkline({
         {data.length > 0 && (() => {
           const last = pts.split(' ').pop()!;
           const [lx, ly] = last.split(',').map(Number);
-          return <circle cx={lx} cy={ly} r={2} fill={`var(--ds-chart-blue-bold, #1868DB)`} />;
+          return <circle cx={lx} cy={ly} r={2} fill={`var(--ds-chart-blue-bold)`} />;
         })()}
       </svg>
       {totalCount !== undefined && (
-        <span style={{ fontSize: 12, color: token('color.text.subtle') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle') }}>
           {totalCount}
         </span>
       )}

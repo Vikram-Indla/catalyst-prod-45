@@ -10,7 +10,7 @@ import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
 import { TimelineContextMenu } from './TimelineContextMenu';
 // Type concept removed — Business Request uses single brand color.
-const getTypeColor = () => ({ hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))', border: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-brand, #3B82F6))' });
+const getTypeColor = () => ({ hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-link-pressed, var(--ds-link-pressed))', border: 'var(--ds-background-brand-bold-hovered)', gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-text-brand))' });
 
 interface TimelineBarProps {
   request: TimelineRequest;
@@ -36,7 +36,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
   // Use type color for bar, override with red for overdue
   const bgGradient = overdue ? 'linear-gradient(90deg, var(--ds-background-danger, rgba(239,68,68,0.15)), var(--ds-background-danger, rgba(239,68,68,0.08)))' : typeColor.gradient;
   const fillColor = overdue ? 'var(--ds-background-danger, rgba(239,68,68,0.25))' : `${typeColor.hex}33`;
-  const borderColor = overdue ? 'var(--ds-text-danger, #EF4444)' : typeColor.border;
+  const borderColor = overdue ? 'var(--ds-text-danger)' : typeColor.border;
 
   const handleMouseEnter = useCallback((e: React.MouseEvent) => {
     setIsHovered(true);
@@ -120,9 +120,9 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
           <span
             style={{
               zIndex: 1,
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
-              color: 'var(--ds-surface, #fff)',
+              color: 'var(--ds-surface)',
               paddingLeft: '8px',
               paddingRight: '8px',
               whiteSpace: 'nowrap',

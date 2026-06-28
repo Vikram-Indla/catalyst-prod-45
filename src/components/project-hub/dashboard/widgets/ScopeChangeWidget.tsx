@@ -38,8 +38,8 @@ import WidgetGearButton from '../WidgetGearButton';
 import { LABEL, SMALL, SMALL_STRONG, BODY, STRONG, H_NUM } from '../dashboardTypography';
 
 // Atlaskit canonical bolder palette — matches Team Workload + Items by Status.
-const SCOPE_ORIG = 'var(--ds-background-accent-blue-bolder, #0C66E4)';
-const SCOPE_ADDED = 'var(--ds-background-accent-red-bolder, #C9372C)';
+const SCOPE_ORIG = 'var(--ds-background-accent-blue-bolder)';
+const SCOPE_ADDED = 'var(--ds-background-accent-red-bolder)';
 
 /** YYYY-MM-DD → "DD Mon YY" without timezone surprises. */
 function formatEndDate(iso: string | null): string {
@@ -135,7 +135,7 @@ export default function ScopeChangeWidget({
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -191,9 +191,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         overflow: 'hidden',
       }}
     >
@@ -201,13 +201,13 @@ function KpiHeadline({
       <KpiCell
         label={`Added >${thresholdHigh}%`}
         value={highCreep}
-        accent={highCreep > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined}
+        accent={highCreep > 0 ? 'var(--ds-text-accent-red-bolder)' : undefined}
       />
       <KpiCell
         label="Planned correctly"
         value={plannedCorrectly}
         accent={
-          plannedCorrectly > 0 ? 'var(--ds-text-accent-green-bolder, #216E4E)' : undefined
+          plannedCorrectly > 0 ? 'var(--ds-text-accent-green-bolder)' : undefined
         }
         last
       />
@@ -234,7 +234,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
       <span
@@ -306,7 +306,7 @@ function ReleaseRow({
       onMouseEnter={(e) => {
         e.currentTarget.style.background = token(
           'color.background.neutral.subtle.hovered',
-          'var(--ds-background-neutral, #F1F2F4)',
+          'var(--ds-background-neutral)',
         );
       }}
       onMouseLeave={(e) => {
@@ -346,7 +346,7 @@ function ReleaseRow({
           }}
         >
           {s.releaseName}{' '}
-          <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), fontWeight: 500 }}>
+          <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtlest)'), fontWeight: 500 }}>
             · {formatEndDate(s.endDate)}
           </span>
         </span>
@@ -361,7 +361,7 @@ function ReleaseRow({
           <span
             style={{
               ...SMALL,
-              color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle)'),
               fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap',
             }}
@@ -386,7 +386,7 @@ function ReleaseRow({
             flex: 1,
             height: 14,
             borderRadius: 7,
-            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             overflow: 'hidden',
             display: 'flex',
           }}
@@ -419,10 +419,10 @@ function ReleaseRow({
             textAlign: 'right',
             color:
               s.deltaPercent > thresholdHigh
-                ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
+                ? 'var(--ds-text-accent-red-bolder)'
                 : s.deltaPercent > 0
-                  ? token('color.text.subtle', 'var(--ds-text-subtle, #44546F)')
-                  : 'var(--ds-text-accent-green-bolder, #216E4E)',
+                  ? token('color.text.subtle', 'var(--ds-text-subtle)')
+                  : 'var(--ds-text-accent-green-bolder)',
             fontVariantNumeric: 'tabular-nums',
           }}
         >

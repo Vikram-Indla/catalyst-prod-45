@@ -174,7 +174,7 @@ export default function AllProjectsPage() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
         fontFamily: 'var(--cp-font-body)',
       }}
     >
@@ -194,14 +194,14 @@ export default function AllProjectsPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
-                  backgroundColor: token('color.background.brand.bold', 'var(--ds-link, #0052CC)'),
+                  color: token('color.text.inverse', 'var(--ds-text-inverse)'),
+                  backgroundColor: token('color.background.brand.bold', 'var(--ds-link)'),
                   border: 'none',
                   cursor: 'pointer',
                   outline: 'none',
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', 'var(--ds-link, #0065FF)')}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', 'var(--ds-link, #0052CC)')}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', 'var(--ds-link)')}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', 'var(--ds-link)')}
               >
                 <Plus size={18} strokeWidth={2.5} />
               </button>
@@ -212,19 +212,19 @@ export default function AllProjectsPage() {
                   height: 40,
                   paddingInline: token('space.250', '20px'),
                   borderRadius: 6,
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
                   gap: token('space.100', '8px'),
-                  color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
-                  backgroundColor: token('color.background.brand.bold', 'var(--ds-link, #0052CC)'),
+                  color: token('color.text.inverse', 'var(--ds-text-inverse)'),
+                  backgroundColor: token('color.background.brand.bold', 'var(--ds-link)'),
                   border: 'none',
                   cursor: 'pointer',
                   outline: 'none',
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', 'var(--ds-link, #0065FF)')}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', 'var(--ds-link, #0052CC)')}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', 'var(--ds-link)')}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', 'var(--ds-link)')}
               >
                 <Plus size={16} strokeWidth={2.5} /> Create project
               </button>
@@ -239,8 +239,8 @@ export default function AllProjectsPage() {
           overflow: 'auto',
           paddingInline: token('space.300', '24px'),
           paddingBlock: token('space.150', '12px'),
-          backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
+          color: token('color.text', 'var(--ds-text)'),
         }}
       >
         {/* Toolbar */}
@@ -257,9 +257,9 @@ export default function AllProjectsPage() {
           <div
             style={{
               borderRadius: 8,
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               padding: token('space.500', '40px'),
-              backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+              backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150', '12px') }}>
@@ -270,7 +270,7 @@ export default function AllProjectsPage() {
                       height: 28,
                       width: 28,
                       borderRadius: '50%',
-                      backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                      backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
                     }}
                   />
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
@@ -279,7 +279,7 @@ export default function AllProjectsPage() {
                         height: 12,
                         width: '30%',
                         borderRadius: 4,
-                        backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                        backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
                       }}
                     />
                     <div
@@ -287,7 +287,7 @@ export default function AllProjectsPage() {
                         height: 10,
                         width: '20%',
                         borderRadius: 4,
-                        backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                        backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
                       }}
                     />
                   </div>
@@ -303,17 +303,17 @@ export default function AllProjectsPage() {
                 width: 64,
                 height: 64,
                 borderRadius: '50%',
-                backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBlockEnd: token('space.200', '16px'),
               }}
             >
-              <FolderOpen size={32} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)') }} />
+              <FolderOpen size={32} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest)') }} />
             </div>
-            <h3 style={{ fontSize: 16, fontWeight: '600', fontFamily: 'var(--cp-font-heading)', color: token('color.text', 'var(--ds-text, #172B4D)'), marginBlockEnd: token('space.050', '4px') }}>No projects yet</h3>
-            <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), marginBlockEnd: token('space.300', '24px'), maxWidth: 448 }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: '600', fontFamily: 'var(--cp-font-heading)', color: token('color.text', 'var(--ds-text)'), marginBlockEnd: token('space.050', '4px') }}>No projects yet</h3>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'), marginBlockEnd: token('space.300', '24px'), maxWidth: 448 }}>
               Projects appear here after the Jira sync has run, or create one manually to get started.
             </p>
             <button
@@ -321,10 +321,10 @@ export default function AllProjectsPage() {
               style={{
                 height: 36,
                 paddingInline: token('space.200', '16px'),
-                backgroundColor: token('color.background.brand.bold', 'var(--ds-link, #0052CC)'),
-                color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+                backgroundColor: token('color.background.brand.bold', 'var(--ds-link)'),
+                color: token('color.text.inverse', 'var(--ds-text-inverse)'),
                 borderRadius: 4,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
@@ -333,24 +333,24 @@ export default function AllProjectsPage() {
                 cursor: 'pointer',
                 outline: 'none',
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', 'var(--ds-link, #0065FF)')}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', 'var(--ds-link, #0052CC)')}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold.hovered', 'var(--ds-link)')}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = token('color.background.brand.bold', 'var(--ds-link)')}
             >
               <Plus size={16} /> Create project
             </button>
           </div>
         ) : isMyProjectsNoAuth ? (
           /* QA1: My Projects — not logged in */
-          <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), paddingBlock: token('space.600', '48px'), textAlign: 'center' }}>Sign in to see your assigned projects.</p>
+          <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'), paddingBlock: token('space.600', '48px'), textAlign: 'center' }}>Sign in to see your assigned projects.</p>
         ) : isStarredEmpty ? (
           /* QA1: Starred tab — 0 starred */
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBlock: token('space.600', '48px'), gap: token('space.150', '12px') }}>
-            <Star size={32} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)') }} />
-            <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>Star projects to find them quickly here</p>
+            <Star size={32} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest)') }} />
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtlest)') }}>Star projects to find them quickly here</p>
           </div>
         ) : isSearchNoResults ? (
           /* QA1: Search — no results */
-          <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), paddingBlock: token('space.600', '48px'), textAlign: 'center' }}>No projects match &ldquo;{filters.search}&rdquo;</p>
+          <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'), paddingBlock: token('space.600', '48px'), textAlign: 'center' }}>No projects match &ldquo;{filters.search}&rdquo;</p>
         ) : filtered.length === 0 ? (
           <div
             style={{
@@ -360,26 +360,26 @@ export default function AllProjectsPage() {
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 8,
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               paddingInline: token('space.500', '40px'),
               paddingBlock: token('space.600', '80px'),
               textAlign: 'center',
-              backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+              backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
             }}
           >
-            <FolderKanban size={48} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)') }} strokeWidth={1.25} />
+            <FolderKanban size={48} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest)') }} strokeWidth={1.25} />
             <h3
               style={{
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: '600',
                 fontFamily: 'var(--cp-font-heading)',
-                color: token('color.text', 'var(--ds-text, #172B4D)'),
+                color: token('color.text', 'var(--ds-text)'),
                 marginBlockStart: token('space.200', '16px'),
               }}
             >
               No projects match your filters
             </h3>
-            <p style={{ marginBlockStart: token('space.050', '4px'), maxWidth: 360, fontSize: 13, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>
+            <p style={{ marginBlockStart: token('space.050', '4px'), maxWidth: 360, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-text-subtlest)') }}>
               Try adjusting your search or filter criteria.
             </p>
           </div>
@@ -393,8 +393,8 @@ export default function AllProjectsPage() {
               flexDirection: 'column',
               overflow: 'hidden',
               borderRadius: 8,
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-              backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+              backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
             }}
           >
             <div className="flex-1 min-h-0 overflow-auto">
@@ -426,12 +426,12 @@ export default function AllProjectsPage() {
                   justifyContent: 'space-between',
                   paddingInline: token('space.200', '16px'),
                   paddingBlock: token('space.100', '8px'),
-                  borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                  backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                  fontSize: 13,
+                  borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                  backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
+                  fontSize: 'var(--ds-font-size-300)',
                 }}
               >
-                <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>
+                <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtlest)') }}>
                   Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
@@ -443,17 +443,17 @@ export default function AllProjectsPage() {
                         width: 32,
                         height: 32,
                         borderRadius: 4,
-                        fontSize: 14,
-                        border: page === n ? `1px solid ${token('color.background.brand.bold', 'var(--ds-link, #0052CC)')}` : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                        fontSize: 'var(--ds-font-size-400)',
+                        border: page === n ? `1px solid ${token('color.background.brand.bold', 'var(--ds-link)')}` : `1px solid ${token('color.border', 'var(--ds-border)')}`,
                         outline: 'none',
                         cursor: 'pointer',
                         fontWeight: page === n ? 600 : 400,
-                        backgroundColor: page === n ? token('color.background.brand.bold', 'var(--ds-link, #0052CC)') : 'transparent',
-                        color: page === n ? token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)') : token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+                        backgroundColor: page === n ? token('color.background.brand.bold', 'var(--ds-link)') : 'transparent',
+                        color: page === n ? token('color.text.inverse', 'var(--ds-text-inverse)') : token('color.text.subtle', 'var(--ds-text-subtlest)'),
                       }}
                       onMouseEnter={e => {
                         if (page !== n) {
-                          e.currentTarget.style.backgroundColor = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                          e.currentTarget.style.backgroundColor = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle)');
                         }
                       }}
                       onMouseLeave={e => {
@@ -470,10 +470,10 @@ export default function AllProjectsPage() {
                       style={{
                         height: 32,
                         width: 72,
-                        fontSize: 12,
-                        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
-                        backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                        fontSize: 'var(--ds-font-size-200)',
+                        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                        color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
+                        backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
                       }}
                     >
                       <SelectValue />

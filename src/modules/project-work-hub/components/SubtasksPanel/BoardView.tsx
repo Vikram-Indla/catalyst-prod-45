@@ -65,7 +65,7 @@ export function BoardView({ subtasks, avatarMap, onCardClick }: BoardViewProps) 
                         style={{
                           width: 20,
                           height: 20,
-                          fontSize: 9,
+                          fontSize: 'var(--ds-font-size-100)',
                           background: getAvatarColor(s.assignee_display_name),
                           marginLeft: 'auto',
                         }}

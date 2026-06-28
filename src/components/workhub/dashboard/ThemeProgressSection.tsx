@@ -21,7 +21,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 600,
           color: 'var(--fg-1)',
           margin: 0,
@@ -32,7 +32,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
           onClick={() => navigate('/projecthub/themes')}
           style={{
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
@@ -50,7 +50,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
       {active.length === 0 ? (
         <p style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--fg-4)',
         }}>
           No active themes
@@ -91,7 +91,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 600,
                   color: 'var(--fg-1)',
                   whiteSpace: 'nowrap',
@@ -101,21 +101,21 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
                   {theme.name}
                 </div>
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-3)',
                   marginTop: 2,
                 }}>
                   {theme.status}
                 </div>
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)',
                   marginTop: 2,
                 }}>
                   E {theme.epic_count} · S {theme.story_count} · ST {theme.subtask_count}
                 </div>
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)',
                   marginTop: 2,
                 }}>

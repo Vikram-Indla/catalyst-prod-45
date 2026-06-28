@@ -22,9 +22,17 @@
 import { useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { DOMAIN_ADAPTER_CONFIGS } from '@/lib/workflow/canonical/adapters';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
+
+// Map a canonical status category → ADS Lozenge appearance (component owns color).
+const CATEGORY_APPEARANCE: Record<string, LozengeAppearance> = {
+  todo: 'default', in_progress: 'inprogress', done: 'success',
+};
 
 /* The 9-stage release lifecycle — mirrors RELEASE_BOARD_COLUMNS in the
    canonical kanban (useKanbanData) so the table and board agree on which
@@ -44,13 +52,14 @@ const RELEASE_STATUSES: Array<{ value: string; label: string; appearance: Lozeng
 const STATUS_BY_VALUE = new Map(RELEASE_STATUSES.map((s) => [s.value, s]));
 
 const RELEASE_SELECT =
-  'id, name, version, status, health, release_type, target_env, target_date, planned_start_date, planned_release_date, readiness_pct, description, source, jira_key, updated_at, created_at, product_id, release_manager_id';
+  'id, name, version, status, workflow_status_key, health, release_type, target_env, target_date, planned_start_date, planned_release_date, readiness_pct, description, source, jira_key, updated_at, created_at, product_id, release_manager_id';
 
 interface ReleaseRow {
   id: string;
   name: string | null;
   version: string | null;
   status: string;
+  workflow_status_key: string | null;
   health: string | null;
   release_type: string | null;
   target_env: string | null;
@@ -77,7 +86,8 @@ function releaseToBacklogStory(r: ReleaseRow): BacklogStory {
     /* Phase 1B: carry the real release fields so the Release Hub's opt-in
        Description / Start date / Progress columns can render them. */
     description: r.description ?? null,
-    status: r.status ?? null,
+    // Canonical status: workflow_status_key is source of truth; free-text fallback.
+    status: r.workflow_status_key ?? r.status ?? null,
     feature_id: null,
     assignee_id: r.release_manager_id ?? null,
     assignee_name: r.manager_name ?? null,
@@ -194,33 +204,49 @@ export function useReleasesSource(): BacklogDataSource | null {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['releases-backlog'] }),
   });
 
+  // Canonical Release workflow (bridged): drives the canonical status dropdown.
+  const canonical = useCanonicalIssueWorkflow('Release');
+  const canonicalReady = canonical.isCanonical && (canonical.statusGroups?.length ?? 0) > 0;
+
   const extraStories = useMemo(() => rows.map(releaseToBacklogStory), [rows]);
 
-  const statusOptions = useMemo<StatusOption[]>(
-    () => RELEASE_STATUSES.map((s) => ({
-      value: s.value,
-      label: s.label,
-      appearance: s.appearance,
-      group: 'Status',
-    })),
-    [],
-  );
-  const allStatuses = useMemo(() => RELEASE_STATUSES.map((s) => s.value), []);
+  const appearanceByLabel = useMemo(() => {
+    const m = new Map<string, LozengeAppearance>();
+    for (const g of canonical.statusGroups ?? []) {
+      for (const label of g.statuses) m.set(label, CATEGORY_APPEARANCE[g.category] ?? 'default');
+    }
+    return m;
+  }, [canonical.statusGroups]);
+
+  const statusOptions = useMemo<StatusOption[]>(() => {
+    if (canonicalReady) {
+      return (canonical.statusGroups ?? []).flatMap((g) =>
+        g.statuses.map((label) => ({
+          value: label, label, appearance: CATEGORY_APPEARANCE[g.category] ?? 'default', group: g.groupLabel,
+        })),
+      );
+    }
+    return RELEASE_STATUSES.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance, group: 'Status' }));
+  }, [canonicalReady, canonical.statusGroups]);
+
+  const allStatuses = useMemo(() => statusOptions.map((s) => s.value), [statusOptions]);
 
   const resolvedStatusAppearance = useCallback(
     (status: string | null | undefined): LozengeAppearance => {
       if (!status) return 'default';
+      if (canonicalReady) return appearanceByLabel.get(canonical.labelForStatus(status)) ?? 'default';
       return STATUS_BY_VALUE.get(status)?.appearance ?? 'default';
     },
-    [],
+    [canonicalReady, appearanceByLabel, canonical],
   );
 
   const resolvedStatusLabel = useCallback(
     (status: string | null | undefined): string => {
       if (!status) return '—';
+      if (canonicalReady) return canonical.labelForStatus(status) || status.replace(/_/g, ' ');
       return STATUS_BY_VALUE.get(status)?.label ?? status.replace(/_/g, ' ');
     },
-    [],
+    [canonicalReady, canonical],
   );
 
   return useMemo((): BacklogDataSource | null => ({
@@ -244,13 +270,35 @@ export function useReleasesSource(): BacklogDataSource | null {
 
     onUpdate: async (id, patch) => {
       const mapped: Record<string, any> = {};
+      let canonicalKey: string | null = null;
+      let prevStatus: string | null = null;
       for (const [k, v] of Object.entries(patch)) {
         if (k === 'updated_at' || k === 'jira_updated_at') continue;
+        if (k === 'status' && canonicalReady) {
+          // Picked value is a canonical label → resolve to its status_key and write
+          // via the bridged workflow_status_key path (free-text status mirrors it).
+          canonicalKey = canonical.resolveStatusKey(v as string);
+          continue;
+        }
         const target = RELEASE_PATCH_MAP[k];
         if (target) mapped[target] = v;
       }
+      if (canonicalKey) {
+        const { data: cur } = await supabase.from('rh_releases').select('status, workflow_status_key').eq('id', id).maybeSingle();
+        prevStatus = (cur as any)?.workflow_status_key ?? (cur as any)?.status ?? null;
+        mapped.workflow_status_key = canonicalKey;
+        // rh_releases.status is FREE TEXT → safe to mirror the canonical key (compat).
+        const compat = (DOMAIN_ADAPTER_CONFIGS.release.enumCompatMap ?? {})[canonicalKey];
+        if (compat) mapped.status = compat;
+      }
       if (Object.keys(mapped).length > 0) {
         await updateMutation.mutateAsync({ id, patch: mapped });
+      }
+      if (canonicalKey && prevStatus !== canonicalKey) {
+        await recordAdvisoryStatusChange({
+          entityKey: 'release', entityId: id, projectKey: null,
+          fromStatusRaw: prevStatus, toStatusRaw: canonicalKey, sourceSurface: 'release_list',
+        });
       }
     },
 
@@ -284,5 +332,6 @@ export function useReleasesSource(): BacklogDataSource | null {
     extraStories, isLoading,
     statusOptions, allStatuses, resolvedStatusAppearance, resolvedStatusLabel,
     updateMutation, deleteMutation, createMutation,
+    canonicalReady, canonical,
   ]);
 }

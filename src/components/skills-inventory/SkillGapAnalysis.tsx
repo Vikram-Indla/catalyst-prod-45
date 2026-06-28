@@ -96,7 +96,7 @@ export const SkillGapAnalysis: React.FC = () => {
       {/* Top Row: 2 Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Section 1: Current vs Required Skills */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-brand-dark">
               Current vs Required Skills
@@ -134,7 +134,7 @@ export const SkillGapAnalysis: React.FC = () => {
         </div>
 
         {/* Section 2: Team Skill Coverage */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-brand-dark">
               Team Skill Coverage
@@ -172,7 +172,7 @@ export const SkillGapAnalysis: React.FC = () => {
       </div>
 
       {/* Section 3: Critical Skills Table */}
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
           <AlertTriangle className="w-5 h-5 text-destructive" />
           <h3 className="text-lg font-semibold text-brand-primary">
@@ -182,21 +182,21 @@ export const SkillGapAnalysis: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full border-separate border-spacing-0">
-            <thead style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
-              <tr style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+            <thead style={{ background: 'var(--ds-surface-sunken)' }}>
+              <tr style={{ background: 'var(--ds-surface-sunken)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken)' }}>
                   Skill
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken)' }}>
                   Gap Severity
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken)' }}>
                   Required For
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken)' }}>
                   Current Coverage
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken)' }}>
                   Recommendation
                 </th>
               </tr>

@@ -21,14 +21,14 @@ import { STATUS_CATEGORY_COLORS, STATUS_CATEGORY_LABELS, type StatusCategory } f
 
 // ── CatalystStatusPill color density (matches CatalystStatusPill.tsx exactly) ─
 const STATUS_BG: Record<string, string> = {
-  success:    'var(--ds-background-success-bold, #6A9A23)',
-  inprogress: 'var(--ds-background-information, #E9F2FF)',
+  success:    'var(--ds-background-success-bold)',
+  inprogress: 'var(--ds-background-information)',
   moved:      '#F3D664', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   new:        '#B8ACF6', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   removed:    '#FD9891', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  default:    'var(--ds-border, #DFE1E6)',
+  default:    'var(--ds-border)',
 };
-const STATUS_TEXT = 'var(--ds-text, #172B4D)';
+const STATUS_TEXT = 'var(--ds-text)';
 const CAT_TO_APPEARANCE: Record<string, string> = {
   todo: 'default', in_progress: 'inprogress', done: 'success', terminal: 'removed',
 };
@@ -128,9 +128,9 @@ function StatusChip({
         alignItems: 'center',
         gap: 6,
         height: 28,
-        padding: '0 10px',
+        padding: '0 8px',
         borderRadius: 3,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         background: bg,
         color: STATUS_TEXT,
@@ -146,12 +146,12 @@ function StatusChip({
             <span
               {...tp}
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
-                color: 'var(--ds-text-brand, #0C66E4)',
-                background: 'var(--ds-background-selected, #E9F2FF)',
+                color: 'var(--ds-text-brand)',
+                background: 'var(--ds-background-selected)',
                 borderRadius: 3,
-                padding: '1px 4px',
+                padding: '0px 4px',
               }}
             >
               Initial
@@ -175,11 +175,11 @@ function StatusChip({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--ds-text-brand, #0C66E4)',
-                fontSize: 10,
+                color: 'var(--ds-text-brand)',
+                fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 700,
                 padding: 0,
-                marginRight: -2,
+                marginRight: 0,
               }}
               title="Set as initial"
             >
@@ -204,17 +204,17 @@ function StatusChip({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
                 marginRight: -4,
                 padding: 0,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-subtle, var(--ds-background-danger, #FFECEB))';
-                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-danger, #AE2E24)';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-subtle, var(--ds-background-danger))';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-danger)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = 'none';
-                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtle, #505258)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtle)';
               }}
             >
               <XIcon />
@@ -252,9 +252,9 @@ function TransitionPill({
         alignItems: 'center',
         gap: 6,
         height: 28,
-        padding: '0 10px',
+        padding: '0 8px',
         borderRadius: 3,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         background: bg,
         color: STATUS_TEXT,
@@ -286,17 +286,17 @@ function TransitionPill({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
                 marginRight: -4,
                 padding: 0,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-subtle, var(--ds-background-danger, #FFECEB))';
-                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-danger, #AE2E24)';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-subtle, var(--ds-background-danger))';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-danger)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = 'none';
-                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtle, #505258)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtle)';
               }}
             >
               <XIcon />
@@ -321,14 +321,14 @@ function AddPill({ label, onClick }: { label: string; onClick: () => void }) {
         alignItems: 'center',
         gap: 5,
         height: 32,
-        padding: '0 10px',
-        border: '1px dashed var(--ds-border, #DFE1E6)',
+        padding: '0 8px',
+        border: '1px dashed var(--ds-border)',
         borderRadius: 3,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
-        color: 'var(--ds-text-brand, #0C66E4)',
-        background: hovered ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-        borderColor: hovered ? 'var(--ds-text-brand, #0C66E4)' : 'var(--ds-border, #DFE1E6)',
+        color: 'var(--ds-text-brand)',
+        background: hovered ? 'var(--ds-background-selected)' : 'transparent',
+        borderColor: hovered ? 'var(--ds-text-brand)' : 'var(--ds-border)',
         cursor: 'pointer',
         transition: 'background 120ms ease, border-color 120ms ease',
       }}
@@ -352,14 +352,14 @@ function AddStatusChip({ onClick }: { onClick: () => void }) {
         alignItems: 'center',
         gap: 5,
         height: 32,
-        padding: '0 10px',
-        border: '1px dashed var(--ds-border, #DFE1E6)',
+        padding: '0 8px',
+        border: '1px dashed var(--ds-border)',
         borderRadius: 3,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
-        color: 'var(--ds-text-brand, #0C66E4)',
-        background: hovered ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
-        borderColor: hovered ? 'var(--ds-text-brand, #0C66E4)' : 'var(--ds-border, #DFE1E6)',
+        color: 'var(--ds-text-brand)',
+        background: hovered ? 'var(--ds-background-selected)' : 'transparent',
+        borderColor: hovered ? 'var(--ds-text-brand)' : 'var(--ds-border)',
         cursor: 'pointer',
         transition: 'background 120ms ease, border-color 120ms ease',
       }}
@@ -398,10 +398,10 @@ function TransitionGroupRow({
   return (
     <div
       style={{
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         marginBottom: 8,
-        background: isGlobal ? 'var(--ds-surface-sunken, #F7F8F9)' : 'var(--ds-surface, #FFFFFF)',
+        background: isGlobal ? 'var(--ds-surface-sunken)' : 'var(--ds-surface)',
       }}
     >
       {/* header */}
@@ -414,21 +414,21 @@ function TransitionGroupRow({
           gap: 8,
           padding: '8px 16px',
           textAlign: 'left',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           transition: 'background 120ms ease',
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))')}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'none')}
         aria-expanded={open}
       >
         <ChevronRight
           style={{
-            color: 'var(--ds-text-brand, #0C66E4)',
+            color: 'var(--ds-text-brand)',
             transition: 'transform 180ms ease',
             transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
             flexShrink: 0,
@@ -436,27 +436,27 @@ function TransitionGroupRow({
         />
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 500,
-            color: 'var(--ds-text-subtlest, #6B6E76)',
+            color: 'var(--ds-text-subtlest)',
           }}
         >
           From
         </span>
         {isGlobal ? (
           <>
-            <PillDot color="var(--ds-border-bold, #8C8F97)" />
-            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
+            <PillDot color="var(--ds-border-bold)" />
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>
               Any status
             </span>
             <span
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
-                color: 'var(--ds-text-subtle, #505258)',
-                background: 'var(--ds-background-neutral, #F1F2F4)',
+                color: 'var(--ds-text-subtle)',
+                background: 'var(--ds-background-neutral)',
                 borderRadius: 3,
-                padding: '2px 5px',
+                padding: '4px 4px',
               }}
             >
               Global · all types
@@ -466,9 +466,9 @@ function TransitionGroupRow({
           <span
             style={{
               display: 'inline-block',
-              padding: '2px 7px',
+              padding: '4px 8px',
               borderRadius: 3,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               background: catToBg(fromStatus.category),
               color: STATUS_TEXT,
@@ -477,16 +477,16 @@ function TransitionGroupRow({
             {fromStatus.name}
           </span>
         ) : (
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>
             Any status
           </span>
         )}
         <span
           style={{
             marginLeft: 'auto',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
-            color: 'var(--ds-text-subtlest, #6B6E76)',
+            color: 'var(--ds-text-subtlest)',
           }}
         >
           {transitions.length} destination{transitions.length !== 1 ? 's' : ''}
@@ -507,8 +507,8 @@ function TransitionGroupRow({
           {transitions.length === 0 && !showPicker ? (
             <span
               style={{
-                fontSize: 13,
-                color: 'var(--ds-text-subtlest, #6B6E76)',
+                fontSize: 'var(--ds-font-size-300)',
+                color: 'var(--ds-text-subtlest)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 10,
@@ -524,7 +524,7 @@ function TransitionGroupRow({
                 <TransitionPill
                   key={t.id}
                   name={toStatus?.name ?? t.to_status_id}
-                  color={toStatus?.color ?? 'var(--ds-text-subtlest, #626F86)'}
+                  color={toStatus?.color ?? 'var(--ds-text-subtlest)'}
                   category={toStatus?.category ?? 'todo'}
                   isGlobal={isGlobalTrans}
                   onRemove={() => {
@@ -541,7 +541,7 @@ function TransitionGroupRow({
           {showPicker ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
               {available.length === 0 ? (
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
                   All available statuses already have transitions.
                 </span>
               ) : (
@@ -556,10 +556,10 @@ function TransitionGroupRow({
                       display: 'inline-flex',
                       alignItems: 'center',
                       height: 28,
-                      padding: '0 10px',
+                      padding: '0 8px',
                       border: 'none',
                       borderRadius: 3,
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       background: catToBg(s.category),
                       color: STATUS_TEXT,
@@ -580,8 +580,8 @@ function TransitionGroupRow({
               <button
                 onClick={() => setShowPicker(false)}
                 style={{
-                  fontSize: 13,
-                  color: 'var(--ds-text-subtle, #505258)',
+                  fontSize: 'var(--ds-font-size-300)',
+                  color: 'var(--ds-text-subtle)',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
@@ -614,7 +614,7 @@ function ModeToggle({
       aria-label="Workflow view mode"
       style={{
         display: 'inline-flex',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 3,
         overflow: 'hidden',
       }}
@@ -627,18 +627,18 @@ function ModeToggle({
           style={{
             height: 32,
             padding: '0 12px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
             color:
               mode === m
-                ? 'var(--ds-text-brand, #0C66E4)'
-                : 'var(--ds-text-subtle, #505258)',
+                ? 'var(--ds-text-brand)'
+                : 'var(--ds-text-subtle)',
             background:
               mode === m
-                ? 'var(--ds-background-selected, #E9F2FF)'
+                ? 'var(--ds-background-selected)'
                 : 'transparent',
             border: 'none',
             cursor: 'pointer',
@@ -647,7 +647,7 @@ function ModeToggle({
           onMouseEnter={(e) => {
             if (mode !== m)
               (e.currentTarget as HTMLButtonElement).style.background =
-                'var(--ds-background-neutral, #F1F2F4)';
+                'var(--ds-background-neutral)';
           }}
           onMouseLeave={(e) => {
             if (mode !== m)
@@ -684,8 +684,8 @@ function AddStatusPicker({
         zIndex: 50,
         top: 'calc(100% + 6px)',
         left: 0,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
         padding: 8,
@@ -703,20 +703,20 @@ function AddStatusPicker({
           width: '100%',
           height: 32,
           padding: '0 8px',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 3,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           marginBottom: 6,
-          background: 'var(--ds-surface, #FFFFFF)',
-          color: 'var(--ds-text, #292A2E)',
+          background: 'var(--ds-surface)',
+          color: 'var(--ds-text)',
         }}
       />
       {filtered.length === 0 ? (
         <div
           style={{
             padding: '8px 4px',
-            fontSize: 12,
-            color: 'var(--ds-text-subtlest, #6B6E76)',
+            fontSize: 'var(--ds-font-size-200)',
+            color: 'var(--ds-text-subtlest)',
           }}
         >
           No more statuses available.
@@ -732,17 +732,17 @@ function AddStatusPicker({
               gap: 8,
               width: '100%',
               padding: '5px 8px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               borderRadius: 3,
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
               textAlign: 'left',
             }}
             onMouseEnter={(e) =>
               ((e.currentTarget as HTMLButtonElement).style.background =
-                'var(--ds-surface-sunken, #F7F8F9)')
+                'var(--ds-surface-sunken)')
             }
             onMouseLeave={(e) =>
               ((e.currentTarget as HTMLButtonElement).style.background = 'none')
@@ -751,9 +751,9 @@ function AddStatusPicker({
             <span
               style={{
                 display: 'inline-block',
-                padding: '2px 7px',
+                padding: '4px 8px',
                 borderRadius: 3,
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 background: catToBg(s.category),
                 color: STATUS_TEXT,
@@ -772,8 +772,8 @@ function AddStatusPicker({
           width: '100%',
           marginTop: 4,
           padding: '6px 8px',
-          fontSize: 12,
-          color: 'var(--ds-text-subtle, #505258)',
+          fontSize: 'var(--ds-font-size-200)',
+          color: 'var(--ds-text-subtle)',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -839,8 +839,8 @@ function CopyWorkflowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         right: window.innerWidth - rect.right,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
@@ -851,10 +851,11 @@ function CopyWorkflowMenu({
       <div
         style={{
           padding: '6px 12px 4px',
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
-          color: 'var(--ds-text-subtlest, #6B6E76)',
+          color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.04em',
+          // ads-scanner:ignore-next-line — ADS Lozenge-parity uppercase section label
           textTransform: 'uppercase',
         }}
       >
@@ -874,8 +875,8 @@ function CopyWorkflowMenu({
             gap: 8,
             width: '100%',
             padding: '7px 12px',
-            fontSize: 14,
-            color: 'var(--ds-text, #292A2E)',
+            fontSize: 'var(--ds-font-size-400)',
+            color: 'var(--ds-text)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -883,7 +884,7 @@ function CopyWorkflowMenu({
           }}
           onMouseEnter={(e) =>
             ((e.currentTarget as HTMLButtonElement).style.background =
-              'var(--ds-surface-sunken, #F7F8F9)')
+              'var(--ds-surface-sunken)')
           }
           onMouseLeave={(e) =>
             ((e.currentTarget as HTMLButtonElement).style.background = 'none')
@@ -934,8 +935,8 @@ export function WorkflowTypePanel({
           alignItems: 'center',
           justifyContent: 'center',
           gap: 12,
-          color: 'var(--ds-text-subtlest, #6B6E76)',
-          fontSize: 14,
+          color: 'var(--ds-text-subtlest)',
+          fontSize: 'var(--ds-font-size-400)',
         }}
       >
         <Spinner size="small" />
@@ -949,8 +950,8 @@ export function WorkflowTypePanel({
       <div
         style={{
           padding: 24,
-          color: 'var(--ds-text-danger, #AE2E24)',
-          fontSize: 14,
+          color: 'var(--ds-text-danger)',
+          fontSize: 'var(--ds-font-size-400)',
         }}
       >
         Failed to load workflow.
@@ -1029,50 +1030,50 @@ export function WorkflowTypePanel({
           flexWrap: 'wrap',
           marginBottom: 16,
           padding: '12px 16px',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 4,
-          background: 'var(--ds-surface-sunken, #F7F8F9)',
+          background: 'var(--ds-surface-sunken)',
         }}
       >
         <span
           style={{
-            fontSize: 13,
-            color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text-subtle)',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
           }}
         >
-          <strong style={{ color: 'var(--ds-text, #292A2E)', fontWeight: 600 }}>
+          <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>
             {statuses.length}
           </strong>{' '}
           statuses
         </span>
         <span
           style={{
-            fontSize: 13,
-            color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text-subtle)',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
           }}
         >
-          <strong style={{ color: 'var(--ds-text, #292A2E)', fontWeight: 600 }}>
+          <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>
             {totalTransitionRules}
           </strong>{' '}
           transition rules
         </span>
         <span
           style={{
-            fontSize: 13,
-            color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text-subtle)',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
           }}
         >
           Initial status:{' '}
-          <strong style={{ color: 'var(--ds-text, #292A2E)', fontWeight: 600 }}>
+          <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>
             {initialName}
           </strong>
         </span>
@@ -1088,13 +1089,13 @@ export function WorkflowTypePanel({
               alignItems: 'center',
               gap: 6,
               height: 32,
-              padding: '0 10px',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              padding: '0 8px',
+              border: '1px solid var(--ds-border)',
               borderRadius: 3,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               background: 'transparent',
-              color: copyWorkflow.isPending ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #292A2E)',
+              color: copyWorkflow.isPending ? 'var(--ds-text-subtlest)' : 'var(--ds-text)',
               cursor: copyWorkflow.isPending ? 'not-allowed' : 'pointer',
               transition: 'background 120ms ease',
             }}
@@ -1130,13 +1131,13 @@ export function WorkflowTypePanel({
       {wfMode === 'diagram' && (
         <div
           style={{
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             padding: 32,
             textAlign: 'center',
-            color: 'var(--ds-text-subtlest, #6B6E76)',
-            fontSize: 14,
-            background: 'var(--ds-surface-sunken, #F7F8F9)',
+            color: 'var(--ds-text-subtlest)',
+            fontSize: 'var(--ds-font-size-400)',
+            background: 'var(--ds-surface-sunken)',
           }}
         >
           Diagram view — workflow diagram renders here
@@ -1149,18 +1150,18 @@ export function WorkflowTypePanel({
           <div style={{ marginBottom: 16 }}>
             <h3
               style={{
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
                 marginBottom: 2,
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
               }}
             >
               Statuses
             </h3>
             <p
               style={{
-                fontSize: 12,
-                color: 'var(--ds-text-subtlest, #6B6E76)',
+                fontSize: 'var(--ds-font-size-200)',
+                color: 'var(--ds-text-subtlest)',
                 marginBottom: 10,
               }}
             >
@@ -1171,8 +1172,8 @@ export function WorkflowTypePanel({
               <div
                 style={{
                   padding: '12px 0',
-                  fontSize: 13,
-                  color: 'var(--ds-text-subtlest, #6B6E76)',
+                  fontSize: 'var(--ds-font-size-300)',
+                  color: 'var(--ds-text-subtlest)',
                 }}
               >
                 No statuses assigned. Add from the registry below.
@@ -1199,9 +1200,9 @@ export function WorkflowTypePanel({
                   <span
                     style={{
                       display: 'inline-block',
-                      padding: '2px 7px',
+                      padding: '4px 8px',
                       borderRadius: 3,
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       background: catToBg(cat),
                       color: STATUS_TEXT,
@@ -1249,12 +1250,12 @@ export function WorkflowTypePanel({
                     position: 'absolute',
                     top: 'calc(100% + 6px)',
                     left: 0,
-                    background: 'var(--ds-surface-overlay, #FFFFFF)',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    background: 'var(--ds-surface-overlay)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: 4,
                     padding: '10px 12px',
-                    fontSize: 13,
-                    color: 'var(--ds-text-subtlest, #6B6E76)',
+                    fontSize: 'var(--ds-font-size-300)',
+                    color: 'var(--ds-text-subtlest)',
                     zIndex: 50,
                     whiteSpace: 'nowrap',
                   }}
@@ -1269,18 +1270,18 @@ export function WorkflowTypePanel({
           <div>
             <h3
               style={{
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
                 marginBottom: 2,
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
               }}
             >
               Transition rules
             </h3>
             <p
               style={{
-                fontSize: 12,
-                color: 'var(--ds-text-subtlest, #6B6E76)',
+                fontSize: 'var(--ds-font-size-200)',
+                color: 'var(--ds-text-subtlest)',
                 marginBottom: 10,
               }}
             >

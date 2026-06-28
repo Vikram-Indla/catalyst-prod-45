@@ -32,7 +32,7 @@ export function useTaskStatuses() {
         id: s.id,
         slug: s.slug,
         name: s.name,
-        color: s.color || 'var(--ds-text-subtlest, #64748b)',
+        color: s.color || 'var(--ds-text-subtlest)',
         order: s.position || 0,
       }));
     },

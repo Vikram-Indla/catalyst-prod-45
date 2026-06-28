@@ -34,7 +34,7 @@ interface DetailPanelProps {
 /* ── Skeleton ── */
 export function DetailPanelSkeleton() {
   const dk = useIsDark();
-  const shimmerBg = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
+  const shimmerBg = dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))';
   return (
     <div style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, position: 'sticky', top: 24 }}>
       {[1, 2, 3, 4, 5].map((i) => (
@@ -74,11 +74,11 @@ function priorityToLevel(name?: string): number {
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   const dk = useIsDark();
   return (
-    <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
+    <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'}` }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
         {label}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
         {children}
       </div>
     </div>
@@ -102,9 +102,9 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
         }}
       >
         {open ? <ChevronDown size={14} color="var(--fg-3)" /> : <ChevronRight size={14} color="var(--fg-3)" />}
-        <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>{title}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>{title}</span>
         {count !== undefined && (
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', background: dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-3)', background: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
         )}
       </button>
       {open && children}
@@ -151,7 +151,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200,
         background: 'var(--bg-1)', border: '1px dashed var(--divider)', borderRadius: 8,
-        color: 'var(--fg-3)', fontSize: 13, fontFamily: 'var(--cp-font-body)',
+        color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)',
       }}>
         Select a work item to view details
       </div>
@@ -216,15 +216,15 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 {parentItem.issueType && <JiraIssueTypeIcon type={parentItem.issueType} size={14} />}
                 <span
                   onClick={() => onSelectItem?.(parentItem)}
-                  style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)', cursor: 'pointer', flexShrink: 0 }}
                 >
                   {parentItem.key}
                 </span>
-                <span style={{ color: 'var(--fg-4)', fontSize: 12 }}>/</span>
+                <span style={{ color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>/</span>
               </>
             )}
             {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={14} />}
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)' }}>{item.key}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)' }}>{item.key}</span>
           </div>
           {onClose && (
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}>
@@ -247,8 +247,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               onClose={() => setActiveDropdown(null)}
             />
           )}
-          <span style={{ color: dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-disabled, #CBD5E1)' }}>·</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: item.hierarchyColorText }}>{item.hierarchyName}</span>
+          <span style={{ color: dk ? 'var(--ds-text-subtlest)' : 'var(--ds-text-disabled)' }}>·</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: item.hierarchyColorText }}>{item.hierarchyName}</span>
         </div>
 
         {/* C. Title + Description */}
@@ -256,11 +256,11 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           <InlineEditTitle
             value={item.title}
             onSave={handleTitleSave}
-            fontSize={18}
+            fontSize={'var(--ds-font-size-600)'}
             fontWeight={700}
             style={{ display: 'block', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.35' }}
           />
-          <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: '8px 0 0', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)', margin: '8px 0 0', fontStyle: 'italic' }}>
             No description
           </p>
         </div>
@@ -283,8 +283,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 onClick={() => setActiveDropdown(activeDropdown === 'priority' ? null : 'priority')}
               >
                 <PriorityBars level={priorityToLevel(item.priority?.name)} />
-                <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{item.priority?.name || 'None'}</span>
-                <span style={{ fontSize: 8, color: 'var(--fg-4)' }}>▾</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>{item.priority?.name || 'None'}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>▾</span>
               </div>
               {activeDropdown === 'priority' && (
                 <PriorityDropdown
@@ -305,14 +305,14 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 {item.assignee ? (
                   <>
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
                         {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                     </div>
                     <span>{item.assignee.displayName}</span>
                   </>
                 ) : <EmptyValue />}
-                <span style={{ fontSize: 8, color: 'var(--fg-4)' }}>▾</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>▾</span>
               </div>
               {activeDropdown === 'assignee' && (
                 <AssigneeDropdown
@@ -332,8 +332,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           {item.fixVersion && (
             <FieldRow label="Fix Versions">
               <span style={{
-                height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: 'var(--ds-chart-teal-bolder, #0f766e)',
-                background: 'var(--ds-background-success, #DCFFF1)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999,
+                height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder)',
+                background: 'var(--ds-background-success)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999,
                 display: 'inline-flex', alignItems: 'center',
               }}>
                 {item.fixVersion.name}
@@ -346,13 +346,13 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           </FieldRow>
 
           <FieldRow label="Created">
-            <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
 
           <FieldRow label="Updated">
-            <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
@@ -360,10 +360,10 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           {item.stats.totalDescendants > 0 && (
             <FieldRow label="Progress">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ flex: 1, height: 6, background: dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 6, background: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 4, transition: 'width 300ms ease' }} />
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
                   {item.stats.completedCount}/{item.stats.totalDescendants}
                 </span>
               </div>
@@ -381,19 +381,19 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   onClick={() => onSelectItem?.(child)}
                   style={{
                     height: 50, display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '0 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, cursor: 'pointer',
+                    padding: '0 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'}`, cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1, #F8FAFC)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = dk ? 'var(--ds-surface-overlay)' : 'var(--bg-1)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   {child.issueType && <JiraIssueTypeIcon type={child.issueType} size={12} />}
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', flexShrink: 0 }}>{child.key}</span>
-                  <span style={{ fontSize: 12, color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-blue)', flexShrink: 0 }}>{child.key}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
                   <StatusBadge status={child.status.name} mini />
                   {child.assignee && (
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
                         {child.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                     </div>
@@ -402,7 +402,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               ))}
             </div>
           ) : (
-            <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
+            <div style={{ padding: '12px 20px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No subtasks
             </div>
           )}
@@ -412,7 +412,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 onClick={() => onAddChild?.(item)}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                  fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
+                  fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
                   display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed var(--divider)',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--cp-blue)')}
@@ -426,7 +426,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
 
         {/* F. Linked Work Items placeholder */}
         <Section title="Linked Work Items" defaultOpen={false}>
-          <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
+          <div style={{ padding: '12px 20px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontStyle: 'italic' }}>
             No linked work items
           </div>
         </Section>
@@ -438,7 +438,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               {['All', 'Comments', 'History'].map((tab, i) => (
                 <button key={tab} style={{
                   background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid var(--cp-blue)' : '2px solid transparent',
-                  padding: '4px 0', fontSize: 12, fontWeight: i === 0 ? 600 : 400,
+                  padding: '4px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: i === 0 ? 600 : 400,
                   color: i === 0 ? 'var(--cp-blue)' : 'var(--fg-3)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}>
                   {tab}
@@ -446,17 +446,17 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               ))}
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', flexShrink: 0 }} />
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', flexShrink: 0 }} />
               <textarea
                 placeholder="Add a comment..."
                 rows={2}
                 style={{
-                  flex: 1, padding: 8, fontSize: 13, fontFamily: 'var(--cp-font-body)',
+                  flex: 1, padding: 8, fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)',
                   border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'none',
                 }}
               />
             </div>
-            <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '8px 0 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', margin: '8px 0 0', textAlign: 'center' }}>
               Comments and activity will appear here.
             </p>
           </div>

@@ -121,7 +121,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
     verticalAlign: 'middle',
     border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
     borderRadius: 4,
-    backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+    backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
     padding: '2px 6px',
     cursor: 'pointer',
     textDecoration: 'none',
@@ -143,7 +143,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
         <span
           style={{
             fontWeight: 600,
-            color: token('color.link', 'var(--ds-link, #0052CC)'),
+            color: token('color.link', 'var(--ds-link)'),
             whiteSpace: 'nowrap',
           }}
         >
@@ -167,7 +167,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
         <span
           style={{
             fontWeight: 600,
-            color: token('color.link', 'var(--ds-link, #0052CC)'),
+            color: token('color.link', 'var(--ds-link)'),
             whiteSpace: 'nowrap',
           }}
         >
@@ -191,7 +191,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
       <span
         style={{
           fontWeight: 600,
-          color: token('color.link', 'var(--ds-link, #0052CC)'),
+          color: token('color.link', 'var(--ds-link)'),
           whiteSpace: 'nowrap',
           flexShrink: 0,
         }}
@@ -202,7 +202,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
         <span
           style={{
             fontWeight: 400,
-            color: token('color.link', 'var(--ds-link, #0052CC)'),
+            color: token('color.link', 'var(--ds-link)'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

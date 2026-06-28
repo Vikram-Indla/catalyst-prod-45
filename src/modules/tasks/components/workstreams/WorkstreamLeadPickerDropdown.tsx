@@ -42,17 +42,17 @@ const DropdownItem: React.FC<{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '12px',
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           flexShrink: 0,
         }}
       >
         {user.initials}
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>{user.name}</div>
-        <div style={{ fontSize: '11px', color: COLORS.textMuted }}>{user.role}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: COLORS.textPrimary }}>{user.name}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', color: COLORS.textMuted }}>{user.role}</div>
       </div>
       {isSelected && <Check size={16} style={{ color: COLORS.accent }} />}
     </div>
@@ -105,7 +105,7 @@ export const LeadPickerDropdown: React.FC<{
           flex: 1,
           border: 'none',
           backgroundColor: 'transparent',
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           color: COLORS.textPrimary,
           outline: 'none',
           fontFamily: 'inherit',
@@ -116,7 +116,7 @@ export const LeadPickerDropdown: React.FC<{
     {/* List */}
     <div style={{ maxHeight: '240px', overflowY: 'auto', padding: '8px' }}>
       {users.length === 0 ? (
-        <div style={{ padding: '16px', textAlign: 'center', color: COLORS.textMuted, fontSize: '13px' }}>
+        <div style={{ padding: '16px', textAlign: 'center', color: COLORS.textMuted, fontSize: 'var(--ds-font-size-300)' }}>
           No members found
         </div>
       ) : (
@@ -140,7 +140,7 @@ export const LeadPickerDropdown: React.FC<{
             backgroundColor: 'transparent',
             border: 'none',
             borderRadius: '8px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             color: COLORS.danger,
             cursor: 'pointer',
             fontFamily: 'inherit',

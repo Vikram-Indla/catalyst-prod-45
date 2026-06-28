@@ -59,12 +59,12 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
           </ModalHeader>
           <ModalBody>
             {isLoading && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
                 Loading…
               </div>
             )}
             {!isLoading && members.length === 0 && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
                 No members yet.
               </div>
             )}
@@ -80,7 +80,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                       alignItems: 'center',
                       gap: 12,
                       padding: '8px 4px',
-                      borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                      borderBottom: '1px solid var(--ds-border)',
                     }}
                   >
                     <Avatar name={m.name} seed={m.userId} />
@@ -90,8 +90,8 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          fontSize: 14,
-                          color: 'var(--ds-text, #172B4D)',
+                          fontSize: 'var(--ds-font-size-400)',
+                          color: 'var(--ds-text)',
                         }}
                       >
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -100,26 +100,26 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                         {m.role === 'admin' && (
                           <span
                             style={{
-                              fontSize: 10,
+                              fontSize: 'var(--ds-font-size-50)',
                               fontWeight: 500,
                               textTransform: 'none',
                               padding: '1px 6px',
                               borderRadius: 3,
-                              background: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',
-                              color: 'var(--ds-text-accent-purple, #5E4DB2)',
+                              background: 'var(--ds-background-accent-purple-subtler)',
+                              color: 'var(--ds-text-accent-purple)',
                             }}
                           >
                             Admin
                           </span>
                         )}
                         {isSelf && (
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>(you)</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>(you)</span>
                         )}
                       </div>
                       {m.email && (
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{m.email}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
                       )}
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                         joined {timeAgo(m.joinedAt)}
                       </div>
                     </div>

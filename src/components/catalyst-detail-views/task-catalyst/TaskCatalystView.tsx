@@ -495,7 +495,7 @@ export default function TaskCatalystView({
   const leftContent = useMemo(() => {
     if (isLoading || !t) {
       return (
-        <div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)' }}>
+        <div style={{ padding: 24, color: 'var(--ds-text-subtle)' }}>
           {isLoading ? 'Loading…' : 'Task not found'}
         </div>
       );
@@ -544,10 +544,10 @@ export default function TaskCatalystView({
               style={{
                 margin: '0 0 8px',
                 padding: '0 16px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 lineHeight: '20px',
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
               }}
             >
               Checklist
@@ -565,10 +565,10 @@ export default function TaskCatalystView({
               style={{
                 margin: '0 0 8px',
                 padding: '0 16px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 lineHeight: '20px',
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
               }}
             >
               Files

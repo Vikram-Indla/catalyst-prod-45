@@ -15,9 +15,9 @@ const SRC = readFileSync(resolve(__dirname, '../HomeSidebar.tsx'), 'utf8');
 
 describe('expanded Home sidebar — functional icons are neutral', () => {
   it('SectionIconWrapper defaults to the neutral subtle ink, never a brand/blue accent', () => {
-    expect(SRC).toMatch(/primaryColor=\{color \?\? 'var\(--ds-text-subtle, var(--ds-icon, var(--ds-icon, #44546F))\)'\}/);
+    expect(SRC).toMatch(/primaryColor=\{color \?\? 'var\(--ds-text-subtle, var(--ds-icon, var(--ds-icon))\)'\}/);
     // no brand/blue literal feeding the functional glyph default
-    expect(SRC).not.toMatch(/icon-brand|var(--ds-link, #2563eb)|var(--ds-link, var(--ds-link, #0C66E4))/i);
+    expect(SRC).not.toMatch(/icon-brand|var(--ds-link)|var(--ds-link, var(--ds-link))/i);
   });
 
   it('recent-location functional icons do NOT inherit loc.color (would re-blue them)', () => {

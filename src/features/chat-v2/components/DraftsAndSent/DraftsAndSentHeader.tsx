@@ -32,7 +32,7 @@ export function DraftsAndSentHeader({
         style={{
           margin: 0,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 700,
           color: 'var(--cv2-text)',
           letterSpacing: '-0.01em',
@@ -81,7 +81,7 @@ const editBtnStyle: React.CSSProperties = {
   background: 'transparent',
   color: 'var(--cv2-text)',
   fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'pointer',
 };
@@ -93,7 +93,7 @@ const doneBtnStyle: React.CSSProperties = {
   background: 'transparent',
   color: 'var(--cv2-text)',
   fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'pointer',
 };
@@ -105,7 +105,7 @@ const deleteBtnActiveStyle: React.CSSProperties = {
   background: 'var(--cv2-danger)',
   color: 'var(--ds-text-inverse)',
   fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'pointer',
 };
@@ -117,7 +117,7 @@ const deleteBtnDisabledStyle: React.CSSProperties = {
   background: 'transparent',
   color: 'var(--cv2-text-muted)',
   fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'not-allowed',
 };

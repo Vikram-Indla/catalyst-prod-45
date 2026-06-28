@@ -15,7 +15,7 @@ interface StatusPillProps {
 
 export function StatusPill({ value, label }: StatusPillProps) {
   if (!value && !label) {
-    return <span style={{ color: 'var(--ds-text-subtlest, #7A869A)' }}>—</span>;
+    return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
   }
   const displayLabel = label || (value || '').replace(/_/g, ' ');
   const appearance = statusToLozenge(value);
@@ -31,7 +31,7 @@ export function StatusPill({ value, label }: StatusPillProps) {
       height: '20px',
     }}>
       <span style={{
-        fontSize: '11px',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 653,
         lineHeight: '20px',
         color: statusFg(appearance),

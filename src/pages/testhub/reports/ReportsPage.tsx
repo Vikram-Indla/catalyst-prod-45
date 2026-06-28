@@ -96,8 +96,8 @@ function useKpiData(projectId: string | undefined) {
 // ── styles ────────────────────────────────────────────────────────────────────
 
 const KPI_CARD: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  background: 'var(--ds-surface)',
+  border: '1px solid var(--ds-border)',
   borderRadius: 8,
   padding: '16px 20px',
   display: 'flex',
@@ -110,10 +110,10 @@ const KPI_CARD: React.CSSProperties = {
 function KpiCard({ label, value }: { label: string; value: number | string }) {
   return (
     <div style={KPI_CARD}>
-      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.04em' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', letterSpacing: '0.04em' }}>
         {label}
       </span>
-      <span style={{ fontSize: 26, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: 1 }}>
         {value}
       </span>
     </div>
@@ -129,8 +129,8 @@ function ReportTileCard({ tile, projectKey }: { tile: ReportTile; projectKey: st
       style={{
         width: 200,
         minHeight: 120,
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         padding: '16px',
         cursor: 'pointer',
@@ -141,13 +141,13 @@ function ReportTileCard({ tile, projectKey }: { tile: ReportTile; projectKey: st
         transition: 'background 0.1s',
         boxSizing: 'border-box',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface)'; }}
     >
-      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: 1.3 }}>
         {tile.label}
       </span>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', lineHeight: 1.5 }}>
         {tile.description}
       </span>
     </button>
@@ -167,7 +167,7 @@ export default function ReportsPage() {
   }));
 
   return (
-    <div style={{ fontFamily: 'var(--ds-font-family-body)', minHeight: '100vh', background: 'var(--ds-surface-sunken, #F7F8F9)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', minHeight: '100vh', background: 'var(--ds-surface-sunken)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
       <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
@@ -184,7 +184,7 @@ export default function ReportsPage() {
 
         {groupedTiles.map(({ group, tiles }) => (
           <div key={group} style={{ marginBottom: 32 }}>
-            <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 12, marginTop: 0, letterSpacing: '0.04em' }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 12, marginTop: 0, letterSpacing: '0.04em' }}>
               {group}
             </h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>

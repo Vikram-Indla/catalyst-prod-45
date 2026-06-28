@@ -20,7 +20,7 @@
  *   - customfield_10109  Actual start (Arabic-labeled)(date,      Epic)
  *
  * Rendering shape mirrors the read-only branches of CatalystMdtRefField
- * (same colour token #292A2E for filled, var(--ds-text-subtlest, #6B6E76) for empty placeholder).
+ * (same colour token #292A2E for filled, var(--ds-text-subtlest) for empty placeholder).
  */
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
@@ -32,7 +32,7 @@ interface DisplayProps {
 
 /* ------------------------------------------------------------------ */
 /* Shared style helpers — keep parity with CatalystMdtRefField read   */
-/* state (#292A2E filled, var(--ds-text-subtlest, #6B6E76) empty). The font sizing matches     */
+/* state (#292A2E filled, var(--ds-text-subtlest) empty). The font sizing matches     */
 /* FieldRow's value cell measured against Jira on 2026-04-28.         */
 /* ------------------------------------------------------------------ */
 
@@ -49,12 +49,12 @@ interface DisplayProps {
  * canonical Atlassian alignment and the picker is the column anchor.
  * 2026-05-31 right-rail alignment fix (iteration 2). */
 const VALUE_STYLE: React.CSSProperties = {
-  fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
+  fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: 'var(--ds-text)',
   fontFamily: 'inherit',
   paddingInlineStart: 8,
 };
 const EMPTY_STYLE: React.CSSProperties = {
-  fontSize: 14, lineHeight: '20px', color: 'var(--ds-text-subtle, #6B6E76)',
+  fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: 'var(--ds-text-subtle)',
   fontFamily: 'inherit',
   paddingInlineStart: 8,
 };

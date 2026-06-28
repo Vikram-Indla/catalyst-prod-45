@@ -137,7 +137,7 @@ export function ToolbarMenuButton({
             }
           }}
           style={buttonStyle}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #E4E6EA)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {icon}
@@ -153,14 +153,14 @@ export function ToolbarMenuButton({
             top: anchor.top,
             right: anchor.right,
             minWidth: 180,
-            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           {groups.map((group, gi) => (
@@ -168,10 +168,10 @@ export function ToolbarMenuButton({
               {group.title && (
                 <div style={{
                   padding: '4px 16px',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
                   letterSpacing: '0.04em',
-                  color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                  color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                 }}>
                   {group.title}
                 </div>
@@ -209,8 +209,8 @@ export function ToolbarMenuButton({
                         : 'transparent',
                       color: item.isDisabled
                         ? token('color.text.disabled', '#A6A7AA')
-                        : token('color.text', 'var(--ds-text, #172B4D)'),
-                      fontSize: 14,
+                        : token('color.text', 'var(--ds-text)'),
+                      fontSize: 'var(--ds-font-size-400)',
                       fontFamily: 'inherit',
                       textAlign: 'left',
                       cursor: item.isDisabled ? 'not-allowed' : 'pointer',
@@ -229,7 +229,7 @@ export function ToolbarMenuButton({
                 <div style={{
                   height: 1,
                   margin: '4px 0',
-                  background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'),
+                  background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))'),
                 }} />
               )}
             </React.Fragment>

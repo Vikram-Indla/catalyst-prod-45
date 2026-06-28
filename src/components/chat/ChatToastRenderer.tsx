@@ -25,13 +25,13 @@ export function ChatToastRenderer({ toasts, onDismiss }: ChatToastRendererProps)
   const getIconForType = useCallback((type: string) => {
     switch (type) {
       case 'success':
-        return <SuccessIcon label="success" primaryColor="var(--ds-text-success, #216E4E)" />;
+        return <SuccessIcon label="success" primaryColor="var(--ds-text-success)" />;
       case 'error':
-        return <ErrorIcon label="error" primaryColor="var(--ds-text-danger, #AE2A19)" />;
+        return <ErrorIcon label="error" primaryColor="var(--ds-text-danger)" />;
       case 'info':
-        return <InfoIcon label="info" primaryColor="var(--ds-link, #0052CC)" />;
+        return <InfoIcon label="info" primaryColor="var(--ds-link)" />;
       case 'warning':
-        return <WarningIcon label="warning" primaryColor="var(--ds-text-warning, #974F0C)" />;
+        return <WarningIcon label="warning" primaryColor="var(--ds-text-warning)" />;
       default:
         return null;
     }

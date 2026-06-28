@@ -18,14 +18,14 @@ import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  danger: 'var(--ds-text-danger, #AE2A19)',
-  dangerBg: 'var(--ds-background-danger, #FFECEB)',
+  surface: 'var(--ds-surface)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  danger: 'var(--ds-text-danger)',
+  dangerBg: 'var(--ds-background-danger)',
 };
 
 function titleCase(v: string | null) {
@@ -38,10 +38,10 @@ function StatusPill({ status }: { status: string }) {
   const active = status === 'active';
   return (
     <span style={{
-      fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+      fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em',
       padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap',
-      color: active ? 'var(--ds-text-information, #0055CC)' : T.subtle,
-      background: active ? 'var(--ds-background-information, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
+      color: active ? 'var(--ds-text-information)' : T.subtle,
+      background: active ? 'var(--ds-background-information)' : 'var(--ds-background-neutral)',
     }}>{status.toUpperCase()}</span>
   );
 }
@@ -53,26 +53,26 @@ function FreezeCard({ w, canManage, onDelete }: { w: FreezeWindowRow; canManage:
     <div style={{
       display: 'flex', alignItems: 'center', gap: 16, padding: 16, borderRadius: 8,
       background: conflict ? T.dangerBg : T.surface,
-      border: `1px solid ${conflict ? 'var(--ds-border-danger, #E2483D)' : T.border}`,
+      border: `1px solid ${conflict ? 'var(--ds-border-danger)' : T.border}`,
     }}>
       <div style={{ width: 48, height: 48, flexShrink: 0, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.dangerBg }}>
         <CalendarOff size={20} style={{ color: T.danger }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{w.name}</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{w.name}</span>
           <StatusPill status={w.status} />
           {conflict && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', color: T.danger, background: T.dangerBg, border: `1px solid var(--ds-border-danger, #E2483D)`, padding: '0 8px', borderRadius: 3 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em', color: T.danger, background: T.dangerBg, border: `1px solid var(--ds-border-danger)`, padding: '0 8px', borderRadius: 3 }}>
               <AlertTriangle size={12} style={{ color: T.danger }} /> CONFLICT{w.conflicts > 1 ? ` ×${w.conflicts}` : ''}
             </span>
           )}
         </div>
-        {w.reason && <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, marginTop: 4 }}>{w.reason}</div>}
+        {w.reason && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 4 }}>{w.reason}</div>}
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>{format(new Date(w.startDate), 'MMM d')} – {format(new Date(w.endDate), 'MMM d, yyyy')}</div>
-        <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, marginTop: 4 }}>{titleCase(w.targetEnv)}</div>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>{format(new Date(w.startDate), 'MMM d')} – {format(new Date(w.endDate), 'MMM d, yyyy')}</div>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 4 }}>{titleCase(w.targetEnv)}</div>
       </div>
       {canManage && (
         <button onClick={onDelete} aria-label="Delete freeze window" style={{ display: 'flex', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', color: T.subtlest, padding: 4 }}>
@@ -107,9 +107,9 @@ export default function FreezeWindowsPage() {
           onClick={() => canManage && setShowCreate(true)}
           disabled={!canManage}
           title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
         >
-          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New freeze window
+          <Plus size={14} style={{ color: 'var(--ds-text-inverse)' }} /> New freeze window
         </button>
       </div>
 

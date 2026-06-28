@@ -44,11 +44,11 @@ const getEventIcon = (type: string) => {
 // Sample mention suggestions - using teal for variety per design spec v2
 const mentionSuggestions = [
   { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-gray-500' },
-  { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-[var(--ds-chart-teal-bold, #0d9488)]' },
-  { id: 'u3', name: 'Nada Alfassam', initials: 'NA', color: 'bg-[var(--ds-chart-teal-bolder, #0f766e)]' },
+  { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-[var(--ds-chart-teal-bold)]' },
+  { id: 'u3', name: 'Nada Alfassam', initials: 'NA', color: 'bg-[var(--ds-chart-teal-bolder)]' },
   { id: 'u4', name: 'Yazeed Daraz', initials: 'YD', color: 'bg-blue-500' },
   { id: 'u5', name: 'Imran Aslam', initials: 'IA', color: 'bg-gray-400' },
-  { id: 'u6', name: 'Suleiman Ahmad Allawanseh', initials: 'SA', color: 'bg-[var(--ds-chart-teal-bold, #0d9488)]' },
+  { id: 'u6', name: 'Suleiman Ahmad Allawanseh', initials: 'SA', color: 'bg-[var(--ds-chart-teal-bold)]' },
 ];
 
 export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentTimelineProps) {
@@ -109,13 +109,13 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
             className={cn(
               "px-3 py-2 text-sm font-medium transition-colors relative",
               activeTab === tab.key
-                ? "text-[var(--cp-primary-60, #0052CC)]"
+                ? "text-[var(--cp-primary-60)]"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
             {tab.label}
             {activeTab === tab.key && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--cp-primary-60, #0052CC)]" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--cp-primary-60)]" />
             )}
           </button>
         ))}
@@ -128,9 +128,9 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
           {/* Rich Text Toolbar */}
           <div className={cn(
             "border border-border rounded-t-md bg-white",
-            isEditorFocused ? "border-[var(--ds-background-information-bold, #0C66E4)] ring-2 ring-[var(--ds-background-information-bold, #0C66E4)]/20" : ""
+            isEditorFocused ? "border-[var(--ds-background-information-bold)] ring-2 ring-[var(--ds-background-information-bold)]/20" : ""
           )}>
-            <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+            <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken,var(--cp-bg-sunken))]">
               {/* Text format dropdown */}
               <button className="flex items-center gap-1 px-2 py-1 text-sm text-foreground hover:bg-muted rounded">
                 Normal text
@@ -268,7 +268,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
               size="sm"
               onClick={handlePostComment}
               disabled={!newComment.trim()}
-              className="h-8 bg-[var(--cp-primary-60, #0052CC)] hover:bg-[var(--ds-link-pressed, #0747A6)] text-white"
+              className="h-8 bg-[var(--cp-primary-60)] hover:bg-[var(--ds-link-pressed)] text-white"
             >
               Save
             </Button>

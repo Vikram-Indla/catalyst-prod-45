@@ -20,13 +20,13 @@ describe('statusBackground (pure function)', () => {
     expect(statusBackground('inprogress')).toBe('rgba(102,157,241,0.18)'); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   });
   it('todo → neutral token', () => {
-    expect(statusBackground('todo')).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))');
+    expect(statusBackground('todo')).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
   });
   it('undefined → neutral token', () => {
-    expect(statusBackground(undefined)).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))');
+    expect(statusBackground(undefined)).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
   });
   it('empty string → neutral token', () => {
-    expect(statusBackground('')).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))');
+    expect(statusBackground('')).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
   });
 });
 

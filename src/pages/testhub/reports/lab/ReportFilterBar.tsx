@@ -49,7 +49,7 @@ function SegmentedControl({
           onClick={() => onChange(opt.value)}
           style={{
             padding: '5px 11px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: value === opt.value ? 600 : 400,
             color: value === opt.value ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
             background: value === opt.value ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
@@ -79,14 +79,14 @@ function SelectFilter({
 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
         {label}
       </span>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
         style={{
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--ds-text)',
           background: 'var(--ds-surface)',
           border: '1px solid var(--ds-border)',

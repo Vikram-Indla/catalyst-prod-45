@@ -171,7 +171,7 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
           return {
             projectKey,
             projectName: projName,
-            projectColor: PROJECT_COLORS[projectKey] || 'var(--ds-text-subtlest, #8B8FA3)',
+            projectColor: PROJECT_COLORS[projectKey] || 'var(--ds-text-subtlest)',
             individualItems: individualItems.slice(0, 5),
             collapsedGroups,
             hasIncident,

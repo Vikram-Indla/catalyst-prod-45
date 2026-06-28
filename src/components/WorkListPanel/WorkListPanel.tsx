@@ -64,8 +64,8 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               height: '100%',
-              fontSize: '14px',
-              color: 'var(--ds-text-subtlest, #626F86)',
+              fontSize: 'var(--ds-font-size-400)',
+              color: 'var(--ds-text-subtlest)',
             }}
           >
             Loading items…
@@ -87,7 +87,7 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
               data-testid="empty-state-icon"
               style={{
                 marginBottom: '16px',
-                color: 'var(--ds-icon-subtle, #626F86)',
+                color: 'var(--ds-icon-subtle)',
               }}
             >
               <SearchIcon size="large" />
@@ -95,9 +95,9 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
             <p
               style={{
                 margin: '0 0 12px 0',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
-                color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
               }}
             >
               No issues found
@@ -109,8 +109,8 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
                 onClearFilters?.();
               }}
               style={{
-                fontSize: '14px',
-                color: 'var(--ds-link, #0055CC)',
+                fontSize: 'var(--ds-font-size-400)',
+                color: 'var(--ds-link)',
                 textDecoration: 'underline',
                 cursor: 'pointer',
               }}

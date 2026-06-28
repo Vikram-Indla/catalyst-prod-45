@@ -89,15 +89,15 @@ function SeverityBadge({ severity }: { severity: string }) {
     switch (severity) {
       case 'SEV1':
         // Dark red background, light red text for dark mode
-        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] dark:bg-[var(--ds-text-danger, var(--ds-text-danger, #AE2A19))] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
+        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger)] dark:bg-[var(--ds-text-danger, var(--ds-text-danger))] dark:text-[var(--ds-border-danger)] dark:border dark:border-[var(--ds-text-danger)]";
       case 'SEV2':
         // Amber variant for dark mode
-        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)] dark:bg-[var(--ds-text-warning, var(--ds-text-warning, #974F0C))] dark:text-[var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))] dark:border dark:border-[var(--ds-text-warning, var(--ds-text-warning, #974F0C))]";
+        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning)] dark:bg-[var(--ds-text-warning, var(--ds-text-warning))] dark:text-[var(--ds-background-warning, var(--ds-background-warning))] dark:border dark:border-[var(--ds-text-warning, var(--ds-text-warning))]";
       case 'SEV3':
       case 'SEV4':
       default:
         // Gray variant for dark mode
-        return "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border dark:border-[var(--ds-text-subtle, #44546F)]";
+        return "bg-[var(--ds-background-neutral-subtle)] text-[var(--ds-text-subtlest)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))] dark:text-[var(--ds-text-disabled)] dark:border dark:border-[var(--ds-text-subtle)]";
     }
   };
   
@@ -168,24 +168,24 @@ export const KanbanCard = memo(function KanbanCard({
         "cursor-pointer transition-all group",
         isDragging && "opacity-50",
         // Dark mode compliant backgrounds
-        "bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]",
-        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]",
+        "bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))]",
+        "border border-[var(--ds-border)] dark:border-[var(--ds-border,var(--cp-ink-1))]",
         // Hover state
-        "hover:border-[var(--ds-background-neutral-hovered, #D4D4D4)] dark:hover:border-[var(--ds-border-bold,#454545)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
+        "hover:border-[var(--ds-background-neutral-hovered)] dark:hover:border-[var(--ds-border-bold)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1))]",
         // Shadow
         "shadow-[0_1px_3px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.05))),0_1px_2px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.03)))]",
         "dark:shadow-none",
         isDragging && "shadow-[0_4px_12px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.15)))]",
         // Left border for severity
-        isBreached && "border-l-[3px] border-l-[var(--ds-text-danger,#ef4444)]",
-        isAtRisk && !isBreached && "border-l-[3px] border-l-[var(--ds-text-warning,#f59e0b)]"
+        isBreached && "border-l-[3px] border-l-[var(--ds-text-danger)]",
+        isAtRisk && !isBreached && "border-l-[3px] border-l-[var(--ds-text-warning)]"
       )}
     >
       {/* Row 1: ID + Badges */}
       <div className="flex items-start justify-between mb-1.5">
         <button
           onClick={handleKeyClick}
-          className="font-mono text-sm font-semibold hover:underline text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]"
+          className="font-mono text-sm font-semibold hover:underline text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]"
         >
           {incident.incident_key}
         </button>
@@ -193,8 +193,8 @@ export const KanbanCard = memo(function KanbanCard({
           {incident.is_major_incident && (
             <span className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
-              "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)]",
-              "dark:bg-[#431407] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[var(--ds-text-danger, #7c2d12)]"
+              "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning)]",
+              "dark:bg-[#431407] dark:text-[var(--ds-background-warning)] dark:border dark:border-[var(--ds-text-danger)]"
             )}>
               <AlertTriangle className="h-2.5 w-2.5" />
               Major
@@ -219,7 +219,7 @@ export const KanbanCard = memo(function KanbanCard({
       </div>
       
       {/* Row 2: Title */}
-      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[var(--ds-surface,#0a0a0a)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">
+      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[var(--ds-surface)] dark:text-[var(--ds-surface-sunken)]">
         {incident.title}
       </h4>
       
@@ -227,12 +227,12 @@ export const KanbanCard = memo(function KanbanCard({
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <SeverityBadge severity={incident.severity} />
-          <span className="text-xs text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">{age}</span>
+          <span className="text-xs text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">{age}</span>
           {isBreached && (
-            <span className="text-xs font-semibold text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]">Breached</span>
+            <span className="text-xs font-semibold text-[var(--ds-text-danger)] dark:text-[var(--ds-background-danger)]">Breached</span>
           )}
           {isAtRisk && (
-            <span className="text-xs font-semibold text-[var(--ds-text-warning,#f59e0b)] dark:text-[var(--ds-background-warning-bold, #E2B203)]">At Risk</span>
+            <span className="text-xs font-semibold text-[var(--ds-text-warning)] dark:text-[var(--ds-background-warning-bold)]">At Risk</span>
           )}
         </div>
         
@@ -240,13 +240,13 @@ export const KanbanCard = memo(function KanbanCard({
         {incident.assignee ? (
           <div className={cn(
             "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold",
-            "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)]",
-            "dark:bg-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-background-neutral-hovered, #D4D4D4)]"
+            "bg-[var(--ds-background-neutral-subtle)] text-[var(--ds-text-subtlest)]",
+            "dark:bg-[var(--ds-text-subtle)] dark:text-[var(--ds-background-neutral-hovered)]"
           )}>
             {incident.assignee.avatar_initials || incident.assignee.full_name.slice(0, 2).toUpperCase()}
           </div>
         ) : (
-          <span className="italic text-xs text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">Unassigned</span>
+          <span className="italic text-xs text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">Unassigned</span>
         )}
       </div>
       
@@ -254,7 +254,7 @@ export const KanbanCard = memo(function KanbanCard({
       {isInCommittee && (
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border">
           {/* Approvers count */}
-          <span className="flex items-center gap-0.5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]">
+          <span className="flex items-center gap-0.5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]">
             <Users className="h-3 w-3" />
             <span className="font-medium">{approverCount}</span>
           </span>
@@ -280,7 +280,7 @@ export const KanbanCard = memo(function KanbanCard({
               <Tooltip position="top" content="Edit Committee">
                 <button
                   onClick={handleEditCommitteeClick}
-                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors"
+                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:hover:text-[var(--ds-text-brand)] transition-colors"
                 >
                   <Settings className="h-3 w-3" />
                 </button>

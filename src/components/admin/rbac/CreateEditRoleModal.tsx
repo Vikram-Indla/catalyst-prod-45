@@ -74,8 +74,8 @@ export function CreateEditRoleModal({ isOpen, onClose, role }: CreateEditRoleMod
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '12px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="rbac-role-name" style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
-              Role name <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+            <label htmlFor="rbac-role-name" style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text)' }}>
+              Role name <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Textfield
               id="rbac-role-name"
@@ -84,11 +84,11 @@ export function CreateEditRoleModal({ isOpen, onClose, role }: CreateEditRoleMod
               placeholder="e.g. Release Manager"
               isInvalid={!!errors.name}
             />
-            {errors.name && <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>{errors.name}</p>}
+            {errors.name && <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-danger)' }}>{errors.name}</p>}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="rbac-role-desc" style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+            <label htmlFor="rbac-role-desc" style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text)' }}>
               Description
             </label>
             <TextArea
@@ -100,10 +100,10 @@ export function CreateEditRoleModal({ isOpen, onClose, role }: CreateEditRoleMod
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', border: '1px solid var(--ds-border)', borderRadius: 4 }}>
             <div>
-              <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Active</p>
-              <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>Inactive roles cannot be assigned</p>
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: 'var(--ds-text)' }}>Active</p>
+              <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtle)' }}>Inactive roles cannot be assigned</p>
             </div>
             <Toggle
               id="rbac-role-active"

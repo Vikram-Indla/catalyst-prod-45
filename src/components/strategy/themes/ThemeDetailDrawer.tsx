@@ -1,7 +1,7 @@
 /**
  * ThemeDetailDrawer — 560px right-side overlay with 6 tabs
  * Fixes: Financials uses planned_budget, enhanced empty states, activity tab, Linear badges
- * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)))
+ * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, var(--cp-ink-1)))
  */
 import { useEffect, useState } from 'react';
 import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from '@/lib/atlaskit-icons';
@@ -51,15 +51,15 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const pri = theme.priority ? PRIORITY_CONFIG[theme.priority] : null;
 
   // Dark palette shortcuts
-  const bg = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)';
+  const bg = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)';
   const t1 = isDark ? DK.t1 : 'var(--fg-1)';
   const t2 = isDark ? DK.t2 : 'var(--fg-3)';
   const t3 = isDark ? DK.t3 : 'var(--fg-4)';
-  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
-  const borderSubtle = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
-  const hoverBg = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
-  const cardBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
-  const linkBlue = isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)';
+  const borderSubtle = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-1)';
+  const hoverBg = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-1)';
+  const cardBg = isDark ? 'var(--ds-surface-overlay)' : 'var(--bg-1)';
+  const linkBlue = isDark ? 'var(--ds-text-brand)' : 'var(--cp-blue)';
 
   return (
     <>
@@ -88,9 +88,9 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
         {/* Header */}
         <div className="flex items-center gap-3 shrink-0" style={{ padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
           <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
-          <h2 className="truncate flex-1" style={{ fontSize: 16, fontWeight: 700, color: t1 }}>{theme.title}</h2>
-          <button onClick={() => onEdit(theme)} style={{ fontSize: 12, color: linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
-          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+          <h2 className="truncate flex-1" style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: t1 }}>{theme.title}</h2>
+          <button onClick={() => onEdit(theme)} style={{ fontSize: 'var(--ds-font-size-200)', color: linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
+          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-background-danger, var(--ds-background-danger))' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
           <button onClick={onClose} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -101,11 +101,11 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
 
         {/* Delete Confirmation */}
         {confirmDelete && (
-          <div style={{ padding: '12px 20px', background: 'var(--cp-danger-light, #FEF2F2)', borderBottom: `1px solid ${'var(--cp-danger-light, #FECACA)'}` }}>
-            <p style={{ fontSize: 12, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
+          <div style={{ padding: '12px 20px', background: 'var(--cp-danger-light)', borderBottom: `1px solid ${'var(--cp-danger-light)'}` }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-danger-text)', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
             <div className="flex gap-2">
-              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
-              <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: isDark ? DK.t1 : 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: 'var(--ds-surface)', cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 'var(--ds-font-size-100)', padding: '4px 12px', borderRadius: 4, border: `1px solid ${border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: isDark ? DK.t1 : 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>
         )}
@@ -117,7 +117,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
               key={t}
               onClick={() => setTab(t)}
               style={{
-                fontSize: 12, fontWeight: tab === t ? 600 : 500,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: tab === t ? 600 : 500,
                 color: tab === t ? 'var(--cp-blue)' : (isDark ? DK.t3 : 'var(--fg-3)'),
                 padding: '10px 12px', border: 'none', background: 'none',
                 borderBottom: tab === t ? '2px solid var(--cp-blue)' : '2px solid transparent',
@@ -147,11 +147,11 @@ function dk(isDark: boolean) {
     t1: isDark ? DK.t1 : 'var(--fg-1)',
     t2: isDark ? DK.t2 : 'var(--fg-3)',
     t3: isDark ? DK.t3 : 'var(--fg-4)',
-    border: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
-    borderSubtle: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)',
-    cardBg: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)',
-    hoverBg: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)',
-    linkBlue: isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)',
+    border: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)',
+    borderSubtle: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-1)',
+    cardBg: isDark ? 'var(--ds-surface-overlay)' : 'var(--bg-1)',
+    hoverBg: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-1)',
+    linkBlue: isDark ? 'var(--ds-text-brand)' : 'var(--cp-blue)',
   };
 }
 
@@ -160,8 +160,8 @@ function KpiCard({ label, value, color, isDark = false }: { label: string; value
   const d = dk(isDark);
   return (
     <div className="rounded-lg border text-center" style={{ borderColor: d.border, padding: '12px 8px', background: isDark ? 'transparent' : undefined }}>
-      <p style={{ fontSize: 20, fontWeight: 700, color: color || d.t1, marginBottom: 2 }}>{value}</p>
-      <p style={{ fontSize: 10, fontWeight: 600, color: d.t3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</p>
+      <p style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: color || d.t1, marginBottom: 2 }}>{value}</p>
+      <p style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: d.t3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</p>
     </div>
   );
 }
@@ -170,7 +170,7 @@ function FieldRow({ label, value, isDark = false }: { label: string; value: Reac
   const d = dk(isDark);
   return (
     <div className="flex items-start gap-2" style={{ padding: '8px 0', borderBottom: `1px solid ${d.borderSubtle}` }}>
-      <span className="shrink-0" style={{ width: 120, fontSize: 10, fontWeight: 600, color: d.t3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+      <span className="shrink-0" style={{ width: 120, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: d.t3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
       <span style={{ fontSize: 12.5, fontWeight: 500, color: d.t1, flex: 1 }}>{value || <span style={{ color: d.t3 }}>—</span>}</span>
     </div>
   );
@@ -180,13 +180,13 @@ function EmptyState({ icon: Icon, title, description, cta, isDark = false }: { i
   const d = dk(isDark);
   return (
     <div className="flex flex-col items-center justify-center text-center" style={{ padding: '48px 24px' }}>
-      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
+      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}>
         <Icon size={22} color={d.t3} strokeWidth={1.5} />
       </div>
-      <p style={{ fontSize: 13, fontWeight: 600, color: d.t1, marginBottom: 4 }}>{title}</p>
-      <p style={{ fontSize: 12, color: d.t3, maxWidth: 280, lineHeight: 1.5 }}>{description}</p>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: d.t1, marginBottom: 4 }}>{title}</p>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', color: d.t3, maxWidth: 280, lineHeight: 1.5 }}>{description}</p>
       {cta && (
-        <button style={{ fontSize: 12, fontWeight: 500, color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', marginTop: 12 }}>
+        <button style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', marginTop: 12 }}>
           + {cta}
         </button>
       )}
@@ -211,18 +211,18 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
         <div className="rounded-lg mb-5 overflow-hidden" style={{
           background: isDark
             ? 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.12))'
-            : 'linear-gradient(135deg, var(--ds-background-information, #E9F2FF), var(--ds-background-selected, #EFF6FF))',
-          border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
+            : 'linear-gradient(135deg, var(--ds-background-information), var(--ds-background-selected))',
+          border: `1px solid ${'var(--cp-primary-light)'}`,
           padding: 16,
         }}>
           <div className="flex items-center gap-2 mb-2">
-            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: 'var(--ds-text-brand, #3B82F6)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', background: 'var(--ds-text-brand)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI
             </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-primary-hover, #1D4ED8)' }}>Strategy Health Score</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-primary-hover)' }}>Strategy Health Score</span>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)', marginBottom: 8 }}>
-            {theme.ai_health_score}<span style={{ fontSize: 14, fontWeight: 500, color: d.t3 }}>/100</span>
+          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: isDark ? 'var(--ds-text-brand)' : 'var(--cp-blue)', marginBottom: 8 }}>
+            {theme.ai_health_score}<span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: d.t3 }}>/100</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             {[
@@ -231,12 +231,12 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
               { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.2) },
             ].map(f => (
               <div key={f.label} className="rounded-md text-center" style={{
-                background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface, rgba(255,255,255,0.6))',
-                border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : 'none',
+                background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface, rgba(255,255,255,0.6))',
+                border: isDark ? '1px solid var(--ds-background-neutral)' : 'none',
                 padding: '6px 0',
               }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : 'var(--ds-link-pressed, #1e40af)' }}>{f.value}</p>
-                <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{f.label}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: isDark ? DK.t1 : 'var(--ds-link-pressed)' }}>{f.value}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? DK.t3 : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{f.label}</p>
               </div>
             ))}
           </div>
@@ -254,7 +254,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
             : null
         } isDark={isDark} />
         <FieldRow label="BSC Perspective" value={bsc?.label} isDark={isDark} />
-        <FieldRow label="Priority" value={pri ? <span style={{ color: isDark ? 'var(--ds-background-danger, #FFECEB)' : pri.color, fontWeight: 600 }}>{pri.label}</span> : null} isDark={isDark} />
+        <FieldRow label="Priority" value={pri ? <span style={{ color: isDark ? 'var(--ds-background-danger)' : pri.color, fontWeight: 600 }}>{pri.label}</span> : null} isDark={isDark} />
         <FieldRow label="Budget (SAR)" value={theme.planned_budget > 0 ? formatBudget(theme.planned_budget) : null} isDark={isDark} />
         <FieldRow label="Theme Group" value={theme.theme_group_name || 'None'} isDark={isDark} />
         <FieldRow label="Milestones" value={`${theme.milestone_count ?? 0} / 20`} isDark={isDark} />
@@ -271,8 +271,8 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: d.t1 }}>Goals ({goals.length})</h3>
-        <button style={{ fontSize: 12, color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Add Goal</button>
+        <h3 style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: d.t1 }}>Goals ({goals.length})</h3>
+        <button style={{ fontSize: 'var(--ds-font-size-200)', color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Add Goal</button>
       </div>
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color={d.t3} /></div>
@@ -285,15 +285,15 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
             return (
               <div key={g.id} className="rounded-lg border p-3" style={{ borderColor: d.border, background: isDark ? 'transparent' : undefined }}>
                 <div className="flex items-start justify-between mb-2">
-                  <span style={{ fontSize: 12, fontWeight: 600, color: d.t1 }}>{g.title}</span>
-                  <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: statusColor + (isDark ? '25' : '18'), color: isDark ? statusColor + 'CC' : statusColor }}>{g.status}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: d.t1 }}>{g.title}</span>
+                  <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, background: statusColor + (isDark ? '25' : '18'), color: isDark ? statusColor + 'CC' : statusColor }}>{g.status}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: isDark ? 'var(--ds-border-bold, #454545)' : 'var(--divider)' }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: isDark ? 'var(--ds-border-bold)' : 'var(--divider)' }}>
                     <div className="h-full rounded-full" style={{ width: `${g.progress_pct}%`, background: statusColor }} />
                   </div>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: d.t2 }}>{g.progress_pct}%</span>
-                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: d.t2 }}>{g.kr_count} KRs</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: d.t2 }}>{g.progress_pct}%</span>
+                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: d.t2 }}>{g.kr_count} KRs</span>
                 </div>
               </div>
             );
@@ -311,8 +311,8 @@ function InitiativesTab({ theme, isDark = false }: { theme: StrategicTheme; isDa
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: d.t1 }}>Linked Requests ({initiatives.length})</h3>
-        <button style={{ fontSize: 12, color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Link Request</button>
+        <h3 style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: d.t1 }}>Linked Requests ({initiatives.length})</h3>
+        <button style={{ fontSize: 'var(--ds-font-size-200)', color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Link Request</button>
       </div>
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color={d.t3} /></div>
@@ -323,10 +323,10 @@ function InitiativesTab({ theme, isDark = false }: { theme: StrategicTheme; isDa
           {initiatives.map((ini: any) => (
             <div key={ini.id} className="rounded-lg border p-3" style={{ borderColor: d.border, background: isDark ? 'transparent' : undefined }}>
               <div className="flex items-start justify-between mb-1">
-                <span style={{ fontSize: 12, fontWeight: 600, color: d.t1 }}>{ini.title}</span>
-                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: d.t2 }}>{ini.status}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: d.t1 }}>{ini.title}</span>
+                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: d.t2 }}>{ini.status}</span>
               </div>
-              <div className="flex items-center gap-3" style={{ fontSize: 10, color: d.t2 }}>
+              <div className="flex items-center gap-3" style={{ fontSize: 'var(--ds-font-size-50)', color: d.t2 }}>
                 <span>Budget: {formatBudget(ini.budget_allocated)}</span>
                 <span>Spent: {formatBudget(ini.budget_spent)}</span>
                 <span>Progress: {ini.progress_pct}%</span>
@@ -352,14 +352,14 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Allocated" value={formatBudget(allocated)} isDark={isDark} />
         <KpiCard label="Spent" value={formatBudget(spent)} isDark={isDark} />
-        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : 'var(--quality-high, #059669)'} isDark={isDark} />
+        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : 'var(--quality-high)'} isDark={isDark} />
       </div>
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
-          <span style={{ fontSize: 11, color: d.t2 }}>Budget Utilization</span>
-          <span style={{ fontSize: 11, fontWeight: 600, color: d.t1 }}>{utilization}%</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: d.t2 }}>Budget Utilization</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: d.t1 }}>{utilization}%</span>
         </div>
-        <div className="rounded-full overflow-hidden" style={{ height: 8, background: isDark ? 'var(--ds-border-bold, #454545)' : 'var(--divider)' }}>
+        <div className="rounded-full overflow-hidden" style={{ height: 8, background: isDark ? 'var(--ds-border-bold)' : 'var(--divider)' }}>
           {utilization > 0 && (
             <div className="h-full rounded-full" style={{
               width: `${Math.min(utilization, 100)}%`,
@@ -368,7 +368,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
           )}
         </div>
       </div>
-      <p style={{ fontSize: 12, color: d.t2, marginTop: 12 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', color: d.t2, marginTop: 12 }}>
         Planned budget: <strong style={{ color: d.t1 }}>{formatBudget(theme.planned_budget)}</strong> SAR for FY{theme.fiscal_year}.
       </p>
     </div>
@@ -378,7 +378,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
 // ═══ MILESTONES ═══
 const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
 const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
-const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', completed: 'var(--ds-text-success, var(--cp-success, #16A34A))', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
+const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', completed: 'var(--ds-text-success, var(--cp-success))', missed: 'var(--ds-text-danger, var(--cp-danger))' };
 
 function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
   const d = dk(isDark);
@@ -410,7 +410,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
   };
 
   const inputStyle: React.CSSProperties = {
-    fontSize: 12, padding: '6px 8px', borderRadius: 4, outline: 'none', width: '100%',
+    fontSize: 'var(--ds-font-size-200)', padding: '6px 8px', borderRadius: 4, outline: 'none', width: '100%',
     border: `1px solid ${d.border}`,
     background: isDark ? 'transparent' : 'var(--bg-app)',
     color: d.t1,
@@ -419,12 +419,12 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: d.t1 }}>Milestones ({milestones.length} / 20)</h3>
-        <button onClick={() => { resetForm(); setShowForm(true); }} disabled={milestones.length >= 20} style={{ fontSize: 12, color: milestones.length >= 20 ? d.t3 : d.linkBlue, background: 'none', border: 'none', cursor: milestones.length >= 20 ? 'default' : 'pointer', fontWeight: 500 }}>+ Add Milestone</button>
+        <h3 style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: d.t1 }}>Milestones ({milestones.length} / 20)</h3>
+        <button onClick={() => { resetForm(); setShowForm(true); }} disabled={milestones.length >= 20} style={{ fontSize: 'var(--ds-font-size-200)', color: milestones.length >= 20 ? d.t3 : d.linkBlue, background: 'none', border: 'none', cursor: milestones.length >= 20 ? 'default' : 'pointer', fontWeight: 500 }}>+ Add Milestone</button>
       </div>
 
       {showForm && (
-        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: 'var(--cp-primary-light, #DBEAFE)', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.06))' : 'var(--bg-1)' }}>
+        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: 'var(--cp-primary-light)', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.06))' : 'var(--bg-1)' }}>
           <div className="space-y-2">
             <input style={inputStyle} placeholder="Milestone name *" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} autoFocus />
             <div className="grid grid-cols-3 gap-2">
@@ -443,8 +443,8 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
               <input type="date" style={inputStyle} value={formData.due_date} onChange={e => setFormData(f => ({ ...f, due_date: e.target.value }))} />
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? 'var(--cp-blue)' : d.t3, color: 'var(--ds-surface, #FFF)', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
-              <button onClick={resetForm} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${d.border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: d.t1, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? 'var(--cp-blue)' : d.t3, color: 'var(--ds-surface)', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
+              <button onClick={resetForm} style={{ fontSize: 'var(--ds-font-size-100)', padding: '4px 12px', borderRadius: 4, border: `1px solid ${d.border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: d.t1, cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>
         </div>
@@ -462,11 +462,11 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: STATE_COLORS[m.state] || d.t3 }} />
-              <span className="flex-1 truncate" style={{ fontSize: 12, fontWeight: 500, color: d.t1 }}>{m.name}</span>
-              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: d.t2 }}>{m.category}</span>
-              <span className="shrink-0" style={{ fontSize: 10, color: d.t3 }}>{m.state.replace(/_/g, ' ')}</span>
+              <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: d.t1 }}>{m.name}</span>
+              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: d.t2 }}>{m.category}</span>
+              <span className="shrink-0" style={{ fontSize: 'var(--ds-font-size-50)', color: d.t3 }}>{m.state.replace(/_/g, ' ')}</span>
               <button onClick={() => startEdit(m)} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Pencil size={12} color={d.t2} /></button>
-              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /></button>
+              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="var(--ds-text-danger, var(--cp-danger))" /></button>
             </div>
           ))}
         </div>
@@ -480,13 +480,13 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
   const d = dk(isDark);
   const activities = [
     {
-      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
       title: 'Theme created',
       detail: `Created by ${theme.owner_name || 'System'}`,
       time: theme.created_at,
     },
     ...(theme.updated_at !== theme.created_at ? [{
-      color: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+      color: 'var(--ds-text-success, var(--cp-success))',
       title: 'Last updated',
       detail: 'Theme details modified',
       time: theme.updated_at,
@@ -500,14 +500,14 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
       ) : (
         <div className="relative pl-6">
           {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)' }} />
+          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)' }} />
           {activities.map((a, i) => (
             <div key={i} className="relative flex items-start gap-3 mb-4">
-              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)'}` }} />
+              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)'}` }} />
               <div>
                 <p style={{ fontSize: 12.5, fontWeight: 500, color: d.t1 }}>{a.title}</p>
-                <p style={{ fontSize: 11, color: d.t2, marginBottom: 2 }}>{a.detail}</p>
-                <p style={{ fontSize: 10, color: d.t3 }}>{formatRelativeTime(a.time)}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-100)', color: d.t2, marginBottom: 2 }}>{a.detail}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-50)', color: d.t3 }}>{formatRelativeTime(a.time)}</p>
               </div>
             </div>
           ))}

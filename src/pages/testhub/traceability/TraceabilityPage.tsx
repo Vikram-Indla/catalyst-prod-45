@@ -168,11 +168,11 @@ export default function TraceabilityPage() {
           content: (
             <div>
               {g.displayKey && g.displayKey !== g.displayTitle && (
-                <div style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 2 }}>
                   {g.displayKey}
                 </div>
               )}
-              <div style={{ fontSize: 13, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }} title={g.displayTitle}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }} title={g.displayTitle}>
                 {g.displayTitle}
               </div>
             </div>
@@ -184,7 +184,7 @@ export default function TraceabilityPage() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {g.links.map(l => (
                 <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
-                  <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: 'var(--ds-text-subtle)' }}>
+                  <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                     {l.case_key ?? '—'}
                   </span>
                   <Lozenge appearance={execAppearance(l.exec_status)}>
@@ -235,8 +235,8 @@ export default function TraceabilityPage() {
               isLoading={false}
               emptyView={
                 <div style={{ textAlign: 'center', padding: '64px 24px', color: 'var(--ds-text-subtlest)' }}>
-                  <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
-                  <div style={{ fontSize: 14 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-400)' }}>
                     Open a test case → Requirements tab → Link requirement to start tracking coverage.
                   </div>
                 </div>
@@ -255,8 +255,8 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
   const color = accent === 'success' ? 'var(--ds-text-success)' : accent === 'danger' ? 'var(--ds-text-danger)' : 'var(--ds-text)';
   return (
     <div>
-      <div style={{ fontSize: 24, fontWeight: 600, color, lineHeight: 1, marginBottom: 4 }}>{value}</div>
-      <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color, lineHeight: 1, marginBottom: 4 }}>{value}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{label}</div>
     </div>
   );
 }

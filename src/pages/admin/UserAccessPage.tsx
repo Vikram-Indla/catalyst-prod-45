@@ -351,7 +351,7 @@ export default function UserAccessPage() {
       style={{
         padding: '24px 32px 48px',
         maxWidth: 1280,
-        color: 'var(--ds-text, #292A2E)',
+        color: 'var(--ds-text)',
         fontFamily: 'var(--ds-font-family-body)',
       }}
     >
@@ -368,10 +368,10 @@ export default function UserAccessPage() {
         <div style={{ flex: 1 }}>
           <h1
             style={{
-              fontSize: 24,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 653,
               lineHeight: '28px',
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
               margin: 0,
               letterSpacing: 'normal',
             }}
@@ -391,9 +391,9 @@ export default function UserAccessPage() {
       </div>
       <p
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
-          color: 'var(--ds-text-subtle, #505258)',
+          color: 'var(--ds-text-subtle)',
           margin: '0 0 24px 0',
           lineHeight: '20px',
           maxWidth: 760,
@@ -426,8 +426,8 @@ export default function UserAccessPage() {
         </div>
         <span
           style={{
-            fontSize: 12,
-            color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 'var(--ds-font-size-200)',
+            color: 'var(--ds-text-subtle)',
             fontWeight: 500,
           }}
         >
@@ -441,14 +441,14 @@ export default function UserAccessPage() {
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           <thead
             style={{
               position: 'sticky',
               top: 0,
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--ds-surface)',
               zIndex: 10,
             }}
           >
@@ -466,9 +466,9 @@ export default function UserAccessPage() {
                   scope="col"
                   style={{
                     textAlign: col.align,
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 653,
-                    color: 'var(--ds-text-subtle, #505258)',
+                    color: 'var(--ds-text-subtle)',
                     padding: '8px 12px 8px 0',
                     borderBottom: '1.67px solid var(--ds-border, rgba(11, 18, 14, 0.14))',
                     textTransform: 'none',
@@ -485,24 +485,24 @@ export default function UserAccessPage() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
                     Loading resources…
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
                     No resources found
                   </td>
                 </tr>
               ) : (
                 filteredUsers.map((user) => (
                   <tr key={user.id}>
-                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'var(--ds-font-family-code)', fontSize: 13, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
+                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {user.rid || '—'}
                     </td>
-                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>{user.name}</td>
-                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
+                    <td style={{ padding: '12px 12px 12px 0', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>{user.name}</td>
+                    <td style={{ padding: '12px 12px 12px 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {editingEmailId === user.id ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <div style={{ width: '180px' }}>
@@ -528,13 +528,13 @@ export default function UserAccessPage() {
                             onClick={() => updateEmailMutation.mutate({ resourceId: user.id, email: editingEmailValue })}
                             disabled={updateEmailMutation.isPending}
                           >
-                            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-success, #1F845A)' }}><CheckMarkIcon label="Save email" size="small" /></span>
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-success)' }}><CheckMarkIcon label="Save email" size="small" /></span>
                           </button>
                           <button
                             style={{ height: 28, width: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 3, background: 'transparent', border: 'none', cursor: 'pointer' }}
                             onClick={() => { setEditingEmailId(null); setEditingEmailValue(''); }}
                           >
-                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #505258)' }}><CrossIcon label="Cancel" size="small" /></span>
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle)' }}><CrossIcon label="Cancel" size="small" /></span>
                           </button>
                         </div>
                       ) : (
@@ -542,8 +542,8 @@ export default function UserAccessPage() {
                           className="group"
                           style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', transition: 'color 120ms ease' }}
                           onClick={() => { setEditingEmailId(user.id); setEditingEmailValue(user.email || ''); }}
-                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)')}
-                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #505258)')}
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text)')}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle)')}
                         >
                           {user.email ? (
                             <>
@@ -551,9 +551,9 @@ export default function UserAccessPage() {
                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</span>
                             </>
                           ) : (
-                            <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>No email</span>
+                            <span style={{ color: 'var(--ds-text-subtlest)' }}>No email</span>
                           )}
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #505258)' }}><EditIcon label="" size="small" /></span>
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle)' }}><EditIcon label="" size="small" /></span>
                         </div>
                       )}
                     </td>
@@ -579,12 +579,12 @@ export default function UserAccessPage() {
                                   roleId: opt.value === 'none' ? null : opt.value,
                                 });
                               }}
-                              styles={{ control: (base: object) => ({ ...base, minHeight: 32, height: 32, fontSize: 14 }) }}
+                              styles={{ control: (base: object) => ({ ...base, minHeight: 32, height: 32, fontSize: 'var(--ds-font-size-400)' }) }}
                             />
                           );
                         })()
                       ) : (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                           <span style={{ display: 'inline-flex' }}><ShieldIcon label="" size="small" /></span>
                           No email
                         </span>
@@ -612,11 +612,11 @@ export default function UserAccessPage() {
                           </Button>
                         </div>
                       ) : user.email ? (
-                        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                           Assign role to authorize
                         </span>
                       ) : (
-                        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                           No email
                         </span>
                       )}
@@ -633,7 +633,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonAddIcon label="" size="medium" /></span>
+              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand)' }}><PersonAddIcon label="" size="medium" /></span>
               Create Account
             </DialogTitle>
             <DialogDescription>
@@ -642,7 +642,7 @@ export default function UserAccessPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
               This will create a new Catalyst login. The user will receive a password reset email to set their own password.
             </p>
           </div>
@@ -666,7 +666,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PeopleGroupIcon label="" size="medium" /></span>
+              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand)' }}><PeopleGroupIcon label="" size="medium" /></span>
               Bulk Create Accounts
             </DialogTitle>
             <DialogDescription>
@@ -677,17 +677,17 @@ export default function UserAccessPage() {
           <div className="py-4 space-y-3">
             {bulkProgress ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
                   Creating accounts… {bulkProgress.done} / {bulkProgress.total}
                 </p>
-                <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+                <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral)' }}>
                   <div
                     className="h-2 rounded-full transition-all"
-                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%`, background: 'var(--ds-background-brand-bold, var(--ds-link, #0C66E4))' }}
+                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%`, background: 'var(--ds-background-brand-bold, var(--ds-link))' }}
                   />
                 </div>
                 {bulkProgress.errors.length > 0 && (
-                  <div className="text-xs max-h-24 overflow-y-auto" style={{ color: 'var(--ds-background-danger-bold, #CA3521)' }}>
+                  <div className="text-xs max-h-24 overflow-y-auto" style={{ color: 'var(--ds-background-danger-bold)' }}>
                     {bulkProgress.errors.map((err, i) => (
                       <p key={i}>{err}</p>
                     ))}
@@ -696,10 +696,10 @@ export default function UserAccessPage() {
               </div>
             ) : (
               <>
-                <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
                   Each user will receive a password reset email to set their own password on first login.
                 </p>
-                <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+                <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))', border: '1px solid var(--ds-border)' }}>
                   {usersNeedingAccounts.map(u => (
                     <p key={u.id}>{u.name} ({u.email})</p>
                   ))}

@@ -217,32 +217,32 @@ export const TEST_STATUS_CONFIG: Record<TestCaseStatus, {
 }> = {
   passed: { 
     label: 'Passed', 
-    bgClass: 'bg-[var(--ds-background-success, #DCFFF1)]', 
-    textClass: 'text-[var(--ds-chart-teal-bold, #0d9488)]',
+    bgClass: 'bg-[var(--ds-background-success)]', 
+    textClass: 'text-[var(--ds-chart-teal-bold)]',
     icon: 'check'
   },
   failed: { 
     label: 'Failed', 
-    bgClass: 'bg-[var(--ds-background-danger, #FFECEB)]', 
-    textClass: 'text-[var(--ds-background-danger-bold, #dc2626)]',
+    bgClass: 'bg-[var(--ds-background-danger)]', 
+    textClass: 'text-[var(--ds-background-danger-bold)]',
     icon: 'x'
   },
   blocked: { 
     label: 'Blocked', 
-    bgClass: 'bg-[var(--ds-background-warning, #FFF7D6)]', 
-    textClass: 'text-[var(--ds-background-warning-bold, #b45309)]',
+    bgClass: 'bg-[var(--ds-background-warning)]', 
+    textClass: 'text-[var(--ds-background-warning-bold)]',
     icon: 'ban'
   },
   'not-run': { 
     label: 'Not Run', 
-    bgClass: 'bg-[var(--ds-surface-sunken, #F7F8F9)]', 
-    textClass: 'text-[var(--ds-text-subtlest, #626F86)]',
+    bgClass: 'bg-[var(--ds-surface-sunken)]', 
+    textClass: 'text-[var(--ds-text-subtlest)]',
     icon: 'circle'
   },
   'in-progress': { 
     label: 'In Progress', 
-    bgClass: 'bg-[var(--ds-background-information, #E9F2FF)]', 
-    textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]',
+    bgClass: 'bg-[var(--ds-background-information)]', 
+    textClass: 'text-[var(--cp-workstream-catalyst-primary)]',
     icon: 'dot'
   },
 };
@@ -254,23 +254,23 @@ export const PRIORITY_CONFIG: Record<TestCasePriority, {
 }> = {
   critical: { 
     label: 'Critical', 
-    bgClass: 'bg-[var(--ds-background-danger, #FFECEB)]', 
-    textClass: 'text-[var(--ds-background-danger-bold, #dc2626)]'
+    bgClass: 'bg-[var(--ds-background-danger)]', 
+    textClass: 'text-[var(--ds-background-danger-bold)]'
   },
   high: { 
     label: 'High', 
-    bgClass: 'bg-[var(--ds-background-warning, #FFF7D6)]', 
-    textClass: 'text-[var(--ds-background-warning-bold, #b45309)]'
+    bgClass: 'bg-[var(--ds-background-warning)]', 
+    textClass: 'text-[var(--ds-background-warning-bold)]'
   },
   medium: { 
     label: 'Medium', 
-    bgClass: 'bg-[var(--ds-background-information, #E9F2FF)]', 
-    textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]'
+    bgClass: 'bg-[var(--ds-background-information)]', 
+    textClass: 'text-[var(--cp-workstream-catalyst-primary)]'
   },
   low: { 
     label: 'Low', 
-    bgClass: 'bg-[var(--ds-surface-sunken, #F7F8F9)]', 
-    textClass: 'text-[var(--ds-text-subtlest, #626F86)]'
+    bgClass: 'bg-[var(--ds-surface-sunken)]', 
+    textClass: 'text-[var(--ds-text-subtlest)]'
   },
 };
 
@@ -281,17 +281,17 @@ export const SEVERITY_CONFIG: Record<DefectSeverity, {
 }> = {
   critical: { 
     label: 'Critical', 
-    bgClass: 'bg-[var(--ds-background-danger, #FFECEB)]', 
-    textClass: 'text-[var(--ds-background-danger-bold, #dc2626)]'
+    bgClass: 'bg-[var(--ds-background-danger)]', 
+    textClass: 'text-[var(--ds-background-danger-bold)]'
   },
   major: { 
     label: 'Major', 
-    bgClass: 'bg-[var(--ds-background-warning, #FFF7D6)]', 
-    textClass: 'text-[var(--ds-background-warning-bold, #b45309)]'
+    bgClass: 'bg-[var(--ds-background-warning)]', 
+    textClass: 'text-[var(--ds-background-warning-bold)]'
   },
   minor: { 
     label: 'Minor', 
-    bgClass: 'bg-[var(--ds-background-information, #E9F2FF)]', 
-    textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]'
+    bgClass: 'bg-[var(--ds-background-information)]', 
+    textClass: 'text-[var(--cp-workstream-catalyst-primary)]'
   },
 };

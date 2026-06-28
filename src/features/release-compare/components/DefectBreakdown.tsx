@@ -15,10 +15,10 @@ interface DefectBreakdownProps {
 
 export function DefectBreakdown({ blocker, critical, major, minor, isWinner }: DefectBreakdownProps) {
   const severities = [
-    { label: 'B', count: blocker, color: 'var(--ds-text-danger, #ef4444)' },  // Danger
-    { label: 'C', count: critical, color: 'var(--ds-text-warning, #d97706)' }, // Warning
-    { label: 'M', count: major, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },    // Primary
-    { label: 'm', count: minor, color: 'var(--ds-text-subtlest, #94a3b8)' },    // Gray 400
+    { label: 'B', count: blocker, color: 'var(--ds-text-danger)' },  // Danger
+    { label: 'C', count: critical, color: 'var(--ds-text-warning)' }, // Warning
+    { label: 'M', count: major, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },    // Primary
+    { label: 'm', count: minor, color: 'var(--ds-text-subtlest)' },    // Gray 400
   ];
   
   return (
@@ -26,7 +26,7 @@ export function DefectBreakdown({ blocker, critical, major, minor, isWinner }: D
       {isWinner && (
         <div 
           className="absolute -top-1 -right-1 text-lg z-10"
-          style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}
+          style={{ color: 'var(--ds-chart-teal-bold)' }}
         >
           ★
         </div>

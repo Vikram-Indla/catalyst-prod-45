@@ -43,7 +43,7 @@ const proficiencyData: ProficiencyData[] = [
   { level: 'Expert', count: 52, percentage: 21, colorClass: 'var(--health-green)' },
   { level: 'Advanced', count: 69, percentage: 28, colorClass: 'var(--sem-info)' },
   { level: 'Intermediate', count: 74, percentage: 30, colorClass: 'var(--sem-warning)' },
-  { level: 'Beginner', count: 37, percentage: 15, colorClass: 'var(--ds-background-discovery-bold, #7B2FCC)' },
+  { level: 'Beginner', count: 37, percentage: 15, colorClass: 'var(--ds-background-discovery-bold)' },
   { level: 'Awareness', count: 15, percentage: 6, colorClass: 'var(--fg-3)' },
 ];
 
@@ -88,7 +88,7 @@ export const SkillsInventoryReport: React.FC = () => {
         scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'
       });
       
       const imgData = canvas.toDataURL('image/png');

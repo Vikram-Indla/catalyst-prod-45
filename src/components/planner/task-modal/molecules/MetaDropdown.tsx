@@ -42,7 +42,7 @@ export const MetaDropdown: React.FC<MetaDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentColor = colorMap[value] || 'var(--ds-text-subtlest, #94a3b8)';
+  const currentColor = colorMap[value] || 'var(--ds-text-subtlest)';
 
   return (
     <div 
@@ -81,7 +81,7 @@ export const MetaDropdown: React.FC<MetaDropdownProps> = ({
         {/* TEXT */}
         <span style={{ 
           flex: 1, 
-          fontSize: '14px', 
+          fontSize: 'var(--ds-font-size-400)', 
           fontWeight: 500, 
           color: COLORS.textPrimary 
         }}>
@@ -163,7 +163,7 @@ const DropdownItem: React.FC<{
       }}
     >
       <ColorDot color={color} size={10} />
-      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>{value}</span>
     </div>
   );
 };

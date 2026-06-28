@@ -23,7 +23,7 @@ export function SelectAllRow({ totalCount, selectedCount, onToggle }: SelectAllR
         border: 'none',
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: 'var(--cv2-text)',
         fontWeight: 500,
         textAlign: 'left',
@@ -45,7 +45,7 @@ export function SelectAllRow({ totalCount, selectedCount, onToggle }: SelectAllR
         }}
       >
         {allSelected && (
-          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
             <path d="M5 13l4 4L19 7" />
           </svg>
         )}
@@ -54,7 +54,7 @@ export function SelectAllRow({ totalCount, selectedCount, onToggle }: SelectAllR
             style={{
               width: 8,
               height: 2,
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--ds-surface)',
               borderRadius: 1,
             }}
           />

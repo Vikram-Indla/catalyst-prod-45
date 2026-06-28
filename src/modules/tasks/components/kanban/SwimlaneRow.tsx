@@ -14,11 +14,11 @@ import type { SwimlaneGrouping } from './KanbanFilters';
 
 // Status colors for summary badges
 const STATUS_DOT_COLORS: Record<string, string> = {
-  'backlog': 'var(--ds-text-subtlest, #626F86)',
-  'planned': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'in-progress': 'var(--ds-text-warning, #d97706)',
-  'review': 'var(--ds-background-discovery-bold, #6E5DC6)',
-  'done': 'var(--ds-background-success-bold, #1F845A)',
+  'backlog': 'var(--ds-text-subtlest)',
+  'planned': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'in-progress': 'var(--ds-text-warning)',
+  'review': 'var(--ds-background-discovery-bold)',
+  'done': 'var(--ds-background-success-bold)',
 };
 
 interface SwimlaneRowProps {

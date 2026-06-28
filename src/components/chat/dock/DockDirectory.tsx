@@ -203,12 +203,12 @@ function DmStackAvatar({ c, onCall = false }: { c: ChatConversation; onCall?: bo
         title="On a huddle"
         style={{
           position: 'absolute', insetInlineEnd: -2, insetBlockEnd: -2, width: 15, height: 15,
-          borderRadius: '50%', background: 'var(--ds-icon-success, #22A06B)',
+          borderRadius: '50%', background: 'var(--ds-icon-success)',
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)',
+          boxShadow: '0 0 0 2px var(--ds-surface-overlay)',
         }}
       >
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-inverse)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14h3v6H6a2 2 0 0 1-2-2zM20 14h-3v6h1a2 2 0 0 0 2-2z" />
         </svg>
       </span>
@@ -250,7 +250,7 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
             <span className="cc-dir__name">
               {titleOverride ?? c.title}
               {c.isMuted && (
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} className="cc-dir__muted-icon" aria-label="Muted">
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest)" strokeWidth={2} className="cc-dir__muted-icon" aria-label="Muted">
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                   <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
                   <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14" />
@@ -1087,7 +1087,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         {/* First-run welcome — shown when user has no live conversations yet */}
         {!isLoading && !query && live.length === 0 && (
           <div className="cc-dir__first-run">
-            <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.2} aria-hidden>
+            <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest)" strokeWidth={1.2} aria-hidden>
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
             <div className="cc-dir__first-run-title">Welcome to Messages</div>
@@ -1123,7 +1123,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         {/* Collapsed-all nudge — visible only when no rows are visible and search is empty */}
         {!isLoading && !query && live.length > 0 && collapsed['dms'] && collapsed['tickets'] && collapsed['projects'] && collapsed['people'] && (
           <div className="cc-dir__collapsed-nudge">
-            <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.5} aria-hidden>
+            <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest)" strokeWidth={1.5} aria-hidden>
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
             <div>

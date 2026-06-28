@@ -73,7 +73,7 @@ const IcSpeaker = ({ size = 15, color = 'currentColor', muted = false }) => (
     )}
   </svg>
 );
-const IcCheck = ({ size = 13, color = 'var(--ds-background-success-bold, #1F845A)', strokeWidth = 2 }: { size?: number; color?: string; strokeWidth?: number }) => (
+const IcCheck = ({ size = 13, color = 'var(--ds-background-success-bold)', strokeWidth = 2 }: { size?: number; color?: string; strokeWidth?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M2 8l5 5 7-7" />
   </svg>
@@ -431,17 +431,17 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
   const ss = String(seconds % 60).padStart(2, '0');
   const timerPct = 1 - seconds / timerDuration;
-  const timerColor = seconds <= 15 ? 'var(--ds-background-danger-bold, #C9372C)' : seconds <= 30 ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))';
+  const timerColor = seconds <= 15 ? 'var(--ds-background-danger-bold)' : seconds <= 30 ? 'var(--ds-background-warning-bold)' : 'var(--ds-text-brand,var(--cp-primary-60))';
   const total = order.length;
   const isLast = step === total - 1;
 
   if (buckets.length === 0) {
     return (
       <div style={panelWrapStyle(tk, docked)}>
-        <div style={{ padding: '12px 14px 8px', fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+        <div style={{ padding: '12px 14px 8px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
         </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.textMuted, fontSize: 13, padding: 24, fontFamily: 'var(--cp-font-body)', textAlign: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.textMuted, fontSize: 'var(--ds-font-size-300)', padding: 24, fontFamily: 'var(--cp-font-body)', textAlign: 'center' }}>
           No team members with issues on the board.
         </div>
       </div>
@@ -455,7 +455,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '14px 16px 10px',
       }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -553,7 +553,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          <IcShuffle size={16} color="var(--ds-text-subtle, #44546F)" />
+          <IcShuffle size={16} color="var(--ds-text-subtle)" />
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <NavStepBtn
@@ -620,9 +620,9 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                 display: 'flex', alignItems: 'center', gap: 10,
                 cursor: 'pointer',
                 background: isSelected
-                  ? 'var(--ds-background-selected,#DEEBFF)'
+                  ? 'var(--ds-background-selected)'
                   : isHovered ? tk.surfaceHover : 'transparent',
-                border: `1px solid ${isSelected ? 'var(--ds-border-selected, #0C66E4)' : 'transparent'}`,
+                border: `1px solid ${isSelected ? 'var(--ds-border-selected)' : 'transparent'}`,
                 borderRadius: 6,
                 marginBottom: 2,
                 fontFamily: 'var(--cp-font-body)',
@@ -645,8 +645,8 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                            padding all around — sits centred, doesn't fill
                            the whole circle. */
                       width: 20, height: 20, borderRadius: '50%',
-                      background: 'var(--ds-icon-success, #1F845A)',
-                      border: '3px solid var(--ds-surface, #FFFFFF)',
+                      background: 'var(--ds-icon-success)',
+                      border: '3px solid var(--ds-surface)',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       pointerEvents: 'none',
                       boxSizing: 'border-box',
@@ -656,14 +656,14 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                         not stroke), which renders as a proper bold checkmark
                         at any size — unlike stroke-based glyphs that look
                         chevron-y when shrunk down. */}
-                    <EditorDoneIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
+                    <EditorDoneIcon label="" size="small" primaryColor="var(--ds-surface)" />
                   </span>
                 )}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
                   fontSize: nameSize, fontWeight: isSelected ? 600 : 500,
-                  color: isSelected ? 'var(--ds-link,var(--cp-primary-60, #0052CC))' : tk.textPrimary,
+                  color: isSelected ? 'var(--ds-link,var(--cp-primary-60))' : tk.textPrimary,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {b.name}
@@ -686,12 +686,12 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                     border: 'none', borderRadius: 4,
                     background: 'transparent',
                     cursor: 'pointer', padding: 0,
-                    color: 'var(--ds-text-subtle, #44546F)',
+                    color: 'var(--ds-text-subtle)',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                 >
-                  <CrossIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+                  <CrossIcon label="" size="small" primaryColor="var(--ds-text-subtle)" />
                 </button>
               )}
             </div>
@@ -714,14 +714,14 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
             height: 30, padding: '0 12px',
             border: 'none', background: 'transparent',
             borderRadius: 4, cursor: 'pointer',
-            fontSize: 13, fontWeight: 500,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
             color: tk.textSecondary,
             fontFamily: 'var(--cp-font-body)',
           }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          <FeedbackIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+          <FeedbackIcon label="" size="small" primaryColor="var(--ds-text-subtle)" />
           <span>Give feedback</span>
         </button>
       </div>
@@ -737,7 +737,7 @@ function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '10px 14px 8px', borderBottom: `1px solid ${tk.border}`,
     }}>
-      <span style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
         Daily Standup
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -745,12 +745,12 @@ function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd
         <button
           onClick={onEnd}
           style={{
-            fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, height: 26, padding: '0 10px',
             borderRadius: 3, border: 'none',
             background: 'transparent', cursor: 'pointer',
-            color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
+            color: 'var(--ds-text-danger)', fontFamily: 'var(--cp-font-body)',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger-hovered,#FFEBE6)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger-hovered)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           End standup
@@ -766,7 +766,7 @@ function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd
    state so users understand why recording isn't happening. */
 function MicIndicator({ status }: { status: StandupSpeechStatus }) {
   const isListening = status === 'listening';
-  const strokeColor = 'var(--ds-text-subtle, #44546F)';
+  const strokeColor = 'var(--ds-text-subtle)';
   const title =
     status === 'listening' ? 'Recording standup audio for AI summary'
     : status === 'denied' ? 'Microphone permission denied — no transcript will be captured'
@@ -794,7 +794,7 @@ function MicIndicator({ status }: { status: StandupSpeechStatus }) {
         <span
           style={{
             width: 9, height: 9, borderRadius: '50%',
-            background: 'var(--ds-icon-information, #1D7AFC)',
+            background: 'var(--ds-icon-information)',
             animation: 'standup-mic-pulse 1.4s ease-in-out infinite',
             flexShrink: 0,
           }}
@@ -815,12 +815,12 @@ function IconBtn({ onClick, title, children, tk, active }: {
       title={title}
       style={{
         width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        borderRadius: 4, border: `1px solid ${active ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : 'transparent'}`,
-        background: active ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
+        borderRadius: 4, border: `1px solid ${active ? 'var(--ds-text-brand,var(--cp-primary-60))' : 'transparent'}`,
+        background: active ? 'var(--ds-background-selected)' : 'transparent',
         cursor: 'pointer', flexShrink: 0,
       }}
       onMouseEnter={e => { if (!active) e.currentTarget.style.background = tk.surfaceHover; }}
-      onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent'; }}
+      onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'var(--ds-background-selected)' : 'transparent'; }}
     >
       {children}
     </button>
@@ -868,9 +868,9 @@ function navBtnStyle(tk: KanbanThemeTokens, primary: boolean, disabled: boolean)
     display: 'inline-flex', alignItems: 'center', gap: 4,
     height: 30, padding: '0 12px', borderRadius: 3, border: 'none',
     cursor: disabled ? 'default' : 'pointer',
-    fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-    color: disabled ? tk.textDisabled : primary ? 'var(--ds-text-inverse, #FFFFFF)' : tk.textPrimary,
-    background: disabled ? tk.chipBg : primary ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : tk.surfaceHover,
+    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+    color: disabled ? tk.textDisabled : primary ? 'var(--ds-text-inverse)' : tk.textPrimary,
+    background: disabled ? tk.chipBg : primary ? 'var(--ds-text-brand,var(--cp-primary-60))' : tk.surfaceHover,
     opacity: disabled ? 0.4 : 1,
     whiteSpace: 'nowrap',
   };
@@ -898,28 +898,28 @@ function SettingsTrigger({
       style={{
         width: 32, height: 32,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'transparent'}`,
+        border: `1px solid ${active ? 'var(--ds-border-selected)' : 'transparent'}`,
         background: active
-          ? 'var(--ds-background-information, #E9F2FE)'
+          ? 'var(--ds-background-information)'
           : 'transparent',
         borderRadius: 4, cursor: 'pointer', padding: 0,
-        color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #44546F)',
+        color: active ? 'var(--ds-link)' : 'var(--ds-text-subtle)',
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background = active
-          ? 'var(--ds-background-information-hovered, #CCE0FF)'
+          ? 'var(--ds-background-information-hovered)'
           : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background = active
-          ? 'var(--ds-background-information, #E9F2FE)'
+          ? 'var(--ds-background-information)'
           : 'transparent';
       }}
     >
       <PreferencesIcon
         label=""
         size="medium"
-        primaryColor={active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #44546F)'}
+        primaryColor={active ? 'var(--ds-link)' : 'var(--ds-text-subtle)'}
       />
     </button>
   );
@@ -983,7 +983,7 @@ function SettingsDropdown({
       {/* Section 1 — Density */}
       <div style={{ padding: '0 14px 8px' }}>
         <div style={{
-          fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
           textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6,
         }}>Density</div>
         <RadioOption
@@ -1021,7 +1021,7 @@ function SettingsDropdown({
       {/* Section 3 — Timer Duration chips */}
       <div style={{ padding: '0 14px 4px' }}>
         <div style={{
-          fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
           textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
         }}>Timer duration (min)</div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -1035,23 +1035,23 @@ function SettingsDropdown({
                 onClick={() => onTimerDurationChange(secs)}
                 style={{
                   width: 40, height: 30, borderRadius: 4,
-                  border: `1px solid ${selected ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                  border: `1px solid ${selected ? 'var(--ds-border-selected)' : 'var(--ds-border)'}`,
                   background: selected
-                    ? 'var(--ds-background-information, #E9F2FE)'
-                    : 'var(--ds-surface, #FFFFFF)',
-                  color: selected ? 'var(--ds-link, #0C66E4)' : tk.textPrimary,
-                  fontSize: 13, fontWeight: 600,
+                    ? 'var(--ds-background-information)'
+                    : 'var(--ds-surface)',
+                  color: selected ? 'var(--ds-link)' : tk.textPrimary,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = selected
-                    ? 'var(--ds-background-information-hovered, #CCE0FF)'
+                    ? 'var(--ds-background-information-hovered)'
                     : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = selected
-                    ? 'var(--ds-background-information, #E9F2FE)'
-                    : 'var(--ds-surface, #FFFFFF)';
+                    ? 'var(--ds-background-information)'
+                    : 'var(--ds-surface)';
                 }}
               >
                 {m}
@@ -1115,17 +1115,17 @@ function RadioOption({
       <span style={{
         width: 16, height: 16, borderRadius: '50%',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        border: `2px solid ${checked ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #C1C7D0)'}`,
+        border: `2px solid ${checked ? 'var(--ds-border-selected)' : 'var(--ds-border)'}`,
         background: 'transparent', flexShrink: 0,
       }}>
         {checked && (
           <span style={{
             width: 8, height: 8, borderRadius: '50%',
-            background: 'var(--ds-border-selected, #0C66E4)',
+            background: 'var(--ds-border-selected)',
           }} />
         )}
       </span>
-      <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text, #292A2E)' }}>{label}</span>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>{label}</span>
       {rightHint}
     </button>
   );
@@ -1141,7 +1141,7 @@ function ToggleRow({
       padding: '8px 0',
     }}>
       <span style={{
-        flex: 1, fontSize: 13, color: 'var(--ds-text, #292A2E)',
+        flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
         lineHeight: '18px',
       }}>{label}</span>
       <PillToggle value={value} onChange={onChange} />
@@ -1160,7 +1160,7 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
       style={{
         width: 44, height: 24, borderRadius: 12,
         border: 'none', padding: 2,
-        background: value ? '#4F7B26' : 'var(--ds-text, #172B4D)',
+        background: value ? '#4F7B26' : 'var(--ds-text)',
         display: 'inline-flex', alignItems: 'center',
         justifyContent: 'space-between',
         cursor: 'pointer', flexShrink: 0,
@@ -1172,24 +1172,24 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
         <>
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 16, height: 16, color: 'var(--ds-surface, #FFFFFF)', marginLeft: 2,
+            width: 16, height: 16, color: 'var(--ds-surface)', marginLeft: 2,
           }}>
-            <CheckIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
+            <CheckIcon label="" size="small" primaryColor="var(--ds-surface)" />
           </span>
           <span style={{
-            width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface, #FFFFFF)',
+            width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface)',
           }} />
         </>
       ) : (
         <>
           <span style={{
-            width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface, #FFFFFF)',
+            width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface)',
           }} />
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 16, height: 16, color: 'var(--ds-surface, #FFFFFF)', marginRight: 2,
+            width: 16, height: 16, color: 'var(--ds-surface)', marginRight: 2,
           }}>
-            <CrossIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
+            <CrossIcon label="" size="small" primaryColor="var(--ds-surface)" />
           </span>
         </>
       )}
@@ -1209,13 +1209,13 @@ function NavStepBtn({
       disabled={disabled}
       style={{
         height: 30, padding: '0 12px',
-        border: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-surface, #FFFFFF)',
+        border: '1px solid var(--ds-border)',
+        background: 'var(--ds-surface)',
         borderRadius: 4,
-        fontSize: 13, fontWeight: 500,
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
         color: disabled
-          ? 'var(--ds-text-disabled, #B3B9C4)'
-          : 'var(--ds-text, #292A2E)',
+          ? 'var(--ds-text-disabled)'
+          : 'var(--ds-text)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
       }}
@@ -1224,7 +1224,7 @@ function NavStepBtn({
         (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)';
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface)';
       }}
     >
       {label}
@@ -1238,7 +1238,7 @@ function NavStepBtn({
 function CircleCtrlBtn({
   onClick, title, kind,
 }: { onClick: () => void; title: string; kind: 'play' | 'pause' | 'stop' }) {
-  const glyphColor = 'var(--ds-icon, #44546F)';
+  const glyphColor = 'var(--ds-icon)';
   return (
     <button
       type="button"
@@ -1248,14 +1248,14 @@ function CircleCtrlBtn({
       style={{
         width: 22, height: 22,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         borderRadius: '50%',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         cursor: 'pointer', padding: 0,
         color: glyphColor,
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface)'; }}
     >
       {kind === 'play' && <VidPlayIcon label="" size="small" primaryColor={glyphColor} />}
       {kind === 'pause' && <VidPauseIcon label="" size="small" primaryColor={glyphColor} />}
@@ -1284,7 +1284,7 @@ function BuzzerBtn({
       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
     >
-      <IcSpeaker size={20} color="var(--ds-text-subtle, #44546F)" muted={muted} />
+      <IcSpeaker size={20} color="var(--ds-text-subtle)" muted={muted} />
     </button>
   );
 }

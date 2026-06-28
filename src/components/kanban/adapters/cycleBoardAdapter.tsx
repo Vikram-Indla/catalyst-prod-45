@@ -100,7 +100,7 @@ export function cycleItemToCanonicalIssue(item: CycleExecutionItem): CanonicalBo
    Icon resolver — test tube (Beaker).
    ═══════════════════════════════════════════════════════════════════════ */
 
-const CYCLE_ICON_COLOR = 'var(--ds-background-information-bold, #1D7AFC)';
+const CYCLE_ICON_COLOR = 'var(--ds-background-information-bold)';
 
 export function resolveCycleIcon(_card: BoardIssue): ReactNode | null {
   return <Beaker size={14} strokeWidth={2} style={{ color: CYCLE_ICON_COLOR }} />;

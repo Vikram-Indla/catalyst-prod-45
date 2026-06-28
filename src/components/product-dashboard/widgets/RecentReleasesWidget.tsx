@@ -26,18 +26,18 @@ function OutcomeLozenge({ outcome }: { outcome: Outcome }) {
   const config: Record<Outcome, { label: string; bg: string; color: string }> = {
     clean: {
       label: 'Clean release',
-      bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'),
-      color: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
+      bg: token('color.background.success', 'var(--ds-background-success)'),
+      color: token('color.text.success', 'var(--ds-text-success)'),
     },
     broke: {
       label: 'Production incident',
-      bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
-      color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+      bg: token('color.background.danger', 'var(--ds-background-danger)'),
+      color: token('color.text.danger', 'var(--ds-text-danger)'),
     },
     minor: {
       label: 'Minor issue',
-      bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
-      color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
+      bg: token('color.background.warning', 'var(--ds-background-warning)'),
+      color: token('color.text.warning', 'var(--ds-text-warning)'),
     },
   };
   const { label, bg, color } = config[outcome];
@@ -47,7 +47,7 @@ function OutcomeLozenge({ outcome }: { outcome: Outcome }) {
         display: 'inline-block',
         padding: '2px 8px',
         borderRadius: 3,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '16px',
         fontWeight: 600,
         textTransform: 'uppercase',
@@ -70,11 +70,11 @@ function TypePill({ label }: { label: string }) {
         display: 'inline-block',
         padding: '1px 8px',
         borderRadius: 10,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '16px',
         fontWeight: 500,
-        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
       }}
     >
       {label}
@@ -119,7 +119,7 @@ export function RecentReleasesWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
@@ -156,8 +156,8 @@ export function RecentReleasesWidget() {
             data-testid="recent-releases-empty"
             style={{
               padding: 24,
-              fontSize: 13,
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              fontSize: 'var(--ds-font-size-300)',
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textAlign: 'center',
             }}
           >
@@ -168,7 +168,7 @@ export function RecentReleasesWidget() {
             style={{
               width: '100%',
               borderCollapse: 'collapse',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             <thead>
@@ -179,10 +179,10 @@ export function RecentReleasesWidget() {
                     style={{
                       textAlign: 'left',
                       padding: '10px 12px',
-                      borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                      fontSize: 11,
+                      borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
-                      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       whiteSpace: 'nowrap',
@@ -201,7 +201,7 @@ export function RecentReleasesWidget() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={e => {
                     Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(
-                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); },
+                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral))'); },
                     );
                   }}
                   onMouseLeave={e => {
@@ -210,35 +210,35 @@ export function RecentReleasesWidget() {
                     );
                   }}
                 >
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`, verticalAlign: 'middle' }}>
                     <span
                       style={{
                         fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
-                        color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                        color: token('color.link', 'var(--ds-link)'),
                       }}
                     >
                       {brKey(item.id)}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`, verticalAlign: 'middle' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>
                       {item.title}
                     </div>
                     {item.assignee && (
-                      <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), marginTop: 2 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), marginTop: 2 }}>
                         {item.process_step} · Assignee: {item.assignee}
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                     {daysAgo(item.entered_step_at)}
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`, verticalAlign: 'middle' }}>
                     <TypePill label="Feature" />
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`, verticalAlign: 'middle' }}>
                     <OutcomeLozenge outcome="clean" />
                   </td>
                 </tr>

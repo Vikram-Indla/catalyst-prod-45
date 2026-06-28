@@ -21,9 +21,9 @@ interface RoadmapListPanelProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  enhancement: 'var(--cp-teal-60, #0D9488)',
-  improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  enhancement: 'var(--cp-teal-60)',
+  improvement: 'var(--ds-text-warning, var(--cp-warning))',
 };
 
 export function RoadmapListPanel({
@@ -33,29 +33,29 @@ export function RoadmapListPanel({
   const renderHeader = () => (
     <div
       className="flex items-center justify-between px-4"
-      style={{ height: 44, borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--ds-surface-sunken, #FAFBFC)' }}
+      style={{ height: 44, borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', background: 'var(--ds-surface-sunken)' }}
     >
       <div className="flex items-center gap-2">
-        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
           Business Requests
         </span>
         <span
           style={{
-            fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
             borderRadius: 12, padding: '2px 7px', fontFamily: 'var(--cp-font-mono)',
           }}
         >
           {items.length}
         </span>
       </div>
-      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
     </div>
   );
 
   const renderAddRow = () => (
     <button
       className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors hover:bg-blue-50"
-      style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}
+      style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))' }}
     >
       <Plus className="w-4 h-4" />
       Add Business Request to Roadmap
@@ -65,24 +65,24 @@ export function RoadmapListPanel({
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
         {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="table">
             {groups.map(group => {
               const typeKey = group.key;
-              const color = TYPE_COLORS[typeKey] || group.color || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+              const color = TYPE_COLORS[typeKey] || group.color || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
               return (
-                <div key={group.key} style={{ borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+                <div key={group.key} style={{ borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))' }}>
                   <button
                     onClick={() => onToggleGroup?.(group.key)}
                     className="w-full flex items-center gap-2 px-4 py-2 transition-colors hover:bg-gray-50"
-                    style={{ background: 'var(--ds-surface-sunken, #FAFBFC)', height: 50 }}
+                    style={{ background: 'var(--ds-surface-sunken)', height: 50 }}
                   >
-                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />}
+                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />}
                     <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{group.label}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginLeft: 'auto' }}>{group.items.length}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>{group.label}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginLeft: 'auto' }}>{group.items.length}</span>
                   </button>
                   {group.isExpanded && group.items.map(item => {
                     const gi = items.findIndex(i => i.id === item.id);
@@ -110,7 +110,7 @@ export function RoadmapListPanel({
 
   // Flat list with DnD
   return (
-    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
       {renderHeader()}
       <ScrollArea className="flex-1">
         <Droppable droppableId="roadmap-list">

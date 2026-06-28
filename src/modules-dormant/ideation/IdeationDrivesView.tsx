@@ -78,22 +78,22 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
+            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
             <span style={{
-              background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '12px',
-              padding: '1px 7px', fontSize: '11px', fontWeight: 600,
-              fontFamily: MONO, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+              background: 'var(--ds-surface-sunken)', border: '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: '12px',
+              padding: '1px 7px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+              fontFamily: MONO, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
             }}>{drives.length}</span>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', margin: 0 }}>
             Themed innovation campaigns to focus idea generation around strategic priorities
           </p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
           style={{
-            height: 50, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
-            padding: '0 16px', fontSize: '13px', fontWeight: 650, cursor: 'pointer',
+            height: 50, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: '6px',
+            padding: '0 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
           }}
         >
@@ -104,11 +104,11 @@ export default function IdeationDrivesView() {
       <CreateDriveModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {isLoading && (
-        <div style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 13, padding: 20 }}>Loading drives...</div>
+        <div style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-300)', padding: 20 }}>Loading drives...</div>
       )}
 
       {error && (
-        <div style={{ color: 'var(--ds-text-danger, #EF4444)', fontSize: 13, padding: 20 }}>Failed to load drives.</div>
+        <div style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-300)', padding: 20 }}>Failed to load drives.</div>
       )}
 
       {/* Drive Cards */}
@@ -119,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -127,23 +127,23 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--cp-border, var(--cp-bg-sunken))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, color: 'var(--cp-text-secondary, #475569)',
+                flexShrink: 0, color: 'var(--cp-text-secondary)',
               }}>
                 <IconComponent size={18} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1 }}>{drive.title}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', flex: 1 }}>{drive.title}</span>
               {/* V12 3-color lozenge for status */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center',
                 background: isActive
-                  ? ('var(--cp-primary-light, #DEEBFF)')
-                  : ('var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'),
+                  ? ('var(--cp-primary-light)')
+                  : ('var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))'),
                 color: isActive
-                  ? ('var(--cp-text-link, #0747A6)')
-                  : ('var(--cp-text-secondary, #253858)'),
-                height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 700,
+                  ? ('var(--cp-text-link)')
+                  : ('var(--cp-text-secondary)'),
+                height: 20, padding: '0 6px', borderRadius: 3, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                 textTransform: 'uppercase', letterSpacing: '0.03em',
               }}>
                 {isActive ? 'ACTIVE' : 'DRAFT'}
@@ -151,10 +151,10 @@ export default function IdeationDrivesView() {
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 500, marginBottom: '10px' }}>
+            <div style={{ display: 'flex', gap: '24px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', fontWeight: 500, marginBottom: '10px' }}>
               <span><strong>{submitted}</strong> {submitted === 1 ? 'idea' : 'ideas'} submitted</span>
               <span>Deadline: <strong>{drive.deadline ? new Date(drive.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline'}</strong></span>
               <span>Target: <strong>{drive.target_count}</strong> ideas</span>
@@ -164,32 +164,32 @@ export default function IdeationDrivesView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{
                 flex: 1, height: 6, borderRadius: 4,
-                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', overflow: 'hidden',
-                border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', overflow: 'hidden',
+                border: '1px solid var(--cp-border, var(--cp-bg-sunken))',
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
-                  background: pct >= 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                  background: pct >= 100 ? 'var(--ds-text-success, var(--cp-success))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                   borderRadius: 4,
                   transition: 'width 0.3s',
                   minWidth: pct > 0 ? 4 : 0,
                 }} />
               </div>
-              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', minWidth: 32, textAlign: 'right' }}>
+              <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', minWidth: 32, textAlign: 'right' }}>
                 {submitted}/{drive.target_count}
               </span>
             </div>
 
             {/* Linked ideas */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
               {drive.ideas.length === 0 && (
-                <span style={{ fontSize: '11px', color: 'var(--ds-text-disabled, #CBD5E1)', fontStyle: 'italic' }}>No ideas linked yet</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)', fontStyle: 'italic' }}>No ideas linked yet</span>
               )}
               {drive.ideas.map(idea => (
                 <span key={idea.idea_key} style={{
-                  fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-                  background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: '4px', padding: '1px 6px',
+                  fontFamily: MONO, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+                  background: 'var(--ds-background-selected)', border: '1px solid var(--ds-background-information)', borderRadius: '4px', padding: '1px 6px',
                 }}>{idea.idea_key}</span>
               ))}
             </div>

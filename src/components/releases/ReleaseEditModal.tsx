@@ -176,14 +176,14 @@ export function ReleaseEditModal({
                 htmlFor="version-name"
                 style={{
                   fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Name
                 <span
                   aria-label="required"
                   style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
+                    color: 'var(--ds-text-danger)',
                     marginLeft: '4px',
                   }}
                 >
@@ -213,7 +213,7 @@ export function ReleaseEditModal({
                   role="alert"
                   aria-live="assertive"
                   style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
+                    color: 'var(--ds-text-danger)',
                     marginTop: '4px',
                   }}
                 >
@@ -228,7 +228,7 @@ export function ReleaseEditModal({
                 htmlFor="version-description"
                 style={{
                   fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Description
@@ -249,7 +249,7 @@ export function ReleaseEditModal({
               <label
                 style={{
                   fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Sprints
@@ -266,7 +266,7 @@ export function ReleaseEditModal({
                 htmlFor="version-start-date"
                 style={{
                   fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Start date
@@ -285,7 +285,7 @@ export function ReleaseEditModal({
                   role="alert"
                   aria-live="assertive"
                   style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
+                    color: 'var(--ds-text-danger)',
                     marginTop: '4px',
                   }}
                 >
@@ -300,7 +300,7 @@ export function ReleaseEditModal({
                 htmlFor="version-release-date"
                 style={{
                   fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Release date
@@ -319,7 +319,7 @@ export function ReleaseEditModal({
                   role="alert"
                   aria-live="assertive"
                   style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
+                    color: 'var(--ds-text-danger)',
                     marginTop: '4px',
                   }}
                 >

@@ -27,8 +27,8 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => onSelect(theme)}
             className="rounded-xl border cursor-pointer overflow-hidden"
             style={{
-              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
-              borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
+              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)',
+              borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)',
               transition: 'transform 200ms ease, box-shadow 200ms ease',
               animation: `fadeUp 300ms ease ${i * 60}ms both`,
             }}
@@ -50,10 +50,10 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Header */}
               <div className="flex items-start justify-between mb-2">
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate" style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)', marginBottom: 2 }}>{theme.title}</h3>
+                  <h3 className="truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)', marginBottom: 2 }}>{theme.title}</h3>
                   <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-4)', fontFamily: 'monospace' }}>FY{theme.fiscal_year}</span>
-                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5" style={{ fontSize: 10, fontWeight: 500, background: sc.bg, color: sc.text }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? DK.t3 : 'var(--fg-4)', fontFamily: 'monospace' }}>FY{theme.fiscal_year}</span>
+                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, background: sc.bg, color: sc.text }}>
                       <span className="rounded-full" style={{ width: 5, height: 5, background: sc.dot }} />
                       {sc.label}
                     </span>
@@ -64,7 +64,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Description */}
               {theme.description && (
                 <p style={{
-                  fontSize: 12, color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 12,
+                  fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 12,
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                   overflow: 'hidden', lineHeight: 1.5,
                 }}>{theme.description}</p>
@@ -77,9 +77,9 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                   { label: 'KRs', value: theme.kr_count },
                   { label: 'Budget', value: formatBudget(theme.planned_budget) },
                 ].map(m => (
-                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)', padding: '6px 0' }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{m.value}</p>
-                    <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-3)' }}>{m.label}</p>
+                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-1)', padding: '6px 0' }}>
+                    <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{m.value}</p>
+                    <p style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? DK.t3 : 'var(--fg-3)' }}>{m.label}</p>
                   </div>
                 ))}
               </div>
@@ -87,15 +87,15 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Progress + Owner */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1 mr-3">
-                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? 'var(--ds-border-bold, #454545)' : 'var(--divider)' }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? 'var(--ds-border-bold)' : 'var(--divider)' }}>
                     <div className="h-full rounded-full" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{theme.progress_pct}%</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{theme.progress_pct}%</span>
                 </div>
                 {theme.owner_name && (
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
                     width: 24, height: 24, background: getAvatarColor(theme.owner_name),
-                    fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   }} title={theme.owner_name}>
                     {getInitials(theme.owner_name)}
                   </div>
@@ -107,7 +107,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
+        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)' }}>
           No themes match the current filters.
         </div>
       )}

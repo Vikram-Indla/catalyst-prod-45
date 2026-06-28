@@ -58,6 +58,20 @@ export function useWfAudit(limit = 50) {
   } });
 }
 
+export type WfReasonCode = Database['public']['Tables']['ph_wf_reason_codes']['Row'];
+/** Reason codes for canonical transitions (global = version_id null). */
+export function useReasonCodes() {
+  return useQuery({
+    queryKey: [...KEY, 'reason-codes'],
+    queryFn: async (): Promise<WfReasonCode[]> => {
+      const { data, error } = await supabase.from('ph_wf_reason_codes')
+        .select('*').order('transition_type', { ascending: true }).order('code', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
 export interface EnforcementRow { project_key: string | null; entity_key: string; mode: string; version_no: number | null; reason: string | null; enabled_at: string | null; }
 export function useEnforcementConfig() {
   return useQuery({ queryKey: [...KEY, 'enforcement'], queryFn: async (): Promise<EnforcementRow[]> => {
@@ -92,5 +106,105 @@ export function useCreateDraftVersion() {
       if (error) throw error; return data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'versions'] }),
+  });
+}
+
+// ── Roles + guards per version (for Transitions admin view) ─────────────────
+export interface WfTransitionRole { transition_id: string; role_group: string; }
+export interface WfTransitionGuard { transition_id: string; guard_type: string; is_blocking: boolean; waiver_allowed: boolean; }
+
+export function useWfVersionRolesAndGuards(versionId: string | null) {
+  return useQuery({
+    queryKey: [...KEY, 'roles-guards', versionId],
+    enabled: !!versionId,
+    queryFn: async (): Promise<{ roles: WfTransitionRole[]; guards: WfTransitionGuard[] }> => {
+      const { data: transitions, error: tErr } = await supabase
+        .from('ph_wf_version_transitions').select('id').eq('version_id', versionId as string);
+      if (tErr) throw tErr;
+      const ids = (transitions ?? []).map((t: any) => t.id);
+      if (ids.length === 0) return { roles: [], guards: [] };
+      const [{ data: roles, error: rErr }, { data: guards, error: gErr }] = await Promise.all([
+        supabase.from('ph_wf_transition_roles').select('transition_id, role_group').in('transition_id', ids),
+        supabase.from('ph_wf_transition_guards').select('transition_id, guard_type, is_blocking, waiver_allowed').in('transition_id', ids),
+      ]);
+      if (rErr) throw rErr;
+      if (gErr) throw gErr;
+      return { roles: (roles ?? []) as WfTransitionRole[], guards: (guards ?? []) as WfTransitionGuard[] };
+    },
+  });
+}
+
+// ── Filtered audit ───────────────────────────────────────────────────────────
+export interface AuditFilterParams {
+  entityKey?: string;
+  sourceSurface?: string;
+  mode?: string;
+  roleDecision?: string;
+  wouldBlock?: boolean;
+  limit?: number;
+}
+export function useWfAuditFiltered(filters: AuditFilterParams) {
+  return useQuery({
+    queryKey: [...KEY, 'audit-filtered', filters],
+    queryFn: async (): Promise<WfAudit[]> => {
+      let q = supabase.from('ph_wf_audit').select('*').order('at', { ascending: false });
+      if (filters.entityKey) q = (q as any).eq('entity_key', filters.entityKey);
+      if (filters.sourceSurface) q = (q as any).eq('source_surface', filters.sourceSurface);
+      if (filters.mode) q = (q as any).eq('mode', filters.mode);
+      if (filters.roleDecision) q = (q as any).eq('role_decision', filters.roleDecision);
+      if (filters.wouldBlock != null) q = (q as any).eq('would_block', filters.wouldBlock);
+      q = (q as any).limit(filters.limit ?? 100);
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []) as WfAudit[];
+    },
+  });
+}
+
+// ── Health / coverage summary ────────────────────────────────────────────────
+export interface EntityHealthSummary {
+  entityKey: string;
+  versionCount: number;
+  publishedVersionId: string | null;
+  schemeEntryCount: number;
+  projectAssignmentCount: number;
+  blockingConfigCount: number;
+  recentAuditCount: number;
+}
+
+export function useWfHealthSummary() {
+  return useQuery({
+    queryKey: [...KEY, 'health-summary'],
+    queryFn: async (): Promise<EntityHealthSummary[]> => {
+      const ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release', 'business_request', 'product_milestone'];
+      const [{ data: versions }, { data: entries }, { data: assignments }, { data: enforcement }, { data: auditRows }] = await Promise.all([
+        supabase.from('ph_wf_versions').select('entity_key, lifecycle, id'),
+        supabase.from('ph_wf_scheme_entries').select('entity_key, version_id, ph_wf_scheme_assignments(id)').limit(500),
+        supabase.from('ph_wf_scheme_assignments').select('id').limit(500),
+        supabase.from('ph_wf_enforcement_config').select('entity_key, mode'),
+        supabase.from('ph_wf_audit').select('entity_key').order('at', { ascending: false }).limit(200),
+      ]);
+      return ENTITIES.map((ek): EntityHealthSummary => {
+        const ev = (versions ?? []).filter((v: any) => v.entity_key === ek);
+        const published = ev.find((v: any) => v.lifecycle === 'published');
+        const ee = (entries ?? []).filter((e: any) => e.entity_key === ek);
+        const uniqueProjects = new Set(
+          (ee as any[]).flatMap((e) =>
+            (e.ph_wf_scheme_assignments ?? []).map((a: any) => a.id)
+          )
+        );
+        const enfRows = (enforcement ?? []).filter((r: any) => r.entity_key === ek && r.mode === 'blocking');
+        const auditCount = (auditRows ?? []).filter((a: any) => a.entity_key === ek).length;
+        return {
+          entityKey: ek,
+          versionCount: ev.length,
+          publishedVersionId: published?.id ?? null,
+          schemeEntryCount: ee.length,
+          projectAssignmentCount: uniqueProjects.size,
+          blockingConfigCount: enfRows.length,
+          recentAuditCount: auditCount,
+        };
+      });
+    },
   });
 }

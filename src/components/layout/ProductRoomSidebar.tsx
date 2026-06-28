@@ -146,8 +146,8 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
         zIndex: 9999,
         width: 260,
         borderRadius: 8,
-        background: isDark ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface, #FFFFFF)',
-        border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
+        background: isDark ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface)',
+        border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
         boxShadow: isDark
           ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.60))'
           : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
@@ -162,10 +162,10 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
           alignItems: 'center',
           gap: 8,
           padding: '8px 12px',
-          borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))'}`,
+          borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--cp-border, var(--cp-bg-sunken))'}`,
         }}
       >
-        <Search size={13} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', flexShrink: 0 }} />
+        <Search size={13} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', flexShrink: 0 }} />
         <input
           autoFocus
           value={search}
@@ -176,15 +176,15 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
             background: 'transparent',
             border: 'none',
             outline: 'none',
-            fontSize: 12,
-            color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+            fontSize: 'var(--ds-font-size-200)',
+            color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))',
           }}
         />
       </div>
 
       <div style={{ maxHeight: 300, overflowY: 'auto', padding: '4px 0' }}>
         {filtered.length === 0 ? (
-          <div style={{ padding: '12px 16px', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
             No products found
           </div>
         ) : (
@@ -203,19 +203,19 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   border: 'none',
                   cursor: 'pointer',
                   background: isCurrent
-                    ? isDark ? 'var(--ds-background-selected, #1C2B41)' : 'var(--ds-background-selected, #E9F2FF)'
+                    ? isDark ? 'var(--ds-background-selected)' : 'var(--ds-background-selected)'
                     : 'transparent',
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: isCurrent ? 600 : 400,
                   color: isCurrent
-                    ? 'var(--cp-text-link, var(--cp-primary-60, #0052CC))'
-                    : isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                    ? 'var(--cp-text-link, var(--cp-primary-60))'
+                    : isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
                   textAlign: 'left',
                 }}
                 onMouseEnter={(e) => {
                   if (!isCurrent) (e.currentTarget as HTMLElement).style.background =
-                    isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-background-neutral-subtle, #F4F5F7)';
+                    isDark ? 'var(--ds-background-neutral-subtle-hovered)' : 'var(--ds-background-neutral-subtle)';
                 }}
                 onMouseLeave={(e) => {
                   if (!isCurrent) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -226,9 +226,9 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                     width: 24,
                     height: 24,
                     borderRadius: 4,
-                    background: p.color || 'var(--cp-blue, var(--cp-primary-60, #0052CC))',
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
-                    fontSize: 10,
+                    background: p.color || 'var(--cp-blue, var(--cp-primary-60))',
+                    color: 'var(--ds-text-inverse)',
+                    fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 700,
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -239,15 +239,15 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   {p.code.slice(0, 2)}
                 </span>
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: 'block', fontWeight: isCurrent ? 600 : 500, fontSize: 13 }}>
+                  <span style={{ display: 'block', fontWeight: isCurrent ? 600 : 500, fontSize: 'var(--ds-font-size-300)' }}>
                     {p.name}
                   </span>
-                  <span style={{ display: 'block', fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontFamily: 'var(--cp-font-mono)' }}>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontFamily: 'var(--cp-font-mono)' }}>
                     {p.code}
                   </span>
                 </span>
                 {isCurrent && (
-                  <span style={{ fontSize: 10, color: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))', fontWeight: 600 }}>✓</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-text-link, var(--cp-primary-60))', fontWeight: 600 }}>✓</span>
                 )}
               </button>
             );
@@ -275,7 +275,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
 
   return (
     <>
-      <div style={{ borderTop: `1px solid ${isDark ? 'var(--ds-border,var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, #DFE1E6)'}`, margin: '8px 12px 4px' }} />
+      <div style={{ borderTop: `1px solid ${isDark ? 'var(--ds-border,var(--cp-ink-1))' : 'var(--ds-border)'}`, margin: '8px 12px 4px' }} />
 
       <button
         onClick={() => setOpen((p) => !p)}
@@ -293,16 +293,16 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
         <ChevronRight
           size={12}
           style={{
-            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
             transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
             transition: 'transform 150ms ease',
           }}
         />
-        <Clock size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }} />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+        <Clock size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }} />
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
           Recents
         </span>
-        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontFamily: 'var(--cp-font-mono)' }}>
           {recentItems.length}
         </span>
       </button>
@@ -324,20 +324,20 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
                 cursor: 'pointer',
                 gap: 8,
                 fontSize: 12.5,
-                color: isDark ? 'var(--ds-text-subtle, #B8C4D0)' : 'var(--ds-text-subtle, #42526E)',
+                color: isDark ? 'var(--ds-text-subtle)' : 'var(--ds-text-subtle)',
                 fontFamily: 'var(--cp-font-body)',
                 textAlign: 'left',
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.background =
-                  isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-background-neutral-subtle, #F4F5F7)';
+                  isDark ? 'var(--ds-background-neutral-subtle-hovered)' : 'var(--ds-background-neutral-subtle)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.background = 'transparent';
               }}
             >
               {item.entity_key && (
-                <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0 }}>
                   {item.entity_key}
                 </span>
               )}

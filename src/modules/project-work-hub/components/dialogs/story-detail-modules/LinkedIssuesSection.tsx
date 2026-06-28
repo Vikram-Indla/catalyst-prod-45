@@ -55,9 +55,9 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
-        height: 36, padding: '0 10px', border: open ? '2px solid var(--ds-border-focused, #4C9AFF)' : '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-        borderRadius: 3, fontSize: 14, fontFamily: 'inherit', background: 'var(--ds-surface, #fff)', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', minWidth: 160,
+        height: 36, padding: '0 10px', border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+        borderRadius: 3, fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', background: 'var(--ds-surface)', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', minWidth: 160,
         transition: 'border-color 0.15s',
       }}>
         <span style={{ flex: 1, textAlign: 'left' }}>{value}</span>
@@ -66,7 +66,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 200,
-          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 4,
+          background: 'var(--ds-surface)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 4,
           boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 60, overflow: 'hidden',
           maxHeight: 320, overflowY: 'auto',
         }}>
@@ -74,10 +74,10 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
             <div key={opt} onClick={() => { onChange(opt); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                background: opt === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
+                cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
+                background: opt === value ? 'var(--ds-background-information)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span>{opt}</span>
@@ -216,7 +216,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
   };
 
   return (
-    <div style={{ padding: '12px 0', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
+    <div style={{ padding: '12px 0', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
         <LinkTypeDropdown value={linkType} onChange={setLinkType} />
         {/* Multi-select input area */}
@@ -225,7 +225,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           style={{
             flex: 1, minHeight: 36, display: 'flex', flexWrap: 'wrap', alignItems: 'center',
             gap: 4, padding: '4px 8px',
-            border: '2px solid var(--ds-background-information-bold, #0C66E4)', borderRadius: 3, background: 'var(--ds-surface, #fff)',
+            border: '2px solid var(--ds-background-information-bold)', borderRadius: 3, background: 'var(--ds-surface)',
             cursor: 'text', position: 'relative',
           }}
           onClick={() => inputRef.current?.focus()}
@@ -235,13 +235,13 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             return (
               <span key={item.item_key} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4, height: 24,
-                padding: '0 6px', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', borderRadius: 3, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-                fontSize: 12, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', whiteSpace: 'nowrap',
+                padding: '0 6px', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', borderRadius: 3, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', whiteSpace: 'nowrap',
               }}>
                 <span dangerouslySetInnerHTML={{ __html: icon }} style={{ display: 'flex', width: 14, height: 14 }} />
                 {item.item_key}
                 <button onClick={e => { e.stopPropagation(); removeSelected(item.item_key); }}
-                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 14, lineHeight: 1 }}
+                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}
                 >×</button>
               </span>
             );
@@ -254,15 +254,15 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             placeholder={selectedItems.length ? '' : 'Type, search or paste URL'}
             style={{
               flex: 1, minWidth: 120, height: 26, border: 'none', outline: 'none',
-              fontSize: 14, fontFamily: 'inherit', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent',
+              fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', background: 'transparent',
             }}
           />
           {selectedItems.length > 0 && (
             <button onClick={() => setSelectedItems([])}
-              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}
+              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0 }}
               title="Clear all"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="2" strokeLinecap="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--ds-text-subtlest, var(--cp-text-secondary))" strokeWidth="2" strokeLinecap="round"/></svg>
             </button>
           )}
         </div>
@@ -270,8 +270,8 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.13))' }}>
-          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3, background: 'var(--ds-surface)', marginBottom: 8, boxShadow: '0 4px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.13))' }}>
+          <div style={{ padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
           {filteredResults.map((r: any) => {
@@ -280,14 +280,14 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
               <div key={r.issue_key} onClick={() => handleSelect(r)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 12px',
-                  cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', borderLeft: '3px solid transparent',
+                  cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', borderLeft: '3px solid transparent',
                   transition: 'background 0.1s, border-color 0.1s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.borderLeftColor = 'var(--ds-background-information-bold, #0C66E4)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))'; e.currentTarget.style.borderLeftColor = 'var(--ds-background-information-bold)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
               >
                 <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
-                <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-accent-gray, #505258)', flexShrink: 0 }}>{r.issue_key}</span>
+                <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-accent-gray)', flexShrink: 0 }}>{r.issue_key}</span>
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
               </div>
             );
@@ -299,9 +299,9 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button
           onClick={onCreateNew}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
-          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
-          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
+          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text)'; }}
+          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))'; }}
         >
           <AddIcon label="" /> Create linked work item
         </button>
@@ -311,8 +311,8 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             disabled={!selectedItems.length || linkMutation.isPending}
             style={{
               height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-              background: selectedItems.length ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
-              color: selectedItems.length ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtlest, #626F86)', fontSize: 14, fontWeight: 500,
+              background: selectedItems.length ? 'var(--cp-primary-60)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
+              color: selectedItems.length ? 'var(--ds-surface)' : 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
             }}
           >
@@ -320,7 +320,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           </button>
           <button onClick={onClose} style={{
             height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 14,
+            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontSize: 'var(--ds-font-size-400)',
             cursor: 'pointer', fontFamily: 'inherit',
           }}>Cancel</button>
         </div>
@@ -483,10 +483,10 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       <button onClick={() => setShowAdd(true)} title="Link issue" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-        cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', transition: 'background 0.15s, color 0.15s',
+        cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', transition: 'background 0.15s, color 0.15s',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary))'; }}
       >
         <AddIcon label="Link issue" />
       </button>
@@ -507,19 +507,19 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       {/* Grouped link display — Jira style */}
       {!isLoading && Object.entries(grouped).map(([type, typeLinks]) => (
         <div key={type} style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
-          <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, overflow: 'hidden' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
+          <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
-              const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))';
+              const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : 'var(--ds-text-disabled, var(--ds-border-bold))';
               // §20 / L41 — pill colour resolved from the Atlaskit helper.
               const issueIcon = WORK_ITEM_ICONS[target.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story;
               return (
                 <div key={link.id} style={{
                   display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 12px',
-                  borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', transition: 'background 0.12s',
+                  borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))', transition: 'background 0.12s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
@@ -535,11 +535,11 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                         navigate(`/issue/${target.issue_key}`);
                       }
                     }}
-                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
+                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-link, var(--cp-primary-60))', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                   >{target.issue_key}</span>
-                  <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
+                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
                     <Lozenge appearance={statusToLozenge(target.status)}>{target.status}</Lozenge>
                     <ChevronDownIcon label="" size="small" />
@@ -548,7 +548,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     <div style={{
                       width: 28, height: 28, borderRadius: '50%', background: avatarColor,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', flexShrink: 0,
                     }} title={target.assignee_display_name}>
                       {target.assignee_display_name.charAt(0).toUpperCase()}
                     </div>
@@ -558,7 +558,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   {/* Drag handle — orange "=" icon (Jira parity) */}
                   <span style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: 24, height: 24, color: 'var(--ds-icon-warning, #FF991F)', flexShrink: 0, cursor: 'grab',
+                    width: 24, height: 24, color: 'var(--ds-icon-warning)', flexShrink: 0, cursor: 'grab',
                   }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <rect x="4" y="8" width="16" height="2.5" rx="1" fill="currentColor"/>
@@ -571,10 +571,10 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0, transition: 'color 0.15s',
+                      cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0, transition: 'color 0.15s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))')}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary))')}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
@@ -643,18 +643,18 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
           padding: '4px 8px',
           borderRadius: 3,
           fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-          fontSize: 14,
-          color: 'var(--ds-text-subtle, #44546f)',
+          fontSize: 'var(--ds-font-size-400)',
+          color: 'var(--ds-text-subtle)',
           cursor: 'pointer',
           transition: 'background 100ms ease, color 100ms ease',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #f1f2f4)';
-          e.currentTarget.style.color = 'var(--ds-text, #172b4d)';
+          e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
+          e.currentTarget.style.color = 'var(--ds-text)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.color = 'var(--ds-text-subtle, #44546f)';
+          e.currentTarget.style.color = 'var(--ds-text-subtle)';
         }}
       >
         Add linked work item

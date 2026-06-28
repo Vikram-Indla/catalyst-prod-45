@@ -56,13 +56,13 @@ const DOT_OFFSET = 8; // distance from the table edge
 const HIT_PAD = 6; // extra invisible padding around the dot for easier hovering
 const LINE_THICKNESS = 2;
 /** Idle filled dot — light gray (ADS neutral subtle). */
-const IDLE_DOT_COLOR = 'var(--ds-text-disabled, #8590A2)';
+const IDLE_DOT_COLOR = 'var(--ds-text-disabled)';
 /** + button border — light gray, matches the table border tone. */
-const BORDER_COLOR = 'var(--ds-border, #DFE1E6)';
+const BORDER_COLOR = 'var(--ds-border)';
 /** Idle + icon color (matches the dot). */
-const PLUS_IDLE_COLOR = 'var(--ds-text-subtlest, #6B778C)';
+const PLUS_IDLE_COLOR = 'var(--ds-text-subtlest)';
 /** Active hover background — solid blue with white +. */
-const ACCENT_COLOR = 'var(--ds-link, #1868DB)';
+const ACCENT_COLOR = 'var(--ds-link)';
 
 export function TableInsertHandles({ editor, containerRef }: Props) {
   const [columnDots, setColumnDots] = useState<ColumnDot[]>([]);
@@ -301,14 +301,14 @@ function ColumnInsertDot({
               width: DOT_HOVER_SIZE,
               height: DOT_HOVER_SIZE,
               borderRadius: '50%',
-              background: activeHover ? ACCENT_COLOR : 'var(--ds-surface, #FFFFFF)',
+              background: activeHover ? ACCENT_COLOR : 'var(--ds-surface)',
               border: `1px solid ${BORDER_COLOR}`,
               padding: 0,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: activeHover ? 'var(--ds-text-inverse, #FFFFFF)' : PLUS_IDLE_COLOR,
+              color: activeHover ? 'var(--ds-text-inverse)' : PLUS_IDLE_COLOR,
               boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
               transition: 'background-color 80ms ease, color 80ms ease',
               overflow: 'hidden',
@@ -404,14 +404,14 @@ function RowInsertDot({
               width: DOT_HOVER_SIZE,
               height: DOT_HOVER_SIZE,
               borderRadius: '50%',
-              background: activeHover ? ACCENT_COLOR : 'var(--ds-surface, #FFFFFF)',
+              background: activeHover ? ACCENT_COLOR : 'var(--ds-surface)',
               border: `1px solid ${BORDER_COLOR}`,
               padding: 0,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: activeHover ? 'var(--ds-text-inverse, #FFFFFF)' : PLUS_IDLE_COLOR,
+              color: activeHover ? 'var(--ds-text-inverse)' : PLUS_IDLE_COLOR,
               boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
               transition: 'background-color 80ms ease, color 80ms ease',
               overflow: 'hidden',

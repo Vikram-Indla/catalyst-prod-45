@@ -203,7 +203,7 @@ export function RoadmapDependencyLines({
         >
           <path 
             d="M 0 0 L 10 5 L 0 10 z" 
-            fill="var(--ds-icon-subtle, #a1a1aa)"
+            fill="var(--ds-icon-subtle)"
           />
         </marker>
         <marker
@@ -217,7 +217,7 @@ export function RoadmapDependencyLines({
         >
           <path 
             d="M 0 0 L 10 5 L 0 10 z" 
-            fill="var(--ds-text-subtle, #44546F)"
+            fill="var(--ds-text-subtle)"
           />
         </marker>
       </defs>
@@ -228,7 +228,7 @@ export function RoadmapDependencyLines({
           <path
             d={path.pathD}
             fill="none"
-            stroke={path.isCritical ? 'var(--ds-text-subtle, #44546F)' : '#a1a1aa'}
+            stroke={path.isCritical ? 'var(--ds-text-subtle)' : '#a1a1aa'}
             strokeWidth={path.isCritical ? 2 : 1.5}
             strokeDasharray={path.isCritical ? 'none' : 'none'}
             markerEnd={`url(#dep-arrow-${path.isCritical ? 'critical' : 'normal'})`}
@@ -238,7 +238,7 @@ export function RoadmapDependencyLines({
             cx={path.startX}
             cy={path.startY}
             r={path.isCritical ? 4 : 3}
-            fill={path.isCritical ? 'var(--ds-text-subtle, #44546F)' : '#a1a1aa'}
+            fill={path.isCritical ? 'var(--ds-text-subtle)' : '#a1a1aa'}
           />
         </g>
       ))}

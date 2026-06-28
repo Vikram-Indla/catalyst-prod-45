@@ -82,7 +82,7 @@ export function ThreadPane({ conversation, parentMessageId, onClose, onSummarize
             onToggleReaction={(id, emoji) => { void toggleParentReaction(id, emoji); }}
           />
         ) : (
-          <div style={{ padding: 24, fontSize: 13, color: 'var(--cv2-text-muted)', textAlign: 'center' }}>
+          <div style={{ padding: 24, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)', textAlign: 'center' }}>
             Loading parent…
           </div>
         )}
@@ -90,7 +90,7 @@ export function ThreadPane({ conversation, parentMessageId, onClose, onSummarize
           <RepliesDivider count={replies.length} />
         )}
         {isLoading && replies.length === 0 ? (
-          <div style={{ padding: 24, fontSize: 13, color: 'var(--cv2-text-muted)', textAlign: 'center' }}>
+          <div style={{ padding: 24, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)', textAlign: 'center' }}>
             Loading replies…
           </div>
         ) : (
@@ -146,7 +146,7 @@ function Header({
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
           }}
@@ -156,7 +156,7 @@ function Header({
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--cv2-text-muted)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -220,7 +220,7 @@ function RepliesDivider({ count }: { count: number }) {
     >
       <span
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
           color: 'var(--cv2-text-muted)',
           whiteSpace: 'nowrap',

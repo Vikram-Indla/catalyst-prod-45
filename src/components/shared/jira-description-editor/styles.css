@@ -5,16 +5,16 @@
 
 /* ── Root wrapper ──────────────────────────────────────── */
 .jde-root {
-  border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--ds-surface);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
   transition: border-color 120ms ease;
 }
 
 .jde-root:focus-within {
-  border-color: var(--ds-background-information-bold, #0C66E4);
-  box-shadow: 0 0 0 1px var(--ds-background-information-bold, #0C66E4);
+  border-color: var(--ds-background-information-bold);
+  box-shadow: 0 0 0 1px var(--ds-background-information-bold);
 }
 
 .jde-root[data-readonly='true'] {
@@ -28,8 +28,8 @@
   align-items: center;
   gap: 1px;
   padding: 4px 6px;
-  border-bottom: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7));
+  border-bottom: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   flex-wrap: wrap;
   border-radius: 2px 2px 0 0;
 }
@@ -43,7 +43,7 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
   cursor: pointer;
   transition: background 80ms;
   padding: 0;
@@ -52,12 +52,12 @@
 
 .jde-tb-btn:hover:not(.jde-tb-btn--disabled) {
   background: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
 }
 
 .jde-tb-btn--active {
   background: rgba(76, 154, 255, 0.15) !important; /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--cp-primary-60, var(--ds-link, #0052CC)) !important;
+  color: var(--cp-primary-60, var(--ds-link)) !important;
 }
 
 .jde-tb-btn--disabled {
@@ -68,7 +68,7 @@
 .jde-tb-divider {
   width: 1px;
   height: 20px;
-  background: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  background: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   margin: 0 3px;
   flex-shrink: 0;
 }
@@ -83,7 +83,7 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
@@ -93,7 +93,7 @@
 
 .jde-tb-style-btn:hover {
   background: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
 }
 
 .jde-tb-style-label {
@@ -112,7 +112,7 @@
   border: none;
   border-radius: 0 3px 3px 0;
   background: transparent;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
   cursor: pointer;
   padding: 0;
   transition: background 80ms;
@@ -128,8 +128,8 @@
   top: calc(100% + 4px);
   left: 0;
   z-index: 1000;
-  background: var(--ds-surface, #FFFFFF);
-  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  background: var(--ds-surface);
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   border-radius: 4px;
   box-shadow: 0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,.15)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,.25));
   padding: 4px;
@@ -163,7 +163,7 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
   font-size: 13px;
   text-align: left;
   cursor: pointer;
@@ -171,13 +171,13 @@
 }
 
 .jde-dropdown-item:hover {
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7));
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
 }
 
 .jde-dropdown-item--active {
-  background: var(--ds-background-information, #E9F2FF);
-  color: var(--cp-primary-60, var(--ds-link, #0052CC));
+  background: var(--ds-background-information);
+  color: var(--cp-primary-60, var(--ds-link));
 }
 
 .jde-dropdown-item--row {
@@ -190,12 +190,12 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
 }
 
 .jde-dropdown-divider {
   height: 1px;
-  background: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  background: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   margin: 4px 0;
 }
 
@@ -219,8 +219,8 @@
   top: calc(100% + 4px);
   left: 0;
   z-index: 1000;
-  background: var(--ds-surface, #FFFFFF);
-  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  background: var(--ds-surface);
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   border-radius: 4px;
   box-shadow: 0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,.15));
   padding: 12px;
@@ -231,23 +231,23 @@
   width: 100%;
   height: 32px;
   padding: 0 8px;
-  border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   border-radius: 3px;
   font-size: 13px;
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
   outline: none;
   box-sizing: border-box;
 }
 
 .jde-link-input:focus {
-  border-color: var(--ds-background-information-bold, #0C66E4);
+  border-color: var(--ds-background-information-bold);
 }
 
 .jde-btn-primary {
   height: 28px;
   padding: 0 10px;
-  background: var(--cp-primary-60, var(--ds-link, #0052CC));
-  color: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-primary-60, var(--ds-link));
+  color: var(--ds-text-inverse);
   border: none;
   border-radius: 3px;
   font-size: 12px;
@@ -256,13 +256,13 @@
   transition: background 80ms;
 }
 
-.jde-btn-primary:hover { background: var(--ds-link, #0065FF); }
+.jde-btn-primary:hover { background: var(--ds-link); }
 
 .jde-btn-ghost {
   height: 28px;
   padding: 0 10px;
   background: transparent;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle);
   border: none;
   border-radius: 3px;
   font-size: 12px;
@@ -271,7 +271,7 @@
   transition: background 80ms;
 }
 
-.jde-btn-ghost:hover { background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)); }
+.jde-btn-ghost:hover { background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle)); }
 
 /* ── Emoji picker ──────────────────────────────────────── */
 .jde-emoji-picker {
@@ -279,8 +279,8 @@
   top: calc(100% + 4px);
   left: 0;
   z-index: 1000;
-  background: var(--ds-surface, #FFFFFF);
-  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  background: var(--ds-surface);
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   border-radius: 4px;
   box-shadow: 0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,.15));
   padding: 8px;
@@ -303,7 +303,7 @@
   transition: background 80ms;
 }
 
-.jde-emoji-btn:hover { background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)); }
+.jde-emoji-btn:hover { background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle)); }
 
 /* ── Editor content area ───────────────────────────────── */
 .jde-content {
@@ -314,26 +314,26 @@
   outline: none;
   font-size: 14px;
   line-height: 1.714;
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
   min-height: inherit;
 }
 
 /* Placeholder */
 .jde-content .ProseMirror .is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  color: var(--ds-text-subtlest, #626F86);
+  color: var(--ds-text-subtlest);
   pointer-events: none;
   float: left;
   height: 0;
 }
 
 /* Headings — Atlassian sizing */
-.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))); }
-.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))); }
-.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))); }
-.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))); }
-.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))); }
-.jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 10px 0 4px; color: var(--ds-text-subtle, #44546F); text-transform: uppercase; }
+.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 10px 0 4px; color: var(--ds-text-subtle); text-transform: uppercase; }
 
 /* Paragraph */
 .jde-content .ProseMirror p { margin: 0 0 8px; }
@@ -353,25 +353,25 @@
 
 /* Blockquote */
 .jde-content .ProseMirror blockquote {
-  border-left: 3px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  border-left: 3px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   padding-left: 12px;
   margin: 8px 0;
-  color: var(--ds-text-subtle, #44546F);
+  color: var(--ds-text-subtle);
 }
 
 /* Inline code */
 .jde-content .ProseMirror code {
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 2px;
   padding: 1px 5px;
   font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', Menlo, monospace;
   font-size: 0.875em;
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
 }
 
 /* Code block */
 .jde-content .ProseMirror pre {
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 3px;
   padding: 10px 14px;
   margin: 8px 0;
@@ -382,24 +382,24 @@
   background: transparent;
   padding: 0;
   font-size: 13px;
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
 }
 
 /* HR */
 .jde-content .ProseMirror hr {
   border: none;
-  border-top: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  border-top: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   margin: 16px 0;
 }
 
 /* Link */
 .jde-content .ProseMirror a.jde-link {
-  color: var(--cp-primary-60, var(--ds-link, #0052CC));
+  color: var(--cp-primary-60, var(--ds-link));
   text-decoration: underline;
 }
 
 .jde-content .ProseMirror a.jde-link:hover {
-  color: var(--ds-link, #0065FF);
+  color: var(--ds-link);
 }
 
 /* Image */
@@ -410,7 +410,7 @@
 }
 
 .jde-content .ProseMirror img.jde-media.ProseMirror-selectednode {
-  outline: 2px solid var(--ds-background-information-bold, #0C66E4);
+  outline: 2px solid var(--ds-background-information-bold);
   border-radius: 3px;
 }
 
@@ -424,13 +424,13 @@
 
 .jde-content .ProseMirror td,
 .jde-content .ProseMirror th {
-  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   padding: 8px 10px;
   vertical-align: top;
 }
 
 .jde-content .ProseMirror th {
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   font-weight: 600;
   text-align: left;
 }
@@ -464,20 +464,20 @@
   margin-top: 1px;
 }
 
-.jde-content .ProseMirror .jde-panel--info    { background: var(--ds-background-information, #E9F2FF); border-left: 4px solid var(--cp-primary-60, var(--ds-link, #0052CC)); }
+.jde-content .ProseMirror .jde-panel--info    { background: var(--ds-background-information); border-left: 4px solid var(--cp-primary-60, var(--ds-link)); }
 .jde-content .ProseMirror .jde-panel--info::before { content: 'ℹ️'; }
-.jde-content .ProseMirror .jde-panel--note    { background: var(--ds-background-discovery, #F3F0FF); border-left: 4px solid var(--ds-background-discovery-bold, #6554C0); }
+.jde-content .ProseMirror .jde-panel--note    { background: var(--ds-background-discovery); border-left: 4px solid var(--ds-background-discovery-bold); }
 .jde-content .ProseMirror .jde-panel--note::before { content: '📝'; }
-.jde-content .ProseMirror .jde-panel--warning { background: var(--ds-background-warning, #FFF7D6); border-left: 4px solid var(--ds-background-warning-bold, #E2B203); }
+.jde-content .ProseMirror .jde-panel--warning { background: var(--ds-background-warning); border-left: 4px solid var(--ds-background-warning-bold); }
 .jde-content .ProseMirror .jde-panel--warning::before { content: '⚠️'; }
-.jde-content .ProseMirror .jde-panel--success { background: var(--ds-background-success, #DFFCF0); border-left: 4px solid var(--ds-background-success-bold, #1F845A); }
+.jde-content .ProseMirror .jde-panel--success { background: var(--ds-background-success); border-left: 4px solid var(--ds-background-success-bold); }
 .jde-content .ProseMirror .jde-panel--success::before { content: '✅'; }
-.jde-content .ProseMirror .jde-panel--error   { background: var(--ds-background-danger, #FFECEB); border-left: 4px solid var(--ds-background-danger-bold, #C9372C); }
+.jde-content .ProseMirror .jde-panel--error   { background: var(--ds-background-danger); border-left: 4px solid var(--ds-background-danger-bold); }
 .jde-content .ProseMirror .jde-panel--error::before { content: '🚨'; }
 
 /* ── Expand node ───────────────────────────────────────── */
 .jde-content .ProseMirror .jde-expand {
-  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)));
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   border-radius: 3px;
   margin: 8px 0;
 }
@@ -486,9 +486,9 @@
   padding: 8px 12px;
   font-weight: 600;
   font-size: 14px;
-  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)));
+  color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
   cursor: pointer;
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 2px 2px 0 0;
 }
 

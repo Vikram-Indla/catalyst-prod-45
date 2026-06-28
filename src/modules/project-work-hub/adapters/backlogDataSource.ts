@@ -29,6 +29,13 @@ import {
 } from '@/hooks/useDemandProcessSteps';
 import type { BusinessRequest } from '@/types/business-request';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+
+// Canonical status category → ADS Lozenge appearance (component owns color).
+const CATEGORY_APPEARANCE: Record<string, LozengeAppearance> = {
+  todo: 'new', in_progress: 'inprogress', done: 'success',
+};
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -306,6 +313,10 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
   const updateMutation = useUpdateBusinessRequest();
   const globalOpenDetail = useGlobalSearchStore(s => s.openDetail);
 
+  // Canonical BR workflow (A-lite: process_step IS the canonical store).
+  const canonical = useCanonicalIssueWorkflow('Business Request');
+  const canonicalReady = canonical.isCanonical && (canonical.statusGroups?.length ?? 0) > 0;
+
   const stepMap = useMemo(
     () => new Map(processSteps.map(s => [s.value, s])),
     [processSteps],
@@ -313,34 +324,54 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
 
   const extraStories = useMemo(() => rows.map(bizRequestToBacklogStory), [rows]);
 
-  const statusOptions = useMemo<StatusOption[]>(
-    () => processSteps.map(s => ({
+  // Label → Lozenge appearance from canonical groups when available.
+  const appearanceByLabel = useMemo(() => {
+    const m = new Map<string, LozengeAppearance>();
+    for (const g of canonical.statusGroups ?? []) {
+      for (const label of g.statuses) m.set(label, CATEGORY_APPEARANCE[g.category] ?? 'default');
+    }
+    return m;
+  }, [canonical.statusGroups]);
+
+  const statusOptions = useMemo<StatusOption[]>(() => {
+    if (canonicalReady) {
+      return (canonical.statusGroups ?? []).flatMap(g =>
+        g.statuses.map(label => ({
+          value: label, label, appearance: CATEGORY_APPEARANCE[g.category] ?? 'default', group: g.groupLabel,
+        })),
+      );
+    }
+    return processSteps.map(s => ({
       value: s.value,
       label: s.label,
       appearance: stepToLozengeAppearance(s) as LozengeAppearance,
       group: 'Status',
-    })),
-    [processSteps],
-  );
+    }));
+  }, [canonicalReady, canonical.statusGroups, processSteps]);
 
-  const allStatuses = useMemo(() => processSteps.map(s => s.value), [processSteps]);
+  const allStatuses = useMemo(
+    () => statusOptions.map(s => s.value),
+    [statusOptions],
+  );
 
   const resolvedStatusAppearance = useCallback(
     (status: string | null | undefined): LozengeAppearance => {
       if (!status) return 'default';
+      if (canonicalReady) return appearanceByLabel.get(canonical.labelForStatus(status)) ?? 'default';
       const step = stepMap.get(status);
       return step ? (stepToLozengeAppearance(step) as LozengeAppearance) : 'default';
     },
-    [stepMap],
+    [canonicalReady, appearanceByLabel, canonical, stepMap],
   );
 
   const resolvedStatusLabel = useCallback(
     (status: string | null | undefined): string => {
       if (!status) return '—';
+      if (canonicalReady) return canonical.labelForStatus(status) || status.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
       const step = stepMap.get(status);
       return step?.label ?? status.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
     },
-    [stepMap],
+    [canonicalReady, canonical, stepMap],
   );
 
   return useMemo((): BacklogDataSource | null => {
@@ -365,13 +396,28 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
         const row = (rows as any[]).find((r: any) => r.request_key === id);
         if (!row) throw new Error(`Business request not found: ${id}`);
         const bizPatch: Record<string, any> = {};
+        let canonicalKey: string | null = null;
         for (const [k, v] of Object.entries(patch)) {
           if (k === 'updated_at' || k === 'jira_updated_at') continue;
+          if (k === 'status' && canonicalReady) {
+            // A-lite: resolve picked label → canonical status_key, write directly
+            // into process_step (the canonical store). No separate column needed.
+            canonicalKey = canonical.resolveStatusKey(v as string);
+            continue;
+          }
           const mapped = BIZ_PATCH_MAP[k];
           if (mapped) bizPatch[mapped] = v;
-          // Unknown keys silently dropped — business_requests has no generic fields
         }
-        if (Object.keys(bizPatch).length > 0) {
+        if (canonicalKey) {
+          const prevStep = (row as any).process_step ?? null;
+          await updateMutation.mutateAsync({ id: row.id, data: { ...bizPatch, process_step: canonicalKey } });
+          if (prevStep !== canonicalKey) {
+            await recordAdvisoryStatusChange({
+              entityKey: 'business_request', entityId: row.id, projectKey: null,
+              fromStatusRaw: prevStep, toStatusRaw: canonicalKey, sourceSurface: 'br_backlog',
+            });
+          }
+        } else if (Object.keys(bizPatch).length > 0) {
           await updateMutation.mutateAsync({ id: row.id, data: bizPatch });
         }
       },
@@ -415,5 +461,6 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
     statusOptions, allStatuses, resolvedStatusAppearance, resolvedStatusLabel,
     createMutation, deleteMutation, updateMutation,
     globalOpenDetail, processSteps, rows,
+    canonicalReady, canonical,
   ]);
 }

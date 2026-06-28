@@ -19,7 +19,7 @@ export function RiskBadge({ risk }: { risk: string }) {
         height: 18,
         padding: '0 6px',
         borderRadius: 4,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         textTransform: 'uppercase',
         backgroundColor: badge.bg,

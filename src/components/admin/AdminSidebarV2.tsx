@@ -56,7 +56,7 @@ function adaptGlyph(
       <Glyph
         label=""
         size="small"
-        primaryColor={style?.color ?? 'var(--ds-icon, #172B4D)'}
+        primaryColor={style?.color ?? 'var(--ds-icon)'}
       />
     );
   }
@@ -248,7 +248,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                 'var(--ds-font-family-heading, var(--cp-font-heading))',
               fontSize: 16,
               fontWeight: 653,
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
               letterSpacing: 'normal',
             }}
           >

@@ -92,7 +92,7 @@ export function CapacityTable({ resources }: Props) {
       <div style={{ padding: '20px 24px 12px' }}>
         <h3 style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 16, fontWeight: 600,
+          fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
           color: 'var(--fg-1)',
         }}>
           Individual Capacity
@@ -111,7 +111,7 @@ export function CapacityTable({ resources }: Props) {
                     onClick={col.sortable ? () => handleSort(col.key) : undefined}
                     style={{
                       padding: '10px 12px',
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       textAlign: 'left',
                       color: isSorted ? 'var(--cp-blue)' : 'var(--fg-4)',
@@ -149,13 +149,13 @@ export function CapacityTable({ resources }: Props) {
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-1)'; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = idx % 2 === 1 ? 'var(--bg-1)' : 'transparent'; }}
                 >
-                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-4)' }}>
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
                     {idx + 1}
                   </td>
                   <td style={{ padding: '8px 12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <AvatarChip name={r.name} color={r.color} size={28} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>
                         {r.name}
                       </span>
                     </div>
@@ -163,18 +163,18 @@ export function CapacityTable({ resources }: Props) {
                   <td style={{ padding: '8px 12px' }} className="hidden md:table-cell">
                     <DepartmentBadge department={r.department || 'Unassigned'} />
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }} className="hidden lg:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }} className="hidden lg:table-cell">
                     <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
                       {r.role || '—'}
                     </span>
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12 }} className="hidden md:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)' }} className="hidden md:table-cell">
                     {r.capacity_hours_per_week}h/wk
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12 }} className="hidden md:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)' }} className="hidden md:table-cell">
                     {r.total_estimated_hours}h
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12 }} className="hidden lg:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)' }} className="hidden lg:table-cell">
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       {r.total_actual_hours}h
                       {variance > 0 && <TrendingUp size={12} style={{ color: 'var(--sem-danger)' }} />}
@@ -185,13 +185,13 @@ export function CapacityTable({ resources }: Props) {
                   <td style={{ padding: '8px 12px', minWidth: 120 }}>
                     <UtilizationBar percent={r.utilization_percent} height={6} compact />
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600 }}>
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
                     {r.active_items}
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }} className="hidden md:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }} className="hidden md:table-cell">
                     {r.completed_items}
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600 }} className="">
+                  <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }} className="">
                     <span style={{ color: r.blocked_items > 0 ? 'var(--sem-danger)' : 'var(--fg-4)' }}>
                       {r.blocked_items}
                     </span>

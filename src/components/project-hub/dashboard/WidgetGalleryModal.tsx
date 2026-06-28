@@ -74,7 +74,7 @@ export default function WidgetGalleryModal({
         maxWidth: 400,
         height: '100%',
         borderLeft: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -88,15 +88,15 @@ export default function WidgetGalleryModal({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 16px 8px',
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         }}
       >
         <span
           style={{
             margin: 0,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
           }}
         >
           Add a Gadget
@@ -115,7 +115,7 @@ export default function WidgetGalleryModal({
         <Textfield
           placeholder="Search gadgets"
           elemBeforeInput={
-            <span style={{ paddingLeft: 8, display: 'inline-flex', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+            <span style={{ paddingLeft: 8, display: 'inline-flex', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
               <Search size={16} />
             </span>
           }
@@ -141,25 +141,25 @@ export default function WidgetGalleryModal({
                   borderRadius: 16,
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   background: isActive
-                    ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
-                    : token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+                    ? token('color.background.selected', 'var(--ds-background-selected)')
+                    : token('color.background.neutral', 'var(--ds-background-neutral)'),
                   color: isActive
-                    ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
-                    : token('color.text', 'var(--ds-text, #172B4D)'),
+                    ? token('color.text.selected', 'var(--ds-link)')
+                    : token('color.text', 'var(--ds-text)'),
                   transition: 'background 120ms ease',
                 }}
               >
                 {cat.label}
                 <span
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 653,
                     color: isActive
-                      ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
-                      : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                      ? token('color.text.selected', 'var(--ds-link)')
+                      : token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                   }}
                 >
                   {cat.count}
@@ -182,8 +182,8 @@ export default function WidgetGalleryModal({
                   gap: 12,
                   padding: '12px 8px',
                   borderRadius: 4,
-                  border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                  background: token('elevation.surface', 'var(--ds-surface)'),
                 }}
               >
                 {/* Icon placeholder */}
@@ -192,13 +192,13 @@ export default function WidgetGalleryModal({
                     width: 48,
                     height: 48,
                     borderRadius: 4,
-                    background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+                    background: token('color.background.neutral', 'var(--ds-background-neutral)'),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    fontSize: 20,
-                    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                    fontSize: 'var(--ds-font-size-700)',
+                    color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                   }}
                 >
                   {widget.group === 'delivery' ? '📊' : widget.group === 'quality' ? '🛡' : '👥'}
@@ -208,9 +208,9 @@ export default function WidgetGalleryModal({
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 500,
-                      color: token('color.text', 'var(--ds-text, #172B4D)'),
+                      color: token('color.text', 'var(--ds-text)'),
                       marginBottom: 2,
                     }}
                   >
@@ -218,8 +218,8 @@ export default function WidgetGalleryModal({
                   </div>
                   <div
                     style={{
-                      fontSize: 12,
-                      color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                      fontSize: 'var(--ds-font-size-200)',
+                      color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                       marginBottom: 2,
                     }}
                   >
@@ -228,8 +228,8 @@ export default function WidgetGalleryModal({
                   {widget.subtitle && (
                     <div
                       style={{
-                        fontSize: 14,
-                        color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                        fontSize: 'var(--ds-font-size-400)',
+                        color: token('color.text.subtle', 'var(--ds-icon)'),
                         lineHeight: '20px',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -244,12 +244,12 @@ export default function WidgetGalleryModal({
                   <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
                     <span
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 500,
                         padding: '2px 8px',
                         borderRadius: 3,
-                        background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
-                        color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                        background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+                        color: token('color.text.subtle', 'var(--ds-icon)'),
                       }}
                     >
                       {widget.group === 'delivery' ? 'Delivery' : widget.group === 'quality' ? 'Quality' : 'Team'}
@@ -275,8 +275,8 @@ export default function WidgetGalleryModal({
               style={{
                 padding: 32,
                 textAlign: 'center',
-                color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-                fontSize: 14,
+                color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
+                fontSize: 'var(--ds-font-size-400)',
               }}
             >
               No gadgets match your search

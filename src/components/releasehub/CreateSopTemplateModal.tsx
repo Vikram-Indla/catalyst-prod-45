@@ -42,8 +42,8 @@ const CATEGORIES: Opt[] = [
   { label: 'Configuration', value: 'configuration' },
 ];
 
-const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 };
-const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 };
+const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 };
+const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', marginTop: 4 };
 
 interface StepDraft { title: string; type: string; env: string; mandatory: boolean }
 
@@ -85,7 +85,7 @@ export function CreateSopTemplateModal({ onClose }: Props) {
         <ModalHeader hasCloseButton><ModalTitle>New SOP template</ModalTitle></ModalHeader>
         <ModalBody>
           {formError && (
-            <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
+            <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
           )}
 
           <div style={{ marginBottom: 16 }}>
@@ -110,10 +110,10 @@ export function CreateSopTemplateModal({ onClose }: Props) {
             <TextArea id="sop-desc" value={description} onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)} placeholder="Optional" minimumRows={2} />
           </div>
 
-          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Steps *</h3>
+          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', margin: '8px 0' }}>Steps *</h3>
           {steps.map((s, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', minWidth: 16 }}>{i + 1}</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', minWidth: 16 }}>{i + 1}</span>
               <div style={{ flex: 1 }}>
                 <Textfield value={s.title} onChange={(e) => updateStep(i, { title: (e.target as HTMLInputElement).value })} placeholder="Step title" isCompact />
               </div>
@@ -122,16 +122,16 @@ export function CreateSopTemplateModal({ onClose }: Props) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Toggle id={`sop-step-mand-${i}`} isChecked={s.mandatory} onChange={() => updateStep(i, { mandatory: !s.mandatory })} />
-                <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)' }}>Required</span>
+                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>Required</span>
               </div>
-              <button onClick={() => removeStep(i)} aria-label="Remove step" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))', padding: 4 }}>
-                <X size={14} style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
+              <button onClick={() => removeStep(i)} aria-label="Remove step" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest))', padding: 4 }}>
+                <X size={14} style={{ color: 'var(--ds-text-subtlest)' }} />
               </button>
             </div>
           ))}
           {submitted && validSteps.length === 0 && <div style={errStyle}>Add at least one step</div>}
-          <button onClick={addStep} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: 'var(--ds-link, #0C66E4)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: 4 }}>
-            <Plus size={14} style={{ color: 'var(--ds-link, #0C66E4)' }} /> Add step
+          <button onClick={addStep} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-link)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: 4 }}>
+            <Plus size={14} style={{ color: 'var(--ds-link)' }} /> Add step
           </button>
         </ModalBody>
         <ModalFooter>

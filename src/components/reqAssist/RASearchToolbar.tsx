@@ -57,7 +57,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           placeholder="Search by title, Jira ticket, domain..."
           style={{
             flex: 1, border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)',
+            fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)',
             appearance: 'none' as any,
           }}
         />
@@ -66,7 +66,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
       {/* Filter Tabs */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 2,
-        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 8, padding: 3,
+        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 8, padding: 3,
       }}>
         {TABS.map(t => {
           const active = tab === t.key;
@@ -77,7 +77,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 height: 28, padding: '8px 12px', borderRadius: 6,
-                fontSize: 12, fontWeight: active ? 600 : 500,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 500,
                 border: 'none', cursor: 'pointer',
                 background: active ? 'var(--bg-app)' : 'transparent',
                 color: active ? 'var(--fg-1)' : 'var(--fg-3)',
@@ -90,7 +90,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             >
               {t.label}
               {t.key === 'all' && totalCount != null && (
-                <span style={{ fontSize: 12, color: 'var(--fg-4)', fontWeight: 400 }}>({totalCount})</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontWeight: 400 }}>({totalCount})</span>
               )}
             </button>
           );
@@ -108,20 +108,20 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           disabled={syncingAll}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '0 14px', height: 50, fontSize: 13, fontWeight: 600,
+            padding: '0 14px', height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
             border: 'none', borderRadius: 6,
             background: syncingAll
               ? 'var(--fg-4)'
-              : 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
+              : 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)',
             boxShadow: syncingAll ? 'none' : '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             cursor: syncingAll ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)',
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}
-          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1D4ED8) 0%, var(--ds-link-pressed, var(--ds-link-pressed, #0747A6)) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information, rgba(37,99,235,0.45))'; } }}
-          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))'; } }}
+          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered) 0%, var(--ds-link-pressed, var(--ds-link-pressed)) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information, rgba(37,99,235,0.45))'; } }}
+          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))'; } }}
         >
           {syncingAll ? (
             <>

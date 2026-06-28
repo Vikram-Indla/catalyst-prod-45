@@ -65,11 +65,11 @@ export function AIStrategyIntelligencePanel({
   if (!metrics) return null;
 
   const LEVEL_COLORS = [
-    { bg: 'var(--ds-background-information, #DBEAFE)', text: 'var(--ds-text, #1E40AF)', border: 'var(--ds-border, #93C5FD)' },
-    { bg: 'var(--ds-surface-sunken, #CCFBF1)', text: 'var(--ds-text, #115E59)', border: 'var(--ds-border, #5EEAD4)' },
-    { bg: 'var(--ds-background-information, #DBEAFE)', text: 'var(--ds-text, #1E40AF)', border: 'var(--ds-border, #93C5FD)' },
-    { bg: 'var(--ds-background-warning, #FEF3C7)', text: 'var(--ds-text, #92400E)', border: 'var(--ds-border, #FDE68A)' },
-    { bg: 'var(--ds-background-discovery, #EDE9FE)', text: 'var(--ds-text-discovery, #5B21B6)', border: 'var(--ds-border, #C4B5FD)' },
+    { bg: 'var(--ds-background-information)', text: 'var(--ds-text)', border: 'var(--ds-border)' },
+    { bg: 'var(--ds-surface-sunken)', text: 'var(--ds-text)', border: 'var(--ds-border)' },
+    { bg: 'var(--ds-background-information)', text: 'var(--ds-text)', border: 'var(--ds-border)' },
+    { bg: 'var(--ds-background-warning)', text: 'var(--ds-text)', border: 'var(--ds-border)' },
+    { bg: 'var(--ds-background-discovery)', text: 'var(--ds-text-discovery)', border: 'var(--ds-border)' },
   ];
 
   const chainSegments = [
@@ -89,12 +89,12 @@ export function AIStrategyIntelligencePanel({
         transition: 'transform 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-text-brand, #60A5FA) 50%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 100%)' }} />
+      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-text-brand) 50%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 100%)' }} />
 
       <div className="px-7 pt-4 pb-0 shrink-0">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-inverse, #1e3a8a))' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-text-inverse))' }}>
               <Sparkles size={16} className="text-white" />
             </div>
             <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
@@ -124,13 +124,13 @@ export function AIStrategyIntelligencePanel({
           {!metrics.initiativeKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', background: 'var(--ds-background-warning, #FFF7D6)', border: '1px solid var(--ds-background-warning, #FFF7D6)' }}>⚠ No Request</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, var(--cp-warning))', background: 'var(--ds-background-warning)', border: '1px solid var(--ds-background-warning)' }}>⚠ No Request</span>
             </>
           )}
           {!metrics.epicKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-information, #E9F2FF)', border: '1px solid var(--ds-background-information-bold, #0C66E4)' }}>⚠ No Epic</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-link-pressed)', background: 'var(--ds-background-information)', border: '1px solid var(--ds-background-information-bold)' }}>⚠ No Epic</span>
             </>
           )}
         </div>
@@ -145,7 +145,7 @@ export function AIStrategyIntelligencePanel({
               style={{
                 color: activeTab === tab.id ? 'var(--fg-1)' : 'var(--fg-3)',
                 fontWeight: activeTab === tab.id ? 700 : 500,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 letterSpacing: '0.03em',
                 textTransform: 'uppercase',
               }}
@@ -178,13 +178,13 @@ export function AIStrategyIntelligencePanel({
 
       <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: 'var(--divider)' }}>
         <div className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--fg-4)' }}>
-          <span style={{ color: 'var(--ds-text-brand, #60A5FA)' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          <span style={{ color: 'var(--ds-text-brand)' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
+          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] dark:border dark:border-[var(--ds-border,var(--cp-ink-1))]">
             Close
           </button>
         </div>
@@ -202,9 +202,9 @@ function StatusBanner({ status, health, confidence, label }: {
   health?: number; confidence?: number; label?: string;
 }) {
   const config = {
-    on_track: { text: 'ON TRACK', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-    at_risk:  { text: 'AT RISK',  color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-    critical: { text: 'CRITICAL', color: 'var(--ds-text-danger, #EF4444)' },
+    on_track: { text: 'ON TRACK', color: 'var(--ds-text-success, var(--cp-success))' },
+    at_risk:  { text: 'AT RISK',  color: 'var(--ds-text-warning, var(--cp-warning))' },
+    critical: { text: 'CRITICAL', color: 'var(--ds-text-danger)' },
   }[status];
 
   return (
@@ -225,13 +225,13 @@ function StatusBanner({ status, health, confidence, label }: {
 }
 
 function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) {
-  const color = status === 'on_track' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : status === 'at_risk' ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+  const color = status === 'on_track' ? 'var(--ds-text-success, var(--cp-success))' : status === 'at_risk' ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />;
 }
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text, #172B4D)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+    <div className="mb-2.5 mt-1" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
       {children}
     </div>
   );
@@ -329,23 +329,23 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
       {/* At-a-Glance Metrics */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Goal Progress</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: goalProgress >= 60 ? 'var(--sem-success)' : goalProgress >= 40 ? 'var(--sem-warning)' : 'var(--sem-danger)' }}>
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>Goal Progress</p>
+          <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: goalProgress >= 60 ? 'var(--sem-success)' : goalProgress >= 40 ? 'var(--sem-warning)' : 'var(--sem-danger)' }}>
             {goalProgress}%
           </p>
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>AI Health</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>AI Health</p>
+          <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>
             {goalHealth}/100
           </p>
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Key Results</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--cp-teal-60, #0D9488)' }}>
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>Key Results</p>
+          <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: 'var(--cp-teal-60)' }}>
             {krCount}
           </p>
-          <p className="text-slate-500 mt-0.5" style={{ fontSize: 10 }}>{krsOnTrack} on track</p>
+          <p className="text-slate-500 mt-0.5" style={{ fontSize: 'var(--ds-font-size-50)' }}>{krsOnTrack} on track</p>
         </div>
       </div>
 
@@ -366,11 +366,11 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
       ) : briefError ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="flex items-center justify-center rounded-xl mb-4"
-            style={{ width: 48, height: 48, background: 'var(--ds-background-warning, #FFF7D6)' }}>
-            <X size={20} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
+            style={{ width: 48, height: 48, background: 'var(--ds-background-warning)' }}>
+            <X size={20} style={{ color: 'var(--ds-text-warning, var(--cp-warning))' }} />
           </div>
-          <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
-          <p className="text-slate-500" style={{ fontSize: 13, maxWidth: 300 }}>{briefError}</p>
+          <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 'var(--ds-font-size-400)' }}>Briefing Unavailable</p>
+          <p className="text-slate-500" style={{ fontSize: 'var(--ds-font-size-300)', maxWidth: 300 }}>{briefError}</p>
           {onRegenerate && (
             <button onClick={onRegenerate} className="mt-4 px-3 py-1.5 rounded-md border border-slate-200 text-[12px] font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
               <RefreshCw size={14} /> Retry
@@ -383,12 +383,12 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             components={{
               h2: ({ children }) => (
                 <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-slate-100 first:mt-0 text-slate-900"
-                  style={{ fontSize: 15 }}>
+                  style={{ fontSize: 'var(--ds-font-size-400)' }}>
                   {children}
                 </h2>
               ),
               p: ({ children }) => (
-                <p className="mb-4 text-slate-600" style={{ fontSize: 14, lineHeight: 1.8 }}>{children}</p>
+                <p className="mb-4 text-slate-600" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.8 }}>{children}</p>
               ),
               strong: ({ children }) => (
                 <strong className="font-semibold text-slate-900">{children}</strong>
@@ -397,7 +397,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
                 <ul className="my-3 space-y-1.5">{children}</ul>
               ),
               li: ({ children }) => (
-                <li className="pl-1 text-slate-600" style={{ fontSize: 13, lineHeight: 1.6 }}>
+                <li className="pl-1 text-slate-600" style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.6 }}>
                   <span className="mr-2 text-slate-400">•</span>{children}
                 </li>
               ),
@@ -406,7 +406,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             {briefContent}
           </ReactMarkdown>
           {isBriefGenerating && (
-            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12 }}>
+            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontSize: 'var(--ds-font-size-200)' }}>
               <Sparkles size={14} className="animate-pulse" />
               <span className="font-medium">Generating…</span>
             </div>
@@ -628,8 +628,8 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
               <>
                 <div className="flex h-3 rounded-full overflow-hidden mb-2">
                   {m.storiesInProd > 0 && <div style={{ width: `${m.storiesInProd / m.storiesTotal * 100}%`, background: 'var(--sem-success)' }} />}
-                  {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: 'var(--ds-background-success, #DFFCF0)' }} />}
-                  {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />}
+                  {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: 'var(--ds-background-success)' }} />}
+                  {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />}
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
                   {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: 'var(--divider)' }} />}
                 </div>

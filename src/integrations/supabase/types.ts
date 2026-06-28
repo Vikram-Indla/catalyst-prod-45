@@ -11948,6 +11948,7 @@ export type Database = {
           updated_at: string
           updated_by: string | null
           urgency: Database["public"]["Enums"]["urgency_level"] | null
+          workflow_status_key: string | null
         }
         Insert: {
           assignee_id?: string | null
@@ -11995,6 +11996,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           urgency?: Database["public"]["Enums"]["urgency_level"] | null
+          workflow_status_key?: string | null
         }
         Update: {
           assignee_id?: string | null
@@ -12042,6 +12044,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           urgency?: Database["public"]["Enums"]["urgency_level"] | null
+          workflow_status_key?: string | null
         }
         Relationships: [
           {
@@ -23194,6 +23197,116 @@ export type Database = {
           {
             foreignKeyName: "ph_wf_audit_version_id_fkey"
             columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_enforcement_config: {
+        Row: {
+          created_at: string
+          enabled_at: string
+          enabled_by: string | null
+          entity_key: string
+          id: string
+          mode: string
+          project_id: string
+          reason: string | null
+          updated_at: string
+          workflow_version_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          enabled_at?: string
+          enabled_by?: string | null
+          entity_key: string
+          id?: string
+          mode?: string
+          project_id: string
+          reason?: string | null
+          updated_at?: string
+          workflow_version_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          enabled_at?: string
+          enabled_by?: string | null
+          entity_key?: string
+          id?: string
+          mode?: string
+          project_id?: string
+          reason?: string | null
+          updated_at?: string
+          workflow_version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_enabled_by_fkey"
+            columns: ["enabled_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_enforcement_config_workflow_version_id_fkey"
+            columns: ["workflow_version_id"]
             isOneToOne: false
             referencedRelation: "ph_wf_versions"
             referencedColumns: ["id"]
@@ -42045,6 +42158,7 @@ export type Database = {
           steps_to_reproduce: string | null
           title: string
           updated_at: string | null
+          workflow_status_key: string | null
         }
         Insert: {
           actual_result?: string | null
@@ -42096,6 +42210,7 @@ export type Database = {
           steps_to_reproduce?: string | null
           title: string
           updated_at?: string | null
+          workflow_status_key?: string | null
         }
         Update: {
           actual_result?: string | null
@@ -42147,6 +42262,7 @@ export type Database = {
           steps_to_reproduce?: string | null
           title?: string
           updated_at?: string | null
+          workflow_status_key?: string | null
         }
         Relationships: [
           {

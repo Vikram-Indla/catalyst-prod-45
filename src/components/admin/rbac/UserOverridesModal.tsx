@@ -20,12 +20,12 @@ interface UserOverridesModalProps {
 }
 
 const T = {
-  text:     'var(--ds-text, #172B4D)',
-  subtle:   'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  border:   'var(--ds-border, #DCDFE4)',
-  bg:       'var(--ds-background-neutral-subtle, #F7F8F9)',
-  surface:  'var(--ds-surface, #FFFFFF)',
+  text:     'var(--ds-text)',
+  subtle:   'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  border:   'var(--ds-border)',
+  bg:       'var(--ds-background-neutral-subtle)',
+  surface:  'var(--ds-surface)',
 };
 
 const OVERRIDE_OPTIONS = [

@@ -9,18 +9,18 @@ function Providers({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 function Frame({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></Providers>;
+  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface)' }}>{children}</div></Providers>;
 }
 
 import { WorkItemCard } from '@/components/kanban/WorkItemCard';
 
 const tk = {
-  surface: 'var(--ds-surface, #fff)', surfaceHover: 'var(--ds-surface-hovered, #fafbfc)',
-  border: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #172B4D)',
-  textSubtle: 'var(--ds-text-subtle, #42526E)', textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
-  flagBg: 'var(--ds-background-warning, #FFF7D6)', selected: 'var(--ds-background-selected, #E9F2FE)',
+  surface: 'var(--ds-surface)', surfaceHover: 'var(--ds-surface-hovered)',
+  border: 'var(--ds-border)', text: 'var(--ds-text)',
+  textSubtle: 'var(--ds-text-subtle)', textSubtlest: 'var(--ds-text-subtlest)',
+  flagBg: 'var(--ds-background-warning)', selected: 'var(--ds-background-selected)',
 };
-const d = { cardPadding: 12, avatarSize: 24, fontSize: 13, keyFontSize: 11, gap: 6, borderRadius: 8, minHeight: 80 };
+const d = { cardPadding: 12, avatarSize: 24, fontSize: 'var(--ds-font-size-300)', keyFontSize: 11, gap: 6, borderRadius: 8, minHeight: 80 };
 
 const card = {
   id: 'i1', issue_key: 'BAU-5972', summary: 'Industrial Capabilities: Add Item Interface',

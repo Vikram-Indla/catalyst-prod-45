@@ -177,41 +177,41 @@ export type GroupByType = 'none' | 'project' | 'department' | 'assignment';
 // Catalyst V5 Design System Colors
 export const CatalystColors = {
   brand: {
-    blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-    blueHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
+    blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+    blueHover: 'var(--ds-background-brand-bold-hovered)',
     blueBg: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))',
-    teal: 'var(--ds-chart-teal-bold, #0d9488)',
-    tealHover: 'var(--ds-chart-teal-bolder, #0f766e)',
+    teal: 'var(--ds-chart-teal-bold)',
+    tealHover: 'var(--ds-chart-teal-bolder)',
     tealBg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))',
   },
   secondary: {
-    olive: 'var(--ds-chart-teal-bold, #0d9488)',
-    bronze: 'var(--ds-background-success-bold, #059669)',
-    champagne: 'var(--ds-text-brand, #3b82f6)',
-    green: 'var(--ds-text-success, #22c55e)',
+    olive: 'var(--ds-chart-teal-bold)',
+    bronze: 'var(--ds-background-success-bold)',
+    champagne: 'var(--ds-text-brand)',
+    green: 'var(--ds-text-success)',
   },
   status: {
-    success: 'var(--ds-chart-teal-bold, #0d9488)',
+    success: 'var(--ds-chart-teal-bold)',
     successBg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))',
-    warning: 'var(--ds-text-warning, #d97706)',
+    warning: 'var(--ds-text-warning)',
     warningBg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.08))',
-    danger: 'var(--ds-text-danger, #dc2626)',
+    danger: 'var(--ds-text-danger)',
     dangerBg: 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08))',
   },
 };
 
 export const ProjectColors: Record<string, string> = {
-  'Digital Investor Portal': 'var(--ds-chart-teal-bold, #0d9488)',
-  'Industrial Marketplace': 'var(--ds-background-success-bold, #059669)',
-  'Industrial Platform Modernization': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'Mobile App Request': 'var(--ds-text-brand, #3b82f6)',
-  default: 'var(--ds-text-subtlest, #626F86)',
+  'Digital Investor Portal': 'var(--ds-chart-teal-bold)',
+  'Industrial Marketplace': 'var(--ds-background-success-bold)',
+  'Industrial Platform Modernization': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'Mobile App Request': 'var(--ds-text-brand)',
+  default: 'var(--ds-text-subtlest)',
 };
 
 export const DepartmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
-  Delivery: { bg: 'bg-[var(--ds-chart-teal-bold, #0d9488)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
-  Support: { bg: 'bg-[var(--ds-background-success-bold, #059669)]', text: 'text-white', badge: 'bg-[var(--ds-background-success-bold, #059669)]/15 text-[var(--ds-background-success-bold, #059669)]' },
+  Product: { bg: 'bg-[var(--ds-text-brand)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand)]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' },
+  Delivery: { bg: 'bg-[var(--ds-chart-teal-bold)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/10 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' },
+  Support: { bg: 'bg-[var(--ds-background-success-bold)]', text: 'text-white', badge: 'bg-[var(--ds-background-success-bold)]/15 text-[var(--ds-background-success-bold)]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 

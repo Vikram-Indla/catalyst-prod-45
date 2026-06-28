@@ -218,7 +218,7 @@ export function WorkflowDiagram({
       const y2 = toPos.y + DIAGRAM_NODE_HEIGHT / 2;
 
       const isSelected = selectedEdge?.transition.id === t.id;
-      const color = isGlobal ? 'var(--ds-background-warning-bold, #d97706)' : (isSelected ? 'var(--ds-link, #0052CC)' : 'var(--ds-border, #DFE1E6)');
+      const color = isGlobal ? 'var(--ds-background-warning-bold)' : (isSelected ? 'var(--ds-link)' : 'var(--ds-border)');
 
       return (
         <g key={t.id}>
@@ -256,7 +256,7 @@ export function WorkflowDiagram({
     const nodes = statuses.map((status) => {
       const pos = nodePositions[status.id];
       if (!pos) return null;
-      const catColor = STATUS_CATEGORY_COLORS[status.category as StatusCategory] ?? 'var(--ds-text-subtlest, #626F86)';
+      const catColor = STATUS_CATEGORY_COLORS[status.category as StatusCategory] ?? 'var(--ds-text-subtlest)';
       const isInitial = status.id === initialStatusId;
       const isUnreachable = !reachable.has(status.id);
       const isAddSource = addMode?.step === 'destination' && (addMode as { step: 'destination'; sourceId: string }).sourceId === status.id;
@@ -275,8 +275,8 @@ export function WorkflowDiagram({
             width={DIAGRAM_NODE_WIDTH}
             height={DIAGRAM_NODE_HEIGHT}
             rx={4}
-            fill="var(--ds-surface, #FFFFFF)"
-            stroke={isAddSource ? catColor : isAddTarget ? 'var(--ds-border-focused, #388BFF)' : catColor}
+            fill="var(--ds-surface)"
+            stroke={isAddSource ? catColor : isAddTarget ? 'var(--ds-border-focused)' : catColor}
             strokeWidth={isAddSource || isAddTarget ? 2 : 1.5}
           />
           {/* Category strip */}
@@ -292,7 +292,7 @@ export function WorkflowDiagram({
             y={DIAGRAM_NODE_HEIGHT / 2 + 5}
             fontSize={12}
             fontFamily="var(--ds-font-family-body, 'Atlassian Sans', sans-serif)"
-            fill="var(--ds-text, #172B4D)"
+            fill="var(--ds-text)"
             clipPath={`url(#clip-${status.id})`}
           >
             {status.name}
@@ -304,14 +304,14 @@ export function WorkflowDiagram({
           {isUnreachable && (
             <Tooltip content="No inbound transition — unreachable from the initial status">
               {/* Tooltip wrapper doesn't work directly in SVG; we use title element */}
-              <circle cx={DIAGRAM_NODE_WIDTH - 10} cy={10} r={5} fill="var(--ds-background-danger-bold, #dc2626)">
+              <circle cx={DIAGRAM_NODE_WIDTH - 10} cy={10} r={5} fill="var(--ds-background-danger-bold)">
                 <title>No inbound transition — unreachable from the initial status</title>
               </circle>
             </Tooltip>
           )}
           {/* Initial marker (dot on left side) */}
           {isInitial && (
-            <circle cx={-8} cy={DIAGRAM_NODE_HEIGHT / 2} r={5} fill="var(--ds-text, #172B4D)" />
+            <circle cx={-8} cy={DIAGRAM_NODE_HEIGHT / 2} r={5} fill="var(--ds-text)" />
           )}
         </g>
       );
@@ -337,7 +337,7 @@ export function WorkflowDiagram({
             height={DIAGRAM_NODE_HEIGHT}
             rx={4}
             fill="transparent"
-            stroke="var(--ds-background-warning-bold, #d97706)"
+            stroke="var(--ds-background-warning-bold)"
             strokeWidth={1.5}
             strokeDasharray="6 3"
           />
@@ -347,7 +347,7 @@ export function WorkflowDiagram({
             fontSize={11}
             textAnchor="middle"
             fontFamily="var(--ds-font-family-body, 'Atlassian Sans', sans-serif)"
-            fill="var(--ds-background-warning-bold, #d97706)"
+            fill="var(--ds-background-warning-bold)"
           >
             Any status · global
           </text>
@@ -376,8 +376,8 @@ export function WorkflowDiagram({
           alignItems: 'center',
           gap: 8,
           padding: '8px 16px',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+          borderBottom: '1px solid var(--ds-border)',
+          background: 'var(--ds-background-neutral-subtle)',
           flexWrap: 'wrap',
         }}
       >
@@ -386,7 +386,7 @@ export function WorkflowDiagram({
           spacing="compact"
           onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}
         >−</Button>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', minWidth: 36, textAlign: 'center' }}>
+        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)', minWidth: 36, textAlign: 'center' }}>
           {Math.round(zoom * 100)}%
         </span>
         <Button
@@ -399,7 +399,7 @@ export function WorkflowDiagram({
           spacing="compact"
           onClick={() => setZoom((z) => Math.min(1.6, z + 0.1))}
         >+</Button>
-        <div style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border)', margin: '0 4px' }} />
         <Button
           appearance="subtle"
           spacing="compact"
@@ -425,8 +425,8 @@ export function WorkflowDiagram({
         {/* Edge toolbar */}
         {selectedEdge && (
           <>
-            <div style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
-            <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+            <div style={{ width: 1, height: 20, background: 'var(--ds-border)', margin: '0 4px' }} />
+            <span style={{ fontSize: 12, color: 'var(--ds-text)' }}>
               {fromStatus} → {toStatus}
             </span>
             <Button
@@ -451,7 +451,7 @@ export function WorkflowDiagram({
           flex: 1,
           overflow: 'hidden',
           cursor: panDrag ? 'grabbing' : 'grab',
-          background: 'var(--ds-surface-sunken, #F7F8F9)',
+          background: 'var(--ds-surface-sunken)',
           userSelect: 'none',
         }}
         onMouseMove={handleMouseMove}
@@ -469,13 +469,13 @@ export function WorkflowDiagram({
         >
           <defs>
             <marker id="arrow-default" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-border, #DFE1E6)" />
+              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-border)" />
             </marker>
             <marker id="arrow-selected" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-link, #0052CC)" />
+              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-link)" />
             </marker>
             <marker id="arrow-global" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-background-warning-bold, #d97706)" />
+              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-background-warning-bold)" />
             </marker>
           </defs>
 
@@ -486,14 +486,14 @@ export function WorkflowDiagram({
                 cx={nodePositions[initialStatusId].x - 20}
                 cy={nodePositions[initialStatusId].y + DIAGRAM_NODE_HEIGHT / 2}
                 r={6}
-                fill="var(--ds-text, #172B4D)"
+                fill="var(--ds-text)"
               />
               <line
                 x1={nodePositions[initialStatusId].x - 14}
                 y1={nodePositions[initialStatusId].y + DIAGRAM_NODE_HEIGHT / 2}
                 x2={nodePositions[initialStatusId].x}
                 y2={nodePositions[initialStatusId].y + DIAGRAM_NODE_HEIGHT / 2}
-                stroke="var(--ds-text, #172B4D)"
+                stroke="var(--ds-text)"
                 strokeWidth={1.5}
                 markerEnd="url(#arrow-default)"
               />

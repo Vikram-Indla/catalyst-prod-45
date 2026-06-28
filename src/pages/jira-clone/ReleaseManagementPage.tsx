@@ -46,9 +46,9 @@ const ReleaseManagementPage: React.FC = () => {
       <h1 style={{ margin: '0 0 24px 0' }}>Senaei BAU</h1>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', borderBottom: '1px solid var(--ds-background-neutral, #EBECF0)' }}>
-        <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: 'var(--ds-text-subtlest, #626F86)', cursor: 'pointer' }}>List</button>
-        <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: 'var(--ds-link, #0052CC)', borderBottom: '2px solid var(--ds-link, #0052CC)', fontWeight: 500, cursor: 'pointer' }}>Releases</button>
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', borderBottom: '1px solid var(--ds-background-neutral)' }}>
+        <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: 'var(--ds-text-subtlest)', cursor: 'pointer' }}>List</button>
+        <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: 'var(--ds-link)', borderBottom: '2px solid var(--ds-link)', fontWeight: 500, cursor: 'pointer' }}>Releases</button>
       </div>
 
       {/* Toolbar */}
@@ -58,31 +58,31 @@ const ReleaseManagementPage: React.FC = () => {
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: '180px', padding: '6px 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '3px', fontSize: '14px' }}
+          style={{ width: '180px', padding: '6px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)' }}
         />
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as ReleaseStatus)}
-          style={{ padding: '6px 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '3px', fontSize: '14px', cursor: 'pointer' }}
+          style={{ padding: '6px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)', cursor: 'pointer' }}
         >
           <option value="RELEASED">Released</option>
           <option value="UNRELEASED">Unreleased</option>
           <option value="ARCHIVED">Archived</option>
         </select>
 
-        <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '13px' }}>This space has 47 releases</span>
+        <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>This space has 47 releases</span>
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
           <button
             onClick={() => { }}
-            style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '3px', cursor: 'pointer', fontSize: '14px' }}
+            style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
           >
             Give feedback
           </button>
           <button
             onClick={() => setIsCreateDialogOpen(true)}
-            style={{ padding: '6px 16px', background: 'var(--ds-link, #0052CC)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}
+            style={{ padding: '6px 16px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
           >
             Create release
           </button>
@@ -90,41 +90,41 @@ const ReleaseManagementPage: React.FC = () => {
       </div>
 
       {/* Table */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
         <thead>
-          <tr style={{ borderBottom: '1px solid var(--ds-background-neutral, #EBECF0)', background: '#FAFBFC' }}>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Release</th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Status</th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Progress</th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Start date</th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Release date</th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Description</th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>More actions</th>
+          <tr style={{ borderBottom: '1px solid var(--ds-background-neutral)', background: '#FAFBFC' }}>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>Release</th>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>Status</th>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>Progress</th>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>Start date</th>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>Release date</th>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>Description</th>
+            <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>More actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredReleases.map((release) => (
-            <tr key={release.id} style={{ borderBottom: '1px solid var(--ds-background-neutral, #EBECF0)', background: 'var(--ds-surface, #FFFFFF)', hover: { background: 'var(--ds-surface-sunken, #F7F8F9)' } as any }}>
+            <tr key={release.id} style={{ borderBottom: '1px solid var(--ds-background-neutral)', background: 'var(--ds-surface)', hover: { background: 'var(--ds-surface-sunken)' } as any }}>
               <td style={{ padding: '12px 16px' }}>
-                <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'underline' }}>{release.name}</a>
+                <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link))', textDecoration: 'underline' }}>{release.name}</a>
               </td>
               <td style={{ padding: '12px 16px' }}>
-                <span style={{ display: 'inline-block', padding: '2px 8px', background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-text-subtlest, #626F86)', borderRadius: '3px', fontSize: '12px', fontWeight: 600 }}>
+                <span style={{ display: 'inline-block', padding: '2px 8px', background: 'var(--ds-surface)', border: '1px solid var(--ds-text-subtlest)', borderRadius: '3px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
                   {release.status}
                 </span>
               </td>
               <td style={{ padding: '12px 16px' }}>
                 {release.workItemsCount === 0 ? (
-                  <span style={{ fontStyle: 'italic', color: 'var(--ds-text-subtlest, #626F86)', fontSize: '13px' }}>No work items</span>
+                  <span style={{ fontStyle: 'italic', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No work items</span>
                 ) : (
-                  <div style={{ display: 'flex', gap: 0, height: '8px', borderRadius: '4px', overflow: 'hidden', background: 'var(--ds-background-neutral, #EBECF0)', width: '100px' }}>
-                    <div style={{ flex: release.progress?.completed || 0, background: 'var(--ds-text-success, #216E4E)' }} />
-                    <div style={{ flex: (release.progress?.total || 0) - (release.progress?.completed || 0), background: 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' }} />
+                  <div style={{ display: 'flex', gap: 0, height: '8px', borderRadius: '4px', overflow: 'hidden', background: 'var(--ds-background-neutral)', width: '100px' }}>
+                    <div style={{ flex: release.progress?.completed || 0, background: 'var(--ds-text-success)' }} />
+                    <div style={{ flex: (release.progress?.total || 0) - (release.progress?.completed || 0), background: 'var(--ds-background-neutral, var(--ds-background-neutral))' }} />
                   </div>
                 )}
               </td>
-              <td style={{ padding: '12px 16px', color: 'var(--ds-text, #172B4D)' }}>{release.startDate || ''}</td>
-              <td style={{ padding: '12px 16px', color: release.releaseDate && new Date(release.releaseDate) < new Date('2026-06-26') ? 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' : 'var(--ds-text, var(--ds-text, #172B4D))' }}>
+              <td style={{ padding: '12px 16px', color: 'var(--ds-text)' }}>{release.startDate || ''}</td>
+              <td style={{ padding: '12px 16px', color: release.releaseDate && new Date(release.releaseDate) < new Date('2026-06-26') ? 'var(--ds-text-danger, var(--ds-text-danger))' : 'var(--ds-text, var(--ds-text))' }}>
                 {release.releaseDate}
               </td>
               <td style={{ padding: '12px 16px' }}>
@@ -134,7 +134,7 @@ const ReleaseManagementPage: React.FC = () => {
                       setSelectedReleaseForAction({ release, action: 'release' });
                       setIsConfirmDialogOpen(true);
                     }}
-                    style={{ padding: '4px 12px', background: 'var(--ds-link, #0052CC)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: '12px', fontWeight: 500 }}
+                    style={{ padding: '4px 12px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}
                   >
                     Release
                   </button>
@@ -143,7 +143,7 @@ const ReleaseManagementPage: React.FC = () => {
               <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                 <button
                   onClick={() => { }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px 8px' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-500)', padding: '4px 8px' }}
                 >
                   ⋯
                 </button>
@@ -162,12 +162,12 @@ const ReleaseManagementPage: React.FC = () => {
               id="release-name"
               type="text"
               placeholder="e.g., Release 1.0"
-              style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '3px', fontSize: '14px', marginBottom: '24px', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)', marginBottom: '24px', boxSizing: 'border-box' }}
             />
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setIsCreateDialogOpen(false)}
-                style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '3px', cursor: 'pointer', fontSize: '14px' }}
+                style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
               >
                 Cancel
               </button>
@@ -176,7 +176,7 @@ const ReleaseManagementPage: React.FC = () => {
                   const input = document.getElementById('release-name') as HTMLInputElement;
                   handleCreateRelease(input.value);
                 }}
-                style={{ padding: '6px 16px', background: 'var(--ds-link, #0052CC)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}
+                style={{ padding: '6px 16px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
               >
                 Create
               </button>
@@ -190,20 +190,20 @@ const ReleaseManagementPage: React.FC = () => {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(9, 30, 66, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001 }}> // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
           <div style={{ background: 'white', borderRadius: '3px', padding: '24px', maxWidth: '500px', width: '90%', boxShadow: '0 20px 32px rgba(9, 30, 66, 0.25)' }}> // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             <h2 style={{ margin: '0 0 16px 0' }}>Release {selectedReleaseForAction.release.name}?</h2>
-            <p style={{ margin: '0 0 24px 0', color: 'var(--ds-text, #172B4D)' }}>Are you sure you want to release this?</p>
+            <p style={{ margin: '0 0 24px 0', color: 'var(--ds-text)' }}>Are you sure you want to release this?</p>
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => {
                   setIsConfirmDialogOpen(false);
                   setSelectedReleaseForAction(null);
                 }}
-                style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '3px', cursor: 'pointer', fontSize: '14px' }}
+                style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleReleaseConfirm}
-                style={{ padding: '6px 16px', background: 'var(--ds-text-danger, #AE2A19)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}
+                style={{ padding: '6px 16px', background: 'var(--ds-text-danger)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
               >
                 Release
               </button>
@@ -221,11 +221,11 @@ const ReleaseManagementPage: React.FC = () => {
           width: '56px',
           height: '56px',
           borderRadius: '50%',
-          background: 'var(--ds-link, #0052CC)',
+          background: 'var(--ds-link)',
           color: 'white',
           border: 'none',
           cursor: 'pointer',
-          fontSize: '20px',
+          fontSize: 'var(--ds-font-size-700)',
           zIndex: 1000,
           boxShadow: '0 8px 12px rgba(9, 30, 66, 0.15)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         }}

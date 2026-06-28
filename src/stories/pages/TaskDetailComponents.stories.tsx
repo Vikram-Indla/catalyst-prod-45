@@ -9,7 +9,7 @@ import { TaskRow } from '@/modules/tasks/components/my-tasks/TaskRow';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return <QueryClientProvider client={qc}><div style={{ maxWidth: 480, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></QueryClientProvider>;
+  return <QueryClientProvider client={qc}><div style={{ maxWidth: 480, padding: 16, background: 'var(--ds-surface)' }}>{children}</div></QueryClientProvider>;
 }
 
 // ─── Mock Task ─────────────────────────────────────────────────────────────

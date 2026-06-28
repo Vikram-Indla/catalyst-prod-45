@@ -41,19 +41,19 @@ import { formatDistanceToNow } from 'date-fns';
 
 /** ADS token map — all colors via var(--ds-*) with light-mode fallbacks. */
 const T = {
-  surface:        'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  border:         'var(--ds-border, #DCDFE4)',
-  borderLayout:   'var(--ds-border-layout, #EBECF0)',
-  borderSelected: 'var(--ds-border-selected, #0C66E4)',
-  text:           'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-  textSubtle:     'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-  textSubtlest:   'var(--ds-text-subtlest, #626F86)',
-  textBrand:      'var(--ds-text-brand, #0C66E4)',
-  bgPage:         'var(--ds-background-accent-gray-subtlest, #F7F8F9)',
-  bgNeutralHover: 'var(--ds-background-neutral-hovered, #F1F2F4)',
-  bgBrandSubtle:  'var(--ds-background-selected, #E9F2FF)',
-  iconBrand:      'var(--ds-icon-brand, #0C66E4)',
-  iconSubtle:     'var(--ds-icon-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+  surface:        'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  border:         'var(--ds-border)',
+  borderLayout:   'var(--ds-border-layout)',
+  borderSelected: 'var(--ds-border-selected)',
+  text:           'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
+  textSubtle:     'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
+  textSubtlest:   'var(--ds-text-subtlest)',
+  textBrand:      'var(--ds-text-brand)',
+  bgPage:         'var(--ds-background-accent-gray-subtlest)',
+  bgNeutralHover: 'var(--ds-background-neutral-hovered)',
+  bgBrandSubtle:  'var(--ds-background-selected)',
+  iconBrand:      'var(--ds-icon-brand)',
+  iconSubtle:     'var(--ds-icon-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
 };
 
 /** Quick actions — all paths registered in REGISTERED_ADMIN_ROUTES. */
@@ -170,10 +170,10 @@ export default function AdminOverview() {
           flexShrink: 0,
         }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: T.text, lineHeight: '24px' }}>
+            <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: T.text, lineHeight: '24px' }}>
               Admin Overview
             </h1>
-            <p style={{ margin: '2px 0 0', fontSize: '14px', color: T.textSubtle }}>
+            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
               System configuration and administration hub
             </p>
           </div>
@@ -226,7 +226,7 @@ export default function AdminOverview() {
                     border: `1px solid ${T.border}`,
                     background: isHovered ? T.bgNeutralHover : T.surface,
                     color: T.text,
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 400,
                     textDecoration: 'none',
                     transition: 'background 0.1s',
@@ -286,10 +286,10 @@ export default function AdminOverview() {
                           <Spinner size="medium" />
                         ) : (
                           <>
-                            <span style={{ fontSize: '24px', fontWeight: 700, color: T.text, lineHeight: 1 }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: T.text, lineHeight: 1 }}>
                               {pocket.count}
                             </span>
-                            <p style={{ margin: '2px 0 0', fontSize: '11px', color: T.textSubtlest }}>
+                            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>
                               {pocket.countLabel}
                             </p>
                           </>
@@ -297,10 +297,10 @@ export default function AdminOverview() {
                       </div>
                     </div>
                     {/* Title + description */}
-                    <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: T.text }}>
+                    <h2 style={{ margin: '0 0 4px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>
                       {pocket.title}
                     </h2>
-                    <p style={{ margin: 0, fontSize: '13px', color: T.textSubtle }}>
+                    <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: T.textSubtle }}>
                       {pocket.description}
                     </p>
                   </div>
@@ -325,7 +325,7 @@ export default function AdminOverview() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <span style={{ display: 'inline-flex', color: T.iconSubtle }}><ClockIcon label="" size="small" /></span>
-                <h2 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: T.text }}>Recently Visited</h2>
+                <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text }}>Recently Visited</h2>
               </div>
               <div>
                 {roomsLoading ? (
@@ -351,9 +351,9 @@ export default function AdminOverview() {
                         transition: 'background 0.1s',
                       }}
                     >
-                      <span style={{ fontSize: '14px', color: T.text }}>{room.room_name}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: T.text }}>{room.room_name}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '12px', color: T.textSubtle }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>
                           {formatDistanceToNow(new Date(room.last_accessed_at), { addSuffix: true })}
                         </span>
                         <span style={{ display: 'inline-flex', color: T.textSubtlest, opacity: hoveredRoom === room.id ? 1 : 0, transition: 'opacity 0.1s' }}>
@@ -363,7 +363,7 @@ export default function AdminOverview() {
                     </Link>
                   ))
                 ) : (
-                  <p style={{ margin: 0, fontSize: '14px', color: T.textSubtle, textAlign: 'center', padding: '16px 0' }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: T.textSubtle, textAlign: 'center', padding: '16px 0' }}>
                     No recent activity yet
                   </p>
                 )}
@@ -380,11 +380,11 @@ export default function AdminOverview() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ color: T.iconSubtle, display: 'flex' }}><ChartTrendIcon label="" size="small" /></span>
-                  <h2 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: T.text }}>Recent Admin Changes</h2>
+                  <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text }}>Recent Admin Changes</h2>
                 </div>
                 <Link
                   to="/admin/workhub/sync-logs"
-                  style={{ fontSize: '12px', color: T.textBrand, textDecoration: 'none' }}
+                  style={{ fontSize: 'var(--ds-font-size-200)', color: T.textBrand, textDecoration: 'none' }}
                 >
                   View all
                 </Link>
@@ -411,7 +411,7 @@ export default function AdminOverview() {
                       <div style={{ minWidth: 0 }}>
                         <p style={{
                           margin: 0,
-                          fontSize: '14px',
+                          fontSize: 'var(--ds-font-size-400)',
                           color: T.text,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -419,11 +419,11 @@ export default function AdminOverview() {
                         }}>
                           {formatActionLabel(change.action, change.entity_type)}
                         </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: T.textSubtle }}>
+                        <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>
                           {change.entity_type} • {change.entity_id.slice(0, 8)}...
                         </p>
                       </div>
-                      <span style={{ fontSize: '12px', color: T.textSubtle, whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, whiteSpace: 'nowrap', marginLeft: '8px' }}>
                         {change.created_at
                           ? formatDistanceToNow(new Date(change.created_at), { addSuffix: true })
                           : '-'}
@@ -431,7 +431,7 @@ export default function AdminOverview() {
                     </div>
                   ))
                 ) : (
-                  <p style={{ margin: 0, fontSize: '14px', color: T.textSubtle, textAlign: 'center', padding: '16px 0' }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: T.textSubtle, textAlign: 'center', padding: '16px 0' }}>
                     No admin changes yet
                   </p>
                 )}

@@ -28,24 +28,24 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
 // Source: Screenshot-Risk1, Web-AtlassianDesign
 // NOTE: Using gold instead of blue per Catalyst theme requirements
 export const ROAM_BADGE_COLORS: Record<RoamStatus, { bg: string; text: string }> = {
-  Resolved: { bg: 'bg-[rgba(163,163,163,0.1)]', text: 'text-[var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))]' },      // Gray (default)
-  Owned: { bg: 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },          // Blue (primary)
-  Accepted: { bg: 'bg-[var(--ds-background-success, rgba(13,148,136,0.08))]', text: 'text-[var(--ds-icon-information, #1D7AFC)]' },      // Teal (success)
-  Mitigated: { bg: 'bg-[var(--ds-background-warning, rgba(217,119,6,0.08))]', text: 'text-[var(--ds-text-warning,#d97706)]' }       // Orange (warning)
+  Resolved: { bg: 'bg-[rgba(163,163,163,0.1)]', text: 'text-[var(--ds-text-subtlest, var(--ds-text-subtlest))]' },      // Gray (default)
+  Owned: { bg: 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' },          // Blue (primary)
+  Accepted: { bg: 'bg-[var(--ds-background-success, rgba(13,148,136,0.08))]', text: 'text-[var(--ds-icon-information)]' },      // Teal (success)
+  Mitigated: { bg: 'bg-[var(--ds-background-warning, rgba(217,119,6,0.08))]', text: 'text-[var(--ds-text-warning)]' }       // Orange (warning)
 };
 
 // Chart colors using Catalyst Risk Colors
 // Source: Blue + Teal Professional Palette
 export const CHART_COLORS = {
   openVsClosed: {
-    Open: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',      // Brand blue
-    Closed: 'var(--ds-background-success-bold, #1F845A)'     // Green
+    Open: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',      // Brand blue
+    Closed: 'var(--ds-background-success-bold)'     // Green
   },
   severity: {
-    Critical: 'var(--ds-text-danger, #ef4444)',  // Red - Critical
-    High: 'var(--ds-text-danger, #ef4444)',      // Red - High
-    Medium: 'var(--ds-text-warning, #d97706)',    // Orange - Medium
-    Low: 'var(--ds-chart-teal-bold, #0d9488)'        // Teal - Low
+    Critical: 'var(--ds-text-danger)',  // Red - Critical
+    High: 'var(--ds-text-danger)',      // Red - High
+    Medium: 'var(--ds-text-warning)',    // Orange - Medium
+    Low: 'var(--ds-chart-teal-bold)'        // Teal - Low
   }
 };
 

@@ -21,7 +21,7 @@ const meta: Meta<typeof CatalystSidebarDetails> = {
   title: 'Enterprise Components/Sidebar Details',
   component: CatalystSidebarDetails,
   parameters: { layout: 'padded' },
-  decorators: [(Story) => <div style={{ width: 320, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: 16 }}><Story /></div>],
+  decorators: [(Story) => <div style={{ width: 320, border: '1px solid var(--ds-border)', borderRadius: 4, padding: 16 }}><Story /></div>],
 };
 export default meta;
 type Story = StoryObj<typeof CatalystSidebarDetails>;

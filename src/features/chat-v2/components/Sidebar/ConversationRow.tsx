@@ -67,7 +67,7 @@ export function ConversationRow({
         cursor: 'pointer',
         transition: 'background var(--cv2-transition-fast)',
         position: 'relative',
-        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
+        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' } : null),
       }}
       onMouseEnter={e => {
         if (!isActive) {
@@ -97,7 +97,7 @@ export function ConversationRow({
         {title}
       </span>
       {hasHuddle && (
-        <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success, #22A06B)', display: 'inline-flex', flex: '0 0 auto' }}>
+        <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success)', display: 'inline-flex', flex: '0 0 auto' }}>
           <HeadphonesIcon size={12} />
         </span>
       )}
@@ -110,8 +110,8 @@ export function ConversationRow({
             padding: '0 4px',
             borderRadius: 8,
             background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text, #FFFFFF)',
-            fontSize: 11,
+            color: 'var(--cv2-unread-text)',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

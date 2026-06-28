@@ -78,7 +78,7 @@ function PriorityChip({ value }: { value: string }) {
 
 function TicketLinkSide({ value }: { value: string | null }) {
   if (!value) {
-    return <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>;
+    return <span className="italic text-[var(--ds-text-subtlest)]">None</span>;
   }
   const m = TICKET_KEY_RE.exec(value);
   if (m) return <TicketLinkCard issueKey={m[1]} />;
@@ -116,18 +116,18 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
       <div className="flex-1 min-w-0">
         {/* Author + action line */}
         <div className="flex items-baseline gap-1 flex-wrap">
-          <span className="text-[14px] font-semibold text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+          <span className="text-[14px] font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text)]">
             {actor.name}
           </span>
 
           {type === 'create' && (
-            <span className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] font-normal">
+            <span className="text-[14px] text-[var(--ds-text)] dark:text-[var(--ds-text)] font-normal">
               {description || 'created this item'}
             </span>
           )}
 
           {type === 'update' && fieldChange && (
-            <span className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] font-normal">
+            <span className="text-[14px] text-[var(--ds-text)] dark:text-[var(--ds-text)] font-normal">
               changed the{' '}
               <span className="font-semibold">
                 {formatFieldName(fieldChange.field)}
@@ -136,7 +136,7 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
           )}
 
           {type === 'delete' && (
-            <span className="text-[14px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] font-normal">
+            <span className="text-[14px] text-[var(--ds-text)] dark:text-[var(--ds-text)] font-normal">
               {description || 'deleted this item'}
             </span>
           )}
@@ -145,22 +145,22 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
         {/* Date — absolute format. When the row was emitted during a
             standup, append a small "during standup" link back to the
             standup detail page (Phase 7b). */}
-        <div className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5 inline-flex items-center gap-2 flex-wrap">
+        <div className="text-[12px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] mt-0.5 inline-flex items-center gap-2 flex-wrap">
           <span>{formatAbsoluteDate(timestamp)}</span>
           {standupContext && (
             <a
               href={standupContext.href}
               onClick={(e) => { e.stopPropagation(); }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold-hovered, #0055CC)';
+                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold-hovered)';
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))';
+                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold, var(--ds-link))';
               }}
               className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium no-underline hover:no-underline transition-colors"
               style={{
-                background: 'var(--ds-background-information-bold, #0C66E4)',
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                background: 'var(--ds-background-information-bold)',
+                color: 'var(--ds-text-inverse)',
                 transition: 'background-color 120ms ease',
               }}
               title="Status was changed during a standup. Click to open."
@@ -186,13 +186,13 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
             {isStatus ? (
               <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className="inline-flex items-center rounded-[3px] border border-[var(--ds-border,#DFE1E6)] bg-[var(--ds-background-neutral,#F4F5F7)] dark:bg-[var(--ds-surface-raised,#2E2E2E)] dark:border-[var(--ds-border,#454545)] px-2 py-0.5 text-[12px] font-bold uppercase text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-nowrap"
+                  className="inline-flex items-center rounded-[3px] border border-[var(--ds-border)] bg-[var(--ds-background-neutral)] dark:bg-[var(--ds-surface-raised)] dark:border-[var(--ds-border)] px-2 py-0.5 text-[12px] font-bold uppercase text-[var(--ds-text)] dark:text-[var(--ds-text)] whitespace-nowrap"
                 >
                   {formatDisplayValue(fieldChange.oldValue)}
                 </span>
-                <span className="text-[14px] text-[var(--ds-text-subtlest,#6B778C)]">→</span>
+                <span className="text-[14px] text-[var(--ds-text-subtlest)]">→</span>
                 <span
-                  className="inline-flex items-center rounded-[3px] border border-[var(--ds-border,#DFE1E6)] bg-[var(--ds-background-neutral,#F4F5F7)] dark:bg-[var(--ds-surface-raised,#2E2E2E)] dark:border-[var(--ds-border,#454545)] px-2 py-0.5 text-[12px] font-bold uppercase text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-nowrap"
+                  className="inline-flex items-center rounded-[3px] border border-[var(--ds-border)] bg-[var(--ds-background-neutral)] dark:bg-[var(--ds-surface-raised)] dark:border-[var(--ds-border)] px-2 py-0.5 text-[12px] font-bold uppercase text-[var(--ds-text)] dark:text-[var(--ds-text)] whitespace-nowrap"
                 >
                   {formatDisplayValue(fieldChange.newValue)}
                 </span>
@@ -203,7 +203,7 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
               // up the deterministic-by-name photo URL when present so the
               // diff matches the actor avatar above; falls through to
               // initials otherwise.
-              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text)] dark:text-[var(--ds-text)]">
                 {fieldChange.oldValue ? (
                   <span className="inline-flex items-center gap-2">
                     <CatalystAvatar
@@ -214,9 +214,9 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
                     <span>{fieldChange.oldValue}</span>
                   </span>
                 ) : (
-                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                  <span className="italic text-[var(--ds-text-subtlest)]">None</span>
                 )}
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest)] shrink-0" />
                 {fieldChange.newValue ? (
                   <span className="inline-flex items-center gap-2">
                     <CatalystAvatar
@@ -227,53 +227,53 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
                     <span>{fieldChange.newValue}</span>
                   </span>
                 ) : (
-                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                  <span className="italic text-[var(--ds-text-subtlest)]">None</span>
                 )}
               </div>
             ) : isPriority ? (
               // Priority — colored arrow glyph + label.
-              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text)] dark:text-[var(--ds-text)]">
                 {fieldChange.oldValue ? (
                   <PriorityChip value={fieldChange.oldValue} />
                 ) : (
-                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                  <span className="italic text-[var(--ds-text-subtlest)]">None</span>
                 )}
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest)] shrink-0" />
                 {fieldChange.newValue ? (
                   <PriorityChip value={fieldChange.newValue} />
                 ) : (
-                  <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>
+                  <span className="italic text-[var(--ds-text-subtlest)]">None</span>
                 )}
               </div>
             ) : isTicketLink ? (
               // Parent / Epic / Link — smart card when value looks
               // like a ticket key, plain text otherwise.
-              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+              <div className="flex items-center gap-3 flex-wrap text-[13px] text-[var(--ds-text)] dark:text-[var(--ds-text)]">
                 <TicketLinkSide value={fieldChange.oldValue} />
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest)] shrink-0" />
                 <TicketLinkSide value={fieldChange.newValue} />
               </div>
             ) : isRich ? (
               <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-start">
-                <div className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] whitespace-pre-wrap break-words">
+                <div className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] whitespace-pre-wrap break-words">
                   {fieldChange.oldValue
                     ? renderJiraContent(fieldChange.oldValue, { userMap: jiraUserMap })
                     : <span className="italic">None</span>}
                 </div>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0 mt-1.5" />
-                <div className="text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap break-words">
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] shrink-0 mt-1.5" />
+                <div className="text-[13px] text-[var(--ds-text)] dark:text-[var(--ds-text)] whitespace-pre-wrap break-words">
                   {fieldChange.newValue
                     ? renderJiraContent(fieldChange.newValue, { userMap: jiraUserMap })
-                    : <span className="italic text-[var(--ds-text-subtlest,#6B778C)]">None</span>}
+                    : <span className="italic text-[var(--ds-text-subtlest)]">None</span>}
                 </div>
               </div>
             ) : (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] line-through">
+                <span className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] line-through">
                   {normalizeJiraText(fieldChange.oldValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
-                <span className="text-[13px] font-medium text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] shrink-0" />
+                <span className="text-[13px] font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">
                   {normalizeJiraText(fieldChange.newValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
               </div>

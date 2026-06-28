@@ -89,7 +89,7 @@ export function useBoardTasks(filters?: BoardFilters) {
         status_id: r.status_id,
         status_name: r.status?.name ?? '',
         status_slug: r.status?.slug ?? '',
-        status_color: r.status?.color ?? 'var(--ds-background-neutral, #F1F2F4)',
+        status_color: r.status?.color ?? 'var(--ds-background-neutral)',
         status_position: r.status?.position ?? 0,
         is_completed_status: r.status?.is_completed_status ?? false,
         workstream_id: r.workstream_id ?? null,

@@ -180,35 +180,35 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
   const configs = {
     full: {
       label: 'Fully Staffed',
-      color: 'var(--ds-chart-teal-bold, #0d9488)',
-      bgClass: 'bg-[var(--ds-background-success, #DFFCF0)] dark:bg-teal-950/30',
-      textClass: 'text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-teal-400',
-      borderClass: 'border-[var(--ds-chart-teal-bold, #0d9488)] dark:border-teal-600',
-      dotClass: 'bg-[var(--ds-chart-teal-bold, #0d9488)]'
+      color: 'var(--ds-chart-teal-bold)',
+      bgClass: 'bg-[var(--ds-background-success)] dark:bg-teal-950/30',
+      textClass: 'text-[var(--ds-chart-teal-bold)] dark:text-teal-400',
+      borderClass: 'border-[var(--ds-chart-teal-bold)] dark:border-teal-600',
+      dotClass: 'bg-[var(--ds-chart-teal-bold)]'
     },
     partial: {
       label: 'Partial',
-      color: 'var(--ds-text-subtlest, #626F86)',
-      bgClass: 'bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-slate-950/30',
-      textClass: 'text-[var(--ds-text-subtlest, #626F86)] dark:text-slate-400',
-      borderClass: 'border-[var(--ds-text-subtlest, #626F86)] dark:border-slate-600',
-      dotClass: 'bg-[var(--ds-text-subtlest, #626F86)]'
+      color: 'var(--ds-text-subtlest)',
+      bgClass: 'bg-[var(--ds-surface-sunken)] dark:bg-slate-950/30',
+      textClass: 'text-[var(--ds-text-subtlest)] dark:text-slate-400',
+      borderClass: 'border-[var(--ds-text-subtlest)] dark:border-slate-600',
+      dotClass: 'bg-[var(--ds-text-subtlest)]'
     },
     under: {
       label: 'Understaffed',
-      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-      bgClass: 'bg-[var(--ds-background-selected,#eff6ff)] dark:bg-blue-950/30',
-      textClass: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-blue-400',
-      borderClass: 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:border-blue-600',
-      dotClass: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+      bgClass: 'bg-[var(--ds-background-selected)] dark:bg-blue-950/30',
+      textClass: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-blue-400',
+      borderClass: 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:border-blue-600',
+      dotClass: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]'
     },
     over: {
       label: 'Over-Allocated',
-      color: 'var(--ds-chart-teal-bold, #0d9488)',
-      bgClass: 'bg-[var(--ds-background-success, #DFFCF0)] dark:bg-teal-950/30',
-      textClass: 'text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-teal-400',
-      borderClass: 'border-[var(--ds-chart-teal-bold, #0d9488)] dark:border-teal-600',
-      dotClass: 'bg-[var(--ds-chart-teal-bold, #0d9488)]'
+      color: 'var(--ds-chart-teal-bold)',
+      bgClass: 'bg-[var(--ds-background-success)] dark:bg-teal-950/30',
+      textClass: 'text-[var(--ds-chart-teal-bold)] dark:text-teal-400',
+      borderClass: 'border-[var(--ds-chart-teal-bold)] dark:border-teal-600',
+      dotClass: 'bg-[var(--ds-chart-teal-bold)]'
     }
   };
   
@@ -228,14 +228,14 @@ export function formatFTE(value: number): string {
  * Get project color with deterministic fallback
  */
 const PROJECT_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
-  'var(--ds-chart-teal-bold, #0d9488)', // Teal
-  'var(--ds-background-success-bold, #059669)', // Green
-  'var(--ds-background-discovery-bold, #6366f1)', // Indigo
-  'var(--ds-background-discovery-bold, #8b5cf6)', // Violet
-  'var(--ds-link, #0C66E4)', // Cyan
-  'var(--quality-high, #059669)', // Emerald
-  'var(--ds-text-brand, #3b82f6)', // Light Blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // Blue
+  'var(--ds-chart-teal-bold)', // Teal
+  'var(--ds-background-success-bold)', // Green
+  'var(--ds-background-discovery-bold)', // Indigo
+  'var(--ds-background-discovery-bold)', // Violet
+  'var(--ds-link)', // Cyan
+  'var(--quality-high)', // Emerald
+  'var(--ds-text-brand)', // Light Blue
 ];
 
 export function getProjectColor(name: string, existingColor?: string): string {

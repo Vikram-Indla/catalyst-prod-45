@@ -142,8 +142,8 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
           <ModalHeader hasCloseButton>
             <ModalTitle>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>
-                  <WarningIcon label="" primaryColor="var(--ds-icon-warning, #E2B203)" size="medium" />
+                <span style={{ color: 'var(--ds-icon-warning)', display: 'inline-flex' }}>
+                  <WarningIcon label="" primaryColor="var(--ds-icon-warning)" size="medium" />
                 </span>
                 <span>Merge {release.name}</span>
               </span>
@@ -151,11 +151,11 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 Required fields are marked with an asterisk
-                <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
+                <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
               </div>
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                 You can merge this {config.label.lowerSingular} into another in your space. You can't undo this.
               </p>
               <div>
@@ -163,13 +163,13 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
                   style={{
                     display: 'block',
                     fontWeight: 600,
-                    fontSize: 12,
-                    color: 'var(--ds-text, #172B4D)',
+                    fontSize: 'var(--ds-font-size-200)',
+                    color: 'var(--ds-text)',
                     marginBottom: 6,
                   }}
                 >
                   Merge {release.name} into
-                  <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
+                  <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
                 </label>
                 <ProductSelect
                   options={options}

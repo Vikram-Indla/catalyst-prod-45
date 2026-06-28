@@ -20,21 +20,21 @@ export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
 // ═══ STATUS CONFIG — Light / Dark ═══
 type StatusStyle = { label: string; bg: string; text: string; dot: string };
 export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
-  on_track:  { label: 'On Track',  bg: 'var(--ds-background-success, rgba(220,252,231,0.7))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  at_risk:   { label: 'At Risk',   bg: 'var(--ds-background-warning, rgba(254,243,199,0.6))',  text: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  off_track: { label: 'Off Track', bg: 'var(--ds-background-danger, rgba(254,226,226,0.6))',  text: 'var(--ds-text-danger, #991B1B)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  planned:   { label: 'Planned',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  completed: { label: 'Completed', bg: 'var(--ds-background-discovery, rgba(238,242,255,0.7))', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #3730a3))', dot: 'var(--ds-background-discovery-bold, #6366f1)' },
-  draft:     { label: 'Planned',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  on_track:  { label: 'On Track',  bg: 'var(--ds-background-success, rgba(220,252,231,0.7))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', dot: 'var(--ds-text-success, var(--cp-success))' },
+  at_risk:   { label: 'At Risk',   bg: 'var(--ds-background-warning, rgba(254,243,199,0.6))',  text: 'var(--ds-text-warning, var(--ds-text-warning))', dot: 'var(--ds-text-warning, var(--cp-warning))' },
+  off_track: { label: 'Off Track', bg: 'var(--ds-background-danger, rgba(254,226,226,0.6))',  text: 'var(--ds-text-danger)', dot: 'var(--ds-text-danger, var(--cp-danger))' },
+  planned:   { label: 'Planned',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtle)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
+  completed: { label: 'Completed', bg: 'var(--ds-background-discovery, rgba(238,242,255,0.7))', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))', dot: 'var(--ds-background-discovery-bold)' },
+  draft:     { label: 'Planned',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtle)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
 };
 
 export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
-  on_track:  { label: 'On Track',  bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-background-success, #DFFCF0)', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  at_risk:   { label: 'At Risk',   bg: '#2A2418', text: 'var(--ds-background-warning-bold, #E2B203)', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  off_track: { label: 'Off Track', bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: 'var(--ds-text-disabled, #8590A2)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  completed: { label: 'Completed', bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-background-information-bold, #0C66E4)', dot: 'var(--ds-background-discovery-bold, #6366f1)' },
-  draft:     { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: 'var(--ds-text-disabled, #8590A2)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  on_track:  { label: 'On Track',  bg: 'var(--ds-text)', text: 'var(--ds-background-success)', dot: 'var(--ds-text-success, var(--cp-success))' },
+  at_risk:   { label: 'At Risk',   bg: '#2A2418', text: 'var(--ds-background-warning-bold)', dot: 'var(--ds-text-warning, var(--cp-warning))' },
+  off_track: { label: 'Off Track', bg: 'var(--ds-text)', text: 'var(--ds-border-danger)', dot: 'var(--ds-text-danger, var(--cp-danger))' },
+  planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1))', text: 'var(--ds-text-disabled)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
+  completed: { label: 'Completed', bg: 'var(--ds-text)', text: 'var(--ds-background-information-bold)', dot: 'var(--ds-background-discovery-bold)' },
+  draft:     { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1))', text: 'var(--ds-text-disabled)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
 };
 
 export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusStyle {
@@ -44,25 +44,25 @@ export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusSt
 // ═══ BSC PERSPECTIVE — Light / Dark ═══
 type BscStyle = { label: string; bg: string; text: string; border: string };
 export const BSC_CONFIG: Record<string, BscStyle> = {
-  'Financial':        { label: 'Financial',        bg: 'var(--ds-background-warning, rgba(254,243,199,0.3))', text: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', border: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
-  'Customer':         { label: 'Customer',         bg: 'var(--ds-background-information, rgba(219,234,254,0.3))', text: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' },
-  'Internal Process': { label: 'Internal Process', bg: 'var(--ds-background-success, rgba(204,251,241,0.3))', text: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))', border: 'var(--ds-background-success, #DFFCF0)' },
-  'Learning & Growth':{ label: 'Learning & Growth',bg: 'var(--ds-background-discovery, rgba(237,233,254,0.3))', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #5b21b6))', border: 'var(--ds-background-discovery, #F3F0FF)' },
-  financial:        { label: 'Financial',        bg: 'var(--ds-background-warning, rgba(254,243,199,0.3))', text: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', border: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
-  customer:         { label: 'Customer',         bg: 'var(--ds-background-information, rgba(219,234,254,0.3))', text: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' },
-  internal_process: { label: 'Internal Process', bg: 'var(--ds-background-success, rgba(204,251,241,0.3))', text: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))', border: 'var(--ds-background-success, #DFFCF0)' },
-  learning_growth:  { label: 'Learning & Growth',bg: 'var(--ds-background-discovery, rgba(237,233,254,0.3))', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #5b21b6))', border: 'var(--ds-background-discovery, #F3F0FF)' },
+  'Financial':        { label: 'Financial',        bg: 'var(--ds-background-warning, rgba(254,243,199,0.3))', text: 'var(--ds-text-warning, var(--ds-text-warning))', border: 'var(--ds-background-warning, var(--ds-background-warning))' },
+  'Customer':         { label: 'Customer',         bg: 'var(--ds-background-information, rgba(219,234,254,0.3))', text: 'var(--ds-link-pressed)', border: 'var(--ds-background-information, var(--ds-background-information))' },
+  'Internal Process': { label: 'Internal Process', bg: 'var(--ds-background-success, rgba(204,251,241,0.3))', text: 'var(--ds-text-success, var(--ds-chart-green-bold))', border: 'var(--ds-background-success)' },
+  'Learning & Growth':{ label: 'Learning & Growth',bg: 'var(--ds-background-discovery, rgba(237,233,254,0.3))', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))', border: 'var(--ds-background-discovery)' },
+  financial:        { label: 'Financial',        bg: 'var(--ds-background-warning, rgba(254,243,199,0.3))', text: 'var(--ds-text-warning, var(--ds-text-warning))', border: 'var(--ds-background-warning, var(--ds-background-warning))' },
+  customer:         { label: 'Customer',         bg: 'var(--ds-background-information, rgba(219,234,254,0.3))', text: 'var(--ds-link-pressed)', border: 'var(--ds-background-information, var(--ds-background-information))' },
+  internal_process: { label: 'Internal Process', bg: 'var(--ds-background-success, rgba(204,251,241,0.3))', text: 'var(--ds-text-success, var(--ds-chart-green-bold))', border: 'var(--ds-background-success)' },
+  learning_growth:  { label: 'Learning & Growth',bg: 'var(--ds-background-discovery, rgba(237,233,254,0.3))', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))', border: 'var(--ds-background-discovery)' },
 };
 
 export const BSC_CONFIG_DARK: Record<string, BscStyle> = {
-  'Financial':        { label: 'Financial',        bg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))', border: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
-  'Customer':         { label: 'Customer',         bg: 'var(--ds-background-information-bold, rgba(96,165,250,0.12))',  text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', border: 'var(--ds-background-information-bold, rgba(96,165,250,0.25))' },
-  'Internal Process': { label: 'Internal Process', bg: 'var(--ds-background-success-bold, rgba(45,212,191,0.12))',  text: 'var(--ds-background-success, #DCFFF1)', border: 'var(--ds-background-success-bold, rgba(45,212,191,0.25))' },
-  'Learning & Growth':{ label: 'Learning & Growth',bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.12))', text: 'var(--ds-background-discovery, #F3F0FF)', border: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.25))' },
-  financial:        { label: 'Financial',        bg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))', border: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
-  customer:         { label: 'Customer',         bg: 'var(--ds-background-information-bold, rgba(96,165,250,0.12))',  text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', border: 'var(--ds-background-information-bold, rgba(96,165,250,0.25))' },
-  internal_process: { label: 'Internal Process', bg: 'var(--ds-background-success-bold, rgba(45,212,191,0.12))',  text: 'var(--ds-background-success, #DCFFF1)', border: 'var(--ds-background-success-bold, rgba(45,212,191,0.25))' },
-  learning_growth:  { label: 'Learning & Growth',bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.12))', text: 'var(--ds-background-discovery, #F3F0FF)', border: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.25))' },
+  'Financial':        { label: 'Financial',        bg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))', border: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
+  'Customer':         { label: 'Customer',         bg: 'var(--ds-background-information-bold, rgba(96,165,250,0.12))',  text: 'var(--ds-background-information-bold, var(--ds-link))', border: 'var(--ds-background-information-bold, rgba(96,165,250,0.25))' },
+  'Internal Process': { label: 'Internal Process', bg: 'var(--ds-background-success-bold, rgba(45,212,191,0.12))',  text: 'var(--ds-background-success)', border: 'var(--ds-background-success-bold, rgba(45,212,191,0.25))' },
+  'Learning & Growth':{ label: 'Learning & Growth',bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.12))', text: 'var(--ds-background-discovery)', border: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.25))' },
+  financial:        { label: 'Financial',        bg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))', border: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
+  customer:         { label: 'Customer',         bg: 'var(--ds-background-information-bold, rgba(96,165,250,0.12))',  text: 'var(--ds-background-information-bold, var(--ds-link))', border: 'var(--ds-background-information-bold, rgba(96,165,250,0.25))' },
+  internal_process: { label: 'Internal Process', bg: 'var(--ds-background-success-bold, rgba(45,212,191,0.12))',  text: 'var(--ds-background-success)', border: 'var(--ds-background-success-bold, rgba(45,212,191,0.25))' },
+  learning_growth:  { label: 'Learning & Growth',bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.12))', text: 'var(--ds-background-discovery)', border: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.25))' },
 };
 
 export function getBscConfig(key: string, isDark: boolean): BscStyle | null {
@@ -80,23 +80,23 @@ export const BSC_FILTER_OPTIONS = [
 
 // ═══ PRIORITY ═══
 export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  high:     { label: 'High',     color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  medium:   { label: 'Medium',   color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  low:      { label: 'Low',      color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger))' },
+  high:     { label: 'High',     color: 'var(--ds-text-warning, var(--cp-warning))' },
+  medium:   { label: 'Medium',   color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  low:      { label: 'Low',      color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' },
 };
 
 // ═══ COLOR SWATCHES ═══
 export const THEME_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', 'var(--ds-background-accent-magenta-bolder, #ec4899)',
-  'var(--quality-high, var(--ds-background-success-bold, #059669))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-link, #0C66E4)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-warning, #974F0C)',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60, var(--ds-chart-teal-bold))', 'var(--ds-text-warning, var(--cp-warning))', 'var(--cp-purple-60, var(--ds-background-discovery-bold))', 'var(--ds-background-accent-magenta-bolder)',
+  'var(--quality-high, var(--ds-background-success-bold))', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-link)', 'var(--ds-background-discovery-bold)', 'var(--ds-text-warning)',
 ];
 
 // ═══ PROGRESS BAR COLOR ═══
 export function getProgressColor(pct: number): string {
-  if (pct >= 60) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (pct >= 40) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-danger, #EF4444)';
+  if (pct >= 60) return 'var(--ds-text-success, var(--cp-success))';
+  if (pct >= 40) return 'var(--ds-text-warning, var(--cp-warning))';
+  return 'var(--ds-text-danger)';
 }
 
 // ═══ FORMATTERS ═══
@@ -113,8 +113,8 @@ export function getInitials(name: string | null): string {
 }
 
 export function getAvatarColor(name: string | null): string {
-  if (!name) return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--quality-high, var(--ds-background-success-bold, #059669))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+  if (!name) return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60, var(--ds-chart-teal-bold))', 'var(--cp-purple-60, var(--ds-background-discovery-bold))', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-background-accent-magenta-bolder)', 'var(--quality-high, var(--ds-background-success-bold))', 'var(--ds-text-danger, var(--cp-danger))'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];
@@ -161,13 +161,13 @@ export function renderStatusBadge(health: HealthStatus) {
 
 // ═══ DARK MODE TOKEN HELPERS ═══
 export const DK = {
-  bg: 'var(--ds-surface, #0A0A0A)',
+  bg: 'var(--ds-surface)',
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #292929))',
-  hover: 'var(--ds-surface-overlay, #1F1F1F)',
-  iconBgSubtle: 'var(--ds-border, var(--cp-ink-1, #292929))',
+  border: 'var(--ds-border, var(--cp-ink-1))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1))',
+  hover: 'var(--ds-surface-overlay)',
+  iconBgSubtle: 'var(--ds-border, var(--cp-ink-1))',
 };

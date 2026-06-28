@@ -8,7 +8,7 @@ function Providers({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 function Frame({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></Providers>;
+  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface)' }}>{children}</div></Providers>;
 }
 
 import { ProductAvatar } from '@/components/icons/ProductAvatar';
@@ -24,7 +24,7 @@ export const AllLandmarks: StoryObj = {
         {STOCK_PLACE_IDS.map((id) => (
           <div key={id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 96 }}>
             <img src={STOCK_PLACE_REGISTRY[id]} width={48} height={48} alt="" aria-hidden="true" style={{ borderRadius: 12 }} />
-            <span style={{ fontSize: 10, color: 'var(--ds-text-subtle, #42526E)', textAlign: 'center', wordBreak: 'break-all' }}>{id}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)', textAlign: 'center', wordBreak: 'break-all' }}>{id}</span>
           </div>
         ))}
       </div>
@@ -39,8 +39,8 @@ export const KnownProduct: StoryObj = {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <ProductAvatar code="INV" size={48} />
         <div>
-          <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Investor Journey Product</div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>INV → Elephant Rock</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>Investor Journey Product</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>INV → Elephant Rock</div>
         </div>
       </div>
     </Frame>
@@ -55,7 +55,7 @@ export const RotationDemo: StoryObj = {
         {['ALPHA', 'BETA', 'GAMMA', 'DELTA', 'OMEGA', 'ZETA', 'THETA', 'KAPPA'].map((code) => (
           <div key={code} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
             <ProductAvatar code={code} size={40} />
-            <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>{code}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>{code}</span>
           </div>
         ))}
       </div>
@@ -71,7 +71,7 @@ export const Sizes: StoryObj = {
         {([16, 24, 32, 40, 48, 64] as const).map((s) => (
           <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <ProductAvatar code="INV" size={s} />
-            <span style={{ fontSize: 10, color: 'var(--ds-text-subtle, #42526E)' }}>{s}px</span>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)' }}>{s}px</span>
           </div>
         ))}
       </div>

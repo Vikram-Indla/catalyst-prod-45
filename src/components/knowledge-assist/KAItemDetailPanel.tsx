@@ -85,17 +85,17 @@ function PriorityBars({ label }: { label: string }) {
           }} />
         ))}
       </div>
-      <span style={{ fontSize: 13, fontWeight: 500, color: T.ink, textTransform: 'capitalize' }}>{label || 'Medium'}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.ink, textTransform: 'capitalize' }}>{label || 'Medium'}</span>
     </div>
   );
 }
 
 function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   const ini = (name || '?').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const clr = [T.primary, T.teal, T.warning, T.danger, 'var(--cp-purple-60, #7C3AED)'][ini.charCodeAt(0) % 5];
+  const clr = [T.primary, T.teal, T.warning, T.danger, 'var(--cp-purple-60)'][ini.charCodeAt(0) % 5];
   return (
     <div style={{
-      width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #fff)',
+      width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--ds-surface)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: size * 0.4, fontWeight: 700, flexShrink: 0,
     }}>{ini}</div>
@@ -110,13 +110,13 @@ function FieldRow({ icon, label, children, last }: { icon: React.ReactNode; labe
     }}>
       <div style={{
         padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7,
-        fontSize: 11, fontWeight: 600, color: T.inkMuted,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.inkMuted,
         textTransform: 'uppercase', letterSpacing: '0.06em',
         background: T.surfaceSecondary, borderRight: `1px solid ${T.border}`,
       }}>
         <span style={{ display: 'flex', color: T.inkMuted }}>{icon}</span>{label}
       </div>
-      <div style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 500, color: T.ink }}>
+      <div style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.ink }}>
         {children}
       </div>
     </div>
@@ -202,7 +202,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             <ArrowLeft size={18} />
           </button>
           <span style={{
-            fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.primary,
+            fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.primary,
             background: T.primaryBg, padding: '4px 12px', borderRadius: 4,
           }}>{issueKey}</span>
           <button
@@ -213,7 +213,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
           </button>
         </div>
         <span style={{
-          fontSize: 10, fontWeight: 700, color: T.primary, background: T.primaryBg,
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.primary, background: T.primaryBg,
           padding: '3px 8px', borderRadius: 4, fontFamily: 'var(--ds-font-family-code)',
           textTransform: 'uppercase', letterSpacing: '0.06em',
         }}>JIRA SYNC</span>
@@ -235,15 +235,15 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
         ) : !item ? (
           <div style={{ padding: 40, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 6 }}>Item Not Found</div>
-            <div style={{ fontSize: 13, color: T.inkMuted, marginBottom: 20 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.ink, marginBottom: 6 }}>Item Not Found</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.inkMuted, marginBottom: 20 }}>
               No item with key <span style={{ fontFamily: 'var(--ds-font-family-code)', fontWeight: 600, color: T.primary }}>{issueKey}</span> was found in the database.
             </div>
             <button
               onClick={onClose}
               style={{
                 padding: '8px 20px', borderRadius: 6, border: `1px solid ${T.border}`,
-                background: T.surfaceSecondary, cursor: 'pointer', fontSize: 13, fontWeight: 500, color: T.ink,
+                background: T.surfaceSecondary, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.ink,
               }}
             >← Back to results</button>
           </div>
@@ -257,14 +257,14 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                 </div>
                 <div style={{ flex: 1 }}>
                   <h2 style={{
-                    fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700,
+                    fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700,
                     color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35, margin: 0,
                   }}>{item.summary}</h2>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
                     <StatusLozenge status={item.status} />
-                    <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>{item.project_name || item.project_key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.inkTertiary }}>{item.project_name || item.project_key}</span>
                     <span style={{ color: T.borderStrong }}>·</span>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.inkTertiary }}>
                       Updated {formatTimeAgo(item.jira_updated_at)}
                     </span>
                   </div>
@@ -280,11 +280,11 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                 border: `1px solid ${T.border}`,
               }}>
                 <CornerDownLeft size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
-                <span style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
                 <JiraIssueTypeIcon type="epic" size={14} />
-                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parent_key}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.primary }}>{item.parent_key}</span>
                 {item.parent_summary && (
-                  <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.parent_summary}
                   </span>
                 )}
@@ -298,13 +298,13 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
               <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{item.project_name || item.project_key}</span></FieldRow>
               <FieldRow icon={<Tag size={13} />} label="Type"><JiraIssueTypeIcon type={item.issue_type} size={14} /><span>{item.issue_type}</span></FieldRow>
               {item.sprint_name && (
-                <FieldRow icon={<GitBranch size={13} />} label="Sprint"><span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>{item.sprint_name}</span></FieldRow>
+                <FieldRow icon={<GitBranch size={13} />} label="Sprint"><span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)' }}>{item.sprint_name}</span></FieldRow>
               )}
               {item.labels && item.labels.length > 0 && (
                 <FieldRow icon={<Tag size={13} />} label="Labels">
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     {item.labels.map(l => (
-                      <span key={l} style={{ fontSize: 11, fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '2px 8px', borderRadius: 4 }}>{l}</span>
+                      <span key={l} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '2px 8px', borderRadius: 4 }}>{l}</span>
                     ))}
                   </div>
                 </FieldRow>
@@ -324,10 +324,10 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             {/* Description */}
             <div style={{ margin: '0 24px 16px' }}>
               <h3 style={{
-                fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, color: T.ink,
+                fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.ink,
                 paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12,
               }}>Description</h3>
-              <div style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.inkSecondary, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
                 {item.description || 'No description provided.'}
               </div>
             </div>
@@ -336,7 +336,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             {changelog.length > 0 && (
               <div style={{ margin: '0 24px 24px' }}>
                 <h3 style={{
-                  fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, color: T.ink,
+                  fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.ink,
                   paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12,
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}>
@@ -347,7 +347,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                     <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                       <Avatar name={c.author_display_name || 'Unknown'} size={24} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, color: T.ink }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.ink }}>
                           <span style={{ fontWeight: 600 }}>{c.author_display_name}</span>
                           <span style={{ color: T.inkMuted }}> {c.field_name === 'status' ? 'changed status' : `updated ${c.field_name}`}</span>
                           {c.from_string && <span style={{ color: T.inkMuted }}> from </span>}
@@ -359,7 +359,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                               : <span style={{ fontWeight: 500, color: T.ink }}>{c.to_string}</span>
                           )}
                         </div>
-                        <span style={{ fontSize: 11, color: T.inkMuted }}>{formatTimeAgo(c.jira_created_at)}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.inkMuted }}>{formatTimeAgo(c.jira_created_at)}</span>
                       </div>
                     </div>
                   ))}

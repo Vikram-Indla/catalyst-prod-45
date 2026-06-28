@@ -153,7 +153,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={16} />
-            <span style={{ fontSize: 15, fontWeight: 600, color: textP, fontFamily: 'var(--cp-font-heading)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: textP, fontFamily: 'var(--cp-font-heading)' }}>
               Move {issue.issueKey}
             </span>
           </div>
@@ -172,12 +172,12 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
         <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
           {/* Current location */}
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
               Current project
             </div>
             <div style={{
               padding: '8px 12px', background: tk.chipBg, borderRadius: 4,
-              fontSize: 13, color: textP, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-300)', color: textP, fontWeight: 500,
             }}>
               {currentProjectKey.toUpperCase()} — {issue.summary.substring(0, 60)}{issue.summary.length > 60 ? '…' : ''}
             </div>
@@ -185,7 +185,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
 
           {/* Destination project */}
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
               Move to project
             </div>
             <div style={{ position: 'relative', marginBottom: 8 }}>
@@ -198,7 +198,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
                 style={{
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 10,
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
-                  fontSize: 13, color: textP, background: tk.inputBg,
+                  fontSize: 'var(--ds-font-size-300)', color: textP, background: tk.inputBg,
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                   boxSizing: 'border-box',
                 }}
@@ -206,7 +206,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
             </div>
             <div style={{ maxHeight: 180, overflowY: 'auto', border: `1px solid ${border}`, borderRadius: 4 }}>
               {filteredProjects.length === 0 && (
-                <div style={{ padding: 12, fontSize: 12, color: textM }}>No other projects found</div>
+                <div style={{ padding: 12, fontSize: 'var(--ds-font-size-200)', color: textM }}>No other projects found</div>
               )}
               {filteredProjects.map((p: any) => {
                 const isSelected = selectedProject?.key === p.key;
@@ -218,18 +218,18 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
                       display: 'flex', alignItems: 'center', gap: 8,
                       width: '100%', padding: '8px 12px', border: 'none',
                       background: isSelected ? tk.dropHighlight : 'transparent',
-                      cursor: 'pointer', fontSize: 13, color: textP,
+                      cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: textP,
                       fontFamily: 'var(--cp-font-body)', textAlign: 'left',
                     }}
                     onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
                     onMouseLeave={e => { e.currentTarget.style.background = isSelected ? tk.dropHighlight : 'transparent'; }}
                   >
-                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: textM, fontWeight: 600, flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: textM, fontWeight: 600, flexShrink: 0 }}>
                       {p.key}
                     </span>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
                     {isSelected && (
-                      <span style={{ color: tk.selectedAccent, fontSize: 11, fontWeight: 600 }}>Selected</span>
+                      <span style={{ color: tk.selectedAccent, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>Selected</span>
                     )}
                   </button>
                 );
@@ -240,14 +240,14 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
           {/* Status mapping */}
           {selectedProject && targetStatuses.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
                 Status in {selectedProject.key}
               </div>
               {statusMismatch && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-                  background: 'var(--ds-background-warning, #FFF3CD)', borderRadius: 4, marginBottom: 8,
-                  fontSize: 12, color: 'var(--ds-text-warning, #856404)',
+                  background: 'var(--ds-background-warning)', borderRadius: 4, marginBottom: 8,
+                  fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)',
                 }}>
                   <AlertTriangle size={14} />
                   <span>"{issue.status}" not found in {selectedProject.key}. Mapped to "{selectedStatus}".</span>
@@ -259,7 +259,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
                 style={{
                   width: '100%', height: 32, padding: '0 10px',
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
-                  fontSize: 13, color: textP, background: tk.inputBg,
+                  fontSize: 'var(--ds-font-size-300)', color: textP, background: tk.inputBg,
                   fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -273,8 +273,8 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
           {/* Error */}
           {error && (
             <div style={{
-              padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4,
-              fontSize: 12, color: 'var(--ds-background-danger-bold, #C9372C)', marginBottom: 8,
+              padding: '8px 12px', background: 'var(--ds-background-danger)', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold)', marginBottom: 8,
             }}>
               {error}
             </div>
@@ -291,7 +291,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
             style={{
               height: 32, padding: '0 16px', border: `1px solid ${border}`,
               borderRadius: 4, background: 'transparent', cursor: 'pointer',
-              fontSize: 13, color: textS, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-300)', color: textS, fontFamily: 'var(--cp-font-body)',
             }}
           >
             Cancel
@@ -301,9 +301,9 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
             disabled={!selectedProject || !selectedStatus || saving}
             style={{
               height: 32, padding: '0 16px', border: 'none',
-              borderRadius: 4, background: selectedProject ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
+              borderRadius: 4, background: selectedProject ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : tk.chipBg,
               cursor: selectedProject ? 'pointer' : 'not-allowed',
-              fontSize: 13, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
+              fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,

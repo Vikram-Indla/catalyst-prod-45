@@ -7,8 +7,8 @@ interface ResourcePatternProps {
 
 const WarningIcon = () => (
   <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-    <path d="M10 2L19 18H1L10 2Z" fill="var(--ds-background-warning, rgba(217, 119, 6, 0.15))" stroke="var(--ds-text-warning, var(--cp-warning, #D97706))" strokeWidth="1.5" strokeLinejoin="round"/>
-    <text x="10" y="15" textAnchor="middle" fill="var(--ds-text-warning, var(--cp-warning, #D97706))" fontSize="10" fontWeight="700">!</text>
+    <path d="M10 2L19 18H1L10 2Z" fill="var(--ds-background-warning, rgba(217, 119, 6, 0.15))" stroke="var(--ds-text-warning, var(--cp-warning))" strokeWidth="1.5" strokeLinejoin="round"/>
+    <text x="10" y="15" textAnchor="middle" fill="var(--ds-text-warning, var(--cp-warning))" fontSize="10" fontWeight="700">!</text>
   </svg>
 );
 
@@ -26,7 +26,7 @@ export const ResourcePattern: React.FC<ResourcePatternProps> = ({ summary, warni
     {summary ? (
       <p className="rai-pattern-text" style={{ margin: 0 }}>{summary}</p>
     ) : (
-      <p style={{ fontSize: 13, color: 'var(--rai-ink-muted)', margin: 0, fontStyle: 'italic' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', margin: 0, fontStyle: 'italic' }}>
         Click "Refresh AI" to generate resource pattern analysis.
       </p>
     )}

@@ -18,7 +18,7 @@ import { RoomContentShell } from '@/components/layout/RoomContentShell';
 /* Helper: read current theme for overlay print bg */
 const getOverlayBg = () => {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  return 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  return 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
 };
 
 const OVERLAY_TOKENS = `
@@ -95,9 +95,9 @@ export default function StrategyRoom() {
     ${styles}
     <style>
       @page { size: auto; margin: 14mm; }
-      html, body { margin: 0; padding: 0; background: var(--ds-surface, #fff); overflow: visible !important; height: auto !important; }
+      html, body { margin: 0; padding: 0; background: var(--ds-surface); overflow: visible !important; height: auto !important; }
       .sri-root-container, .sri-root-container * { position: static !important; overflow: visible !important; height: auto !important; max-height: none !important; }
-      .sri-root-container { inset: auto !important; z-index: auto !important; background: var(--ds-surface, #fff) !important; }
+      .sri-root-container { inset: auto !important; z-index: auto !important; background: var(--ds-surface) !important; }
       [data-sri] .sri-actions { display: none !important; }
     </style>
   </head>
@@ -151,7 +151,7 @@ export default function StrategyRoom() {
       <a
         href="#dashboard-main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
-        style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}
+        style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}
       >
         Skip to dashboard content
       </a>

@@ -15,6 +15,9 @@ import type { EntityKey } from '@/lib/workflow/canonical/contracts';
 // engine are mapped; others stay undefined -> advisory is a no-op for them).
 const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   Story: 'story',
+  Epic: 'epic',
+  Feature: 'feature',
+  'Sub-task': 'subtask',
 };
 
 export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
@@ -24,7 +27,10 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
     queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
 
   const updateStatus = useMutation({
-    mutationFn: async (newStatus: string) => {
+    mutationFn: async (arg: string | { status: string; reasonCode?: string | null; reasonText?: string | null }) => {
+      const newStatus = typeof arg === 'string' ? arg : arg.status;
+      const reasonCode = typeof arg === 'string' ? null : arg.reasonCode ?? null;
+      const reasonText = typeof arg === 'string' ? null : arg.reasonText ?? null;
       // capture pre-update context (incl. guard fields) for canonical gate + audit
       const { data: before } = await supabase
         .from('ph_issues')
@@ -34,12 +40,14 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
 
       const entityKey = before?.issue_type ? ISSUE_TYPE_TO_ENTITY[before.issue_type] : undefined;
 
-      // Canonical gate (resolves advisory|blocking, evaluates role+guards, audits).
+      // Canonical gate (resolves advisory|blocking, evaluates role+guards, audits reason).
       if (entityKey && before?.id) {
         const gate = await gateTransition({
           entityKey,
           issueRow: before,
           toStatusRaw: newStatus,
+          reasonCode,
+          reasonText,
           sourceSurface: 'catalyst_status_pill',
         });
         // BLOCKING mode + denied → do NOT persist; surface the tooltip basis.

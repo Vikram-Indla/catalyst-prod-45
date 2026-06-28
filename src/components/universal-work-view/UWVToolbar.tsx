@@ -62,24 +62,24 @@ function CloseGlyph({ label }: { label?: string }) {
 function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="11" cy="11" r="6" stroke="var(--ds-text-subtle, #505258)" strokeWidth="1.6" />
-      <path d="M20 20l-4-4" stroke="var(--ds-text-subtle, #505258)" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="11" cy="11" r="6" stroke="var(--ds-text-subtle)" strokeWidth="1.6" />
+      <path d="M20 20l-4-4" stroke="var(--ds-text-subtle)" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M6 9l6 6 6-6" stroke="var(--ds-text-subtle, #505258)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 9l6 6 6-6" stroke="var(--ds-text-subtle)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 function MoreIcon({ label }: { label?: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label={label} role="img">
-      <circle cx="5" cy="12" r="1.6" fill="var(--ds-text-subtle, #505258)" />
-      <circle cx="12" cy="12" r="1.6" fill="var(--ds-text-subtle, #505258)" />
-      <circle cx="19" cy="12" r="1.6" fill="var(--ds-text-subtle, #505258)" />
+      <circle cx="5" cy="12" r="1.6" fill="var(--ds-text-subtle)" />
+      <circle cx="12" cy="12" r="1.6" fill="var(--ds-text-subtle)" />
+      <circle cx="19" cy="12" r="1.6" fill="var(--ds-text-subtle)" />
     </svg>
   );
 }
@@ -164,15 +164,15 @@ export function UWVToolbar({
       }}
     >
       {statusGroups.length === 0 ? (
-        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>No statuses available</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>No statuses available</div>
       ) : (
         statusGroups.map((group: any) => (
           <div key={group.label} style={{ marginBottom: 12 }}>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 marginBottom: 6,
@@ -197,7 +197,7 @@ export function UWVToolbar({
         <div
           style={{
             paddingTop: 8,
-            borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+            borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
             marginTop: 4,
           }}
         >
@@ -218,17 +218,17 @@ export function UWVToolbar({
           display: 'flex',
           alignItems: 'center',
           padding: '0 16px',
-          borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           flexShrink: 0,
         }}
       >
         <IconButton icon={CloseGlyph as any} label="Close" appearance="subtle" onClick={onClose} />
         <span
           style={{
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
             marginLeft: 8,
             fontFamily: '"Atlassian Sans", -apple-system, sans-serif',
           }}
@@ -270,8 +270,8 @@ export function UWVToolbar({
               padding: '8px 16px',
               display: 'flex',
               gap: 6,
-              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
               flexShrink: 0,
               flexWrap: 'wrap',
             }}
@@ -290,10 +290,10 @@ export function UWVToolbar({
                     height: 26,
                     padding: '0 10px',
                     borderRadius: 13,
-                    border: `1px solid ${active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
-                    background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #505258)',
-                    fontSize: 12,
+                    border: `1px solid ${active ? 'var(--ds-link)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))'}`,
+                    background: active ? 'var(--ds-background-selected)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                    color: active ? 'var(--ds-link)' : 'var(--ds-text-subtle)',
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
@@ -324,8 +324,8 @@ export function UWVToolbar({
             alignItems: 'center',
             gap: 12,
             padding: '0 16px',
-            background: 'var(--ds-surface-sunken, #F7F8F9)',
-            borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+            background: 'var(--ds-surface-sunken)',
+            borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
             flexShrink: 0,
           }}
         >
@@ -396,8 +396,8 @@ export function UWVToolbar({
           />
           <label
             style={{
-              fontSize: 12,
-              color: 'var(--ds-text-subtle, #505258)',
+              fontSize: 'var(--ds-font-size-200)',
+              color: 'var(--ds-text-subtle)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,

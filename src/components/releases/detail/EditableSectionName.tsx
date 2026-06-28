@@ -23,10 +23,10 @@ interface Props {
   children: React.ReactNode;
 }
 
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #6B778C)';
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const BLUE = 'var(--ds-border-selected, #1868DB)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
+const BORDER = 'var(--ds-border)';
+const BLUE = 'var(--ds-border-selected)';
 
 export function EditableSectionName({
   name,
@@ -61,7 +61,7 @@ export function EditableSectionName({
     height: 28,
     borderRadius: 3,
     border: `1px solid ${BORDER}`,
-    background: 'var(--ds-surface, #FFFFFF)',
+    background: 'var(--ds-surface)',
     color: active ? TEXT : SUBTLE,
   });
 
@@ -84,13 +84,13 @@ export function EditableSectionName({
                 maxWidth: 320,
                 height: 32,
                 padding: '0 8px',
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 700,
                 color: TEXT,
                 border: `1px solid ${BLUE}`,
                 borderRadius: 3,
                 outline: 'none',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 boxShadow: '0 0 0 1px rgba(24,104,219,0.2)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               }}
             />
@@ -118,7 +118,7 @@ export function EditableSectionName({
           </>
         ) : (
           <>
-            <span style={{ fontSize: 16, fontWeight: 700, color: TEXT }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>
               {name || 'Give this section a name'}
             </span>
             <button

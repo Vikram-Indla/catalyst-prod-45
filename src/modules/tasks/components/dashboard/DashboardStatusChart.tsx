@@ -14,11 +14,11 @@ interface DashboardStatusChartProps {
 
 // Status color map using V9 tokens
 const STATUS_COLORS: Record<string, string> = {
-  backlog: 'var(--ds-text-subtlest, #64748b)',
-  planned: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  progress: 'var(--ds-text-warning, #d97706)',
-  review: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  done: 'var(--ds-background-success-bold, #1F845A)',
+  backlog: 'var(--ds-text-subtlest)',
+  planned: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  progress: 'var(--ds-text-warning)',
+  review: 'var(--ds-background-discovery-bold)',
+  done: 'var(--ds-background-success-bold)',
 };
 
 export function DashboardStatusChart({ data }: DashboardStatusChartProps) {

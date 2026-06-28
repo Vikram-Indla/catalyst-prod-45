@@ -4,7 +4,7 @@
  * Jira-sourced strings arrive with:
  *   - Mentions:     [~accountid:712020:abc-def]
  *   - Links:        [display text|https://url?share=xxx&rtime=yyy]
- *   - Colors:       {color:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))}text{color}
+ *   - Colors:       {color:var(--cp-bg-elevated, var(--cp-bg-elevated))}text{color}
  *   - Emphasis:     *bold*  _italic_  +underline+  -strike-
  *   - Code:         {{monospace}}
  *   - Bare URLs:    https://moiksa-my.sharepoint.com/...?share=xxx&rtime=yyy
@@ -108,7 +108,7 @@ export function renderJiraContent(
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[var(--ds-link-pressed, #0747A6)] dark:text-[var(--ds-background-information-bold, #0C66E4)] hover:underline"
+          className="text-[var(--ds-link-pressed)] dark:text-[var(--ds-background-information-bold)] hover:underline"
         >
           {text}
         </a>
@@ -122,7 +122,7 @@ export function renderJiraContent(
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[var(--ds-link-pressed, #0747A6)] dark:text-[var(--ds-background-information-bold, #0C66E4)] hover:underline"
+          className="text-[var(--ds-link-pressed)] dark:text-[var(--ds-background-information-bold)] hover:underline"
         >
           {prettyUrl(url)}
         </a>

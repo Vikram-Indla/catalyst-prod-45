@@ -149,27 +149,27 @@ function SortableRow({
   return (
     <tr
       ref={setNodeRef}
-      style={{ ...style, borderTop: '1px solid var(--ds-border, #DCDFE4)', opacity: !assignment.is_active ? 0.5 : isDragging ? 0.7 : 1 }}
-      onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, var(--ds-background-neutral-subtle, #F7F8F9))' : ''; }}
+      style={{ ...style, borderTop: '1px solid var(--ds-border)', opacity: !assignment.is_active ? 0.5 : isDragging ? 0.7 : 1 }}
+      onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, var(--ds-background-neutral-subtle))' : ''; }}
     >
-      <td style={{ padding: '12px 16px', cursor: 'grab', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }} className="active:cursor-grabbing" {...attributes} {...listeners}>
+      <td style={{ padding: '12px 16px', cursor: 'grab', color: 'var(--ds-text-subtle, var(--cp-text-secondary))' }} className="active:cursor-grabbing" {...attributes} {...listeners}>
         <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
       </td>
       <td style={{ padding: "12px 16px" }}>
-        <span className="text-xs font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
+        <span className="text-xs font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand)', background: 'var(--ds-background-selected)' }}>
           {assignment.assignment_id || '—'}
         </span>
       </td>
       <td style={{ padding: "12px 16px" }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-selected, #E9F2FF)' }}>
-            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><BriefcaseIcon label="" size="small" /></span>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-selected)' }}>
+            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand)' }}><BriefcaseIcon label="" size="small" /></span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{assignment.name}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{assignment.name}</span>
             {assignment.project?.name && (
-              <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{assignment.project.name}</span>
+              <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>{assignment.project.name}</span>
             )}
           </div>
         </div>
@@ -180,7 +180,7 @@ function SortableRow({
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
             className="flex items-center gap-1.5 px-2 py-1 rounded transition-colors cursor-pointer"
-            style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))', color: 'var(--ds-text-success, #15803D)' }}
+            style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))', color: 'var(--ds-text-success)' }}
             onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold, rgba(34,197,94,0.2))')}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold, rgba(34,197,94,0.1))')}
           >
@@ -188,7 +188,7 @@ function SortableRow({
             <span className="text-sm font-medium">{resourceCount}</span>
           </button>
         ) : (
-          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>0</span>
+          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>0</span>
         )}
       </td>
       <td style={{ padding: "12px 16px" }}>
@@ -202,16 +202,16 @@ function SortableRow({
             { label: 'Completed', value: 'completed' },
           ]}
           onChange={(opt) => opt && onStatusChange(assignment, opt.value)}
-          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 12 }) }}
+          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 'var(--ds-font-size-200)' }) }}
         />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
       <td style={{ padding: "12px 16px" }}>
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' ? (
           <Tooltip content={<p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>}>
-            <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded min-w-[80px] cursor-help" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
-              <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>﷼</span>
-              <span className="text-sm" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{totalBudget.toLocaleString()}</span>
+            <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded min-w-[80px] cursor-help" style={{ background: 'var(--ds-background-neutral)' }}>
+              <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>﷼</span>
+              <span className="text-sm" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{totalBudget.toLocaleString()}</span>
             </div>
           </Tooltip>
         ) : (
@@ -234,9 +234,9 @@ function SortableRow({
             <button
               className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
               style={{
-                borderColor: 'var(--ds-border, #DCDFE4)',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-                color: assignment.start_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                borderColor: 'var(--ds-border)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                color: assignment.start_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
               }}
             >
               <span style={{ display: 'inline-flex', marginRight: 8 }}><CalendarIcon label="" size="small" /></span>
@@ -260,9 +260,9 @@ function SortableRow({
             <button
               className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
               style={{
-                borderColor: 'var(--ds-border, #DCDFE4)',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-                color: assignment.end_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                borderColor: 'var(--ds-border)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                color: assignment.end_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
               }}
             >
               <span style={{ display: 'inline-flex', marginRight: 8 }}><CalendarIcon label="" size="small" /></span>
@@ -294,10 +294,10 @@ function SortableRow({
               ...vendors.map(v => ({ label: v.name, value: v.id })),
             ]}
             onChange={(opt) => opt && onVendorChange(assignment, opt.value)}
-            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 12 }) }}
+            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 'var(--ds-font-size-200)' }) }}
           />
         ) : (
-          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
+          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>—</span>
         )}
       </td>
       <td style={{ padding: "12px 16px" }}>
@@ -315,7 +315,7 @@ function SortableRow({
               value={typeOpts.find(o => o.value === curType) || null}
               options={typeOpts}
               onChange={(opt) => opt && onAssignmentTypeChange(assignment, opt.value)}
-              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 12 }) }}
+              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 'var(--ds-font-size-200)' }) }}
             />
           );
         })()}
@@ -341,12 +341,12 @@ function SortableRow({
                 value={payOpts.find(o => o.value === curPay) || null}
                 options={payOpts}
                 onChange={(opt) => opt && onPaymentStatusChange(assignment, opt.value)}
-                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 12 }) }}
+                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 'var(--ds-font-size-200)' }) }}
               />
             );
           })()
         ) : (
-          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
+          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>—</span>
         )}
       </td>
       <td style={{ padding: "12px 16px", textAlign: "center" }}>
@@ -360,18 +360,18 @@ function SortableRow({
           <button
             onClick={() => onEdit(assignment)}
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
-            style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
+            style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))'; }}
           >
             <EditIcon label="" size="small" />
           </button>
           <button
             onClick={() => onDelete(assignment)}
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
-            style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
+            style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))'; }}
           >
             <TrashIcon label="" size="small" />
           </button>
@@ -744,8 +744,8 @@ export default function ResourceAssignmentsPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 rounded w-48" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
-          <div className="h-32 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div className="h-8 rounded w-48" style={{ background: 'var(--ds-background-neutral)' }} />
+          <div className="h-32 rounded" style={{ background: 'var(--ds-background-neutral)' }} />
         </div>
       </div>
     );
@@ -757,7 +757,7 @@ export default function ResourceAssignmentsPage() {
       style={{
         padding: '24px 32px 48px',
         maxWidth: 1280,
-        color: 'var(--ds-text, #292A2E)',
+        color: 'var(--ds-text)',
         fontFamily:
           '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
       }}
@@ -775,10 +775,10 @@ export default function ResourceAssignmentsPage() {
         <div style={{ flex: 1 }}>
           <h1
             style={{
-              fontSize: 24,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 653,
               lineHeight: '28px',
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
               margin: 0,
               letterSpacing: 'normal',
             }}
@@ -812,9 +812,9 @@ export default function ResourceAssignmentsPage() {
       </div>
       <p
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
-          color: 'var(--ds-text-subtle, #505258)',
+          color: 'var(--ds-text-subtle)',
           margin: '0 0 24px 0',
           lineHeight: '20px',
           maxWidth: 760,
@@ -830,24 +830,24 @@ export default function ResourceAssignmentsPage() {
           const typeAppearance = ASSIGNMENT_TYPE_APPEARANCES[group.type] || ASSIGNMENT_TYPE_APPEARANCES.Unspecified;
 
           return (
-            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: '1px solid var(--ds-border)' }}>
               {/* Group Header */}
               <button
                 onClick={() => toggleGroup(group.type)}
                 className="w-full flex items-center gap-3 px-4 py-3 transition-colors"
-                style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral-subtle, #F7F8F9))')}
+                style={{ background: 'var(--ds-background-neutral)' }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral-subtle))')}
               >
                 {isCollapsed ? (
-                  <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><ChevronRightIcon label="" size="small" /></span>
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}><ChevronRightIcon label="" size="small" /></span>
                 ) : (
-                  <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><ChevronDownIcon label="" size="small" /></span>
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}><ChevronDownIcon label="" size="small" /></span>
                 )}
                 <Lozenge appearance={typeAppearance}>
                   {group.type}
                 </Lozenge>
-                <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                   {group.items.length} assignment{group.items.length !== 1 ? 's' : ''}
                 </span>
               </button>
@@ -884,9 +884,9 @@ export default function ResourceAssignmentsPage() {
                             scope="col"
                             style={{
                               textAlign: col.align || 'left',
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                               fontWeight: 653,
-                              color: 'var(--ds-text-subtle, #505258)',
+                              color: 'var(--ds-text-subtle)',
                               padding: '8px 12px 8px 0',
                               borderBottom: '1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))',
                               textTransform: 'none',
@@ -941,7 +941,7 @@ export default function ResourceAssignmentsPage() {
         })}
 
         {groupedAssignments.length === 0 && (
-          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '1px solid var(--ds-border, #DCDFE4)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: '1px solid var(--ds-border)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
             No assignments configured. Click "Add Assignment" to create one.
           </div>
         )}
@@ -955,7 +955,7 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -963,7 +963,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Description</label>
               <Textfield
                 value={formData.description}
                 onChange={(e) => setFormData(f => ({ ...f, description: (e.target as HTMLInputElement).value }))}
@@ -971,7 +971,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Assignment Type</label>
               {(() => {
                 const typeOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1011,7 +1011,7 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -1019,7 +1019,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Project</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Project</label>
               {(() => {
                 const projectOpts = [
                   { label: 'No project', value: '__none__' },
@@ -1036,7 +1036,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Status</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Assignment Status</label>
               {(() => {
                 const statusOpts = [
                   { label: 'Yet to Start', value: 'yet_to_start' },
@@ -1055,7 +1055,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Budget</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Budget</label>
               <Textfield
                 type="number"
                 value={formData.budget}
@@ -1064,7 +1064,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Vendor</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Vendor</label>
               {(() => {
                 const vendorOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1081,7 +1081,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Assignment Type</label>
               {(() => {
                 const typeOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1131,7 +1131,7 @@ export default function ResourceAssignmentsPage() {
             <DialogTitle className="flex items-center gap-2">
               {linkedRecords.length > 0 ? (
                 <>
-                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning, #F79009)' }}><WarningIcon label="" size="medium" /></span>
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning)' }}><WarningIcon label="" size="medium" /></span>
                   Cannot Delete Assignment
                 </>
               ) : (
@@ -1141,34 +1141,34 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           
           {isCheckingLinks ? (
-            <div className="py-8 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <div className="py-8 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
               Checking for linked records...
             </div>
           ) : linkedRecords.length > 0 ? (
             <div className="space-y-4 py-4">
-              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                 The assignment <strong>"{assignmentToDelete?.name}"</strong> cannot be deleted because it has {linkedRecords.length} linked resource{linkedRecords.length > 1 ? 's' : ''}:
               </p>
-              <ScrollArea className="h-[200px] rounded-md p-3" style={{ border: '1px solid var(--ds-border, #DCDFE4)' }}>
+              <ScrollArea className="h-[200px] rounded-md p-3" style={{ border: '1px solid var(--ds-border)' }}>
                 <div className="space-y-2">
                   {linkedRecords.map((record, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
-                      <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><BriefcaseIcon label="" size="small" /></span>
+                    <div key={index} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded" style={{ background: 'var(--ds-background-neutral)' }}>
+                      <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}><BriefcaseIcon label="" size="small" /></span>
                       <span className="font-medium">{record.resource_name}</span>
-                      <span className="text-xs ml-auto" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                      <span className="text-xs ml-auto" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                         ({record.table_source === 'allocation' ? 'Allocation' : 'Assigned'})
                       </span>
                     </div>
                   ))}
                 </div>
               </ScrollArea>
-              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                 Please reassign or remove these resources from this assignment before deleting.
               </p>
             </div>
           ) : (
             <div className="py-4">
-              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                 Are you sure you want to delete <strong>"{assignmentToDelete?.name}"</strong>? This action cannot be undone.
               </p>
             </div>
@@ -1187,8 +1187,8 @@ export default function ResourceAssignmentsPage() {
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
                 style={{
-                  padding: '8px 16px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
-                  background: 'var(--ds-background-danger-bold, #CA3521)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                  padding: '8px 16px', borderRadius: '4px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+                  background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)',
                   border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer',
                   opacity: isDeleting ? 0.7 : 1,
                 }}
@@ -1206,11 +1206,11 @@ export default function ResourceAssignmentsPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))' }}>
-                <span style={{ display: 'inline-flex', color: 'var(--ds-text-success, #15803D)' }}><PeopleGroupIcon label="" size="small" /></span>
+                <span style={{ display: 'inline-flex', color: 'var(--ds-text-success)' }}><PeopleGroupIcon label="" size="small" /></span>
               </div>
               <div>
                 <div className="text-lg font-semibold">Linked Resources</div>
-                <div className="text-sm font-normal" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                <div className="text-sm font-normal" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                   {resourceModalAssignment?.name || 'Assignment'}
                 </div>
               </div>
@@ -1219,14 +1219,14 @@ export default function ResourceAssignmentsPage() {
           
           <div className="py-4">
             {resourceModalResources.length === 0 ? (
-              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                 <span style={{ display: 'flex', justifyContent: 'center', opacity: 0.3, marginBottom: 12 }}><PersonIcon label="" size="large" /></span>
                 <p>No resources linked to this assignment.</p>
               </div>
             ) : (
               <div className="space-y-1">
                 {/* Table Header */}
-                <div className="flex items-center px-4 py-2 rounded-lg text-[11px] font-semibold uppercase" style={{ background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtlest, #626F86)' }}>
+                <div className="flex items-center px-4 py-2 rounded-lg text-[11px] font-semibold uppercase" style={{ background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtlest)' }}>
                   <div className="w-16">RID</div>
                   <div className="flex-1">Name</div>
                 </div>
@@ -1238,20 +1238,20 @@ export default function ResourceAssignmentsPage() {
                       <div
                         key={resource.id}
                         className="flex items-center px-4 py-3 rounded-lg transition-colors"
-                        style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}
-                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))')}
-                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))')}
+                        style={{ border: '1px solid var(--ds-border)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}
+                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))')}
+                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))')}
                       >
                         <div className="w-16">
-                          <span className="text-xs font-mono font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
+                          <span className="text-xs font-mono font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand)', background: 'var(--ds-background-selected)' }}>
                             {resource.resourceId || '—'}
                           </span>
                         </div>
                         <div className="flex-1 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
-                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><PersonIcon label="" size="small" /></span>
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--ds-background-neutral)' }}>
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}><PersonIcon label="" size="small" /></span>
                           </div>
-                          <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{resource.name}</span>
+                          <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{resource.name}</span>
                         </div>
                       </div>
                     ))}
@@ -1259,8 +1259,8 @@ export default function ResourceAssignmentsPage() {
                 </ScrollArea>
 
                 {/* Footer Summary */}
-                <div className="flex items-center justify-between px-4 py-3 mt-3 rounded-lg" style={{ background: 'var(--ds-background-neutral, #F7F8F9)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
-                  <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>Total Resources</span>
+                <div className="flex items-center justify-between px-4 py-3 mt-3 rounded-lg" style={{ background: 'var(--ds-background-neutral)', border: '1px solid var(--ds-border)' }}>
+                  <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>Total Resources</span>
                   <Lozenge appearance="success">
                     {resourceModalResources.length}
                   </Lozenge>

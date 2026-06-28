@@ -15,7 +15,7 @@ interface JiraSyncChipProps {
 
 const JIRA_SVG = (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11.53 2C6.63 2 2.84 5.68 2.84 10.5c0 4.83 3.79 8.5 8.69 8.5h.64l5.82 3V18.5c2.77-1.56 4.17-4.4 4.17-8 0-4.82-3.79-8.5-8.63-8.5z" fill="var(--ds-link, #0C66E4)"/>
+    <path d="M11.53 2C6.63 2 2.84 5.68 2.84 10.5c0 4.83 3.79 8.5 8.69 8.5h.64l5.82 3V18.5c2.77-1.56 4.17-4.4 4.17-8 0-4.82-3.79-8.5-8.63-8.5z" fill="var(--ds-link)"/>
     <path d="M12.06 7l-4.5 4.5 4.5 4.5 4.5-4.5L12.06 7z" fill="white"/>
   </svg>
 );
@@ -27,7 +27,7 @@ export function JiraSyncChip({ jiraKey, baseUrl, size = 'sm', className }: JiraS
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded font-mono',
-        'bg-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-link-pressed, #0747A6)] dark:bg-[var(--ds-link-pressed, #0747A6)]/20 dark:text-[var(--ds-background-information-bold, #0C66E4)]',
+        'bg-[var(--ds-background-information)] text-[var(--ds-link-pressed)] dark:bg-[var(--ds-link-pressed)]/20 dark:text-[var(--ds-background-information-bold)]',
         size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]',
         'font-semibold tracking-wide whitespace-nowrap',
         className
@@ -41,7 +41,7 @@ export function JiraSyncChip({ jiraKey, baseUrl, size = 'sm', className }: JiraS
           target="_blank"
           rel="noopener noreferrer"
           onClick={e => e.stopPropagation()}
-          className="text-[var(--ds-link-pressed, #0747A6)] dark:text-[var(--ds-background-information-bold, #0C66E4)] hover:text-[var(--cp-primary-60, #0052CC)]"
+          className="text-[var(--ds-link-pressed)] dark:text-[var(--ds-background-information-bold)] hover:text-[var(--cp-primary-60)]"
         >
           <ExternalLink size={10} />
         </a>

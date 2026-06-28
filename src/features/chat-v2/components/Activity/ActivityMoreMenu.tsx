@@ -181,24 +181,24 @@ const Item = React.forwardRef<HTMLButtonElement, {
         height: 34,
         padding: '0 14px',
         background: active ? 'var(--cv2-accent)' : 'transparent',
-        color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
+        color: active ? 'var(--ds-text-inverse)' : 'var(--cv2-text)',
         border: 'none',
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         transition: 'background var(--cv2-transition-fast)',
       }}
     >
       <span style={{ display: 'inline-flex', width: 16, color: 'inherit' }}>{icon}</span>
       <span style={{ flex: 1 }}>{label}</span>
       {shortcut && (
-        <span style={{ fontSize: 12, color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
           {shortcut}
         </span>
       )}
       {trailingArrow && (
-        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-surface, #FFFFFF)' : 'var(--cv2-text-subtle)' }} />
+        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-surface)' : 'var(--cv2-text-subtle)' }} />
       )}
     </button>
   );

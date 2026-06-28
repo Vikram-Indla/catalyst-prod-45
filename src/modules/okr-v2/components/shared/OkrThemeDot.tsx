@@ -14,11 +14,11 @@ interface OkrThemeDotProps {
 
 // Catalyst brand color palette - Blue + Teal
 const BRAND_THEME_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',   // Blue (primary)
-  'var(--ds-icon-information, #1D7AFC)',   // Teal
-  'var(--ds-text-subtlest, #626F86)',   // Gray
-  'var(--ds-text-warning, #f59e0b)',   // Amber
-  'var(--ds-text-subtlest, #626F86)',   // Light gray
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',   // Blue (primary)
+  'var(--ds-icon-information)',   // Teal
+  'var(--ds-text-subtlest)',   // Gray
+  'var(--ds-text-warning)',   // Amber
+  'var(--ds-text-subtlest)',   // Light gray
 ];
 
 // Get a consistent color based on theme name hash

@@ -30,14 +30,14 @@ export default function ReportEmptyState({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 22,
+          fontSize: 'var(--ds-font-size-700)',
           marginBottom: 4,
         }}
       >
         📊
       </div>
-      <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--ds-text)' }}>{message}</p>
-      <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-subtle)', maxWidth: 320, lineHeight: 1.5 }}>{hint}</p>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>{message}</p>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', maxWidth: 320, lineHeight: 1.5 }}>{hint}</p>
     </div>
   );
 }

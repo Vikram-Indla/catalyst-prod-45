@@ -53,7 +53,7 @@ function VscodeLink({ file, line }: { file: string; line: number }) {
     <a
       href={href}
       style={{
-        color: token('color.link', 'var(--ds-link, #0C66E4)'),
+        color: token('color.link', 'var(--ds-link)'),
         textDecoration: 'none',
         fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
@@ -90,14 +90,14 @@ export default function ADSViolationsPanel() {
         padding: '4px 10px',
         borderRadius: 12,
         border: `1px solid ${
-          isActive ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border-disabled, var(--ds-border-disabled, #DCDFE4))')
+          isActive ? token('color.border.selected', 'var(--ds-link)') : token('color.border', 'var(--ds-border-disabled, var(--ds-border-disabled))')
         }`,
         background: isActive
-          ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
-          : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          ? token('color.background.selected', 'var(--ds-background-selected)')
+          : token('elevation.surface', 'var(--ds-surface)'),
         color: isActive
-          ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
-          : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          ? token('color.text.selected', 'var(--ds-link)')
+          : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
         fontSize: 12,
         fontWeight: 500,
         cursor: 'pointer',
@@ -120,7 +120,7 @@ export default function ADSViolationsPanel() {
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
             fontSize: 13,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             maxWidth: 760,
           }}
         >
@@ -159,10 +159,10 @@ export default function ADSViolationsPanel() {
         <div
           style={{
             padding: token('space.300', '24px'),
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
-            background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'),
-            color: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
+            background: token('color.background.success', 'var(--ds-background-success)'),
+            color: token('color.text.success', 'var(--ds-text-success)'),
             fontSize: 14,
             fontWeight: 500,
           }}
@@ -172,14 +172,14 @@ export default function ADSViolationsPanel() {
       ) : (
         <div
           style={{
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
             overflow: 'hidden',
           }}
         >
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
+              <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)') }}>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left', width: 60 }}>Sev</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left', width: 180 }}>Category</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Location</th>
@@ -190,7 +190,7 @@ export default function ADSViolationsPanel() {
               {filtered.map(v => (
                 <tr
                   key={v.id}
-                  style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}
+                  style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}` }}
                 >
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top' }}>
                     <SeverityChip severity={v.severity} />
@@ -199,7 +199,7 @@ export default function ADSViolationsPanel() {
                     style={{
                       padding: token('space.100', '8px'),
                       verticalAlign: 'top',
-                      color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                      color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                     }}
                   >
                     {CATEGORY_LABELS[v.category]}
@@ -211,7 +211,7 @@ export default function ADSViolationsPanel() {
                         marginTop: 4,
                         fontFamily: 'var(--ds-font-family-code)',
                         fontSize: 11,
-                        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -226,7 +226,7 @@ export default function ADSViolationsPanel() {
                     style={{
                       padding: token('space.100', '8px'),
                       verticalAlign: 'top',
-                      color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                      color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                     }}
                   >
                     <div>{v.rule}</div>
@@ -234,7 +234,7 @@ export default function ADSViolationsPanel() {
                       style={{
                         marginTop: 4,
                         fontSize: 12,
-                        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                       }}
                     >
                       Fix: {v.suggestion}

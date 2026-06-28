@@ -12,9 +12,9 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
     <div
       data-testid="widget-settings-panel"
       style={{
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderRadius: 6,
-        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
         padding: token('space.200', '16px'),
         display: 'flex',
         flexDirection: 'column',
@@ -32,9 +32,9 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
         <h3
           style={{
             margin: 0,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
           }}
         >
           Widget Settings
@@ -47,10 +47,10 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             padding: 4,
             borderRadius: 4,
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             lineHeight: 1,
           }}
         >
@@ -69,11 +69,11 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
           onClick={onClose}
           style={{
             padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-            background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
-            color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+            background: token('color.background.brand.bold', 'var(--ds-link)'),
+            color: token('color.text.inverse', 'var(--ds-text-inverse)'),
             border: 'none',
             borderRadius: 4,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             cursor: 'pointer',
           }}

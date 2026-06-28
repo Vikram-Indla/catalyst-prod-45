@@ -142,11 +142,11 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             <div
               style={{
                 padding: '8px 12px',
-                background: 'var(--ds-background-warning, #FFF7D6)',
-                border: '1px solid var(--ds-border-warning, #CF9F02)',
+                background: 'var(--ds-background-warning)',
+                border: '1px solid var(--ds-border-warning)',
                 borderRadius: 4,
-                fontSize: 13,
-                color: 'var(--ds-text-warning, #974F0C)',
+                fontSize: 'var(--ds-font-size-300)',
+                color: 'var(--ds-text-warning)',
               }}
             >
               Channel limit reached ({MAX_CHANNELS}/{MAX_CHANNELS}). Delete a channel to create a new one.
@@ -158,9 +158,9 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
               htmlFor="cc-new-channel-name"
               style={{
                 display: 'block',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
-                color: 'var(--ds-text-subtle, #44546F)',
+                color: 'var(--ds-text-subtle)',
                 marginBottom: 4,
               }}
             >
@@ -177,7 +177,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             />
             </div>
             {name.trim() && (
-              <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', marginTop: 4 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', marginTop: 4 }}>
                 Will be created as <strong>#{slugify(name)}</strong>
               </div>
             )}
@@ -187,9 +187,9 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             <label
               style={{
                 display: 'block',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
-                color: 'var(--ds-text-subtle, #44546F)',
+                color: 'var(--ds-text-subtle)',
                 marginBottom: 4,
               }}
             >
@@ -206,7 +206,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
                 maxHeight: 220,
                 overflowY: 'auto',
                 marginTop: 8,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 4,
               }}
             >
@@ -214,8 +214,8 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
                 <div
                   style={{
                     padding: 12,
-                    fontSize: 12,
-                    color: 'var(--ds-text-subtle, #44546F)',
+                    fontSize: 'var(--ds-font-size-200)',
+                    color: 'var(--ds-text-subtle)',
                     textAlign: 'center',
                   }}
                 >
@@ -233,7 +233,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
                       gap: 8,
                       padding: '6px 8px',
                       cursor: atLimit ? 'default' : 'pointer',
-                      background: checked ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                      background: checked ? 'var(--ds-background-selected)' : 'transparent',
                     }}
                   >
                     <input
@@ -244,11 +244,11 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
                       style={{ margin: 0 }}
                     />
                     <Avatar name={p.name} seed={p.id} />
-                    <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', flex: 1 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', flex: 1 }}>
                       {p.name}
                     </span>
                     {p.role && (
-                      <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                         {p.role}
                       </span>
                     )}
@@ -291,7 +291,7 @@ export function ChannelCreatedFlag({
         icon={
           <SuccessIcon
             label="success"
-            primaryColor="var(--ds-icon-success, #22A06B)"
+            primaryColor="var(--ds-icon-success)"
           />
         }
         title={`Channel created (${count}/${MAX_CHANNELS})`}

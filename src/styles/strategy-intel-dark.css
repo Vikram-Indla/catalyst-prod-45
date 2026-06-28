@@ -5,72 +5,72 @@
 
 /* Panel container */
 .dark .strategy-intel-panel {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))) !important;
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
+  color: var(--ds-text, var(--cp-bg-neutral)) !important;
 }
 
 /* Text overrides */
 .dark .strategy-intel-panel .text-slate-900,
 .dark .strategy-intel-panel .text-slate-800,
 .dark .strategy-intel-panel .text-\[15px\].font-\[700\] {
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
+  color: var(--ds-text, var(--cp-bg-neutral)) !important;
 }
 .dark .strategy-intel-panel .text-slate-700,
 .dark .strategy-intel-panel .text-slate-600 {
-  color: var(--ds-text-subtlest, #A1A1A1) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 .dark .strategy-intel-panel .text-slate-500,
 .dark .strategy-intel-panel .text-slate-400 {
-  color: var(--ds-text-subtlest, #626F86) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 
 /* Backgrounds */
 .dark .strategy-intel-panel .bg-white {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))) !important;
 }
 .dark .strategy-intel-panel .bg-slate-100,
 .dark .strategy-intel-panel .bg-slate-50 {
-  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
+  background: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Borders */
 .dark .strategy-intel-panel .border-slate-200,
 .dark .strategy-intel-panel .border-slate-100 {
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 .dark .strategy-intel-panel .border-l {
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Hover states */
 .dark .strategy-intel-panel .hover\:bg-slate-100:hover,
 .dark .strategy-intel-panel .hover\:bg-slate-50:hover {
-  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
+  background: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Tab bar */
 .dark .strategy-intel-panel .border-b {
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 .dark .strategy-intel-panel .border-t {
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Footer */
 .dark .strategy-intel-panel .shrink-0.border-t {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))) !important;
 }
 
 /* Metric cards in Executive Brief tab */
 .dark .strategy-intel-panel .border.border-slate-200.rounded-lg {
-  background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  background: var(--ds-surface-overlay) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Close button */
 .dark .strategy-intel-panel button.p-1\.5:hover {
-  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
+  background: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Shadow kill */
@@ -80,26 +80,26 @@
 
 /* Markdown content */
 .dark .strategy-intel-panel h2.border-b {
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Status banner left border cards */
 .dark .strategy-intel-panel .p-4.bg-white.border.border-slate-200 {
-  background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  background: var(--ds-surface-overlay) !important;
+  border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
 
 /* Chain breadcrumb badges — keep colored backgrounds */
 
 /* Scrollbar */
 .dark .strategy-intel-panel ::-webkit-scrollbar-track {
-  background: var(--ds-surface-overlay, #1F1F1F);
+  background: var(--ds-surface-overlay);
 }
 .dark .strategy-intel-panel ::-webkit-scrollbar-thumb {
-  background: var(--ds-border-bold, #454545);
+  background: var(--ds-border-bold);
 }
 
 /* Health bars */
 .dark .strategy-intel-panel .bg-slate-100.rounded-full {
-  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  background: var(--ds-border, var(--cp-ink-1)) !important;
 }

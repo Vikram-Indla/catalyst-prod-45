@@ -145,7 +145,7 @@ export default function SummaryView({ project }: SummaryViewProps) {
                   type="category" 
                   dataKey="priority" 
                   width={60} 
-                  tick={{ fontSize: 12 }} 
+                  tick={{ fontSize: 'var(--ds-font-size-200)' }} 
                   axisLine={false}
                   tickLine={false}
                 />

@@ -138,7 +138,7 @@ export function WorkItemOverflowMenu({
 
         {/* Flag */}
         <MenuItem
-          icon={<Flag size={14} color={issue.isFlagged ? 'var(--ds-background-danger-bold, #C9372C)' : undefined} />}
+          icon={<Flag size={14} color={issue.isFlagged ? 'var(--ds-background-danger-bold)' : undefined} />}
           label={issue.isFlagged ? 'Remove flag' : 'Add flag'}
           onClick={() => { onToggleFlag?.(issue.id); onClose(); }}
           tk={tk}
@@ -256,13 +256,13 @@ function MenuItem({ icon, label, onClick, tk, hasSubmenu, destructive }: {
         display: 'flex', alignItems: 'center', gap: 8,
         width: '100%', padding: '7px 12px', border: 'none',
         background: 'transparent', cursor: 'pointer',
-        fontSize: 13, color: destructive ? 'var(--ds-background-danger-bold, #C9372C)' : tk.textPrimary,
+        fontSize: 'var(--ds-font-size-300)', color: destructive ? 'var(--ds-background-danger-bold)' : tk.textPrimary,
         fontFamily: 'var(--cp-font-body)', textAlign: 'left',
       }}
       onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
-      <span style={{ color: destructive ? 'var(--ds-background-danger-bold, #C9372C)' : tk.textMuted, flexShrink: 0 }}>{icon}</span>
+      <span style={{ color: destructive ? 'var(--ds-background-danger-bold)' : tk.textMuted, flexShrink: 0 }}>{icon}</span>
       <span className="flex-1">{label}</span>
       {hasSubmenu && <ChevronRight size={12} color={tk.textMuted} />}
     </button>

@@ -9,7 +9,7 @@ function Providers({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 function Frame({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></Providers>;
+  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface)' }}>{children}</div></Providers>;
 }
 
 import { CatalystSidebarDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails';
@@ -86,7 +86,7 @@ export const WithImproveDropdown: StoryObj = {
         issue={mockIssue as any} itemId="BAU-5972"
         onStatusChange={fn()} onClose={fn()} onDelete={fn()}
         statusPill={<CatalystStatusPill status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />}
-        improveDropdown={<button style={{ fontSize: 12, padding: '4px 8px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer' }}>Improve</button>}
+        improveDropdown={<button style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: '1px solid var(--ds-border)', borderRadius: 3, background: 'var(--ds-surface)', cursor: 'pointer' }}>Improve</button>}
       />
     </Frame>
   ),

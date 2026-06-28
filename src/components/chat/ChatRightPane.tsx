@@ -142,8 +142,8 @@ export function ChatRightPane({
       <style>{`
         .cv-right-pane {
           width: 360px;
-          border-left: 1px solid var(--ds-border, #DFE1E6);
-          background: var(--ds-surface, #FFFFFF);
+          border-left: 1px solid var(--ds-border);
+          background: var(--ds-surface);
           display: flex;
           flex-direction: column;
           height: 100%;
@@ -151,16 +151,16 @@ export function ChatRightPane({
 
         .cv-right-pane-header {
           padding: 8px 16px;
-          border-bottom: 1px solid var(--ds-border, #DFE1E6);
+          border-bottom: 1px solid var(--ds-border);
           font-size: 14px;
           font-weight: 600;
-          color: var(--ds-text, #172B4D);
+          color: var(--ds-text);
         }
 
         .cv-right-pane [role="tablist"] {
           font-size: 12px;
           font-weight: 500;
-          border-bottom: 1px solid var(--ds-border, #DFE1E6);
+          border-bottom: 1px solid var(--ds-border);
           display: flex;
           flex-direction: row;
         }
@@ -171,14 +171,14 @@ export function ChatRightPane({
           text-align: center;
           border-bottom: 2px solid transparent;
           cursor: pointer;
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
           background: transparent;
         }
 
         .cv-right-pane [role="tab"][aria-selected="true"] {
-          color: var(--ds-text, #172B4D);
-          border-bottom-color: var(--ds-border-focused, #0052CC);
-          background: var(--ds-background-selected, #E9F2FE);
+          color: var(--ds-text);
+          border-bottom-color: var(--ds-border-focused);
+          background: var(--ds-background-selected);
         }
 
         .cv-right-pane [role="tab"]:hover {
@@ -219,34 +219,34 @@ export function ChatRightPane({
         .cc-thread-snippet {
           font-size: 12px;
           font-weight: 500;
-          color: var(--ds-text, #172B4D);
+          color: var(--ds-text);
           margin-bottom: 4px;
         }
 
         .cc-thread-meta {
           font-size: 11px;
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
 
         .cc-reply-badge {
-          background: var(--ds-background-neutral, #F1F2F4);
+          background: var(--ds-background-neutral);
           padding: 2px 6px;
           border-radius: 2px;
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
         }
 
         .cc-timestamp {
           font-size: 11px;
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
         }
 
         .cc-empty-state {
           padding: 16px;
           text-align: center;
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
           font-size: 12px;
         }
 
@@ -261,7 +261,7 @@ export function ChatRightPane({
         }
 
         .cc-tab-placeholder {
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
           font-size: 12px;
         }
       `}</style>

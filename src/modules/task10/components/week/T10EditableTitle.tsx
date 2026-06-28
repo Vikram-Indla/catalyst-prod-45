@@ -83,8 +83,8 @@ export function T10EditableTitle({
         className={className}
         style={{
           padding: '0px 2px',
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '2px solid var(--ds-link, #2563eb)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          border: '2px solid var(--ds-link)',
           borderRadius: '4px',
           fontSize: 'inherit',
           fontWeight: 'inherit',

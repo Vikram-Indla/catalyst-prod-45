@@ -83,7 +83,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.strokeStyle = 'var(--ds-border, #DFE1E6)';
+      ctx.strokeStyle = 'var(--ds-border)';
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -94,14 +94,14 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
-      ctx.strokeStyle = 'var(--ds-border, #DFE1E6)';
+      ctx.strokeStyle = 'var(--ds-border)';
       ctx.lineWidth = 1;
       ctx.stroke();
     }
 
     // Axis labels
     ctx.font = '10px system-ui, sans-serif';
-    ctx.fillStyle = 'var(--ds-text-subtlest, #626F86)';
+    ctx.fillStyle = 'var(--ds-text-subtlest)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const labelR = maxR + 16;
@@ -126,7 +126,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
     ctx.closePath();
     ctx.fillStyle = 'var(--ds-background-information, rgba(37, 99, 235, 0.15))';
     ctx.fill();
-    ctx.strokeStyle = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+    ctx.strokeStyle = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -138,9 +138,9 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       const y = cy + r * Math.sin(angle);
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, 2 * Math.PI);
-      ctx.fillStyle = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+      ctx.fillStyle = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
       ctx.fill();
-      ctx.strokeStyle = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+      ctx.strokeStyle = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
       ctx.lineWidth = 2;
       ctx.stroke();
     });
@@ -173,13 +173,13 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
     <div>
       {/* Computed score header */}
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #a1a1aa)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           Computed Score
         </div>
-        <div style={{ fontSize: '40px', fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontSize: '40px', fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontVariantNumeric: 'tabular-nums' }}>
           {computedScore.toFixed(1)}
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
           {computedScore >= 4.0 ? 'High Priority' : computedScore >= 3.0 ? 'Medium Priority' : computedScore >= 2.0 ? 'Low Priority' : 'Unscored'}
         </div>
       </div>
@@ -191,8 +191,8 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
           return (
             <div key={dim.key}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)' }}>{dim.label}</span>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{dim.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontVariantNumeric: 'tabular-nums' }}>
                   {Number(val).toFixed(1)}
                 </span>
               </div>
@@ -209,7 +209,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
                   appearance: 'none',
                   WebkitAppearance: 'none',
                   borderRadius: '9999px',
-                  background: `linear-gradient(to right, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) ${(val / 5) * 100}%, var(--ds-border, #DFE1E6) ${(val / 5) * 100}%, var(--ds-border, #DFE1E6) 100%)`,
+                  background: `linear-gradient(to right, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) ${(val / 5) * 100}%, var(--ds-border) ${(val / 5) * 100}%, var(--ds-border) 100%)`,
                   outline: 'none',
                   cursor: 'pointer',
                 }}
@@ -231,23 +231,23 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         style={{
           width: '100%',
           height: '50px',
-          backgroundColor: saveMutation.isPending ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          fontSize: '14px',
+          backgroundColor: saveMutation.isPending ? 'var(--ds-background-information)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 600,
           borderRadius: '8px',
           border: 'none',
           cursor: saveMutation.isPending ? 'not-allowed' : 'pointer',
           transition: 'background-color 150ms',
         }}
-        onMouseEnter={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold-hovered, #1d4ed8)'; }}
-        onMouseLeave={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'; }}
+        onMouseEnter={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold-hovered)'; }}
+        onMouseLeave={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; }}
       >
         {saveMutation.isPending ? 'Saving…' : saveMutation.isSuccess ? '✓ Saved' : 'Save Score'}
       </button>
 
       {saveMutation.isError && (
-        <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--ds-text-danger, #ef4444)', textAlign: 'center' }}>
+        <div style={{ marginTop: '8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', textAlign: 'center' }}>
           Failed to save. Please try again.
         </div>
       )}

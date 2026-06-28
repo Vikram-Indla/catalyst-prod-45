@@ -120,15 +120,15 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
           // Saved row gets a discrete card affordance — gray border +
           // light elevation shadow. Hover deepens the background.
           background: rowHovered
-            ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
-            : 'var(--cp-bg-elevated, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+            ? 'var(--ds-background-neutral-hovered)'
+            : 'var(--cp-bg-elevated)',
+          border: '1px solid var(--ds-border)',
           boxShadow: '0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08))',
           transition: 'background 0.12s, box-shadow 0.12s',
           cursor: 'default',
         }}
       >
-        <LinkIcon label="" color="var(--ds-text-subtle, #505258)" />
+        <LinkIcon label="" color="var(--ds-text-subtle)" />
         <a
           href={link.url}
           target="_blank"
@@ -142,12 +142,12 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
             flex: '0 1 auto',
             minWidth: 0,
             maxWidth: '100%',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: linkHovered
-              ? 'var(--ds-text-subtle, #6B6E76)'
-              : 'var(--ds-text, #292A2E)',
+              ? 'var(--ds-text-subtle)'
+              : 'var(--ds-text)',
             textDecoration: linkHovered ? 'underline' : 'none',
-            textDecorationColor: linkHovered ? 'var(--ds-text, #000000)' : 'transparent',
+            textDecorationColor: linkHovered ? 'var(--ds-text)' : 'transparent',
             textUnderlineOffset: 2,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -179,7 +179,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               background: 'transparent',
               cursor: 'pointer',
               borderRadius: 3,
-              color: 'var(--ds-text-subtle, #505258)',
+              color: 'var(--ds-text-subtle)',
               padding: 0,
             }}
             onMouseEnter={(e) => {
@@ -189,7 +189,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               e.currentTarget.style.background = 'transparent';
             }}
           >
-            <CrossIcon size="small" label="" primaryColor="var(--ds-text-subtle, #505258)" />
+            <CrossIcon size="small" label="" primaryColor="var(--ds-text-subtle)" />
           </button>
         )}
       </div>
@@ -204,8 +204,8 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
             left: cardRect.left,
             width: cardRect.width,
             maxWidth: 420,
-            background: 'var(--cp-bg-elevated, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--cp-bg-elevated)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 6,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
             padding: 12,
@@ -221,7 +221,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               Spec point #3: prefer the user's link_text over the raw URL. */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <span style={{ flexShrink: 0, marginTop: 2 }}>
-              <LinkIcon label="" color="var(--ds-link, #0052CC)" />
+              <LinkIcon label="" color="var(--ds-link)" />
             </span>
             <a
               href={link.url}
@@ -230,9 +230,9 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               style={{
                 flex: 1,
                 minWidth: 0,
-                fontSize: 15,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
-                color: 'var(--ds-link, #0052CC)',
+                color: 'var(--ds-link)',
                 textDecoration: 'none',
                 wordBreak: 'break-word',
               }}
@@ -246,8 +246,8 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
           {/* Static descriptive blurb (spec point #6). */}
           <div
             style={{
-              fontSize: 13,
-              color: 'var(--ds-text-subtle, #505258)',
+              fontSize: 'var(--ds-font-size-300)',
+              color: 'var(--ds-text-subtle)',
               lineHeight: '18px',
               wordBreak: 'break-word',
             }}
@@ -257,7 +257,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
           </div>
 
           {/* Footer: Copy link button */}
-          <div style={{ borderTop: '1px solid var(--ds-border-subtle, #EBECF0)', paddingTop: 8 }}>
+          <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 8 }}>
             <button
               type="button"
               onClick={handleCopyUrl}
@@ -270,17 +270,17 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
                 padding: '4px 8px',
                 border: 'none',
                 background: copyHovered
-                  ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
+                  ? 'var(--ds-background-neutral-hovered)'
                   : 'transparent',
-                color: 'var(--ds-text, #292A2E)',
-                fontSize: 13,
+                color: 'var(--ds-text)',
+                fontSize: 'var(--ds-font-size-300)',
                 fontFamily: 'inherit',
                 cursor: 'pointer',
                 borderRadius: 3,
                 transition: 'background 0.12s',
               }}
             >
-              <CopyIcon label="" color="var(--ds-text-subtle, #505258)" />
+              <CopyIcon label="" color="var(--ds-text-subtle)" />
               Copy link
             </button>
           </div>

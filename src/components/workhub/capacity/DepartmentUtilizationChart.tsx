@@ -20,7 +20,7 @@ function DeptTooltip({ active, payload }: any) {
   const d = payload[0].payload as DepartmentCapacity;
   return (
     <div style={CHART_TOOLTIP_STYLE}>
-      <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 13 }}>{d.department}</div>
+      <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 'var(--ds-font-size-300)' }}>{d.department}</div>
       <div>Avg Utilization: <strong>{d.avgUtilization}%</strong></div>
       <div>Members: {d.memberCount}</div>
       <div>Capacity: {d.totalCapacityHours}h/wk</div>
@@ -45,7 +45,7 @@ export function DepartmentUtilizationChart({ departments }: Props) {
       <h3
         style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 16,
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
           color: 'var(--fg-1)',
           marginBottom: 20,
@@ -60,11 +60,11 @@ export function DepartmentUtilizationChart({ departments }: Props) {
           <XAxis type="number" domain={[0, 120]} tickFormatter={v => `${v}%`} />
           <YAxis
             type="category" dataKey="department" width={110}
-            tick={{ fontSize: 13, fontFamily: 'var(--cp-font-body)' }}
+            tick={{ fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)' }}
           />
           <Tooltip content={<DeptTooltip />} />
-          <ReferenceLine x={80} stroke="var(--ds-text-danger, #ef4444)" strokeDasharray="4 4" />
-          <ReferenceLine x={60} stroke="var(--ds-text-warning, #d97706)" strokeDasharray="4 4" />
+          <ReferenceLine x={80} stroke="var(--ds-text-danger)" strokeDasharray="4 4" />
+          <ReferenceLine x={60} stroke="var(--ds-text-warning)" strokeDasharray="4 4" />
           <Bar dataKey="avgUtilization" radius={[0, 4, 4, 0]} barSize={24}>
             {departments.map((d, i) => (
               <Cell key={i} fill={getUtilColor(d.avgUtilization)} />

@@ -82,8 +82,8 @@ const pageContainerStyle: React.CSSProperties = {
 };
 
 const listContainerStyle: React.CSSProperties = {
-  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  border: '1px solid var(--ds-border, #DCDFE4)',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  border: '1px solid var(--ds-border)',
   borderRadius: 6,
   overflow: 'hidden',
 };
@@ -95,7 +95,7 @@ const rowStyle: React.CSSProperties = {
   gap: 16,
   paddingBlock: 12,
   paddingInline: 16,
-  borderBottom: '1px solid var(--ds-border, #DCDFE4)',
+  borderBottom: '1px solid var(--ds-border)',
 };
 
 const rowStyleLast: React.CSSProperties = {
@@ -199,7 +199,7 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
           gap: 8,
           fontSize: 14,
           fontWeight: 500,
-          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -212,7 +212,7 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
         </div>
         <div style={{
           fontSize: 12,
-          color: 'var(--ds-text-subtle, #626F86)',
+          color: 'var(--ds-text-subtle)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -284,7 +284,7 @@ export default function AdminAvatarsPage() {
     <div style={pageContainerStyle}>
       <div style={{ marginBottom: 16 }}>
         <Heading size="xlarge">Resource avatars</Heading>
-        <div style={{ marginTop: 8, color: 'var(--ds-text-subtle, #626F86)', maxWidth: 720, fontSize: 14 }}>
+        <div style={{ marginTop: 8, color: 'var(--ds-text-subtle)', maxWidth: 720, fontSize: 14 }}>
           Manage face photos for every resource. Replacements take effect immediately
           across every Catalyst surface that renders this person — assignee pickers,
           comments, sidebars, breadcrumbs, recent items.
@@ -297,19 +297,19 @@ export default function AdminAvatarsPage() {
         style={{
           marginBottom: 24,
           padding: 16,
-          background: 'var(--ds-background-information, #E9F2FF)',
-          border: '1px solid var(--ds-border-information, #85B8FF)',
+          background: 'var(--ds-background-information)',
+          border: '1px solid var(--ds-border-information)',
           borderRadius: 6,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
           <Heading size="small">Canonical UserAvatar</Heading>
           <Lozenge appearance="success">v2.0.0</Lozenge>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
             <code>@/components/shared/UserAvatar</code>
           </span>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 12, maxWidth: 800 }}>
+        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))', marginBottom: 12, maxWidth: 800 }}>
           Composition over <code>CatalystAvatar</code> with an optional country flag overlay.
           Use this wrapper everywhere a user identity is shown — tables, rails, sidebars,
           comment threads, notification rows. Photo precedence:{' '}
@@ -319,7 +319,7 @@ export default function AdminAvatarsPage() {
           {(['xsmall', 'small', 'medium', 'large', 'xlarge'] as const).map(s => (
             <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <UserAvatar name="Amadou Ndiaye" country="Saudi Arabia" size={s} />
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{s}</span>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>{s}</span>
             </div>
           ))}
         </div>
@@ -367,9 +367,9 @@ export default function AdminAvatarsPage() {
         <div style={{
           padding: 40,
           textAlign: 'center',
-          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
           borderRadius: 6,
-          color: 'var(--ds-text-subtle, #626F86)',
+          color: 'var(--ds-text-subtle)',
         }}>
           {profiles.length === 0
             ? 'No profiles found. Have any users been provisioned?'

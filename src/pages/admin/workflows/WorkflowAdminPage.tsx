@@ -39,17 +39,17 @@ import { CatalystWorkflowBuilder } from './CatalystWorkflowBuilder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  text: 'var(--ds-text, #172B4D)',
-  textSubtle: 'var(--ds-text-subtle, #44546F)',
-  textSubtlest: 'var(--ds-text-subtlest, #626F86)',
-  textBrand: 'var(--ds-link, #0C66E4)',
-  textDanger: 'var(--ds-text-danger, #AE2A19)',
-  border: 'var(--ds-border, #DCDFE4)',
-  bgHover: 'var(--ds-background-neutral-hovered, #F1F2F4)',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
-  bgSelected: 'var(--ds-background-selected, #E9F2FE)',
-  iconBrand: 'var(--ds-icon-brand, #0C66E4)',
+  surface: 'var(--ds-surface)',
+  text: 'var(--ds-text)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  textBrand: 'var(--ds-link)',
+  textDanger: 'var(--ds-text-danger)',
+  border: 'var(--ds-border)',
+  bgHover: 'var(--ds-background-neutral-hovered)',
+  bgNeutral: 'var(--ds-background-neutral)',
+  bgSelected: 'var(--ds-background-selected)',
+  iconBrand: 'var(--ds-icon-brand)',
 };
 
 const CATS: StatusCategory[] = ['todo', 'in_progress', 'done'];
@@ -77,7 +77,7 @@ function CatPill({ cat, label, bold }: { cat: StatusCategory; label?: string; bo
 }
 
 function StatusPillInline({ name, category }: { name: string; category: string }) {
-  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? 'var(--ds-border, #DFE1E6)';
+  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? 'var(--ds-border)';
   return (
     <span
       style={{
@@ -86,7 +86,7 @@ function StatusPillInline({ name, category }: { name: string; category: string }
         height: 20,
         padding: '0 8px',
         borderRadius: 3,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 500,
         background: bg,
         color: STATUS_TEXT,
@@ -140,7 +140,7 @@ const menuItemBase: React.CSSProperties = {
   border: 'none',
   background: 'none',
   padding: '6px 12px',
-  fontSize: '13px',
+  fontSize: 'var(--ds-font-size-300)',
   cursor: 'pointer',
   fontFamily: 'inherit',
   lineHeight: '20px',
@@ -208,7 +208,7 @@ function RowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         left: rect.left,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         border: `1px solid ${T.border}`,
         borderRadius: '6px',
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -259,7 +259,7 @@ function OverflowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         right: window.innerWidth - rect.right,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         border: `1px solid ${T.border}`,
         borderRadius: '6px',
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -333,7 +333,7 @@ function StatusRow({
         style={{
           color: T.textSubtlest,
           opacity: hovered ? 0.5 : 0,
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           flexShrink: 0,
           cursor: 'grab',
           lineHeight: 1,
@@ -359,9 +359,9 @@ function StatusRow({
           onBlur={commitRename}
           style={{
             flex: 1,
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             color: T.text,
-            border: `1px solid var(--ds-border-focused, #388BFF)`,
+            border: `1px solid var(--ds-border-focused)`,
             borderRadius: '3px',
             padding: '1px 4px',
             outline: 'none',
@@ -382,7 +382,7 @@ function StatusRow({
       {isInitial && (
         <span
           title="Initial status — new items start here"
-          style={{ color: 'var(--ds-background-warning-bold, #E2B203)', fontSize: '11px', flexShrink: 0, lineHeight: 1 }}
+          style={{ color: 'var(--ds-background-warning-bold)', fontSize: 'var(--ds-font-size-100)', flexShrink: 0, lineHeight: 1 }}
         >
           ★
         </span>
@@ -399,7 +399,7 @@ function StatusRow({
             background: 'none',
             cursor: 'pointer',
             color: T.textSubtlest,
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -502,7 +502,7 @@ function StatusColumn({
         <span
           style={{
             marginLeft: 'auto',
-            fontSize: '11px',
+            fontSize: 'var(--ds-font-size-100)',
             color: T.textSubtlest,
             background: T.bgNeutral,
             borderRadius: '10px',
@@ -521,7 +521,7 @@ function StatusColumn({
               padding: '24px 16px',
               textAlign: 'center',
               color: T.textSubtlest,
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
             }}
           >
             No statuses
@@ -580,7 +580,7 @@ function StatusColumn({
                 border: 'none',
                 background: 'transparent',
                 outline: 'none',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 color: T.text,
                 fontFamily: 'inherit',
                 minWidth: 0,
@@ -597,7 +597,7 @@ function StatusColumn({
                     background: 'none',
                     cursor: 'pointer',
                     color: T.textBrand,
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     padding: '0 2px',
                     lineHeight: 1,
                   }}
@@ -615,7 +615,7 @@ function StatusColumn({
                     background: 'none',
                     cursor: 'pointer',
                     color: T.textSubtlest,
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     padding: '0 2px',
                     lineHeight: 1,
                   }}
@@ -639,7 +639,7 @@ function StatusColumn({
               background: 'transparent',
               cursor: 'pointer',
               color: T.textSubtlest,
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               borderRadius: '4px',
               fontFamily: 'inherit',
             }}
@@ -652,7 +652,7 @@ function StatusColumn({
               (e.currentTarget as HTMLElement).style.background = 'transparent';
             }}
           >
-            <span style={{ fontSize: '16px', lineHeight: 1 }}>+</span>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', lineHeight: 1 }}>+</span>
             Add status
           </button>
         )}
@@ -756,11 +756,11 @@ function AssignmentBadge({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 4,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 500,
         color: assignment.is_customized ? T.textSubtlest : T.textBrand,
         background: assignment.is_customized ? T.bgNeutral : T.bgSelected,
-        border: `1px solid ${assignment.is_customized ? T.border : 'var(--ds-border-brand, #0C66E4)'}`,
+        border: `1px solid ${assignment.is_customized ? T.border : 'var(--ds-border-brand)'}`,
         borderRadius: 3,
         padding: '2px 6px',
         flexShrink: 0,
@@ -820,7 +820,7 @@ function TemplateCard({
   return (
     <div
       style={{
-        border: `1px solid ${isActiveType ? 'var(--ds-border-brand, #0C66E4)' : T.border}`,
+        border: `1px solid ${isActiveType ? 'var(--ds-border-brand)' : T.border}`,
         borderRadius: 6,
         background: T.surface,
         overflow: 'hidden',
@@ -838,17 +838,17 @@ function TemplateCard({
         onClick={() => setExpanded((v) => !v)}
       >
         <JiraIssueTypeIcon type={template.work_item_type as WorkItemType} size={16} />
-        <span style={{ fontWeight: 600, fontSize: 13, color: T.text, flex: 1 }}>
+        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: T.text, flex: 1 }}>
           {template.name}
         </span>
         {template.is_default && (
           <span
             style={{
-              fontSize: 10,
+              fontSize: 'var(--ds-font-size-50)',
               fontWeight: 600,
               color: T.textBrand,
               background: T.bgSelected,
-              border: `1px solid var(--ds-border-brand, #0C66E4)`,
+              border: `1px solid var(--ds-border-brand)`,
               borderRadius: 3,
               padding: '1px 5px',
             }}
@@ -856,7 +856,7 @@ function TemplateCard({
             DEFAULT
           </span>
         )}
-        <span style={{ fontSize: 11, color: T.textSubtlest }}>{expanded ? '▲' : '▼'}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>{expanded ? '▲' : '▼'}</span>
       </div>
 
       {expanded && (
@@ -869,7 +869,7 @@ function TemplateCard({
               <div style={{ marginBottom: 10 }}>
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: T.textSubtlest,
                     textTransform: 'uppercase',
@@ -890,14 +890,14 @@ function TemplateCard({
                         gap: 4,
                         padding: '2px 8px',
                         borderRadius: 3,
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 500,
-                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? 'var(--ds-border, #DFE1E6)',
+                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? 'var(--ds-border)',
                         color: STATUS_TEXT,
                       }}
                     >
                       {s.is_initial && (
-                        <span style={{ fontSize: 9, opacity: 0.7 }}>★</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', opacity: 0.7 }}>★</span>
                       )}
                       {s.name}
                     </span>
@@ -908,7 +908,7 @@ function TemplateCard({
               {/* Transition count */}
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: T.textSubtle,
                   marginBottom: 12,
                 }}
@@ -928,9 +928,9 @@ function TemplateCard({
                     padding: '5px 12px',
                     borderRadius: 4,
                     border: 'none',
-                    background: 'var(--ds-background-brand-bold, #0C66E4)',
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
-                    fontSize: 12,
+                    background: 'var(--ds-background-brand-bold)',
+                    color: 'var(--ds-text-inverse)',
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     cursor: applying ? 'not-allowed' : 'pointer',
                     opacity: applying ? 0.7 : 1,
@@ -949,7 +949,7 @@ function TemplateCard({
                     border: `1px solid ${T.border}`,
                     background: T.surface,
                     color: T.text,
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 500,
                     cursor: pushTemplate.isPending || pushed ? 'not-allowed' : 'pointer',
                     opacity: pushTemplate.isPending ? 0.7 : 1,
@@ -1013,10 +1013,10 @@ function TemplatesView({
           color: T.textSubtlest,
         }}
       >
-        <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: T.textSubtle }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.textSubtle }}>
           No templates yet
         </p>
-        <p style={{ margin: 0, fontSize: 13 }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)' }}>
           Apply the migration to seed default templates for Business Request, BRD Task, and Story.
         </p>
       </div>
@@ -1025,7 +1025,7 @@ function TemplatesView({
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px 24px' }}>
-      <p style={{ margin: '0 0 16px', fontSize: 13, color: T.textSubtle }}>
+      <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-300)', color: T.textSubtle }}>
         Master templates define the canonical workflow for each work item type. Apply a template to
         copy its statuses and transitions into a project. Projects with{' '}
         <span style={{ fontWeight: 600 }}>in-sync</span> assignments update automatically when you
@@ -1044,7 +1044,7 @@ function TemplatesView({
             <JiraIssueTypeIcon type={type as WorkItemType} size={16} />
             <span
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 653,
                 color: T.textSubtle,
                 textTransform: 'uppercase',
@@ -1056,7 +1056,7 @@ function TemplatesView({
             {type === activeType && (
               <span
                 style={{
-                  fontSize: 10,
+                  fontSize: 'var(--ds-font-size-50)',
                   fontWeight: 600,
                   color: T.textSubtlest,
                   background: T.bgNeutral,
@@ -1117,7 +1117,7 @@ export default function WorkflowAdminPage() {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
         }}
       >
         <div
@@ -1134,7 +1134,7 @@ export default function WorkflowAdminPage() {
             <h1
               style={{
                 margin: 0,
-                fontSize: '24px',
+                fontSize: 'var(--ds-font-size-800)',
                 fontWeight: 653,
                 color: T.text,
                 lineHeight: '28px',
@@ -1143,7 +1143,7 @@ export default function WorkflowAdminPage() {
             >
               Workflows
             </h1>
-            <p style={{ margin: '4px 0 0', fontSize: '14px', color: T.textSubtle }}>
+            <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
               Status workflows and master templates per work item type
             </p>
           </div>
@@ -1167,7 +1167,7 @@ export default function WorkflowAdminPage() {
                     padding: '3px 12px',
                     borderRadius: 4,
                     border: 'none',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: pageMode === mode ? 600 : 400,
                     background: pageMode === mode ? T.surface : 'transparent',
                     color: pageMode === mode ? T.text : T.textSubtlest,
@@ -1184,7 +1184,7 @@ export default function WorkflowAdminPage() {
             <Link
               to="/admin/workflows/versions"
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: T.textBrand,
                 textDecoration: 'none',
@@ -1207,7 +1207,7 @@ export default function WorkflowAdminPage() {
                 setTypeIdx(0);
               }}
               style={{
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: T.text,
                 background: T.surface,
@@ -1240,7 +1240,7 @@ export default function WorkflowAdminPage() {
                   border: `1px solid ${T.border}`,
                   background: showOverflow ? T.bgNeutral : T.surface,
                   cursor: 'pointer',
-                  fontSize: '16px',
+                  fontSize: 'var(--ds-font-size-500)',
                   color: T.textSubtle,
                   display: 'flex',
                   alignItems: 'center',
@@ -1289,7 +1289,7 @@ export default function WorkflowAdminPage() {
                   padding: '4px 8px 4px 8px',
                   borderRadius: '20px',
                   border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: typeIdx === i ? 600 : 400,
                   color: typeIdx === i ? T.textBrand : T.textSubtle,
                   background: typeIdx === i ? T.bgSelected : T.surface,
@@ -1333,7 +1333,7 @@ export default function WorkflowAdminPage() {
                       padding: '3px 12px',
                       borderRadius: 4,
                       border: 'none',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: viewMode === mode ? 600 : 400,
                       background: viewMode === mode ? T.surface : 'transparent',
                       color: viewMode === mode ? T.text : T.textSubtlest,

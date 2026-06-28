@@ -16,14 +16,14 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
 
-const BLUE_BORDER = 'var(--ds-border-selected, #1868DB)';
-const BLUE_BG = 'var(--ds-background-selected, #E9F2FE)';
-const BLUE_TEXT = 'var(--ds-text-selected, #0C66E4)';
-const GRAY_BORDER = 'var(--ds-border, #DFE1E6)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const TEXT_SUBTLE = 'var(--ds-text-subtle, #505258)';
-const TEXT_SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
-const DANGER = 'var(--ds-text-danger, #AE2A19)';
+const BLUE_BORDER = 'var(--ds-border-selected)';
+const BLUE_BG = 'var(--ds-background-selected)';
+const BLUE_TEXT = 'var(--ds-text-selected)';
+const GRAY_BORDER = 'var(--ds-border)';
+const TEXT = 'var(--ds-text)';
+const TEXT_SUBTLE = 'var(--ds-text-subtle)';
+const TEXT_SUBTLEST = 'var(--ds-text-subtlest)';
+const DANGER = 'var(--ds-text-danger)';
 
 // 2026-06-26: hover underline on release title link. Inline style cannot
 // express :hover, so inject a one-time stylesheet at module load. HMR-safe:
@@ -32,7 +32,7 @@ const RELEASES_TABLE_STYLE_ID = 'releases-table-title-link-css';
 const RELEASES_TABLE_CSS = `
   .releases-table-title-link:hover {
     text-decoration: underline !important;
-    text-decoration-color: var(--ds-link, #0052CC) !important;
+    text-decoration-color: var(--ds-link) !important;
     text-underline-offset: 2px;
   }
 `;
@@ -51,9 +51,9 @@ if (typeof document !== 'undefined') {
 // ─── Status pill ──────────────────────────────────────────────────────────
 
 const STATUS_BORDER: Record<ReleaseStatus, string> = {
-  released:   'var(--ds-border-success, #22A06B)',
-  unreleased: 'var(--ds-border-selected, #1868DB)',
-  archived:   'var(--ds-icon-subtle, #8993A4)',
+  released:   'var(--ds-border-success)',
+  unreleased: 'var(--ds-border-selected)',
+  archived:   'var(--ds-icon-subtle)',
 };
 
 const STATUS_LABEL: Record<ReleaseStatus, string> = {
@@ -72,9 +72,9 @@ function StatusPill({ status }: { status: ReleaseStatus }) {
         padding: '0 8px',
         borderRadius: 3,
         border: `1.5px solid ${STATUS_BORDER[status]}`,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         color: TEXT,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         letterSpacing: 0.4,
         lineHeight: 1,
@@ -88,13 +88,13 @@ function StatusPill({ status }: { status: ReleaseStatus }) {
 
 // ─── Progress bar ─────────────────────────────────────────────────────────
 
-const PROGRESS_DONE = 'var(--ds-background-success-bold, #22A06B)';
-const PROGRESS_IN_PROGRESS = 'var(--ds-background-information-bold, #1868DB)';
-const PROGRESS_TODO = 'var(--ds-border, #DFE1E6)';
+const PROGRESS_DONE = 'var(--ds-background-success-bold)';
+const PROGRESS_IN_PROGRESS = 'var(--ds-background-information-bold)';
+const PROGRESS_TODO = 'var(--ds-border)';
 
 function ProgressBar({ progress }: { progress: ReleaseProgress | null }) {
   if (!progress || !progress.total) {
-    return <span style={{ color: TEXT_SUBTLEST, fontSize: 13 }}>No work items</span>;
+    return <span style={{ color: TEXT_SUBTLEST, fontSize: 'var(--ds-font-size-300)' }}>No work items</span>;
   }
   const { done, inProgress, toDo, total } = progress;
   const segments: Array<{ key: string; count: number; pct: number; color: string; label: string }> = [
@@ -243,7 +243,7 @@ function ActionsMenu({ release, onRelease, onArchive, onMerge, onEdit, onDelete 
             right: pos.right,
             zIndex: 10001,
             minWidth: 160,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${GRAY_BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -280,9 +280,9 @@ function MenuItem({ label, onClick, danger = false }: { label: string; onClick: 
         boxSizing: 'border-box',
         padding: '8px 12px',
         cursor: 'pointer',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: danger ? DANGER : TEXT,
-        background: hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
+        background: hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
       }}
     >
       {label}
@@ -325,7 +325,7 @@ export interface ReleasesTableProps {
 const thStyle: React.CSSProperties = {
   textAlign: 'left',
   padding: '10px 8px',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
   color: TEXT_SUBTLE,
   background: 'transparent',
@@ -335,7 +335,7 @@ const thStyle: React.CSSProperties = {
 
 const tdStyle: React.CSSProperties = {
   padding: '12px 8px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   color: TEXT,
   background: 'transparent',
   borderBottom: 'none',
@@ -368,7 +368,7 @@ function ReleaseRow({
           href="#"
           onClick={(e) => { e.preventDefault(); onOpenDetail(r.id); }}
           className="releases-table-title-link"
-          style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, textDecoration: 'none' }}
+          style={{ color: 'var(--ds-link)', fontWeight: 500, textDecoration: 'none' }}
         >
           {r.name}
         </a>
@@ -538,7 +538,7 @@ export function ReleasesTable({
                           </span>
                           <span
                             style={{
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                               fontWeight: 600,
                               color: TEXT_SUBTLE,
                               textTransform: 'uppercase',
@@ -549,7 +549,7 @@ export function ReleasesTable({
                           </span>
                           <span
                             style={{
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                               fontWeight: 500,
                               color: TEXT_SUBTLEST,
                             }}

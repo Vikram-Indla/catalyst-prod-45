@@ -8,14 +8,14 @@ import { SyncStatusDot } from '../source-badge/SyncStatusDot';
 
 // Canonical Jira work item type SVGs — NOT Lucide
 const WORK_ITEM_ICONS: Record<string, string> = {
-  story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold, #1F845A)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 C7.03905703,18.0054091 7,17.9917347 7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 C17,17.9913444 16.9591854,18.0056137 16.9369996,17.9868881 L15.6470004,19.5152539 Z"/></svg>`,
-  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-danger-bold, #C9372C)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
-  task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-link, #0C66E4)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
-  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-discovery-bold, #6554C0)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M18.1875,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.80261507 14.3098441,3 13.3125,3 C12.786559,3 12.3057802,3.22820418 11.9641282,3.60847767 L11.7684218,3.8182425 C11.6727284,3.93237073 11.4437645,4.21475964 10.706343,5.12646288 C9.94345588,6.0712692 9.18052942,7.02081922 8.4681962,7.91397549 L8.37483685,8.03107544 C5.18814094,12.029567 5,12.2744886 5,12.8 C5,13.8104178 5.81859781,14.5 6.8125,14.5 L9.875,14.5744 L9.875,19.2 C9.875,20.1973849 10.6901559,21 11.6875,21 L13.125,11.4 L17.6195191,11.4 Z"/></svg>`,
-  improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold, #1F845A)" fill-rule="evenodd" d="M13,7.42194829 L16.2836227,10.7069575 C16.6740646,11.0975642 17.3072295,11.0976979 17.6978362,10.707256 C18.0884429,10.3168142 18.0885766,9.68364921 17.6981347,9.29304249 L12.7002451,4.29304249 C12.3096867,3.90231917 11.6762915,3.90231917 11.2857331,4.29304249 L6.28784344,9.29304249 C5.89740159,9.68364921 5.89753524,10.3168142 6.28814196,10.707256 C6.67874867,11.0976979 7.31191364,11.0975642 7.70235549,10.7069575 L11,7.40792056 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,7.42194829 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
-  new_feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold, #1F845A)" fill-rule="evenodd" d="M13,11 L13,5 C13,4.44771525 12.5522847,4 12,4 C11.4477153,4 11,4.44771525 11,5 L11,11 L5,11 C4.44771525,11 4,11.4477153 4,12 C4,12.5522847 4.44771525,13 5,13 L11,13 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,13 L19,13 C19.5522847,13 20,12.5522847 20,12 C20,11.4477153 19.5522847,11 19,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
-  feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold, #1F845A)" fill-rule="evenodd" d="M13,11 L13,5 C13,4.44771525 12.5522847,4 12,4 C11.4477153,4 11,4.44771525 11,5 L11,11 L5,11 C4.44771525,11 4,11.4477153 4,12 C4,12.5522847 4.44771525,13 5,13 L11,13 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,13 L19,13 C19.5522847,13 20,12.5522847 20,12 C20,11.4477153 19.5522847,11 19,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
-  subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-link, #0C66E4)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
+  story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 C7.03905703,18.0054091 7,17.9917347 7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 C17,17.9913444 16.9591854,18.0056137 16.9369996,17.9868881 L15.6470004,19.5152539 Z"/></svg>`,
+  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-danger-bold)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
+  task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-link)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
+  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-discovery-bold)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M18.1875,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.80261507 14.3098441,3 13.3125,3 C12.786559,3 12.3057802,3.22820418 11.9641282,3.60847767 L11.7684218,3.8182425 C11.6727284,3.93237073 11.4437645,4.21475964 10.706343,5.12646288 C9.94345588,6.0712692 9.18052942,7.02081922 8.4681962,7.91397549 L8.37483685,8.03107544 C5.18814094,12.029567 5,12.2744886 5,12.8 C5,13.8104178 5.81859781,14.5 6.8125,14.5 L9.875,14.5744 L9.875,19.2 C9.875,20.1973849 10.6901559,21 11.6875,21 L13.125,11.4 L17.6195191,11.4 Z"/></svg>`,
+  improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold)" fill-rule="evenodd" d="M13,7.42194829 L16.2836227,10.7069575 C16.6740646,11.0975642 17.3072295,11.0976979 17.6978362,10.707256 C18.0884429,10.3168142 18.0885766,9.68364921 17.6981347,9.29304249 L12.7002451,4.29304249 C12.3096867,3.90231917 11.6762915,3.90231917 11.2857331,4.29304249 L6.28784344,9.29304249 C5.89740159,9.68364921 5.89753524,10.3168142 6.28814196,10.707256 C6.67874867,11.0976979 7.31191364,11.0975642 7.70235549,10.7069575 L11,7.40792056 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,7.42194829 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
+  new_feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold)" fill-rule="evenodd" d="M13,11 L13,5 C13,4.44771525 12.5522847,4 12,4 C11.4477153,4 11,4.44771525 11,5 L11,11 L5,11 C4.44771525,11 4,11.4477153 4,12 C4,12.5522847 4.44771525,13 5,13 L11,13 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,13 L19,13 C19.5522847,13 20,12.5522847 20,12 C20,11.4477153 19.5522847,11 19,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
+  feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-background-success-bold)" fill-rule="evenodd" d="M13,11 L13,5 C13,4.44771525 12.5522847,4 12,4 C11.4477153,4 11,4.44771525 11,5 L11,11 L5,11 C4.44771525,11 4,11.4477153 4,12 C4,12.5522847 4.44771525,13 5,13 L11,13 L11,19 C11,19.5522847 11.4477153,20 12,20 C12.5522847,20 13,19.5522847 13,19 L13,13 L19,13 C19.5522847,13 20,12.5522847 20,12 C20,11.4477153 19.5522847,11 19,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z"/></svg>`,
+  subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="var(--ds-link)" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
 };
 
 function getTypeIcon(typeName: string): string | null {
@@ -26,9 +26,9 @@ function getTypeIcon(typeName: string): string | null {
 // StatusLozenge — GUARDRAIL: 3-color only
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
-    case 'in_progress': return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' };
-    case 'done': return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' };
-    default: return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' };
+    case 'in_progress': return { bg: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' };
+    case 'done': return { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' };
+    default: return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' };
   }
 }
 
@@ -46,7 +46,7 @@ function AssigneeAvatar({ name }: { name: string }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-success, var(--cp-success))'];
   return (
     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0"
       style={{ backgroundColor: colors[Math.abs(hash) % colors.length] }}>
@@ -119,7 +119,7 @@ export function WorkItemTableRow({
         return (
           <td key={col.key} style={{ width: 34, textAlign: 'center', padding: '0 8px' }} onClick={e => e.stopPropagation()}>
             <input type="checkbox" checked={isSelected} onChange={() => {}} onClick={onSelect}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
           </td>
         );
       case 'type':
@@ -147,7 +147,7 @@ export function WorkItemTableRow({
         return (
           <td key={col.key} style={{ width: 70, padding: '0 4px' }}>
             <span style={{
-              fontSize: 10, fontFamily: 'var(--cp-font-mono)',
+              fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)',
               color: isDone ? 'var(--fg-4)' : 'var(--fg-3)',
               textDecoration: isDone ? 'line-through' : 'none',
               whiteSpace: 'nowrap',
@@ -168,7 +168,7 @@ export function WorkItemTableRow({
             ) : (
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="truncate" style={{
-                  fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   color: isDone ? 'var(--fg-4)' : 'var(--fg-1)',
                   textDecoration: isDone ? 'line-through' : 'none',
                 }} title={item.title || item.summary}>
@@ -199,7 +199,7 @@ export function WorkItemTableRow({
               style={{
                 height: 20, lineHeight: '20px',
                 padding: '0 6px', borderRadius: 4,
-                fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                 backgroundColor: statusStyle.bg, color: statusStyle.color,
                 whiteSpace: 'nowrap',
               }}
@@ -228,7 +228,7 @@ export function WorkItemTableRow({
                 {releaseLabel}
               </span>
             ) : (
-              <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>—</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>—</span>
             )}
           </td>
         );
@@ -239,12 +239,12 @@ export function WorkItemTableRow({
               {item.assignee_name ? (
                 <div className="flex items-center gap-1.5 min-w-0">
                   <AssigneeAvatar name={item.assignee_name} />
-                  <span className="truncate" style={{ fontSize: 11, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
+                  <span className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
                     {item.assignee_name}
                   </span>
                 </div>
               ) : (
-                <span style={{ fontSize: 11, color: 'var(--divider)' }}>—</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--divider)' }}>—</span>
               )}
             </div>
             {editingField === 'assignee' && (
@@ -262,12 +262,12 @@ export function WorkItemTableRow({
                 <div className="flex items-center gap-1">
                   <Calendar size={11} style={{ color: overdue ? 'var(--sem-danger)' : 'var(--fg-4)' }} />
                   <span style={{
-                    fontSize: 10, fontFamily: 'var(--cp-font-mono)',
+                    fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)',
                     color: overdue ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: overdue ? 600 : 400,
                   }}>{formatDue(item.due_date)}</span>
                 </div>
               ) : (
-                <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>—</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>—</span>
               )}
             </div>
             {editingField === 'dueDate' && (
@@ -282,7 +282,7 @@ export function WorkItemTableRow({
           <td key={col.key} style={{ width: 84, padding: '0 4px' }} onClick={e => handleCellClick('priority', e)}>
             <div ref={priorityRef} className="flex items-center gap-1 cursor-pointer">
               <PriorityIcon priority={item.priority} />
-              <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
                 {priorityLabel(item.priority)}
               </span>
             </div>

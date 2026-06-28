@@ -29,23 +29,23 @@ function Greeting({ userCtx }: { userCtx: UserContext }) {
 
   return (
     <div style={{ marginBottom: 20 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.02em', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
+      <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.02em', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
         {greeting}, {firstName}
       </h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
           {effectiveRole}
         </span>
         <span style={{ width: 1, height: 12, background: 'var(--divider)' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {topProjects.map(pk => (
-            <span key={pk} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
+            <span key={pk} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: PROJECT_COLORS[pk] || 'var(--fg-3)', flexShrink: 0 }} />
               {pk}
             </span>
           ))}
           {userCtx.projectKeys.length > 4 && (
-            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
               +{userCtx.projectKeys.length - 4} more
             </span>
           )}
@@ -72,12 +72,12 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: project.projectColor, flexShrink: 0 }} />
-          <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>
             {project.projectKey}
           </span>
           {project.hasIncident && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: 'var(--sem-danger)',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--sem-danger)',
               background: 'var(--sem-danger-bg)', border: '1px solid var(--sem-danger-light)',
               padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase',
               letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)',
@@ -86,7 +86,7 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
             </span>
           )}
         </div>
-        <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-code)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-code)' }}>
           {totalItems} item{totalItems !== 1 ? 's' : ''}
         </span>
       </div>
@@ -132,17 +132,17 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
       {/* Type label + key + day counter */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{
-          fontSize: 10, fontWeight: 700, color: item.tierColor,
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: item.tierColor,
           textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)',
         }}>
           {item.tierLabel}
         </span>
-        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 650, color: 'var(--cp-blue)' }}>
+        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 650, color: 'var(--cp-blue)' }}>
           {item.itemKey}
         </span>
         {showMovedTag && (
           <span style={{
-            fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             background: 'var(--cp-blue)', padding: '1px 6px', borderRadius: 4,
             textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'var(--ds-font-family-body)',
             whiteSpace: 'nowrap',
@@ -151,21 +151,21 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
           </span>
         )}
         <span style={{ flex: 1 }} />
-        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 600, color: dayColor }}>
+        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: dayColor }}>
           {item.daysSinceUpdate <= 0 ? 'today' : item.daysSinceUpdate === 1 ? '1d' : `${item.daysSinceUpdate}d`}
         </span>
       </div>
 
       {/* Title */}
       <span style={{
-        fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)',
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {item.title}
       </span>
 
       {/* Metadata line */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
         <span>{item.involvement}</span>
         {item.assignee && (
           <>
@@ -177,7 +177,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
           <>
             <span>·</span>
             <span style={{
-              fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase',
               padding: '1px 5px', borderRadius: 4,
               background: 'var(--cp-lz-gy-bg)', color: 'var(--cp-lz-gy-t)',
             }}>
@@ -208,22 +208,22 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
-        <span style={{ fontSize: 10, fontWeight: 700, color: group.tierColor, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: group.tierColor, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
           {group.tierLabel}
         </span>
         <span style={{
-          fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 700, color: 'var(--fg-1)',
+          fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-1)',
           background: 'var(--bg-2)', padding: '1px 6px', borderRadius: 4, minWidth: 20, textAlign: 'center',
         }}>
           {group.count}
         </span>
         <span style={{
-          fontSize: 12, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)', flex: 1,
+          fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)', flex: 1,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {group.titleSummary}
         </span>
-        <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', flexShrink: 0 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', flexShrink: 0 }}>
           {group.assignees.length > 0 ? group.assignees[0] : 'Unassigned'}
           {group.assignees.length > 1 ? ` +${group.assignees.length - 1}` : ''}
         </span>
@@ -248,16 +248,16 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', minWidth: 70 }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-blue)', minWidth: 70 }}>
                 {item.itemKey}
               </span>
               <span style={{
-                fontSize: 12, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)', flex: 1,
+                fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)', flex: 1,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {item.title}
               </span>
-              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', flexShrink: 0 }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-3)', flexShrink: 0 }}>
                 {item.daysSinceUpdate}d
               </span>
             </button>
@@ -286,17 +286,17 @@ function WeekNarrativeCard({ narrative, userCtx }: { narrative: WeekNarrative; u
       padding: '14px 16px', border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)',
     }}>
       {narrative.myTotal > 0 ? (
-        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
           You closed <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{narrative.myTotal} items</strong> this week.
         </p>
       ) : (
-        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
           No items closed by you this week yet.
         </p>
       )}
 
       {narrative.teamTotal > 0 && (
-        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: '20px', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
           Your team delivered{' '}
           <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{closedNarrative}</strong>
           {' '}across{' '}
@@ -327,10 +327,10 @@ function EmptyState({ userCtx }: { userCtx: UserContext }) {
       padding: '32px 20px', textAlign: 'center',
       border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)',
     }}>
-      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: '0 0 6px', fontFamily: 'var(--ds-font-family-body)' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', margin: '0 0 6px', fontFamily: 'var(--ds-font-family-body)' }}>
         All clear across your projects
       </p>
-      <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
         No items with recent activity in {userCtx.projectKeys.slice(0, 4).join(', ')}.
         Try asking me about specific items or projects below.
       </p>
@@ -369,7 +369,7 @@ function QuickActionsBar({ role, onPresetClick }: { role: string; onPresetClick:
           key={preset.query}
           onClick={() => onPresetClick(preset.query)}
           style={{
-            fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)',
             background: 'var(--cp-float)', border: '1px solid var(--divider)',
             padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
             transition: 'all 0.15s', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
@@ -396,7 +396,7 @@ function QuickActionsBar({ role, onPresetClick }: { role: string; onPresetClick:
 function SectionLabel({ text }: { text: string }) {
   return (
     <span style={{
-      fontSize: 10, fontWeight: 700, color: 'var(--fg-3)',
+      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--fg-3)',
       textTransform: 'uppercase', letterSpacing: '0.08em',
       fontFamily: 'var(--ds-font-family-body)', display: 'block', marginBottom: 10,
     }}>

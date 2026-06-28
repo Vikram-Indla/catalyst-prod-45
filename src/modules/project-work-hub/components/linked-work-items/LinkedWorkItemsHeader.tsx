@@ -46,8 +46,8 @@ export function LinkedWorkItemsHeader({
             aria-label={expanded ? 'Collapse' : 'Expand'}
           >
             {expanded
-              ? <ChevronDownIcon label="" color="var(--ds-text-subtle, #505258)" />
-              : <ChevronRightIcon label="" color="var(--ds-text-subtle, #505258)" />
+              ? <ChevronDownIcon label="" color="var(--ds-text-subtle)" />
+              : <ChevronRightIcon label="" color="var(--ds-text-subtle)" />
             }
           </button>
         </Tooltip>
@@ -76,7 +76,7 @@ export function LinkedWorkItemsHeader({
           aria-label="Add linked work item"
           title="Add linked work item"
         >
-          <AddIcon size="small" label="" primaryColor="var(--ds-icon, #42526E)" />
+          <AddIcon size="small" label="" primaryColor="var(--ds-icon)" />
           <span>Add linked work item</span>
         </button>
       )}

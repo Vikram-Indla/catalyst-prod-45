@@ -28,22 +28,22 @@ export type StatusAppearance =
  * new uses discovery-bold (purple) + inverse — no subtle-only constraint.
  */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-background-success-bold, #1F845A)',
-  inprogress: 'var(--ds-background-information-bold, #0055CC)',
-  moved:      'var(--ds-background-warning-bold, #E2B203)',
-  new:        'var(--ds-background-discovery-bold, #5E4DB2)',
-  removed:    'var(--ds-background-danger-bold, #C9372C)',
-  default:    'var(--ds-background-neutral, #DFE1E6)',
+  success:    'var(--ds-background-success-bold)',
+  inprogress: 'var(--ds-background-information-bold)',
+  moved:      'var(--ds-background-warning-bold)',
+  new:        'var(--ds-background-discovery-bold)',
+  removed:    'var(--ds-background-danger-bold)',
+  default:    'var(--ds-background-neutral)',
 };
 
 /** Matching text token per status. Inverse for dark bgs, dark text for amber. */
 export const STATUS_FG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-text-inverse, #FFFFFF)',
-  inprogress: 'var(--ds-text-inverse, #FFFFFF)',
-  moved:      'var(--ds-text, #172B4D)',
-  new:        'var(--ds-text-inverse, #FFFFFF)',
-  removed:    'var(--ds-text-inverse, #FFFFFF)',
-  default:    'var(--ds-text, #172B4D)',
+  success:    'var(--ds-text-inverse)',
+  inprogress: 'var(--ds-text-inverse)',
+  moved:      'var(--ds-text)',
+  new:        'var(--ds-text-inverse)',
+  removed:    'var(--ds-text-inverse)',
+  default:    'var(--ds-text)',
 };
 
 /** Default status text token (neutral). */

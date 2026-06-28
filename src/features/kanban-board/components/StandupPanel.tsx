@@ -161,10 +161,10 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
   const avatarSize = compact ? 'small' : 'medium';
 
   return (
-    <aside style={{ width: 280, minWidth: 280, flexShrink: 0, border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 8, position: 'sticky', top: 0, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), overflowY: 'auto' }}>
+    <aside style={{ width: 280, minWidth: 280, flexShrink: 0, border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 8, position: 'sticky', top: 0, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface)'), overflowY: 'auto' }}>
       {/* Header: title + settings */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 10px' }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>Standup</span>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>Standup</span>
         <button
           ref={settingsTriggerRef}
           type="button"
@@ -172,12 +172,12 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
           onClick={() => setShowSettings((s) => !s)}
           style={{
             width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            border: `1px solid ${showSettings ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
-            background: showSettings ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+            border: `1px solid ${showSettings ? token('color.border.selected', 'var(--ds-link)') : 'transparent'}`,
+            background: showSettings ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
             borderRadius: 4, cursor: 'pointer', padding: 0,
           }}
         >
-          <PreferencesIcon label="" size="medium" primaryColor={showSettings ? token('color.icon.selected', 'var(--ds-link, #0C66E4)') : token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))')} />
+          <PreferencesIcon label="" size="medium" primaryColor={showSettings ? token('color.icon.selected', 'var(--ds-link)') : token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon))')} />
         </button>
       </div>
 
@@ -195,12 +195,12 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
       {/* Session timer */}
       {enableTimer && (
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, padding: '0 16px 12px' }}>
-          <span style={{ fontSize: 36, fontWeight: 400, fontVariantNumeric: 'tabular-nums', lineHeight: '40px', color: timerDanger ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}>
+          <span style={{ fontSize: 36, fontWeight: 400, fontVariantNumeric: 'tabular-nums', lineHeight: '40px', color: timerDanger ? token('color.text.danger', 'var(--ds-text-danger)') : token('color.text', 'var(--ds-text, var(--ds-text))') }}>
             {mm}:{ss}
           </span>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, paddingBottom: 4 }}>
             <CircleBtn label={running ? 'Pause' : 'Play'} onClick={() => { if (seconds === 0) setSeconds(timerSec); setRunning((r) => !r); }}>
-              {running ? <VidPauseIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} /> : <VidPlayIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))')} />}
+              {running ? <VidPauseIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon)')} /> : <VidPlayIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon))')} />}
             </CircleBtn>
           </div>
         </div>
@@ -209,7 +209,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
       {/* Nav row: Shuffle | Previous + Next */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 12px', gap: 8 }}>
         <IconGhostBtn label="Shuffle order" onClick={shuffle}>
-          <IcShuffle size={16} color={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />
+          <IcShuffle size={16} color={token('color.icon.subtle', 'var(--ds-icon)')} />
         </IconGhostBtn>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <NavStepBtn label="Previous" disabled={step === 0} onClick={() => advance(-1)} />
@@ -237,8 +237,8 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: rowPad, marginBottom: 2,
                 borderRadius: 6, cursor: 'pointer',
-                background: isSelected ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : isHovered ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent',
-                border: `1px solid ${isSelected ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
+                background: isSelected ? token('color.background.selected', 'var(--ds-background-selected)') : isHovered ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent',
+                border: `1px solid ${isSelected ? token('color.border.selected', 'var(--ds-link)') : 'transparent'}`,
               }}
             >
               <div style={{ position: 'relative', flexShrink: 0, lineHeight: 0 }}>
@@ -246,18 +246,18 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
                 {wasVisited && (
                   <span aria-label="Standup done" title="Done" style={{
                     position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: '50%',
-                    background: token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)'), border: `2px solid ${token('elevation.surface', 'var(--ds-surface, #FFFFFF)')}`,
+                    background: token('color.icon.success', 'var(--ds-background-success-bold)'), border: `2px solid ${token('elevation.surface', 'var(--ds-surface)')}`,
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', boxSizing: 'border-box',
                   }}>
-                    <EditorDoneIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
+                    <EditorDoneIcon label="" size="small" primaryColor="var(--ds-surface)" />
                   </span>
                 )}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: compact ? 13 : 14, fontWeight: isSelected ? 600 : 500, color: isSelected ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: compact ? 13 : 14, fontWeight: isSelected ? 600 : 500, color: isSelected ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {b.name}
                 </div>
-                <div style={{ fontSize: compact ? 10 : 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginTop: 1 }}>
+                <div style={{ fontSize: compact ? 10 : 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginTop: 1 }}>
                   {b.total} issue{b.total !== 1 ? 's' : ''}{b.inProgress > 0 ? ` · ${b.inProgress} in progress` : ''}
                 </div>
               </div>
@@ -269,7 +269,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
                   onClick={(e) => { e.stopPropagation(); removeFromStandup(b.name); }}
                   style={{ width: 22, height: 22, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: 4, background: 'transparent', cursor: 'pointer', padding: 0 }}
                 >
-                  <CrossIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />
+                  <CrossIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon)')} />
                 </button>
               )}
             </div>
@@ -289,14 +289,14 @@ function NavStepBtn({ label, disabled, onClick }: { label: string; disabled: boo
       disabled={disabled}
       style={{
         height: 30, padding: '0 12px', borderRadius: 4,
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-        fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
-        color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+        background: token('elevation.surface', 'var(--ds-surface)'),
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontFamily: 'inherit',
+        color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
       onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface', 'var(--ds-surface)'); }}
     >
       {label}
     </button>
@@ -307,9 +307,9 @@ function CircleBtn({ label, onClick, children }: { label: string; onClick: () =>
   return (
     <button
       type="button" aria-label={label} title={label} onClick={onClick}
-      style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: '50%', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), cursor: 'pointer', padding: 0 }}
+      style={{ width: 22, height: 22, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: '50%', background: token('elevation.surface', 'var(--ds-surface)'), cursor: 'pointer', padding: 0 }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface', 'var(--ds-surface)'); }}
     >
       {children}
     </button>
@@ -351,7 +351,7 @@ function SettingsDropdown({
       ref={panelRef}
       role="menu"
       onMouseDown={(e) => e.stopPropagation()}
-      style={{ position: 'fixed', top, left, width: PANEL_W, background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'), border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 6, padding: '10px 0', zIndex: 10000, boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))') }}
+      style={{ position: 'fixed', top, left, width: PANEL_W, background: token('elevation.surface.overlay', 'var(--ds-surface)'), border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 6, padding: '10px 0', zIndex: 10000, boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))') }}
     >
       <div style={{ padding: '0 14px 8px' }}>
         <SectionLabel>Density</SectionLabel>
@@ -377,10 +377,10 @@ function SettingsDropdown({
                 onClick={() => onTimer(secs)}
                 style={{
                   minWidth: 40, height: 30, padding: '0 8px', borderRadius: 4,
-                  border: `1px solid ${selected ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                  background: selected ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                  color: selected ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
-                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+                  border: `1px solid ${selected ? token('color.border.selected', 'var(--ds-link)') : token('color.border', 'var(--ds-border)')}`,
+                  background: selected ? token('color.background.selected', 'var(--ds-background-selected)') : token('elevation.surface', 'var(--ds-surface)'),
+                  color: selected ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                 }}
               >
                 {m}
@@ -395,17 +395,17 @@ function SettingsDropdown({
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>{children}</div>;
+  return <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>{children}</div>;
 }
 function Divider() { return <div style={{ height: 1, background: token('color.border', '#091E4224'), margin: '6px 0' }} />; }
 
 function RadioOption({ checked, onSelect, label }: { checked: boolean; onSelect: () => void; label: string }) {
   return (
     <button type="button" role="radio" aria-checked={checked} onClick={onSelect} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
-      <span style={{ width: 16, height: 16, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${checked ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', '#C1C7D0')}`, flexShrink: 0 }}>
-        {checked && <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.border.selected', 'var(--ds-link, #0C66E4)') }} />}
+      <span style={{ width: 16, height: 16, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${checked ? token('color.border.selected', 'var(--ds-link)') : token('color.border', '#C1C7D0')}`, flexShrink: 0 }}>
+        {checked && <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.border.selected', 'var(--ds-link)') }} />}
       </span>
-      <span style={{ flex: 1, fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{label}</span>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text)') }}>{label}</span>
     </button>
   );
 }
@@ -413,20 +413,20 @@ function RadioOption({ checked, onSelect, label }: { checked: boolean; onSelect:
 function ToggleRow({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
-      <span style={{ flex: 1, fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '18px' }}>{label}</span>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text)'), lineHeight: '18px' }}>{label}</span>
       <button
         type="button" role="switch" aria-checked={value} onClick={() => onChange(!value)}
-        style={{ width: 44, height: 24, borderRadius: 12, border: 'none', padding: 2, background: value ? token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)') : token('color.background.neutral.bold', 'var(--ds-icon, var(--ds-icon, #44546F))'), display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', flexShrink: 0 }}
+        style={{ width: 44, height: 24, borderRadius: 12, border: 'none', padding: 2, background: value ? token('color.background.success.bold', 'var(--ds-background-success-bold)') : token('color.background.neutral.bold', 'var(--ds-icon, var(--ds-icon))'), display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', flexShrink: 0 }}
       >
         {value ? (
           <>
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginLeft: 2 }}><CheckIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" /></span>
-            <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface, #FFFFFF)' }} />
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginLeft: 2 }}><CheckIcon label="" size="small" primaryColor="var(--ds-surface)" /></span>
+            <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface)' }} />
           </>
         ) : (
           <>
-            <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface, #FFFFFF)' }} />
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginRight: 2 }}><CrossIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" /></span>
+            <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface)' }} />
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginRight: 2 }}><CrossIcon label="" size="small" primaryColor="var(--ds-surface)" /></span>
           </>
         )}
       </button>

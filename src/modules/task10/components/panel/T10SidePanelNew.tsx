@@ -221,7 +221,7 @@ export function T10SidePanelNew({
     width: 480,
     maxWidth: '100vw',
     height: 'calc(100dvh - var(--app-top-offset, 0px))',
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     boxShadow: '-8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)), -2px 0 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
     zIndex: 100001,
     display: 'flex',
@@ -273,7 +273,7 @@ export function T10SidePanelNew({
         {/* Header - clean blue bar */}
         <div
           style={{
-            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
             padding: '14px 20px',
             flexShrink: 0,
             display: 'flex',
@@ -297,9 +297,9 @@ export function T10SidePanelNew({
                 background: 'var(--ds-surface, rgba(255, 255, 255, 0.15))',
                 border: 'none',
                 borderRadius: 8,
-                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 cursor: 'pointer',
-                fontSize: 18,
+                fontSize: 'var(--ds-font-size-600)',
                 fontFamily: 'system-ui, sans-serif',
               }}
             >
@@ -308,11 +308,11 @@ export function T10SidePanelNew({
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   fontFamily: 'system-ui, -apple-system, sans-serif',
                 }}
               >
@@ -327,9 +327,9 @@ export function T10SidePanelNew({
                   height: 24,
                   background: 'var(--ds-surface, rgba(255, 255, 255, 0.2))',
                   borderRadius: 6,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 700,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 }}
               >
                 10
@@ -345,9 +345,9 @@ export function T10SidePanelNew({
                   height: 24,
                   background: 'var(--ds-surface, rgba(255, 255, 255, 0.2))',
                   borderRadius: 6,
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 }}
               >
                 {item.rank}
@@ -369,7 +369,7 @@ export function T10SidePanelNew({
               background: 'var(--ds-surface, rgba(255, 255, 255, 0.15))',
               border: 'none',
               borderRadius: 8,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               cursor: 'pointer',
             }}
           >
@@ -424,7 +424,7 @@ export function T10SidePanelNew({
             style={{
               flex: 1,
               padding: '12px 14px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 600,
               background: 'transparent',
               border: 'none',
@@ -444,7 +444,7 @@ export function T10SidePanelNew({
             style={{
               flex: 1,
               padding: '12px 14px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 600,
               background: 'transparent',
               border: 'none',
@@ -485,7 +485,7 @@ export function T10SidePanelNew({
                   className={`t10-status-toggle ${isCompleted ? 't10-status-toggle-done' : ''}`}
                 >
                   <div className={`t10-status-checkbox ${isCompleted ? 't10-status-checkbox-done' : ''}`}>
-                    {isCompleted && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
+                    {isCompleted && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />}
                   </div>
                   <span className={`t10-status-text ${isCompleted ? 't10-status-text-done' : ''}`}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}
@@ -578,7 +578,7 @@ export function T10SidePanelNew({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: 13, color: 'var(--t10-text-secondary)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--t10-text-secondary)' }}>
             Created {formatT10RelativeTime(item.created_at)}
           </span>
           <button

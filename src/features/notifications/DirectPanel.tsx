@@ -147,11 +147,11 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
       <span
         style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
           color: isDark
-            ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))'
-            : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            ? 'var(--ds-text-subtlest, var(--cp-text-secondary))'
+            : token('color.text.subtlest', 'var(--ds-text-disabled)'),
         }}
       >
         {label}
@@ -161,7 +161,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
 }
 
 function LoadingState({ isDark }: { isDark: boolean }) {
-  const skeletonBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+  const skeletonBg = isDark ? 'var(--ds-surface-overlay)' : token('color.background.neutral', 'var(--ds-background-neutral-subtle)');
   return (
     <Box xcss={panelXcss}>
       {[0, 1, 2, 3].map((i) => (
@@ -172,7 +172,7 @@ function LoadingState({ isDark }: { isDark: boolean }) {
             alignItems: 'center',
             gap: 12,
             padding: '12px 16px',
-            borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           }}
           aria-hidden="true"
         >
@@ -194,15 +194,15 @@ function EmptyState({ isDark }: { isDark: boolean }) {
   return (
     <Box xcss={emptyXcss}>
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)')} />
-        <path d="M16 24l5 5 11-11" stroke={isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)')} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, var(--cp-ink-1))' : token('color.background.neutral', 'var(--ds-background-neutral-subtle)')} />
+        <path d="M16 24l5 5 11-11" stroke={isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : token('color.text.subtlest', 'var(--ds-text-disabled)')} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
       <span
         style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 600,
-          color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E'),
+          color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : token('color.text', '#292A2E'),
         }}
       >
         You're all caught up
@@ -210,8 +210,8 @@ function EmptyState({ isDark }: { isDark: boolean }) {
       <span
         style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 13,
-          color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
+          fontSize: 'var(--ds-font-size-300)',
+          color: isDark ? 'var(--ds-text-subtlest)' : token('color.text.subtle', 'var(--ds-text-subtlest)'),
           textAlign: 'center',
         }}
       >
@@ -298,6 +298,9 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     // that sit beyond page 1 of useNotificationsQuery. When the deduped event notification
     // has no actor (e.g. only the empty read-receipt row was in page 1), enrich it here.
     const syncActorMap = new Map<string, { name: string; avatarUrl: string | null; userId: string | null }>();
+    // jira_updated_at from ph_issues — use as the canonical event time for trigger-created
+    // notifications whose created_at is the cron-sync fire time, not the actual Jira event time.
+    const syncDateMap = new Map<string, string>();
     for (const s of (syncItems ?? [])) {
       const meta = s.metadata as Record<string, unknown> | null;
       const name = (meta?.actor_display_name as string | null | undefined)?.trim();
@@ -308,22 +311,34 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
           userId: s.actor_user_id,
         });
       }
+      if (s.created_at) syncDateMap.set(s.entity_id, s.created_at);
     }
 
     const ASSIGNMENT_FAMILY = new Set([
       'assigned', 'assigned_work_item', 'assigned_story', 'tester_assigned',
     ]);
 
-    // Enrich actor-less assignment events with actor data from the sync items
+    // Enrich actor-less assignment events with actor data from the sync items.
+    // Also backdate trigger-created notifications: the trigger fires at cron-sync time
+    // (NOW()), not at actual Jira event time. Use jira_updated_at from ph_issues when
+    // it is earlier than the notification's created_at — that's the real event time.
     const enriched = deduplicatedEventNotifications.map(n => {
-      if (!ASSIGNMENT_FAMILY.has(n.notification_type)) return n;
       const meta = n.metadata as Record<string, unknown> | undefined;
-      const alreadyHasActor = !!(n.actor_user_id || meta?.actor_display_name || meta?.actor_name);
-      if (alreadyHasActor) return n;
-      const syncActor = syncActorMap.get(n.entity_id);
-      if (!syncActor) return n;
+      // Use jira_updated_at (sync item date) when it pre-dates the notification insert.
+      // Trigger fires at cron-sync time (NOW()), not the actual Jira event time — backdate
+      // to jira_updated_at regardless of is_jira_sync flag.
+      const jiraDate = syncDateMap.get(n.entity_id);
+      const displayDate =
+        jiraDate && jiraDate < n.created_at ? jiraDate : n.created_at;
+      const dated = displayDate !== n.created_at ? { ...n, created_at: displayDate } : n;
+
+      if (!ASSIGNMENT_FAMILY.has(dated.notification_type)) return dated;
+      const alreadyHasActor = !!(dated.actor_user_id || meta?.actor_display_name || meta?.actor_name);
+      if (alreadyHasActor) return dated;
+      const syncActor = syncActorMap.get(dated.entity_id);
+      if (!syncActor) return dated;
       return {
-        ...n,
+        ...dated,
         actor_user_id: syncActor.userId,
         metadata: {
           ...(meta ?? {}),
@@ -366,6 +381,29 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     [rawNotifications, actorMaps]
   );
 
+  // Filter + group:
+  // 1. Drop old bulk-sync "Jira Sync assigned" rows (no real actor, system-generated)
+  // 2. Group all notifications for the same entity_id → primary row + "+N updates" badge
+  const groupedNotifications = useMemo<DirectNotification[]>(() => {
+    const filtered = notifications.filter(
+      n => !(n.verb === 'assigned' && n.actor?.actorType === 'system')
+    );
+    // notifications already sorted DESC by created_at; first occurrence per entity wins
+    const seen = new Map<string, { primary: DirectNotification; count: number }>();
+    for (const n of filtered) {
+      const key = n.target.id;
+      if (!seen.has(key)) {
+        seen.set(key, { primary: n, count: 0 });
+      } else {
+        seen.get(key)!.count++;
+      }
+    }
+    return Array.from(seen.values()).map(({ primary, count }) => {
+      if (count === 0 || !primary.actor) return primary;
+      return { ...primary, aggregation: { count, actor: primary.actor } };
+    });
+  }, [notifications]);
+
   // Read-state: merge DB read_at, local optimistic state, and external state
   const resolvedReadIds = useMemo<Set<string>>(() => {
     const ids = new Set<string>(localReadIds);
@@ -396,15 +434,15 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   if (isLoading) return <LoadingState isDark={isDark} />;
 
   const visible = unreadOnly
-    ? notifications.filter(n => !resolvedReadIds.has(n.id))
-    : notifications;
+    ? groupedNotifications.filter(n => !resolvedReadIds.has(n.id))
+    : groupedNotifications;
 
   if (visible.length === 0) {
     return <EmptyState isDark={isDark} />;
   }
 
   const groups = groupByDate(visible);
-  const dividerColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
+  const dividerColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))');
 
   return (
     <Box xcss={panelXcss}>
@@ -419,8 +457,8 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
           )}
           <SectionLabel label={group.label} isDark={isDark} />
           {group.items.map(n =>
-            n.verb === 'mentioned' ? (
-              // Mention notifications render as full activity cards per spec
+            (n.verb === 'mentioned' || n.verb === 'commented') ? (
+              // Mention and comment notifications render as full activity cards
               <div key={n.id} style={{ padding: '8px 16px' }}>
                 <MentionActivityCard
                   notification={n}

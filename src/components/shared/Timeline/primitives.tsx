@@ -62,8 +62,8 @@ export function PortalMenu({ isOpen, onClose, triggerRef, minWidth = 200, alignR
       style={{
         position: 'fixed',
         ...pos,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))',
         padding: '4px 0',
@@ -91,12 +91,12 @@ export function MenuItemRow({
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: danger
-          ? 'var(--ds-text-danger, #AE2A19)'
+          ? 'var(--ds-text-danger)'
           : disabled
-            ? 'var(--ds-text-disabled, #A5ADBA)'
-            : 'var(--ds-text, #172B4D)',
+            ? 'var(--ds-text-disabled)'
+            : 'var(--ds-text)',
         fontFamily: 'var(--ds-font-family-body)',
         opacity: disabled ? 0.6 : 1,
       }}
@@ -106,8 +106,8 @@ export function MenuItemRow({
       {isChecked !== undefined && (
         <div style={{
           width: 14, height: 14, borderRadius: 3, flexShrink: 0,
-          border: `2px solid ${isChecked ? 'var(--ds-border-selected, #0052CC)' : 'var(--ds-border, #DFE1E6)'}`,
-          background: isChecked ? 'var(--ds-background-selected-bold, #0052CC)' : 'transparent',
+          border: `2px solid ${isChecked ? 'var(--ds-border-selected)' : 'var(--ds-border)'}`,
+          background: isChecked ? 'var(--ds-background-selected-bold)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {isChecked && <svg width="8" height="6" viewBox="0 0 8 6"><path d="M1 3l2 2 4-4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
@@ -147,15 +147,15 @@ export function ModalDateField({
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           width: '100%', height: 40, padding: '0 8px', boxSizing: 'border-box',
-          border: `1px solid ${open ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border-input, #DFE1E6)'}`,
-          borderRadius: 3, background: 'var(--ds-background-input, #FFFFFF)',
+          border: `1px solid ${open ? 'var(--ds-border-focused)' : 'var(--ds-border-input)'}`,
+          borderRadius: 3, background: 'var(--ds-background-input)',
           cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
         }}
       >
-        <span style={{ fontSize: 14, color: value ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: value ? 'var(--ds-text)' : 'var(--ds-text-subtlest)' }}>
           {value || placeholder}
         </span>
-        <span style={{ lineHeight: 0, color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0 }}>
+        <span style={{ lineHeight: 0, color: 'var(--ds-text-subtle)', flexShrink: 0 }}>
           <Calendar size={16} />
         </span>
       </button>
@@ -189,9 +189,9 @@ export function EmptyRowAdd({ rowTop, addLeft, onAdd }: { rowTop: number; addLef
         style={{
           position: 'absolute', left: addLeft, top: (ROW_H - 24) / 2, width: 24, height: 24,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: '1px dashed var(--ds-border-bold, #8590A2)', borderRadius: 3,
-          background: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
-          color: 'var(--ds-text-subtle, #42526E)',
+          border: '1px dashed var(--ds-border-bold)', borderRadius: 3,
+          background: 'var(--ds-surface)', cursor: 'pointer',
+          color: 'var(--ds-text-subtle)',
           opacity: hovered ? 1 : 0, transition: 'opacity 120ms ease',
           pointerEvents: hovered ? 'auto' : 'none',
         }}
@@ -209,8 +209,8 @@ export function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: stri
     <div style={{
       position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: 32,
-      background: 'var(--ds-surface-overlay, #FFFFFF)',
-      border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
+      background: 'var(--ds-surface-overlay)',
+      border: '1px solid var(--ds-border)', borderRadius: 8,
       boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
       zIndex: 20, minWidth: 280,
     }}>
@@ -222,19 +222,19 @@ export function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: stri
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           width: 24, height: 24, border: 'none', borderRadius: 3,
           background: 'transparent', cursor: 'pointer',
-          color: 'var(--ds-text-subtlest, #626F86)',
+          color: 'var(--ds-text-subtlest)',
         }}
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <CrossIcon label="Dismiss" size="small" />
       </button>
-      <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest, #626F86)' }} />
+      <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest)' }} />
       <div style={{ textAlign: 'center' }}>
-        <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
           No issues with dates
         </p>
-        <p style={{ margin: '8px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+        <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
           Add start or due dates to issues in {projectKey} to see them on the timeline.
         </p>
       </div>
@@ -262,16 +262,16 @@ export function TimelineEmptyState({ projectKey }: { projectKey: string }) {
     }}>
       <div style={{
         width: 120, height: 120, borderRadius: 8,
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
+        background: 'var(--ds-surface-sunken)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: 24, color: 'var(--ds-text-subtlest, #6B778C)',
+        marginBottom: 24, color: 'var(--ds-text-subtlest)',
       }}>
         <GanttChart style={{ width: 48, height: 48 }} />
       </div>
-      <h4 style={{ fontSize: 20, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '0 0 8px 0' }}>
+      <h4 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text)', margin: '0 0 8px 0' }}>
         Nothing scheduled yet
       </h4>
-      <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', margin: 0, maxWidth: 400 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text)', margin: 0, maxWidth: 400 }}>
         Work items in {projectKey} will appear here on the timeline. Add start or due dates to issues to plot them across the schedule.
       </p>
     </div>
@@ -305,15 +305,15 @@ export function ViewSettingsPanel({ showProgress, showReleases, onToggleProgress
   return createPortal(
     <div ref={panelRef} style={{
       position: 'fixed', top: rect.bottom + 4, right: window.innerWidth - rect.right,
-      background: 'var(--ds-surface-overlay, #FFFFFF)',
-      border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
+      background: 'var(--ds-surface-overlay)',
+      border: '1px solid var(--ds-border)', borderRadius: 8,
       boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))', padding: '12px 0',
       minWidth: 220, zIndex: 9999,
     }}>
-      <div style={{ padding: '0 12px 8px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
+      <div style={{ padding: '0 12px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
         View settings
       </div>
-      <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '0 0 8px' }} />
+      <div style={{ height: 1, background: 'var(--ds-border)', margin: '0 0 8px' }} />
       <div style={{ padding: '4px 12px' }}>
         <Checkbox label="Show progress" isChecked={showProgress} onChange={onToggleProgress} />
       </div>
@@ -383,8 +383,8 @@ export function TimelineBarPopover({ issue, disabled, children }: {
           onMouseLeave={() => { leaveTimer.current = window.setTimeout(close, 200); }}
           style={{
             position: 'fixed', top: cardTop, left: cardLeft, width: CARD_W,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface-overlay)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 6,
             boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
             padding: '12px 14px',
@@ -394,12 +394,12 @@ export function TimelineBarPopover({ issue, disabled, children }: {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={14} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
               {issue.issueKey}
             </span>
           </div>
           <div style={{
-            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: 1.4, marginBottom: 10,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.4, marginBottom: 10,
             overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
           }}>
             {issue.summary}
@@ -407,7 +407,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: issue.assigneeDisplayName ? 8 : 0 }}>
             {issue.status && <StatusPill value={issue.statusCategory} label={issue.status} />}
             {(issue.startDate || issue.dueDate) && (
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #626F86)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                 {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
               </span>
             )}
@@ -415,7 +415,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
           {issue.assigneeDisplayName && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>{issue.assigneeDisplayName}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{issue.assigneeDisplayName}</span>
             </div>
           )}
         </div>,

@@ -189,7 +189,7 @@ export default function ProjectDirectory() {
                   return (
                     <div
                       className="w-6 h-6 rounded flex items-center justify-center shrink-0"
-                      style={{ background: 'var(--ds-background-neutral, #F1F2F4)' }}
+                      style={{ background: 'var(--ds-background-neutral)' }}
                     >
                       {url && <img src={url} alt="" aria-hidden style={{ width: 18, height: 18, objectFit: 'contain' }} />}
                     </div>

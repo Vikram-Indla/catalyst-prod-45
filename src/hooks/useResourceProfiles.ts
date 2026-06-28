@@ -67,10 +67,10 @@ export function getContractStatus(endDate: string | null | undefined): ContractS
     return {
       status: 'critical',
       daysRemaining,
-      color: 'var(--ds-text-danger, #be123c)', // Rose - matches Catalyst danger
-      ringColor: 'ring-[var(--ds-text-danger, #be123c)]',
+      color: 'var(--ds-text-danger)', // Rose - matches Catalyst danger
+      ringColor: 'ring-[var(--ds-text-danger)]',
       bgColor: 'bg-red-50',
-      textColor: 'text-[var(--ds-text-danger, #be123c)]',
+      textColor: 'text-[var(--ds-text-danger)]',
       label: `${daysRemaining}d`
     };
   }
@@ -79,10 +79,10 @@ export function getContractStatus(endDate: string | null | undefined): ContractS
     return {
       status: 'warning',
       daysRemaining,
-      color: 'var(--ds-text-warning, #974F0C)', // Gold/Amber - matches Catalyst warning
-      ringColor: 'ring-[var(--ds-text-warning, #974F0C)]',
+      color: 'var(--ds-text-warning)', // Gold/Amber - matches Catalyst warning
+      ringColor: 'ring-[var(--ds-text-warning)]',
       bgColor: 'bg-amber-50',
-      textColor: 'text-[var(--ds-text-warning, #974F0C)]',
+      textColor: 'text-[var(--ds-text-warning)]',
       label: `${daysRemaining}d`
     };
   }
@@ -90,10 +90,10 @@ export function getContractStatus(endDate: string | null | undefined): ContractS
   return {
     status: 'healthy',
     daysRemaining,
-    color: 'var(--ds-chart-teal-bold, #0d9488)', // Teal - matches Catalyst success
-    ringColor: 'ring-[var(--ds-chart-teal-bold, #0d9488)]',
+    color: 'var(--ds-chart-teal-bold)', // Teal - matches Catalyst success
+    ringColor: 'ring-[var(--ds-chart-teal-bold)]',
     bgColor: 'bg-teal-50',
-    textColor: 'text-[var(--ds-chart-teal-bold, #0d9488)]',
+    textColor: 'text-[var(--ds-chart-teal-bold)]',
     label: `${daysRemaining}d`
   };
 }

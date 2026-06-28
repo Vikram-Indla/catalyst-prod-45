@@ -51,7 +51,7 @@ export async function exportAnalyticsReportToPDF(
     const canvas = await html2canvas(contentElement, {
       scale: 2, // 2x for sharp output
       useCORS: true,
-      backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+      backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
       logging: false,
       windowWidth: contentElement.scrollWidth,
       windowHeight: contentElement.scrollHeight,

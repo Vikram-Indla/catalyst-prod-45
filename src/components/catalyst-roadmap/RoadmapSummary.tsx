@@ -30,10 +30,10 @@ export function RoadmapSummary({
   
   // Health ring color: teal >= 70%, amber 40-69%, red < 40%
   const healthColor = healthPercent >= 70 
-    ? 'var(--ds-chart-teal-bold, #0d9488)' 
+    ? 'var(--ds-chart-teal-bold)' 
     : healthPercent >= 40 
-    ? 'var(--ds-text-warning, #d97706)' 
-    : 'var(--ds-text-danger, #dc2626)';
+    ? 'var(--ds-text-warning)' 
+    : 'var(--ds-text-danger)';
 
   return (
     <div className="h-[68px] px-5 flex items-center gap-8 shrink-0" style={{ backgroundColor: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>

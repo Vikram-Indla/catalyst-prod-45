@@ -38,14 +38,14 @@ type TrendDir = 'better' | 'worse' | 'flat';
 function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
   const color =
     dir === 'better'
-      ? token('color.text.success', 'var(--ds-text-success, #216E4E)')
+      ? token('color.text.success', 'var(--ds-text-success)')
       : dir === 'worse'
-      ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
-      : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))');
+      ? token('color.text.danger', 'var(--ds-text-danger)')
+      : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))');
   return (
     <span
       style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 500,
         color,
         display: 'inline-flex',
@@ -89,7 +89,7 @@ function KpiCell({
       style={{
         flex: 1,
         padding: '18px 22px',
-        borderRight: borderRight ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` : 'none',
+        borderRight: borderRight ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}` : 'none',
         display: 'flex',
         flexDirection: 'column',
         gap: 6,
@@ -98,9 +98,9 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
-          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
           display: 'block',
         }}
       >
@@ -108,9 +108,9 @@ function KpiCell({
       </span>
       <span
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
           minHeight: 32,
           lineHeight: '16px',
           display: 'block',
@@ -129,9 +129,9 @@ function KpiCell({
       >
         <span
           style={{
-            fontSize: 28,
+            fontSize: 'var(--ds-font-size-800)',
             fontWeight: 700,
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
             lineHeight: 1,
           }}
         >
@@ -140,9 +140,9 @@ function KpiCell({
         {unit && (
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             }}
           >
             {unit}
@@ -169,10 +169,10 @@ function SettingsPanel() {
       data-testid="widget-settings-panel"
       style={{
         padding: '12px 18px',
-        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-        fontSize: 13,
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+        fontSize: 'var(--ds-font-size-300)',
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
       }}
     >
       Configure which process steps define the Business, IT, and Landing legs.
@@ -225,7 +225,7 @@ export function AtAGlanceWidget() {
         style={{
           height: 180,
           borderRadius: 8,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
@@ -263,7 +263,7 @@ export function AtAGlanceWidget() {
           trend={activeCount != null ? `${activeCount} active in pipeline` : undefined}
           trendDir="flat"
           sparkPoints="0,18 12,16 24,20 36,15 48,12 60,14 72,10 84,9 100,6"
-          sparkColor="var(--ds-link, #0C66E4)"
+          sparkColor="var(--ds-link)"
           sparkTestId="sparkline-active"
           borderRight
         />
@@ -275,7 +275,7 @@ export function AtAGlanceWidget() {
           trend={businessCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
           trendDir="flat"
           sparkPoints="0,16 12,15 24,14 36,12 48,11 60,9 72,8 84,7 100,5"
-          sparkColor="var(--ds-text-danger, #AE2A19)"
+          sparkColor="var(--ds-text-danger)"
           sparkTestId="sparkline-business-cycle"
           borderRight
         />
@@ -287,7 +287,7 @@ export function AtAGlanceWidget() {
           trend={itCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
           trendDir="flat"
           sparkPoints="0,20 9,19 18,17 27,16 36,18 45,15 54,13 63,11 72,9 81,7 90,6 100,5"
-          sparkColor="var(--ds-text-danger, #AE2A19)"
+          sparkColor="var(--ds-text-danger)"
           sparkTestId="sparkline-it-cycle"
           borderRight
         />
@@ -299,7 +299,7 @@ export function AtAGlanceWidget() {
           trend={totalCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
           trendDir="flat"
           sparkPoints="0,22 12,20 24,18 36,21 48,17 60,16 72,14 84,12 100,10"
-          sparkColor="var(--ds-background-success-bold, #1F845A)"
+          sparkColor="var(--ds-background-success-bold)"
           sparkTestId="sparkline-total-cycle"
         />
       </div>

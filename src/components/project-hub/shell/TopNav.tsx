@@ -26,7 +26,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
   return (
     <header
-      className="flex items-center flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
+      className="flex items-center flex-shrink-0 bg-white dark:bg-[var(--ds-surface)] border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]"
       style={{
         height: 48,
         paddingLeft: 16,
@@ -57,9 +57,9 @@ export function TopNav({ onCreateClick }: TopNavProps) {
               className="relative flex items-center h-full transition-colors duration-150"
               style={{
                 padding: '0 10px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'),
+                color: isActive ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest)' : 'var(--fg-2)'),
                 fontFamily: 'var(--cp-font-body)',
                 background: 'transparent',
                 border: 'none',
@@ -67,8 +67,8 @@ export function TopNav({ onCreateClick }: TopNavProps) {
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
               }}
-              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)))' : 'var(--cp-blue)'; }}
-              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'; }}
+              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text, var(--cp-bg-neutral, var(--ds-background-neutral)))' : 'var(--cp-blue)'; }}
+              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text-subtlest)' : 'var(--fg-2)'; }}
             >
               {tab.label}
             </button>
@@ -85,10 +85,10 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           style={{
             height: 32,
             padding: '8px 12px',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             border: 'none',
             borderRadius: 6,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
@@ -100,7 +100,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
         {/* Search bar */}
         <div
-          className="flex items-center gap-2 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
+          className="flex items-center gap-2 rounded-md bg-[var(--ds-surface-sunken)] dark:bg-transparent border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]"
           style={{
             height: 32,
             padding: '0 10px',
@@ -108,14 +108,14 @@ export function TopNav({ onCreateClick }: TopNavProps) {
             minWidth: 180,
           }}
         >
-          <Search size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" strokeWidth={2} />
-          <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 12, userSelect: 'none', whiteSpace: 'nowrap' }}>
+          <Search size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] dark:text-[var(--ds-text-subtlest)]" strokeWidth={2} />
+          <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-200)', userSelect: 'none', whiteSpace: 'nowrap' }}>
             Search anything...
           </span>
           <kbd
-            className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]"
+            className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] dark:text-[var(--ds-text-subtlest)]"
             style={{
-              fontSize: 10,
+              fontSize: 'var(--ds-font-size-50)',
               fontWeight: 500,
               borderRadius: 4,
               padding: '1px 5px',
@@ -128,20 +128,20 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
         {/* Bell */}
         <button
-          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] dark:hover:bg-[var(--ds-surface-overlay)]"
           style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="Notifications"
         >
-          <Bell size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" strokeWidth={1.75} />
+          <Bell size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" strokeWidth={1.75} />
         </button>
 
         {/* Settings */}
         <button
-          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] dark:hover:bg-[var(--ds-surface-overlay)]"
           style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="Settings"
         >
-          <Settings size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" strokeWidth={1.75} />
+          <Settings size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" strokeWidth={1.75} />
         </button>
 
         {/* Avatar */}

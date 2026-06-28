@@ -35,8 +35,8 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         left: 0,
         marginTop: 4,
         width: 200,
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+        border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border, var(--cp-bg-sunken))',
         borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))',
         maxHeight: 300,
@@ -58,15 +58,15 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
-              background: isCurrent ? ('var(--cp-bg-page, #F8FAFC)') : undefined,
+              background: isCurrent ? ('var(--cp-bg-page)') : undefined,
               fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? ('var(--cp-bg-page, #F8FAFC)') : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--cp-bg-page)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? ('var(--cp-bg-page)') : '')}
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1 }}>{status}</span>
-            {isCurrent && <Check size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />}
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', flex: 1 }}>{status}</span>
+            {isCurrent && <Check size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />}
           </div>
         );
       })}

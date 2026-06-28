@@ -82,7 +82,7 @@ export default function StakeholderLensWidget({
               style={{
                 height: 44,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -106,8 +106,8 @@ export default function StakeholderLensWidget({
                   gap: 10,
                   padding: '8px 10px',
                   borderRadius: token('border.radius', '4px'),
-                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                  border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                  background: token('elevation.surface', 'var(--ds-surface)'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                 }}
               >
                 {/* Avatar */}
@@ -117,8 +117,8 @@ export default function StakeholderLensWidget({
                     height: 28,
                     borderRadius: '50%',
                     background: atRiskTotal > 0
-                      ? 'var(--ds-background-accent-orange-subtle, #FFECEB)'
-                      : 'var(--ds-background-neutral, #F1F2F4)',
+                      ? 'var(--ds-background-accent-orange-subtle)'
+                      : 'var(--ds-background-neutral)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -128,11 +128,11 @@ export default function StakeholderLensWidget({
                   <span
                     style={{
                       ...LABEL,
-                      fontSize: 10,
+                      fontSize: 'var(--ds-font-size-50)',
                       fontWeight: 700,
                       color: atRiskTotal > 0
-                        ? 'var(--ds-text-accent-orange-bolder, #974F0C)'
-                        : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
+                        ? 'var(--ds-text-accent-orange-bolder)'
+                        : token('color.text.subtle', 'var(--ds-text-subtlest)'),
                     }}
                   >
                     {initials(owner.name)}
@@ -162,8 +162,8 @@ export default function StakeholderLensWidget({
                         ...LABEL,
                         padding: '2px 6px',
                         borderRadius: 3,
-                        background: 'var(--ds-background-accent-red-bolder, #C9372C)',
-                        color: 'var(--ds-text-inverse, #FFFFFF)',
+                        background: 'var(--ds-background-accent-red-bolder)',
+                        color: 'var(--ds-text-inverse)',
                       }}
                     >
                       {owner.overdue} overdue
@@ -175,8 +175,8 @@ export default function StakeholderLensWidget({
                         ...LABEL,
                         padding: '2px 6px',
                         borderRadius: 3,
-                        background: 'var(--ds-background-accent-orange-bolder, #C25100)',
-                        color: 'var(--ds-text-inverse, #FFFFFF)',
+                        background: 'var(--ds-background-accent-orange-bolder)',
+                        color: 'var(--ds-text-inverse)',
                       }}
                     >
                       {owner.atRisk} at risk
@@ -188,8 +188,8 @@ export default function StakeholderLensWidget({
                         ...LABEL,
                         padding: '2px 6px',
                         borderRadius: 3,
-                        background: 'var(--ds-background-accent-green-bolder, #1F845A)',
-                        color: 'var(--ds-text-inverse, #FFFFFF)',
+                        background: 'var(--ds-background-accent-green-bolder)',
+                        color: 'var(--ds-text-inverse)',
                       }}
                     >
                       {owner.healthy} healthy
@@ -201,7 +201,7 @@ export default function StakeholderLensWidget({
                 <span
                   style={{
                     ...SMALL,
-                    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+                    color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
                   }}

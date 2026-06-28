@@ -21,7 +21,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 600,
           color: 'var(--fg-1)',
           margin: 0,
@@ -32,7 +32,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
           onClick={() => navigate('/projecthub/releases')}
           style={{
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
@@ -50,7 +50,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
       {active.length === 0 ? (
         <p style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--fg-4)',
         }}>
           No active releases
@@ -81,7 +81,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                 {/* Name + title */}
                 <div style={{
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 600,
                   color: 'var(--fg-1)',
                   whiteSpace: 'nowrap',
@@ -100,7 +100,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   marginBottom: 8,
                 }}>
                   <span style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: release.status === 'At Risk' ? 'var(--sem-danger)' : 'var(--cp-blue)',
                     display: 'inline-flex',
@@ -117,7 +117,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                     {release.status}
                   </span>
                   <span style={{
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 700,
                     color: 'var(--fg-1)',
                   }}>
@@ -140,7 +140,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   justifyContent: 'space-between',
                   marginTop: 8,
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)',
                 }}>
                   <span>{release.total_items} items</span>

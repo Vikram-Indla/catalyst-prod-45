@@ -112,8 +112,8 @@ function SmartPopover({
         visibility: pos ? 'visible' : 'hidden',
         zIndex: 10000,
         minWidth,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
       }}
@@ -598,7 +598,7 @@ function InlineCreateCardComponent({
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     border: 'none', background: 'transparent', borderRadius: 4,
     cursor: 'pointer', padding: 0,
-    color: 'var(--ds-text-subtle, #44546F)',
+    color: 'var(--ds-text-subtle)',
   };
 
   /* Position helper for portal popovers — anchored under the toolbar. */
@@ -607,8 +607,8 @@ function InlineCreateCardComponent({
     top: 'calc(100% + 4px)',
     left: 0,
     zIndex: 10000,
-    background: 'var(--ds-surface-overlay, #FFFFFF)',
-    border: '1px solid var(--ds-border, #DFE1E6)',
+    background: 'var(--ds-surface-overlay)',
+    border: '1px solid var(--ds-border)',
     borderRadius: 6,
     boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
   };
@@ -622,10 +622,10 @@ function InlineCreateCardComponent({
         flexDirection: 'column',
         gap: 6,
         padding: '10px 12px',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         borderRadius: 6,
         /* Jira-parity: full clean blue outline around the whole card. */
-        border: '2px solid var(--ds-border-selected, #0C66E4)',
+        border: '2px solid var(--ds-border-selected)',
         boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
       }}
       onMouseDown={e => e.stopPropagation()}
@@ -634,11 +634,11 @@ function InlineCreateCardComponent({
       {error && (
         <div
           style={{
-            background: 'var(--ds-background-danger, #FFEBE6)',
-            color: 'var(--ds-text-danger, #AE2A19)',
+            background: 'var(--ds-background-danger)',
+            color: 'var(--ds-text-danger)',
             padding: '4px 6px',
             borderRadius: 3,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
           }}
         >
           {error}
@@ -667,10 +667,10 @@ function InlineCreateCardComponent({
           outline: 'none',
           background: 'transparent',
           resize: 'none',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           lineHeight: '20px',
           fontFamily: 'var(--cp-font-body)',
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           padding: 0,
           minHeight: 40,
         }}
@@ -708,10 +708,10 @@ function InlineCreateCardComponent({
                     width: '100%', padding: '8px 12px',
                     border: 'none', background: 'transparent',
                     cursor: 'pointer', textAlign: 'left',
-                    fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                    fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
                     fontFamily: 'var(--cp-font-body)',
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information)'; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                 >
                   <JiraIssueTypeIcon type={name.toLowerCase()} size={14} />
@@ -750,7 +750,7 @@ function InlineCreateCardComponent({
               <path d="M5 1.5v3M11 1.5v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
             {dueDate && (
-              <span style={{ fontSize: 12, fontWeight: 500 }}>{formatDueDate(dueDate)}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}>{formatDueDate(dueDate)}</span>
             )}
           </button>
           <SmartPopover isOpen={showDatePicker} triggerRef={dateTriggerRef}>
@@ -805,10 +805,10 @@ function InlineCreateCardComponent({
                   <span
                     style={{
                       width: 18, height: 18, borderRadius: '50%',
-                      background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
-                      color: 'var(--ds-text, #172B4D)',
+                      background: 'var(--ds-background-accent-blue-subtler)',
+                      color: 'var(--ds-text)',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, fontWeight: 700,
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                     }}
                   >
                     {assigneeName.slice(0, 1).toUpperCase()}
@@ -821,7 +821,7 @@ function InlineCreateCardComponent({
           </button>
           <SmartPopover isOpen={showAssigneeDropdown} triggerRef={assigneeTriggerRef} minWidth={240}>
             <div ref={assigneePickerRef} style={{ maxHeight: 280, overflowY: 'auto' }}>
-              <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
                 <input
                   type="text"
                   value={assigneeSearch}
@@ -830,8 +830,8 @@ function InlineCreateCardComponent({
                   autoFocus
                   style={{
                     width: '100%', padding: '6px 8px',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 4, fontSize: 13,
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 4, fontSize: 'var(--ds-font-size-300)',
                     fontFamily: 'var(--cp-font-body)', outline: 'none',
                   }}
                 />
@@ -851,10 +851,10 @@ function InlineCreateCardComponent({
                       width: '100%', padding: '8px 12px',
                       border: 'none', background: 'transparent',
                       cursor: 'pointer', textAlign: 'left',
-                      fontSize: 13, color: 'var(--ds-text-subtle, #44546F)',
+                      fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)',
                       fontFamily: 'var(--cp-font-body)',
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information)'; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                   >
                     Unassign
@@ -877,10 +877,10 @@ function InlineCreateCardComponent({
                           width: '100%', padding: '8px 12px',
                           border: 'none', background: 'transparent',
                           cursor: 'pointer', textAlign: 'left',
-                          fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                          fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
                           fontFamily: 'var(--cp-font-body)',
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                       >
                         {url ? (
@@ -889,10 +889,10 @@ function InlineCreateCardComponent({
                           <span
                             style={{
                               width: 20, height: 20, borderRadius: '50%',
-                              background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
-                              color: 'var(--ds-text, #172B4D)',
+                              background: 'var(--ds-background-accent-blue-subtler)',
+                              color: 'var(--ds-text)',
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                              fontSize: 11, fontWeight: 700,
+                              fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                             }}
                           >
                             {option.name.slice(0, 1).toUpperCase()}
@@ -903,11 +903,11 @@ function InlineCreateCardComponent({
                     );
                   })
                 ) : assigneeOptions.length === 0 ? (
-                  <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     No assignees available
                   </div>
                 ) : (
-                  <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     No results for "{assigneeSearch}"
                   </div>
                 )}
@@ -931,11 +931,11 @@ function InlineCreateCardComponent({
             border: 'none', borderRadius: 4, padding: 0,
             cursor: canSubmit ? 'pointer' : 'not-allowed',
             background: canSubmit
-              ? 'var(--ds-background-brand-bold, #0C66E4)'
-              : 'var(--ds-background-neutral, #F1F2F4)',
+              ? 'var(--ds-background-brand-bold)'
+              : 'var(--ds-background-neutral)',
             color: canSubmit
-              ? 'var(--ds-text-inverse, #FFFFFF)'
-              : 'var(--ds-text-disabled, #B3B9C4)',
+              ? 'var(--ds-text-inverse)'
+              : 'var(--ds-text-disabled)',
             transition: 'background 120ms ease, color 120ms ease',
           }}
         >

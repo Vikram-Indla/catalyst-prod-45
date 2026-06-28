@@ -4,16 +4,16 @@
  */
 
 export const CATALYST_COLORS = {
-  primary: 'var(--cp-workstream-catalyst-primary, #2563eb)',
-  primaryDark: 'var(--ds-link-pressed, #1d4ed8)',
-  primaryLight: 'var(--ds-background-information-bold, #3b82f6)',
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',
-  tealDark: 'var(--ds-chart-teal-bolder, #0f766e)',
-  tealLight: 'var(--ds-background-accent-teal-bolder, #14b8a6)',
-  warning: 'var(--ds-background-warning-bold, #d97706)',
-  warningDark: 'var(--ds-background-warning-bold, #b45309)',
-  danger: 'var(--ds-background-danger-bold, #ef4444)',
-  dangerDark: 'var(--ds-background-danger-bold, #dc2626)',
+  primary: 'var(--cp-workstream-catalyst-primary)',
+  primaryDark: 'var(--ds-link-pressed)',
+  primaryLight: 'var(--ds-background-information-bold)',
+  teal: 'var(--ds-chart-teal-bold)',
+  tealDark: 'var(--ds-chart-teal-bolder)',
+  tealLight: 'var(--ds-background-accent-teal-bolder)',
+  warning: 'var(--ds-background-warning-bold)',
+  warningDark: 'var(--ds-background-warning-bold)',
+  danger: 'var(--ds-background-danger-bold)',
+  dangerDark: 'var(--ds-background-danger-bold)',
 } as const;
 
 export type UtilizationStatus = 'available' | 'light' | 'moderate' | 'optimal' | 'at-capacity' | 'over-allocated';

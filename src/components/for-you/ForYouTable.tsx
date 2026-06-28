@@ -46,7 +46,7 @@ const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
 };
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-background-accent-magenta-bolder, #BE185D)'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-link)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-background-accent-magenta-bolder)'];
 
 const FORYOU_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
@@ -185,10 +185,10 @@ export function CatalystTable({
 
   if (resolvedGroups.length === 0) {
     return (
-      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-        <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 4 }}>No work items found</p>
-        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Try adjusting your filters or search</p>
+      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 8, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-800)', marginBottom: 12 }}>📋</span>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>No work items found</p>
+        <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>Try adjusting your filters or search</p>
       </div>
     );
   }
@@ -212,23 +212,23 @@ export function CatalystTable({
                 onClick={() => toggleGroup(group.key)}
                 style={{
                   height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
-                  background: 'var(--ds-surface-sunken, #F7F8F9)',
-                  borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-                  borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-                  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
+                  background: 'var(--ds-surface-sunken)',
+                  borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken))',
+                  borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken))',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle)',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
                 {isCollapsed
-                  ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />
-                  : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />}
+                  ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />
+                  : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />}
                 {group.label}
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                  background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)',
-                  fontSize: 10, fontWeight: 700, marginLeft: 4,
+                  background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)',
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 700, marginLeft: 4,
                 }}>
                   {group.items.length}
                 </span>
@@ -250,9 +250,9 @@ export function CatalystTable({
                     onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                     style={{
                       padding: '12px',
-                      borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                      borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken))',
                       cursor: 'pointer',
-                      background: isSelected ? 'var(--ds-background-selected, rgba(37,99,235,0.08))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      background: isSelected ? 'var(--ds-background-selected, rgba(37,99,235,0.08))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                       display: 'flex', flexDirection: 'column', gap: 8,
                     }}
                   >
@@ -262,9 +262,9 @@ export function CatalystTable({
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
                       <JiraIssueTypeIcon type={item.issueType} size={16} />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{item.key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
-                        <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', transform: 'rotate(-45deg)' }} />
+                        <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', transform: 'rotate(-45deg)' }} />
                       )}
                       <div style={{ flex: 1 }} />
                       <button
@@ -272,7 +272,7 @@ export function CatalystTable({
                         style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
                         title={item.starred ? 'Unstar' : 'Star'}
                       >
-                        <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled, #CBD5E1)'} strokeWidth={2} />
+                        <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled)'} strokeWidth={2} />
                       </button>
                     </div>
 
@@ -280,7 +280,7 @@ export function CatalystTable({
                     <div
                       dir="auto"
                       style={{
-                        fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', lineHeight: 1.3,
+                        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', lineHeight: 1.3,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -293,7 +293,7 @@ export function CatalystTable({
                     {/* Row 3: status + hub + priority */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <StatusLozenge status={item.status} />
-                      <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
                       <span title={priorityLabel} style={{ display: 'inline-flex' }}>
@@ -302,13 +302,13 @@ export function CatalystTable({
                     </div>
 
                     {/* Row 4: avatar + project + updated */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
                       {avatarUrl ? (
-                        <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
+                        <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken))' }} />
                       ) : (
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                       )}
-                      <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle, #475569)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.project}</span>
+                      <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.project}</span>
                       <div style={{ flex: 1 }} />
                       <span style={{ flexShrink: 0 }}>{item.updatedAt}</span>
                     </div>
@@ -344,7 +344,7 @@ export function CatalystTable({
                 style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
                 title={item.starred ? 'Unstar' : 'Star'}
               >
-                <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled, #CBD5E1)'} strokeWidth={2} />
+                <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled)'} strokeWidth={2} />
               </button>
             </div>
           </td>
@@ -362,9 +362,9 @@ export function CatalystTable({
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {(item.attachmentCount ?? 0) > 0 && (
-                <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
+                <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
               )}
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{item.key}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{item.key}</span>
             </div>
           </td>
         );
@@ -383,13 +383,13 @@ export function CatalystTable({
       case 'project':
         return (
           <td key={colKey} style={{ width: columnWidths.project, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            <span title={item.project} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)' }}>{item.project}</span>
+            <span title={item.project} style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>{item.project}</span>
           </td>
         );
       case 'hub':
         return (
           <td key={colKey} style={{ width: columnWidths.hub }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
               {item.hubLabel}
             </span>
           </td>
@@ -402,7 +402,7 @@ export function CatalystTable({
         );
       case 'updated':
         return (
-          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
             {item.updatedAt}
           </td>
         );
@@ -416,12 +416,12 @@ export function CatalystTable({
                 const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
                 const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
                 return avatarUrl ? (
-                  <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
+                  <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken))' }} />
                 ) : (
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                 );
               })()}
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
             </div>
           </td>
         );
@@ -431,7 +431,7 @@ export function CatalystTable({
   };
 
   return (
-    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, overflow: 'hidden' }}>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 8, overflow: 'hidden' }}>
       {/* Scoped sticky — at tablet widths (768–1023px) the SUMMARY column
           (5th th/td after checkbox/star/type/key) pins to the left edge so
           the item summary stays readable while the right-hand columns
@@ -447,9 +447,9 @@ export function CatalystTable({
             background: inherit;
           }
           .fy-table .pb-table thead th:nth-child(5) {
-            background: var(--ds-surface-sunken, #F7F8F9);
+            background: var(--ds-surface-sunken);
           }
-          .fy-table .pb-table tbody tr { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); }
+          .fy-table .pb-table tbody tr { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))); }
           .fy-table .pb-table tbody tr.pb-row-selected { background: var(--ds-background-selected, rgba(37,99,235,0.08)); }
         }
       `}</style>
@@ -510,28 +510,28 @@ export function CatalystTable({
                     onClick={() => toggleGroup(group.key)}
                     style={{
                       height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
-                      background: 'var(--ds-surface-sunken, #F7F8F9)',
-                      borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-                      borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-                      fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
+                      background: 'var(--ds-surface-sunken)',
+                      borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken))',
+                      borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken))',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle)',
                       textTransform: 'uppercase', letterSpacing: '0.08em',
                       verticalAlign: 'middle',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       {isCollapsed
-                        ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />
-                        : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />
+                        ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />
+                        : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />
                       }
                       {isAssigneeGroup && (
                         avatarUrl ? (
-                          <img src={avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
+                          <img src={avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken))' }} />
                         ) : (
                           <div style={{
                             width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
                             background: AVATAR_COLOURS[initials.charCodeAt(0) % AVATAR_COLOURS.length],
-                            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 9, fontWeight: 700,
+                            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                           }}>
                             {initials}
                           </div>
@@ -541,8 +541,8 @@ export function CatalystTable({
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                        background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)',
-                        fontSize: 10, fontWeight: 700,
+                        background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)',
+                        fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                       }}>
                         {group.items.length}
                       </span>

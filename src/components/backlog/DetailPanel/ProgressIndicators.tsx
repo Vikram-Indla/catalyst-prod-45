@@ -3,10 +3,10 @@ import { FormSelect } from './FormSelect';
 
 // Static configuration - not seed data
 const EPIC_STATES: EpicState[] = [
-  { id: 1, name: 'Funnel', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },
-  { id: 2, name: 'Backlog', color: 'var(--cp-primary-60, #0052CC)' },
-  { id: 3, name: 'In Progress', color: 'var(--ds-link, #0065FF)' },
-  { id: 4, name: 'Done', color: 'var(--ds-background-success-bold, #1F845A)' },
+  { id: 1, name: 'Funnel', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' },
+  { id: 2, name: 'Backlog', color: 'var(--cp-primary-60)' },
+  { id: 3, name: 'In Progress', color: 'var(--ds-link)' },
+  { id: 4, name: 'Done', color: 'var(--ds-background-success-bold)' },
 ];
 
 interface ProgressIndicatorsProps {

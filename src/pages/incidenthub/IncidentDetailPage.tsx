@@ -97,11 +97,11 @@ export default function IncidentDetailPage() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)',
-        color: 'var(--ds-text-subtle, #5E6C84)',
+        color: 'var(--ds-text-subtle)',
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
-          <span style={{ fontSize: 14 }}>Loading incident…</span>
+          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--ds-text-brand)' }} />
+          <span style={{ fontSize: 'var(--ds-font-size-400)' }}>Loading incident…</span>
         </div>
       </div>
     );
@@ -113,19 +113,19 @@ export default function IncidentDetailPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)', gap: 12,
       }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #344054)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
           Incident not found
         </span>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
           The incident could not be found or has been deleted.
         </span>
         <button
           onClick={() => navigate('/incident-hub')}
           style={{
             marginTop: 8, padding: '8px 16px',
-            background: 'var(--ds-text-brand, #2563EB)',
-            color: 'var(--cp-bg-elevated, #FFFFFF)',
-            border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500,
+            background: 'var(--ds-text-brand)',
+            color: 'var(--cp-bg-elevated)',
+            border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
             cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           }}
         >

@@ -26,28 +26,28 @@ interface FeatureKanbanBoardProps {
 // Catalyst-approved color mapping from semantic color names
 const COLOR_MAP: Record<string, string> = {
   // Status colors
-  info: 'var(--ds-border, #DFE1E6)',      // Grey
-  warning: 'var(--ds-text-warning, #f59e0b)',   // Amber
-  success: 'var(--ds-chart-teal-bold, #0d9488)',   // Teal
-  danger: 'var(--ds-text-danger, #ef4444)',    // Red
-  forest: 'var(--ds-chart-teal-bold, #0d9488)',    // Teal (done)
+  info: 'var(--ds-border)',      // Grey
+  warning: 'var(--ds-text-warning)',   // Amber
+  success: 'var(--ds-chart-teal-bold)',   // Teal
+  danger: 'var(--ds-text-danger)',    // Red
+  forest: 'var(--ds-chart-teal-bold)',    // Teal (done)
   // Catalyst brand colors
-  blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',
-  olive: 'var(--ds-chart-teal-bold, #0d9488)',     // Changed to teal
-  bronze: 'var(--ds-text-subtlest, #626F86)',    // Changed to gray
-  grey: 'var(--ds-border, #DFE1E6)',
+  blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  teal: 'var(--ds-chart-teal-bold)',
+  olive: 'var(--ds-chart-teal-bold)',     // Changed to teal
+  bronze: 'var(--ds-text-subtlest)',    // Changed to gray
+  grey: 'var(--ds-border)',
   // Fallbacks
-  default: 'var(--ds-border, #DFE1E6)',
+  default: 'var(--ds-border)',
 };
 
 // Fallback statuses if DB fetch fails
 const FALLBACK_STATUSES = [
-  { id: 'funnel', label: 'Funnel', color: 'var(--ds-border, #DFE1E6)' },
-  { id: 'analyzing', label: 'Analyzing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  { id: 'backlog', label: 'Backlog', color: 'var(--ds-chart-teal-bold, #0d9488)' },
-  { id: 'implementing', label: 'Implementing', color: 'var(--ds-text-warning, #f59e0b)' },
-  { id: 'done', label: 'Done', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+  { id: 'funnel', label: 'Funnel', color: 'var(--ds-border)' },
+  { id: 'analyzing', label: 'Analyzing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { id: 'backlog', label: 'Backlog', color: 'var(--ds-chart-teal-bold)' },
+  { id: 'implementing', label: 'Implementing', color: 'var(--ds-text-warning)' },
+  { id: 'done', label: 'Done', color: 'var(--ds-chart-teal-bold)' },
 ];
 
 export function FeatureKanbanBoard({

@@ -44,7 +44,7 @@ export const DateNode = Node.create({
       mergeAttributes(HTMLAttributes, {
         'data-date-timestamp': ts,
         style:
-          'background:var(--ds-background-neutral,#F1F2F4);color:var(--ds-text,#292A2E);padding:1px 6px;border-radius:3px;font-size:12px;',
+          'background:var(--ds-background-neutral);color:var(--ds-text);padding:1px 6px;border-radius:3px;font-size:12px;',
       }),
       formatTimestamp(ts),
     ];

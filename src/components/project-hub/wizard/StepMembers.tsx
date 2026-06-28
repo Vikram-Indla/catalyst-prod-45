@@ -58,14 +58,14 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
     onChange(members.map(m => m.userId === userId ? { ...m, role } : m));
   };
 
-  const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+  const AVATAR_COLORS = ['var(--cp-purple-60)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-text-danger, var(--cp-danger))'];
 
   return (
     <div className="space-y-4">
       {/* Info note */}
       <div
         className="flex items-center gap-2 rounded-lg bg-[var(--cp-blue-wash)]"
-        style={{ padding: '8px 12px', fontSize: 12, color: 'var(--cp-blue)' }}
+        style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)' }}
       >
         <span style={{ fontWeight: 500 }}>ℹ</span>
         You will be added as Admin automatically.
@@ -88,7 +88,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
+            style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
           />
         </div>
 
@@ -106,7 +106,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
               <button
                 key={user.id}
                 onClick={() => addMember(user)}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)]"
+                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--ds-surface-sunken)]"
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <div
@@ -115,16 +115,16 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                     width: 28,
                     height: 28,
                     background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length],
-                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    fontSize: 11,
+                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                   }}
                 >
                   {user.name[0]?.toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
-                  <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{user.email}</div>
+                  <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
+                  <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{user.email}</div>
                 </div>
               </button>
             ))}
@@ -147,16 +147,16 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   width: 32,
                   height: 32,
                   background: AVATAR_COLORS[member.name.charCodeAt(0) % AVATAR_COLORS.length],
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  fontSize: 12,
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                 }}
               >
                 {member.name[0]?.toUpperCase() || '?'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{member.name}</div>
-                <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{member.email}</div>
+                <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{member.name}</div>
+                <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{member.email}</div>
               </div>
               <select
                 value={member.role}
@@ -164,7 +164,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                 style={{
                   height: 28,
                   padding: '0 6px',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 500,
                   border: '1px solid var(--divider)',
                   borderRadius: 4,
@@ -179,7 +179,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
               </select>
               <button
                 onClick={() => removeMember(member.userId)}
-                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
+                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]"
                 style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <X size={14} color="var(--fg-4)" />
@@ -190,7 +190,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       )}
 
       {members.length === 0 && (
-        <div style={{ fontSize: 12, color: 'var(--fg-4)', textAlign: 'center', padding: '20px 0' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', textAlign: 'center', padding: '20px 0' }}>
           No additional members added. You can add them later from project settings.
         </div>
       )}

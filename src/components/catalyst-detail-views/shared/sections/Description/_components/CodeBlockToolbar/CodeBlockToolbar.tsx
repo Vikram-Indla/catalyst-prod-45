@@ -68,8 +68,8 @@ interface ActiveBlock {
 }
 
 const TOOLBAR_GAP = 8;
-const ICON_COLOR = 'var(--ds-text, #292A2E)';
-const ICON_COLOR_ACTIVE = 'var(--ds-text-information, #0C66E4)';
+const ICON_COLOR = 'var(--ds-text)';
+const ICON_COLOR_ACTIVE = 'var(--ds-text-information)';
 
 function findCodeBlockAt(state: EditorState) {
   const { $from } = state.selection;
@@ -198,8 +198,8 @@ export function CodeBlockToolbar({ editor, containerRef }: Props) {
         alignItems: 'center',
         gap: 4,
         padding: 4,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         zIndex: 2147483600,
@@ -224,7 +224,7 @@ function Divider() {
       style={{
         width: 1,
         alignSelf: 'stretch',
-        background: 'var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-border)',
         margin: '4px 2px',
       }}
     />
@@ -265,7 +265,7 @@ function IconBtn({
         border: 'none',
         borderRadius: 4,
         background: active
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : 'transparent',
         color: active ? ICON_COLOR_ACTIVE : ICON_COLOR,
         cursor: 'pointer',
@@ -516,18 +516,18 @@ function LanguageSelect({
     height: 32,
     width: TRIGGER_WIDTH,
     padding: '0 10px',
-    background: 'var(--ds-surface, #FFFFFF)',
+    background: 'var(--ds-surface)',
     border: `${open ? 2 : 1}px solid ${
       open
-        ? 'var(--ds-border-focused, #388BFF)'
-        : 'var(--ds-border-input, #8590A2)'
+        ? 'var(--ds-border-focused)'
+        : 'var(--ds-border-input)'
     }`,
     borderRadius: 4,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     color:
       current === CODE_LANGUAGE_NONE
-        ? 'var(--ds-text-subtle, #6B778C)'
-        : 'var(--ds-text, #292A2E)',
+        ? 'var(--ds-text-subtle)'
+        : 'var(--ds-text)',
     cursor: open ? 'text' : 'pointer',
     // Compensate the 1→2px border-width change so the trigger doesn't
     // jump 1px when focused.
@@ -582,8 +582,8 @@ function LanguageSelect({
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              fontSize: 14,
-              color: 'var(--ds-text, #292A2E)',
+              fontSize: 'var(--ds-font-size-400)',
+              color: 'var(--ds-text)',
             }}
           />
           <span
@@ -592,7 +592,7 @@ function LanguageSelect({
               display: 'inline-flex',
               alignItems: 'center',
               padding: '0 8px 0 0',
-              color: 'var(--ds-text-subtle, #6B778C)',
+              color: 'var(--ds-text-subtle)',
               pointerEvents: 'none',
             }}
           >
@@ -634,8 +634,8 @@ function LanguageSelect({
                 top: coords.top,
                 left: coords.left,
                 width: TRIGGER_WIDTH,
-                background: 'var(--ds-surface-overlay, #FFFFFF)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface-overlay)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
                 zIndex: 2147483647,
@@ -658,8 +658,8 @@ function LanguageSelect({
                   <div
                     style={{
                       padding: '8px 12px',
-                      fontSize: 13,
-                      color: 'var(--ds-text-subtle, #6B778C)',
+                      fontSize: 'var(--ds-font-size-300)',
+                      color: 'var(--ds-text-subtle)',
                     }}
                   >
                     No matches
@@ -713,9 +713,9 @@ function LanguageRow({
   //  - idle             → no rail, transparent bg
   const showRail = selected || highlighted;
   const bg = selected
-    ? 'var(--ds-background-selected, #E9F2FE)'
+    ? 'var(--ds-background-selected)'
     : highlighted
-      ? 'var(--ds-background-neutral, #F1F2F4)'
+      ? 'var(--ds-background-neutral)'
       : 'transparent';
   return (
     <div
@@ -728,11 +728,11 @@ function LanguageRow({
       style={{
         position: 'relative',
         padding: '7px 12px 7px 14px',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: selected ? 500 : 400,
         color: selected
-          ? 'var(--ds-text-information, #0C66E4)'
-          : 'var(--ds-text, #292A2E)',
+          ? 'var(--ds-text-information)'
+          : 'var(--ds-text)',
         cursor: 'pointer',
         borderRadius: 3,
         background: bg,
@@ -747,7 +747,7 @@ function LanguageRow({
             top: 4,
             bottom: 4,
             width: 2,
-            background: 'var(--ds-border-focused, #388BFF)',
+            background: 'var(--ds-border-focused)',
             borderRadius: 2,
           }}
         />
@@ -871,8 +871,8 @@ function Dropdown({
         top: coords.top,
         left: coords.left,
         minWidth,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         padding: 4,
@@ -911,9 +911,9 @@ function MenuItem({ label, icon, onClick, danger = false }: MenuItemProps) {
         borderRadius: 4,
         background: 'transparent',
         color: danger
-          ? 'var(--ds-text-danger, #AE2A19)'
-          : 'var(--ds-text, #292A2E)',
-        fontSize: 13,
+          ? 'var(--ds-text-danger)'
+          : 'var(--ds-text)',
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 400,
         cursor: 'pointer',
         textAlign: 'start',

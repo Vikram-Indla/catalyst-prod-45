@@ -79,11 +79,11 @@ export function LaterFilterMenu({ anchorRect, hideUpcoming, onChange, onClose }:
             width: '100%',
             padding: '8px 14px',
             background: opt.selected ? 'var(--cv2-accent)' : 'transparent',
-            color: opt.selected ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
+            color: opt.selected ? 'var(--ds-text-inverse)' : 'var(--cv2-text)',
             border: 'none',
             cursor: 'pointer',
             fontFamily: 'inherit',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             textAlign: 'left',
           }}
         >

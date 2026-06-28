@@ -7,69 +7,69 @@
 /* ── LIGHT MODE (DEFAULT) ── */
 :root, [data-theme="light"] {
   /* Surfaces — ADS bridge (V9 migration 2026-06-13) */
-  --cp-bg:              var(--ds-surface, #FFFFFF);
-  --cp-bg-canvas:       var(--ds-surface, #FFFFFF);
-  --cp-bg-sidebar-hdr:  var(--ds-surface-sunken, #F7F8F9);
-  --cp-bg-sunken:       var(--ds-surface-sunken, #F7F8F9);
-  --cp-float:           var(--ds-surface-raised, #FFFFFF);
-  --cp-bg-overlay:      var(--ds-surface-overlay, #FFFFFF);
-  --cp-bg-inset:        var(--ds-background-neutral-subtle, #F7F8F9);
-  --cp-text-disabled:   var(--ds-text-disabled, #8993A5);
+  --cp-bg:              var(--ds-surface);
+  --cp-bg-canvas:       var(--ds-surface);
+  --cp-bg-sidebar-hdr:  var(--ds-surface-sunken);
+  --cp-bg-sunken:       var(--ds-surface-sunken);
+  --cp-float:           var(--ds-surface-raised);
+  --cp-bg-overlay:      var(--ds-surface-overlay);
+  --cp-bg-inset:        var(--ds-background-neutral-subtle);
+  --cp-text-disabled:   var(--ds-text-disabled);
 
   /* Text — ADS bridge (V9 migration 2026-06-13) */
-  --cp-t1:              var(--ds-text, #172B4D);
-  --cp-t2:              var(--ds-text-subtle, #42526E);
-  --cp-t3:              var(--ds-text-subtlest, #6B778C);
-  --cp-t4:              var(--ds-text-disabled, #8993A5);
+  --cp-t1:              var(--ds-text);
+  --cp-t2:              var(--ds-text-subtle);
+  --cp-t3:              var(--ds-text-subtlest);
+  --cp-t4:              var(--ds-text-disabled);
 
   /* Borders */
-  --cp-bd:              var(--ds-border, #DFE1E6);
-  --cp-bd-zone:         var(--ds-background-neutral-subtle, #F7F8F9);
-  --cp-bd-hover:        var(--ds-border-bold, #B3B9C4);
-  --cp-bd-table:        var(--ds-border, #DFE1E6);
+  --cp-bd:              var(--ds-border);
+  --cp-bd-zone:         var(--ds-background-neutral-subtle);
+  --cp-bd-hover:        var(--ds-border-bold);
+  --cp-bd-table:        var(--ds-border);
 
   /* Interactive */
   --cp-hover:           var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
   --cp-press:           var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14));
-  --cp-focus-ring:      var(--ds-border-focused, #388BFF);
+  --cp-focus-ring:      var(--ds-border-focused);
 
   /* Brand */
-  --cp-blue:            var(--ds-link, #0052CC);
-  --cp-blue-text:       var(--ds-link, #0052CC);
-  --cp-blue-link:       var(--ds-link, #0052CC);
-  --cp-blue-wash:       var(--ds-background-selected, #E9F2FE);
+  --cp-blue:            var(--ds-link);
+  --cp-blue-text:       var(--ds-link);
+  --cp-blue-link:       var(--ds-link);
+  --cp-blue-wash:       var(--ds-background-selected);
 
   /* Status */
-  --cp-ok:              var(--ds-text-success, #216E4E);
-  --cp-ok-bg:           var(--ds-background-success, #DFFCF0);
-  --cp-warn:            var(--ds-text-warning, #974F0C);
-  --cp-warn-bg:         var(--ds-background-warning, #FFF7D6);
-  --cp-err:             var(--ds-text-danger, #AE2A19);
-  --cp-err-bg:          var(--ds-background-danger, #FFEBE6);
-  --cp-err-text:        var(--ds-text-danger, #AE2A19);
+  --cp-ok:              var(--ds-text-success);
+  --cp-ok-bg:           var(--ds-background-success);
+  --cp-warn:            var(--ds-text-warning);
+  --cp-warn-bg:         var(--ds-background-warning);
+  --cp-err:             var(--ds-text-danger);
+  --cp-err-bg:          var(--ds-background-danger);
+  --cp-err-text:        var(--ds-text-danger);
 
   /* AI */
   --cp-ai-bg:           var(--ds-background-information-bold, rgba(59,130,246,0.06));
   --cp-ai-bd:           var(--ds-background-information-bold, rgba(59,130,246,0.12));
-  --cp-ai-t:            var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --cp-ai-t:            var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 
   /* StatusLozenge */
-  --cp-lz-gy-bg:        var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
-  --cp-lz-gy-t:         var(--ds-text-subtle, #42526E);
-  --cp-lz-bl-bg:        var(--ds-link, #0C66E4);
-  --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A));
-  --cp-lz-gn-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --cp-lz-rd-bg:        var(--ds-background-danger, #FFECEB);
-  --cp-lz-rd-t:         var(--ds-text-danger, #AE2A19);
+  --cp-lz-gy-bg:        var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  --cp-lz-gy-t:         var(--ds-text-subtle);
+  --cp-lz-bl-bg:        var(--ds-link);
+  --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, var(--ds-background-success-bold));
+  --cp-lz-gn-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --cp-lz-rd-bg:        var(--ds-background-danger);
+  --cp-lz-rd-t:         var(--ds-text-danger);
 
   /* StatusBadge — Jira-grade pill tokens */
-  --status-todo-bg:         var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
-  --status-todo-text:       var(--ds-text-subtle, #42526E);
-  --status-inprogress-bg:   var(--ds-link, #0C66E4);
-  --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --status-done-bg:         var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A));
-  --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --status-todo-bg:         var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  --status-todo-text:       var(--ds-text-subtle);
+  --status-inprogress-bg:   var(--ds-link);
+  --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --status-done-bg:         var(--cp-lozenge-green-bg, var(--ds-background-success-bold));
+  --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 
   /* Progress */
   --cp-prg-bg:          var(--ds-shadow-raised, rgba(0,0,0,0.06));
@@ -78,14 +78,14 @@
   --cp-scroll:          var(--ds-shadow-raised, rgba(0,0,0,0.12));
 
   /* Chart Palette */
-  --cp-chart-1: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --cp-chart-2: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488));
-  --cp-chart-3: var(--ds-text-warning, var(--cp-warning, #D97706));
-  --cp-chart-4: var(--ds-text-danger, var(--cp-danger, #DC2626));
-  --cp-chart-5: var(--ds-text-success, var(--cp-success, #16A34A));
-  --cp-chart-6: var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED));
-  --cp-chart-7: var(--ds-background-accent-magenta-bolder, #BE185D);
-  --cp-chart-8: var(--ds-text-subtlest, #626F86);
+  --cp-chart-1: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --cp-chart-2: var(--cp-teal-60, var(--ds-chart-teal-bold));
+  --cp-chart-3: var(--ds-text-warning, var(--cp-warning));
+  --cp-chart-4: var(--ds-text-danger, var(--cp-danger));
+  --cp-chart-5: var(--ds-text-success, var(--cp-success));
+  --cp-chart-6: var(--cp-purple-60, var(--ds-background-discovery-bold));
+  --cp-chart-7: var(--ds-background-accent-magenta-bolder);
+  --cp-chart-8: var(--ds-text-subtlest);
 }
 
 /* ── DARK MODE — ADS dark (canonical Apr 2026) ── */
@@ -98,95 +98,95 @@
 .dark, [data-theme="dark"] {
   /* Surfaces — ADS canonical dark, Jira parity (2026-04-30).
      Jira's shell uses TWO elevation tiers in dark mode:
-       background.neutral = var(--ds-surface, #1D2125)  (page canvas — main content area)
-       elevation.surface   = var(--ds-surface-raised, #22272B)  (raised — sidebar, header, cards)
+       background.neutral = var(--ds-surface)  (page canvas — main content area)
+       elevation.surface   = var(--ds-surface-raised)  (raised — sidebar, header, cards)
      This pairing is what produces Jira's subtle "sidebar slightly lifted
-     above canvas" seam. Previously we collapsed both to var(--ds-surface, #FFFFFF), which
+     above canvas" seam. Previously we collapsed both to var(--ds-surface), which
      made canvas + sidebar identical and exposed the split-tone defect
-     when one path used --ds-surface (var(--ds-surface-raised, #22272B)) and the other --cp-bg
-     (var(--ds-surface, #FFFFFF)). Re-aligning to ADS pair eliminates the seam at source. */
-  --cp-bg:              var(--ds-background-neutral, #1D2125);
-  --cp-bg-canvas:       var(--ds-background-neutral, #1D2125);
-  --cp-bg-sidebar-hdr:  var(--ds-surface, #22272B);
-  --cp-bg-sunken:       var(--ds-background-neutral-subtle, #18191A);
-  --cp-float:           var(--ds-surface-raised, #282E33);
+     when one path used --ds-surface (var(--ds-surface-raised)) and the other --cp-bg
+     (var(--ds-surface)). Re-aligning to ADS pair eliminates the seam at source. */
+  --cp-bg:              var(--ds-background-neutral);
+  --cp-bg-canvas:       var(--ds-background-neutral);
+  --cp-bg-sidebar-hdr:  var(--ds-surface);
+  --cp-bg-sunken:       var(--ds-background-neutral-subtle);
+  --cp-float:           var(--ds-surface-raised);
   /* Bridge gap closure (2026-04-28) — see light block. DARK MODE
      dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
      and text.disabled. */
-  --cp-bg-overlay:      var(--ds-surface-overlay, #1F1F1F);
-  --cp-bg-inset:        var(--ds-text, #172B4D);
-  --cp-text-disabled:   var(--ds-text-subtlest, #626F86);
+  --cp-bg-overlay:      var(--ds-surface-overlay);
+  --cp-bg-inset:        var(--ds-text);
+  --cp-text-disabled:   var(--ds-text-subtlest);
 
   /* Text — ADS solid hex scale */
-  --cp-t1:              var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --cp-t2:              var(--ds-text-subtlest, #A1A1A1);
-  --cp-t3:              var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
-  --cp-t4:              var(--ds-text-subtle, #44546F);
+  --cp-t1:              var(--ds-text, var(--cp-bg-neutral));
+  --cp-t2:              var(--ds-text-subtlest);
+  --cp-t3:              var(--ds-text-subtlest, var(--cp-text-secondary));
+  --cp-t4:              var(--ds-text-subtle);
 
   /* Borders — ADS solid hex */
-  --cp-bd:              var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --cp-bd-zone:         var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --cp-bd-hover:        var(--ds-border-bold, #454545);
-  --cp-bd-table:        var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --cp-bd:              var(--ds-border, var(--cp-ink-1));
+  --cp-bd-zone:         var(--ds-border, var(--cp-ink-1));
+  --cp-bd-hover:        var(--ds-border-bold);
+  --cp-bd-table:        var(--ds-border, var(--cp-ink-1));
 
   /* Interactive — ADS solid hex */
-  --cp-hover:           var(--ds-surface-overlay, #1F1F1F);
-  --cp-press:           var(--ds-border, var(--cp-ink-1, #292929));
+  --cp-hover:           var(--ds-surface-overlay);
+  --cp-press:           var(--ds-border, var(--cp-ink-1));
   --cp-focus-ring:      var(--ds-background-information-bold, rgba(59,130,246, 0.45));
 
   /* Brand */
-  --cp-blue:            var(--ds-text-brand, #3B82F6);
-  --cp-blue-text:       var(--ds-text-brand, #60A5FA);
-  --cp-blue-link:       var(--ds-background-information-bold, #0C66E4);
+  --cp-blue:            var(--ds-text-brand);
+  --cp-blue-text:       var(--ds-text-brand);
+  --cp-blue-link:       var(--ds-background-information-bold);
   --cp-blue-wash:       var(--ds-background-information-bold, rgba(59,130,246, 0.10));
 
   /* Status — bright on dark for readability */
-  --cp-ok:              var(--ds-background-success, #DFFCF0);
+  --cp-ok:              var(--ds-background-success);
   --cp-ok-bg:           var(--ds-background-success-bold, rgba(74,222,128, 0.12));
-  --cp-warn:            var(--ds-background-warning, #FFF7D6);
+  --cp-warn:            var(--ds-background-warning);
   --cp-warn-bg:         var(--ds-background-warning, rgba(253,230,138, 0.10));
-  --cp-err:             var(--ds-border-danger, #FCA5A5);
+  --cp-err:             var(--ds-border-danger);
   --cp-err-bg:          var(--ds-background-danger, rgba(239,68,68, 0.10));
-  --cp-err-text:        var(--ds-border-danger, #FCA5A5);
+  --cp-err-text:        var(--ds-border-danger);
 
   /* AI — Catalyst Blue, NEVER purple */
   --cp-ai-bg:           var(--ds-background-information-bold, rgba(59,130,246, 0.08));
   --cp-ai-bd:           var(--ds-background-information-bold, rgba(59,130,246, 0.16));
-  --cp-ai-t:            var(--ds-text-brand, #60A5FA);
+  --cp-ai-t:            var(--ds-text-brand);
 
   /* StatusLozenge — Bold pill (matches StatusBadge canonical) */
-  --cp-lz-gy-bg:        var(--ds-text-subtle, #42526E);
-  --cp-lz-gy-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --cp-lz-bl-bg:        var(--ds-link, #0C66E4);
-  --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A));
-  --cp-lz-gn-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --cp-lz-rd-bg:        var(--ds-text-danger, #AE2A19);
-  --cp-lz-rd-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --cp-lz-gy-bg:        var(--ds-text-subtle);
+  --cp-lz-gy-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --cp-lz-bl-bg:        var(--ds-link);
+  --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, var(--ds-background-success-bold));
+  --cp-lz-gn-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --cp-lz-rd-bg:        var(--ds-text-danger);
+  --cp-lz-rd-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 
   /* StatusBadge — Jira-grade pill tokens (dark) */
-  --status-todo-bg:         var(--ds-text, #172B4D);
-  --status-todo-text:       var(--ds-background-neutral-hovered, #D4D4D4);
-  --status-inprogress-bg:   var(--ds-link, #0C66E4);
-  --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --status-done-bg:         var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A));
-  --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --status-todo-bg:         var(--ds-text);
+  --status-todo-text:       var(--ds-background-neutral-hovered);
+  --status-inprogress-bg:   var(--ds-link);
+  --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --status-done-bg:         var(--cp-lozenge-green-bg, var(--ds-background-success-bold));
+  --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
 
   /* Progress */
-  --cp-prg-bg:          var(--ds-border, var(--cp-ink-1, #292929));
+  --cp-prg-bg:          var(--ds-border, var(--cp-ink-1));
 
   /* Scrollbar */
-  --cp-scroll:          var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --cp-scroll:          var(--ds-border, var(--cp-ink-1));
 
   /* Chart Palette */
-  --cp-chart-1: var(--ds-text-brand, #60A5FA);
-  --cp-chart-2: var(--ds-background-success, #DCFFF1);
-  --cp-chart-3: var(--ds-background-warning-bold, #E2B203);
-  --cp-chart-4: var(--ds-background-danger, #FFECEB);
-  --cp-chart-5: var(--ds-background-success, #DFFCF0);
-  --cp-chart-6: var(--ds-background-discovery, #F3F0FF);
-  --cp-chart-7: var(--ds-background-accent-magenta-subtle, #FCE7F3);
-  --cp-chart-8: var(--ds-text-disabled, #8590A2);
+  --cp-chart-1: var(--ds-text-brand);
+  --cp-chart-2: var(--ds-background-success);
+  --cp-chart-3: var(--ds-background-warning-bold);
+  --cp-chart-4: var(--ds-background-danger);
+  --cp-chart-5: var(--ds-background-success);
+  --cp-chart-6: var(--ds-background-discovery);
+  --cp-chart-7: var(--ds-background-accent-magenta-subtle);
+  --cp-chart-8: var(--ds-text-disabled);
 }
 
 /* ── Scrollbar dark mode ── */

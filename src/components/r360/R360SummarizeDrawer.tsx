@@ -15,7 +15,7 @@ const DUE_SOON_DAYS = 7;
 const HIGH_VELOCITY_THRESHOLD = 5;
 
 const STATIC_RAINBOW =
-  'conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder, #BE185D) 0deg, var(--ds-background-discovery-bold, #6E5DC6) 60deg, var(--ds-link, #0C66E4) 120deg, var(--ds-background-information-bold, #0C66E4) 180deg, var(--ds-background-success, #DFFCF0) 240deg, var(--ds-background-warning-bold, #E2B203) 300deg, var(--ds-background-accent-magenta-bolder, #BE185D) 360deg)';
+  'conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder) 0deg, var(--ds-background-discovery-bold) 60deg, var(--ds-link) 120deg, var(--ds-background-information-bold) 180deg, var(--ds-background-success) 240deg, var(--ds-background-warning-bold) 300deg, var(--ds-background-accent-magenta-bolder) 360deg)';
 
 interface ProjectSummary {
   projectKey: string;
@@ -263,16 +263,16 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
   }, [summary]);
 
   const REC_BORDER: Record<Recommendation['type'], string> = {
-    warning: token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)'),
-    win: token('color.border.success', 'var(--ds-background-success-bold, #1F845A)'),
-    suggestion: token('color.border.information', 'var(--ds-background-information-bold, #0C66E4)'),
+    warning: token('color.border.warning', 'var(--ds-background-warning-bold)'),
+    win: token('color.border.success', 'var(--ds-background-success-bold)'),
+    suggestion: token('color.border.information', 'var(--ds-background-information-bold)'),
   };
 
   if (loading) {
     return (
       <div style={{ padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
         <Spinner size="large" />
-        <span style={{ fontSize: 14, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
           Generating summary...
         </span>
       </div>
@@ -285,9 +285,9 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
         <div style={{
           padding: 16,
           borderRadius: 8,
-          background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
-          color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-          fontSize: 14,
+          background: token('color.background.danger', 'var(--ds-background-danger)'),
+          color: token('color.text.danger', 'var(--ds-text-danger)'),
+          fontSize: 'var(--ds-font-size-400)',
         }}>
           {error}
         </div>
@@ -301,7 +301,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 20, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
           ✦ Ask Caty — Summarize
         </span>
         <button
@@ -310,8 +310,8 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontSize: 20,
-            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+            fontSize: 'var(--ds-font-size-700)',
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             padding: 4,
             lineHeight: 1,
           }}
@@ -326,10 +326,10 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 
       {/* Sub-header */}
       <div style={{ padding: '16px 24px 8px' }}>
-        <div style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: token('color.text', 'var(--ds-text)') }}>
           Work summary for {summary.resourceName}
         </div>
-        <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 4 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), marginTop: 4 }}>
           Generated {generatedLabel} · Based on {summary.totalItems} items
           {fromCache && ' · Cached'}
         </div>
@@ -340,12 +340,12 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 
         {/* Capacity snapshot */}
         <div style={{
-          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
           borderRadius: 8,
           padding: 16,
           marginBottom: 16,
         }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 8 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 8 }}>
             Capacity snapshot
           </div>
           <div style={{ display: 'flex', gap: 24, marginBottom: 8 }}>
@@ -367,7 +367,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
         {/* Recommendations */}
         {summary.recommendations.length > 0 && (
           <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 8 }}>
               Recommendations
             </div>
             {summary.recommendations.map((rec, i) => (
@@ -378,9 +378,9 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
                   padding: '8px 16px',
                   marginBottom: 8,
                   borderRadius: '0 4px 4px 0',
-                  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-                  fontSize: 13,
-                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+                  fontSize: 'var(--ds-font-size-300)',
+                  color: token('color.text', 'var(--ds-text)'),
                 }}
               >
                 {rec.text}
@@ -391,8 +391,8 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 
         {/* Cache indicator */}
         <div style={{
-          fontSize: 11,
-          color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+          fontSize: 'var(--ds-font-size-100)',
+          color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
           marginTop: 16,
           textAlign: 'center',
         }}>
@@ -406,10 +406,10 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div>
-      <div style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+      <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
         {value}
       </div>
-      <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
         {label}
       </div>
     </div>
@@ -425,9 +425,9 @@ function UtilizationBar({ projects, total }: { projects: ProjectSummary[]; total
 
   return (
     <div style={{ display: 'flex', height: 4, borderRadius: 2, overflow: 'hidden' }}>
-      {doneW > 0 && <div style={{ width: `${doneW}%`, background: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)') }} />}
-      {ipW > 0 && <div style={{ width: `${ipW}%`, background: token('color.background.information.bold', 'var(--ds-link, #0C66E4)') }} />}
-      {todoW > 0 && <div style={{ width: `${todoW}%`, background: token('color.background.neutral', 'var(--ds-border, #DFE1E6)') }} />}
+      {doneW > 0 && <div style={{ width: `${doneW}%`, background: token('color.background.success.bold', 'var(--ds-background-success-bold)') }} />}
+      {ipW > 0 && <div style={{ width: `${ipW}%`, background: token('color.background.information.bold', 'var(--ds-link)') }} />}
+      {todoW > 0 && <div style={{ width: `${todoW}%`, background: token('color.background.neutral', 'var(--ds-border)') }} />}
     </div>
   );
 }
@@ -439,32 +439,32 @@ function ProjectCard({ project }: { project: ProjectSummary }) {
 
   return (
     <div style={{
-      border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+      border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
       borderRadius: 8,
       padding: 16,
       marginBottom: 8,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
           {project.projectKey}
         </span>
-        <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
           {project.total} items
         </span>
       </div>
 
       {/* Status dots */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
-        <StatusDot color={token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')} label="Done" count={project.done} />
-        <StatusDot color={token('color.icon.information', 'var(--ds-link, #0C66E4)')} label="In progress" count={project.inProgress} />
-        <StatusDot color={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)')} label="To do" count={project.toDo} />
+        <StatusDot color={token('color.icon.success', 'var(--ds-background-success-bold)')} label="Done" count={project.done} />
+        <StatusDot color={token('color.icon.information', 'var(--ds-link)')} label="In progress" count={project.inProgress} />
+        <StatusDot color={token('color.icon.subtle', 'var(--ds-text-subtlest)')} label="To do" count={project.toDo} />
       </div>
 
       {/* Completion bar */}
       <div style={{ display: 'flex', height: 4, borderRadius: 2, overflow: 'hidden', marginBottom: 8 }}>
-        {doneW > 0 && <div style={{ width: `${doneW}%`, background: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)') }} />}
-        {ipW > 0 && <div style={{ width: `${ipW}%`, background: token('color.background.information.bold', 'var(--ds-link, #0C66E4)') }} />}
-        {todoW > 0 && <div style={{ width: `${todoW}%`, background: token('color.background.neutral', 'var(--ds-border, #DFE1E6)') }} />}
+        {doneW > 0 && <div style={{ width: `${doneW}%`, background: token('color.background.success.bold', 'var(--ds-background-success-bold)') }} />}
+        {ipW > 0 && <div style={{ width: `${ipW}%`, background: token('color.background.information.bold', 'var(--ds-link)') }} />}
+        {todoW > 0 && <div style={{ width: `${todoW}%`, background: token('color.background.neutral', 'var(--ds-border)') }} />}
       </div>
 
       {/* Key items */}
@@ -472,16 +472,16 @@ function ProjectCard({ project }: { project: ProjectSummary }) {
         <div
           key={item.key}
           style={{
-            fontSize: 12,
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            fontSize: 'var(--ds-font-size-200)',
+            color: token('color.text', 'var(--ds-text)'),
             padding: '2px 0',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
           }}
         >
-          <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginRight: 4 }}>·</span>
-          <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), fontWeight: 500, marginRight: 4 }}>
+          <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), marginRight: 4 }}>·</span>
+          <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle)'), fontWeight: 500, marginRight: 4 }}>
             {item.key}
           </span>
           {item.title}
@@ -501,7 +501,7 @@ function StatusDot({ color, label, count }: { color: string; label: string; coun
         background: color,
         flexShrink: 0,
       }} />
-      <span style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle)') }}>
         {count} {label}
       </span>
     </div>

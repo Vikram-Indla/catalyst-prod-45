@@ -282,7 +282,7 @@ export function IndustryHeaderToolbarV2({
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
-            className="md:hidden h-9 px-3 flex items-center gap-2 rounded-lg bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[var(--ds-link-pressed, #1d4ed8)] text-white text-sm font-medium transition-colors shadow-sm"
+            className="md:hidden h-9 px-3 flex items-center gap-2 rounded-lg bg-[var(--cp-workstream-catalyst-primary)] hover:bg-[var(--ds-link-pressed)] text-white text-sm font-medium transition-colors shadow-sm"
           >
             <div className="w-4 h-4">
               <Icons.Plus />
@@ -446,7 +446,7 @@ export function IndustryHeaderToolbarV2({
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
-            className="hidden md:flex h-9 px-4 items-center gap-2 rounded-lg bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[var(--ds-link-pressed, #1d4ed8)] text-white text-sm font-medium transition-colors shadow-sm"
+            className="hidden md:flex h-9 px-4 items-center gap-2 rounded-lg bg-[var(--cp-workstream-catalyst-primary)] hover:bg-[var(--ds-link-pressed)] text-white text-sm font-medium transition-colors shadow-sm"
           >
             <div className="w-4 h-4">
               <Icons.Plus />

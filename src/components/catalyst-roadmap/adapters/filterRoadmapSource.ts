@@ -62,12 +62,12 @@ function resolvedDate(row: JqlResultRow, dateField: DateField): string | null {
 // ── ADS-token lane colours (one per lane slot, cycling) ───────────────────────
 
 const LANE_COLORS = [
-  'var(--ds-background-information, #E9F2FE)',
-  'var(--ds-background-success, #DCFFF1)',
-  'var(--ds-background-warning, #FFF7D6)',
-  'var(--ds-background-danger, #FFEDEB)',
-  'var(--ds-background-discovery, #F3F0FF)',
-  'var(--ds-background-neutral, #F1F2F4)',
+  'var(--ds-background-information)',
+  'var(--ds-background-success)',
+  'var(--ds-background-warning)',
+  'var(--ds-background-danger)',
+  'var(--ds-background-discovery)',
+  'var(--ds-background-neutral)',
 ];
 
 // ── Core pure mapper ──────────────────────────────────────────────────────────
@@ -133,7 +133,7 @@ export function jqlRowsToRoadmapGroups(
     groups.push({
       id:    'lane-unscheduled',
       name:  'Unscheduled',
-      color: 'var(--ds-background-neutral, #F1F2F4)',
+      color: 'var(--ds-background-neutral)',
       order: groups.length,
       objs:  unscheduledObjs,
       ms:    [],

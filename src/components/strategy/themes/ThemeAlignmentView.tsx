@@ -28,33 +28,33 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: 'var(--ds-link-pressed, #0747A6)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  goal:       { color: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', badgeBg: 'var(--ds-background-success, #DFFCF0)', badgeText: 'var(--ds-text-success, #216E4E)', border: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-information, #E9F2FF)', badgeText: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: 'var(--ds-background-warning, #FFF7D6)', badgeText: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  epic:       { color: 'var(--ds-background-discovery-bold, #6E5DC6)', badgeBg: '#EEF2FF', badgeText: 'var(--ds-background-discovery-bold, #3730a3)', border: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', badgeBg: 'var(--ds-background-selected)', badgeText: 'var(--ds-link-pressed)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  goal:       { color: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', badgeBg: 'var(--ds-background-success)', badgeText: 'var(--ds-text-success)', border: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', badgeBg: 'var(--ds-background-information)', badgeText: 'var(--ds-link-pressed)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  initiative: { color: 'var(--ds-text-warning, var(--cp-warning))', badgeBg: 'var(--ds-background-warning)', badgeText: 'var(--ds-text-warning)', border: 'var(--ds-text-warning, var(--cp-warning))' },
+  epic:       { color: 'var(--ds-background-discovery-bold)', badgeBg: '#EEF2FF', badgeText: 'var(--ds-background-discovery-bold)', border: 'var(--ds-background-discovery-bold)' },
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  active:       { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'Active' },
-  on_track:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'On Track' },
-  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'At Risk' },
-  off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
-  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
-  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
-  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'Done' },
-  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
-  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'In Progress' },
-  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
-  approved:     { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'Approved' },
-  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
-  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
+  active:       { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'Active' },
+  on_track:     { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'On Track' },
+  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'At Risk' },
+  off_track:    { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', label: 'Off Track' },
+  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Draft' },
+  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Planned' },
+  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-link-pressed)', label: 'Done' },
+  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Cancelled' },
+  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-link-pressed)', label: 'In Progress' },
+  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Not Started' },
+  approved:     { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'Approved' },
+  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Proposed' },
+  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
-  if (v >= 60) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (v >= 40) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-danger, #EF4444)';
+  if (v >= 60) return 'var(--ds-text-success, var(--cp-success))';
+  if (v >= 40) return 'var(--ds-text-warning, var(--cp-warning))';
+  return 'var(--ds-text-danger)';
 }
 
 // ── Sub-components ──
@@ -63,7 +63,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = STATUS_CONFIG[status?.toLowerCase()] || STATUS_CONFIG.draft;
   return (
     <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md shrink-0"
-      style={{ background: c.bg, color: c.text, fontSize: 9, fontWeight: 600 }}>
+      style={{ background: c.bg, color: c.text, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
       <div className="rounded-full shrink-0" style={{ width: 5, height: 5, background: c.dot }} />
       {c.label}
     </div>
@@ -72,15 +72,15 @@ function StatusBadge({ status }: { status: string }) {
 
 function ChainStat({ label, value, total }: { label: string; value: number; total: number }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-  const clr = pct >= 70 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+  const clr = pct >= 70 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return (
     <div className="text-center" style={{ minWidth: 100 }}>
       <div className="flex items-baseline justify-center gap-1">
-        <span className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>{value}</span>
-        <span className="text-muted-foreground" style={{ fontSize: 12 }}>/{total}</span>
-        <span style={{ color: clr, fontSize: 12, fontWeight: 600 }}>({pct}%)</span>
+        <span className="text-foreground" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>{value}</span>
+        <span className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>/{total}</span>
+        <span style={{ color: clr, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>({pct}%)</span>
       </div>
-      <div className="text-muted-foreground" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+      <div className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
     </div>
   );
 }
@@ -88,9 +88,9 @@ function ChainStat({ label, value, total }: { label: string; value: number; tota
 function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
-      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'var(--ds-surface, rgba(248,250,252,0.5))' }}>
-      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No linked {label}</span>
+      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled)', background: 'var(--ds-surface, rgba(248,250,252,0.5))' }}>
+      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>No linked {label}</span>
     </div>
   );
 }
@@ -99,10 +99,10 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
   return (
     <div className="flex items-center gap-1.5 max-w-[180px]">
       <span className="font-mono font-bold px-1.5 py-0.5 rounded shrink-0"
-        style={{ fontSize: 9, background: `${color}15`, color }}>
+        style={{ fontSize: 'var(--ds-font-size-100)', background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>{title}</span>
     </div>
   );
 }
@@ -111,13 +111,13 @@ function MetricCard({ label, value, sub, color }: { label: string; value: string
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-3">
-        <p className="uppercase tracking-wider font-semibold text-muted-foreground mb-1" style={{ fontSize: 10 }}>
+        <p className="uppercase tracking-wider font-semibold text-muted-foreground mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>
           {label}
         </p>
-        <p className="font-bold leading-none" style={{ fontSize: 20, color }}>
+        <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color }}>
           {value}
         </p>
-        {sub && <p className="text-muted-foreground mt-1" style={{ fontSize: 10 }}>{sub}</p>}
+        {sub && <p className="text-muted-foreground mt-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>{sub}</p>}
       </CardContent>
     </Card>
   );
@@ -127,8 +127,8 @@ function AILoadingState() {
   return (
     <div className="px-8 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: 'var(--ds-background-discovery, #F3F0FF)' }}>
-          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: 'var(--ds-background-discovery)' }}>
+          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
         </div>
         <div>
           <div className="h-3 w-48 bg-muted rounded-full animate-pulse" />
@@ -165,13 +165,13 @@ function getChainHealthLabel(chain: LockedChainData | null): string {
 function getChainHealthColor(chain: LockedChainData | null): string {
   const label = getChainHealthLabel(chain);
   switch (label) {
-    case 'Strong': return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-    case 'Moderate': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    case 'At Risk': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    case 'Critical': return 'var(--ds-text-danger, #EF4444)';
-    case 'Broken': return 'var(--ds-text-danger, #EF4444)';
-    case 'Partial': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    default: return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+    case 'Strong': return 'var(--ds-text-success, var(--cp-success))';
+    case 'Moderate': return 'var(--ds-text-warning, var(--cp-warning))';
+    case 'At Risk': return 'var(--ds-text-warning, var(--cp-warning))';
+    case 'Critical': return 'var(--ds-text-danger)';
+    case 'Broken': return 'var(--ds-text-danger)';
+    case 'Partial': return 'var(--ds-text-warning, var(--cp-warning))';
+    default: return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
   }
 }
 
@@ -670,7 +670,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   function getPathStyle(p: RenderedPath) {
     if (!isFocused && !anyHover) {
-      return { stroke: 'var(--ds-border, #DFE1E6)', strokeWidth: 1, opacity: 0.35, filter: 'none' };
+      return { stroke: 'var(--ds-border)', strokeWidth: 1, opacity: 0.35, filter: 'none' };
     }
     if (isFocused) {
       const srcIn = focusedChain!.nodes.has(p.sourceId);
@@ -678,12 +678,12 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       if (srcIn && tgtIn) {
         return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px var(--ds-background-information, rgba(37, 99, 235, 0.3)))' };
       }
-      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
     }
     // Hover-only
     const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
     if (isLit) return { stroke: p.layerColor, strokeWidth: 2.5, opacity: 1, filter: 'none' };
-    return { stroke: 'var(--ds-border, #DFE1E6)', strokeWidth: 1, opacity: 0.08, filter: 'none' };
+    return { stroke: 'var(--ds-border)', strokeWidth: 1, opacity: 0.08, filter: 'none' };
   }
 
   // ── Loading / empty states ──
@@ -738,8 +738,8 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                 <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
                 <Separator orientation="vertical" className="h-5" />
                 <div className="text-center">
-                  <div className="text-foreground font-bold" style={{ fontSize: 15 }}>{stats.fullChains}</div>
-                  <div className="text-muted-foreground uppercase" style={{ fontSize: 10, letterSpacing: '0.05em' }}>Full Chains</div>
+                  <div className="text-foreground font-bold" style={{ fontSize: 'var(--ds-font-size-400)' }}>{stats.fullChains}</div>
+                  <div className="text-muted-foreground uppercase" style={{ fontSize: 'var(--ds-font-size-50)', letterSpacing: '0.05em' }}>Full Chains</div>
                 </div>
               </div>
             </>
@@ -767,7 +767,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                 <Minus size={12} />
               </button>
             </Tooltip>
-            <span className="font-mono text-center text-muted-foreground" style={{ fontSize: 10, width: 28 }}>
+            <span className="font-mono text-center text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', width: 28 }}>
               {Math.round(zoom * 100)}%
             </span>
             <Tooltip content="Zoom in">
@@ -796,18 +796,18 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
       {/* ═══ CHAIN EXPLANATION BANNER ═══ */}
       <div className="flex items-center justify-center shrink-0 px-6 border-b border-border bg-muted/50 dark:bg-transparent" style={{ height: 40 }}>
-        <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
+        <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 'var(--ds-font-size-200)' }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-selected, #EFF6FF)', borderColor: 'var(--ds-background-information, #E9F2FF)' }}>● Theme</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed)', background: 'var(--ds-background-selected)', borderColor: 'var(--ds-background-information)' }}>● Theme</span>
           <span>breaks down into</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-success, #216E4E)', background: 'var(--ds-background-success, #DFFCF0)', borderColor: 'var(--ds-background-success, #DFFCF0)' }}>● Goals</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-success)', background: 'var(--ds-background-success)', borderColor: 'var(--ds-background-success)' }}>● Goals</span>
           <span>measured by</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-information, #E9F2FF)', borderColor: 'var(--ds-background-information-bold, #0C66E4)' }}>● Key Results</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed)', background: 'var(--ds-background-information)', borderColor: 'var(--ds-background-information-bold)' }}>● Key Results</span>
           <span>delivered through</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-warning, #974F0C)', background: 'var(--ds-background-warning, #FFF7D6)', borderColor: 'var(--ds-background-warning, #FFF7D6)' }}>● Requests</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-warning)', background: 'var(--ds-background-warning)', borderColor: 'var(--ds-background-warning)' }}>● Requests</span>
           <span>executed as</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-background-discovery-bold, #3730a3)', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-background-discovery-bold)', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
         </div>
       </div>
 
@@ -818,7 +818,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           ref={canvasRef}
           className="overflow-auto select-none transition-all duration-400 ease-out"
           style={{
-            background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))',
+            background: 'var(--bg-1, var(--ds-surface-sunken))',
             cursor: isPanning ? 'grabbing' : 'grab',
             width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,
@@ -839,10 +839,10 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   borderLeft: `3px solid ${col.color}`,
                 }}>
                 <div className="rounded-full" style={{ width: 8, height: 8, background: col.color }} />
-                <span className="font-bold uppercase text-foreground" style={{ fontSize: 13, letterSpacing: '0.03em' }}>
+                <span className="font-bold uppercase text-foreground" style={{ fontSize: 'var(--ds-font-size-300)', letterSpacing: '0.03em' }}>
                   {col.label}
                 </span>
-                <span className="font-semibold text-muted-foreground" style={{ fontSize: 12 }}>
+                <span className="font-semibold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>
                   ({col.count})
                 </span>
               </div>
@@ -894,21 +894,21 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3.5">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
                               {t.key}
                             </span>
                             <StatusBadge status={t.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 13 }}>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-300)' }}>
                             {t.title}
                           </p>
                           <div className="flex items-center gap-2 mt-2.5">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 5 }}>
                               <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-foreground" style={{ fontSize: 11 }}>{Math.round(t.progress || 0)}%</span>
+                            <span className="font-bold text-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{Math.round(t.progress || 0)}%</span>
                           </div>
-                          <div className="text-muted-foreground" style={{ fontSize: 10, marginTop: 8 }}>
+                          <div className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', marginTop: 8 }}>
                             {t.goalCount || 0} goals · {t.krCount || 0} KRs
                           </div>
                         </div>
@@ -933,15 +933,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
                             <StatusBadge status={g.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 12 }}>{g.title}</p>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>{g.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
                               <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(g.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(g.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -965,15 +965,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
                             <StatusBadge status={kr.status} />
                           </div>
-                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 11 }}>{kr.title}</p>
+                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{kr.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 3 }}>
                               <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(kr.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(kr.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -1000,15 +1000,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
                             <StatusBadge status={ini.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 12 }}>{ini.title}</p>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>{ini.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
                               <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(ini.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(ini.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -1037,10 +1037,10 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
                             <StatusBadge status={epic.status} />
                           </div>
-                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 11 }}>{epic.title}</p>
+                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{epic.title}</p>
                         </div>
                       </div>
                     </div>
@@ -1080,13 +1080,13 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           { label: 'Request', color: LAYER.initiative.color },
           { label: 'Epic', color: LAYER.epic.color },
         ].map(item => (
-          <div key={item.label} className="flex items-center gap-1.5 font-medium text-muted-foreground" style={{ fontSize: 11 }}>
+          <div key={item.label} className="flex items-center gap-1.5 font-medium text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>
             <div className="rounded-full" style={{ width: 10, height: 3, background: item.color }} />
             {item.label}
           </div>
         ))}
         <Separator orientation="vertical" className="h-3 mx-1" />
-        <div className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: 11 }}>
+        <div className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>
           <div style={{ width: 10, height: 0, borderTop: '1px dashed currentColor' }} />
           Unlinked
         </div>

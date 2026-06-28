@@ -27,39 +27,39 @@ export const STATUS_CATEGORIES: Record<string, string[]> = {
  * `in_uat` it renders the canonical blue, not cyan.
  */
 export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  todo:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
-  in_progress: { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
-  done:        { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
-  blocked:     { bg: 'var(--ds-background-danger, #FFEBE6)', text: 'var(--ds-text-danger, #BF2600)' },
-  on_hold:     { bg: 'var(--ds-background-warning, #FFF0B3)', text: 'var(--ds-text-warning, #974F0C)' },
-  in_uat:      { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' }, // was #00B8D9 cyan — now Atlaskit inprogress-blue
-  in_beta:     { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
-  in_prod:     { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
-  in_review:   { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
+  todo:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text)' },
+  in_progress: { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' },
+  done:        { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' },
+  blocked:     { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)' },
+  on_hold:     { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)' },
+  in_uat:      { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' }, // was #00B8D9 cyan — now Atlaskit inprogress-blue
+  in_beta:     { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' },
+  in_prod:     { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' },
+  in_review:   { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' },
 };
 
 export const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
-  grey:  { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
-  blue:  { background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
-  green: { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
+  grey:  { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)' },
+  blue:  { background: 'var(--ds-background-information)', color: 'var(--ds-link-pressed)' },
+  green: { background: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
 };
 
 export const LOZENGE: Record<StatusCategory, React.CSSProperties> = {
-  todo:        { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
-  in_progress: { background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
-  done:        { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
+  todo:        { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)' },
+  in_progress: { background: 'var(--ds-background-information)', color: 'var(--ds-link-pressed)' },
+  done:        { background: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
 };
 
 export const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-icon-danger, #FF5630)', High: 'var(--ds-icon-danger, #FF5630)', Medium: 'var(--ds-icon-warning, #FFAB00)', Low: 'var(--ds-background-success-bold, #36B37E)', Lowest: 'var(--ds-background-neutral-bold, #8993A4)',
+  Highest: 'var(--ds-icon-danger)', High: 'var(--ds-icon-danger)', Medium: 'var(--ds-icon-warning)', Low: 'var(--ds-background-success-bold)', Lowest: 'var(--ds-background-neutral-bold)',
 };
 
 export const PRIORITY_STYLES: Record<string, { color: string; symbol: string }> = {
-  Highest: { color: 'var(--ds-text-danger, #AE2A19)', symbol: '▲▲' },
-  High: { color: 'var(--ds-text-danger, #DE350B)', symbol: '▲' },
-  Medium: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', symbol: '—' },
-  Low: { color: 'var(--ds-background-success-bold, #36B37E)', symbol: '▼' },
-  Lowest: { color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', symbol: '▼▼' },
+  Highest: { color: 'var(--ds-text-danger)', symbol: '▲▲' },
+  High: { color: 'var(--ds-text-danger)', symbol: '▲' },
+  Medium: { color: 'var(--ds-text-warning, var(--cp-warning))', symbol: '—' },
+  Low: { color: 'var(--ds-background-success-bold)', symbol: '▼' },
+  Lowest: { color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', symbol: '▼▼' },
 };
 
 export const PRIORITY_ICONS: Record<string, string> = {
@@ -69,11 +69,11 @@ export const PRIORITY_ICONS: Record<string, string> = {
 export const PRIORITY_LIST: PriorityLevel[] = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
 export const TEST_RESULT_STYLES: Record<TestResult, React.CSSProperties> = {
-  passed:  { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
-  failed:  { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
-  blocked: { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
-  skipped: { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
-  not_run: { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },
+  passed:  { background: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
+  failed:  { background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' },
+  blocked: { background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' },
+  skipped: { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)' },
+  not_run: { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' },
 };
 
 export const LINK_TYPE_LABELS: Record<string, string> = {
@@ -86,14 +86,14 @@ export const LINK_TYPE_LABELS: Record<string, string> = {
 };
 
 export const LINK_TYPE_STYLES: Record<string, React.CSSProperties> = {
-  blocks:           { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
-  'is blocked by':  { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
-  'relates to':     { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
-  relates_to:       { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
-  duplicates:       { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
-  'is duplicated by': { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },
-  clones:           { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
-  'is cloned by':   { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
+  blocks:           { background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' },
+  'is blocked by':  { background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' },
+  'relates to':     { background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' },
+  relates_to:       { background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' },
+  duplicates:       { background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' },
+  'is duplicated by': { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' },
+  clones:           { background: 'var(--ds-background-selected)', color: 'var(--ds-background-brand-bold-hovered)' },
+  'is cloned by':   { background: 'var(--ds-background-selected)', color: 'var(--ds-background-brand-bold-hovered)' },
 };
 
 export const LINK_TYPE_OPTIONS = [
@@ -163,14 +163,14 @@ export const WORK_ITEM_ICONS: Record<string, string> = Object.fromEntries(
 
 export const menuItemStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
-  background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtle, #344054)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+  background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtle)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
   textAlign: 'left',
 };
 
 export const detailLabelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 650, color: 'var(--ds-text-subtle, #475467)', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
+  fontSize: 11, fontWeight: 650, color: 'var(--ds-text-subtle)', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 
 export const detailValueStyle: React.CSSProperties = {
-  fontSize: 13, color: 'var(--ds-text, #101828)', padding: '6px 0',
+  fontSize: 13, color: 'var(--ds-text)', padding: '6px 0',
 };

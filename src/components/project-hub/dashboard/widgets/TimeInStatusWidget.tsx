@@ -237,7 +237,7 @@ function totalBg(ms: number, max: number): string {
   if (!ms || max <= 0) return 'transparent';
   const ratio = Math.min(1, ms / max);
   if (ratio < 0.5) return 'transparent';
-  return 'var(--ds-background-neutral, #F1F2F4)';
+  return 'var(--ds-background-neutral)';
 }
 
 const ROW_HEIGHT = 35;
@@ -342,8 +342,8 @@ export default function TimeInStatusWidget({
           justifyContent: 'space-between',
           gap: token('space.200', '16px'),
           padding: '12px 16px',
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+          background: token('elevation.surface', 'var(--ds-surface)'),
         }}
       >
         {/* Issue-type tabs */}
@@ -364,8 +364,8 @@ export default function TimeInStatusWidget({
                   ...(active ? SMALL_STRONG : SMALL),
                   borderRadius: 'var(--ds-border-radius, 3px)',
                   border: '1px solid transparent',
-                  background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
-                  color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
+                  background: active ? 'var(--ds-background-neutral)' : 'transparent',
+                  color: active ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                 }}
@@ -392,8 +392,8 @@ export default function TimeInStatusWidget({
                   ...(active ? SMALL_STRONG : SMALL),
                   borderRadius: 'var(--ds-border-radius, 3px)',
                   border: '1px solid transparent',
-                  background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
-                  color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
+                  background: active ? 'var(--ds-background-neutral)' : 'transparent',
+                  color: active ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
                   cursor: 'pointer',
                 }}
                 title={WINDOW_LABELS[w]}
@@ -444,16 +444,16 @@ export default function TimeInStatusWidget({
             }}
           >
             <thead>
-              <tr style={{ background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), position: 'sticky', top: 0, zIndex: 2 }}>
+              <tr style={{ background: token('elevation.surface', 'var(--ds-surface)'), position: 'sticky', top: 0, zIndex: 2 }}>
                 <th
                   style={{
                     position: 'sticky', left: 0, zIndex: 3,
-                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                    background: token('elevation.surface', 'var(--ds-surface)'),
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
                     padding: '4px',
                     borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
-                    borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                    borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                     ...SMALL_STRONG,
                     fontWeight: 500,
                     textTransform: 'none',
@@ -471,7 +471,7 @@ export default function TimeInStatusWidget({
                       textAlign: 'left',
                       padding: '4px',
                       borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
-                      borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                      borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                     }}
                   >
                     {/* 2026-06-10 — Jira-canonical pill via shared StatusPill
@@ -491,7 +491,7 @@ export default function TimeInStatusWidget({
                     borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
                     ...STRONG,
                     fontWeight: 500,
-                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                    background: token('elevation.surface', 'var(--ds-surface)'),
                     position: 'sticky', right: 0, zIndex: 2,
                   }}
                 >
@@ -513,18 +513,18 @@ export default function TimeInStatusWidget({
                     })
                   }
                   style={{ height: ROW_HEIGHT, cursor: 'pointer' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   {/* Frozen left cell */}
                   <td
                     style={{
                       position: 'sticky', left: 0,
-                      background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                    boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--ds-border, #DFE1E6)'),
+                      background: token('elevation.surface', 'var(--ds-surface)'),
+                    boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--ds-border)'),
                       padding: '4px',
-                      borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                      borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                      borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                      borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                       width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     }}
                   >
@@ -538,7 +538,7 @@ export default function TimeInStatusWidget({
                       <span
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: 8,
-                          color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                          color: token('color.link', 'var(--ds-link)'),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           ...BODY, whiteSpace: 'nowrap',
                           flexShrink: 0,
@@ -554,7 +554,7 @@ export default function TimeInStatusWidget({
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           ...BODY,
-                          color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                          color: token('color.link', 'var(--ds-link)'),
                         }}
                       >
                         {r.title}
@@ -575,8 +575,8 @@ export default function TimeInStatusWidget({
                         style={{
                           minWidth: STATUS_COL_MIN,
                           padding: '4px',
-                          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                          borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                          borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           ...LABEL,
@@ -630,10 +630,10 @@ export default function TimeInStatusWidget({
                                       <span
                                         style={{
                                           ...LABEL,
-                                          color: 'var(--ds-text-accent-red, #AE2A19)',
+                                          color: 'var(--ds-text-accent-red)',
                                           padding: '0 4px',
                                           borderRadius: 'var(--ds-border-radius, 4px)',
-                                          background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+                                          background: 'var(--ds-background-accent-red-subtler)',
                                         }}
                                         aria-label={`${visits} visits`}
                                       >
@@ -657,7 +657,7 @@ export default function TimeInStatusWidget({
                     style={{
                       padding: '4px',
                       textAlign: 'right',
-                      borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                      borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                       ...SMALL_STRONG,
                       color: token('color.text', '#292A2E'),
@@ -682,8 +682,8 @@ export default function TimeInStatusWidget({
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '8px 16px',
-              borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-              background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+              borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+              background: token('elevation.surface', 'var(--ds-surface)'),
               ...LABEL,
               color: token('color.text.subtle', '#505258'),
             }}
@@ -703,10 +703,10 @@ export default function TimeInStatusWidget({
                   onClick={() => setFullscreen(true)}
                   style={{
                     ...LABEL, height: 24, padding: '0 10px', cursor: 'pointer',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: 'var(--ds-border-radius, 3px)',
                     background: 'transparent',
-                    color: 'var(--ds-link, #0C66E4)',
+                    color: 'var(--ds-link)',
                     fontWeight: 600,
                   }}
                 >

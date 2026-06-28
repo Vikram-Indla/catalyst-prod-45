@@ -34,7 +34,7 @@ export function ForYouToolbar({
         <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--cp-t4)' }} />
         <span className="truncate" style={{
           flex: 1,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--cp-t4)',
         }}>
           Search work items...
@@ -45,7 +45,7 @@ export function ForYouToolbar({
           background: 'var(--cp-bd-zone)',
           border: '1px solid var(--cp-bd)',
           borderRadius: 4,
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           fontWeight: 600,
           color: 'var(--cp-t4)',
         }}>

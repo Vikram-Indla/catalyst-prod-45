@@ -9,7 +9,7 @@ function Providers({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 function Frame({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></Providers>;
+  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface)' }}>{children}</div></Providers>;
 }
 
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -25,7 +25,7 @@ export const AllTypes: StoryObj = {
         {ALL_TYPES.map(t => (
           <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 8 }}>
             <JiraIssueTypeIcon type={t} size={20} />
-            <span style={{ fontSize: 14 }}>{t}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{t}</span>
           </div>
         ))}
       </div>

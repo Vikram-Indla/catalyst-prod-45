@@ -26,11 +26,11 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter') onClick(); } : undefined}
       style={{
         padding: '10px 0',
-        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
+        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'background 150ms',
       }}
-      onMouseEnter={onClick ? (e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #F8FAFC)'; } : undefined}
+      onMouseEnter={onClick ? (e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover)'; } : undefined}
       onMouseLeave={onClick ? (e) => { e.currentTarget.style.background = 'transparent'; } : undefined}
     >
       {/* Status dot */}
@@ -48,9 +48,9 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
       <div className="flex-1 min-w-0">
         <div
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
-            color: 'var(--catalyst-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+            color: 'var(--catalyst-text-primary, var(--cp-ink-1, var(--cp-ink-1)))',
             lineHeight: 1.4,
           }}
         >
@@ -58,8 +58,8 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
         </div>
         <div
           style={{
-            fontSize: 11,
-            color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+            fontSize: 'var(--ds-font-size-100)',
+            color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light)))',
             lineHeight: 1.4,
           }}
         >
@@ -71,7 +71,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
       {progress !== undefined && (
         <span
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
             color: dotColor,
             flexShrink: 0,

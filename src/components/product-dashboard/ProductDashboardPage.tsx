@@ -33,14 +33,14 @@ function AkBtn({
         padding: '0 12px',
         borderRadius: 4,
         border: primary
-          ? `1px solid ${token('color.link', 'var(--ds-link, #0C66E4)')}`
-          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          ? `1px solid ${token('color.link', 'var(--ds-link)')}`
+          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         background: primary
-          ? hover ? 'var(--cp-primary-60, #0052CC)' : token('color.link', 'var(--ds-link, #0C66E4)')
-          : hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-        fontSize: 14,
+          ? hover ? 'var(--cp-primary-60)' : token('color.link', 'var(--ds-link)')
+          : hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral)') : token('elevation.surface', 'var(--ds-surface)'),
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
-        color: primary ? 'var(--ds-text-inverse, #FFFFFF)' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+        color: primary ? 'var(--ds-text-inverse)' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
         cursor: 'pointer',
         fontFamily: 'inherit',
         display: 'inline-flex',
@@ -65,7 +65,7 @@ export function ProductDashboardPage() {
         flexDirection: 'column',
         height: '100%',
         overflow: 'hidden',
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
       }}
     >
       {key && <ProjectPageHeader projectKey={key} hubType="product" />}
@@ -73,8 +73,8 @@ export function ProductDashboardPage() {
       {/* ── Sub-header: time range filter + actions ────────────────────── */}
       <div
         style={{
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          background: token('elevation.surface', 'var(--ds-surface)'),
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
           padding: '8px 32px',
           display: 'flex',
           alignItems: 'center',
@@ -112,9 +112,9 @@ export function ProductDashboardPage() {
         data-testid="workflow-path-region"
         style={{
           padding: '8px 32px',
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           flexShrink: 0,
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          background: token('elevation.surface', 'var(--ds-surface)'),
         }}
       >
         <DashboardWorkflowPath />

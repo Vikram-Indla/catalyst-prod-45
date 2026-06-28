@@ -59,7 +59,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger style={{ height: 32, fontSize: 13, minWidth: 120 }}>
+            <SelectTrigger style={{ height: 32, fontSize: 'var(--ds-font-size-300)', minWidth: 120 }}>
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -71,7 +71,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger style={{ height: 32, fontSize: 13, minWidth: 100 }}>
+            <SelectTrigger style={{ height: 32, fontSize: 'var(--ds-font-size-300)', minWidth: 100 }}>
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
@@ -95,7 +95,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
           >
             <ChevronLeft size={16} color={INK4} />
           </button>
-          <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
           <button
             onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
             disabled={weekOffset >= 0}
@@ -115,8 +115,8 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
           gap: 8, padding: '48px 16px',
         }}>
           <Inbox size={24} color={MUTED} />
-          <span style={{ fontSize: 13, color: INK4 }}>No work items found</span>
-          <span style={{ fontSize: 12, color: MUTED }}>Try adjusting the filters</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK4 }}>No work items found</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: MUTED }}>Try adjusting the filters</span>
         </div>
       ) : (
         <div style={{ overflowX: 'auto' }}>
@@ -146,19 +146,19 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
               <span style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
               </span>
-              <span style={{ width: 100, fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: INK4, paddingLeft: 8 }}>{item.item_key}</span>
+              <span style={{ width: 100, fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4, paddingLeft: 8 }}>{item.item_key}</span>
               <span style={{
-                flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
+                flex: 1, fontSize: 'var(--ds-font-size-300)', color: INK2, overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
               }}>{item.title}</span>
               <span style={{ width: 120 }}>
                 <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
               </span>
-              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 11, color: MUTED }}>{relTime(item.updated_at)}</span>
+              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 'var(--ds-font-size-100)', color: MUTED }}>{relTime(item.updated_at)}</span>
             </div>
           ))}
           {totalCount > 50 && (
-            <div style={{ padding: '8px 12px', fontSize: 12, color: MUTED, textAlign: 'center' as const }}>
+            <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: MUTED, textAlign: 'center' as const }}>
               Showing 50 of {totalCount} items
             </div>
           )}

@@ -119,7 +119,7 @@ export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKe
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>From (source)</label>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4 }}>From (source)</label>
                   <Select
                     options={candidates}
                     value={sourceKey}
@@ -133,7 +133,7 @@ export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKe
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Relationship</label>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4 }}>Relationship</label>
                   <Select
                     options={depTypeOptions}
                     value={depTypeOptions.find((opt) => opt.value === depType)}
@@ -144,7 +144,7 @@ export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKe
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>To (target)</label>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4 }}>To (target)</label>
                   <Select
                     options={candidates}
                     value={targetKey}
@@ -158,13 +158,13 @@ export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKe
                 </div>
 
                 {error && (
-                  <div style={{ padding: 8, borderRadius: 4, background: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12 }}>
+                  <div style={{ padding: 8, borderRadius: 4, background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-200)' }}>
                     {error}
                   </div>
                 )}
 
                 {sourceKey && targetKey && sourceKey.value !== targetKey.value && (
-                  <p style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', margin: 0 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', margin: 0 }}>
                     {sourceKey.value} <strong>{depType}</strong> {targetKey.value}
                   </p>
                 )}

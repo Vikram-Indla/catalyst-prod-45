@@ -58,7 +58,7 @@ export function DraftsAndSentTabs({
               marginBottom: -1,
               color: isActive ? 'var(--cv2-text)' : 'var(--cv2-text-subtle)',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: isActive ? 700 : 500,
               cursor: 'pointer',
               display: 'inline-flex',
@@ -70,7 +70,7 @@ export function DraftsAndSentTabs({
             {t.count !== null && (
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: isActive ? 'var(--cv2-text-subtle)' : 'var(--cv2-text-muted)',
                 }}

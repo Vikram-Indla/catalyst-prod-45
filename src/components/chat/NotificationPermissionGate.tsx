@@ -93,8 +93,8 @@ export function NotificationPermissionGate({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '12px 16px',
-        backgroundColor: 'var(--ds-background-information-subtle, #F1F7FF)',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        backgroundColor: 'var(--ds-background-information-subtle)',
+        borderBottom: '1px solid var(--ds-border)',
         gap: '12px',
       }}
     >
@@ -109,16 +109,16 @@ export function NotificationPermissionGate({
             flexShrink: 0,
           }}
         >
-          <BellIcon label="notifications" size="medium" primaryColor="var(--ds-link, #0052CC)" />
+          <BellIcon label="notifications" size="medium" primaryColor="var(--ds-link)" />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
           <p
             style={{
               margin: 0,
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text)',
             }}
           >
             Enable notifications for chat
@@ -126,8 +126,8 @@ export function NotificationPermissionGate({
           <p
             style={{
               margin: 0,
-              fontSize: '12px',
-              color: 'var(--ds-text-subtle, #42526E)',
+              fontSize: 'var(--ds-font-size-200)',
+              color: 'var(--ds-text-subtle)',
             }}
           >
             Get notified of @mentions, direct messages, and reminders.

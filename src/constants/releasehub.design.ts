@@ -1,12 +1,12 @@
 // ReleaseHub v2.1 — Design System Constants (V12 Hybrid Precision)
-// BANNED: Purple (var(--cp-purple-60, #7C3AED)), Yellow/Amber, ServiceNow, Golden Hour palette
+// BANNED: Purple (var(--cp-purple-60)), Yellow/Amber, ServiceNow, Golden Hour palette
 
 export const RH = {
   // Backgrounds
-  pageBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfaceBg: 'var(--bg-1, #F8FAFC)',
-  sunkenBg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+  pageBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfaceBg: 'var(--bg-1)',
+  sunkenBg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
 
   // Borders
   borderDefault: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
@@ -14,26 +14,26 @@ export const RH = {
   borderStrong: 'var(--ds-shadow-overlay, rgba(15,23,42,0.20))',
 
   // Colors
-  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  primaryDark: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
-  primaryLt: 'var(--ds-background-selected, #EFF6FF)',
-  teal: 'var(--cp-teal-60, #0D9488)',
-  success: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  successBg: 'var(--cp-lozenge-green-bg, #1B7F37)',
-  warning: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  danger: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  dangerBg: 'var(--ds-background-danger, #FEF2F2)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  primaryDark: 'var(--ds-background-brand-bold-hovered)',
+  primaryLt: 'var(--ds-background-selected)',
+  teal: 'var(--cp-teal-60)',
+  success: 'var(--ds-text-success, var(--cp-success))',
+  successBg: 'var(--cp-lozenge-green-bg)',
+  warning: 'var(--ds-text-warning, var(--cp-warning))',
+  danger: 'var(--ds-text-danger, var(--cp-danger))',
+  dangerBg: 'var(--ds-background-danger)',
 
   // AI = Blue, NOT purple
-  ai: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  aiLt: 'var(--ds-background-selected, #EFF6FF)',
-  aiBorder: 'var(--ds-background-information, #E9F2FF)',
+  ai: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  aiLt: 'var(--ds-background-selected)',
+  aiBorder: 'var(--ds-background-information)',
 
   // Text
-  ink1: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-  ink2: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  ink3: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  ink4: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+  ink1: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))',
+  ink2: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+  ink3: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+  ink4: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
 
   // Fonts
   fontDisplay: "var(--ds-font-family-heading)",
@@ -48,14 +48,14 @@ export const RH = {
 };
 
 // ── STATUS LOZENGE 3-COLOR GUARDRAIL ──────────────────────────────
-// GREY:  bg=var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) text=var(--ds-text, #253858) → NEW, ARCHIVED, NOT_STARTED
-// BLUE:  bg=#DEEBFF text=var(--ds-link-pressed, #0747A6) → IN_UAT, IN_BETA, IN_PROGRESS, PLANNING, WAITING
-// GREEN: bg=var(--ds-background-success, #E3FCEF) text=var(--ds-text-success, #006644) → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
+// GREY:  bg=var(--cp-lozenge-grey-bg, var(--cp-border-neutral)) text=var(--ds-text) → NEW, ARCHIVED, NOT_STARTED
+// BLUE:  bg=#DEEBFF text=var(--ds-link-pressed) → IN_UAT, IN_BETA, IN_PROGRESS, PLANNING, WAITING
+// GREEN: bg=var(--ds-background-success) text=var(--ds-text-success) → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
 
 export const LOZENGE = {
-  grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  blue:  { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  green: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  blue:  { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  green: { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
 } as const;
 
 type LozengeStyle = { bg: string; text: string };
@@ -95,25 +95,25 @@ export const CHG_STATUS_ORDER: string[] = ['new', 'in_uat', 'in_beta', 'in_produ
 
 // Risk badges
 export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
-  standard: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  low: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  high: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  emergency: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  critical: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  medium: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  standard: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  low: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  high: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger, var(--cp-danger))' },
+  emergency: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)' },
+  critical: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)' },
+  medium: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
 };
 
 // Source badges
 export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
-  jira: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  catalyst: { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  jira: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  catalyst: { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
 };
 
 // Deployment result badges (only shown when status=IN_PRODUCTION)
 export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> = {
-  success: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  rolled_back: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  monitoring: { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  success: { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  rolled_back: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)' },
+  monitoring: { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
 };
 
 // Sign-off decision lozenges
@@ -126,11 +126,11 @@ export const SIGNOFF_LOZENGE: Record<string, LozengeStyle> = {
 
 // Section accents for change timeline
 export const SECTION_ACCENT: Record<string, string> = {
-  past: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-  today: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  this_week: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  upcoming: 'var(--cp-teal-60, #0D9488)',
-  future: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+  past: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
+  today: 'var(--ds-text-danger, var(--cp-danger))',
+  this_week: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  upcoming: 'var(--cp-teal-60)',
+  future: 'var(--ds-text-success, var(--cp-success))',
 };
 
 export const CATEGORIES = ['Landing Page', 'Senaei BAU', 'MIM Website', 'Mobile App', 'Tohammena', 'Data & AI'];

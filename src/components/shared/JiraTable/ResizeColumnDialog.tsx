@@ -105,7 +105,7 @@ function CustomSlider({
           transform: 'translateY(-50%)',
           height: 6,
           borderRadius: 3,
-          background: 'var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-border)',
         }}
       />
       <div
@@ -117,7 +117,7 @@ function CustomSlider({
           width: `${pct}%`,
           height: 6,
           borderRadius: 3,
-          background: 'var(--ds-text-subtle, #505258)',
+          background: 'var(--ds-text-subtle)',
           pointerEvents: 'none',
         }}
       />
@@ -130,7 +130,7 @@ function CustomSlider({
           width: 16,
           height: 16,
           borderRadius: '50%',
-          background: 'var(--ds-text-subtle, #505258)',
+          background: 'var(--ds-text-subtle)',
           pointerEvents: 'none',
         }}
       />
@@ -213,8 +213,8 @@ export function ResizeColumnDialog({
         position: 'fixed',
         top: dialogTop,
         left: dialogLeft,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
         padding: 12,
@@ -224,9 +224,9 @@ export function ResizeColumnDialog({
     >
       <div
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 653,
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           marginBottom: 8,
         }}
       >
@@ -256,10 +256,10 @@ export function ResizeColumnDialog({
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
             padding: '4px 8px',
             cursor: 'pointer',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             borderRadius: 3,
           }}
         >
@@ -269,12 +269,12 @@ export function ResizeColumnDialog({
           type="button"
           onClick={() => { onSave(width); onClose(); }}
           style={{
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
+            background: 'var(--ds-background-brand-bold)',
             border: 'none',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
             padding: '4px 12px',
             cursor: 'pointer',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             borderRadius: 3,
           }}

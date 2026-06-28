@@ -73,36 +73,36 @@ export default function DirectNotificationRow({
     },
     [target.key, target.iconType, isStarred, toggleStar]
   );
-  const STAR_GOLD = "var(--ds-icon-accent-yellow, #FFAB00)";
+  const STAR_GOLD = "var(--ds-icon-accent-yellow)";
 
   const idleBg = isDark
-    ? "var(--ds-surface, #1A1A1A)"
-    : "var(--ds-surface-overlay, #FFFFFF)";
+    ? "var(--ds-surface)"
+    : "var(--ds-surface-overlay)";
   const hoverBg = isDark
-    ? "var(--ds-surface-overlay, #1F1F1F)"
+    ? "var(--ds-surface-overlay)"
     : token(
         "color.background.neutral.hovered",
         "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))"
       );
   const pressBg = isDark
-    ? "var(--ds-border, var(--cp-ink-1, #292929))"
+    ? "var(--ds-border, var(--cp-ink-1))"
     : token("color.background.neutral.pressed", "rgba(9,30,66,0.10)");
   const rowBg = pressed ? pressBg : hovered ? hoverBg : idleBg;
 
   const text1 = isDark
-    ? "var(--ds-text, var(--cp-bg-neutral, #EDEDED))"
+    ? "var(--ds-text, var(--cp-bg-neutral))"
     : token("color.text", "#292A2E");
   const text2 = isDark
-    ? "var(--ds-text-subtlest, #A1A1A1)"
-    : token("color.text.subtle", "var(--ds-text-subtlest, #626F86)");
+    ? "var(--ds-text-subtlest)"
+    : token("color.text.subtle", "var(--ds-text-subtlest)");
   const text3 = isDark
-    ? "var(--ds-text-subtlest, var(--cp-text-secondary, #878787))"
-    : token("color.text.subtlest", "var(--ds-text-disabled, #8590A2)");
+    ? "var(--ds-text-subtlest, var(--cp-text-secondary))"
+    : token("color.text.subtlest", "var(--ds-text-disabled)");
   const linkClr = isDark
     ? "#6698FF" // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    : token("color.link", "var(--ds-link, #0C66E4)");
+    : token("color.link", "var(--ds-link)");
   const dotColor =
-    "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))";
+    "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))";
 
   const threadBorderColor = isDark
     ? "var(--ds-surface, rgba(255,255,255,0.10))"
@@ -166,7 +166,7 @@ export default function DirectNotificationRow({
         padding: "8px 16px",
         background: rowBg,
         border: "none",
-        borderBottom: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, #DFE1E6)'}`,
+        borderBottom: `1px solid ${isDark ? 'var(--ds-border)' : 'var(--ds-border)'}`,
         borderRadius: 0,
         boxShadow: "none",
         cursor: "pointer",
@@ -200,9 +200,9 @@ export default function DirectNotificationRow({
               height: 40,
               borderRadius: '50%',
               background: isDark
-                ? 'var(--ds-surface-overlay, #2A2A2A)'
-                : 'var(--ds-background-neutral, #F1F2F4)',
-              border: `1.5px dashed ${isDark ? 'var(--ds-border, #444)' : 'var(--ds-border, #B3BAC5)'}`,
+                ? 'var(--ds-surface-overlay)'
+                : 'var(--ds-background-neutral)',
+              border: `1.5px dashed ${isDark ? 'var(--ds-border)' : 'var(--ds-border)'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -214,20 +214,20 @@ export default function DirectNotificationRow({
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
               <path
                 d="M2.5 9a6.5 6.5 0 0 1 11.1-4.6M15.5 9a6.5 6.5 0 0 1-11.1 4.6"
-                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                stroke={isDark ? 'var(--ds-icon-subtle)' : 'var(--ds-icon-subtle)'}
                 strokeWidth="1.6"
                 strokeLinecap="round"
               />
               <polyline
                 points="13.5,4 15.5,4.4 15.1,6.4"
-                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                stroke={isDark ? 'var(--ds-icon-subtle)' : 'var(--ds-icon-subtle)'}
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
               <polyline
                 points="4.5,14 2.5,13.6 2.9,11.6"
-                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                stroke={isDark ? 'var(--ds-icon-subtle)' : 'var(--ds-icon-subtle)'}
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -240,7 +240,7 @@ export default function DirectNotificationRow({
               width: 40,
               height: 40,
               borderRadius: '50%',
-              background: 'var(--ds-background-neutral, #F1F2F4)',
+              background: 'var(--ds-background-neutral)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -251,8 +251,8 @@ export default function DirectNotificationRow({
               label=""
               size="medium"
               primaryColor={isDark
-                ? 'var(--ds-icon-subtle, #8696A7)'
-                : 'var(--ds-icon-subtle, #626F86)'}
+                ? 'var(--ds-icon-subtle)'
+                : 'var(--ds-icon-subtle)'}
             />
           </div>
         )}
@@ -272,7 +272,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: "20px",
               color: text1,
               flex: 1,
@@ -301,7 +301,7 @@ export default function DirectNotificationRow({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: text3,
                 whiteSpace: "nowrap",
               }}
@@ -370,7 +370,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: "20px",
               color: text1,
               flex: 1,
@@ -386,7 +386,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color: linkClr,
               flexShrink: 0,
@@ -397,7 +397,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               color: text3,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: "20px",
               flexShrink: 0,
             }}
@@ -408,7 +408,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color: text2,
               flexShrink: 0,
@@ -464,7 +464,7 @@ export default function DirectNotificationRow({
                 style={{
                   margin: 0,
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   lineHeight: "20px",
                   color: text1,
                   overflow: "hidden",
@@ -480,7 +480,7 @@ export default function DirectNotificationRow({
                 style={{
                   margin: 0,
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   lineHeight: "20px",
                   color: text3,
                   fontStyle: "italic",
@@ -520,7 +520,7 @@ export default function DirectNotificationRow({
                           : "transparent",
                       cursor: "pointer",
                       fontFamily: "var(--cp-font-body)",
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       color: text2,
                       lineHeight: "16px",
                     }}
@@ -529,7 +529,7 @@ export default function DirectNotificationRow({
                       count > 0 ? `, ${count}` : ""
                     }`}
                   >
-                    <span style={{ fontSize: 12, lineHeight: 1 }}>{emoji}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: 1 }}>{emoji}</span>
                     {count > 0 && (
                       <span style={{ fontWeight: 500 }}>{count}</span>
                     )}
@@ -551,7 +551,7 @@ export default function DirectNotificationRow({
                   background: "transparent",
                   cursor: "pointer",
                   color: text3,
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   lineHeight: 1,
                   padding: 0,
                 }}
@@ -591,7 +591,7 @@ export default function DirectNotificationRow({
                 type="button"
                 style={{
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: linkClr,
                   background: "none",
@@ -609,7 +609,7 @@ export default function DirectNotificationRow({
                 type="button"
                 style={{
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: linkClr,
                   background: "none",
@@ -665,7 +665,7 @@ export default function DirectNotificationRow({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 color: linkClr,
               }}

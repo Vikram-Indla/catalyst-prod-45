@@ -80,28 +80,28 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: 680,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
           borderRadius: 8,
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,0.25))',
           display: 'flex', flexDirection: 'column',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          border: '1px solid var(--ds-border)',
         }}
       >
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          padding: '16px 24px', borderBottom: '1px solid var(--ds-border)',
         }}>
           <div>
             <h2 style={{
-              fontSize: 20, fontWeight: 600, margin: 0,
-              color: 'var(--ds-text, #172B4D)',
+              fontSize: 'var(--ds-font-size-700)', fontWeight: 600, margin: 0,
+              color: 'var(--ds-text)',
             }}>
               Name this board
             </h2>
             <p style={{
-              fontSize: 13, margin: '4px 0 0',
-              color: 'var(--ds-text-subtle, #42526E)',
+              fontSize: 'var(--ds-font-size-300)', margin: '4px 0 0',
+              color: 'var(--ds-text-subtle)',
             }}>
               Required fields are marked with an asterisk *
             </p>
@@ -114,7 +114,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
+            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest)" />
           </button>
         </div>
 
@@ -128,10 +128,10 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             {/* Board name */}
             <div style={{ marginBottom: 16 }}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
-                color: 'var(--ds-text, #172B4D)', marginBottom: 4,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                color: 'var(--ds-text)', marginBottom: 4,
               }}>
-                Board name <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                Board name <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <input
                 autoFocus
@@ -144,10 +144,10 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
                 placeholder="e.g. My Kanban board"
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
-                  border: '2px solid var(--ds-border-focused, #4C9AFF)',
-                  borderRadius: 4, fontSize: 14,
-                  color: 'var(--ds-text, #172B4D)',
-                  background: 'var(--ds-surface, #FFFFFF)',
+                  border: '2px solid var(--ds-border-focused)',
+                  borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
+                  color: 'var(--ds-text)',
+                  background: 'var(--ds-surface)',
                   outline: 'none', boxSizing: 'border-box',
                 }}
               />
@@ -156,20 +156,20 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             {/* Saved filter */}
             <div style={{ marginBottom: 16 }}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
-                color: 'var(--ds-text, #172B4D)', marginBottom: 4,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                color: 'var(--ds-text)', marginBottom: 4,
               }}>
-                Saved filter <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                Saved filter <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <select
                 value={filterId}
                 onChange={e => setFilterId(e.target.value)}
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4, fontSize: 14,
-                  color: filterId ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
-                  background: 'var(--ds-surface, #FFFFFF)',
+                  border: '1px solid var(--ds-border)',
+                  borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
+                  color: filterId ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
+                  background: 'var(--ds-surface)',
                   outline: 'none', cursor: 'pointer', boxSizing: 'border-box',
                 }}
               >
@@ -180,8 +180,8 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
               </select>
               {filters.length === 0 && projectKey && (
                 <p style={{
-                  fontSize: 11, marginTop: 4,
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  fontSize: 'var(--ds-font-size-100)', marginTop: 4,
+                  color: 'var(--ds-text-subtlest)',
                 }}>
                   No saved filters found for this project.
                 </p>
@@ -191,25 +191,25 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             {/* Location — read-only */}
             <div style={{ marginBottom: 0 }}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
-                color: 'var(--ds-text, #172B4D)', marginBottom: 4,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                color: 'var(--ds-text)', marginBottom: 4,
               }}>
                 Location
               </label>
               <div style={{
                 height: 40, padding: '0 12px',
-                border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 4, fontSize: 14,
-                color: 'var(--ds-text-subtle, #42526E)',
-                background: 'var(--ds-surface-sunken, #F7F8F9)',
+                border: '1px solid var(--ds-border)',
+                borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
+                color: 'var(--ds-text-subtle)',
+                background: 'var(--ds-surface-sunken)',
                 display: 'flex', alignItems: 'center',
                 boxSizing: 'border-box',
               }}>
                 {locationLabel}
               </div>
               <p style={{
-                fontSize: 11, marginTop: 4,
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                fontSize: 'var(--ds-font-size-100)', marginTop: 4,
+                color: 'var(--ds-text-subtlest)',
               }}>
                 This board will be added to the current project.
               </p>
@@ -218,29 +218,29 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
 
           {/* Right column — info panel */}
           <div style={{
-            borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+            borderLeft: '1px solid var(--ds-border)',
             paddingLeft: 24,
           }}>
             <h3 style={{
-              fontSize: 13, fontWeight: 600, margin: '0 0 8px',
-              color: 'var(--ds-text, #172B4D)',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, margin: '0 0 8px',
+              color: 'var(--ds-text)',
             }}>
               Saved filters
             </h3>
             <p style={{
-              fontSize: 13, margin: '0 0 12px',
-              color: 'var(--ds-text-subtle, #42526E)',
+              fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px',
+              color: 'var(--ds-text-subtle)',
               lineHeight: 1.5,
             }}>
               Choose from a list of saved filters that define which issues appear on the board.
             </p>
             <p style={{
-              fontSize: 13, margin: 0,
-              color: 'var(--ds-text-subtle, #42526E)',
+              fontSize: 'var(--ds-font-size-300)', margin: 0,
+              color: 'var(--ds-text-subtle)',
               lineHeight: 1.5,
             }}>
               You can create and manage saved filters from the{' '}
-              <span style={{ color: 'var(--ds-link, #0052CC)' }}>Filters</span> section of your project.
+              <span style={{ color: 'var(--ds-link)' }}>Filters</span> section of your project.
             </p>
           </div>
         </div>
@@ -248,16 +248,16 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
         {/* Footer */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
-          padding: '16px 24px', borderTop: '1px solid var(--ds-border, #DFE1E6)',
+          padding: '16px 24px', borderTop: '1px solid var(--ds-border)',
         }}>
           <button
             onClick={onClose}
             style={{
               height: 32, padding: '0 16px', borderRadius: 3,
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              background: 'var(--ds-surface, #FFFFFF)',
-              fontSize: 14, fontWeight: 500,
-              color: 'var(--ds-text-subtle, #42526E)',
+              border: '1px solid var(--ds-border)',
+              background: 'var(--ds-surface)',
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+              color: 'var(--ds-text-subtle)',
               cursor: 'pointer',
             }}
           >
@@ -269,12 +269,12 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             style={{
               height: 32, padding: '0 16px', borderRadius: 3, border: 'none',
               background: canCreate
-                ? 'var(--ds-background-brand-bold, #0052CC)'
-                : 'var(--ds-background-neutral, #F1F2F4)',
-              fontSize: 14, fontWeight: 500,
+                ? 'var(--ds-background-brand-bold)'
+                : 'var(--ds-background-neutral)',
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: canCreate
-                ? 'var(--ds-text-inverse, #FFFFFF)'
-                : 'var(--ds-text-disabled, #97A0AF)',
+                ? 'var(--ds-text-inverse)'
+                : 'var(--ds-text-disabled)',
               cursor: canCreate ? 'pointer' : 'not-allowed',
             }}
           >

@@ -14,7 +14,7 @@ interface SkillColumn {
 
 const PROFICIENCY_COLORS: Record<number, string> = {
   1: 'rgba(115,115,115,0.3)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  2: 'var(--ds-background-discovery-bold, #7B2FCC)',
+  2: 'var(--ds-background-discovery-bold)',
   3: 'var(--sem-warning)',
   4: 'var(--sem-info)',
   5: 'var(--health-green)',
@@ -106,7 +106,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+    <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
@@ -135,16 +135,16 @@ export const SkillsMatrixHeatmap: React.FC = () => {
       {/* Matrix Table - Catalyst Table Style */}
       <div className="overflow-x-auto">
         <table className="w-full border-separate border-spacing-0">
-          <thead className="sticky top-0 z-10" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
-            <tr style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
-              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+          <thead className="sticky top-0 z-10" style={{ background: 'var(--ds-surface-sunken)' }}>
+            <tr style={{ background: 'var(--ds-surface-sunken)' }}>
+              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken)' }}>
                 Team Member
               </th>
               {skills.map((skill) => (
                 <th
                   key={skill.id}
                   className="text-center py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200"
-                  style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}
+                  style={{ background: 'var(--ds-surface-sunken)' }}
                 >
                   {skill.name}
                 </th>
@@ -154,7 +154,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
           <tbody>
             {teamMembers.map((member, rowIndex) => (
               <tr key={member.id} className="border-b border-neutral-100 last:border-b-0">
-                <td className="w-[200px] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] py-4 px-4">
+                <td className="w-[200px] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] py-4 px-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-brand-dark">
                       {member.name}
@@ -197,7 +197,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-neutral-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-neutral-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
             <p className="font-semibold text-brand-dark text-sm">
               {tooltip.memberName}
             </p>

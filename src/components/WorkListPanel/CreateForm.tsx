@@ -57,9 +57,9 @@ export const CreateForm = memo(function CreateForm({
         onChange={handleSummaryChange}
         style={{
           padding: '8px 12px',
-          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'inherit',
         }}
       />
@@ -69,9 +69,9 @@ export const CreateForm = memo(function CreateForm({
         onChange={handleDescriptionChange}
         style={{
           padding: '8px 12px',
-          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           minHeight: '100px',
           fontFamily: 'inherit',
           resize: 'vertical',
@@ -82,20 +82,20 @@ export const CreateForm = memo(function CreateForm({
         onClick={handleSubmit}
         style={{
           padding: '8px 12px',
-          backgroundColor: 'var(--ds-link, #0C66E4)',
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          backgroundColor: 'var(--ds-link)',
+          color: 'var(--ds-text-inverse)',
           border: 'none',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           transition: 'background-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold, #0044A3)';
+          e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';
+          e.currentTarget.style.backgroundColor = 'var(--ds-link)';
         }}
       >
         Create

@@ -70,7 +70,7 @@ export function useSmartAssignment(cycleId: string, testCaseIds: string[]) {
           id: p.id,
           name: p.full_name || 'Unknown',
           initials,
-          avatarColor: 'var(--ds-link, #2563eb)',
+          avatarColor: 'var(--ds-link)',
           currentAssignments: workloadMap[p.id] || 0,
           dailyCapacity: 5,
           skills: {},

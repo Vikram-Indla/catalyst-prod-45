@@ -50,7 +50,7 @@ export function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByN
       })}
       {overflow > 0 && (
         <span style={{
-          marginLeft: 4, fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          marginLeft: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
           background: tk.badgeBg, borderRadius: 10, padding: '4px 8px',
           lineHeight: '18px', whiteSpace: 'nowrap',
         }}>+{overflow}</span>
@@ -123,12 +123,12 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
                 <CheckRow key={e.key} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key])} tk={tk}>
                   <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
                     <div style={{ fontSize: 13.5, color: tk.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{e.summary || e.key}</div>
-                    <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: 'var(--cp-font-mono)' }}>{e.key}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: tk.textMuted, fontFamily: 'var(--cp-font-mono)' }}>{e.key}</div>
                   </div>
                 </CheckRow>
               );
             })}
-            {filtered.length === 0 && <div style={{ padding: 16, fontSize: 13, color: tk.textMuted, textAlign: 'center' }}>No epics found</div>}
+            {filtered.length === 0 && <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: tk.textMuted, textAlign: 'center' }}>No epics found</div>}
           </div>
           {active && <ClearAll onClick={() => onChange([])} tk={tk} />}
         </DropdownPanel>
@@ -160,7 +160,7 @@ export function TypeFilterDropdown({ types, selected, onChange, tk }: {
                 <CheckRow key={t.type} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== t.type) : [...selected, t.type])} tk={tk}>
                   <JiraIssueTypeIcon type={t.type} size={16} />
                   <span style={{ flex: 1, fontSize: 13.5, color: tk.textPrimary, fontWeight: 450 }}>{t.type}</span>
-                  <span style={{ fontSize: 11, color: tk.textMuted, fontWeight: 600, fontFamily: 'var(--cp-font-mono)' }}>{t.count}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: tk.textMuted, fontWeight: 600, fontFamily: 'var(--cp-font-mono)' }}>{t.count}</span>
                 </CheckRow>
               );
             })}
@@ -235,7 +235,7 @@ export function QuickFilterDropdown({ selected, onChange, tk }: {
           transition: 'all 120ms ease', outline: 'none',
         }}>
         <Filter size={14} />
-        Quick{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 20, height: 20, borderRadius: 10, background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700 }}>{selected.size}</span>}
+        Quick{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 20, height: 20, borderRadius: 10, background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>{selected.size}</span>}
       </button>
       {open && (
         <DropdownPanel width={240} tk={tk}>
@@ -269,9 +269,9 @@ export function DensityToggle({ value, onChange, tk }: {
     <div className="flex" style={{ borderRadius: 6, border: `1px solid ${tk.border}`, overflow: 'hidden' }}>
       {opts.map(o => (
         <button key={o.key} onClick={() => onChange(o.key)} style={{
-          padding: '0 12px', height: 30, fontSize: 12, fontWeight: value === o.key ? 600 : 450,
+          padding: '0 12px', height: 30, fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.key ? 600 : 450,
           background: value === o.key ? tk.selectedAccent : tk.surfaceBg,
-          color: value === o.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
+          color: value === o.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : tk.textSecondary,
           border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           transition: 'all 100ms ease',
         }}>{o.label}</button>
@@ -314,7 +314,7 @@ export function GroupByBtn({ value, onChange, tk }: {
       </button>
       {open && (
         <DropdownPanel width={220} align="right" tk={tk}>
-          <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
+          <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
           {GRP_OPTS.map(o => {
             const sel = value === o.key;
             return (
@@ -379,7 +379,7 @@ function FilterTrigger({ label, count, active, onClick, tk }: {
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           minWidth: 20, height: 20, borderRadius: 10,
-          background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700,
+          background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         }}>{count}</span>
       )}
       <ChevronDown size={13} />
@@ -413,7 +413,7 @@ function CheckRow({ checked, onClick, children, tk }: {
         flexShrink: 0,
         transition: 'all 100ms ease',
       }}>
-        {checked && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={3} />}
+        {checked && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" strokeWidth={3} />}
       </div>
       {children}
     </button>
@@ -424,7 +424,7 @@ function ClearAll({ onClick, tk }: { onClick: () => void; tk: KanbanThemeTokens 
   return (
     <div style={{ padding: '8px 14px', borderTop: `1px solid ${tk.border}` }}>
       <button onClick={onClick} style={{
-        fontSize: 13, color: tk.selectedAccent,
+        fontSize: 'var(--ds-font-size-300)', color: tk.selectedAccent,
         background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
         fontFamily: 'var(--cp-font-body)',
       }}>Clear all</button>

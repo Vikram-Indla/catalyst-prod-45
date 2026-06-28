@@ -159,30 +159,30 @@ export const MORE_MENU_ITEMS = [
 
 // Type icons and colors
 export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color: string }> = {
-  FEATURE: { label: 'Epic', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  STORY: { label: 'Story', color: 'var(--ds-text-success, #16a34a)' },
-  SUBTASK: { label: 'Subtask', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  DEFECT: { label: 'Bug', color: 'var(--ds-text-danger, #dc2626)' },
-  INCIDENT: { label: 'Production Incident', color: 'var(--ds-text-warning, #f59e0b)' },
-  TASK: { label: 'Task', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
+  FEATURE: { label: 'Epic', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  STORY: { label: 'Story', color: 'var(--ds-text-success)' },
+  SUBTASK: { label: 'Subtask', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  DEFECT: { label: 'Bug', color: 'var(--ds-text-danger)' },
+  INCIDENT: { label: 'Production Incident', color: 'var(--ds-text-warning)' },
+  TASK: { label: 'Task', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
 };
 
 // Priority config
 export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; icon: string }> = {
-  HIGHEST: { label: 'Highest', color: 'var(--ds-background-danger-bold, #C9372C)', icon: 'chevrons-up' },
-  HIGH: { label: 'High', color: 'var(--ds-background-danger-bold, #FF7452)', icon: 'chevron-up' },
-  MEDIUM: { label: 'Medium', color: 'var(--ds-background-warning-bold, #E2B203)', icon: 'minus' },
-  LOW: { label: 'Low', color: 'var(--ds-background-success-bold, #1F845A)', icon: 'chevron-down' },
-  LOWEST: { label: 'Lowest', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', icon: 'chevrons-down' },
-  NONE: { label: 'None', color: 'var(--ds-text-disabled, #8590A2)', icon: 'minus' },
+  HIGHEST: { label: 'Highest', color: 'var(--ds-background-danger-bold)', icon: 'chevrons-up' },
+  HIGH: { label: 'High', color: 'var(--ds-background-danger-bold)', icon: 'chevron-up' },
+  MEDIUM: { label: 'Medium', color: 'var(--ds-background-warning-bold)', icon: 'minus' },
+  LOW: { label: 'Low', color: 'var(--ds-background-success-bold)', icon: 'chevron-down' },
+  LOWEST: { label: 'Lowest', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', icon: 'chevrons-down' },
+  NONE: { label: 'None', color: 'var(--ds-text-disabled)', icon: 'minus' },
 };
 
 // Status colors
 export const STATUS_COLORS: Record<string, string> = {
-  'TODO': 'var(--ds-border, #e5e7eb)',
-  'IN PROGRESS': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'DONE': 'var(--ds-text-success, #16a34a)',
-  'READY FOR QA': 'var(--ds-text-warning, #f59e0b)',
-  'READY FOR PRODUCTION': 'var(--ds-text-success, #16a34a)',
-  'CLOSED': 'var(--ds-text-success, #16a34a)',
+  'TODO': 'var(--ds-border)',
+  'IN PROGRESS': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'DONE': 'var(--ds-text-success)',
+  'READY FOR QA': 'var(--ds-text-warning)',
+  'READY FOR PRODUCTION': 'var(--ds-text-success)',
+  'CLOSED': 'var(--ds-text-success)',
 };

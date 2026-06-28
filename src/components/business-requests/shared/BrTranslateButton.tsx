@@ -39,11 +39,11 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
         transition: 'background 120ms',
         outline: 'none',
       }}
@@ -56,7 +56,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+        e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle)');
       }}
     >
       {loading ? (
@@ -66,7 +66,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
             d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z"
-            fill="var(--cp-purple-60, #7C3AED)"
+            fill="var(--cp-purple-60)"
           />
         </svg>
       )}

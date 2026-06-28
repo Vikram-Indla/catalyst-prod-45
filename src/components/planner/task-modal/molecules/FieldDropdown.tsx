@@ -41,7 +41,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentColor = colorMap[value] || 'var(--ds-text-subtlest, #94a3b8)';
+  const currentColor = colorMap[value] || 'var(--ds-text-subtlest)';
 
   return (
     <div 
@@ -75,7 +75,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
         }}
       >
         <ColorDot color={currentColor} size={10} />
-        <span style={{ flex: 1, fontSize: '14px', color: COLORS.textPrimary }}>
+        <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>
           {value}
         </span>
         <ChevronDown 
@@ -130,7 +130,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
                 }}
               >
                 <ColorDot color={option.color} size={10} />
-                <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{option.value}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>{option.value}</span>
               </div>
             );
           })}

@@ -8,45 +8,45 @@
 
 /* ═══════════════ TOKEN LAYER ═══════════════ */
 .clmp-root {
-  --clmp-brand: var(--ds-background-brand-bold, #1868DB);
-  --clmp-brand-hover: var(--ds-background-brand-bold-hovered, #1558BC);
-  --clmp-brand-text: var(--ds-text-brand, #1868DB);
-  --clmp-brand-subtle: var(--ds-background-information, #E9F2FF);
-  --clmp-brand-line: var(--ds-border-information, #9CC2F7);
+  --clmp-brand: var(--ds-background-brand-bold);
+  --clmp-brand-hover: var(--ds-background-brand-bold-hovered);
+  --clmp-brand-text: var(--ds-text-brand);
+  --clmp-brand-subtle: var(--ds-background-information);
+  --clmp-brand-line: var(--ds-border-information);
 
-  --clmp-ink: var(--ds-text, #13161A);
-  --clmp-surface: var(--ds-surface, #FFFFFF);
-  --clmp-sunken: var(--ds-surface-sunken, #F4F5F7);
-  --clmp-raised: var(--ds-surface-raised, #FFFFFF);
+  --clmp-ink: var(--ds-text);
+  --clmp-surface: var(--ds-surface);
+  --clmp-sunken: var(--ds-surface-sunken);
+  --clmp-raised: var(--ds-surface-raised);
 
-  --clmp-text: var(--ds-text, #13161A);
-  --clmp-text-subtle: var(--ds-text-subtle, #42526E);
-  --clmp-text-subtlest: var(--ds-text-subtlest, #6B778C);
+  --clmp-text: var(--ds-text);
+  --clmp-text-subtle: var(--ds-text-subtle);
+  --clmp-text-subtlest: var(--ds-text-subtlest);
 
-  --clmp-line: var(--ds-border, #C8CCD2);
-  --clmp-line-subtle: var(--ds-border-subtle, #E3E5E9);
-  --clmp-line-strong: var(--ds-text, #13161A);
-  --clmp-focus: var(--ds-border-focused, #388BFF);
+  --clmp-line: var(--ds-border);
+  --clmp-line-subtle: var(--ds-border-subtle);
+  --clmp-line-strong: var(--ds-text);
+  --clmp-focus: var(--ds-border-focused);
 
-  --clmp-success: var(--ds-text-success, #1F845A);
-  --clmp-success-bg: var(--ds-background-success, #DCFFF1);
+  --clmp-success: var(--ds-text-success);
+  --clmp-success-bg: var(--ds-background-success);
 
   /* CATY mascot — theme-flipping defaults (dark body on light bg) */
-  --caty-body: var(--ds-text, #172B4D);
-  --caty-inner: var(--ds-surface-sunken, #F7F8F9);
-  --caty-face: var(--ds-surface, #FFFFFF);
+  --caty-body: var(--ds-text);
+  --caty-inner: var(--ds-surface-sunken);
+  --caty-face: var(--ds-surface);
 
   /* Brand-fixed (never theme-flip): token-first, fixed fallback */
-  --clmp-white: var(--clmp-k-white, var(--ds-surface, #FFFFFF));
-  --clmp-cream: var(--clmp-k-cream, var(--ds-surface-sunken, #F7F8F9));
-  --clmp-mint: var(--clmp-k-mint, var(--ds-background-success, #DCFFF1));
-  --clmp-chip: var(--clmp-k-chip, var(--ds-background-information, #E9F2FF));
-  --clmp-navy: var(--clmp-k-navy, var(--ds-text, #172B4D));
-  --clmp-navy-2: var(--clmp-k-navy2, var(--ds-text, #172B4D));
-  --clmp-navy-text: var(--clmp-k-navyt, var(--ds-background-information, #E9F2FF));
-  --clmp-navy-sub: var(--clmp-k-navys, var(--ds-text-subtle, #44546F));
+  --clmp-white: var(--clmp-k-white, var(--ds-surface));
+  --clmp-cream: var(--clmp-k-cream, var(--ds-surface-sunken));
+  --clmp-mint: var(--clmp-k-mint, var(--ds-background-success));
+  --clmp-chip: var(--clmp-k-chip, var(--ds-background-information));
+  --clmp-navy: var(--clmp-k-navy, var(--ds-text));
+  --clmp-navy-2: var(--clmp-k-navy2, var(--ds-text));
+  --clmp-navy-text: var(--clmp-k-navyt, var(--ds-background-information));
+  --clmp-navy-sub: var(--clmp-k-navys, var(--ds-text-subtle));
   --clmp-navy-line: var(--clmp-k-navyl, rgba(156, 194, 247, .25));
-  --clmp-cyan: var(--clmp-k-cyan, var(--ds-background-information, #E9F2FF));
+  --clmp-cyan: var(--clmp-k-cyan, var(--ds-background-information));
   --clmp-glass-1: var(--clmp-k-g1, rgba(255, 255, 255, .04));
   --clmp-glass-2: var(--clmp-k-g2, rgba(255, 255, 255, .06));
   --clmp-glass-3: var(--clmp-k-g3, rgba(255, 255, 255, .08));
@@ -69,63 +69,63 @@
 }
 
 .dark .clmp-root {
-  --clmp-brand: var(--ds-background-brand-bold, #579DFF);
-  --clmp-brand-hover: var(--ds-background-brand-bold-hovered, #85B8FF);
-  --clmp-brand-text: var(--ds-text-brand, #85B8FF);
-  --clmp-brand-subtle: var(--ds-background-information, #102A4C);
-  --clmp-brand-line: var(--ds-border-information, #09326C);
+  --clmp-brand: var(--ds-background-brand-bold);
+  --clmp-brand-hover: var(--ds-background-brand-bold-hovered);
+  --clmp-brand-text: var(--ds-text-brand);
+  --clmp-brand-subtle: var(--ds-background-information);
+  --clmp-brand-line: var(--ds-border-information);
 
-  --clmp-ink: var(--ds-text, #E9EDF2);
-  --clmp-surface: var(--ds-surface, #0D1117);
-  --clmp-sunken: var(--ds-surface-sunken, #11161D);
-  --clmp-raised: var(--ds-surface-raised, #171D26);
+  --clmp-ink: var(--ds-text);
+  --clmp-surface: var(--ds-surface);
+  --clmp-sunken: var(--ds-surface-sunken);
+  --clmp-raised: var(--ds-surface-raised);
 
-  --clmp-text: var(--ds-text, #E9EDF2);
-  --clmp-text-subtle: var(--ds-text-subtle, #B4BCC9);
-  --clmp-text-subtlest: var(--ds-text-subtlest, #8C96A5);
+  --clmp-text: var(--ds-text);
+  --clmp-text-subtle: var(--ds-text-subtle);
+  --clmp-text-subtlest: var(--ds-text-subtlest);
 
-  --clmp-line: var(--ds-border, #3B4350);
-  --clmp-line-subtle: var(--ds-border-subtle, #262D38);
-  --clmp-line-strong: var(--ds-text, #E9EDF2);
+  --clmp-line: var(--ds-border);
+  --clmp-line-subtle: var(--ds-border-subtle);
+  --clmp-line-strong: var(--ds-text);
 
-  --clmp-success: var(--ds-text-success, #4BCE97);
-  --clmp-success-bg: var(--ds-background-success, #0F3324);
+  --clmp-success: var(--ds-text-success);
+  --clmp-success-bg: var(--ds-background-success);
 
-  --clmp-navy: var(--clmp-k-navy-d, var(--ds-text, #172B4D));
-  --clmp-navy-2: var(--clmp-k-navy2-d, var(--ds-text, #172B4D));
+  --clmp-navy: var(--clmp-k-navy-d, var(--ds-text));
+  --clmp-navy-2: var(--clmp-k-navy2-d, var(--ds-text));
   --clmp-nav-bg: var(--clmp-k-navbg-d, rgba(13, 17, 23, .92));
 
   /* CATY mascot — cream body on dark surfaces */
-  --caty-body: var(--ds-surface-sunken, #F7F8F9);
-  --caty-inner: var(--ds-text, #172B4D);
-  --caty-face: var(--ds-text, #172B4D);
+  --caty-body: var(--ds-surface-sunken);
+  --caty-inner: var(--ds-text);
+  --caty-face: var(--ds-text);
 }
 
 @media (prefers-color-scheme: dark) {
   html:not([data-color-mode="light"]) .clmp-root {
-    --clmp-brand: var(--ds-background-brand-bold, #579DFF);
-    --clmp-brand-hover: var(--ds-background-brand-bold-hovered, #85B8FF);
-    --clmp-brand-text: var(--ds-text-brand, #85B8FF);
-    --clmp-brand-subtle: var(--ds-background-information, #102A4C);
-    --clmp-brand-line: var(--ds-border-information, #09326C);
-    --clmp-ink: var(--ds-text, #E9EDF2);
-    --clmp-surface: var(--ds-surface, #0D1117);
-    --clmp-sunken: var(--ds-surface-sunken, #11161D);
-    --clmp-raised: var(--ds-surface-raised, #171D26);
-    --clmp-text: var(--ds-text, #E9EDF2);
-    --clmp-text-subtle: var(--ds-text-subtle, #B4BCC9);
-    --clmp-text-subtlest: var(--ds-text-subtlest, #8C96A5);
-    --clmp-line: var(--ds-border, #3B4350);
-    --clmp-line-subtle: var(--ds-border-subtle, #262D38);
-    --clmp-line-strong: var(--ds-text, #E9EDF2);
-    --clmp-success: var(--ds-text-success, #4BCE97);
-    --clmp-success-bg: var(--ds-background-success, #0F3324);
-    --clmp-navy: var(--clmp-k-navy-d, var(--ds-text, #172B4D));
-    --clmp-navy-2: var(--clmp-k-navy2-d, var(--ds-text, #172B4D));
+    --clmp-brand: var(--ds-background-brand-bold);
+    --clmp-brand-hover: var(--ds-background-brand-bold-hovered);
+    --clmp-brand-text: var(--ds-text-brand);
+    --clmp-brand-subtle: var(--ds-background-information);
+    --clmp-brand-line: var(--ds-border-information);
+    --clmp-ink: var(--ds-text);
+    --clmp-surface: var(--ds-surface);
+    --clmp-sunken: var(--ds-surface-sunken);
+    --clmp-raised: var(--ds-surface-raised);
+    --clmp-text: var(--ds-text);
+    --clmp-text-subtle: var(--ds-text-subtle);
+    --clmp-text-subtlest: var(--ds-text-subtlest);
+    --clmp-line: var(--ds-border);
+    --clmp-line-subtle: var(--ds-border-subtle);
+    --clmp-line-strong: var(--ds-text);
+    --clmp-success: var(--ds-text-success);
+    --clmp-success-bg: var(--ds-background-success);
+    --clmp-navy: var(--clmp-k-navy-d, var(--ds-text));
+    --clmp-navy-2: var(--clmp-k-navy2-d, var(--ds-text));
     --clmp-nav-bg: var(--clmp-k-navbg-d, rgba(13, 17, 23, .92));
-    --caty-body: var(--ds-surface-sunken, #F7F8F9);
-    --caty-inner: var(--ds-text, #172B4D);
-    --caty-face: var(--ds-text, #172B4D);
+    --caty-body: var(--ds-surface-sunken);
+    --caty-inner: var(--ds-text);
+    --caty-face: var(--ds-text);
   }
 }
 
@@ -187,10 +187,10 @@
 [dir="rtl"] .clmp-hero-watermark { inset-inline-end: auto; inset-inline-start: -160px; transform: scaleX(-1); }
 .clmp-hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: center; }
 
-.clmp-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; color: var(--ds-surface, #FFFFFF); border: 1.5px solid var(--clmp-brand); background: var(--clmp-brand); border-radius: 999px; padding: 5px 16px; margin-block-end: 24px; box-shadow: 0 2px 8px var(--ds-link, rgba(24,104,219,.30)); }
+.clmp-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; color: var(--ds-surface); border: 1.5px solid var(--clmp-brand); background: var(--clmp-brand); border-radius: 999px; padding: 5px 16px; margin-block-end: 24px; box-shadow: 0 2px 8px var(--ds-link, rgba(24,104,219,.30)); }
 .clmp-eyebrow .clmp-pulse { background: var(--ds-surface, rgba(255,255,255,.90)); animation: clmp-ripple-white 2.4s infinite; }
 .clmp-pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--clmp-success); animation: clmp-ripple 2.4s infinite; }
-.clmp-pulse-mint { background: var(--ds-background-success-bold, #1F845A); }
+.clmp-pulse-mint { background: var(--ds-background-success-bold); }
 @keyframes clmp-ripple { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--clmp-success) 50%, transparent); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 @keyframes clmp-ripple-white { 0% { box-shadow: 0 0 0 0 var(--ds-surface, rgba(255,255,255,.50)); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 
@@ -296,7 +296,7 @@
 .clmp-chat-on { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--clmp-success); }
 .clmp-chat-body { padding: 16px; display: grid; gap: 16px; min-height: 280px; background: var(--clmp-surface); }
 .clmp-msg { max-width: 88%; border-radius: 12px; padding: 8px 16px; font-size: 13px; line-height: 1.55; }
-.clmp-msg-user { justify-self: end; background: var(--ds-background-brand-bold, #1868DB); color: var(--ds-surface, #FFFFFF); border-end-end-radius: 4px; }
+.clmp-msg-user { justify-self: end; background: var(--ds-background-brand-bold); color: var(--ds-surface); border-end-end-radius: 4px; }
 [dir="rtl"] .clmp-msg-user { border-end-end-radius: 12px; border-end-start-radius: 4px; }
 .clmp-msg-caty { justify-self: start; background: var(--clmp-sunken); border: 1px solid var(--clmp-line-subtle); color: var(--clmp-text); border-end-start-radius: 4px; }
 .clmp-msg-who { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; letter-spacing: .6px; color: var(--clmp-brand-text); margin-block-end: 8px; }
@@ -308,7 +308,7 @@
 .clmp-typing i:nth-child(2) { animation-delay: .18s; } .clmp-typing i:nth-child(3) { animation-delay: .36s; }
 @keyframes clmp-tp { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 .clmp-chat-in { display: flex; align-items: center; gap: 8px; margin: 0 16px 16px; border: 1.5px solid var(--clmp-line); border-radius: 10px; padding: 8px 16px; font-size: 13px; color: var(--clmp-text-subtlest); background: var(--clmp-surface); }
-.clmp-chat-send { margin-inline-start: auto; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; background: var(--ds-background-brand-bold, #1868DB); color: var(--ds-surface, #FFFFFF); flex-shrink: 0; }
+.clmp-chat-send { margin-inline-start: auto; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; background: var(--ds-background-brand-bold); color: var(--ds-surface); flex-shrink: 0; }
 
 /* ═══════════════ SECTIONS ═══════════════ */
 .clmp-section, .clmp-section-band { padding-block: 32px; }

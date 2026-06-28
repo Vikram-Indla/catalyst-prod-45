@@ -13,7 +13,7 @@ interface ThemeModalProps {
   theme?: Theme;
 }
 
-const COLOR_PRESETS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-text-success, #16a34a)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-subtle, #475569)', 'var(--ds-link, #0C66E4)'];
+const COLOR_PRESETS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-icon-information)', 'var(--ds-background-discovery-bold)', 'var(--ds-text-success)', 'var(--ds-text-warning)', 'var(--ds-text-danger)', 'var(--ds-text-subtle)', 'var(--ds-link)'];
 const STATUS_OPTIONS = ['Active', 'Completed', 'On Hold'] as const;
 
 export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
@@ -94,7 +94,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '16px 20px', borderBottom: '1px solid var(--divider)',
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0, color: 'var(--fg-1)' }}>
+          <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, margin: 0, color: 'var(--fg-1)' }}>
             {isEdit ? 'Edit Theme' : 'New Theme'}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -106,7 +106,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
         <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Name */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Theme Name *
             </label>
             <input
@@ -115,7 +115,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               placeholder="e.g. Digital Maturity"
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
-                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', outline: 'none',
                 boxSizing: 'border-box',
               }}
               onFocus={e => e.target.style.borderColor = 'var(--cp-blue)'}
@@ -125,7 +125,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Description */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Description
             </label>
             <textarea
@@ -135,7 +135,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               placeholder="Brief description of this theme..."
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
-                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', outline: 'none',
                 resize: 'vertical', boxSizing: 'border-box',
               }}
               onFocus={e => e.target.style.borderColor = 'var(--cp-blue)'}
@@ -145,7 +145,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Status */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Status
             </label>
             <select
@@ -153,7 +153,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               onChange={e => setStatus(e.target.value)}
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
-                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', outline: 'none',
                 background: 'var(--cp-float)', boxSizing: 'border-box',
               }}
             >
@@ -163,7 +163,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Color */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
               Color
             </label>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -186,7 +186,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
           {/* Dates */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
                 Start Date
               </label>
               <input
@@ -195,13 +195,13 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
                 onChange={e => setStartDate(e.target.value)}
                 style={{
                   width: '100%', padding: '8px 12px', borderRadius: 8,
-                  border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
+                  border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
                 End Date
               </label>
               <input
@@ -210,7 +210,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
                 onChange={e => setEndDate(e.target.value)}
                 style={{
                   width: '100%', padding: '8px 12px', borderRadius: 8,
-                  border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
+                  border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
@@ -219,7 +219,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Error */}
           {error && (
-            <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: 0 }}>{error}</p>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-danger)', margin: 0 }}>{error}</p>
           )}
         </div>
 
@@ -230,7 +230,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
         }}>
           <button onClick={onClose} style={{
             padding: '8px 16px', borderRadius: 8, border: '1px solid var(--divider)',
-            background: 'var(--cp-float)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
             color: 'var(--fg-3)',
           }}>
             Cancel
@@ -241,7 +241,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
             style={{
               padding: '8px 20px', borderRadius: 8, border: 'none',
               background: 'var(--cp-blue)', color: 'var(--bg-app)',
-              fontSize: 13, fontWeight: 600, cursor: isPending ? 'wait' : 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: isPending ? 'wait' : 'pointer',
               opacity: isPending ? 0.7 : 1,
             }}
           >

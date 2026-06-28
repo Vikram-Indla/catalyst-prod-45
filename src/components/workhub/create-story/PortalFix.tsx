@@ -81,7 +81,7 @@ export function ModalDialog({ children, onClose, width = 'medium', modalTitle = 
             bottom: 0,
             right: 24,
             zIndex: 400,
-            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             borderRadius: '8px 8px 0 0',
             boxShadow: token('elevation.shadow.overlay', '0 -2px 8px var(--ds-shadow-raised, rgba(9,30,66,0.20))'),
             display: 'flex',
@@ -90,7 +90,7 @@ export function ModalDialog({ children, onClose, width = 'medium', modalTitle = 
             padding: '8px 16px',
             cursor: 'pointer',
             minWidth: 220,
-            borderTop: `2px solid ${token('color.border.brand', 'var(--ds-link, #1868DB)')}`,
+            borderTop: `2px solid ${token('color.border.brand', 'var(--ds-link)')}`,
           }}
           onClick={() => setMinimized(false)}
           role="button"
@@ -98,14 +98,14 @@ export function ModalDialog({ children, onClose, width = 'medium', modalTitle = 
           tabIndex={0}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMinimized(false); }}
         >
-          <span style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)'), flex: 1 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--ds-text)'), flex: 1 }}>
             {modalTitle}
           </span>
           <button
             type="button"
             aria-label="Close"
             onClick={(e) => { e.stopPropagation(); onClose?.(); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), padding: 4, display: 'flex' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-text-disabled)'), padding: 4, display: 'flex' }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </button>
@@ -138,7 +138,7 @@ export function ModalDialog({ children, onClose, width = 'medium', modalTitle = 
             aria-labelledby="create-story-modal-title"
             style={{
               position: 'relative',
-              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
               borderRadius: 8,
               boxShadow: token('elevation.shadow.overlay', '0 8px 16px -4px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
               width: fullscreen ? '90vw' : '100%',
@@ -174,9 +174,9 @@ export function ModalTitle({ children }: { children: ReactNode }) {
     <h1
       id="create-story-modal-title"
       style={{
-        fontSize: 20,
+        fontSize: 'var(--ds-font-size-700)',
         fontWeight: 600,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
         margin: 0,
         lineHeight: '28px',
       }}
@@ -208,7 +208,7 @@ export function ModalFooter({ children }: { children: ReactNode }) {
   return (
     <div style={{
       padding: '16px 24px',
-      borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+      borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
       display: 'flex',
       alignItems: 'center',
       gap: 8,

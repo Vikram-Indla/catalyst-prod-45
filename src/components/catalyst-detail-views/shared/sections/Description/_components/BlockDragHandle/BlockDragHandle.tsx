@@ -163,7 +163,7 @@ export function BlockDragHandle({ editor, containerRef }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'grab',
-        color: 'var(--ds-text-subtlest, #97A0AF)',
+        color: 'var(--ds-text-subtlest)',
         background: 'transparent',
         borderRadius: 3,
         userSelect: 'none',
@@ -173,11 +173,11 @@ export function BlockDragHandle({ editor, containerRef }: Props) {
       onMouseEnter={(e) => {
         e.currentTarget.style.background =
           'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-        e.currentTarget.style.color = 'var(--ds-text-subtle, #44546F)';
+        e.currentTarget.style.color = 'var(--ds-text-subtle)';
       }}
       onMouseLeaveCapture={(e) => {
         e.currentTarget.style.background = 'transparent';
-        e.currentTarget.style.color = 'var(--ds-text-subtlest, #97A0AF)';
+        e.currentTarget.style.color = 'var(--ds-text-subtlest)';
       }}
       title="Drag to reorder"
       aria-label="Drag to reorder block"

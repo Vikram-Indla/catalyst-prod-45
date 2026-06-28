@@ -43,7 +43,7 @@ export function ThemeDetail() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--fg-3)' }}>
         <Loader2 className="animate-spin" size={24} />
-        <span style={{ marginLeft: 8, fontSize: 14 }}>Loading theme...</span>
+        <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-400)' }}>Loading theme...</span>
       </div>
     );
   }
@@ -51,10 +51,10 @@ export function ThemeDetail() {
   if (error || !theme) {
     return (
       <div style={{ padding: '48px 32px', textAlign: 'center' }}>
-        <p style={{ color: 'var(--sem-danger)', fontSize: 14, marginBottom: 12 }}>Theme not found</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 'var(--ds-font-size-400)', marginBottom: 12 }}>Theme not found</p>
         <button onClick={() => navigate('/projecthub/themes')} style={{
           padding: '8px 16px', borderRadius: 8, border: '1px solid var(--divider)',
-          background: 'var(--cp-float)', fontSize: 13, cursor: 'pointer',
+          background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',
         }}>
           Back to Themes
         </button>
@@ -84,7 +84,7 @@ export function ThemeDetail() {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-blue)',
           marginBottom: 16, padding: 0,
         }}
       >
@@ -97,7 +97,7 @@ export function ThemeDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 12, height: 12, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
           <h1 style={{
-            fontSize: 24, fontWeight: 700, margin: 0,
+            fontSize: 'var(--ds-font-size-800)', fontWeight: 700, margin: 0,
             fontFamily: 'var(--cp-font-heading)',
             color: 'var(--fg-1)',
           }}>
@@ -109,14 +109,14 @@ export function ThemeDetail() {
           <button onClick={() => setEditOpen(true)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             padding: '6px 14px', borderRadius: 8, border: '1px solid var(--divider)',
-            background: 'var(--cp-float)', fontSize: 12, fontWeight: 500, cursor: 'pointer', color: 'var(--fg-2)',
+            background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer', color: 'var(--fg-2)',
           }}>
             <Pencil size={13} /> Edit
           </button>
           <button onClick={() => setDeleteOpen(true)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            padding: '6px 14px', borderRadius: 8, border: '1px solid var(--ds-background-danger, #FFECEB)',
-            background: 'var(--cp-float)', fontSize: 12, fontWeight: 500, cursor: 'pointer', color: 'var(--sem-danger)',
+            padding: '6px 14px', borderRadius: 8, border: '1px solid var(--ds-background-danger)',
+            background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer', color: 'var(--sem-danger)',
           }}>
             <Trash2 size={13} /> Delete
           </button>
@@ -124,11 +124,11 @@ export function ThemeDetail() {
       </div>
 
       {/* Date + Description */}
-      <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: '4px 0 8px', paddingLeft: 22 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)', margin: '4px 0 8px', paddingLeft: 22 }}>
         {dateRange}
       </p>
       <p style={{
-        fontSize: 14, color: theme.description ? 'var(--fg-3)' : 'var(--fg-4)',
+        fontSize: 'var(--ds-font-size-400)', color: theme.description ? 'var(--fg-3)' : 'var(--fg-4)',
         fontStyle: theme.description ? 'normal' : 'italic',
         margin: '0 0 24px', paddingLeft: 22,
       }}>
@@ -143,7 +143,7 @@ export function ThemeDetail() {
           padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <ProgressRing percent={theme.completion_percent} size={60} strokeWidth={5} color={theme.color} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>Completion</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)' }}>Completion</span>
         </div>
 
         {/* Total items */}
@@ -152,8 +152,8 @@ export function ThemeDetail() {
           padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <Layers size={24} color="var(--cp-blue)" />
-          <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>{theme.total_items}</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>Items</span>
+          <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--fg-1)' }}>{theme.total_items}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)' }}>Items</span>
         </div>
 
         {/* Epics */}
@@ -162,8 +162,8 @@ export function ThemeDetail() {
           padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--cp-blue)' }} />
-          <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>{theme.epic_count}</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>Epics</span>
+          <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--fg-1)' }}>{theme.epic_count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)' }}>Epics</span>
         </div>
 
         {/* Stories */}
@@ -172,15 +172,15 @@ export function ThemeDetail() {
           padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--sem-success)' }} />
-          <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>{theme.story_count}</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>Stories</span>
+          <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--fg-1)' }}>{theme.story_count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)' }}>Stories</span>
         </div>
       </div>
 
       {/* Work Items Section */}
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{
-          fontSize: 16, fontWeight: 700, margin: 0,
+          fontSize: 'var(--ds-font-size-500)', fontWeight: 700, margin: 0,
           color: 'var(--fg-1)',
         }}>
           Work Items ({theme.total_items})
@@ -192,7 +192,7 @@ export function ThemeDetail() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '6px 14px', borderRadius: 8, border: '1px solid var(--divider)',
-              background: 'var(--cp-float)', fontSize: 12, fontWeight: 500, cursor: 'pointer', color: 'var(--cp-blue)',
+              background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer', color: 'var(--cp-blue)',
             }}
           >
             <Plus size={14} /> Link Items

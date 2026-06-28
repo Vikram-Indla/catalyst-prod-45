@@ -3,10 +3,10 @@
  * CIO Executive Cockpit - Refined Colors
  * 
  * STATUS COLORS (Catalyst V5):
- * - Available: Teal var(--ds-chart-teal-bold, #0d9488)
- * - Optimal: Blue var(--cp-workstream-catalyst-primary, #2563eb)
- * - Over-allocated: Orange var(--ds-background-warning-bold, #d97706)
- * - Error: Red var(--ds-background-danger-bold, #ef4444)
+ * - Available: Teal var(--ds-chart-teal-bold)
+ * - Optimal: Blue var(--cp-workstream-catalyst-primary)
+ * - Over-allocated: Orange var(--ds-background-warning-bold)
+ * - Error: Red var(--ds-background-danger-bold)
  * 
  * DEPRECATED: olive, bronze, gold, champagne, grey (Golden Hour palette)
  */
@@ -53,16 +53,16 @@ export const CATALYST_V5 = {
   dangerLight: 'var(--cp-color-red-lighter)',
   dangerLighter: 'var(--cp-color-red-lightest)',
   slate: {
-    50: 'var(--ds-surface-sunken, #F8FAFC)',
-    100: 'var(--ds-surface-sunken, #F7F8F9)',
-    200: 'var(--ds-border, #DFE1E6)',
-    300: 'var(--ds-border, #DFE1E6)',
-    400: 'var(--ds-text-disabled, #8590A2)',
-    500: 'var(--ds-text-subtlest, #626F86)',
-    600: 'var(--ds-text-subtle, #44546F)',
-    700: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
-    800: 'var(--ds-text, #172B4D)',
-    900: 'var(--ds-text, #172B4D)',
+    50: 'var(--ds-surface-sunken)',
+    100: 'var(--ds-surface-sunken)',
+    200: 'var(--ds-border)',
+    300: 'var(--ds-border)',
+    400: 'var(--ds-text-disabled)',
+    500: 'var(--ds-text-subtlest)',
+    600: 'var(--ds-text-subtle)',
+    700: 'var(--cp-ink-2, var(--cp-ink-2))',
+    800: 'var(--ds-text)',
+    900: 'var(--ds-text)',
   },
 };
 

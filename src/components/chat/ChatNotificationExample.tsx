@@ -67,9 +67,9 @@ export function MessageComposerWithNotifications({
         style={{
           padding: '8px',
           borderRadius: '4px',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          border: '1px solid var(--ds-border)',
           fontFamily: 'inherit',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           minHeight: '80px',
         }}
       />
@@ -127,14 +127,14 @@ export function ChatMainViewWithNotifications({
       />
 
       {/* Sound settings (optional) */}
-      <div style={{ padding: '12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <div style={{ padding: '12px', borderBottom: '1px solid var(--ds-border)' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <input
             type="checkbox"
             onChange={(e) => setSoundEnabled(e.target.checked)}
             defaultChecked={false}
           />
-          <span style={{ fontSize: '12px' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)' }}>
             Play sound on @mention
           </span>
         </label>
@@ -149,7 +149,7 @@ export function ChatMainViewWithNotifications({
           flex: 1,
           overflowY: 'auto',
           padding: '12px',
-          backgroundColor: 'var(--ds-surface, #FFFFFF)',
+          backgroundColor: 'var(--ds-surface)',
         }}
       >
         {messages.map((msg) => (
@@ -159,13 +159,13 @@ export function ChatMainViewWithNotifications({
               marginBottom: '12px',
               padding: '8px',
               borderRadius: '4px',
-              backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
+              backgroundColor: 'var(--ds-surface-sunken)',
             }}
           >
-            <div style={{ fontWeight: 500, fontSize: '12px' }}>
+            <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-200)' }}>
               {msg.authorName}
             </div>
-            <div style={{ fontSize: '14px', marginTop: '4px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', marginTop: '4px' }}>
               {msg.bodyText}
             </div>
 
@@ -179,10 +179,10 @@ export function ChatMainViewWithNotifications({
                     style={{
                       padding: '4px 8px',
                       borderRadius: '12px',
-                      border: `1px solid ${r.reactedByMe ? 'blue' : 'var(--ds-border, #ccc)'}`,
-                      backgroundColor: r.reactedByMe ? '#e8f4ff' : 'var(--ds-surface-sunken, #F7F8F9)',
+                      border: `1px solid ${r.reactedByMe ? 'blue' : 'var(--ds-border)'}`,
+                      backgroundColor: r.reactedByMe ? '#e8f4ff' : 'var(--ds-surface-sunken)',
                       cursor: 'pointer',
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                     }}
                   >
                     {r.emoji} {r.count}

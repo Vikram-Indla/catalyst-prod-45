@@ -224,13 +224,13 @@
 
 .statusImplementing {
   background: rgba(38, 132, 255, 0.12); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--ds-link, #0C66E4);
+  color: var(--ds-link);
   border-color: rgba(38, 132, 255, 0.24); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
 }
 
 .statusDone {
   background: var(--ds-background-success-bold, rgba(22, 163, 74, 0.12));
-  color: var(--ds-text-success, var(--cp-success, #16A34A));
+  color: var(--ds-text-success, var(--cp-success));
   border-color: var(--ds-background-success-bold, rgba(22, 163, 74, 0.24));
 }
 
@@ -339,7 +339,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--secondary-green, #709550) 0%, #57743E 100%);
+  background: linear-gradient(135deg, var(--secondary-green) 0%, #57743E 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -372,7 +372,7 @@
 
 .healthGreen {
   background: var(--ds-background-success-bold, rgba(22, 163, 74, 0.12));
-  color: var(--ds-text-success, var(--cp-success, #16A34A));
+  color: var(--ds-text-success, var(--cp-success));
 }
 
 .healthAmber,
@@ -383,7 +383,7 @@
 
 .healthRed {
   background: var(--ds-background-danger, rgba(239, 68, 68, 0.12));
-  color: var(--ds-text-danger, #EF4444);
+  color: var(--ds-text-danger);
 }
 
 /* Planned Dates display */
@@ -672,7 +672,7 @@
 }
 
 .priorityLow .priorityIcon {
-  color: var(--ds-link, #0C66E4);
+  color: var(--ds-link);
 }
 
 /* Assignee Cell */
@@ -712,12 +712,12 @@
 
 .statusPillInProgress {
   background: rgba(38, 132, 255, 0.12); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--ds-link, #0C66E4);
+  color: var(--ds-link);
 }
 
 .statusPillDone {
   background: var(--ds-background-success-bold, rgba(22, 163, 74, 0.12));
-  color: var(--ds-text-success, var(--cp-success, #16A34A));
+  color: var(--ds-text-success, var(--cp-success));
 }
 
 /* Linked Items (matches TSX .linked-items) */
@@ -1270,12 +1270,12 @@
 
 .storyStatusDone {
   background: var(--ds-background-success-bold, rgba(22, 163, 74, 0.15));
-  color: var(--ds-text-success, var(--cp-success, #16A34A));
+  color: var(--ds-text-success, var(--cp-success));
 }
 
 .storyStatusInProgress {
   background: rgba(38, 132, 255, 0.15); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--ds-link, #0C66E4);
+  color: var(--ds-link);
 }
 
 .storyStatusTodo {
@@ -1292,7 +1292,7 @@
   font-size: 11px;
   font-weight: 500;
   background: var(--ds-background-danger, rgba(239, 68, 68, 0.1));
-  color: var(--ds-text-danger, #EF4444);
+  color: var(--ds-text-danger);
   border: 1px solid var(--ds-background-danger, rgba(239, 68, 68, 0.2));
 }
 

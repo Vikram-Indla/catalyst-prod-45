@@ -78,14 +78,14 @@ interface Props {
 }
 
 const COLOR_TO_HEX: Record<ModalIconColor, string> = {
-  green: 'var(--ds-background-success-bold, #1F845A)',
-  blue: 'var(--ds-link, #1868DB)',
-  orange: 'var(--ds-text-warning, #E56910)',
-  purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  red: 'var(--ds-background-danger-bold, #C9372C)',
-  gray: 'var(--ds-icon-subtle, #626F86)',
+  green: 'var(--ds-background-success-bold)',
+  blue: 'var(--ds-link)',
+  orange: 'var(--ds-text-warning)',
+  purple: 'var(--ds-background-discovery-bold)',
+  red: 'var(--ds-background-danger-bold)',
+  gray: 'var(--ds-icon-subtle)',
   pink: '#E774BB', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  brand: 'var(--ds-link, #1868DB)',
+  brand: 'var(--ds-link)',
 };
 
 function renderIcon(el: ModalElement) {
@@ -99,7 +99,7 @@ function renderIcon(el: ModalElement) {
     return (
       <span
         style={{
-          fontWeight: 700, fontSize: 13,
+          fontWeight: 700, fontSize: 'var(--ds-font-size-300)',
           color: primaryColor,
           fontFamily: '"Atlassian Sans", ui-sans-serif, system-ui, sans-serif',
         }}
@@ -227,7 +227,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
           maxWidth: '92vw',
           height: 600,
           maxHeight: '90vh',
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          background: 'var(--ds-surface-overlay)',
           borderRadius: 8,
           /* Drop shadow only — removed the 1px hairline ring so the modal
              has no border, just elevation. */
@@ -262,7 +262,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               border: 'none',
               borderRadius: 4,
               background: 'transparent',
-              color: 'var(--ds-text-subtle, #44546F)',
+              color: 'var(--ds-text-subtle)',
               cursor: 'pointer',
             }}
             onMouseEnter={(e) => {
@@ -299,10 +299,10 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
             style={{
               margin: 0,
               padding: '8px 16px 28px',
-              fontSize: 28,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 600,
               lineHeight: 1.2,
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
             }}
           >
             Browse
@@ -321,12 +321,12 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                     border: 'none',
                     borderRadius: 4,
                     background: active
-                      ? 'var(--ds-background-selected, #E9F2FE)'
+                      ? 'var(--ds-background-selected)'
                       : 'transparent',
                     color: active
-                      ? 'var(--ds-text-selected, #0C66E4)'
-                      : 'var(--ds-text, #292A2E)',
-                    fontSize: 14,
+                      ? 'var(--ds-text-selected)'
+                      : 'var(--ds-text)',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: active ? 600 : 400,
                     cursor: 'pointer',
                   }}
@@ -367,13 +367,13 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 border: searchFocused
-                  ? '2px solid var(--ds-border-focused, #2684FF)'
-                  : '2px solid var(--ds-border, #DFE1E6)',
+                  ? '2px solid var(--ds-border-focused)'
+                  : '2px solid var(--ds-border)',
                 borderRadius: 4,
-                background: 'var(--ds-surface, #FFFFFF)',
-                color: 'var(--ds-text, #292A2E)',
+                background: 'var(--ds-surface)',
+                color: 'var(--ds-text)',
                 outline: 'none',
                 boxSizing: 'border-box',
                 transition: 'border-color 80ms ease',
@@ -388,8 +388,8 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                 style={{
                   padding: 40,
                   textAlign: 'center',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
-                  fontSize: 13,
+                  color: 'var(--ds-text-subtlest)',
+                  fontSize: 'var(--ds-font-size-300)',
                 }}
               >
                 No elements match
@@ -425,7 +425,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                         border: 'none',
                         borderRadius: 4,
                         background: active
-                          ? 'var(--ds-background-selected, #E9F2FE)'
+                          ? 'var(--ds-background-selected)'
                           : 'transparent',
                         cursor: 'pointer',
                         textAlign: 'left',
@@ -448,7 +448,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                             position: 'absolute',
                             left: 0, top: 0, bottom: 0,
                             width: 3,
-                            background: 'var(--ds-border-selected, #0C66E4)',
+                            background: 'var(--ds-border-selected)',
                           }}
                         />
                       )}
@@ -460,9 +460,9 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
-                          border: '1px solid var(--ds-border, #DFE1E6)',
+                          border: '1px solid var(--ds-border)',
                           borderRadius: 3,
-                          background: 'var(--ds-surface, #FFFFFF)',
+                          background: 'var(--ds-surface)',
                         }}
                       >
                         {renderIcon(el)}
@@ -470,9 +470,9 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                       <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                         <span
                           style={{
-                            fontSize: 14,
+                            fontSize: 'var(--ds-font-size-400)',
                             fontWeight: 500,
-                            color: 'var(--ds-text, #292A2E)',
+                            color: 'var(--ds-text)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -482,8 +482,8 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                         </span>
                         <span
                           style={{
-                            fontSize: 12,
-                            color: 'var(--ds-text-subtlest, #6B778C)',
+                            fontSize: 'var(--ds-font-size-200)',
+                            color: 'var(--ds-text-subtlest)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -515,12 +515,12 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               onClick={onClose}
               style={{
                 padding: '6px 12px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 3,
                 background: 'transparent',
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
                 cursor: 'pointer',
               }}
             >
@@ -532,16 +532,16 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               onClick={handleInsert}
               style={{
                 padding: '6px 14px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 3,
                 background: selected
-                  ? 'var(--ds-background-brand-bold, #0C66E4)'
-                  : 'var(--ds-background-neutral, #F1F2F4)',
+                  ? 'var(--ds-background-brand-bold)'
+                  : 'var(--ds-background-neutral)',
                 color: selected
-                  ? 'var(--ds-text-inverse, #FFFFFF)'
-                  : 'var(--ds-text-disabled, #B3B9C4)',
+                  ? 'var(--ds-text-inverse)'
+                  : 'var(--ds-text-disabled)',
                 cursor: selected ? 'pointer' : 'not-allowed',
               }}
             >

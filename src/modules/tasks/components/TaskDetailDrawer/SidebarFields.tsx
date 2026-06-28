@@ -23,30 +23,30 @@ interface SidebarFieldsProps {
 
 // Label colors
 const LABEL_COLORS: Record<string, { bg: string; text: string; hex: string }> = {
-  red: { bg: 'bg-red-500', text: 'text-white', hex: 'var(--ds-text-danger, #ef4444)' },
-  orange: { bg: 'bg-orange-500', text: 'text-white', hex: 'var(--ds-background-warning-bold, #E2B203)' },
-  yellow: { bg: 'bg-yellow-500', text: 'text-black', hex: 'var(--ds-background-warning-bold, #E2B203)' },
-  green: { bg: 'bg-green-500', text: 'text-white', hex: 'var(--ds-text-success, #22c55e)' },
-  blue: { bg: 'bg-blue-500', text: 'text-white', hex: 'var(--ds-text-brand, #3b82f6)' },
+  red: { bg: 'bg-red-500', text: 'text-white', hex: 'var(--ds-text-danger)' },
+  orange: { bg: 'bg-orange-500', text: 'text-white', hex: 'var(--ds-background-warning-bold)' },
+  yellow: { bg: 'bg-yellow-500', text: 'text-black', hex: 'var(--ds-background-warning-bold)' },
+  green: { bg: 'bg-green-500', text: 'text-white', hex: 'var(--ds-text-success)' },
+  blue: { bg: 'bg-blue-500', text: 'text-white', hex: 'var(--ds-text-brand)' },
   purple: { bg: 'bg-purple-500', text: 'text-white', hex: '#a855f7' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  pink: { bg: 'bg-pink-500', text: 'text-white', hex: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
-  gray: { bg: 'bg-gray-500', text: 'text-white', hex: 'var(--ds-text-subtlest, #626F86)' },
+  pink: { bg: 'bg-pink-500', text: 'text-white', hex: 'var(--ds-background-accent-magenta-bolder)' },
+  gray: { bg: 'bg-gray-500', text: 'text-white', hex: 'var(--ds-text-subtlest)' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
-  planned: { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
-  'in-progress': { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
-  in_progress: { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
-  review: { label: 'Review', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  done: { label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
+  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest)' },
+  planned: { label: 'Planned', color: 'var(--ds-text-brand)' },
+  'in-progress': { label: 'In Progress', color: 'var(--ds-link)' },
+  in_progress: { label: 'In Progress', color: 'var(--ds-link)' },
+  review: { label: 'Review', color: 'var(--ds-background-discovery-bold)' },
+  done: { label: 'Done', color: 'var(--ds-text-success)' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string; icon?: boolean }> = {
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)', icon: true },
-  high: { label: 'High', color: 'var(--ds-text-warning, #974F0C)' },
-  medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger)', icon: true },
+  high: { label: 'High', color: 'var(--ds-text-warning)' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  low: { label: 'Low', color: 'var(--ds-text-subtlest)' },
 };
 
 function useStatuses() {
@@ -107,13 +107,13 @@ function getAvatarColor(name: string): string {
   // CLAUDE.md §L38 — hex literals only (no HSL).
   // Catalyst avatar palette — bold, visually distinct.
   const colors = [
-    'var(--ds-link, #2A6DF4)',  // Blue
-    'var(--ds-background-discovery-bold, #7C3BED)',  // Purple
-    'var(--ds-background-success-bold, #25A777)',  // Teal
-    'var(--ds-background-danger-bold, #E92063)',  // Magenta
-    'var(--ds-background-warning-bold, #F97015)',  // Orange
-    'var(--ds-chart-green-bold, #21C45D)',  // Green
-    'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky Blue
+    'var(--ds-link)',  // Blue
+    'var(--ds-background-discovery-bold)',  // Purple
+    'var(--ds-background-success-bold)',  // Teal
+    'var(--ds-background-danger-bold)',  // Magenta
+    'var(--ds-background-warning-bold)',  // Orange
+    'var(--ds-chart-green-bold)',  // Green
+    'var(--ds-chart-blue-bold)',  // Sky Blue
     '#FAC814',  // Yellow // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     '#BB36D3',  // Violet // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     '#1DAFA1',  // Cyan // ads-scanner:ignore-line — intentional design color, no ADS token equivalent

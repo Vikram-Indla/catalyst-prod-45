@@ -10,9 +10,9 @@ import { ProgressBar } from '../shared/ProgressBar';
 import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 
 function getProgressColor(v: number) {
-  if (v >= 70) return 'var(--exec-blue-700, #1E40AF)';
-  if (v >= 40) return 'var(--exec-signal-amber, var(--cp-warning, #D97706))';
-  return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
+  if (v >= 70) return 'var(--exec-blue-700)';
+  if (v >= 40) return 'var(--exec-signal-amber, var(--cp-warning))';
+  return 'var(--exec-signal-red, var(--cp-danger))';
 }
 
 export function OkrTree() {
@@ -31,7 +31,7 @@ export function OkrTree() {
       return {
         id: theme.id,
         name: theme.title,
-        color: 'var(--ds-link-pressed, #1e40af)', // All theme dots use exec-blue-700
+        color: 'var(--ds-link-pressed)', // All theme dots use exec-blue-700
         progress: avgProgress,
         goals: themeGoals.map(g => ({
           id: g.id,
@@ -72,7 +72,7 @@ export function OkrTree() {
   if (treeData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--exec-text-tertiary)' }}>
-        <span style={{ fontSize: 12 }}>No strategic themes defined</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)' }}>No strategic themes defined</span>
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function OkrTree() {
       <div className="flex justify-end mb-2">
         <button
           onClick={toggleAll}
-          style={{ fontSize: 10, color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+          style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-blue-700)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
         >
           {Object.values(expanded).every(Boolean) ? 'Collapse All' : 'Expand All'}
         </button>
@@ -108,14 +108,14 @@ export function OkrTree() {
                   padding: '8px 6px', borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer',
                   transition: 'background 120ms',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken)))'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)', flex: 1, textAlign: 'left' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--exec-text-primary)', flex: 1, textAlign: 'left' }}>
                   {theme.name}
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
                   {theme.progress}%
                 </span>
                 <Chevron size={14} style={{ color: 'var(--exec-text-tertiary)', transition: 'transform 150ms' }} />
@@ -133,11 +133,11 @@ export function OkrTree() {
                         borderRadius: 4,
                         transition: 'background-color 120ms ease',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken)))'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--exec-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--exec-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {goal.name}
                       </span>
                       <div style={{ width: 80 }}>

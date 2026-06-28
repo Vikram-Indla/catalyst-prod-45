@@ -89,9 +89,9 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
   }
 
   return (
-    <div className="p-6 space-y-4 bg-white dark:bg-[var(--ds-surface,#161B22)]">
+    <div className="p-6 space-y-4 bg-white dark:bg-[var(--ds-surface)]">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">
+        <h3 className="text-sm font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text)]">
           Key Results ({keyResults?.length || 0})
         </h3>
         <Button 
@@ -107,9 +107,9 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
       {keyResults && keyResults.length > 0 ? (
         <div className="space-y-2">
           {keyResults.map((kr) => (
-            <div key={kr.id} className="border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] rounded-lg overflow-hidden">
+            <div key={kr.id} className="border border-[var(--ds-border)] dark:border-[var(--ds-border)] rounded-lg overflow-hidden">
               <div
-                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--ds-surface-sunken,#F6F8FA)] dark:hover:bg-[var(--ds-surface,#21262D)] transition-colors"
+                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface)] transition-colors"
                 onClick={() => toggleExpanded(kr.id)}
               >
                 <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0">
@@ -121,37 +121,37 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
                 </Button>
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   {getDirectionIcon(kr.direction)}
-                  <span className="font-medium truncate text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">{kr.summary}</span>
+                  <span className="font-medium truncate text-[var(--ds-text)] dark:text-[var(--ds-text)]">{kr.summary}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-sm text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)]">{Math.round(kr.progress)}%</span>
-                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-[var(--ds-surface-sunken,#F6F8FA)] dark:bg-[var(--ds-surface,#21262D)] text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtlest,#8B949E)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
+                  <span className="text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">{Math.round(kr.progress)}%</span>
+                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface)] text-[var(--ds-text-subtle)] dark:text-[var(--ds-text-subtlest)] border border-[var(--ds-border)] dark:border-[var(--ds-border)]">
                     {kr.metric_type}
                   </span>
                 </div>
               </div>
 
               {expandedKrs.has(kr.id) && (
-                <div className="px-4 py-4 border-t border-[var(--ds-border,#EAECEF)] dark:border-[var(--ds-border,#21262D)] space-y-4 bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface,#0D1117)]">
+                <div className="px-4 py-4 border-t border-[var(--ds-border)] dark:border-[var(--ds-border)] space-y-4 bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface)]">
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)] mb-1">Baseline</p>
-                      <p className="text-2xl font-bold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">{kr.baseline_value}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] mb-1">Baseline</p>
+                      <p className="text-2xl font-bold text-[var(--ds-text)] dark:text-[var(--ds-text)]">{kr.baseline_value}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)] mb-1">Current</p>
-                      <p className="text-2xl font-bold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">{kr.current_value}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] mb-1">Current</p>
+                      <p className="text-2xl font-bold text-[var(--ds-text)] dark:text-[var(--ds-text)]">{kr.current_value}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)] mb-1">Target</p>
-                      <p className="text-2xl font-bold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">{kr.goal_value}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] mb-1">Target</p>
+                      <p className="text-2xl font-bold text-[var(--ds-text)] dark:text-[var(--ds-text)]">{kr.goal_value}</p>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)]">Progress</span>
-                      <span className="font-semibold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">{Math.round(kr.progress)}%</span>
+                      <span className="text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">Progress</span>
+                      <span className="font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text)]">{Math.round(kr.progress)}%</span>
                     </div>
                     <div className="h-2 rounded-full bg-muted overflow-hidden">
                       <div 
@@ -162,36 +162,36 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
                   </div>
 
                   {/* Timeframe Display */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-[var(--ds-border,#EAECEF)] dark:border-[var(--ds-border,#21262D)]">
-                    <Calendar className="h-4 w-4 text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)]" />
-                    <span className="text-sm text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)]">Timeframe:</span>
+                  <div className="flex items-center gap-2 pt-2 border-t border-[var(--ds-border)] dark:border-[var(--ds-border)]">
+                    <Calendar className="h-4 w-4 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]" />
+                    <span className="text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">Timeframe:</span>
                     {kr.start_date && kr.end_date ? (
-                      <span className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">
+                      <span className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">
                         {format(new Date(kr.start_date), 'dd MMM yyyy')} → {format(new Date(kr.end_date), 'dd MMM yyyy')}
                       </span>
                     ) : (
-                      <span className="text-sm text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)] italic">Not set</span>
+                      <span className="text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] italic">Not set</span>
                     )}
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-[var(--ds-border,#EAECEF)] dark:border-[var(--ds-border,#21262D)] flex-wrap">
+                  <div className="flex gap-2 pt-2 border-t border-[var(--ds-border)] dark:border-[var(--ds-border)] flex-wrap">
                     <button
                       onClick={(e) => handleAlignWork(kr, e)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface)] border border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
                     >
                       <Link2 className="h-4 w-4" />
                       Align Work
                     </button>
                     <button
                       onClick={(e) => handleEdit(kr, e)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface)] border border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
                     >
                       <Edit className="h-4 w-4" />
                       Update Value
                     </button>
                     <button
                       onClick={(e) => handleDelete(kr, e)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface)] border border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete
@@ -203,12 +203,12 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface,#161B22)]">
-          <div className="w-16 h-16 rounded-full bg-[var(--ds-surface-sunken,#F6F8FA)] dark:bg-[var(--ds-surface,#21262D)] flex items-center justify-center mb-4">
-            <TrendingUp className="h-7 w-7 text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)]" />
+        <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface)]">
+          <div className="w-16 h-16 rounded-full bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface)] flex items-center justify-center mb-4">
+            <TrendingUp className="h-7 w-7 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]" />
           </div>
-          <h3 className="text-base font-semibold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] mb-2">No key results yet</h3>
-          <p className="text-sm text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest,#6E7681)]">Add key results to track progress toward this objective</p>
+          <h3 className="text-base font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text)] mb-2">No key results yet</h3>
+          <p className="text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">Add key results to track progress toward this objective</p>
         </div>
       )}
 

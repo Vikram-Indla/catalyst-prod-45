@@ -25,27 +25,27 @@ type PanelType = 'insourced' | 'cosourced' | 'outsourced' | 'licenses' | null;
 // V8 Color definitions
 const cardColors = {
   insourced: {
-    bar: 'bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] to-[var(--ds-text-brand,#3b82f6)]',
-    value: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
-    badge: 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
+    bar: 'bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] to-[var(--ds-text-brand)]',
+    value: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
+    badge: 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-information, var(--ds-background-information, rgba(37,99,235,0.3)))]'
   },
   cosourced: {
-    bar: 'bg-gradient-to-r from-[var(--ds-chart-teal-bolder, #0f766e)] to-[var(--ds-chart-teal-bold, #0d9488)]',
-    value: 'text-[var(--ds-chart-teal-bold, #0d9488)]',
-    badge: 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-icon-information, #1D7AFC)]',
+    bar: 'bg-gradient-to-r from-[var(--ds-chart-teal-bolder)] to-[var(--ds-chart-teal-bold)]',
+    value: 'text-[var(--ds-chart-teal-bold)]',
+    badge: 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-icon-information)]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-success, var(--ds-background-success, rgba(13,148,136,0.3)))]'
   },
   outsourced: {
-    bar: 'bg-gradient-to-r from-[var(--ds-text-warning,#d97706)] to-[var(--ds-text-warning,#f59e0b)]',
-    value: 'text-[var(--ds-text-warning,#d97706)]',
-    badge: 'bg-[var(--ds-background-warning, rgba(217,119,6,0.1))] text-[var(--ds-text-warning,#d97706)]',
+    bar: 'bg-gradient-to-r from-[var(--ds-text-warning)] to-[var(--ds-text-warning)]',
+    value: 'text-[var(--ds-text-warning)]',
+    badge: 'bg-[var(--ds-background-warning, rgba(217,119,6,0.1))] text-[var(--ds-text-warning)]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-warning, var(--ds-background-warning, rgba(217,119,6,0.3)))]'
   },
   licenses: {
-    bar: 'bg-gradient-to-r from-[var(--ds-background-discovery-bold, #7C3AED)] to-[var(--ds-background-discovery, #F3F0FF)]',
-    value: 'text-[var(--ds-background-discovery-bold, #7C3AED)]',
-    badge: 'bg-[var(--ds-background-discovery-bold, rgba(124,58,237,0.1))] text-[var(--ds-background-discovery-bold, #7C3AED)]',
+    bar: 'bg-gradient-to-r from-[var(--ds-background-discovery-bold)] to-[var(--ds-background-discovery)]',
+    value: 'text-[var(--ds-background-discovery-bold)]',
+    badge: 'bg-[var(--ds-background-discovery-bold, rgba(124,58,237,0.1))] text-[var(--ds-background-discovery-bold)]',
     ring: 'shadow-[0_0_0_2px_var(--ds-background-discovery-bold, rgba(124,58,237,0.3))]'
   }
 };
@@ -246,7 +246,7 @@ export function BudgetSummaryCards({
             <div className="flex items-center justify-between">
               <span>Monthly: <strong>{formatCurrency(monthlyLicenseCost)}</strong></span>
               {nextRenewal && (
-                <span className="text-xs text-[var(--ds-background-discovery-bold, #7C3AED)] font-medium">
+                <span className="text-xs text-[var(--ds-background-discovery-bold)] font-medium">
                   Next: {new Date(nextRenewal.renewalDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </span>
               )}

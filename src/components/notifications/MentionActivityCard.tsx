@@ -26,15 +26,15 @@ function MentionSectionIcon() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--ds-background-discovery, #EAE6FF)',
+        background: 'var(--ds-background-discovery)',
         borderRadius: 4,
       }}
     >
       {/* @atlaskit/icon equivalent: comment-icon or mention glyph */}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="2" y="3" width="20" height="14" rx="2" stroke="var(--ds-icon-discovery, #6554C0)" strokeWidth="1.8"/>
-        <path d="M8 8h8M8 11.5h5" stroke="var(--ds-icon-discovery, #6554C0)" strokeWidth="1.8" strokeLinecap="round"/>
-        <path d="M6 17l3-3H20a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2Z" fill="var(--ds-background-discovery, #EAE6FF)"/>
+        <rect x="2" y="3" width="20" height="14" rx="2" stroke="var(--ds-icon-discovery)" strokeWidth="1.8"/>
+        <path d="M8 8h8M8 11.5h5" stroke="var(--ds-icon-discovery)" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M6 17l3-3H20a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2Z" fill="var(--ds-background-discovery)"/>
       </svg>
     </div>
   );
@@ -48,12 +48,12 @@ function EntityTypeIcon({ type }: { type: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
       {t === 'bug' || t === 'qa bug' ? (
-        <><rect width="16" height="16" rx="2" fill="var(--ds-background-danger-bold, #AE2A19)"/><path d="M4 8.5l2 2 5-5" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>
+        <><rect width="16" height="16" rx="2" fill="var(--ds-background-danger-bold)"/><path d="M4 8.5l2 2 5-5" stroke="var(--ds-text-inverse)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>
       ) : t === 'epic' ? (
-        <><rect width="16" height="16" rx="2" fill="var(--ds-background-discovery-bold, #6554C0)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="var(--ds-text-inverse, #FFFFFF)"/></>
+        <><rect width="16" height="16" rx="2" fill="var(--ds-background-discovery-bold)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="var(--ds-text-inverse)"/></>
       ) : (
         /* default: page/bookmark = green */
-        <><rect width="16" height="16" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="var(--ds-text-inverse, #FFFFFF)"/></>
+        <><rect width="16" height="16" rx="2" fill="var(--ds-background-success-bold)"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="var(--ds-text-inverse)"/></>
       )}
     </svg>
   );
@@ -76,7 +76,7 @@ function MetadataLine({
   timestamp: string;
   isDark: boolean;
 }) {
-  const color = isDark ? 'var(--ds-text-subtlest, #8C9CB5)' : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)');
+  const color = isDark ? 'var(--ds-text-subtlest)' : token('color.text.subtlest', 'var(--ds-text-subtlest)');
   const items = [projectName, issueKey, formatRelativeTime(timestamp)].filter(Boolean) as string[];
 
   return (
@@ -88,7 +88,7 @@ function MetadataLine({
         marginTop: 0,
         paddingInlineStart: 44, // 32px avatar + 12px gap
         fontFamily: 'var(--cp-font-body, inherit)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         lineHeight: '16px',
         color,
       }}
@@ -123,7 +123,7 @@ function mapStatusAppearance(statusAppearance: string): LozengeAppearance {
 // ─── Comment body with @mention parsing ──────────────────────────────────────
 
 function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
-  const color = isDark ? 'var(--ds-text, #E6EDFA)' : token('color.text', 'var(--ds-text, #172B4D)');
+  const color = isDark ? 'var(--ds-text)' : token('color.text', 'var(--ds-text)');
 
   // Roster-aware @mention parsing — supports names of any word count.
   // Longest-matches `@maria garcia lopez` as one mention even though it's
@@ -147,7 +147,7 @@ function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
       style={{
         margin: 0,
         fontFamily: 'var(--cp-font-body, inherit)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         color,
       }}
@@ -218,12 +218,12 @@ export default function MentionActivityCard({
   const actorAvatarUrl = actor?.avatarUrl ?? undefined;
 
   // Token-based colors
-  const cardBg        = isDark ? 'var(--ds-surface-raised, #22272B)' : token('color.background.card', 'var(--ds-surface, #FFFFFF)');
-  const cardBorder    = isDark ? 'var(--ds-border, #2C3E50)'          : token('color.border', 'var(--ds-border, #DFE1E6)');
-  const primaryText   = isDark ? 'var(--ds-text, #E6EDFA)'            : token('color.text', 'var(--ds-text, #172B4D)');
-  const subtleText    = isDark ? 'var(--ds-text-subtle, #8C9CB5)'     : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)');
-  const linkColor     = isDark ? 'var(--ds-link, #4C9AFF)'            : token('color.link', 'var(--ds-link, #0052CC)');
-  const threadBorder  = isDark ? 'var(--ds-border, #2C3E50)'          : 'var(--ds-border, #DFE1E6)';
+  const cardBg        = isDark ? 'var(--ds-surface-raised)' : token('color.background.card', 'var(--ds-surface)');
+  const cardBorder    = isDark ? 'var(--ds-border)'          : token('color.border', 'var(--ds-border)');
+  const primaryText   = isDark ? 'var(--ds-text)'            : token('color.text', 'var(--ds-text)');
+  const subtleText    = isDark ? 'var(--ds-text-subtle)'     : token('color.text.subtle', 'var(--ds-text-subtle)');
+  const linkColor     = isDark ? 'var(--ds-link)'            : token('color.link', 'var(--ds-link)');
+  const threadBorder  = isDark ? 'var(--ds-border)'          : 'var(--ds-border)';
 
   const handleReply = useCallback(() => {
     setShowComposer(true);
@@ -258,7 +258,7 @@ export default function MentionActivityCard({
           <h3
             style={{
               margin: 0,
-              fontSize: 16,
+              fontSize: 'var(--ds-font-size-500)',
               fontWeight: 600,
               lineHeight: '20px',
               color: primaryText,
@@ -269,7 +269,7 @@ export default function MentionActivityCard({
           <p
             style={{
               margin: '4px 0 0',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               lineHeight: '20px',
               color: subtleText,
@@ -300,7 +300,7 @@ export default function MentionActivityCard({
               alignItems: 'center',
               flexWrap: 'wrap',
               gap: 6,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               color: primaryText,
             }}
@@ -318,7 +318,7 @@ export default function MentionActivityCard({
                 onClick={() => onEntityClick?.(target.key)}
                 style={{
                   fontFamily: 'inherit',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   lineHeight: '20px',
                   color: linkColor,
@@ -360,7 +360,7 @@ export default function MentionActivityCard({
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleToggleStar(e); }}
                 style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
               >
-                <Star size={16} color="var(--ds-icon-accent-yellow, #FFAB00)" fill={isStarred ? 'var(--ds-icon-accent-yellow, #FFAB00)' : 'none'} />
+                <Star size={16} color="var(--ds-icon-accent-yellow)" fill={isStarred ? 'var(--ds-icon-accent-yellow)' : 'none'} />
               </span>
             )}
           </div>

@@ -6,31 +6,31 @@ import { useTheme } from '@/hooks/useTheme';
 // STATUS COLORS — Jira status → display colors
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
-  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Backlog',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Requirements',accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Awaiting',    accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In QA',       accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Ready QA',    accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Retest',      accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
-  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
-  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #AE2A19)', label: 'Blocked',     accent: 'var(--ds-text-danger, #EF4444)' },
-  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #AE2A19)', label: 'Rejected',    accent: 'var(--ds-text-danger, #EF4444)' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning))' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning))' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Backlog',     accent: 'var(--ds-text-warning, var(--cp-warning))' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Re-Open',     accent: 'var(--ds-text-warning, var(--cp-warning))' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Requirements',accent: 'var(--ds-text-warning, var(--cp-warning))' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Awaiting',    accent: 'var(--ds-text-warning, var(--cp-warning))' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'In QA',       accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Ready QA',    accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Retest',      accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', bg: 'var(--ds-background-discovery)', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', bg: 'var(--ds-background-discovery)', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success))' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success))' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success))' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success))' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success))' },
+  'Blocked':              { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Blocked',     accent: 'var(--ds-text-danger)' },
+  'Rejected':             { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Rejected',    accent: 'var(--ds-text-danger)' },
 };
-const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Unknown', accent: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
+const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Unknown', accent: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -45,16 +45,16 @@ function resolveStatus(item: any) {
 
 // ═══ JIRA ICONS ═══
 const BugIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, #C9372C)"/><circle cx="8" cy="8" r="3" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold)"/><circle cx="8" cy="8" r="3" fill="white"/></svg>
 );
 const TaskIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold, #1D7AFC)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
 );
 const StoryIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 const EpicIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold, #904EE2)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 function JiraIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase();
@@ -65,12 +65,12 @@ function JiraIcon({ type }: { type: string }) {
 }
 
 // ═══ HELPERS ═══
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', SEN: 'var(--ds-text-warning, var(--cp-warning))', FAC: 'var(--ds-text-success, var(--cp-success))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
 
 const SPOTS = [
   { x: 3,  y: 3  },
@@ -139,12 +139,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       <div style={{
         position: 'relative', width: '100%', height: '720px', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--bg-1) 55%, var(--bg-3) 100%)',
+        background: 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--bg-1) 55%, var(--bg-3) 100%)',
         borderRadius: 12, border: '1px solid var(--divider)',
       }}>
         <div style={{ textAlign: 'center', color: 'var(--fg-3)' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
-          <div style={{ fontSize: 13 }}>Assigned work items will orbit here.</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Assigned work items will orbit here.</div>
         </div>
       </div>
     );
@@ -154,11 +154,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
     <div style={{
       position: 'relative', width: '100%', height: '720px', overflow: 'visible', boxSizing: 'border-box',
       background: isDark
-        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%)'
-        : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%)',
+        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1)) 0%, var(--ds-surface) 55%, var(--ds-surface) 100%)'
+        : 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface-sunken) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 100%)',
       backgroundImage: isDark
-        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%), radial-gradient(circle, var(--ds-border, var(--cp-ink-1, #292929)) 1px, transparent 1px)'
-        : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
+        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1)) 0%, var(--ds-surface) 55%, var(--ds-surface) 100%), radial-gradient(circle, var(--ds-border, var(--cp-ink-1)) 1px, transparent 1px)'
+        : 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface-sunken) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 100%), radial-gradient(circle, var(--ds-text-disabled) 1px, transparent 1px)',
       backgroundSize: 'cover, 24px 24px',
     }}>
       {/* SVG SPOKES */}
@@ -168,7 +168,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           const cy = SPOTS[i].y + 9;
           return (
             <line key={`spoke-${i}`} x1="50%" y1={`${centerTopPct}%`} x2={`${cx}%`} y2={`${cy}%`}
-              stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
+              stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
           );
         })}
       </svg>
@@ -183,7 +183,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           <div key={`label-${i}`} style={{
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
-            fontSize: '11px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
             padding: '2px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
             whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)',
             fontVariantNumeric: 'tabular-nums',
@@ -210,8 +210,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             {getInitials(memberName)}
           </div>
         </div>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--fg-1)' }}>{memberName}</div>
-        <div style={{ fontSize: '11px', fontWeight: 500, color: 'var(--fg-2)' }}>{memberRole}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>{memberName}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-2)' }}>{memberRole}</div>
       </div>
 
       {/* ORBITAL CARDS */}
@@ -239,14 +239,14 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', background: projColor }}>{item.project_key}</span>
               )}
-              <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
+              <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
             <div style={{
-              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))', lineHeight: '1.35', marginBottom: '5px',
+              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text))', lineHeight: '1.35', marginBottom: '5px',
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             } as React.CSSProperties}>
               {trunc(item.title, 48)}
@@ -279,8 +279,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             }}
           >
             <div style={{
-              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-              fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+              fontSize: 'var(--ds-font-size-600)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
                 ? '0 0 0 3px var(--ds-background-success-bold, rgba(22,163,74,.25)), 0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))'
                 : '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
@@ -290,7 +290,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               {doneCount}
             </div>
             <span style={{
-              fontSize: '9.5px', fontWeight: 700, color: 'var(--ds-text-success, #216E4E)', textTransform: 'uppercase',
+              fontSize: '9.5px', fontWeight: 700, color: 'var(--ds-text-success)', textTransform: 'uppercase',
               letterSpacing: '.06em', writingMode: 'vertical-rl',
             } as React.CSSProperties}>
               COMPLETED
@@ -313,17 +313,17 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{
-                    width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-                    color: 'var(--ds-surface, #FFF)', fontSize: '12px', fontWeight: 700,
+                    width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success))',
+                    color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
-                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))' }}>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--cp-text-primary, var(--ds-text))' }}>
                     Completed This Week
                   </span>
                 </div>
                 <span style={{
-                  fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-success, #216E4E)',
-                  background: 'var(--ds-background-success, #DFFCF0)', padding: '2px 10px', borderRadius: '12px',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-success)',
+                  background: 'var(--ds-background-success)', padding: '2px 10px', borderRadius: '12px',
                 }}>
                   {doneCount}
                 </span>
@@ -342,18 +342,18 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       padding: '10px 16px', cursor: 'pointer',
                       borderBottom: '1px solid var(--bg-1)', transition: 'background .1s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-success, #DFFCF0)')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-success)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     {/* Green check circle */}
                     <div style={{
                       width: '22px', height: '22px', borderRadius: '50%',
-                      background: 'var(--ds-background-success, #DFFCF0)', border: '1.5px solid var(--cp-success, var(--ds-background-success-bold, #1F845A))',
+                      background: 'var(--ds-background-success)', border: '1.5px solid var(--cp-success, var(--ds-background-success-bold))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, marginTop: '1px',
                     }}>
                       <svg width="12" height="12" viewBox="0 0 12 12">
-                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--cp-success, #16A34A))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--cp-success))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
 
@@ -367,25 +367,25 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                           {item.item_key}
                         </span>
                         <span style={{
-                          fontSize: '10px', fontWeight: 700, padding: '1px 5px',
-                          borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 5px',
+                          borderRadius: '4px', color: 'var(--ds-surface)', background: 'var(--ds-text-success, var(--cp-success))',
                         }}>
                           DONE
                         </span>
                       </div>
                       <div style={{
-                        fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))', lineHeight: '1.3',
+                        fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text))', lineHeight: '1.3',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--fg-3)', marginTop: '2px' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: '2px' }}>
                         Resolved · {formatResolvedDate(item.resolved_at || item.updated_at)}
                       </div>
                     </div>
 
                     {/* Age */}
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--sem-success)', flexShrink: 0 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--sem-success)', flexShrink: 0 }}>
                       {item.age_days ?? 0}d
                     </span>
                   </div>

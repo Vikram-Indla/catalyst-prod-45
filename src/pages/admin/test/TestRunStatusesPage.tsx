@@ -22,29 +22,29 @@ interface RunStatusRow {
 }
 
 const STATUS_TYPE_COLORS: Record<RunStatus, string> = {
-  NOT_RUN:     'var(--ds-background-neutral, #F1F2F4)',
-  IN_PROGRESS: 'var(--ds-background-information, #E9F2FF)',
-  PASSED:      'var(--ds-background-success, #DCFFF1)',
-  FAILED:      'var(--ds-background-danger, #FFECEB)',
-  BLOCKED:     'var(--ds-background-warning, #FFF7D6)',
-  SKIPPED:     'var(--ds-background-neutral, #F1F2F4)',
+  NOT_RUN:     'var(--ds-background-neutral)',
+  IN_PROGRESS: 'var(--ds-background-information)',
+  PASSED:      'var(--ds-background-success)',
+  FAILED:      'var(--ds-background-danger)',
+  BLOCKED:     'var(--ds-background-warning)',
+  SKIPPED:     'var(--ds-background-neutral)',
 };
 
 const STATUS_TYPE_TEXT: Record<RunStatus, string> = {
-  NOT_RUN:     'var(--ds-text-subtle, #42526E)',
-  IN_PROGRESS: 'var(--ds-text-information, #0052CC)',
-  PASSED:      'var(--ds-text-success, #006644)',
-  FAILED:      'var(--ds-text-danger, #AE2A19)',
-  BLOCKED:     'var(--ds-text-warning, #974F0C)',
-  SKIPPED:     'var(--ds-text-subtlest, #6B778C)',
+  NOT_RUN:     'var(--ds-text-subtle)',
+  IN_PROGRESS: 'var(--ds-text-information)',
+  PASSED:      'var(--ds-text-success)',
+  FAILED:      'var(--ds-text-danger)',
+  BLOCKED:     'var(--ds-text-warning)',
+  SKIPPED:     'var(--ds-text-subtlest)',
 };
 
 function StatusChip({ row }: { row: RunStatusRow }) {
   const bg = row.highlight_color ?? STATUS_TYPE_COLORS[row.status_type] ?? STATUS_TYPE_COLORS.NOT_RUN;
-  const color = STATUS_TYPE_TEXT[row.status_type] ?? 'var(--ds-text, #172B4D)';
+  const color = STATUS_TYPE_TEXT[row.status_type] ?? 'var(--ds-text)';
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
       background: bg, color,
     }}>
       {row.name}
@@ -111,28 +111,28 @@ export default function TestRunStatusesPage() {
         }
       />
 
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', margin: '4px 0 24px' }}>
         Statuses applied to individual test run results. System statuses cannot be deleted but display names and colors can be customized.
       </p>
 
-      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+      <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
           <thead>
-            <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
               {['Preview', 'Name', 'Type', 'Marks complete', 'System', 'Actions'].map((h, i) => (
-                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{h}</th>
+                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {statuses.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <td colSpan={6} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
                   No run statuses found.
                 </td>
               </tr>
             ) : statuses.map(row => (
-              <tr key={row.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <tr key={row.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
                 <td style={{ padding: '10px 12px', width: 100 }}>
                   <StatusChip row={row} />
                 </td>
@@ -145,17 +145,17 @@ export default function TestRunStatusesPage() {
                         autoFocus
                       />
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <label style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>Color override:</label>
+                        <label style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>Color override:</label>
                         <input
                           type="color"
-                          value={editColor || 'var(--ds-background-neutral, #F1F2F4)'}
+                          value={editColor || 'var(--ds-background-neutral)'}
                           onChange={e => setEditColor(e.target.value)}
                           style={{ width: 32, height: 24, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
                         />
                         {editColor && (
                           <button
                             onClick={() => setEditColor('')}
-                            style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer' }}
+                            style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer' }}
                           >
                             Reset to default
                           </button>
@@ -163,26 +163,26 @@ export default function TestRunStatusesPage() {
                       </div>
                     </div>
                   ) : (
-                    <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{row.name}</span>
+                    <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{row.name}</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
-                  <span style={{ fontSize: 11, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle)' }}>
                     {row.status_type}
                   </span>
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   {row.execution_completed ? (
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-success, #006644)' }}>✓ Yes</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success)' }}>✓ Yes</span>
                   ) : (
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>—</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   {row.is_system ? (
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>System</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>System</span>
                   ) : (
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>Custom</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>Custom</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>

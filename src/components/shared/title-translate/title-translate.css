@@ -30,14 +30,14 @@
   /* Force LTR so the magenta CatyPulse signature icon stays leading and
      the label reads correctly even when the parent title is RTL. */
   direction: ltr;
-  background: var(--ds-surface, #FFFFFF);
-  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
   border-radius: 4px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
   /* Signature CTA — primary text, never muted/subtle (Vikram 2026-06-18). */
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text);
   cursor: pointer;
   user-select: none;
   /* Hover-reveal: hidden by default, shown only when the title region is
@@ -53,7 +53,7 @@
 }
 .ttw-translate-chip:hover:not(:disabled) {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
-  border-color: var(--ds-border-bold, #B3BAC5);
+  border-color: var(--ds-border-bold);
 }
 .ttw-translate-chip:disabled {
   cursor: default;
@@ -76,7 +76,7 @@
 }
 .ttw-translate-chip__arrow {
   font-size: 10px;
-  color: var(--ds-icon-accent-magenta, #CD519D);
+  color: var(--ds-icon-accent-magenta);
 }
 /* In an RTL title the result reads toward the start of the line, so the
    arrow mirrors to point that way. scaleX flips → into ← with no markup
@@ -92,13 +92,13 @@
   gap: 8px;
   direction: ltr;
   padding: 4px 8px;
-  background: var(--ds-background-warning, #FFF7D6);
-  border: 1px solid var(--ds-border-warning, #F5CD47);
+  background: var(--ds-background-warning);
+  border: 1px solid var(--ds-border-warning);
   border-radius: 4px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ds-text-warning-inverse, #533F04);
+  color: var(--ds-text-warning-inverse);
   user-select: none;
 }
 .ttw-error-chip__retry {
@@ -107,7 +107,7 @@
   padding: 0 2px;
   font: inherit;
   font-weight: 500;
-  color: var(--ds-link, #0c66e4);
+  color: var(--ds-link);
   cursor: pointer;
   text-decoration: underline;
 }
@@ -117,13 +117,13 @@
   align-items: center;
   gap: 8px;
   padding: 4px 10px;
-  background: var(--ds-background-information, #DEEBFF);
-  border: 1px solid var(--ds-border-information, #B3D4FF);
+  background: var(--ds-background-information);
+  border: 1px solid var(--ds-border-information);
   border-radius: 4px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ds-text-information, #0747A6);
+  color: var(--ds-text-information);
   user-select: none;
 }
 
@@ -132,13 +132,13 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  background: var(--ds-background-success, #E3FCEF);
-  border: 1px solid var(--ds-border-success, #ABF5D1);
+  background: var(--ds-background-success);
+  border: 1px solid var(--ds-border-success);
   border-radius: 4px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ds-text-success, #006644);
+  color: var(--ds-text-success);
   user-select: none;
 }
 .ttw-translated-chip__lang {
@@ -147,7 +147,7 @@
   opacity: 0.7;
 }
 .ttw-translated-chip__sep {
-  color: var(--ds-border-success, #57D9A3);
+  color: var(--ds-border-success);
 }
 .ttw-translated-chip__revert {
   background: none;
@@ -156,7 +156,7 @@
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ds-link, #0c66e4);
+  color: var(--ds-link);
   cursor: pointer;
   user-select: none;
   display: inline-flex;

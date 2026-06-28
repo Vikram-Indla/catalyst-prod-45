@@ -74,7 +74,7 @@ const CARD_COLOR_METHODS: { value: CardColorMethod; label: string }[] = [
 ];
 
 // ads-scanner:ignore-next-line — input[type=color] data value, not CSS style
-const DEFAULT_CARD_COLOR = 'var(--ds-link, #0052CC)';
+const DEFAULT_CARD_COLOR = 'var(--ds-link)';
 
 const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -85,30 +85,30 @@ const S = {
     display: 'flex',
     height: '100%',
     overflow: 'hidden',
-    background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
+    background: token('color.background.input', 'var(--ds-surface-sunken)'),
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   } as React.CSSProperties,
 
   sidebar: {
     width: 240,
     flexShrink: 0,
-    borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
     padding: '24px 0',
     overflowY: 'auto' as const,
-    background: token('color.background.input', 'var(--ds-surface, #FFFFFF)'),
+    background: token('color.background.input', 'var(--ds-surface)'),
   } as React.CSSProperties,
 
   content: {
     flex: 1,
     overflowY: 'auto' as const,
     padding: '32px 40px',
-    background: token('color.background.input', 'var(--ds-surface, #FFFFFF)'),
+    background: token('color.background.input', 'var(--ds-surface)'),
   } as React.CSSProperties,
 
   sectionLabel: {
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 653,
-    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+    color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
     padding: '8px 16px 4px',
     display: 'block',
   } as React.CSSProperties,
@@ -119,30 +119,30 @@ const S = {
     textAlign: 'left',
     border: 'none',
     background: active
-      ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FE)')
+      ? token('color.background.selected', 'var(--ds-background-selected)')
       : 'transparent',
     color: active
-      ? token('color.text.selected', 'var(--ds-text-selected, #0052CC)')
-      : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
-    fontSize: 14,
+      ? token('color.text.selected', 'var(--ds-text-selected)')
+      : token('color.text.subtle', 'var(--ds-text-subtle)'),
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: active ? 600 : 400,
     padding: '8px 16px',
     cursor: 'pointer',
-    borderLeft: active ? `2px solid ${token('color.border.focused', 'var(--ds-border-focused, #0052CC)')}` : '2px solid transparent',
+    borderLeft: active ? `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}` : '2px solid transparent',
     boxSizing: 'border-box',
   }),
 
   h1: {
-    fontSize: 24,
+    fontSize: 'var(--ds-font-size-800)',
     fontWeight: 653,
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    color: token('color.text', 'var(--ds-text)'),
     margin: '0 0 4px',
     lineHeight: '28px',
   } as React.CSSProperties,
 
   subtitle: {
-    fontSize: 14,
-    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+    fontSize: 'var(--ds-font-size-400)',
+    color: token('color.text.subtle', 'var(--ds-text-subtle)'),
     margin: '0 0 24px',
   } as React.CSSProperties,
 
@@ -152,31 +152,31 @@ const S = {
     gap: 16,
     alignItems: 'start',
     padding: '12px 0',
-    borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
   } as React.CSSProperties,
 
   fieldLabel: {
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 600,
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    color: token('color.text', 'var(--ds-text)'),
     paddingTop: 4,
   } as React.CSSProperties,
 
   fieldHint: {
-    fontSize: 12,
-    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+    fontSize: 'var(--ds-font-size-200)',
+    color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
     marginTop: 4,
   } as React.CSSProperties,
 
   input: {
     width: '100%',
     height: 36,
-    border: `2px solid ${token('color.border.input', 'var(--ds-border-input, #DFE1E6)')}`,
+    border: `2px solid ${token('color.border.input', 'var(--ds-border-input)')}`,
     borderRadius: 4,
     padding: '0 8px',
-    fontSize: 14,
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
-    background: token('color.background.input', 'var(--ds-background-input, #FAFBFC)'),
+    fontSize: 'var(--ds-font-size-400)',
+    color: token('color.text', 'var(--ds-text)'),
+    background: token('color.background.input', 'var(--ds-background-input)'),
     boxSizing: 'border-box' as const,
     outline: 'none',
   } as React.CSSProperties,
@@ -184,12 +184,12 @@ const S = {
   textarea: {
     width: '100%',
     minHeight: 80,
-    border: `2px solid ${token('color.border.input', 'var(--ds-border-input, #DFE1E6)')}`,
+    border: `2px solid ${token('color.border.input', 'var(--ds-border-input)')}`,
     borderRadius: 4,
     padding: 8,
-    fontSize: 14,
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
-    background: token('color.background.input', 'var(--ds-background-input, #FAFBFC)'),
+    fontSize: 'var(--ds-font-size-400)',
+    color: token('color.text', 'var(--ds-text)'),
+    background: token('color.background.input', 'var(--ds-background-input)'),
     boxSizing: 'border-box' as const,
     resize: 'vertical' as const,
     outline: 'none',
@@ -198,12 +198,12 @@ const S = {
 
   select: {
     height: 36,
-    border: `2px solid ${token('color.border.input', 'var(--ds-border-input, #DFE1E6)')}`,
+    border: `2px solid ${token('color.border.input', 'var(--ds-border-input)')}`,
     borderRadius: 4,
     padding: '0 8px',
-    fontSize: 14,
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
-    background: token('color.background.input', 'var(--ds-background-input, #FAFBFC)'),
+    fontSize: 'var(--ds-font-size-400)',
+    color: token('color.text', 'var(--ds-text)'),
+    background: token('color.background.input', 'var(--ds-background-input)'),
     cursor: 'pointer',
     outline: 'none',
   } as React.CSSProperties,
@@ -211,11 +211,11 @@ const S = {
   btnPrimary: {
     height: 32,
     padding: '0 16px',
-    background: token('color.background.brand.bold', 'var(--ds-background-brand-bold, #0052CC)'),
-    color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+    background: token('color.background.brand.bold', 'var(--ds-background-brand-bold)'),
+    color: token('color.text.inverse', 'var(--ds-text-inverse)'),
     border: 'none',
     borderRadius: 4,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     cursor: 'pointer',
   } as React.CSSProperties,
@@ -224,10 +224,10 @@ const S = {
     height: 32,
     padding: '0 12px',
     background: 'transparent',
-    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
-    border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+    border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
     borderRadius: 4,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     cursor: 'pointer',
   } as React.CSSProperties,
@@ -235,8 +235,8 @@ const S = {
   btnLink: {
     background: 'none',
     border: 'none',
-    color: token('color.link', 'var(--ds-link, #0052CC)'),
-    fontSize: 14,
+    color: token('color.link', 'var(--ds-link)'),
+    fontSize: 'var(--ds-font-size-400)',
     cursor: 'pointer',
     padding: 0,
     textDecoration: 'underline',
@@ -245,23 +245,23 @@ const S = {
   table: {
     width: '100%',
     borderCollapse: 'collapse' as const,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
   } as React.CSSProperties,
 
   th: {
     textAlign: 'left' as const,
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 653,
-    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+    color: token('color.text.subtle', 'var(--ds-text-subtle)'),
     padding: '4px 8px 4px 0',
-    borderBottom: `1.67px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    borderBottom: `1.67px solid ${token('color.border', 'var(--ds-border)')}`,
   } as React.CSSProperties,
 
   td: {
     padding: '8px 8px 8px 0',
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    color: token('color.text', 'var(--ds-text)'),
     verticalAlign: 'top' as const,
-    borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+    borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
   } as React.CSSProperties,
 
   toggle: (on: boolean): React.CSSProperties => ({
@@ -269,8 +269,8 @@ const S = {
     height: 20,
     borderRadius: 10,
     background: on
-      ? token('color.background.brand.bold', 'var(--ds-background-brand-bold, #0052CC)')
-      : token('color.background.neutral', 'var(--ds-background-neutral, #DFE1E6)'),
+      ? token('color.background.brand.bold', 'var(--ds-background-brand-bold)')
+      : token('color.background.neutral', 'var(--ds-background-neutral)'),
     position: 'relative',
     cursor: 'pointer',
     border: 'none',
@@ -283,7 +283,7 @@ const S = {
     width: 16,
     height: 16,
     borderRadius: '50%',
-    background: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+    background: token('color.text.inverse', 'var(--ds-text-inverse)'),
     top: 2,
     left: on ? 22 : 2,
     transition: 'left 0.15s',
@@ -451,7 +451,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       {/* Name */}
       <div style={S.fieldRow}>
         <div>
-          <div style={S.fieldLabel}>Name <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span></div>
+          <div style={S.fieldLabel}>Name <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)') }}>*</span></div>
         </div>
         <div>
           <input
@@ -470,7 +470,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
           <div style={S.fieldHint}>Read-only</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 4 }}>
-          <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text)') }}>
             {projectKey} project
           </span>
         </div>
@@ -479,7 +479,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       {/* Board filter */}
       <div style={S.fieldRow}>
         <div>
-          <div style={S.fieldLabel}>Board filter <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span></div>
+          <div style={S.fieldLabel}>Board filter <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)') }}>*</span></div>
           <div style={S.fieldHint}>Issues shown on the board are controlled by the linked filter</div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -591,7 +591,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
           {DAYS_OF_WEEK.map((day, idx) => (
-            <label key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, fontSize: 12, cursor: 'pointer' }}>
+            <label key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={workingDays.workdays[idx]}
@@ -688,7 +688,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       {/* Workflow type (read-only) */}
       <div style={S.fieldRow}>
         <div style={S.fieldLabel}>Workflow type</div>
-        <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), paddingTop: 4 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text)'), paddingTop: 4 }}>
           {board.boardType === 'scrum' ? 'Scrum' : 'Kanban'}
         </span>
       </div>
@@ -741,7 +741,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       </div>
 
       {/* Column list */}
-      <h2 style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '24px 0 12px' }}>
+      <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: token('color.text', 'var(--ds-text)'), margin: '24px 0 12px' }}>
         Board columns
       </h2>
       <table style={S.table}>
@@ -758,14 +758,14 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
               <td style={S.td}>{col.name}{col.isBacklog ? ' (Backlog)' : ''}{col.isDone ? ' (Done)' : ''}</td>
               <td style={S.td}>
                 {(col.statusIds ?? []).length > 0
-                  ? <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{col.statusIds.length} status(es)</span>
-                  : <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>No statuses mapped</span>
+                  ? <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)') }}>{col.statusIds.length} status(es)</span>
+                  : <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontStyle: 'italic' }}>No statuses mapped</span>
                 }
               </td>
               <td style={S.td}>
                 {!col.isBacklog && !col.isDone && (
                   <button
-                    style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                    style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger)') }}
                     onClick={() => deleteCol.mutateAsync({ columnId: col.id, boardId: board.id })}
                   >Delete</button>
                 )}
@@ -774,7 +774,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
           ))}
           {columns.length === 0 && (
             <tr>
-              <td style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }} colSpan={3}>
+              <td style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }} colSpan={3}>
                 No columns defined
               </td>
             </tr>
@@ -874,10 +874,10 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       {cardColorMethod === 'jql' && (
         <>
           <div style={{ marginTop: 24, marginBottom: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: token('color.text', 'var(--ds-text)'), margin: '0 0 4px' }}>
               Colour rules
             </h2>
-            <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), margin: 0 }}>
               Issues matching the first applicable JQL rule will use that colour.
             </p>
           </div>
@@ -898,10 +898,10 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
                     <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: 2, background: cc.color }} />
                   </td>
                   <td style={S.td}>{cc.label}</td>
-                  <td style={{ ...S.td, fontFamily: 'monospace', fontSize: 12 }}>{cc.jql}</td>
+                  <td style={{ ...S.td, fontFamily: 'monospace', fontSize: 'var(--ds-font-size-200)' }}>{cc.jql}</td>
                   <td style={S.td}>
                     <button
-                      style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                      style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger)') }}
                       onClick={() => setCardColors(prev => prev.filter((_, i) => i !== idx))}
                     >Delete</button>
                   </td>
@@ -909,7 +909,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
               ))}
               {cardColors.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                  <td colSpan={4} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                     No colour rules defined
                   </td>
                 </tr>
@@ -967,7 +967,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
         </div>
         <div style={{ display: 'flex', gap: 24 }}>
           {(['default', 'compact'] as const).map(v => (
-            <label key={v} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14 }}>
+            <label key={v} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}>
               <input type="radio" name="cardLayout" checked={cardLayout === v} onChange={() => setCardLayout(v)} />
               {v === 'default' ? 'Default' : 'Compact'}
             </label>
@@ -986,10 +986,10 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
 
       {/* Extra fields */}
       <div style={{ marginTop: 24, marginBottom: 12 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>
+        <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: token('color.text', 'var(--ds-text)'), margin: '0 0 4px' }}>
           Extra fields
         </h2>
-        <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), margin: 0 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), margin: 0 }}>
           Show up to 3 additional fields on each card.
         </p>
       </div>
@@ -1007,7 +1007,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
               <td style={S.td}>{f}</td>
               <td style={S.td}>
                 <button
-                  style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                  style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger)') }}
                   onClick={() => setCardExtraFields(prev => prev.filter((_, i) => i !== idx))}
                 >Delete</button>
               </td>
@@ -1015,7 +1015,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
           ))}
           {cardExtraFields.length === 0 && (
             <tr>
-              <td colSpan={2} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+              <td colSpan={2} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                 No extra fields added
               </td>
             </tr>
@@ -1085,12 +1085,12 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
           {quickFilters.map((qf: BoardQuickFilter) => (
             <tr key={qf.id}>
               <td style={S.td}>{qf.name}</td>
-              <td style={{ ...S.td, fontFamily: 'monospace', fontSize: 12 }}>{qf.jqlQuery ?? qf.filterValue?.jql as string ?? ''}</td>
-              <td style={{ ...S.td, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{qf.description ?? ''}</td>
+              <td style={{ ...S.td, fontFamily: 'monospace', fontSize: 'var(--ds-font-size-200)' }}>{qf.jqlQuery ?? qf.filterValue?.jql as string ?? ''}</td>
+              <td style={{ ...S.td, color: token('color.text.subtle', 'var(--ds-text-subtle)') }}>{qf.description ?? ''}</td>
               <td style={S.td}>
                 {!qf.isSystem && (
                   <button
-                    style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}
+                    style={{ ...S.btnSubtle, color: token('color.text.danger', 'var(--ds-text-danger)') }}
                     onClick={() => deleteQuickFilter.mutateAsync({ filterId: qf.id, boardId: board.id })}
                   >Delete</button>
                 )}
@@ -1099,7 +1099,7 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
           ))}
           {quickFilters.length === 0 && (
             <tr>
-              <td colSpan={4} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+              <td colSpan={4} style={{ ...S.td, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                 No quick filters defined
               </td>
             </tr>
@@ -1108,8 +1108,8 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
       </table>
 
       {addingFilter && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16, padding: 16, border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 4 }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16, padding: 16, border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 4 }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
             New quick filter
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1164,14 +1164,14 @@ export default function BoardSettingsPage({ board, projectKey }: BoardSettingsPa
     <div style={S.page}>
       {/* Left nav */}
       <nav style={S.sidebar} aria-label="Board settings navigation">
-        <div style={{ padding: '0 16px 16px', borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, marginBottom: 8 }}>
+        <div style={{ padding: '0 16px 16px', borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`, marginBottom: 8 }}>
           <button
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: token('color.link', 'var(--ds-link, #0052CC)'), fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: token('color.link', 'var(--ds-link)'), fontSize: 'var(--ds-font-size-400)', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => navigate(backPath)}
           >
             ← Back to boards
           </button>
-          <div style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginTop: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginTop: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {board.name}
           </div>
         </div>

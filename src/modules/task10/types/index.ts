@@ -13,35 +13,35 @@ export type T10WeekStatus = 'active' | 'completed' | 'archived';
 export type T10ItemStatus = 'todo' | 'done';
 
 export const T10_STATUS_COLORS = {
-  active: 'var(--ds-text-success, #22c55e)',    // Green
-  inactive: 'var(--ds-text-subtlest, #626F86)',  // Gray
-  archived: 'var(--ds-text-subtlest, #94a3b8)',  // Light gray
-  completed: 'var(--ds-text-brand, #3b82f6)', // Blue
+  active: 'var(--ds-text-success)',    // Green
+  inactive: 'var(--ds-text-subtlest)',  // Gray
+  archived: 'var(--ds-text-subtlest)',  // Light gray
+  completed: 'var(--ds-text-brand)', // Blue
 } as const;
 
 export const T10_RANK_COLORS = {
-  top5: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',      // Blue with glow for ranks 1-5
-  standard: 'var(--ds-text-subtlest, #64748b)',  // Gray for ranks 6-10
-  buffer: 'var(--ds-text-subtlest, #94a3b8)',    // Light gray dashed for 11+
+  top5: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',      // Blue with glow for ranks 1-5
+  standard: 'var(--ds-text-subtlest)',  // Gray for ranks 6-10
+  buffer: 'var(--ds-text-subtlest)',    // Light gray dashed for 11+
 } as const;
 
 // Label color palette (15 colors)
 export const T10_LABEL_COLORS = [
-  { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Orange', value: 'var(--ds-background-warning-bold, #f97316)' },
-  { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
-  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Lime', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
-  { name: 'Emerald', value: 'var(--ds-background-success-bold, #059669)' },
-  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
-  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
-  { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6366f1)' },
-  { name: 'Violet', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
-  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #a855f7)' },
-  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
-  { name: 'Gray', value: 'var(--ds-text-subtlest, #626F86)' },
+  { name: 'Red', value: 'var(--ds-text-danger)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Amber', value: 'var(--ds-text-warning)' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Lime', value: 'var(--ds-background-success-bold)' },
+  { name: 'Green', value: 'var(--ds-text-success)' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold)' },
+  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information)' },
+  { name: 'Blue', value: 'var(--ds-text-brand)' },
+  { name: 'Indigo', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Violet', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder)' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest)' },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -9,7 +9,7 @@ function Providers({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 function Frame({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></Providers>;
+  return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface)' }}>{children}</div></Providers>;
 }
 
 import { EditableAssignee } from '@/components/EditableAssignee';

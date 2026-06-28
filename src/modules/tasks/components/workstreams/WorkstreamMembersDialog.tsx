@@ -26,17 +26,17 @@ interface WorkstreamMembersDialogProps {
 }
 
 const COLORS = {
-  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--ds-text-subtlest, #64748b)',
-  textMuted: 'var(--ds-text-subtlest, #94a3b8)',
-  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  surfaceHover: 'var(--ds-surface-sunken, #f8fafc)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  textPrimary: 'var(--ds-text)',
+  textSecondary: 'var(--ds-text-subtlest)',
+  textMuted: 'var(--ds-text-subtlest)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken))',
+  surfaceHover: 'var(--ds-surface-sunken)',
 };
 
 // Generate avatar background color from user ID
 const getAvatarColor = (userId: string): string => {
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text-success, #16a34a)', 'var(--ds-link, #0C66E4)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-accent-magenta-bolder, #be185d)'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-discovery-bold)', 'var(--ds-background-accent-magenta-bolder)', 'var(--ds-background-warning-bold)', 'var(--ds-text-success)', 'var(--ds-link)', 'var(--ds-background-discovery-bold)', 'var(--ds-background-accent-magenta-bolder)'];
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 };
@@ -187,9 +187,9 @@ export function WorkstreamMembersDialog({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '12px',
+                          fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 600,
-                          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                           flexShrink: 0,
                         }}
                       >

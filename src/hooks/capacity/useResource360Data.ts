@@ -295,18 +295,18 @@ export function useResource360Data(resourceId: string | null) {
 
     // Build sunburst hierarchy
     const typeColors: Record<string, string> = {
-      theme: 'var(--ds-chart-teal-bold, #0d9488)',
-      epic: 'var(--ds-link, #2563eb)',
-      feature: 'var(--ds-chart-teal-bold, #0d9488)',
-      story: 'var(--ds-background-success-bold, #059669)',
-      defect: 'var(--ds-background-danger-bold, #dc2626)',
-      incident: 'var(--ds-background-warning-bold, #d97706)',
+      theme: 'var(--ds-chart-teal-bold)',
+      epic: 'var(--ds-link)',
+      feature: 'var(--ds-chart-teal-bold)',
+      story: 'var(--ds-background-success-bold)',
+      defect: 'var(--ds-background-danger-bold)',
+      incident: 'var(--ds-background-warning-bold)',
     };
 
     const children: SunburstNode[] = Object.entries(metrics.itemsByType).map(([type, count]) => ({
       name: type.charAt(0).toUpperCase() + type.slice(1),
       value: count,
-      color: typeColors[type] || 'var(--ds-text-subtlest, #626F86)',
+      color: typeColors[type] || 'var(--ds-text-subtlest)',
       type,
     }));
 

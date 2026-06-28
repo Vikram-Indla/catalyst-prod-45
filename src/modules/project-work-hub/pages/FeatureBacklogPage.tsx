@@ -59,14 +59,14 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Error loading features</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, var(--cp-danger))' }}>Error loading features</div>;
 
   const total = features?.length || 0;
 
   return (
     <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
       <CatalystPageHeader title="Feature Backlog" actions={
-        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6 }}>
+        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 6 }}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Feature
         </Button>
       } />
@@ -77,7 +77,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
             <Layers className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
             <p className="text-base font-medium" style={{ color: tk.t1 }}>No features yet</p>
             <p className="text-sm mt-1 mb-4" style={{ color: tk.t3 }}>Create the first feature to get started</p>
-            <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6 }}>
+            <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 6 }}>
               <Plus className="h-3.5 w-3.5 mr-1" /> Create Feature
             </Button>
           </div>
@@ -87,20 +87,20 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
               <div style={{ width: 38, flexShrink: 0 }} />
               <div style={{ width: 26, flexShrink: 0 }} />
               <div style={{ width: 38, flexShrink: 0 }} />
-              <div style={{ width: 110, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>KEY</div>
-              <div style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>SUMMARY</div>
-              <div style={{ width: 138, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>STATUS</div>
-              <div style={{ width: 158, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>ASSIGNEE</div>
-              <div style={{ width: 96, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>DUE DATE</div>
-              <div style={{ width: 88, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>PRIORITY</div>
+              <div style={{ width: 110, flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>KEY</div>
+              <div style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>SUMMARY</div>
+              <div style={{ width: 138, flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>STATUS</div>
+              <div style={{ width: 158, flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>ASSIGNEE</div>
+              <div style={{ width: 96, flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>DUE DATE</div>
+              <div style={{ width: 88, flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: tk.t2 }}>PRIORITY</div>
             </div>
 
             {groups.map(group => (
               <div key={group.status}>
                 <div className="flex items-center h-[32px] px-2 cursor-pointer select-none" style={{ background: tk.tableHeaderBg, borderBottom: `0.75px solid ${tk.border}` }} onClick={() => toggleGroup(group.status)}>
                   {collapsed[group.status] ? <ChevronRight className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} /> : <ChevronDown className="h-3.5 w-3.5 mr-2" style={{ color: tk.t2 }} />}
-                  <span style={{ fontSize: 11, fontWeight: 600, color: tk.t2, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{group.label}</span>
-                  <span className="ml-2 inline-flex items-center justify-center rounded-full" style={{ fontSize: 10, fontWeight: 600, color: tk.t2, background: tk.chipBg, minWidth: 20, height: 18, padding: '0 6px' }}>{group.items.length}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.t2, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{group.label}</span>
+                  <span className="ml-2 inline-flex items-center justify-center rounded-full" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: tk.t2, background: tk.chipBg, minWidth: 20, height: 18, padding: '0 6px' }}>{group.items.length}</span>
                 </div>
 
                 {!collapsed[group.status] && group.items.map((feat) => {
@@ -118,23 +118,23 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <WorkItemIcon type="feature" />
                       </div>
-                      <div style={{ width: 110, flexShrink: 0, fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: feat.display_id ? tk.blueKey : tk.t3 }}>
+                      <div style={{ width: 110, flexShrink: 0, fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: feat.display_id ? tk.blueKey : tk.t3 }}>
                         {feat.display_id || '—'}
                       </div>
-                      <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 500, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{feat.name}</div>
+                      <div style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{feat.name}</div>
                       <div style={{ width: 138, flexShrink: 0 }}>
-                        {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
+                        {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
                       </div>
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: tk.t3, display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(null)}</div>
+                      <div style={{ width: 158, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', color: tk.t3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(null)}</div>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Unassigned</span>
                       </div>
-                      <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: overdue ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : tk.t2 }}>{formatDueDate(feat.planned_end_date)}</div>
-                      <div style={{ width: 88, flexShrink: 0, fontSize: 12, position: 'relative' }}>
+                      <div style={{ width: 96, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', color: overdue ? 'var(--ds-text-danger, var(--cp-danger))' : tk.t2 }}>{formatDueDate(feat.planned_end_date)}</div>
+                      <div style={{ width: 88, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', position: 'relative' }}>
                         <span style={{ color: getPriorityColor(feat.priority) }}>{getPriorityLabel(feat.priority)}</span>
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' }}>
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : 'var(--ds-text, var(--cp-bg-neutral))' }}>
                           <button onClick={() => setEditFeatureId(feat.id)} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
-                          <button onClick={() => setDeleteTarget(feat)} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} /></button>
+                          <button onClick={() => setDeleteTarget(feat)} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-danger, var(--cp-danger))' }} /></button>
                         </div>
                       </div>
                     </div>

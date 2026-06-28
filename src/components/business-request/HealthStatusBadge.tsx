@@ -10,23 +10,23 @@ interface HealthStatusBadgeProps {
 }
 
 const DOT_COLORS: Record<string, string> = {
-  Uncommitted:    token('color.icon.disabled',     'var(--ds-text-disabled, #8590A2)'),
-  Committed:      token('color.icon.information',  'var(--ds-link, #0C66E4)'),
-  'On Track':     token('color.icon.success',      'var(--ds-background-success-bold, #1F845A)'),
+  Uncommitted:    token('color.icon.disabled',     'var(--ds-text-disabled)'),
+  Committed:      token('color.icon.information',  'var(--ds-link)'),
+  'On Track':     token('color.icon.success',      'var(--ds-background-success-bold)'),
   Delayed:        token('color.icon.warning',      '#CF9F02'),
-  'At Risk':      token('color.icon.danger',       'var(--ds-background-danger-bold, #C9372C)'),
-  Blocked:        token('color.icon.danger',       'var(--ds-background-danger-bold, #C9372C)'),
-  Delivered:      token('color.icon.success',      'var(--ds-background-success-bold, #1F845A)'),
+  'At Risk':      token('color.icon.danger',       'var(--ds-background-danger-bold)'),
+  Blocked:        token('color.icon.danger',       'var(--ds-background-danger-bold)'),
+  Delivered:      token('color.icon.success',      'var(--ds-background-success-bold)'),
 };
 
 const LABEL_COLORS: Record<string, string> = {
-  Uncommitted:    token('color.text.subtlest',    'var(--ds-icon-subtle, #626F86)'),
-  Committed:      token('color.text.information', 'var(--ds-link, #0052CC)'),
-  'On Track':     token('color.text.success',     'var(--ds-text-success, #216E4E)'),
-  Delayed:        token('color.text.warning',     'var(--ds-text-warning, #974F0C)'),
-  'At Risk':      token('color.text.danger',      'var(--ds-text-danger, #AE2A19)'),
-  Blocked:        token('color.text.danger',      'var(--ds-text-danger, #AE2A19)'),
-  Delivered:      token('color.text.success',     'var(--ds-text-success, #216E4E)'),
+  Uncommitted:    token('color.text.subtlest',    'var(--ds-icon-subtle)'),
+  Committed:      token('color.text.information', 'var(--ds-link)'),
+  'On Track':     token('color.text.success',     'var(--ds-text-success)'),
+  Delayed:        token('color.text.warning',     'var(--ds-text-warning)'),
+  'At Risk':      token('color.text.danger',      'var(--ds-text-danger)'),
+  Blocked:        token('color.text.danger',      'var(--ds-text-danger)'),
+  Delivered:      token('color.text.success',     'var(--ds-text-success)'),
 };
 
 const FRIENDLY_LABELS: Record<string, string> = {
@@ -70,12 +70,12 @@ function DeliveryTooltipBody({ health }: { health: BusinessRequestHealth }) {
   const description = HEALTH_DESCRIPTIONS[health.health_status] ?? '';
   return (
     <div style={{ maxWidth: 260, padding: '2px 0' }}>
-      <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 12 }}>
+      <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 'var(--ds-font-size-200)' }}>
         Delivery · {FRIENDLY_LABELS[health.health_status] ?? health.health_status}
       </div>
-      <div style={{ fontSize: 12, lineHeight: '16px' }}>{description}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: '16px' }}>{description}</div>
       {health.br_target_date && (
-        <div style={{ marginTop: 6, fontSize: 11, opacity: 0.8 }}>
+        <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', opacity: 0.8 }}>
           Target:{' '}
           {new Date(health.br_target_date).toLocaleDateString('en-GB', {
             day: 'numeric',
@@ -85,10 +85,10 @@ function DeliveryTooltipBody({ health }: { health: BusinessRequestHealth }) {
         </div>
       )}
       {health.violation_count > 0 && (
-        <div style={{ marginTop: 4, fontSize: 11 }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)' }}>
           {health.violation_count} violation{health.violation_count !== 1 ? 's' : ''}
           {health.critical_violation_count > 0 && (
-            <span style={{ marginLeft: 4, color: 'var(--ds-background-danger-bold, #C9372C)' }}>
+            <span style={{ marginLeft: 4, color: 'var(--ds-background-danger-bold)' }}>
               · {health.critical_violation_count} critical
             </span>
           )}
@@ -100,8 +100,8 @@ function DeliveryTooltipBody({ health }: { health: BusinessRequestHealth }) {
 
 export function HealthStatusBadge({ health }: HealthStatusBadgeProps) {
   const status = health.health_status;
-  const dotColor   = DOT_COLORS[status]   ?? token('color.icon.disabled',  'var(--ds-text-disabled, #8590A2)');
-  const labelColor = LABEL_COLORS[status] ?? token('color.text.subtlest',  'var(--ds-icon-subtle, #626F86)');
+  const dotColor   = DOT_COLORS[status]   ?? token('color.icon.disabled',  'var(--ds-text-disabled)');
+  const labelColor = LABEL_COLORS[status] ?? token('color.text.subtlest',  'var(--ds-icon-subtle)');
   const label      = FRIENDLY_LABELS[status] ?? status;
   const subtitle   = SUBTITLES[status] ?? '';
 
@@ -119,14 +119,14 @@ export function HealthStatusBadge({ health }: HealthStatusBadgeProps) {
             aria-hidden="true"
             style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }}
           />
-          <span style={{ fontSize: 14, fontWeight: 500, color: labelColor, lineHeight: '20px' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: labelColor, lineHeight: '20px' }}>
             {label}
           </span>
         </div>
         <span
           style={{
-            fontSize: 11,
-            color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+            fontSize: 'var(--ds-font-size-100)',
+            color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
             lineHeight: '14px',
             paddingLeft: 15,
           }}

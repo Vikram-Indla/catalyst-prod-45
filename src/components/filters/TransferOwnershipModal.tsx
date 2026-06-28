@@ -59,7 +59,7 @@ export function TransferOwnershipModal({ filter, onClose }: Props) {
       </ModalHeader>
 
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 14, color: token('color.text.subtle') }}>
+        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle') }}>
           Transfer <strong style={{ color: token('color.text') }}>{filter.name}</strong> to another member.
           The new owner will have full edit and delete rights.
         </p>

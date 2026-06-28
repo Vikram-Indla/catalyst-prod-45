@@ -69,22 +69,22 @@ export type DrawerTab = 'hierarchy' | 'sunburst';
 
 // Work item type icons and colors config
 export const WorkItemConfig = {
-  theme: { color: 'var(--ds-chart-teal-bold, #0d9488)', bgColor: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/10', label: 'Theme', level: 'enterprise' },
-  objective: { color: 'var(--ds-text-subtlest, #626F86)', bgColor: 'bg-[var(--ds-text-subtlest, #626F86)]/10', label: 'Objective', level: 'enterprise' },
-  key_result: { color: 'var(--ds-background-information-bold, #3b82f6)', bgColor: 'bg-[var(--ds-background-information-bold, #3b82f6)]/10', label: 'Key Result', level: 'enterprise' },
-  epic: { color: 'var(--ds-link, #2563eb)', bgColor: 'bg-[var(--cp-workstream-catalyst-primary, #2563eb)]/10', label: 'Epic', level: 'program' },
-  feature: { color: 'var(--ds-chart-teal-bold, #0d9488)', bgColor: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/10', label: 'Feature', level: 'project' },
-  story: { color: 'var(--ds-background-success-bold, #059669)', bgColor: 'bg-[var(--ds-background-success-bold, #059669)]/10', label: 'Story', level: 'project' },
-  defect: { color: 'var(--ds-background-danger-bold, #dc2626)', bgColor: 'bg-[var(--ds-background-danger-bold, #dc2626)]/10', label: 'Defect', level: 'project' },
-  incident: { color: 'var(--ds-background-warning-bold, #d97706)', bgColor: 'bg-[var(--ds-background-warning-bold, #d97706)]/10', label: 'Incident', level: 'project' },
-  business_request: { color: 'var(--ds-background-success-bold, #1F845A)', bgColor: 'bg-[var(--ds-background-success-bold, #1F845A)]/10', label: 'Business Request', level: 'product' },
+  theme: { color: 'var(--ds-chart-teal-bold)', bgColor: 'bg-[var(--ds-chart-teal-bold)]/10', label: 'Theme', level: 'enterprise' },
+  objective: { color: 'var(--ds-text-subtlest)', bgColor: 'bg-[var(--ds-text-subtlest)]/10', label: 'Objective', level: 'enterprise' },
+  key_result: { color: 'var(--ds-background-information-bold)', bgColor: 'bg-[var(--ds-background-information-bold)]/10', label: 'Key Result', level: 'enterprise' },
+  epic: { color: 'var(--ds-link)', bgColor: 'bg-[var(--cp-workstream-catalyst-primary)]/10', label: 'Epic', level: 'program' },
+  feature: { color: 'var(--ds-chart-teal-bold)', bgColor: 'bg-[var(--ds-chart-teal-bold)]/10', label: 'Feature', level: 'project' },
+  story: { color: 'var(--ds-background-success-bold)', bgColor: 'bg-[var(--ds-background-success-bold)]/10', label: 'Story', level: 'project' },
+  defect: { color: 'var(--ds-background-danger-bold)', bgColor: 'bg-[var(--ds-background-danger-bold)]/10', label: 'Defect', level: 'project' },
+  incident: { color: 'var(--ds-background-warning-bold)', bgColor: 'bg-[var(--ds-background-warning-bold)]/10', label: 'Incident', level: 'project' },
+  business_request: { color: 'var(--ds-background-success-bold)', bgColor: 'bg-[var(--ds-background-success-bold)]/10', label: 'Business Request', level: 'product' },
 } as const;
 
 export const StatusConfig = {
-  current: { color: 'var(--ds-chart-teal-bold, #0d9488)', bgColor: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/10', label: 'CURRENT' },
-  future: { color: 'var(--ds-link, #2563eb)', bgColor: 'bg-[var(--cp-workstream-catalyst-primary, #2563eb)]/10', label: 'FUTURE' },
-  completed: { color: 'var(--ds-text-subtlest, #626F86)', bgColor: 'bg-[var(--ds-text-subtlest, #626F86)]/10', label: 'COMPLETED' },
-  cancelled: { color: 'var(--ds-background-danger-bold, #dc2626)', bgColor: 'bg-[var(--ds-background-danger-bold, #dc2626)]/10', label: 'CANCELLED' },
+  current: { color: 'var(--ds-chart-teal-bold)', bgColor: 'bg-[var(--ds-chart-teal-bold)]/10', label: 'CURRENT' },
+  future: { color: 'var(--ds-link)', bgColor: 'bg-[var(--cp-workstream-catalyst-primary)]/10', label: 'FUTURE' },
+  completed: { color: 'var(--ds-text-subtlest)', bgColor: 'bg-[var(--ds-text-subtlest)]/10', label: 'COMPLETED' },
+  cancelled: { color: 'var(--ds-background-danger-bold)', bgColor: 'bg-[var(--ds-background-danger-bold)]/10', label: 'CANCELLED' },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -501,7 +501,7 @@ export type StatusCategory = 'all' | 'todo' | 'progress' | 'done';
 export function getStaleIndicator(ageDays: number, status: string, statusCategory?: string): { icon: string; color: string; label: string } | null {
   const cat = getStatusCategory(status, statusCategory);
   if (cat === 'done') return null;
-  if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', label: 'Critically stale (>21d)' };
+  if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, var(--ds-text-warning))', label: 'Critically stale (>21d)' };
   if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' }; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   return null;
 }
@@ -555,21 +555,21 @@ export function getStatusCategory(status: string, statusCategory?: string): Stat
 
 /** Status category color tokens — Catalyst V5 compliant */
 export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; border: string; dot: string }> = {
-  all:      { bg: 'var(--ds-background-neutral-subtle, #F7F8F9)', text: 'var(--ds-text-subtle, #44546F)', border: 'var(--ds-border, #DFE1E6)', dot: 'var(--ds-text-subtlest, #626F86)' },
-  todo:     { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', border: 'var(--ds-border, #DFE1E6)', dot: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))' },
-  progress: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--cp-workstream-catalyst-primary, #2563EB)', border: 'var(--ds-background-information, #E9F2FF)', dot: 'var(--cp-workstream-catalyst-primary, #2563EB)' },
-  done:     { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--quality-high, #059669)', border: 'var(--ds-background-success, #DFFCF0)', dot: 'var(--quality-high, #059669)' },
+  all:      { bg: 'var(--ds-background-neutral-subtle)', text: 'var(--ds-text-subtle)', border: 'var(--ds-border)', dot: 'var(--ds-text-subtlest)' },
+  todo:     { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken))', text: 'var(--cp-ink-3, var(--cp-text-secondary))', border: 'var(--ds-border)', dot: 'var(--cp-ink-3, var(--cp-text-secondary))' },
+  progress: { bg: 'var(--ds-background-information)', text: 'var(--cp-workstream-catalyst-primary)', border: 'var(--ds-background-information)', dot: 'var(--cp-workstream-catalyst-primary)' },
+  done:     { bg: 'var(--ds-background-success)', text: 'var(--quality-high)', border: 'var(--ds-background-success)', dot: 'var(--quality-high)' },
 };
 
 /** Hub color mapping (V3) */
 export const WH_HUB_COLORS: Record<string, string> = {
-  StrategyHub:  'var(--cp-purple-60, #7C3AED)',
-  ProductHub:   'var(--cp-teal-60, #0D9488)',
-  ProjectHub:   'var(--cp-workstream-catalyst-primary, #2563EB)',
-  ReleaseHub:   'var(--cp-warning, #D97706)',
-  TestHub:      'var(--cp-danger, #DC2626)',
-  IncidentHub:  'var(--ds-background-danger-bold, #ef4444)',
-  Tasks:      'var(--cp-ink-3, var(--cp-text-secondary, #64748B))',
+  StrategyHub:  'var(--cp-purple-60)',
+  ProductHub:   'var(--cp-teal-60)',
+  ProjectHub:   'var(--cp-workstream-catalyst-primary)',
+  ReleaseHub:   'var(--cp-warning)',
+  TestHub:      'var(--cp-danger)',
+  IncidentHub:  'var(--ds-background-danger-bold)',
+  Tasks:      'var(--cp-ink-3, var(--cp-text-secondary))',
 };
 
 /** Hub short names for badges (V3) */

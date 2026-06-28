@@ -27,7 +27,7 @@ const TYPE_MAP: Record<string, RoadmapRequest['type']> = {
 };
 
 // ── Color fallback for owners — deterministic from name ──
-const OWNER_PALETTE = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--quality-high, #059669)', 'var(--ds-background-danger-bold, #e11d48)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const OWNER_PALETTE = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-purple-60)', 'var(--cp-teal-60)', 'var(--ds-background-accent-magenta-bolder)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--quality-high)', 'var(--ds-background-danger-bold)', 'var(--ds-background-discovery-bold)'];
 
 function getInitials(name: string): string {
   if (!name || name === 'Unassigned') return '?';
@@ -51,7 +51,7 @@ function splitTitle(title: string): { titleAr: string; titleEn: string } {
 }
 
 function ownerColorFromName(name: string): string {
-  if (!name || name === 'Unassigned') return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+  if (!name || name === 'Unassigned') return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
   return OWNER_PALETTE[Math.abs(hash) % OWNER_PALETTE.length];

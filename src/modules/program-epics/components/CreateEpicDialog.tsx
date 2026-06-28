@@ -407,18 +407,18 @@ export function CreateEpicDialog({
         "bg-white dark:bg-[#141414]", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         "rounded-lg",
         "shadow-xl",
-        "border border-gray-200 dark:border-[var(--ds-text, #172B4D)]",
+        "border border-gray-200 dark:border-[var(--ds-text)]",
         "[&>button]:hidden"
       )}>
         {/* Accent Bar */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-background-discovery-bold, #6E5DC6)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] via-[var(--ds-background-discovery-bold)] to-[var(--ds-text-brand)] flex-shrink-0" />
 
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[var(--ds-text, #172B4D)] flex-shrink-0 bg-white dark:bg-[#141414]">
+        <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[var(--ds-text)] flex-shrink-0 bg-white dark:bg-[#141414]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Box className="h-5 w-5 text-[var(--ds-background-discovery-bold, #8b5cf6)]" />
-              <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-[var(--ds-surface-sunken, #F7F8F9)]">
+              <Box className="h-5 w-5 text-[var(--ds-background-discovery-bold)]" />
+              <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-[var(--ds-surface-sunken)]">
                 Create Epic
               </DialogTitle>
             </div>
@@ -426,8 +426,8 @@ export function CreateEpicDialog({
               onClick={handleClose} 
               className={cn(
                 "p-1.5 rounded-md",
-                "text-gray-400 hover:text-gray-600 dark:text-[var(--ds-text-subtlest, #626F86)] dark:hover:text-[var(--ds-text-disabled, #8590A2)]",
-                "hover:bg-gray-100 dark:hover:bg-[var(--ds-surface-raised,#1a1a1a)]",
+                "text-gray-400 hover:text-gray-600 dark:text-[var(--ds-text-subtlest)] dark:hover:text-[var(--ds-text-disabled)]",
+                "hover:bg-gray-100 dark:hover:bg-[var(--ds-surface-raised)]",
                 "transition-colors"
               )}
             >
@@ -508,12 +508,12 @@ export function CreateEpicDialog({
                             const statusStyle = isActive 
                               ? {
                                   backgroundColor: 'var(--ds-background-success, rgba(13, 148, 136, 0.1))',
-                                  color: 'var(--ds-chart-teal-bold, #0d9488)',
+                                  color: 'var(--ds-chart-teal-bold)',
                                   border: '1px solid var(--ds-background-success, rgba(13, 148, 136, 0.3))'
                                 }
                               : {
                                   backgroundColor: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))',
-                                  color: 'var(--ds-background-warning-bold, #b45309)',
+                                  color: 'var(--ds-background-warning-bold)',
                                   border: '1px solid var(--ds-background-warning-bold, rgba(245, 158, 11, 0.25))'
                                 };
                             
@@ -530,7 +530,7 @@ export function CreateEpicDialog({
                                   themeId === theme.id && "!bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
                                 )}
                                 style={{
-                                  borderLeft: themeId === theme.id ? '3px solid var(--ds-link, #2563eb)' : '3px solid transparent'
+                                  borderLeft: themeId === theme.id ? '3px solid var(--ds-link)' : '3px solid transparent'
                                 }}
                               >
                                 <Check
@@ -627,7 +627,7 @@ export function CreateEpicDialog({
                                 linkedBusinessRequestId === br.id && "!bg-[var(--ds-background-information, rgba(37,99,235,0.08))]"
                               )}
                               style={{
-                                borderLeft: linkedBusinessRequestId === br.id ? '3px solid var(--ds-link, #2563eb)' : '3px solid transparent'
+                                borderLeft: linkedBusinessRequestId === br.id ? '3px solid var(--ds-link)' : '3px solid transparent'
                               }}
                             >
                               <Check
@@ -659,7 +659,7 @@ export function CreateEpicDialog({
                                     className="px-2 py-0.5 rounded text-[10px] font-medium"
                                     style={{
                                       backgroundColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
-                                      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+                                      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                                       border: '1px solid var(--ds-background-information, rgba(37, 99, 235, 0.25))'
                                     }}
                                   >
@@ -779,18 +779,18 @@ export function CreateEpicDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[var(--ds-text, #172B4D)] bg-gray-50 dark:bg-[var(--ds-surface-raised,#1a1a1a)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[var(--ds-text)] bg-gray-50 dark:bg-[var(--ds-surface-raised)]">
           <Button
             variant="ghost"
             onClick={handleClose}
-            className="text-gray-600 dark:text-[var(--ds-text-disabled, #8590A2)] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[var(--ds-text, #172B4D)]"
+            className="text-gray-600 dark:text-[var(--ds-text-disabled)] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[var(--ds-text)]"
           >
             Cancel
           </Button>
           <Button 
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
-            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6"
+            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white px-6"
             title={
               isProgramMissing 
                 ? 'Program context required' 

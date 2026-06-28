@@ -286,9 +286,9 @@ export function ProfilePicker({
         padding: triggerVariant === 'cell' ? '2px 4px' : '4px 8px',
         cursor: effectivelyDisabled ? 'default' : 'pointer',
         borderRadius: 3,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
-        color: 'var(--ds-text, #172B4D)',
+        color: 'var(--ds-text)',
         textAlign: 'left',
         fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
         display: 'inline-flex',
@@ -340,8 +340,8 @@ export function ProfilePicker({
         >
           <div
             style={{
-              background: 'var(--ds-surface-overlay, #FFFFFF)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface-overlay)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 6,
               boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
               overflow: 'hidden',
@@ -350,8 +350,8 @@ export function ProfilePicker({
             <div
               style={{
                 padding: '8px 12px',
-                borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                background: 'var(--ds-surface-sunken, #F7F8F9)',
+                borderBottom: '1px solid var(--ds-border)',
+                background: 'var(--ds-surface-sunken)',
               }}
             >
               <input
@@ -365,8 +365,8 @@ export function ProfilePicker({
                   outline: 'none',
                   background: 'transparent',
                   fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
-                  fontSize: 14,
-                  color: 'var(--ds-text, #172B4D)',
+                  fontSize: 'var(--ds-font-size-400)',
+                  color: 'var(--ds-text)',
                 }}
               />
             </div>
@@ -389,7 +389,7 @@ export function ProfilePicker({
               )}
 
               {filtered.length === 0 && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
+                <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)', textAlign: 'center' }}>
                   {/* 2026-06-21: distinguish "no source" from "search filtered them all out".
                      "No people match" was confusing when the picker was empty BEFORE the user typed
                      anything — usually means the project has no project_members rows yet. */}
@@ -426,10 +426,10 @@ function UnassignedRow({ isSelected, onClick }: { isSelected: boolean; onClick: 
   const [hover, setHover] = useState(false);
   const showBar = isSelected || hover;
   const bg = isSelected
-    ? 'var(--ds-background-selected, #E9F2FE)'
+    ? 'var(--ds-background-selected)'
     : hover
-      ? 'var(--ds-background-neutral, #F1F2F4)'
-      : 'var(--ds-surface, #FFFFFF)';
+      ? 'var(--ds-background-neutral)'
+      : 'var(--ds-surface)';
   return (
     <button
       type="button"
@@ -460,12 +460,12 @@ function UnassignedRow({ isSelected, onClick }: { isSelected: boolean; onClick: 
           style={{
             position: 'absolute',
             left: 0, top: 0, bottom: 0, width: 3,
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
+            background: 'var(--ds-background-brand-bold)',
           }}
         />
       )}
       <UnassignedAvatar size={24} />
-      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>Unassigned</span>
     </button>
   );
 }
@@ -488,10 +488,10 @@ function PickerRow({
      - idle → surface (white) background, no bar */
   const showBar = isSelected || hover;
   const bg = isSelected
-    ? 'var(--ds-background-selected, #E9F2FE)'
+    ? 'var(--ds-background-selected)'
     : hover
-      ? 'var(--ds-background-neutral, #F1F2F4)'
-      : 'var(--ds-surface, #FFFFFF)';
+      ? 'var(--ds-background-neutral)'
+      : 'var(--ds-surface)';
   return (
     <button
       type="button"
@@ -522,16 +522,16 @@ function PickerRow({
           style={{
             position: 'absolute',
             left: 0, top: 0, bottom: 0, width: 3,
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
+            background: 'var(--ds-background-brand-bold)',
           }}
         />
       )}
       <AkAvatar appearance="circle" size="small" name={member.name} src={member.avatarUrl ?? undefined} label={member.name} />
-      <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: 'var(--ds-text, #172B4D)', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {member.name}
       </span>
       {member.presenceState === 'on_leave' && (
-        <span style={{ fontSize: 11, color: 'var(--ds-text-warning, #B65C02)', flexShrink: 0 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)', flexShrink: 0 }}>
           On leave
         </span>
       )}
@@ -543,9 +543,9 @@ function PickerRow({
       {badge && (
         <span
           style={{
-            fontSize: 11,
-            color: 'var(--ds-text-information, #0055CC)',
-            background: 'var(--ds-background-information, #E9F2FE)',
+            fontSize: 'var(--ds-font-size-100)',
+            color: 'var(--ds-text-information)',
+            background: 'var(--ds-background-information)',
             padding: '2px 6px',
             borderRadius: 3,
             flexShrink: 0,

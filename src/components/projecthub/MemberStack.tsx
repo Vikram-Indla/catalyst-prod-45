@@ -88,7 +88,7 @@ export function MemberStack({
   const ids = memberIds ?? [];
 
   if (memberCount === 0) {
-    return <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #758195)' }}>—</span>;
+    return <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>—</span>;
   }
 
   // Map member IDs into Atlaskit AvatarGroup data shape.

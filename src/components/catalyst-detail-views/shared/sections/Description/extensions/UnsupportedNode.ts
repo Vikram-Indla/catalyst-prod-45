@@ -43,7 +43,7 @@ export const UnsupportedBlock = Node.create({
         contenteditable: 'false',
         dir: 'auto',
         style:
-          'border:1px dashed var(--ds-border,#DFE1E6);border-radius:4px;padding:8px 12px;margin:8px 0;background:var(--ds-background-neutral-subtle,#F7F8F9);color:var(--ds-text-subtle,#44546F);font-size:12px;font-style:italic;',
+          'border:1px dashed var(--ds-border);border-radius:4px;padding:8px 12px;margin:8px 0;background:var(--ds-background-neutral-subtle);color:var(--ds-text-subtle);font-size:12px;font-style:italic;',
         title: `Jira ADF node "${nodeType}" — preserved on save (full edit support coming soon)`,
       }),
       `[Jira ${nodeType} block — preserved]`,
@@ -82,7 +82,7 @@ export const UnsupportedInline = Node.create({
         'data-unsupported-inline': node.attrs.adf,
         contenteditable: 'false',
         style:
-          'background:var(--ds-background-neutral,#F1F2F4);color:var(--ds-text-subtle,#44546F);padding:1px 4px;border-radius:3px;font-size:11px;font-style:italic;',
+          'background:var(--ds-background-neutral);color:var(--ds-text-subtle);padding:1px 4px;border-radius:3px;font-size:11px;font-style:italic;',
         title: `Jira ADF inline node "${nodeType}" — preserved on save`,
       }),
       `[${nodeType}]`,

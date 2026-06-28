@@ -119,9 +119,9 @@ export const mockReleases: ReleaseData[] = [
     stats: { workItems: 42, testCases: 156, cycles: 3 },
     status: 'active',
     team: [
-      { initials: 'VS', name: 'Vikram Singh', color: 'var(--ds-link, #2563eb)' },
-      { initials: 'AA', name: 'Ahmed Al-Rashid', color: 'var(--ds-chart-teal-bold, #0d9488)' },
-      { initials: 'SK', name: 'Sara Khan', color: 'var(--ds-background-discovery-bold, #7C3AED)' },
+      { initials: 'VS', name: 'Vikram Singh', color: 'var(--ds-link)' },
+      { initials: 'AA', name: 'Ahmed Al-Rashid', color: 'var(--ds-chart-teal-bold)' },
+      { initials: 'SK', name: 'Sara Khan', color: 'var(--ds-background-discovery-bold)' },
     ],
   },
   {
@@ -137,8 +137,8 @@ export const mockReleases: ReleaseData[] = [
     // FIX 5: Change status from 'active' to 'at-risk'
     status: 'at-risk',
     team: [
-      { initials: 'MR', name: 'Mohammed Rizvi', color: 'var(--ds-background-warning-bold, #d97706)' },
-      { initials: 'AA', name: 'Ahmed Al-Rashid', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+      { initials: 'MR', name: 'Mohammed Rizvi', color: 'var(--ds-background-warning-bold)' },
+      { initials: 'AA', name: 'Ahmed Al-Rashid', color: 'var(--ds-chart-teal-bold)' },
     ],
   },
   {
@@ -153,7 +153,7 @@ export const mockReleases: ReleaseData[] = [
     stats: { workItems: 12, testCases: 48, cycles: 2 },
     status: 'approved',
     team: [
-      { initials: 'VS', name: 'Vikram Singh', color: 'var(--ds-link, #2563eb)' },
+      { initials: 'VS', name: 'Vikram Singh', color: 'var(--ds-link)' },
     ],
   },
 ];
@@ -169,7 +169,7 @@ export const mockCycles: CycleData[] = [
     releaseId: 'rel-26-01-01',
     environment: 'staging',
     progress: 45,
-    assignee: { initials: 'VS', name: 'Vikram S.', color: 'var(--ds-link, #2563eb)' },
+    assignee: { initials: 'VS', name: 'Vikram S.', color: 'var(--ds-link)' },
     testsCompleted: 18,
     testsTotal: 40,
   },
@@ -180,7 +180,7 @@ export const mockCycles: CycleData[] = [
     releaseId: 'rel-26-01-01',
     environment: 'staging',
     progress: 78,
-    assignee: { initials: 'AA', name: 'Ahmed A.', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+    assignee: { initials: 'AA', name: 'Ahmed A.', color: 'var(--ds-chart-teal-bold)' },
     testsCompleted: 62,
     testsTotal: 80,
   },
@@ -191,7 +191,7 @@ export const mockCycles: CycleData[] = [
     releaseId: 'rel-26-01-01',
     environment: 'production',
     progress: 0,
-    assignee: { initials: 'SK', name: 'Sara K.', color: 'var(--ds-background-discovery-bold, #7C3AED)' },
+    assignee: { initials: 'SK', name: 'Sara K.', color: 'var(--ds-background-discovery-bold)' },
     testsCompleted: 0,
     testsTotal: 36,
   },
@@ -202,7 +202,7 @@ export const mockCycles: CycleData[] = [
     releaseId: 'rel-26-01-02',
     environment: 'dev',
     progress: 22,
-    assignee: { initials: 'MR', name: 'Mohammed R.', color: 'var(--ds-background-warning-bold, #d97706)' },
+    assignee: { initials: 'MR', name: 'Mohammed R.', color: 'var(--ds-background-warning-bold)' },
     testsCompleted: 11,
     testsTotal: 50,
   },

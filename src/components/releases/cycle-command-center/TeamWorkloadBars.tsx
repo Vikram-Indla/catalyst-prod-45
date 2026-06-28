@@ -20,7 +20,7 @@ const WORKLOAD_BADGES = {
   overloaded: { bg: CATALYST_V5.dangerLight, text: CATALYST_V5.danger, label: 'Overloaded' },
 };
 
-const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, CATALYST_V5.warning, 'var(--ds-background-discovery-bold, #8b5cf6)', 'var(--ds-background-accent-magenta-bolder, #ec4899)'];
+const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, CATALYST_V5.warning, 'var(--ds-background-discovery-bold)', 'var(--ds-background-accent-magenta-bolder)'];
 
 export function TeamWorkloadBars({ cycleId }: TeamWorkloadBarsProps) {
   const { teamMembers, isLoading } = useCycleTeamWorkload(cycleId);

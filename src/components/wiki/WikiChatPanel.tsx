@@ -66,7 +66,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
   return (
     <div style={{
       position: 'fixed', bottom: 80, right: 24, width: 380, height: 520,
-      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
+      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
       border: `0.75px solid ${border}`,
       boxShadow: isDark ? '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
@@ -77,11 +77,11 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
         display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
       }}>
         <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <MessageCircle size={14} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
+          <MessageCircle size={14} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
-          <div style={{ fontSize: 10, color: 'var(--fg-3)' }}>Knowledge assistant</div>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
+          <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)' }}>Knowledge assistant</div>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--fg-3)' }}
           onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'}
@@ -94,7 +94,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
       {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {messages.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--fg-4)', fontSize: 12 }}>
+          <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>
             Ask anything about ministry regulations, processes, or policies.
           </div>
         )}
@@ -106,7 +106,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
             <div style={{
               padding: '8px 12px', borderRadius: 8, fontSize: 12.5, lineHeight: 1.5,
               background: m.role === 'user' ? 'var(--cp-blue)' : 'var(--cp-bd-zone)',
-              color: m.role === 'user' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-1)',
+              color: m.role === 'user' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--fg-1)',
             }}>
               {m.loading ? (
                 <Loader2 size={14} style={{ animation: 'spin 1s linear infinite', color: 'var(--fg-3)' }} />
@@ -122,13 +122,13 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
                 {m.sources.map((s, i) => (
                   <div key={i} onClick={() => s.slug && navigate(`/wiki/${s.slug}`)}
                     style={{
-                      fontSize: 10, color: 'var(--cp-blue)', cursor: s.slug ? 'pointer' : 'default',
+                      fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-blue)', cursor: s.slug ? 'pointer' : 'default',
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}
                   >
                     <span style={{ fontWeight: 600 }}>📄 {s.title}</span>
                     {s.confidence != null && (
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 9, color: 'var(--fg-3)' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>
                         {Math.round((s.confidence ?? 0) * 100)}%
                       </span>
                     )}
@@ -152,14 +152,14 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           style={{
             flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
             border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'var(--cp-font-body)',
-            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
+            background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-1)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.08))'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button onClick={handleSend} disabled={sending || !input.trim()} style={{
           width: 36, height: 50, borderRadius: 8, border: 'none', cursor: 'pointer',
-          background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: sending || !input.trim() ? 0.5 : 1,
         }}>
           <Send size={14} />

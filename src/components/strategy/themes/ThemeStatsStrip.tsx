@@ -29,8 +29,8 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: active.length,
       sub: `${themes.length} total`,
       icon: Layers,
-      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-      iconBg: 'var(--cp-primary-light, #EFF6FF)',
+      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+      iconBg: 'var(--cp-primary-light)',
       cardBg: undefined,
     },
     {
@@ -38,11 +38,11 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: `${avgProgress}%`,
       sub: `${progressDelta >= 0 ? '↑' : '↓'} ${Math.abs(progressDelta)}% vs target`,
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
-      iconColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+      iconColor: progressDelta >= 0 ? 'var(--cp-teal-60)' : 'var(--ds-text-danger, var(--cp-danger))',
       iconBg: isDark
         ? (progressDelta >= 0 ? 'var(--ds-background-success, rgba(13,148,136,0.12))' : 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))')
-        : (progressDelta >= 0 ? 'var(--ds-background-success, #DFFCF0)' : 'var(--ds-background-danger, #FEF2F2)'),
-      subColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+        : (progressDelta >= 0 ? 'var(--ds-background-success)' : 'var(--ds-background-danger)'),
+      subColor: progressDelta >= 0 ? 'var(--cp-teal-60)' : 'var(--ds-text-danger, var(--cp-danger))',
       cardBg: undefined,
     },
     {
@@ -50,8 +50,8 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: totalGoals,
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
-      iconColor: 'var(--quality-high, #059669)',
-      iconBg: 'var(--cp-success-light, #ECFDF5)',
+      iconColor: 'var(--quality-high)',
+      iconBg: 'var(--cp-success-light)',
       cardBg: undefined,
     },
     {
@@ -59,8 +59,8 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: formatBudget(totalBudget),
       sub: 'FY2026 planned',
       icon: DollarSign,
-      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-      iconBg: 'var(--cp-primary-light, #EFF6FF)',
+      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+      iconBg: 'var(--cp-primary-light)',
       cardBg: undefined,
     },
     {
@@ -68,11 +68,11 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: atRiskCount,
       sub: atRiskCount > 0 ? 'Needs attention' : 'All healthy',
       icon: AlertTriangle,
-      iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)',
+      iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger))' : 'var(--quality-high)',
       iconBg: isDark
         ? (atRiskCount > 0 ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'rgba(5,150,105,0.12)')
-        : (atRiskCount > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-background-success, #DFFCF0)'),
-      valueColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : undefined,
+        : (atRiskCount > 0 ? 'var(--ds-background-danger)' : 'var(--ds-background-success)'),
+      valueColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger))' : undefined,
       cardBg: undefined,
     },
   ];
@@ -88,8 +88,8 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
         >
           <div className="flex items-start justify-between mb-2">
             <span style={{
-              fontSize: 11, fontWeight: 600,
-              color: isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+              color: isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
               letterSpacing: '0.5px',
             }}>{c.label}</span>
             <div
@@ -100,13 +100,13 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
             </div>
           </div>
           <p style={{
-            fontSize: 26, fontWeight: 800,
-            color: (c as any).valueColor || (isDark ? DK.t1 : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'),
+            fontSize: 'var(--ds-font-size-800)', fontWeight: 800,
+            color: (c as any).valueColor || (isDark ? DK.t1 : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))'),
             lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
           }}>{c.value}</p>
           <p style={{
-            fontSize: 11,
-            color: (c as any).subColor || (isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'),
+            fontSize: 'var(--ds-font-size-100)',
+            color: (c as any).subColor || (isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))'),
           }}>{c.sub}</p>
         </div>
       ))}

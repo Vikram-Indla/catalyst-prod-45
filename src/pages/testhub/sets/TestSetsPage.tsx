@@ -41,15 +41,15 @@ const SET_TYPE_LABELS: Record<SetType, string> = {
 };
 
 const SET_TYPE_COLORS: Record<SetType, string> = {
-  smoke: 'var(--ds-background-accent-orange-subtler, #FFE2BD)',
-  regression: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
-  sanity: 'var(--ds-background-accent-green-subtler, #BAF3DB)',
-  integration: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',
-  e2e: 'var(--ds-background-accent-teal-subtler, #C1F0F5)',
-  performance: 'var(--ds-background-accent-yellow-subtler, #F8E6A0)',
-  security: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
-  accessibility: 'var(--ds-background-accent-magenta-subtler, #FDD0EC)',
-  custom: 'var(--ds-background-neutral, #F1F2F4)',
+  smoke: 'var(--ds-background-accent-orange-subtler)',
+  regression: 'var(--ds-background-accent-blue-subtler)',
+  sanity: 'var(--ds-background-accent-green-subtler)',
+  integration: 'var(--ds-background-accent-purple-subtler)',
+  e2e: 'var(--ds-background-accent-teal-subtler)',
+  performance: 'var(--ds-background-accent-yellow-subtler)',
+  security: 'var(--ds-background-accent-red-subtler)',
+  accessibility: 'var(--ds-background-accent-magenta-subtler)',
+  custom: 'var(--ds-background-neutral)',
 };
 
 function SetTypePill({ type }: { type: SetType }) {
@@ -58,10 +58,10 @@ function SetTypePill({ type }: { type: SetType }) {
       display: 'inline-block',
       padding: '2px 8px',
       borderRadius: 3,
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
-      background: SET_TYPE_COLORS[type] ?? 'var(--ds-background-neutral, #F1F2F4)',
-      color: 'var(--ds-text, #172B4D)',
+      background: SET_TYPE_COLORS[type] ?? 'var(--ds-background-neutral)',
+      color: 'var(--ds-text)',
       textTransform: 'uppercase',
       letterSpacing: '0.04em',
     }}>
@@ -73,11 +73,11 @@ function SetTypePill({ type }: { type: SetType }) {
 function MembershipBadge({ type }: { type: MembershipType }) {
   return (
     <span style={{
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 500,
       color: type === 'dynamic'
-        ? 'var(--ds-text-accent-blue, #0052CC)'
-        : 'var(--ds-text-subtle, #42526E)',
+        ? 'var(--ds-text-accent-blue)'
+        : 'var(--ds-text-subtle)',
     }}>
       {type === 'dynamic' ? '⚡ Dynamic' : '📌 Static'}
     </span>
@@ -174,21 +174,21 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
 
   const item: React.CSSProperties = {
     display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
-    border: 'none', background: 'none', cursor: 'pointer', fontSize: 13,
-    color: 'var(--ds-text, #172B4D)',
+    border: 'none', background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
+    color: 'var(--ds-text)',
   };
 
   return (
     <>
       <button ref={trigRef} onClick={e => e.stopPropagation()}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest)' }}>
         <MoreHorizontal size={14} />
       </button>
       {pos && createPortal(
         <div ref={menuRef} role="menu" style={{
           position: 'fixed', top: pos.top, left: pos.left,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface-overlay)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0', minWidth: 160, zIndex: 9999,
         }}>
@@ -198,13 +198,13 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Copy set
           </button>
-          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning, #974F0C)' }}
+          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning)' }}
             onClick={e => { e.stopPropagation(); archiveMut.mutate(); }}
             onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Archive set
           </button>
-          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger, #AE2A19)' }}
+          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger)' }}
             onClick={e => { e.stopPropagation(); deleteMut.mutate(); }}
             onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
@@ -310,31 +310,31 @@ export default function TestSetsPage() {
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>Test Sets</h2>
+        <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)' }}>Test Sets</h2>
         <Button appearance="primary" onClick={() => setShowCreate(true)}>
           + New Test Set
         </Button>
       </div>
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', margin: '4px 0' }}>
           {sets.length} set{sets.length !== 1 ? 's' : ''}
         </p>
 
       {/* Create form */}
       {showCreate && (
         <div style={{
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 8,
           padding: 20,
           marginBottom: 24,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          background: 'var(--ds-surface-overlay)',
           boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
         }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
             New Test Set
           </h3>
           <div style={{ display: 'grid', gap: 12 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                 Name *
               </label>
               <Textfield
@@ -345,7 +345,7 @@ export default function TestSetsPage() {
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                 Description
               </label>
               <TextArea
@@ -356,7 +356,7 @@ export default function TestSetsPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                   Type
                 </label>
                 <Select
@@ -366,7 +366,7 @@ export default function TestSetsPage() {
                 />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                   Membership
                 </label>
                 <Select
@@ -399,11 +399,11 @@ export default function TestSetsPage() {
       {sets.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '64px 32px',
-          color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14,
-          border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 8,
+          color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)',
+          border: '1px dashed var(--ds-border)', borderRadius: 8,
         }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
-          <p style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
+          <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
             No test sets yet
           </p>
           <p style={{ margin: '0 0 20px' }}>
@@ -420,12 +420,12 @@ export default function TestSetsPage() {
             display: 'grid',
             gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
             padding: '8px 16px',
-            background: 'var(--ds-surface-sunken, #F7F8F9)',
+            background: 'var(--ds-surface-sunken)',
             borderRadius: '6px 6px 0 0',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
           }}>
             {['Key', 'Name', 'Type', 'Membership', 'Cases', 'Active', ''].map((h, i) => (
-              <span key={i} style={{ fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>
+              <span key={i} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle)' }}>
                 {h}
               </span>
             ))}
@@ -440,31 +440,31 @@ export default function TestSetsPage() {
                 gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
                 padding: '12px 16px',
                 alignItems: 'center',
-                background: 'var(--ds-surface, #FFFFFF)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface)',
+                border: '1px solid var(--ds-border)',
                 borderTop: 'none',
                 borderRadius: idx === sets.length - 1 ? '0 0 6px 6px' : 0,
                 cursor: 'pointer',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface)')}
             >
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
                 {set.set_key ?? '—'}
               </span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-link)', cursor: 'pointer' }}>
                   {set.name}
                 </div>
                 {set.description && (
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>
                     {set.description}
                   </div>
                 )}
               </div>
               <div><SetTypePill type={set.set_type} /></div>
               <div><MembershipBadge type={set.membership_type} /></div>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 {set.test_count ?? 0}
               </span>
               <div onClick={e => e.stopPropagation()}>
@@ -474,15 +474,15 @@ export default function TestSetsPage() {
                     width: 36, height: 20, borderRadius: 10,
                     border: 'none', cursor: 'pointer',
                     background: set.is_active
-                      ? 'var(--ds-background-brand-bold, #0052CC)'
-                      : 'var(--ds-background-neutral, #DFE1E6)',
+                      ? 'var(--ds-background-brand-bold)'
+                      : 'var(--ds-background-neutral)',
                     position: 'relative', transition: 'background 200ms',
                   }}
                   aria-label={set.is_active ? 'Deactivate' : 'Activate'}
                 >
                   <span style={{
                     display: 'block', width: 14, height: 14, borderRadius: '50%',
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    background: 'var(--ds-surface)',
                     position: 'absolute', top: 3,
                     left: set.is_active ? 19 : 3,
                     transition: 'left 200ms',
@@ -499,7 +499,7 @@ export default function TestSetsPage() {
                     />
                   : <button
                       onClick={e => { e.stopPropagation(); setRowMenuId(set.id); }}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest, #6B778C)' }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest)' }}
                     >
                       <MoreHorizontal size={14} />
                     </button>

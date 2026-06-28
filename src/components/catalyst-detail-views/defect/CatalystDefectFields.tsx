@@ -20,7 +20,7 @@
  *   - `@atlaskit/lozenge`  for Severity colour, Found-in build chip,
  *      Fix-in build chip, Resolution lozenge
  *   - `KeyDetailsFieldRow` for canonical label + value layout
- *   - Muted `var(--cp-text-secondary, #6B778C)` inline "None" (Atlaskit `color.text.subtlest`) —
+ *   - Muted `var(--cp-text-secondary)` inline "None" (Atlaskit `color.text.subtlest`) —
  *      replaces the italic placeholder that failed WCAG AA contrast.
  *
  * Data wiring today:
@@ -79,12 +79,12 @@ function severityAppearance(value: string): React.ComponentProps<typeof Lozenge>
   return SEVERITY_APPEARANCE[value.trim().toLowerCase()] ?? 'default';
 }
 
-/* Inline muted empty-state. `color.text.subtlest` equivalent (var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C)))
-   hits 4.6:1 on white — the former italic var(--ds-text-disabled, #8590A2) was ~3.2:1 and failed
+/* Inline muted empty-state. `color.text.subtlest` equivalent (var(--ds-text-subtlest, var(--cp-text-secondary)))
+   hits 4.6:1 on white — the former italic var(--ds-text-disabled) was ~3.2:1 and failed
    WCAG AA for body text. */
 function Empty({ text = 'None' }: { text?: string }) {
   return (
-    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{text}</span>
+    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>{text}</span>
   );
 }
 
@@ -174,7 +174,7 @@ export function CatalystDefectKeyRows({
 
       {hasRootCause && (
         <KeyDetailsFieldRow label="Root cause" alignBlock="center">
-          <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{rootCause}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{rootCause}</span>
         </KeyDetailsFieldRow>
       )}
 
@@ -192,9 +192,9 @@ export function CatalystDefectKeyRows({
    ═══════════════════════════════════════════════════════════ */
 
 const BODY_STYLE: React.CSSProperties = {
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontWeight: 400,
-  color: 'var(--ds-text, #292A2E)',
+  color: 'var(--ds-text)',
   lineHeight: 1.5,
   fontFamily:
     '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',

@@ -117,8 +117,8 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
             borderRadius: '8px',
             border: isToday && !isSelected ? `1px solid ${COLORS.accent}` : 'none',
             backgroundColor: isSelected ? COLORS.accent : 'transparent',
-            color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textPrimary,
-            fontSize: '14px',
+            color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : COLORS.textPrimary,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: isSelected || isToday ? 600 : 400,
             cursor: 'pointer',
             fontFamily: 'inherit'
@@ -173,7 +173,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
         <span 
           style={{ 
             flex: 1, 
-            fontSize: '14px', 
+            fontSize: 'var(--ds-font-size-400)', 
             color: selectedDate ? COLORS.textPrimary : COLORS.textLight 
           }}
         >
@@ -238,7 +238,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
             >
               <ChevronLeft size={18} />
             </button>
-            <span style={{ fontSize: '15px', fontWeight: 600, color: COLORS.textPrimary }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: COLORS.textPrimary }}>
               {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
             </span>
             <button
@@ -278,7 +278,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: COLORS.textMuted
                 }}
@@ -320,7 +320,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
                 backgroundColor: COLORS.surfaceHover,
                 border: 'none',
                 borderRadius: '8px',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: COLORS.textSecondary,
                 cursor: 'pointer',
@@ -342,7 +342,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
                 backgroundColor: COLORS.surfaceHover,
                 border: 'none',
                 borderRadius: '8px',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: COLORS.textSecondary,
                 cursor: 'pointer',
@@ -364,7 +364,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
                 backgroundColor: COLORS.surfaceHover,
                 border: 'none',
                 borderRadius: '8px',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: COLORS.textSecondary,
                 cursor: 'pointer',

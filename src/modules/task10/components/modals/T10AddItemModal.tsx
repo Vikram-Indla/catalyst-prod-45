@@ -113,7 +113,7 @@ export function T10AddItemModal({
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           borderRadius: '12px',
           boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25))',
           zIndex: 601,
@@ -131,10 +131,10 @@ export function T10AddItemModal({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 20px',
-            borderBottom: '1px solid var(--ds-border, #e5e7eb)',
+            borderBottom: '1px solid var(--ds-border)',
           }}
         >
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #111827)', margin: 0 }}>
+          <h2 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)', margin: 0 }}>
             Add Priority Item
           </h2>
           <button
@@ -149,7 +149,7 @@ export function T10AddItemModal({
               backgroundColor: 'transparent',
               border: 'none',
               borderRadius: '6px',
-              color: 'var(--ds-text-subtlest, #6b7280)',
+              color: 'var(--ds-text-subtlest)',
               cursor: 'pointer',
             }}
           >
@@ -165,15 +165,15 @@ export function T10AddItemModal({
               <label
                 style={{
                   display: 'block',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: 'var(--ds-text-subtlest, #6b7280)',
+                  color: 'var(--ds-text-subtlest)',
                   marginBottom: '8px',
                 }}
               >
-                Title <span style={{ color: 'var(--ds-text-danger, #ef4444)' }}>*</span>
+                Title <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <input
                 ref={titleInputRef}
@@ -185,14 +185,14 @@ export function T10AddItemModal({
                 style={{
                   width: '100%',
                   padding: '12px 14px',
-                  fontSize: '14px',
-                  border: '1px solid var(--ds-border, #d1d5db)',
+                  fontSize: 'var(--ds-font-size-400)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
                   outline: 'none',
                 }}
               />
               {error && (
-                <p style={{ fontSize: '13px', color: 'var(--ds-text-danger, #ef4444)', marginTop: '4px' }}>{error}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger)', marginTop: '4px' }}>{error}</p>
               )}
             </div>
 
@@ -203,11 +203,11 @@ export function T10AddItemModal({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: 'var(--ds-text-subtlest, #6b7280)',
+                  color: 'var(--ds-text-subtlest)',
                   marginBottom: '8px',
                 }}
               >
@@ -223,9 +223,9 @@ export function T10AddItemModal({
                 style={{
                   width: '100%',
                   padding: '12px 14px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: "'SF Mono', Monaco, monospace",
-                  border: '1px solid var(--ds-border, #d1d5db)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
                   outline: 'none',
                 }}
@@ -237,11 +237,11 @@ export function T10AddItemModal({
               <label
                 style={{
                   display: 'block',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: 'var(--ds-text-subtlest, #6b7280)',
+                  color: 'var(--ds-text-subtlest)',
                   marginBottom: '8px',
                 }}
               >
@@ -266,24 +266,24 @@ export function T10AddItemModal({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '14px',
+                        fontSize: 'var(--ds-font-size-400)',
                         fontWeight: 600,
                         color: isSelected
-                          ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'
+                          ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'
                           : isOccupied
-                          ? 'var(--ds-text-subtlest, #9ca3af)'
+                          ? 'var(--ds-text-subtlest)'
                           : isBuffer
-                          ? 'var(--ds-text-subtlest, #9ca3af)'
-                          : 'var(--ds-text-subtle, #4b5563)',
+                          ? 'var(--ds-text-subtlest)'
+                          : 'var(--ds-text-subtle)',
                         backgroundColor: isSelected
-                          ? 'var(--ds-background-selected, #eff6ff)'
+                          ? 'var(--ds-background-selected)'
                           : isBuffer
-                          ? 'var(--ds-surface-sunken, #f9fafb)'
-                          : 'var(--ds-background-neutral, #f3f4f6)',
+                          ? 'var(--ds-surface-sunken)'
+                          : 'var(--ds-background-neutral)',
                         border: isSelected
-                          ? '2px solid var(--ds-link, #2563eb)'
+                          ? '2px solid var(--ds-link)'
                           : isBuffer
-                          ? '2px dashed var(--ds-border, #d1d5db)'
+                          ? '2px dashed var(--ds-border)'
                           : '2px solid transparent',
                         borderRadius: '8px',
                         cursor: isOccupied ? 'not-allowed' : 'pointer',
@@ -306,11 +306,11 @@ export function T10AddItemModal({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
-                    color: 'var(--ds-text-subtlest, #6b7280)',
+                    color: 'var(--ds-text-subtlest)',
                     marginBottom: '8px',
                   }}
                 >
@@ -324,8 +324,8 @@ export function T10AddItemModal({
                   style={{
                     width: '100%',
                     padding: '12px 14px',
-                    fontSize: '14px',
-                    border: '1px solid var(--ds-border, #d1d5db)',
+                    fontSize: 'var(--ds-font-size-400)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: '8px',
                     outline: 'none',
                   }}
@@ -339,11 +339,11 @@ export function T10AddItemModal({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
-                    color: 'var(--ds-text-subtlest, #6b7280)',
+                    color: 'var(--ds-text-subtlest)',
                     marginBottom: '8px',
                   }}
                 >
@@ -357,11 +357,11 @@ export function T10AddItemModal({
                     width: '100%',
                     height: '44px',
                     padding: '0 14px',
-                    fontSize: '14px',
-                    border: '1px solid var(--ds-border, #d1d5db)',
+                    fontSize: 'var(--ds-font-size-400)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: '8px',
                     outline: 'none',
-                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   }}
                 >
                   <option value="">Unassigned</option>
@@ -382,8 +382,8 @@ export function T10AddItemModal({
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '16px 20px',
-              backgroundColor: 'var(--ds-surface-sunken, #f9fafb)',
-              borderTop: '1px solid var(--ds-border, #e5e7eb)',
+              backgroundColor: 'var(--ds-surface-sunken)',
+              borderTop: '1px solid var(--ds-border)',
             }}
           >
             <span
@@ -391,8 +391,8 @@ export function T10AddItemModal({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                fontSize: '12px',
-                color: 'var(--ds-text-subtlest, #9ca3af)',
+                fontSize: 'var(--ds-font-size-200)',
+                color: 'var(--ds-text-subtlest)',
               }}
             >
               <span
@@ -404,11 +404,11 @@ export function T10AddItemModal({
                   height: '20px',
                   padding: '0 6px',
                   fontFamily: "'SF Mono', Monaco, monospace",
-                  fontSize: '11px',
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtlest, #6b7280)',
-                  backgroundColor: 'var(--ds-border, #e5e7eb)',
-                  border: '1px solid var(--ds-border, #d1d5db)',
+                  color: 'var(--ds-text-subtlest)',
+                  backgroundColor: 'var(--ds-border)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '4px',
                 }}
               >
@@ -422,11 +422,11 @@ export function T10AddItemModal({
                 onClick={handleClose}
                 style={{
                   padding: '10px 20px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
-                  color: 'var(--ds-text, #374151)',
-                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  border: '1px solid var(--ds-border, #d1d5db)',
+                  color: 'var(--ds-text)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '6px',
                   cursor: 'pointer',
                 }}
@@ -438,10 +438,10 @@ export function T10AddItemModal({
                 disabled={!title.trim() || createItem.isPending}
                 style={{
                   padding: '10px 20px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: !title.trim() ? 'not-allowed' : 'pointer',

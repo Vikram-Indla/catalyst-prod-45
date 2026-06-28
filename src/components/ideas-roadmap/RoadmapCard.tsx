@@ -50,18 +50,18 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       }}
       onMouseEnter={e => {
         if (!isDark) e.currentTarget.style.boxShadow = '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.08))';
-        e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)';
+        e.currentTarget.style.borderColor = 'var(--cp-border-strong)';
       }}
       onMouseLeave={e => {
         if (!isDark) e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.04))';
-        e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
+        e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))';
         setMoveOpen(false);
       }}
     >
       {/* Row 1: Key + Move + Toggle */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{
-          fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: dk.t3,
+          fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: dk.t3,
           textTransform: 'uppercase', letterSpacing: '0.04em',
         }}>
           {idea.ideaKey}
@@ -79,12 +79,12 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                 opacity: 0, transition: 'opacity 150ms',
               }}
             >
-              <Move size={10} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />
+              <Move size={10} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))'} />
             </button>
             {moveOpen && (
               <div style={{
                 position: 'absolute', top: 22, right: 0, zIndex: 20,
-                background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
+                background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)',
                 border: `1px solid ${dk.border}`, borderRadius: 6,
                 boxShadow: isDark ? 'none' : '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.12))',
                 minWidth: 140, padding: 4,
@@ -99,12 +99,12 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                     }}
                     style={{
                       display: 'block', width: '100%', padding: '6px 10px',
-                      fontSize: 12, fontWeight: 500, color: dk.t2,
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: dk.t2,
                       fontFamily: 'var(--cp-font-body)', background: 'transparent',
                       border: 'none', cursor: 'pointer', borderRadius: 4,
                       textAlign: 'left', transition: 'background 100ms',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     {opt.label}
@@ -118,7 +118,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             title={idea.isCommitted ? 'Uncommit' : 'Commit'}
             style={{
               width: 32, height: 18, borderRadius: 8, border: 'none', cursor: 'pointer',
-              background: idea.isCommitted ? 'var(--sem-success)' : ('var(--cp-border-strong, #CBD5E1)'),
+              background: idea.isCommitted ? 'var(--sem-success)' : ('var(--cp-border-strong)'),
               position: 'relative', transition: 'background 150ms',
             }}
           >
@@ -133,7 +133,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
 
       {/* Row 2: Title */}
       <div style={{
-        fontSize: 13, fontWeight: 650, color: dk.t1, fontFamily: 'var(--cp-font-body)',
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: dk.t1, fontFamily: 'var(--cp-font-body)',
         lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: 6,
       }}>
@@ -144,16 +144,16 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
         {idea.theme && (
           <span style={{
-            fontSize: 10, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
-            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
             color: dk.t2, padding: '2px 6px', borderRadius: 4,
             border: isDark ? `1px solid ${dk.border}` : 'none',
           }}>{idea.theme}</span>
         )}
         {idea.team && (
           <span style={{
-            fontSize: 10, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
-            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
             color: dk.t2, padding: '2px 6px', borderRadius: 4,
             border: isDark ? `1px solid ${dk.border}` : 'none',
           }}>{idea.team}</span>
@@ -165,20 +165,20 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         {MILESTONE_CONFIGS.map(m => {
           const isSet = !!idea.milestones[m.key];
           const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-            req:  { bg: 'var(--cp-primary-light, #DBEAFE)', text: 'var(--cp-primary-hover, #1D4ED8)', border: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' : 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' },
-            des:  { bg: 'var(--cp-purple-5, #EDE9FE)', text: 'var(--cp-purple-60, #5B21B6)', border: isDark ? 'var(--ds-background-discovery-bold, rgba(139,92,246,0.25))' : 'var(--ds-background-discovery, #F3F0FF)' },
-            dev:  { bg: 'var(--cp-success-light, #DCFCE7)', text: 'var(--cp-success, #15803D)', border: 'var(--cp-success, #86EFAC)' },
-            uat:  { bg: 'var(--cp-warning-light, #FEF3C7)', text: 'var(--cp-warning-text, #92400E)', border: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.25))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
-            beta: { bg: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.15))' : 'var(--ds-background-success, #DCFFF1)', text: 'var(--cp-teal-60, var(--ds-chart-teal-bolder, #0f766e))', border: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.25))' : 'var(--ds-background-success, #DCFFF1)' },
-            prod: { bg: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.15))' : 'var(--ds-background-success, #DFFCF0)', text: 'var(--cp-success-text, #065F46)', border: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : 'var(--ds-background-success, #DFFCF0)' },
+            req:  { bg: 'var(--cp-primary-light)', text: 'var(--cp-primary-hover)', border: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' : 'var(--ds-background-information, var(--ds-background-information))' },
+            des:  { bg: 'var(--cp-purple-5)', text: 'var(--cp-purple-60)', border: isDark ? 'var(--ds-background-discovery-bold, rgba(139,92,246,0.25))' : 'var(--ds-background-discovery)' },
+            dev:  { bg: 'var(--cp-success-light)', text: 'var(--cp-success)', border: 'var(--cp-success)' },
+            uat:  { bg: 'var(--cp-warning-light)', text: 'var(--cp-warning-text)', border: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.25))' : 'var(--ds-background-warning, var(--ds-background-warning))' },
+            beta: { bg: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.15))' : 'var(--ds-background-success)', text: 'var(--cp-teal-60, var(--ds-chart-teal-bolder))', border: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.25))' : 'var(--ds-background-success)' },
+            prod: { bg: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.15))' : 'var(--ds-background-success)', text: 'var(--cp-success-text)', border: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : 'var(--ds-background-success)' },
           };
-          const unsetStyle = { bg: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-border-strong, #CBD5E1)', border: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' };
+          const unsetStyle = { bg: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-border-strong)', border: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))' };
           const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;
           return (
             <span key={m.key} style={{
               height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               padding: '0 6px', borderRadius: 4,
-              fontSize: 9, fontWeight: 700, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, fontFamily: 'var(--cp-font-body)',
               textTransform: 'uppercase', letterSpacing: '0.06em',
               background: style.bg, color: style.text, border: `1px solid ${style.border}`,
             }}>
@@ -193,10 +193,10 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         <span style={{
           display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
           borderRadius: 4,
-          background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))',
-          color: isDark ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-app)',
+          background: 'var(--cp-success, var(--cp-lozenge-green-bg))',
+          color: isDark ? 'var(--ds-background-success)' : 'var(--bg-app)',
           border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
-          fontSize: 10, fontWeight: 700,
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',
         }}>
           ✓ Converted
@@ -208,19 +208,19 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             height: 24, padding: '0 8px', borderRadius: 4,
             border: `1px solid ${dk.border}`,
             background: isDark ? 'transparent' : 'var(--bg-app)',
-            color: dk.t3, fontSize: 10, fontWeight: 600,
+            color: dk.t3, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
             transition: 'all 120ms',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = 'var(--cp-teal-60, #0D9488)';
-            e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-            e.currentTarget.style.borderColor = 'var(--cp-teal-60, #0D9488)';
+            e.currentTarget.style.background = 'var(--cp-teal-60)';
+            e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
+            e.currentTarget.style.borderColor = 'var(--cp-teal-60)';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-            e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-            e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
+            e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
+            e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))';
+            e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))';
           }}
         >
           → Init

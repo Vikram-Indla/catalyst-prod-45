@@ -68,7 +68,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
     ? name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
     : '??';
   const weekNum = getWeekNumber(selectedDate);
-  const avatarBg = name ? getAvatarColor(name) : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+  const avatarBg = name ? getAvatarColor(name) : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
   const avatarUrl = resource?.avatar_url || null;
 
   const noAIData = !patternData?.summary && !patternData?.insights?.length;
@@ -85,7 +85,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
           <button className="rai-topbar-btn" onClick={onClose}>← Back to Resources</button>
           <div style={{ flex: 1 }} />
           {stalenessLabel && (
-            <span style={{ fontSize: 11, color: 'var(--rai-ink-muted)', fontFamily: 'var(--rai-font-mono)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--rai-ink-muted)', fontFamily: 'var(--rai-font-mono)' }}>
               Data: {stalenessLabel}
             </span>
           )}
@@ -106,7 +106,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
               alt={name}
               style={{
                 width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                border: '2px solid var(--ds-border, #DFE1E6)', background: avatarBg,
+                border: '2px solid var(--ds-border)', background: avatarBg,
               }}
               onError={(e) => {
                 const el = e.currentTarget;
@@ -157,10 +157,10 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                 animation: 'spin 1s linear infinite',
               }} />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-link-pressed, #1e40af)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link-pressed)' }}>
                   Generating AI Intelligence…
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--cp-blue)', marginTop: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-blue)', marginTop: 2 }}>
                   First-time analysis — computing metrics and generating behavioral patterns.
                 </div>
               </div>

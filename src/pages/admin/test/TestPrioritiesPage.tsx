@@ -16,8 +16,8 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { TMCasePriority } from '@/types/test-management';
 
 const COLORS = [
-  'var(--ds-background-danger-bold, #ef4444)', 'var(--ds-background-warning-bold, #f97316)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-accent-teal-bolder, #14b8a6)',
-  'var(--ds-background-information-bold, #3b82f6)', 'var(--ds-background-discovery-bold, #8b5cf6)', 'var(--ds-background-accent-magenta-bolder, #ec4899)', 'var(--ds-text-subtlest, #626F86)', 'var(--ds-text, #172B4D)',
+  'var(--ds-background-danger-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-background-success-bold)', 'var(--ds-background-accent-teal-bolder)',
+  'var(--ds-background-information-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-background-accent-magenta-bolder)', 'var(--ds-text-subtlest)', 'var(--ds-text)',
 ];
 
 export default function TestPrioritiesPage() {
@@ -109,7 +109,7 @@ export default function TestPrioritiesPage() {
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4, display: 'block',
+    fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4, display: 'block',
   };
 
   return (
@@ -126,16 +126,16 @@ export default function TestPrioritiesPage() {
         actions={<Button appearance="primary" onClick={() => setShowAdd(v => !v)}>+ Add priority</Button>}
       />
 
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle)', margin: '4px 0 24px' }}>
         Define priority levels for test cases. The default priority is applied automatically on new cases.
       </p>
 
       {showAdd && (
         <div style={{
-          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 20, marginBottom: 20,
-          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
+          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 20, marginBottom: 20,
+          background: 'var(--ds-surface-overlay)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
         }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>New priority</h3>
+          <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text)' }}>New priority</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'end' }}>
             <div>
               <label style={labelStyle}>Name *</label>
@@ -155,7 +155,7 @@ export default function TestPrioritiesPage() {
                     onClick={() => setNewColor(c)}
                     style={{
                       width: 24, height: 24, borderRadius: '50%', background: c,
-                      border: newColor === c ? '2px solid var(--ds-border-focused, #0052CC)' : '2px solid transparent',
+                      border: newColor === c ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
                       cursor: 'pointer', padding: 0,
                     }}
                   />
@@ -172,24 +172,24 @@ export default function TestPrioritiesPage() {
         </div>
       )}
 
-      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
           <thead>
-            <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
               {['Color', 'Name', 'Default', 'Actions'].map((h, i) => (
-                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{h}</th>
+                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {priorities.length === 0 ? (
               <tr>
-                <td colSpan={4} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <td colSpan={4} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
                   No priorities yet. Add your first priority above.
                 </td>
               </tr>
             ) : priorities.map(p => (
-              <tr key={p.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <tr key={p.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
                 <td style={{ padding: '10px 12px', width: 48 }}>
                   {editingId === p.id ? (
                     <div style={{ display: 'flex', gap: 3 }}>
@@ -198,14 +198,14 @@ export default function TestPrioritiesPage() {
                           key={c}
                           onClick={() => setEditColor(c)}
                           style={{
-                            width: 18, height: 18, borderRadius: '50%', background: c, border: editColor === c ? '2px solid var(--ds-border-focused, #0052CC)' : '2px solid transparent',
+                            width: 18, height: 18, borderRadius: '50%', background: c, border: editColor === c ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
                             cursor: 'pointer', padding: 0,
                           }}
                         />
                       ))}
                     </div>
                   ) : (
-                    <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', background: p.color ?? 'var(--ds-text-subtlest, #626F86)' }} />
+                    <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', background: p.color ?? 'var(--ds-text-subtlest)' }} />
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
@@ -216,19 +216,19 @@ export default function TestPrioritiesPage() {
                       autoFocus
                     />
                   ) : (
-                    <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{p.name}</span>
+                    <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{p.name}</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   {p.is_default ? (
                     <span style={{
                       display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
-                      background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)', color: 'var(--ds-text-accent-blue, #0052CC)',
+                      background: 'var(--ds-background-accent-blue-subtler)', color: 'var(--ds-text-accent-blue)',
                     }}>Default</span>
                   ) : (
                     <button
                       onClick={() => setDefault(p)}
-                      style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      style={{ fontSize: 11, color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                     >
                       Set default
                     </button>

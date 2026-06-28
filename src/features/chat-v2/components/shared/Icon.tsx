@@ -88,7 +88,7 @@ export const DraftsClockIcon = makeIcon(
   <>
     <path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />
     <circle cx="17.5" cy="17.5" r="4.5" fill="currentColor" stroke="none" />
-    <path d="M17.5 15v2.5l1.5 1" stroke="var(--cv2-bg-rail, #1a1d21)" strokeWidth={1.4} />
+    <path d="M17.5 15v2.5l1.5 1" stroke="var(--cv2-bg-rail)" strokeWidth={1.4} />
   </>,
 );
 export const ShareIcon = makeIcon(
@@ -108,10 +108,10 @@ export function CheckBoxCheckIcon({ size = 18, ...rest }: IconProps) {
       aria-hidden="true"
       {...rest}
     >
-      <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="var(--ds-background-success-bold, #1F845A)" />
+      <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="var(--ds-background-success-bold)" />
       <path
         d="M7 12.5l3.2 3.2L17 9"
-        stroke="var(--ds-surface, #FFFFFF)"
+        stroke="var(--ds-surface)"
         strokeWidth={2.2}
         strokeLinecap="round"
         strokeLinejoin="round"

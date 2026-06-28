@@ -93,8 +93,8 @@ export function Toolbar({
         flexWrap: 'nowrap',
         gap: 2,
         padding: '6px 8px',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-surface, #FFFFFF)',
+        borderBottom: '1px solid var(--ds-border)',
+        background: 'var(--ds-surface)',
         flexShrink: 0,
         overflowX: 'auto',
       }}

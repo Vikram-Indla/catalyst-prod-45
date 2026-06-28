@@ -8,7 +8,7 @@ describe('BRStatusEducationalPopover', () => {
     name: 'Analysis & Design',
     slug: 'analysis_design',
     category: 'in_progress' as const,
-    color: 'var(--cp-primary-60, #0052CC)',
+    color: 'var(--cp-primary-60)',
     position: 2,
     is_initial: false,
     is_final: false,

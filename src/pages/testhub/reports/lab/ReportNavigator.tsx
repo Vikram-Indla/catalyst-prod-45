@@ -23,7 +23,7 @@ function StatusPill({ status }: { status: ReportStatus }) {
   return (
     <span
       style={{
-        fontSize: 10,
+        fontSize: 'var(--ds-font-size-50)',
         fontWeight: 700,
         letterSpacing: '0.03em',
         padding: '1px 6px',
@@ -68,7 +68,7 @@ function NavItem({ def, selected, onSelect }: { def: ReportDef; selected: boolea
     >
       <span
         style={{
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: selected ? 600 : 400,
           color: selected ? 'var(--ds-text-selected, var(--ds-text))' : 'var(--ds-text-subtle)',
           lineHeight: 1.3,
@@ -102,7 +102,7 @@ export default function ReportNavigator({ selected, onSelect }: Props) {
       <div
         style={{
           padding: '14px 16px 10px',
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.06em',
@@ -120,7 +120,7 @@ export default function ReportNavigator({ selected, onSelect }: Props) {
             <div
               style={{
                 padding: '10px 14px 4px',
-                fontSize: 10,
+                fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 700,
                 color: 'var(--ds-text-subtlest)',
                 letterSpacing: '0.08em',

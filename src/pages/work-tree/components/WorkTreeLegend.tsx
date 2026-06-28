@@ -52,19 +52,19 @@ export function WorkTreeLegend({ open, onClose }: WorkTreeLegendProps) {
             <h3 className="text-sm font-semibold mb-3">Health Status</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[var(--ds-chart-teal-bold, #0d9488)]" />
+                <div className="w-3 h-3 rounded-full bg-[var(--ds-chart-teal-bold)]" />
                 <span className="text-sm">On Track</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-warning,#f59e0b)]" />
+                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-warning)]" />
                 <span className="text-sm">At Risk</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-danger,#ef4444)]" />
+                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-danger)]" />
                 <span className="text-sm">Off Track</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-subtlest, #626F86)]" />
+                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-subtlest)]" />
                 <span className="text-sm">Unknown / N/A</span>
               </div>
             </div>
@@ -87,7 +87,7 @@ export function WorkTreeLegend({ open, onClose }: WorkTreeLegendProps) {
                 <span className="text-sm">Has Discussions</span>
               </div>
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning,#f59e0b)]" />
+                <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning)]" />
                 <span className="text-sm">Has Questions</span>
               </div>
               <div className="flex items-center gap-2">

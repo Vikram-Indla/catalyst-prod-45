@@ -34,7 +34,7 @@ export function ComposerScheduledBanner({ count, onSeeAll }: ComposerScheduledBa
         background: 'var(--cv2-bg-row-hover)',
         borderRadius: '8px 8px 0 0',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--cv2-text-subtle)',
       }}
     >
@@ -77,7 +77,7 @@ function ClockGlyph() {
       height={16}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="var(--cv2-warning, #ECB22E)"
+      stroke="var(--cv2-warning)"
       strokeWidth={1.7}
       strokeLinecap="round"
       strokeLinejoin="round"

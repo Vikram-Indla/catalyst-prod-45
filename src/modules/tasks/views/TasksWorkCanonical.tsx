@@ -46,21 +46,21 @@ function TasksLeftToolbarSlot({
   const [teamOpen, setTeamOpen] = useState(false);
   const groupLabel = GROUP_OPTIONS.find((o) => o.id === groupBy)?.label ?? 'None';
   const teamLabel = teams.find((t) => t.id === selectedTeamId)?.name ?? 'All Workstreams';
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const surface = token('elevation.surface', 'var(--ds-surface)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
   const btnStyle = (active: boolean): React.CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
     height: 32,
     padding: '0 10px',
-    border: `1px solid ${active ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : borderSubtle}`,
+    border: `1px solid ${active ? token('color.border.selected', 'var(--ds-link)') : borderSubtle}`,
     borderRadius: 3,
-    background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : surface,
-    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : textPrimary,
-    fontSize: 13,
+    background: active ? token('color.background.selected', 'var(--ds-background-selected)') : surface,
+    color: active ? token('color.text.selected', 'var(--ds-link)') : textPrimary,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     fontFamily: 'inherit',
     cursor: 'pointer',
@@ -70,7 +70,7 @@ function TasksLeftToolbarSlot({
     top: 36,
     left: 0,
     minWidth: 200,
-    background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+    background: token('elevation.surface.overlay', 'var(--ds-surface)'),
     border: `1px solid ${borderSubtle}`,
     borderRadius: 6,
     boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -83,7 +83,7 @@ function TasksLeftToolbarSlot({
     padding: '0 12px',
     display: 'flex',
     alignItems: 'center',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     cursor: 'pointer',
     color: textPrimary,

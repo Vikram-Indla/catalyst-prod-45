@@ -381,24 +381,24 @@ export function EpicDescriptionEditorPreview() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
       {/* Header + Tab Navigation */}
       <div>
-        <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
           AdfDescriptionField — 12 Variants
         </h3>
         <Tabs tabs={PREVIEW_VARIANTS.map((v) => ({ label: v.label, key: v.id }))} selected={selectedVariantId} onChange={(key) => setSelectedVariantId(key)} />
       </div>
 
       {/* Variant Description */}
-      <div style={{ padding: '8px 12px', backgroundColor: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), borderRadius: 3, fontSize: 13 }}>
+      <div style={{ padding: '8px 12px', backgroundColor: token('color.background.neutral', 'var(--ds-background-neutral)'), borderRadius: 3, fontSize: 13 }}>
         <strong>{currentVariant.label}:</strong> {currentVariant.description}
         {isReadOnly && (
-          <div style={{ marginTop: 6, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+          <div style={{ marginTop: 6, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
             🔒 Read-only — editor is locked in this variant
           </div>
         )}
       </div>
 
       {/* Live Editor */}
-      <div style={{ padding: 12, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, borderRadius: 3 }}>
+      <div style={{ padding: 12, border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`, borderRadius: 3 }}>
         <AdfDescriptionField
           initialAdfJson={editorContent[selectedVariantId]}
           onChange={handleEditorChange}
@@ -412,12 +412,12 @@ export function EpicDescriptionEditorPreview() {
       </div>
 
       {/* Debug Info */}
-      <details style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+      <details style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
         <summary style={{ cursor: 'pointer', marginBottom: 8 }}>Debug: ADF JSON</summary>
         <pre
           style={{
             padding: 8,
-            backgroundColor: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            backgroundColor: token('color.background.neutral', 'var(--ds-background-neutral)'),
             borderRadius: 3,
             overflow: 'auto',
             maxHeight: 200,

@@ -177,11 +177,11 @@ function useUserByNames(names: Array<string | null | undefined>) {
 // ─── Value renderers ────────────────────────────────────────────────
 
 const PRIORITY_GLYPH: Record<string, { glyph: string; color: string }> = {
-  Highest: { glyph: '↑↑', color: 'var(--ds-text-danger, #CD1316)' },
-  High:    { glyph: '↑',  color: 'var(--ds-text-danger, #E2483D)' },
-  Medium:  { glyph: '=',  color: 'var(--ds-text-warning, #E1A20B)' },
-  Low:     { glyph: '↓',  color: 'var(--ds-link, #2884FF)' },
-  Lowest:  { glyph: '↓↓', color: 'var(--ds-link, #0C66E4)' },
+  Highest: { glyph: '↑↑', color: 'var(--ds-text-danger)' },
+  High:    { glyph: '↑',  color: 'var(--ds-text-danger)' },
+  Medium:  { glyph: '=',  color: 'var(--ds-text-warning)' },
+  Low:     { glyph: '↓',  color: 'var(--ds-link)' },
+  Lowest:  { glyph: '↓↓', color: 'var(--ds-link)' },
 };
 
 function StatusValue({ value, statusMap }: { value: string | null; statusMap?: Map<string, string | null> }) {
@@ -220,12 +220,12 @@ function PlainValue({ value }: { value: string | null }) {
 }
 
 function NoneLabel() {
-  return <span style={{ color: 'var(--ds-text-subtle, #6B778C)' }}>None</span>;
+  return <span style={{ color: 'var(--ds-text-subtle)' }}>None</span>;
 }
 
 function Arrow() {
   return (
-    <span aria-hidden style={{ color: 'var(--ds-text-subtle, #6B778C)', margin: '0 6px' }}>
+    <span aria-hidden style={{ color: 'var(--ds-text-subtle)', margin: '0 6px' }}>
       →
     </span>
   );
@@ -240,10 +240,10 @@ export function HistoryPill({ label = 'HISTORY' }: { label?: string }) {
         display: 'inline-block',
         padding: '2px 8px',
         borderRadius: 3,
-        border: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-background-neutral, #F4F5F7)',
-        color: 'var(--ds-text-subtle, #42526E)',
-        fontSize: 11,
+        border: '1px solid var(--ds-border)',
+        background: 'var(--ds-background-neutral)',
+        color: 'var(--ds-text-subtle)',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         letterSpacing: 0.5,
         lineHeight: '14px',
@@ -284,10 +284,10 @@ export function JiraActivityRow({
           <Avatar src={item.actor.avatarUrl ?? undefined} name={item.actor.name} size="small" />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
             <strong>{item.actor.name}</strong> {item.description ?? 'updated this work item'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
             {formatAbsolute(item.timestamp)}
           </div>
           {showTypePill && <div style={{ marginTop: 6 }}><HistoryPill /></div>}
@@ -318,11 +318,11 @@ export function JiraActivityRow({
         <Avatar src={item.actor.avatarUrl ?? undefined} name={item.actor.name} size="small" />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
-          <strong style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 600 }}>{item.actor.name}</strong>{' '}
-          <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{action}</span>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
+          <strong style={{ color: 'var(--ds-link)', fontWeight: 600 }}>{item.actor.name}</strong>{' '}
+          <span style={{ color: 'var(--ds-text-subtle)' }}>{action}</span>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 2 }}>
           {formatAbsolute(item.timestamp)}
         </div>
         {showTypePill && <div style={{ marginTop: 6 }}><HistoryPill /></div>}
@@ -336,20 +336,20 @@ export function JiraActivityRow({
               gap: 12,
               alignItems: 'start',
               marginTop: 8,
-              fontSize: 13,
-              color: 'var(--ds-text, #172B4D)',
+              fontSize: 'var(--ds-font-size-300)',
+              color: 'var(--ds-text)',
             }}
           >
             <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               {fc.oldValue ?? <NoneLabel />}
             </div>
-            <div style={{ color: 'var(--ds-text-subtle, #6B778C)', paddingTop: 1 }}>→</div>
+            <div style={{ color: 'var(--ds-text-subtle)', paddingTop: 1 }}>→</div>
             <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               {fc.newValue ?? <NoneLabel />}
             </div>
           </div>
         ) : (
-          <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', marginTop: 8, fontSize: 13 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', marginTop: 8, fontSize: 'var(--ds-font-size-300)' }}>
             {renderSide(fc.oldValue)}
             <Arrow />
             {renderSide(fc.newValue)}

@@ -37,12 +37,12 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 // ── Utilities ──────────────────────────────────────────
 // ADS tokens only — no raw hex (CLAUDE.md ADS ring-fence rule 2026-05-09)
 const BADGE_COLORS = [
-  'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
-  'var(--ds-text-accent-purple, #5243AA)',
-  'var(--ds-text-accent-teal, #0C7E6A)',
-  'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-  'var(--ds-text-accent-green, #216E4E)',
-  'var(--ds-text-subtlest, #626F86)',
+  'var(--ds-text-brand, var(--cp-primary-60))',
+  'var(--ds-text-accent-purple)',
+  'var(--ds-text-accent-teal)',
+  'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
+  'var(--ds-text-accent-green)',
+  'var(--ds-text-subtlest)',
 ];
 
 function getBadgeColor(id: string): string {
@@ -300,7 +300,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
               title={displayLead.name || undefined}
               style={{
                 pointerEvents: 'none',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 color: token('color.text'),
                 fontFamily: 'var(--cp-font-body)',
@@ -326,7 +326,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
             <span
               style={{
                 pointerEvents: 'none',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 color: token('color.text.subtle'),
                 fontFamily: 'var(--cp-font-body)',
@@ -373,7 +373,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
           </div>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
@@ -420,7 +420,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div
                       style={{
-                        fontSize: 13,
+                        fontSize: 'var(--ds-font-size-300)',
                         fontWeight: 500,
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -431,7 +431,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                     </div>
                     <div
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         color: token('color.text.subtlest'),
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -442,7 +442,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                     </div>
                   </div>
                   {isCurrent && (
-                    <span style={{ fontSize: 10, fontWeight: 700, color: token('color.text.brand') }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: token('color.text.brand') }}>
                       CURRENT
                     </span>
                   )}
@@ -452,7 +452,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
             {filtered.length === 0 && (
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: token('color.text.subtlest'),
                   textAlign: 'center',
                   padding: '12px 0',
@@ -583,7 +583,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
       </div>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
@@ -625,7 +625,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
               <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="small" />
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   flex: 1,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -642,14 +642,14 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
                 // Replaces the previous hand-rolled green "✓" circle which was
                 // an ADS violation (raw bg color, custom shape, custom font).
                 // Design-critique 2026-05-17 H4 P0.
-                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.brand', 'var(--ds-link, #0C66E4)'), flexShrink: 0 }}>
+                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.brand', 'var(--ds-link)'), flexShrink: 0 }}>
                   <CheckCircleIcon label="" size="medium" primaryColor="currentColor" />
                 </span>
               ) : (
                 // ADS canonical "add" affordance — outlined neutral, becomes
                 // visible on row hover (the row itself is the click target;
                 // the icon is decorative).
-                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), flexShrink: 0 }}>
+                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.subtle', 'var(--ds-icon-subtle)'), flexShrink: 0 }}>
                   <AddCircleIcon label="" size="medium" primaryColor="currentColor" />
                 </span>
               )}
@@ -659,7 +659,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
         {sortedFiltered.length === 0 && (
           <div
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.subtlest'),
               textAlign: 'center',
               padding: '12px 0',
@@ -705,7 +705,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtle'),
             }}
           >
@@ -720,7 +720,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
                 borderRadius: 12,
                 border: `1px dashed ${token('color.border')}`,
                 color: token('color.text.subtle'),
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 700,
               }}
             >+</span>
@@ -844,7 +844,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
   const menuItemStyle: React.CSSProperties = {
     display: 'block', width: '100%', padding: '7px 14px',
     background: 'transparent', border: 'none', cursor: 'pointer',
-    textAlign: 'left', fontSize: 14, color: token('color.text'),
+    textAlign: 'left', fontSize: 'var(--ds-font-size-400)', color: token('color.text'),
     fontFamily: 'var(--cp-font-body)', borderRadius: 0,
   };
   const menuItemHover = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -949,7 +949,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
                   htmlFor={`rename-${project.id}`}
                   style={{
                     display: 'block',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: token('color.text.subtle'),
                     marginBottom: 6,
@@ -969,7 +969,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
                     }
                   }}
                 />
-                <p style={{ fontSize: 12, color: token('color.text.subtlest'), marginTop: 6, margin: 0 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest'), marginTop: 6, margin: 0 }}>
                   Key (<code style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace' }}>{project.project_key}</code>) and member assignments are unchanged.
                 </p>
               </div>
@@ -1005,7 +1005,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
                 ). This cannot be undone — all issues, comments, and member
                 assignments tied to this project will be removed.
               </p>
-              <p style={{ marginTop: 12, color: token('color.text.subtle'), fontSize: 13 }}>
+              <p style={{ marginTop: 12, color: token('color.text.subtle'), fontSize: 'var(--ds-font-size-300)' }}>
                 Consider archiving instead if you might want it back later.
               </p>
             </ModalBody>
@@ -1134,18 +1134,18 @@ export function AllProjectsTable({
       <div
         style={{
           borderRadius: 8,
-          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
           padding: token('space.500', '40px'),
-          backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          backgroundColor: token('elevation.surface', 'var(--ds-surface)'),
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150', '12px') }}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: token('space.200', '16px') }}>
-              <div style={{ height: 28, width: 28, borderRadius: '50%', backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)') }} />
+              <div style={{ height: 28, width: 28, borderRadius: '50%', backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)') }} />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
-                <div style={{ height: 12, width: '30%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)') }} />
-                <div style={{ height: 10, width: '20%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)') }} />
+                <div style={{ height: 12, width: '30%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)') }} />
+                <div style={{ height: 10, width: '20%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)') }} />
               </div>
             </div>
           ))}
@@ -1192,7 +1192,7 @@ export function AllProjectsTable({
               title={p.name}
               style={{
                 pointerEvents: 'auto',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 color: token('color.link'),
                 fontFamily: 'var(--cp-font-body)',
@@ -1220,7 +1220,7 @@ export function AllProjectsTable({
       // aligned with the key and the starred functionality"). Previously
       // centered, which made the key drift away from the Name column's
       // left-aligned start, breaking the row's visual grid.
-      case 'project_key': return <td key={colKey} style={{ textAlign: 'left' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
+      case 'project_key': return <td key={colKey} style={{ textAlign: 'left' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       // 'type' column is permanently banned from the Projects list view.
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} currentUserId={currentUserId} /></td>;
@@ -1230,7 +1230,7 @@ export function AllProjectsTable({
             {/* Line 1: issue count + freshness — Tooltip wraps the whole line so the
                 dot's own dimensions are not collapsed by AK Tooltip's ref wrapper */}
             <Tooltip content={syncTooltipText} position="top">
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)', cursor: 'help' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)', cursor: 'help' }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: syncDotBg }} />
                 <span
                   style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}
@@ -1242,7 +1242,7 @@ export function AllProjectsTable({
             </Tooltip>
             {/* Line 2: 24h activity footprint — only when there's activity */}
             {hasActivityToday && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)', paddingLeft: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)', paddingLeft: 14 }}>
                 {updatedToday > 0 && (
                   <span title={`${updatedToday} issue${updatedToday === 1 ? '' : 's'} updated in the last 24h`}>
                     ↑ {updatedToday} updated

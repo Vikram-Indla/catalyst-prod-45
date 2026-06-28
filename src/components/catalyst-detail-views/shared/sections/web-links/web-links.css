@@ -22,13 +22,13 @@
 .web-link-input[data-error="true"]:focus,
 .web-link-input[data-error="true"]:focus-visible,
 .web-link-input[data-error="true"]:focus-within {
-  border-color: var(--ds-border-danger, #C9372C) !important;
+  border-color: var(--ds-border-danger) !important;
   box-shadow: none !important;
 }
 
 .web-link-input[data-error="false"]:focus,
 .web-link-input[data-error="false"]:focus-visible,
 .web-link-input[data-error="false"]:focus-within {
-  border-color: var(--ds-border-focused, #388BFF) !important;
+  border-color: var(--ds-border-focused) !important;
   box-shadow: none !important;
 }

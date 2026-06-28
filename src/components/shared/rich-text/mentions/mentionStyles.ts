@@ -106,15 +106,15 @@ export function injectMentionStyles(): void {
        read-mode rendering. */
     span[data-mention-id]:not([data-mention-self="true"]),
     span.atlaskit-mention[data-id]:not([data-mention-self="true"]) {
-      background: var(--ds-background-neutral-subtle, #F7F8F9) !important;
-      color: var(--ds-link, #0052CC) !important;
+      background: var(--ds-background-neutral-subtle) !important;
+      color: var(--ds-link) !important;
     }
 
     /* ── CURRENT-user — bold brand blue + white text ───────────────── */
     span[data-mention-id][data-mention-self="true"],
     span.atlaskit-mention[data-id][data-mention-self="true"] {
-      background: var(--ds-background-brand-bold, #0C66E4) !important;
-      color: var(--ds-text-inverse, #FFFFFF) !important;
+      background: var(--ds-background-brand-bold) !important;
+      color: var(--ds-text-inverse) !important;
     }
   `;
   document.head.appendChild(style);

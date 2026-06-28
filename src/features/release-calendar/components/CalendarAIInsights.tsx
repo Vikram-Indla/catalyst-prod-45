@@ -47,17 +47,17 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
 
   const getIcon = (type: 'critical' | 'warning' | 'info') => {
     switch (type) {
-      case 'critical': return <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger,#ef4444)" />;
-      case 'warning': return <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning,#d97706)" />;
-      case 'info': return <ClockIcon label="" size="small" primaryColor="var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))" />;
+      case 'critical': return <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger)" />;
+      case 'warning': return <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning)" />;
+      case 'info': return <ClockIcon label="" size="small" primaryColor="var(--ds-text-brand,var(--cp-workstream-catalyst-primary))" />;
     }
   };
 
   const getBgColor = (type: 'critical' | 'warning' | 'info') => {
     switch (type) {
-      case 'critical': return 'bg-[var(--ds-background-danger, #FFECEB)] border-[var(--ds-background-danger, #FFECEB)]';
-      case 'warning': return 'bg-[var(--ds-background-warning, #FFF7D6)] border-[var(--ds-background-warning, #FFF7D6)]';
-      case 'info': return 'bg-[var(--ds-background-selected,#eff6ff)] border-[var(--ds-background-information, #E9F2FF)]';
+      case 'critical': return 'bg-[var(--ds-background-danger)] border-[var(--ds-background-danger)]';
+      case 'warning': return 'bg-[var(--ds-background-warning)] border-[var(--ds-background-warning)]';
+      case 'info': return 'bg-[var(--ds-background-selected)] border-[var(--ds-background-information)]';
     }
   };
 
@@ -76,16 +76,16 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
             className="p-1.5 rounded-lg"
             style={{ background: `linear-gradient(135deg, ${CATALYST_COLORS.aiPurpleStart}, ${CATALYST_COLORS.aiPurpleEnd})` }}
           >
-            <SparklesIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
+            <SparklesIcon label="" size="small" primaryColor="var(--ds-surface)" />
           </div>
           <span className="font-semibold text-slate-800">AI Insights</span>
           {criticalCount > 0 && (
-            <span className="px-2 py-0.5 bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger, #AE2A19)] text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)] text-xs font-medium rounded-full">
               {criticalCount} critical
             </span>
           )}
           {warningCount > 0 && (
-            <span className="px-2 py-0.5 bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text-warning, #974F0C)] text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-[var(--ds-background-warning)] text-[var(--ds-text-warning)] text-xs font-medium rounded-full">
               {warningCount} warnings
             </span>
           )}
@@ -125,7 +125,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
               variant="ghost"
               size="sm"
               onClick={() => onInsightClick?.(item.releaseIds)}
-              className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/80 text-xs"
+              className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/80 text-xs"
             >
               {item.action}
               <ArrowRightIcon label="" size="small" primaryColor="currentColor" />

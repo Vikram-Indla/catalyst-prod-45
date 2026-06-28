@@ -56,11 +56,11 @@
   z-index: -2;
   background: conic-gradient(
     from 0deg,
-    var(--ds-link, #0C66E4) 0deg,
-    var(--ds-background-discovery-bold, #6554C0) 90deg,
-    var(--ds-background-danger-bold, #C9372C) 180deg,
-    var(--ds-background-warning-bold, #E2B203) 270deg,
-    var(--ds-link, #0C66E4) 360deg
+    var(--ds-link) 0deg,
+    var(--ds-background-discovery-bold) 90deg,
+    var(--ds-background-danger-bold) 180deg,
+    var(--ds-background-warning-bold) 270deg,
+    var(--ds-link) 360deg
   );
   animation: als-rotate 3s linear infinite;
   pointer-events: none;
@@ -73,7 +73,7 @@
      ring at the edge. */
   inset: 1.5px;
   border-radius: 6.5px;
-  background: var(--ds-surface, #fff);
+  background: var(--ds-surface);
   z-index: -1;
   pointer-events: none;
 }
@@ -98,20 +98,20 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--ds-background-discovery-bold, #6554C0);
+  background: var(--ds-background-discovery-bold);
   animation: als-bounce 1.2s infinite ease-in-out;
 }
 
 .als-bouncing-dots span:nth-child(1) {
-  background: var(--ds-link, #0C66E4);
+  background: var(--ds-link);
   animation-delay: 0s;
 }
 .als-bouncing-dots span:nth-child(2) {
-  background: var(--ds-background-discovery-bold, #6554C0);
+  background: var(--ds-background-discovery-bold);
   animation-delay: 0.15s;
 }
 .als-bouncing-dots span:nth-child(3) {
-  background: var(--ds-background-danger-bold, #C9372C);
+  background: var(--ds-background-danger-bold);
   animation-delay: 0.3s;
 }
 
@@ -131,7 +131,7 @@
   display: inline-block;
   width: 1px;
   height: 14px;
-  background: var(--ds-text-subtlest, #6b778c);
+  background: var(--ds-text-subtlest);
   margin-left: 2px;
   vertical-align: middle;
   animation: als-blink 1s steps(2) infinite;

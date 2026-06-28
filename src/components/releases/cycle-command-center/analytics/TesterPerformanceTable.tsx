@@ -14,7 +14,7 @@ interface TesterPerformanceTableProps {
   cycleId: string;
 }
 
-const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-text-warning, #f59e0b)'];
+const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, 'var(--ds-background-discovery-bold)', 'var(--ds-background-accent-magenta-bolder)', 'var(--ds-text-warning)'];
 
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${Math.round(seconds)}s`;

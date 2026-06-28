@@ -35,7 +35,7 @@ export function ReleaseDetail() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--fg-3)' }}>
         <Loader2 className="animate-spin" size={24} />
-        <span style={{ marginLeft: 8, fontSize: 14 }}>Loading release...</span>
+        <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-400)' }}>Loading release...</span>
       </div>
     );
   }
@@ -43,11 +43,11 @@ export function ReleaseDetail() {
   if (!release) {
     return (
       <div style={{ padding: 32, textAlign: 'center' }}>
-        <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Release not found: {versionName}</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 'var(--ds-font-size-400)' }}>Release not found: {versionName}</p>
         <button onClick={() => navigate('/projecthub/releases')} style={{
           marginTop: 12, padding: '8px 16px', borderRadius: 6,
           border: '1px solid var(--divider)', background: 'var(--cp-float)',
-          fontSize: 13, cursor: 'pointer',
+          fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',
         }}>
           Back to Releases
         </button>
@@ -61,7 +61,7 @@ export function ReleaseDetail() {
   const segments = [
     { label: 'Done', value: release.doneItems, color: 'var(--sem-success)' },
     { label: 'In Progress', value: release.inProgressItems, color: 'var(--cp-blue)' },
-    { label: 'In Review', value: release.inReviewItems, color: 'var(--ds-background-discovery-bold, #7C3AED)' },
+    { label: 'In Review', value: release.inReviewItems, color: 'var(--ds-background-discovery-bold)' },
     { label: 'Blocked', value: release.blockedItems, color: 'var(--sem-danger)' },
     { label: 'To Do', value: release.todoItems, color: 'var(--fg-4)' },
   ];
@@ -77,7 +77,7 @@ export function ReleaseDetail() {
   const kpis = [
     { label: 'Completion', value: `${release.completionPercent}%`, icon: TrendingUp, color: release.completionPercent > 50 ? 'var(--sem-success)' : 'var(--sem-warning)' },
     { label: 'Items', value: String(release.totalItems), icon: FileStack, color: 'var(--cp-blue)' },
-    { label: 'Assignees', value: String(release.assignees.length), icon: Users, color: 'var(--ds-background-discovery-bold, #7C3AED)' },
+    { label: 'Assignees', value: String(release.assignees.length), icon: Users, color: 'var(--ds-background-discovery-bold)' },
     { label: 'Projects', value: String(release.projects.length), icon: FolderGit2, color: 'var(--sem-success)' },
     { label: 'Blocked', value: String(release.blockedItems), icon: AlertTriangle, color: release.blockedItems > 0 ? 'var(--sem-danger)' : 'var(--fg-4)' },
   ];
@@ -88,7 +88,7 @@ export function ReleaseDetail() {
       <button onClick={() => navigate('/projecthub/releases')} style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         background: 'none', border: 'none', cursor: 'pointer',
-        fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)',
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-blue)',
         marginBottom: 16, padding: 0,
       }}>
         <ArrowLeft size={16} /> Back to Releases
@@ -104,7 +104,7 @@ export function ReleaseDetail() {
             <Rocket size={20} color="var(--cp-blue)" />
           </div>
           <h1 style={{
-            fontSize: 24, fontWeight: 700, margin: 0,
+            fontSize: 'var(--ds-font-size-800)', fontWeight: 700, margin: 0,
             fontFamily: 'var(--cp-font-heading)',
             color: 'var(--fg-1)',
           }}>
@@ -118,19 +118,19 @@ export function ReleaseDetail() {
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '4px 12px', borderRadius: 9999,
-          fontSize: 12, fontWeight: 600,
-          background: statusLabel === 'Completed' ? 'var(--ds-background-success, #DFFCF0)' : statusLabel === 'Active' ? 'var(--ds-background-information, #E9F2FF)' : statusLabel === 'At Risk' ? 'var(--ds-background-danger, #FFECEB)' : 'var(--bg-1)',
-          color: statusLabel === 'Completed' ? 'var(--ds-background-success-bold, #1F845A)' : statusLabel === 'Active' ? 'var(--ds-background-brand-bold-hovered, #1d4ed8)' : statusLabel === 'At Risk' ? 'var(--ds-text-danger, #991b1b)' : 'var(--fg-2)',
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+          background: statusLabel === 'Completed' ? 'var(--ds-background-success)' : statusLabel === 'Active' ? 'var(--ds-background-information)' : statusLabel === 'At Risk' ? 'var(--ds-background-danger)' : 'var(--bg-1)',
+          color: statusLabel === 'Completed' ? 'var(--ds-background-success-bold)' : statusLabel === 'Active' ? 'var(--ds-background-brand-bold-hovered)' : statusLabel === 'At Risk' ? 'var(--ds-text-danger)' : 'var(--fg-2)',
         }}>
           {statusLabel}
         </span>
         {release.releaseDate && (
-          <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)' }}>
             Due: {formatDate(release.releaseDate)}
           </span>
         )}
         {isOverdue && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: 'var(--sem-danger)' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--sem-danger)' }}>
             <AlertTriangle size={14} /> Overdue
           </span>
         )}
@@ -141,13 +141,13 @@ export function ReleaseDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 52, marginBottom: 16, flexWrap: 'wrap' }}>
           <FolderGit2 size={14} style={{ color: 'var(--fg-4)' }} />
           {release.projects.map((proj, i) => {
-            const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-success, #16a34a)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+            const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-discovery-bold)', 'var(--ds-icon-information)', 'var(--ds-text-warning)', 'var(--ds-text-danger)', 'var(--ds-link)', 'var(--ds-text-success)', 'var(--ds-background-discovery-bold)'];
             const c = colors[i % colors.length];
             return (
               <span key={proj} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '2px 8px', borderRadius: 4,
-                fontSize: 11, fontWeight: 600,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                 background: `${c}10`, color: c, border: `1px solid ${c}30`,
               }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: c }} />
@@ -169,12 +169,12 @@ export function ReleaseDetail() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <Icon size={14} color={kpi.color} />
-                <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   {kpi.label}
                 </span>
               </div>
               <span style={{
-                fontSize: 20, fontWeight: 700, color: kpi.color,
+                fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: kpi.color,
                 fontFamily: 'var(--cp-font-heading)',
               }}>
                 {kpi.value}
@@ -205,7 +205,7 @@ export function ReleaseDetail() {
           background: 'var(--cp-float)', border: '1px solid var(--divider)',
           borderRadius: 'var(--wh-radius-lg, 8px)', padding: '16px 20px', marginBottom: 24,
         }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 10 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 10 }}>
             Team ({release.assignees.length})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -219,7 +219,7 @@ export function ReleaseDetail() {
       {/* Work Items Table */}
       <div>
         <h2 style={{
-          fontSize: 16, fontWeight: 600, color: 'var(--fg-1)',
+          fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--fg-1)',
           marginBottom: 12,
         }}>
           Work Items ({workItemsData?.totalCount ?? 0})
@@ -232,7 +232,7 @@ export function ReleaseDetail() {
             textAlign: 'center',
           }}>
             <FileStack size={32} color="var(--fg-4)" style={{ marginBottom: 8 }} />
-            <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-3)', margin: 0 }}>
               No work items in this fix version.
             </p>
           </div>
@@ -280,19 +280,19 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
       ) : (
         <div style={{
           width: 24, height: 24, borderRadius: '50%',
-          background: 'var(--ds-background-discovery-bold, #6366f1)', color: 'var(--bg-app)',
+          background: 'var(--ds-background-discovery-bold)', color: 'var(--bg-app)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 9, fontWeight: 700,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         }}>
           {initials}
         </div>
       )}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', lineHeight: 1.2 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', lineHeight: 1.2 }}>
           {assignee.displayName}
         </span>
         {assignee.roleName && (
-          <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--fg-4)', lineHeight: 1.2 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 400, color: 'var(--fg-4)', lineHeight: 1.2 }}>
             {assignee.roleName}
           </span>
         )}

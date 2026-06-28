@@ -30,13 +30,13 @@ interface CatyStarredDigestProps {
 const CACHE_KEY = 'caty.starred-digest.lastVisit';
 
 const BODY = 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif';
-const TEXT = token('color.text', 'var(--ds-text, #172B4D)');
-const SUBTLE = token('color.text.subtle', 'var(--ds-icon, #44546F)');
-const SUBTLEST = token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)');
-const LINK = token('color.link', 'var(--ds-link, #0052CC)');
-const BORDER = token('color.border', 'var(--ds-border, #DFE1E6)');
+const TEXT = token('color.text', 'var(--ds-text)');
+const SUBTLE = token('color.text.subtle', 'var(--ds-icon)');
+const SUBTLEST = token('color.text.subtlest', 'var(--ds-icon-subtle)');
+const LINK = token('color.link', 'var(--ds-link)');
+const BORDER = token('color.border', 'var(--ds-border)');
 const TILE_BG = token('color.background.neutral', 'rgba(5,21,36,0.06)');
-const PILL_BG = token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)');
+const PILL_BG = token('color.background.neutral', 'var(--ds-background-neutral)');
 
 function getLastVisit(): string {
   const stored = localStorage.getItem(CACHE_KEY);

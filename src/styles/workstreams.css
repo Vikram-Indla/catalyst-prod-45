@@ -16,42 +16,42 @@
 
 :root {
   /* Primary Colors - Catalyst V5 */
-  --ws-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --ws-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --ws-primary-light: var(--ds-background-selected, #eff6ff);
+  --ws-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --ws-primary-hover: var(--ds-background-brand-bold-hovered);
+  --ws-primary-light: var(--ds-background-selected);
   
   /* Semantic Colors */
-  --ws-success: var(--ds-background-success-bold, #059669);
-  --ws-success-light: var(--ds-background-success, #DFFCF0);
-  --ws-warning: var(--ds-text-warning, #d97706);
-  --ws-warning-light: var(--ds-background-warning, #FFF7D6);
-  --ws-danger: var(--ds-text-danger, #ef4444);
-  --ws-danger-light: var(--ds-background-danger, #fef2f2);
-  --ws-teal: var(--ds-chart-teal-bold, #0d9488);
+  --ws-success: var(--ds-background-success-bold);
+  --ws-success-light: var(--ds-background-success);
+  --ws-warning: var(--ds-text-warning);
+  --ws-warning-light: var(--ds-background-warning);
+  --ws-danger: var(--ds-text-danger);
+  --ws-danger-light: var(--ds-background-danger);
+  --ws-teal: var(--ds-chart-teal-bold);
   
   /* Workstream Identity Colors */
-  --ws-color-senaei: var(--ds-icon-information, #1D7AFC);
-  --ws-color-catalyst: var(--ds-background-discovery-bold, #8b5cf6);
-  --ws-color-tahommona: var(--ds-background-discovery-bold, #6366f1);
-  --ws-color-delivery: var(--ds-background-warning-bold, #f97316);
-  --ws-color-mim: var(--ds-background-accent-magenta-bolder, #ec4899);
-  --ws-color-standalone: var(--ds-background-success-bold, #1F845A);
-  --ws-color-dataai: var(--ds-background-accent-teal-bolder, #14b8a6);
+  --ws-color-senaei: var(--ds-icon-information);
+  --ws-color-catalyst: var(--ds-background-discovery-bold);
+  --ws-color-tahommona: var(--ds-background-discovery-bold);
+  --ws-color-delivery: var(--ds-background-warning-bold);
+  --ws-color-mim: var(--ds-background-accent-magenta-bolder);
+  --ws-color-standalone: var(--ds-background-success-bold);
+  --ws-color-dataai: var(--ds-background-accent-teal-bolder);
   
   /* Neutral Scale */
-  --ws-slate-50: var(--ds-surface-sunken, #f8fafc);
-  --ws-slate-100: var(--ds-surface-sunken, #f1f5f9);
-  --ws-slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --ws-slate-300: var(--ds-text-disabled, #cbd5e1);
-  --ws-slate-400: var(--ds-text-subtlest, #94a3b8);
-  --ws-slate-500: var(--ds-text-subtlest, #64748b);
-  --ws-slate-600: var(--ds-text-subtle, #475569);
-  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --ws-slate-800: var(--ds-text, #172B4D);
-  --ws-slate-900: var(--ds-text, #0f172a);
+  --ws-slate-50: var(--ds-surface-sunken);
+  --ws-slate-100: var(--ds-surface-sunken);
+  --ws-slate-200: var(--ds-border, var(--cp-bg-sunken));
+  --ws-slate-300: var(--ds-text-disabled);
+  --ws-slate-400: var(--ds-text-subtlest);
+  --ws-slate-500: var(--ds-text-subtlest);
+  --ws-slate-600: var(--ds-text-subtle);
+  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --ws-slate-800: var(--ds-text);
+  --ws-slate-900: var(--ds-text);
   
   /* Semantic Mappings - Light Mode */
-  --ws-bg-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --ws-bg-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   --ws-bg-secondary: var(--ws-slate-50);
   --ws-bg-tertiary: var(--ws-slate-100);
   --ws-text-primary: var(--ws-slate-900);
@@ -104,10 +104,10 @@
   --ws-text-muted: var(--ws-slate-500);
   --ws-border-primary: var(--ws-slate-700);
   --ws-border-secondary: var(--ws-slate-800);
-  --ws-primary-light: var(--ds-text, #172B4D);
-  --ws-warning-light: var(--ds-text-warning, #974F0C);
-  --ws-danger-light: var(--ds-background-danger, #FFECEB);
-  --ws-success-light: var(--ds-text-success, #216E4E);
+  --ws-primary-light: var(--ds-text);
+  --ws-warning-light: var(--ds-text-warning);
+  --ws-danger-light: var(--ds-background-danger);
+  --ws-success-light: var(--ds-text-success);
 }
 
 /* ==========================================================================

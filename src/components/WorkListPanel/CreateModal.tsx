@@ -58,7 +58,7 @@ export const CreateModal = memo(function CreateModal({
     >
       <div
         style={{
-          backgroundColor: 'var(--ds-surface, #FFFFFF)',
+          backgroundColor: 'var(--ds-surface)',
           borderRadius: '3px',
           padding: '24px',
           maxWidth: '400px',
@@ -69,9 +69,9 @@ export const CreateModal = memo(function CreateModal({
         <h2
           style={{
             margin: '0 0 20px 0',
-            fontSize: '18px',
+            fontSize: 'var(--ds-font-size-600)',
             fontWeight: 600,
-            color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+            color: 'var(--cp-text-primary, var(--cp-text-inverse))',
           }}
         >
           {selectedType ? `Create ${selectedType}` : 'Create Issue'}
@@ -99,20 +99,20 @@ export const CreateModal = memo(function CreateModal({
                 onClick={() => setSelectedType(null)}
                 style={{
                   padding: '8px 12px',
-                  backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
-                  color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+                  backgroundColor: 'var(--ds-background-neutral)',
+                  color: 'var(--cp-text-primary, var(--cp-text-inverse))',
                   border: 'none',
                   borderRadius: '3px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   cursor: 'pointer',
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--ds-border, #DCDFE6)';
+                  e.currentTarget.style.backgroundColor = 'var(--ds-border)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #F1F2F4)';
+                  e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral)';
                 }}
               >
                 Back
@@ -121,11 +121,11 @@ export const CreateModal = memo(function CreateModal({
                 onClick={handleCancel}
                 style={{
                   padding: '8px 12px',
-                  backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
-                  color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+                  backgroundColor: 'var(--ds-background-neutral)',
+                  color: 'var(--cp-text-primary, var(--cp-text-inverse))',
                   border: 'none',
                   borderRadius: '3px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   cursor: 'pointer',
                 }}
@@ -148,11 +148,11 @@ export const CreateModal = memo(function CreateModal({
               onClick={handleCancel}
               style={{
                 padding: '8px 12px',
-                backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
-                color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+                backgroundColor: 'var(--ds-background-neutral)',
+                color: 'var(--cp-text-primary, var(--cp-text-inverse))',
                 border: 'none',
                 borderRadius: '3px',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 cursor: 'pointer',
               }}

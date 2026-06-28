@@ -68,7 +68,7 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
       {CHANNEL_DEFS.map(({ key, label, Icon }) => (
         <Tooltip key={key} delay={200} content={`${label}: ${channels[key] ? 'Enabled' : 'Disabled'}`}>
           <div className="flex items-center gap-1">
-            <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'flex' }}>
+            <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', display: 'flex' }}>
               <Icon label="" size="small" />
             </span>
             <Toggle
@@ -103,8 +103,8 @@ export function ChannelToggleCard({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Delivery Channels</span>
-        <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">
+        <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))]">Delivery Channels</span>
+        <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]">
           {enabledCount}/{CHANNEL_DEFS.length} active
         </span>
       </div>
@@ -116,13 +116,13 @@ export function ChannelToggleCard({
             disabled={disabled}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-md border text-left transition-colors duration-150 ${
               channels[key]
-                ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.04))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20'
-                : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))]'
+                ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.04))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20'
+                : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))]'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span
               style={{
-                color: channels[key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+                color: channels[key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
                 display: 'flex',
                 flexShrink: 0,
               }}
@@ -130,8 +130,8 @@ export function ChannelToggleCard({
               <Icon label="" size="small" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">{label}</p>
-              <p className="text-[10px] text-[var(--ds-text-subtle,#475569)] truncate">{description}</p>
+              <p className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))]">{label}</p>
+              <p className="text-[10px] text-[var(--ds-text-subtle)] truncate">{description}</p>
             </div>
             <Toggle
               isChecked={channels[key]}
@@ -157,7 +157,7 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
   const active = CHANNEL_DEFS.filter((d) => channels[d.key]);
 
   if (active.length === 0) {
-    return <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">No channels</span>;
+    return <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]">No channels</span>;
   }
 
   return (
@@ -165,12 +165,12 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
       {active.map(({ key, label, Icon }) => (
         <div
           key={key}
-          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
+          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]"
         >
-          <span style={{ color: 'var(--ds-text-subtle, #475569)', display: 'flex' }}>
+          <span style={{ color: 'var(--ds-text-subtle)', display: 'flex' }}>
             <Icon label="" size="small" />
           </span>
-          <span className="text-[9px] font-medium text-[var(--ds-text-subtle,#475569)]">{label}</span>
+          <span className="text-[9px] font-medium text-[var(--ds-text-subtle)]">{label}</span>
         </div>
       ))}
     </div>

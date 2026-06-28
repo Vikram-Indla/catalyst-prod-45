@@ -7,7 +7,7 @@
  *
  * Visual rules (per CLAUDE.md §6):
  *   - Catalyst → neutral grey #3F3F46 (structural, NOT semantic)
- *   - Jira-MDT → blue var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))
+ *   - Jira-MDT → blue var(--ds-text-brand, var(--cp-workstream-catalyst-primary))
  *   - These are non-semantic structural identifiers and must NEVER be confused
  *     with the StatusLozenge 3-color guardrail.
  *
@@ -34,8 +34,8 @@ interface SourceBadgeProps {
 }
 
 const PALETTE: Record<'catalyst' | 'jira', { bg: string; bgSubtle: string; text: string; border: string }> = {
-  catalyst: { bg: 'var(--ds-text-subtle, #44546F)', bgSubtle: 'var(--ds-surface-sunken, #F7F8F9)', text: 'var(--ds-text-subtle, #44546F)', border: 'var(--ds-border, #DFE1E6)' },
-  jira:     { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bgSubtle: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', border: 'var(--ds-background-information, #E9F2FF)' },
+  catalyst: { bg: 'var(--ds-text-subtle)', bgSubtle: 'var(--ds-surface-sunken)', text: 'var(--ds-text-subtle)', border: 'var(--ds-border)' },
+  jira:     { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bgSubtle: 'var(--ds-background-selected)', text: 'var(--ds-background-brand-bold-hovered)', border: 'var(--ds-background-information)' },
 };
 
 export const SourceBadge: React.FC<SourceBadgeProps> = ({
@@ -74,7 +74,7 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({
         lineHeight: 1,
         whiteSpace: 'nowrap',
         background: isOutline ? p.bgSubtle : p.bg,
-        color: isOutline ? p.text : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        color: isOutline ? p.text : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         border: isOutline ? `1px solid ${p.border}` : `1px solid ${p.bg}`,
         ...style,
       }}

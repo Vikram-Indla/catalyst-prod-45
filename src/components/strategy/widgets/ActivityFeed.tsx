@@ -14,32 +14,32 @@ interface FeedItem {
 /* All human avatars: exec-blue-700. AI avatar: exec-ai-purple. */
 const TEMP_MOCK_FEED: FeedItem[] = [
   {
-    initials: 'AH', color: 'var(--ds-link-pressed, #1e40af)',
-    text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: 'var(--ds-link-pressed, #1e40af)' }}>82%</strong></>,
+    initials: 'AH', color: 'var(--ds-link-pressed)',
+    text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: 'var(--ds-link-pressed)' }}>82%</strong></>,
     time: '2 hours ago',
   },
   {
-    initials: 'AI', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-    text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Off Track</strong> — contractor delays</>,
+    initials: 'AI', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+    text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, var(--cp-danger))' }}>Off Track</strong> — contractor delays</>,
     time: '3 hours ago',
   },
   {
-    initials: 'SR', color: 'var(--ds-link-pressed, #1e40af)',
-    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))' }}>on track</strong></>,
+    initials: 'SR', color: 'var(--ds-link-pressed)',
+    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, var(--cp-success))' }}>on track</strong></>,
     time: '5 hours ago',
   },
   {
-    initials: 'MK', color: 'var(--ds-link-pressed, #1e40af)',
-    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>pending</strong></>,
+    initials: 'MK', color: 'var(--ds-link-pressed)',
+    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, var(--cp-warning))' }}>pending</strong></>,
     time: 'Yesterday',
   },
   {
-    initials: 'FN', color: 'var(--ds-link-pressed, #1e40af)',
+    initials: 'FN', color: 'var(--ds-link-pressed)',
     text: <><strong>Fatima Noor</strong> submitted ESG compliance framework draft for review</>,
     time: 'Yesterday',
   },
   {
-    initials: 'KA', color: 'var(--ds-link-pressed, #1e40af)',
+    initials: 'KA', color: 'var(--ds-link-pressed)',
     text: <><strong>Khalid Al-Otaibi</strong> closed Epic "Ministry Integration Phase 2" — all features delivered</>,
     time: '2 days ago',
   },
@@ -54,28 +54,28 @@ export function ActivityFeed() {
           className="flex gap-3"
           style={{
             padding: '10px 4px',
-            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))' : 'none',
+            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))' : 'none',
             transition: 'background 120ms',
             borderRadius: 6,
             margin: '0 -4px',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken)))'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div
             className="flex items-center justify-center flex-shrink-0"
             style={{
               width: 28, height: 28, borderRadius: '50%', background: item.color,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 10, fontWeight: 600,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
             }}
           >
             {item.initials}
           </div>
           <div className="flex-1 min-w-0">
-            <div style={{ fontSize: 11, color: 'var(--exec-text-secondary)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-secondary)', lineHeight: 1.5 }}>
               {item.text}
             </div>
-            <div style={{ fontSize: 10, color: 'var(--exec-text-tertiary)', marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-text-tertiary)', marginTop: 2 }}>
               {item.time}
             </div>
           </div>

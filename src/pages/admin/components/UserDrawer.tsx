@@ -593,7 +593,7 @@ const drawerCSS = `
   bottom: 0;
   width: 520px;
   max-width: 90vw;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)));
   z-index: 101;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -611,17 +611,17 @@ const drawerCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
 }
 .um-drawer-header h2 {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
-  color: var(--ds-text, #0f172a);
+  color: var(--ds-text);
 }
 .um-drawer-header p {
   font-size: 12px;
-  color: var(--ds-text-subtlest, #94a3b8);
+  color: var(--ds-text-subtlest);
   margin: 2px 0 0 0;
 }
 .um-drawer-close {
@@ -631,15 +631,15 @@ const drawerCSS = `
   align-items: center;
   justify-content: center;
   border: none;
-  background: var(--ds-surface-sunken, #f8fafc);
+  background: var(--ds-surface-sunken);
   cursor: pointer;
   border-radius: 8px;
-  color: var(--ds-text-subtlest, #94a3b8);
+  color: var(--ds-text-subtlest);
   transition: all 0.15s;
 }
 .um-drawer-close:hover {
-  background: var(--ds-surface-sunken, #f1f5f9);
-  color: var(--ds-text, #0f172a);
+  background: var(--ds-surface-sunken);
+  color: var(--ds-text);
 }
 
 /* Drawer Body */
@@ -655,8 +655,8 @@ const drawerCSS = `
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  background: var(--ds-surface-sunken, #f8fafc);
+  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  background: var(--ds-surface-sunken);
 }
 
 /* Form Sections */
@@ -668,10 +668,10 @@ const drawerCSS = `
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--ds-surface-sunken, #f1f5f9);
+  border-bottom: 1px solid var(--ds-surface-sunken);
 }
 .um-form-row {
   display: grid;
@@ -690,28 +690,28 @@ const drawerCSS = `
 .um-form-group label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--ds-text-subtle, #475569);
+  color: var(--ds-text-subtle);
 }
 .um-form-group input,
 .um-form-group select {
   height: 40px;
   padding: 0 12px;
   font-size: 14px;
-  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
   transition: all 0.15s;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  color: var(--ds-text, #0f172a);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)));
+  color: var(--ds-text);
 }
 .um-form-group input:focus,
 .um-form-group select:focus {
   outline: none;
-  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
 }
 .um-form-group input:disabled {
   background: var(--ds-background-information, rgba(37, 99, 235, 0.08));
-  color: var(--ds-text-subtlest, #94a3b8);
+  color: var(--ds-text-subtlest);
   border-color: transparent;
   cursor: not-allowed;
 }
@@ -726,76 +726,76 @@ const drawerCSS = `
   font-size: 13px;
   font-weight: 500;
   border-radius: 6px;
-  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  color: var(--ds-text, #0f172a);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)));
+  color: var(--ds-text);
   cursor: pointer;
   transition: all 0.15s;
 }
 .um-drawer .um-btn:hover {
-  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 }
 .um-drawer .um-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 .um-drawer .um-btn-primary {
-  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   color: white;
 }
 .um-drawer .um-btn-primary:hover {
-  background: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  background: var(--ds-background-brand-bold-hovered);
 }
 .um-drawer .um-btn-danger {
-  background: var(--ds-text-danger, #ef4444);
-  border-color: var(--ds-text-danger, #ef4444);
+  background: var(--ds-text-danger);
+  border-color: var(--ds-text-danger);
   color: white;
 }
 .um-drawer .um-btn-danger:hover {
-  background: var(--ds-text-danger, #dc2626);
+  background: var(--ds-text-danger);
 }
 
 /* ═══ DARK MODE — ADS tokens (was inline solid hex palette) ═══
    Per platform guardrail: use --ds-* tokens with sensible fallbacks.
-   Brand blue (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))) and danger red (var(--ds-text-danger, #ef4444)) stay as-is — they
+   Brand blue (var(--ds-text-brand, var(--cp-workstream-catalyst-primary))) and danger red (var(--ds-text-danger)) stay as-is — they
    are intentional brand accents in both modes. */
 .dark .um-drawer {
-  background: var(--ds-surface-overlay, #1D2125) !important;
+  background: var(--ds-surface-overlay) !important;
   box-shadow: -12px 0 40px var(--ds-shadow-raised, rgba(0,0,0,0.5)) !important;
 }
 .dark .um-drawer .um-drawer-header {
-  border-color: var(--ds-border, #38414A) !important;
+  border-color: var(--ds-border) !important;
 }
 .dark .um-drawer .um-drawer-header h2 {
-  color: var(--ds-text, #B6C2CF) !important;
+  color: var(--ds-text) !important;
 }
 .dark .um-form-group label {
-  color: var(--ds-text-subtle, #9FADBC) !important;
+  color: var(--ds-text-subtle) !important;
 }
 .dark .um-form-group input,
 .dark .um-form-group select {
-  background: var(--ds-surface-sunken, #161A1D) !important;
-  color: var(--ds-text, #B6C2CF) !important;
-  border-color: var(--ds-border, #38414A) !important;
+  background: var(--ds-surface-sunken) !important;
+  color: var(--ds-text) !important;
+  border-color: var(--ds-border) !important;
 }
 .dark .um-form-group input:focus,
 .dark .um-form-group select:focus {
-  border-color: var(--ds-border-focused, #579DFF) !important;
+  border-color: var(--ds-border-focused) !important;
   box-shadow: 0 0 0 3px rgba(87,157,255,0.20) !important; /* ads-scanner:ignore-line — focus ring, no ADS shadow token */
 }
 .dark .um-form-group input:disabled {
-  background: var(--ds-background-disabled, #1D2125) !important;
-  color: var(--ds-text-disabled, #5C6F82) !important;
+  background: var(--ds-background-disabled) !important;
+  color: var(--ds-text-disabled) !important;
 }
 .dark .um-drawer .um-btn {
-  background: var(--ds-surface-sunken, #161A1D) !important;
-  color: var(--ds-text-subtle, #9FADBC) !important;
-  border-color: var(--ds-border, #38414A) !important;
+  background: var(--ds-surface-sunken) !important;
+  color: var(--ds-text-subtle) !important;
+  border-color: var(--ds-border) !important;
 }
 .dark .um-drawer .um-btn:hover {
-  border-color: var(--ds-border-focused, #579DFF) !important;
-  color: var(--ds-text-information, #85B8FF) !important;
+  border-color: var(--ds-border-focused) !important;
+  color: var(--ds-text-information) !important;
 }
 `;

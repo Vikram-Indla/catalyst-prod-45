@@ -207,18 +207,11 @@ class ADSTokenScanner {
       }
       if (opensBlock) inBlockComment = true;
 
-      // Check for raw hex colors — but ONLY hex that is NOT inside a CSS
-      // var() fallback chain. `var(--ds-foo, #BAR)` is the ADS-canonical
-      // pattern (token first, hex fallback for browsers without CSS
-      // custom-property support or SSR). Strip those before scanning.
+      // Check for raw hex colors. Per CLAUDE.md: var(--ds-token, #hex) is
+      // explicitly BANNED — hex fallbacks inside var() are violations, not
+      // exemptions. Scan the full line (minus inline comments only).
       const stripped = line
-        .replace(/var\([^)]*\)/g, '') // remove every var(...) expression
-        // Also strip @atlaskit/tokens token(...) calls — same ADS-canonical
-        // pattern. `token('color.text', '#172B4D')` means "use ADS token,
-        // fallback to hex if the runtime can't resolve it" — flagging the
-        // fallback hex is a false positive identical to var() fallback.
-        .replace(/\btoken\([^)]*\)/g, '')
-        .replace(/\/\/.*$/, ''); // strip line comments
+        .replace(/\/\/.*$/, ''); // strip line comments only
       if (this.rawHexPattern.test(stripped)) {
         // Exclude allowed patterns
         if (!line.trim().startsWith('//') && !line.includes('whitelist')) {
@@ -232,13 +225,9 @@ class ADSTokenScanner {
         }
       }
 
-      // Inline rgb()/rgba()/hsl()/hsla() not wrapped in var(). Use
-      // removeVarExpressions() which handles nested parens correctly —
-      // e.g. var(--ds-shadow-overlay, 0 4px rgba(9,30,66,0.15)) won't
-      // fire because the rgba() is inside the var() fallback chain.
-      const strippedForRgb = this.removeVarExpressions(
-        line.replace(/\/\/.*$/, ''),
-      );
+      // Inline rgb()/rgba()/hsl()/hsla() — banned whether raw OR inside a
+      // var() fallback. Per CLAUDE.md: no raw color functions anywhere.
+      const strippedForRgb = line.replace(/\/\/.*$/, '');
       if (
         this.rgbHslPattern.test(strippedForRgb) &&
         !line.trim().startsWith('//') &&

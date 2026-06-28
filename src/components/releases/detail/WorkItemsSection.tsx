@@ -39,13 +39,13 @@ import { AddWorkItemsModal } from './AddWorkItemsModal';
 import { MoveToVersionModal } from './MoveToVersionModal';
 import { catalystFlag } from '@/lib/catalystFlag';
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const BLUE = 'var(--ds-border-selected, #1868DB)';
-const BLUE_BG = 'var(--ds-background-selected, #E9F2FE)';
-const BLUE_TEXT = 'var(--ds-text-selected, #0C66E4)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
-const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
+const BORDER = 'var(--ds-border)';
+const BLUE = 'var(--ds-border-selected)';
+const BLUE_BG = 'var(--ds-background-selected)';
+const BLUE_TEXT = 'var(--ds-text-selected)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
+const SUBTLEST = 'var(--ds-text-subtlest)';
 
 // 2026-06-26: hover background on every menu-item button inside the row
 // 3-dot action menu (Move to / View all versions / Remove from version).
@@ -54,7 +54,7 @@ const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
 const WIS_MENU_STYLE_ID = 'wis-row-menu-item-css';
 const WIS_MENU_CSS = `
   .wis-row-menu-item:hover {
-    background: var(--ds-background-neutral-subtle-hovered, #F1F2F4) !important;
+    background: var(--ds-background-neutral-subtle-hovered) !important;
   }
 `;
 if (typeof document !== 'undefined') {
@@ -107,9 +107,9 @@ const DISPLAY_DEFAULT: Record<DisplayKey, boolean> = {
 };
 
 const STATUS_BG: Record<string, { bg: string; color: string }> = {
-  todo: { bg: 'var(--ds-background-neutral, #F1F2F4)', color: TEXT },
-  'in progress': { bg: 'var(--ds-background-information, #E9F2FE)', color: BLUE_TEXT },
-  done: { bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-text-success, #216E4E)' },
+  todo: { bg: 'var(--ds-background-neutral)', color: TEXT },
+  'in progress': { bg: 'var(--ds-background-information)', color: BLUE_TEXT },
+  done: { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
 };
 
 function priorityIcon(priority: string | null) {
@@ -402,13 +402,13 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Section header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>Work items</h2>
+          <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>Work items</h2>
           <span
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: TEXT,
-              background: 'var(--ds-background-neutral, #F1F2F4)',
+              background: 'var(--ds-background-neutral)',
               padding: '1px 8px',
               borderRadius: 3,
               minWidth: 18,
@@ -465,9 +465,9 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 label="Status category"
                 selectedCount={statusCatFilter.length}
                 options={[
-                  { id: 'To Do', label: 'TO DO', pillBg: 'var(--ds-background-neutral, #F1F2F4)', pillColor: TEXT },
-                  { id: 'In Progress', label: 'IN PROGRESS', pillBg: 'var(--ds-background-information, #E9F2FE)', pillColor: BLUE_TEXT },
-                  { id: 'Done', label: 'DONE', pillBg: 'var(--ds-background-success, #DCFFF1)', pillColor: 'var(--ds-text-success, #216E4E)' },
+                  { id: 'To Do', label: 'TO DO', pillBg: 'var(--ds-background-neutral)', pillColor: TEXT },
+                  { id: 'In Progress', label: 'IN PROGRESS', pillBg: 'var(--ds-background-information)', pillColor: BLUE_TEXT },
+                  { id: 'Done', label: 'DONE', pillBg: 'var(--ds-background-success)', pillColor: 'var(--ds-text-success)' },
                 ]}
                 value={statusCatFilter}
                 onChange={setStatusCatFilter}
@@ -509,7 +509,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                       all: 'unset',
                       cursor: hasFilters ? 'pointer' : 'not-allowed',
                       color: hasFilters ? BLUE_TEXT : SUBTLEST,
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       padding: '0 6px',
                     }}
                   >
@@ -521,7 +521,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
               <button
                 type="button"
                 onClick={() => setSortAsc((v) => !v)}
-                style={{ all: 'unset', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, color: SUBTLE, fontSize: 13 }}
+                style={{ all: 'unset', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, color: SUBTLE, fontSize: 'var(--ds-font-size-300)' }}
               >
                 <span>Sort by: <span style={{ color: TEXT }}>Date created</span></span>
                 {sortAsc ? <ArrowUpIcon label="" size="small" /> : <ArrowDownIcon label="" size="small" />}
@@ -537,7 +537,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 gap: 0,
                 border: `1px solid ${BORDER}`,
                 borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 overflow: 'hidden auto',
                 maxHeight: 560,
               }}
@@ -556,22 +556,22 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 />
               ))}
               {isLoading && (
-                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 13 }}>Loading work items…</div>
+                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 'var(--ds-font-size-300)' }}>Loading work items…</div>
               )}
               {error && (
-                <div style={{ padding: '16px 12px', color: 'var(--ds-text-danger, #C9372C)', fontSize: 13 }}>
+                <div style={{ padding: '16px 12px', color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-300)' }}>
                   Query error: {(error as any)?.message || String(error)}
                 </div>
               )}
               {!isLoading && !error && sorted.length === 0 && (
-                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 13 }}>
+                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 'var(--ds-font-size-300)' }}>
                   No work items in this release.
                 </div>
               )}
               {hasMore && (
                 <div
                   ref={sentinelRef}
-                  style={{ padding: '10px 12px', color: SUBTLEST, fontSize: 12, textAlign: 'center' }}
+                  style={{ padding: '10px 12px', color: SUBTLEST, fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}
                 >
                   Loading more…
                 </div>
@@ -580,7 +580,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             <button
               type="button"
               onClick={() => setIsAddOpen(true)}
-              style={{ all: 'unset', cursor: 'pointer', marginTop: 4, color: SUBTLE, fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              style={{ all: 'unset', cursor: 'pointer', marginTop: 4, color: SUBTLE, fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
               <AddIcon label="" size="small" /> Add work items
             </button>
@@ -600,7 +600,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             top: moreMenuPos.top,
             right: moreMenuPos.right,
             zIndex: 10010,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -636,7 +636,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             Manage warnings
           </button>
           <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
-          <div style={{ padding: '4px 12px', fontSize: 12, fontWeight: 700, color: SUBTLE, textTransform: 'none' }}>
+          <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: SUBTLE, textTransform: 'none' }}>
             Display information
           </div>
           {([
@@ -677,7 +677,7 @@ function SearchField({ value, onChange }: { value: string; onChange: (v: string)
         padding: '0 8px',
         border: `1px solid ${focused ? BLUE : BORDER}`,
         borderRadius: 3,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         minWidth: 180,
         boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         transition: 'border-color 80ms ease, box-shadow 80ms ease',
@@ -690,7 +690,7 @@ function SearchField({ value, onChange }: { value: string; onChange: (v: string)
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholder=""
-        style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT }}
+        style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT }}
       />
     </div>
   );
@@ -720,7 +720,7 @@ function menuItemStyle(): React.CSSProperties {
     width: '100%',
     boxSizing: 'border-box',
     padding: '8px 12px',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     color: TEXT,
   };
 }
@@ -747,15 +747,15 @@ function DisplayCheckRow({
         padding: '6px 12px',
         cursor: 'pointer',
         background: checked
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : hover
-            ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
+            ? 'var(--ds-background-neutral-subtle-hovered)'
             : 'transparent',
         color: checked
-          ? 'var(--ds-text-selected, #0C66E4)'
-          : 'var(--ds-text-subtle, #505258)',
+          ? 'var(--ds-text-selected)'
+          : 'var(--ds-text-subtle)',
         fontWeight: 400,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       <Checkbox isChecked={checked} onChange={() => { /* noop */ }} />
@@ -831,9 +831,9 @@ function CheckboxFilterPill({
         {selectedCount > 0 && (
           <span style={{
             minWidth: 22, height: 18, padding: '0 6px', borderRadius: 3,
-            background: 'var(--ds-background-accent-blue-subtle, #CCE0FF)',
-            color: 'var(--ds-text, #292A2E)',
-            fontSize: 11, fontWeight: 700,
+            background: 'var(--ds-background-accent-blue-subtle)',
+            color: 'var(--ds-text)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           }}>{selectedCount}</span>
         )}
@@ -845,7 +845,7 @@ function CheckboxFilterPill({
           style={{
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 10010,
             minWidth: 220, maxHeight: 360, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-            background: 'var(--ds-surface-overlay, #FFFFFF)', border: `1px solid ${BORDER}`, borderRadius: 4,
+            background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
           }}
         >
@@ -858,19 +858,19 @@ function CheckboxFilterPill({
                 placeholder={placeholder || `Search ${label} filters...`}
                 style={{
                   width: '100%', boxSizing: 'border-box', height: 32, padding: '0 8px',
-                  border: `1px solid ${BLUE}`, borderRadius: 3, outline: 'none', fontSize: 13, color: TEXT,
+                  border: `1px solid ${BLUE}`, borderRadius: 3, outline: 'none', fontSize: 'var(--ds-font-size-300)', color: TEXT,
                 }}
               />
             </div>
           )}
           {header && (
-            <div style={{ padding: '8px 12px', fontSize: 12, color: SUBTLE, borderBottom: `1px solid ${BORDER}` }}>
+            <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: SUBTLE, borderBottom: `1px solid ${BORDER}` }}>
               {header}
             </div>
           )}
           <div style={{ overflowY: 'auto', padding: '4px 0' }}>
             {filteredOpts.length === 0 && (
-              <div style={{ padding: '8px 12px', fontSize: 13, color: SUBTLEST }}>No matches</div>
+              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: SUBTLEST }}>No matches</div>
             )}
             {filteredOpts.map((opt) => {
               const checked = value.includes(opt.id);
@@ -882,7 +882,7 @@ function CheckboxFilterPill({
                   style={{
                     all: 'unset', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', boxSizing: 'border-box', padding: '6px 12px',
-                    background: checked ? BLUE_BG : 'transparent', fontSize: 13, color: TEXT,
+                    background: checked ? BLUE_BG : 'transparent', fontSize: 'var(--ds-font-size-300)', color: TEXT,
                   }}
                 >
                   <Checkbox isChecked={checked} onChange={() => { /* noop */ }} />
@@ -953,9 +953,9 @@ function PillFilter({
         {selectedCount > 0 && (
           <span style={{
             minWidth: 22, height: 18, padding: '0 6px', borderRadius: 3,
-            background: 'var(--ds-background-accent-blue-subtle, #CCE0FF)',
-            color: 'var(--ds-text, #292A2E)',
-            fontSize: 11, fontWeight: 700,
+            background: 'var(--ds-background-accent-blue-subtle)',
+            color: 'var(--ds-text)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           }}>{selectedCount}</span>
         )}
@@ -967,7 +967,7 @@ function PillFilter({
           style={{
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 10010,
             minWidth: 180,
-            background: 'var(--ds-surface-overlay, #FFFFFF)', border: `1px solid ${BORDER}`, borderRadius: 4,
+            background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
           }}
@@ -990,7 +990,7 @@ function PillFilter({
                   style={{
                     background: opt.pillBg,
                     color: opt.pillColor,
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 700,
                     padding: '2px 8px',
                     borderRadius: 3,
@@ -1019,10 +1019,10 @@ function pillBtn(active: boolean): React.CSSProperties {
     height: 32,
     padding: '0 10px',
     border: `1px solid ${active ? BLUE : BORDER}`,
-    background: 'var(--ds-surface, #FFFFFF)',
+    background: 'var(--ds-surface)',
     color: active ? BLUE_TEXT : TEXT,
     borderRadius: 3,
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     boxShadow: active ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
   };
@@ -1145,7 +1145,7 @@ function WorkItemRow({
           gap: 12,
           padding: '10px 12px',
           borderBottom: isLast ? 'none' : `1px solid ${BORDER}`,
-          background: hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
+          background: hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
           cursor: 'pointer',
         }}
       >
@@ -1156,9 +1156,9 @@ function WorkItemRow({
           href="#"
           onClick={(e) => { e.preventDefault(); onOpen?.(); }}
           style={{
-            color: 'var(--ds-link, #0C66E4)',
+            color: 'var(--ds-link)',
             fontWeight: 400,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontFamily: 'inherit',
             lineHeight: 1,
             letterSpacing: 0,
@@ -1173,8 +1173,8 @@ function WorkItemRow({
         <span style={{
           flex: 1,
           minWidth: 0,
-          color: 'var(--ds-text, #292A2E)',
-          fontSize: 14,
+          color: 'var(--ds-text)',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
           fontFamily: 'inherit',
           overflow: 'hidden',
@@ -1221,14 +1221,14 @@ function WorkItemRow({
           style={{
             position: 'fixed', top: pos.top, right: pos.right, zIndex: 10010,
             minWidth: 220,
-            background: 'var(--ds-surface-overlay, #FFFFFF)', border: `1px solid ${BORDER}`, borderRadius: 4,
+            background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
           }}
         >
           {(siblings ?? []).length > 0 && (
             <>
-              <div style={{ padding: '4px 12px', fontSize: 12, fontWeight: 700, color: SUBTLE }}>Move to</div>
+              <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: SUBTLE }}>Move to</div>
               {(siblings ?? []).map((s: any) => (
                 <button
                   key={s.id}
@@ -1277,10 +1277,10 @@ function WorkItemRow({
 
 // ─── Progress section ───────────────────────────────────────────────────────
 
-const PROGRESS_DONE = 'var(--ds-background-success-bold, #22A06B)';
-const PROGRESS_WIP = 'var(--ds-background-information-bold, #1868DB)';
-const PROGRESS_TODO = 'var(--ds-border, #DFE1E6)';
-const PROGRESS_WARN = 'var(--ds-background-warning-bold, #E2B203)';
+const PROGRESS_DONE = 'var(--ds-background-success-bold)';
+const PROGRESS_WIP = 'var(--ds-background-information-bold)';
+const PROGRESS_TODO = 'var(--ds-border)';
+const PROGRESS_WARN = 'var(--ds-background-warning-bold)';
 
 function ProgressSection({ items }: { items: Issue[] }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -1307,7 +1307,7 @@ function ProgressSection({ items }: { items: Issue[] }) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>Progress</h2>
+        <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>Progress</h2>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1317,8 +1317,8 @@ function ProgressSection({ items }: { items: Issue[] }) {
           style={{ all: 'unset', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
           aria-expanded={!collapsed}
         >
-          <span style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>Work items</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: SUBTLE, fontSize: 13 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: TEXT }}>Work items</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: SUBTLE, fontSize: 'var(--ds-font-size-300)' }}>
             {counts.done} of {total} done
             {collapsed ? <ChevronRightIcon label="" size="small" /> : <ChevronDownIcon label="" size="small" />}
           </span>
@@ -1373,7 +1373,7 @@ function ProgressSection({ items }: { items: Issue[] }) {
 
 function ProgressStatRow({ color, label, count }: { color: string; label: string; count: number }) {
   return (
-    <li style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: TEXT }}>
+    <li style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-400)', color: TEXT }}>
       <span
         aria-hidden
         style={{

@@ -236,7 +236,7 @@ export function SprintsPage() {
     border: 'none',
     background: 'transparent',
     borderRadius: 3,
-    color: 'var(--ds-text-subtle, #42526E)',
+    color: 'var(--ds-text-subtle)',
     cursor: 'pointer',
   };
 
@@ -288,10 +288,10 @@ export function SprintsPage() {
     <div style={{ padding: '24px' }}>
       {/* Header: title + sprint count */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h1 style={{ fontSize: 'var(--ds-font-size-400, 24px)', fontWeight: 600, margin: 0, color: 'var(--ds-text, #292A2E)' }}>
+        <h1 style={{ fontSize: 'var(--ds-font-size-400, 24px)', fontWeight: 600, margin: 0, color: 'var(--ds-text)' }}>
           Sprints
         </h1>
-        <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
           This space has {sprints.length} sprints
         </span>
       </div>
@@ -340,7 +340,7 @@ export function SprintsPage() {
           hideSprintsColumn
         />
       ) : (
-        <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
           No sprints match this filter.
         </div>
       )}

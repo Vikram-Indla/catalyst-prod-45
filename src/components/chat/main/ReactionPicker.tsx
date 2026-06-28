@@ -93,8 +93,8 @@ export function ReactionPicker({
         left,
         right,
         zIndex: 1000,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: `1px solid var(--ds-border, #DFE1E6)`,
+        background: 'var(--ds-surface-overlay)',
+        border: `1px solid var(--ds-border)`,
         borderRadius: 8,
         boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',
         width: 320,
@@ -117,8 +117,8 @@ export function ReactionPicker({
         style={{
           padding: '8px 12px',
           border: 'none',
-          borderBottom: `1px solid var(--ds-border, #DFE1E6)`,
-          fontSize: 14,
+          borderBottom: `1px solid var(--ds-border)`,
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'var(--ds-font-family-body, -apple-system, sans-serif)',
           outline: 'none',
         }}
@@ -132,7 +132,7 @@ export function ReactionPicker({
             display: 'flex',
             padding: '8px 12px',
             gap: 4,
-            borderBottom: `1px solid var(--ds-border, #DFE1E6)`,
+            borderBottom: `1px solid var(--ds-border)`,
             alignItems: 'center',
             justifyContent: 'flex-start',
             flexWrap: 'wrap',
@@ -151,7 +151,7 @@ export function ReactionPicker({
                 padding: '4px',
                 background: 'transparent',
                 border: 'none',
-                fontSize: 20,
+                fontSize: 'var(--ds-font-size-700)',
                 cursor: 'pointer',
                 borderRadius: 4,
                 transition: 'background 100ms',
@@ -177,7 +177,7 @@ export function ReactionPicker({
           style={{
             display: 'flex',
             gap: 0,
-            borderBottom: `1px solid var(--ds-border, #DFE1E6)`,
+            borderBottom: `1px solid var(--ds-border)`,
             padding: '4px 8px',
             overflowX: 'auto',
           }}
@@ -190,13 +190,13 @@ export function ReactionPicker({
               className={`cc-emoji-tab ${activeCategory === cat ? 'is-active' : ''}`}
               style={{
                 padding: '4px 8px',
-                background: activeCategory === cat ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
+                background: activeCategory === cat ? 'var(--ds-background-neutral)' : 'transparent',
                 border: 'none',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: activeCategory === cat ? 600 : 400,
                 cursor: 'pointer',
                 borderRadius: 4,
-                color: activeCategory === cat ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #42526E)',
+                color: activeCategory === cat ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -231,7 +231,7 @@ export function ReactionPicker({
               padding: '4px',
               background: 'transparent',
               border: 'none',
-              fontSize: 20,
+              fontSize: 'var(--ds-font-size-700)',
               cursor: 'pointer',
               borderRadius: 4,
               transition: 'background 100ms',
@@ -255,8 +255,8 @@ export function ReactionPicker({
           style={{
             padding: '24px 12px',
             textAlign: 'center',
-            color: 'var(--ds-text-subtle, #42526E)',
-            fontSize: 14,
+            color: 'var(--ds-text-subtle)',
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           No emoji found for "{searchTerm}"

@@ -39,22 +39,22 @@ export type LabelDisplayMode = 'full' | 'abbreviated' | 'hidden';
 // ============================================
 
 export const STATUS_COLORS: Record<EpicStatus, string> = {
-  not_started: 'var(--ds-text-disabled, #8590A2)',  // Gray-400
-  in_progress: 'var(--cp-workstream-catalyst-primary, #2563eb)',  // Blue-600 (was Amber)
-  accepted: 'var(--ds-chart-teal-bold, #0d9488)',     // Teal-600 (was Blue)
-  done: 'var(--ds-chart-teal-bold, #0d9488)',         // Teal-600 (was Green)
-  blocked: 'var(--ds-background-danger-bold, #dc2626)',      // Red-600
+  not_started: 'var(--ds-text-disabled)',  // Gray-400
+  in_progress: 'var(--cp-workstream-catalyst-primary)',  // Blue-600 (was Amber)
+  accepted: 'var(--ds-chart-teal-bold)',     // Teal-600 (was Blue)
+  done: 'var(--ds-chart-teal-bold)',         // Teal-600 (was Green)
+  blocked: 'var(--ds-background-danger-bold)',      // Red-600
 };
 
 export const LABEL_COLORS: Record<LabelColor, { bg: string; text: string }> = {
-  orange: { bg: 'var(--ds-background-warning-bold, #f59e0b)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  teal: { bg: 'var(--ds-chart-teal-bold, #0d9488)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  purple: { bg: 'var(--ds-text-subtlest, #626F86)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  blue: { bg: 'var(--ds-link, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  red: { bg: 'var(--ds-background-danger-bold, #dc2626)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  gray: { bg: 'var(--ds-text-subtlest, #626F86)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  green: { bg: 'var(--ds-chart-teal-bold, #0d9488)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  pink: { bg: 'var(--ds-link, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  orange: { bg: 'var(--ds-background-warning-bold)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  teal: { bg: 'var(--ds-chart-teal-bold)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  purple: { bg: 'var(--ds-text-subtlest)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  blue: { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  red: { bg: 'var(--ds-background-danger-bold)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  gray: { bg: 'var(--ds-text-subtlest)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  green: { bg: 'var(--ds-chart-teal-bold)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
+  pink: { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated))' },
 };
 
 // ============================================
@@ -503,9 +503,9 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
 };
 
 export const EPIC_STATES: EpicState[] = [
-  { id: 1, name: 'Funnel', color: 'var(--cp-text-secondary, #6B778C)' },
-  { id: 2, name: 'In Progress', color: 'var(--ds-background-warning-bold, #E2B203)' },
-  { id: 3, name: 'Done', color: 'var(--ds-background-success-bold, #1F845A)' },
+  { id: 1, name: 'Funnel', color: 'var(--cp-text-secondary)' },
+  { id: 2, name: 'In Progress', color: 'var(--ds-background-warning-bold)' },
+  { id: 3, name: 'Done', color: 'var(--ds-background-success-bold)' },
 ];
 
 export const VIEWING_OPTIONS: ViewingOption[] = [

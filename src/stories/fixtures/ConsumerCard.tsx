@@ -56,36 +56,36 @@ export interface ConsumerCardProps {
 }
 
 const RISK_COLORS = {
-  safe:     { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'SAFE TO REMOVE' },
-  caution:  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'VERIFY BEFORE REMOVING' },
-  critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)', label: 'DO NOT REMOVE — BREAKS APP' },
+  safe:     { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'SAFE TO REMOVE' },
+  caution:  { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'VERIFY BEFORE REMOVING' },
+  critical: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', label: 'DO NOT REMOVE — BREAKS APP' },
 };
 
 export function ConsumerCard({ component, source, consumers, ads, risk, notes }: ConsumerCardProps) {
   const r = RISK_COLORS[risk];
   return (
     <div style={{
-      border: '1px solid var(--ds-border, #DFE1E6)',
+      border: '1px solid var(--ds-border)',
       borderRadius: 8,
       padding: 0,
       marginBottom: 24,
-      background: 'var(--ds-surface, #fff)',
+      background: 'var(--ds-surface)',
       fontFamily: 'var(--ds-font-family-body, "Atlassian Sans", -apple-system, sans-serif)',
-      fontSize: 14,
+      fontSize: 'var(--ds-font-size-400)',
     }}>
       {/* Header */}
       <div style={{
         padding: '12px 16px',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        borderBottom: '1px solid var(--ds-border)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Component Registry
           </div>
-          <div style={{ fontSize: 16, fontWeight: 653, color: 'var(--ds-text, #172B4D)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text)', marginTop: 2 }}>
             {component}
           </div>
         </div>
@@ -94,7 +94,7 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
           borderRadius: 3,
           background: r.bg,
           color: r.text,
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
         }}>
           {r.label}
@@ -102,16 +102,16 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
       </div>
 
       {/* Source verification */}
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-        <div style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>
           Source file (production)
         </div>
         <code style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           padding: '2px 6px',
           borderRadius: 3,
-          background: 'var(--ds-background-neutral, #F1F2F4)',
-          color: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-background-neutral)',
+          color: 'var(--ds-text)',
           fontFamily: 'var(--ds-font-family-code, "SFMono-Regular", monospace)',
         }}>
           {source}
@@ -120,13 +120,13 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
           <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
             <span style={{
               padding: '2px 8px', borderRadius: 3,
-              background: 'var(--ds-background-information, #E9F2FF)',
-              color: 'var(--ds-text-information, #0055CC)',
-              fontSize: 11, fontWeight: 600,
+              background: 'var(--ds-background-information)',
+              color: 'var(--ds-text-information)',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
             }}>
               ADS
             </span>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
               Wraps <code>{ads.package}</code>
               {ads.token && <> · Token: <code>{ads.token}</code></>}
             </span>
@@ -135,17 +135,17 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
       </div>
 
       {/* Consumer list */}
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-        <div style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 8 }}>
           Consumers ({consumers.length} files import this)
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <th style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border)', fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)' }}>
                 File
               </th>
-              <th style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <th style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border)', fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)' }}>
                 Surface
               </th>
             </tr>
@@ -153,10 +153,10 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
           <tbody>
             {consumers.map((c, i) => (
               <tr key={i}>
-                <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
-                  <code style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-code, monospace)' }}>{c.file}</code>
+                <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
+                  <code style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>{c.file}</code>
                 </td>
-                <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)', color: 'var(--ds-text-subtle)' }}>
                   {c.surface}
                 </td>
               </tr>
@@ -167,7 +167,7 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
 
       {/* Notes */}
       {notes && (
-        <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', fontStyle: 'italic' }}>
+        <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', fontStyle: 'italic' }}>
           {notes}
         </div>
       )}

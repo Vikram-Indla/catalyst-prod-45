@@ -92,7 +92,7 @@ function mapBrToWorkItem(
       name: dm.full_name ?? 'Unknown',
       avatarUrl: dm.avatar_url ?? null,
       initials: initialsFromName(dm.full_name),
-      color: 'var(--ds-background-accent-purple-subtle, #6554C0)',
+      color: 'var(--ds-background-accent-purple-subtle)',
     } : undefined,
     reporterId: (r as any).po_user_id ?? null,
     reporter: po ? { id: (r as any).po_user_id, name: po.full_name ?? 'Unknown' } : undefined,
@@ -625,7 +625,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     // Matches Jira's 3-region scroll model (measured 2026-04-18): left
     // panel 256×717 scrolls cards; center body scrolls article; right
     // details scrolls sidebar. Independent, not page-level.
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
       {/* jira-compare catalog item 1 (2026-05-02): the standalone "Project
           work" h2 is replaced by the canonical ProjectHeaderChip — Jira
           renders a 32px horizontal-nav-header strip with project avatar +
@@ -650,16 +650,16 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           alignItems: 'center',
           gap: 8,
           padding: '8px 12px',
-          background: 'var(--ds-background-information, #E9F2FF)',
-          borderBottom: '1px solid var(--ds-border-information, #CCE0FF)',
-          fontSize: 13,
-          color: 'var(--ds-text-information, #0055CC)',
+          background: 'var(--ds-background-information)',
+          borderBottom: '1px solid var(--ds-border-information)',
+          fontSize: 'var(--ds-font-size-300)',
+          color: 'var(--ds-text-information)',
           flexShrink: 0,
         }}>
           {isCreateMode ? (
             <>
               <span style={{ fontWeight: 500 }}>Creating filter</span>
-              <span style={{ color: 'var(--ds-text-subtle, #42526E)' }}>
+              <span style={{ color: 'var(--ds-text-subtle)' }}>
                 — set your filters below, then click Save filter
               </span>
             </>
@@ -677,8 +677,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: 12,
-                  color: 'var(--ds-text-subtle, #42526E)',
+                  fontSize: 'var(--ds-font-size-200)',
+                  color: 'var(--ds-text-subtle)',
                   padding: '0 4px',
                 }}
               >
@@ -752,8 +752,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           <div style={{
             width: isNarrow ? '100%' : panelLayout === 'medium' ? 260 : 360,
             flexShrink: 0,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+            borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
             borderRadius: 0,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
             padding: '0',
@@ -798,19 +798,19 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '8px 8px',
-              borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-              background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F6F7F8))',
+              borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+              background: 'var(--cp-bg-sunken, var(--cp-bg-sunken))',
               gap: '8px',
               // ads-scanner:ignore-next-line
-              fontSize: '12px',
-              color: 'var(--cp-text-secondary, var(--cp-text-tertiary, #6B778C))',
+              fontSize: 'var(--ds-font-size-200)',
+              color: 'var(--cp-text-secondary, var(--cp-text-tertiary))',
             }}>
               {/* Jira-style range label: "1–25 of 656" */}
               <span
                 data-testid="allwork-pagination-count"
                 style={{
-                  fontSize: 12,
-                  color: 'var(--ds-text-subtle, var(--cp-text-tertiary, #6B778C))',
+                  fontSize: 'var(--ds-font-size-200)',
+                  color: 'var(--ds-text-subtle, var(--cp-text-tertiary))',
                   fontFamily: 'var(--cp-font-body)',
                   whiteSpace: 'nowrap',
                   flexShrink: 0,
@@ -854,7 +854,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     ...base,
                     minHeight: '28px',
                     // ads-scanner:ignore-next-line
-                    fontSize: '12px',
+                    fontSize: 'var(--ds-font-size-200)',
                   }),
                 }}
                 aria-label="Rows per page"
@@ -867,11 +867,11 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
             activeItem ? (
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 borderRadius: '0 10px 10px 0', overflow: 'hidden',
               }}>
                 <Suspense fallback={
-                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14 }}>
+                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, var(--cp-text-secondary))', fontSize: 'var(--ds-font-size-400)' }}>
                     Loading…
                   </div>
                 }>
@@ -916,19 +916,19 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
               >
                 {/* Illustration — list-with-cursor SVG inline (no external asset dep) */}
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                  <rect x="8" y="16" width="64" height="48" rx="6" fill="var(--ds-background-neutral, #F7F8F9)" stroke="var(--ds-border, #DFE1E6)" strokeWidth="1.5"/>
-                  <rect x="16" y="28" width="24" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
-                  <rect x="16" y="38" width="36" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
-                  <rect x="16" y="48" width="20" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
-                  <circle cx="56" cy="52" r="14" fill="var(--ds-background-information, #E9F2FF)" stroke="var(--ds-border-information, #CCE0FF)" strokeWidth="1.5"/>
-                  <path d="M56 46v6l4 2" stroke="var(--ds-icon-information, #1868DB)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <rect x="8" y="16" width="64" height="48" rx="6" fill="var(--ds-background-neutral)" stroke="var(--ds-border)" strokeWidth="1.5"/>
+                  <rect x="16" y="28" width="24" height="4" rx="2" fill="var(--ds-background-neutral-pressed)"/>
+                  <rect x="16" y="38" width="36" height="4" rx="2" fill="var(--ds-background-neutral-pressed)"/>
+                  <rect x="16" y="48" width="20" height="4" rx="2" fill="var(--ds-background-neutral-pressed)"/>
+                  <circle cx="56" cy="52" r="14" fill="var(--ds-background-information)" stroke="var(--ds-border-information)" strokeWidth="1.5"/>
+                  <path d="M56 46v6l4 2" stroke="var(--ds-icon-information)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
 
                 <div style={{ textAlign: 'center' }}>
                   <p style={{
                     margin: '0 0 8px',
-                    fontSize: 16, fontWeight: 600,
-                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                    fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
+                    color: 'var(--ds-text, var(--cp-text-primary))',
                     lineHeight: '20px',
                   }}>
                     {isProduct
@@ -943,8 +943,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     data-testid="allwork-empty-state-subtitle"
                     style={{
                       margin: 0,
-                      fontSize: 14, fontWeight: 400,
-                      color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                      fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
+                      color: 'var(--ds-text-subtle, var(--cp-text-secondary))',
                       lineHeight: '20px', maxWidth: 280,
                     }}
                   >

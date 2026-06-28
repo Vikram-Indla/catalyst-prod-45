@@ -36,7 +36,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
 
   const displayName = value?.name || 'Unassigned';
   const displayInitials = value?.initials || '?';
-  const displayColor = value?.color || 'var(--ds-text-subtlest, #94a3b8)';
+  const displayColor = value?.color || 'var(--ds-text-subtlest)';
 
   return (
     <div 
@@ -75,7 +75,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
         {/* TEXT */}
         <span style={{ 
           flex: 1, 
-          fontSize: '14px', 
+          fontSize: 'var(--ds-font-size-400)', 
           fontWeight: 500, 
           color: COLORS.textPrimary 
         }}>
@@ -164,14 +164,14 @@ const AssigneeItem: React.FC<{
           height: '28px',
           borderRadius: '50%',
           backgroundColor: assignee.color,
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          fontSize: '11px',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600
         }}
       >
         {assignee.initials}
       </span>
-      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{assignee.name}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>{assignee.name}</span>
     </div>
   );
 };

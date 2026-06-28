@@ -125,8 +125,8 @@ function RangeCalendar({ pickedFor, startIso, dueIso, minDate, onPick }: RangeCa
   return (
     <div
       style={{
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))',
         padding: 12,
@@ -140,7 +140,7 @@ function RangeCalendar({ pickedFor, startIso, dueIso, minDate, onPick }: RangeCa
           <NavBtn label="Previous year" onClick={() => stepYear(-1)}>«</NavBtn>
           <NavBtn label="Previous month" onClick={() => stepMonth(-1)}>‹</NavBtn>
         </div>
-        <div style={{ fontSize: 14, fontWeight: 653, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text)' }}>
           {MONTHS_LONG[view.month]} {view.year}
         </div>
         <div style={{ display: 'flex', gap: 4 }}>
@@ -153,8 +153,8 @@ function RangeCalendar({ pickedFor, startIso, dueIso, minDate, onPick }: RangeCa
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 32px)', gap: 4, marginBottom: 4 }}>
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
           <div key={d} style={{
-            fontSize: 11, fontWeight: 500, textAlign: 'center',
-            color: 'var(--ds-text-subtle, #44546F)', padding: '4px 0',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textAlign: 'center',
+            color: 'var(--ds-text-subtle)', padding: '4px 0',
           }}>{d}</div>
         ))}
       </div>
@@ -200,7 +200,7 @@ function NavBtn({ label, onClick, children }: { label: string; onClick: () => vo
       style={{
         width: 24, height: 24, borderRadius: 4, padding: 0,
         background: 'transparent', border: 'none', cursor: 'pointer',
-        color: 'var(--ds-text-subtle, #44546F)', fontSize: 14, lineHeight: 1,
+        color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)', lineHeight: 1,
       }}
       onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
@@ -219,10 +219,10 @@ function DayCell({
 }) {
   const [hover, setHover] = useState(false);
   let bg = 'transparent';
-  let color: string = inMonth ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-disabled, #A5ADBA)';
-  if (disabled) color = 'var(--ds-text-disabled, #A5ADBA)';
-  if (inRange) bg = 'var(--ds-background-selected, #E9F2FE)';
-  if (selected) { bg = 'var(--ds-background-selected-bold, var(--ds-link, #0C66E4))'; color = 'var(--ds-text-inverse, #FFFFFF)'; }
+  let color: string = inMonth ? 'var(--ds-text)' : 'var(--ds-text-disabled)';
+  if (disabled) color = 'var(--ds-text-disabled)';
+  if (inRange) bg = 'var(--ds-background-selected)';
+  if (selected) { bg = 'var(--ds-background-selected-bold, var(--ds-link))'; color = 'var(--ds-text-inverse)'; }
   if (hover && !disabled && !selected) bg = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
   return (
     <button
@@ -239,7 +239,7 @@ function DayCell({
         border: 'none',
         borderRadius: isStart || isDue ? '50%' : 0,
         cursor: disabled ? 'not-allowed' : 'pointer',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontFamily: 'var(--ds-font-family-body)',
         fontWeight: selected ? 600 : 400,
         padding: 0,
@@ -273,17 +273,17 @@ function DateInputField({
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         width: '100%', height: 40, padding: '0 8px', boxSizing: 'border-box',
-        border: `1px solid ${focused ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border-input, #DFE1E6)'}`,
+        border: `1px solid ${focused ? 'var(--ds-border-focused)' : 'var(--ds-border-input)'}`,
         borderRadius: 3,
-        background: 'var(--ds-background-input, #FFFFFF)',
+        background: 'var(--ds-background-input)',
         cursor: 'pointer',
         fontFamily: 'var(--ds-font-family-body)',
         textAlign: 'left',
       }}
     >
       <span style={{
-        fontSize: 14,
-        color: value ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)',
+        fontSize: 'var(--ds-font-size-400)',
+        color: value ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
       }}>
         {value ? formatHuman(value) : placeholder}
       </span>
@@ -297,16 +297,16 @@ function DateInputField({
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onClear(); } }}
             style={{
               width: 16, height: 16, borderRadius: '50%',
-              background: 'var(--ds-background-neutral, #DDDEE1)',
-              color: 'var(--ds-text-subtle, #44546F)',
+              background: 'var(--ds-background-neutral)',
+              color: 'var(--ds-text-subtle)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 11, lineHeight: 1,
+              cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', lineHeight: 1,
             }}
           >
             ×
           </span>
         )}
-        <span style={{ color: 'var(--ds-text-subtle, #42526E)', lineHeight: 0 }}>
+        <span style={{ color: 'var(--ds-text-subtle)', lineHeight: 0 }}>
           <CalendarIcon size={16} />
         </span>
       </span>
@@ -321,16 +321,16 @@ function DiffValue({ original, pending }: { original: string | null; pending: st
   const next = formatHuman(pending);
   if (orig === next) {
     return (
-      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family-body)' }}>
         {orig}
       </span>
     );
   }
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--ds-font-family-body)', fontSize: 14 }}>
-      <span style={{ color: 'var(--ds-text-subtle, #44546F)', textDecoration: 'line-through' }}>{orig}</span>
-      <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>→</span>
-      <span style={{ color: 'var(--ds-text, #172B4D)' }}>{next}</span>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)' }}>
+      <span style={{ color: 'var(--ds-text-subtle)', textDecoration: 'line-through' }}>{orig}</span>
+      <span style={{ color: 'var(--ds-text-subtle)' }}>→</span>
+      <span style={{ color: 'var(--ds-text)' }}>{next}</span>
     </span>
   );
 }
@@ -419,30 +419,30 @@ export function ProductEditDatesModal({
         </ModalHeader>
         <ModalBody>
           <div style={{
-            fontSize: 14,
-            color: 'var(--ds-text, #172B4D)',
+            fontSize: 'var(--ds-font-size-400)',
+            color: 'var(--ds-text)',
             fontFamily: 'var(--ds-font-family-body)',
             marginBottom: 16,
           }}>
             Leave the date fields blank to{' '}
-            <span style={{ color: 'var(--ds-link, #0052CC)', textDecoration: 'underline' }}>
+            <span style={{ color: 'var(--ds-link)', textDecoration: 'underline' }}>
               infer dates from the issue's sprint assignment.
             </span>
           </div>
 
           {/* summary card with diff */}
           <div style={{
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 6, padding: 16, marginBottom: 16,
             fontFamily: 'var(--ds-font-family-body)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <JiraIssueTypeIcon type={issue.issueType} size={16} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>
                 {issue.issueKey}
               </span>
               <span style={{
-                fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {issue.summary}
@@ -450,13 +450,13 @@ export function ProductEditDatesModal({
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                   Start date
                 </div>
                 <DiffValue original={issue.startDate} pending={startIso} />
               </div>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                   Due date
                 </div>
                 <DiffValue original={issue.dueDate} pending={dueIso} />
@@ -468,8 +468,8 @@ export function ProductEditDatesModal({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div ref={startBtnRef}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
-                color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                color: 'var(--ds-text-subtle)', marginBottom: 4,
                 fontFamily: 'var(--ds-font-family-body)',
               }}>Start date</label>
               <DateInputField
@@ -483,8 +483,8 @@ export function ProductEditDatesModal({
             </div>
             <div ref={dueBtnRef}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
-                color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                color: 'var(--ds-text-subtle)', marginBottom: 4,
                 fontFamily: 'var(--ds-font-family-body)',
               }}>Due date</label>
               <DateInputField
@@ -500,8 +500,8 @@ export function ProductEditDatesModal({
 
           {invalid && (
             <div style={{
-              marginTop: 8, fontSize: 12,
-              color: 'var(--ds-text-danger, #AE2A19)',
+              marginTop: 8, fontSize: 'var(--ds-font-size-200)',
+              color: 'var(--ds-text-danger)',
               fontFamily: 'var(--ds-font-family-body)',
             }}>
               Due date must be on or after start date.

@@ -9,5 +9,5 @@ interface PriorityChipProps {
 }
 
 export function PriorityChip({ priority }: PriorityChipProps) {
-  return <PriorityIndicator priority={priority} fontSize={11} />;
+  return <PriorityIndicator priority={priority} fontSize={'var(--ds-font-size-100)'} />;
 }

@@ -266,7 +266,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   const dialogStyle: React.CSSProperties = {
     width: 480,
     maxWidth: 'calc(100vw - 48px)',
-    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+    background: token('elevation.surface', 'var(--ds-surface)'),
     borderRadius: 8,
     boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
     display: 'flex',
@@ -278,21 +278,21 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '20px 24px 12px',
-    borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+    borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
   };
   const modalTitleStyle: React.CSSProperties = {
     margin: 0,
-    fontSize: 20,
+    fontSize: 'var(--ds-font-size-700)',
     fontWeight: 653,
     letterSpacing: '-0.003em',
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    color: token('color.text', 'var(--ds-text)'),
   };
   const modalFooterStyle: React.CSSProperties = {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: 8,
     padding: '12px 24px 20px',
-    borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+    borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
   };
 
   return (
@@ -316,7 +316,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
             projectKey={iconKey}
             avatarUrl={project?.avatar_url}
             iconName={project?.icon || 'mountain'}
-            color={project?.color || 'var(--ds-link, #2563eb)'}
+            color={project?.color || 'var(--ds-link)'}
             name={projectName}
           />
         </span>
@@ -325,8 +325,8 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
           data-testid="catalyst-project-header.name"
           style={{
             margin: 0, padding: 0,
-            fontSize: 20, fontWeight: 653, lineHeight: '24px',
-            color: 'var(--ds-text, #292A2E)',
+            fontSize: 'var(--ds-font-size-700)', fontWeight: 653, lineHeight: '24px',
+            color: 'var(--ds-text)',
             fontFamily: 'inherit',
           }}
         >
@@ -334,7 +334,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
         </h1>
 
         {/* Add people icon button — inline, instant open */}
-        <span style={{ display: 'inline-flex', marginLeft: 4, color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ display: 'inline-flex', marginLeft: 4, color: 'var(--ds-text-subtle)' }}>
           <IconButton
             icon={PersonAddIcon}
             label="Add people"
@@ -345,7 +345,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
         </span>
 
         {/* Three-dots meatball — bespoke portal (replaces @atlaskit/dropdown-menu) */}
-        <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle)' }}>
           <IconButton
             ref={meatballRef}
             icon={EditorMoreIcon}
@@ -375,8 +375,8 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               top: menuAnchor.top,
               left: menuAnchor.left,
               zIndex: 9001,
-              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
               borderRadius: 4,
               boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
               minWidth: 220,
@@ -400,7 +400,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               },
             ].map((item) => {
               if ((item as any).divider) {
-                return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '6px 0' }} />;
+                return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))'), margin: '6px 0' }} />;
               }
               return (
                 <button
@@ -412,9 +412,9 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                     display: 'block', width: '100%',
                     padding: '8px 16px',
                     border: 'none', background: 'transparent',
-                    textAlign: 'left', fontSize: 14, fontWeight: 400,
+                    textAlign: 'left', fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
                     fontFamily: 'inherit',
-                    color: token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: token('color.text', 'var(--ds-text)'),
                     cursor: 'pointer',
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
@@ -442,7 +442,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               <h2 id="phc-add-people-title" style={modalTitleStyle}>Add people to {projectName}</h2>
             </div>
             <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
                 Add a registered user by email. Press Enter or click Add.
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -469,11 +469,11 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
 
               {/* Current members list (live from project_members / product_members) */}
               <div style={{ marginTop: 4 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 8 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle)'), marginBottom: 8 }}>
                   Members ({members.length})
                 </div>
                 {members.length === 0 ? (
-                  <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), padding: '8px 0' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon-subtle)'), padding: '8px 0' }}>
                     No members yet. Add someone above.
                   </div>
                 ) : (
@@ -484,23 +484,23 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                         style={{
                           display: 'flex', alignItems: 'center', gap: 10,
                           padding: '6px 8px', borderRadius: 4,
-                          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                          background: token('elevation.surface', 'var(--ds-surface)'),
                         }}
                       >
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%',
                           background: token('color.background.accent.blue.subtler', '#CCE0FF'),
-                          color: token('color.text', 'var(--ds-text, #172B4D)'),
+                          color: token('color.text', 'var(--ds-text)'),
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 11, fontWeight: 700, flexShrink: 0,
+                          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, flexShrink: 0,
                         }}>
                           {(m.name || m.email || '?').slice(0, 2).toUpperCase()}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {m.name}
                           </div>
-                          <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon-subtle)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {m.email} · {m.role}
                           </div>
                         </div>

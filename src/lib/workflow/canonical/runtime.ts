@@ -185,6 +185,20 @@ export async function writeAdvisoryAudit(input: {
   } catch (err) { console.warn('[canonical-workflow] audit threw', err); return null; }
 }
 
+/**
+ * Bridged entities (Defect/Incident): resolve the canonical status key for a
+ * raw status (enum value / label / legacy) via the published version + remaps.
+ */
+export async function resolveBridgedKey(
+  entityKey: EntityKey, projectKey: string | null | undefined, rawStatus: string | null | undefined,
+): Promise<string | null> {
+  try {
+    const version = await resolveCanonicalVersion(entityKey, projectKey);
+    if (!version) return null;
+    return resolveKeyInVersion(version, rawStatus);
+  } catch { return null; }
+}
+
 // ── Enforcement (advisory|blocking) + real role/guard evaluation ─────────────
 export type EnforcementMode = WorkflowMode;
 
@@ -234,8 +248,15 @@ export function evaluateGuardsReal(
         const has = !!(reason && reason.trim());
         return { ...base, passed: has, detail: has ? 'reason provided' : 'reason required' };
       }
-      case 'qa_signoff': case 'uat_signoff': case 'test_coverage':
-        return { ...base, passed: null, detail: 'no evidence source — advisory until Test Hub slice' };
+      case 'test_coverage': {
+        // Real coverage from tm_test_case_links (count injected into issueRow).
+        const cov = (issueRow as any)?._coverageCount;
+        if (cov == null) return { ...base, passed: null, detail: 'no coverage data available' };
+        const has = Number(cov) >= 1;
+        return { ...base, passed: has, detail: has ? `${cov} linked test case(s)` : 'no linked test cases — coverage required' };
+      }
+      case 'qa_signoff': case 'uat_signoff':
+        return { ...base, passed: null, detail: 'no sign-off evidence source — advisory' };
       default:
         return { ...base, passed: null, detail: 'not evaluated' };
     }
@@ -245,10 +266,14 @@ export function evaluateGuardsReal(
 export interface GateResult { mode: EnforcementMode; blocked: boolean; message: string | null; auditId: string | null; }
 
 export async function gateTransition(args: {
-  entityKey: EntityKey; issueRow: any; toStatusRaw: string; reason?: string | null; sourceSurface: string;
+  entityKey: EntityKey; issueRow: any; toStatusRaw: string;
+  reason?: string | null; reasonCode?: string | null; reasonText?: string | null;
+  sourceSurface: string;
 }): Promise<GateResult> {
   try {
     const projectKey = args.issueRow?.project_key ?? null;
+    // effective reason: explicit code/text from the reason modal, or legacy string.
+    const effReason = args.reasonText ?? args.reason ?? args.reasonCode ?? null;
     const version = await resolveCanonicalVersion(args.entityKey, projectKey);
     if (!version) return { mode: 'advisory', blocked: false, message: null, auditId: null };
 
@@ -266,9 +291,21 @@ export async function gateTransition(args: {
 
     const roleOk = allowedRoles.length === 0 || actor.roles.some((r) => allowedRoles.includes(r)) || actor.isAssignee || actor.isSuperAdmin;
     const superBypass = actor.isSuperAdmin;
-    const bypassReasonOk = !superBypass || !!(args.reason && args.reason.trim());
+    const bypassReasonOk = !superBypass || !!(effReason && effReason.trim());
 
-    const guardResults = evaluateGuardsReal(match, args.issueRow, args.reason);
+    // Real test coverage: count linked test cases for entities with a
+    // test_coverage guard on this transition (tm_test_case_links is polymorphic).
+    if (match?.guards.some((g) => g.guardType === 'test_coverage') && args.issueRow?.id) {
+      try {
+        const { count } = await supabase
+          .from('tm_test_case_links')
+          .select('id', { count: 'exact', head: true })
+          .eq('linked_item_type', args.entityKey)
+          .eq('linked_item_id', args.issueRow.id);
+        (args.issueRow as any)._coverageCount = count ?? 0;
+      } catch { /* leave undefined → advisory */ }
+    }
+    const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
     const failingGuards = guardResults.filter((g) => g.isBlocking && g.passed === false);
 
     let blocked = false;
@@ -295,7 +332,7 @@ export async function gateTransition(args: {
         reasonRequired: !!match?.requires_reason, commentRequired: !!match?.requires_comment, bypassRequired: wouldBlock,
         tooltipBasis: { currentRole: actorRole, entityType: args.entityKey, fromStatus: fromKey, toStatus: toKey, requiredRoles: allowedRoles, missingGuard },
       },
-      sourceSurface: args.sourceSurface, reasonText: args.reason ?? null, mode: enforce ? 'blocking' : 'advisory',
+      sourceSurface: args.sourceSurface, reasonCode: args.reasonCode ?? null, reasonText: effReason, mode: enforce ? 'blocking' : 'advisory',
     });
 
     return { mode, blocked: enforce && wouldBlock, message: enforce && wouldBlock ? tooltip : null, auditId };

@@ -104,7 +104,7 @@ export default function TestCaseTypesPage() {
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4, display: 'block',
+    fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4, display: 'block',
   };
 
   return (
@@ -121,16 +121,16 @@ export default function TestCaseTypesPage() {
         actions={<Button appearance="primary" onClick={() => setShowAdd(v => !v)}>+ Add type</Button>}
       />
 
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle)', margin: '4px 0 24px' }}>
         Define test case types (e.g. Functional, Regression, Integration). The default type is applied on new cases.
       </p>
 
       {showAdd && (
         <div style={{
-          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 20, marginBottom: 20,
-          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
+          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 20, marginBottom: 20,
+          background: 'var(--ds-surface-overlay)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
         }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>New case type</h3>
+          <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text)' }}>New case type</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'end' }}>
             <div>
               <label style={labelStyle}>Name *</label>
@@ -150,8 +150,8 @@ export default function TestCaseTypesPage() {
                     onClick={() => setNewIcon(ic)}
                     style={{
                       width: 28, height: 28, borderRadius: 4, fontSize: 16,
-                      border: newIcon === ic ? '2px solid var(--ds-border-focused, #0052CC)' : '2px solid transparent',
-                      cursor: 'pointer', background: newIcon === ic ? 'var(--ds-background-selected, #E9F2FE)' : 'none',
+                      border: newIcon === ic ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                      cursor: 'pointer', background: newIcon === ic ? 'var(--ds-background-selected)' : 'none',
                     }}
                   >
                     {ic}
@@ -169,24 +169,24 @@ export default function TestCaseTypesPage() {
         </div>
       )}
 
-      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
           <thead>
-            <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
               {['Icon', 'Name', 'Default', 'Actions'].map((h, i) => (
-                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{h}</th>
+                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {types.length === 0 ? (
               <tr>
-                <td colSpan={4} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <td colSpan={4} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
                   No case types yet.
                 </td>
               </tr>
             ) : types.map(t => (
-              <tr key={t.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <tr key={t.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
                 <td style={{ padding: '10px 12px', width: 80 }}>
                   {editingId === t.id ? (
                     <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
@@ -196,8 +196,8 @@ export default function TestCaseTypesPage() {
                           onClick={() => setEditIcon(ic)}
                           style={{
                             width: 24, height: 24, borderRadius: 4, fontSize: 14,
-                            border: editIcon === ic ? '2px solid var(--ds-border-focused, #0052CC)' : '2px solid transparent',
-                            cursor: 'pointer', background: editIcon === ic ? 'var(--ds-background-selected, #E9F2FE)' : 'none',
+                            border: editIcon === ic ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                            cursor: 'pointer', background: editIcon === ic ? 'var(--ds-background-selected)' : 'none',
                           }}
                         >
                           {ic}
@@ -216,19 +216,19 @@ export default function TestCaseTypesPage() {
                       autoFocus
                     />
                   ) : (
-                    <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{t.name}</span>
+                    <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{t.name}</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   {t.is_default ? (
                     <span style={{
                       display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
-                      background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)', color: 'var(--ds-text-accent-blue, #0052CC)',
+                      background: 'var(--ds-background-accent-blue-subtler)', color: 'var(--ds-text-accent-blue)',
                     }}>Default</span>
                   ) : (
                     <button
                       onClick={() => setDefault(t)}
-                      style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      style={{ fontSize: 11, color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                     >
                       Set default
                     </button>

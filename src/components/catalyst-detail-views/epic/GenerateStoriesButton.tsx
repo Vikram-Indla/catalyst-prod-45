@@ -61,16 +61,16 @@ function GeneratingOverlay() {
       <Spinner size="large" />
       <div style={{
         marginTop: 16,
-        fontSize: 16,
+        fontSize: 'var(--ds-font-size-500)',
         fontWeight: 500,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
       }}>
         Generating stories…
       </div>
       <div style={{
         marginTop: 8,
-        fontSize: 13,
-        color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+        fontSize: 'var(--ds-font-size-300)',
+        color: token('color.text.subtle', 'var(--ds-text-subtle)'),
       }}>
         Analyzing epic documentation. This may take a moment.
       </div>
@@ -163,7 +163,7 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
           aria-busy="true"
         >
           <Spinner size="large" />
-          <div style={{ marginTop: 16, fontSize: 16, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+          <div style={{ marginTop: 16, fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: token('color.text', 'var(--ds-text)') }}>
             Creating stories…
           </div>
         </div>

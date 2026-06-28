@@ -81,10 +81,10 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
         style={{
           height: 44,
           backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
-          borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
+          borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))',
         }}
         onClick={() => onItemClick(item.id)}
-        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #FAFBFC)'; }}
+        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'; }}
         onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
         {position ? (
@@ -99,8 +99,8 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
         ) : (
           // Fallback: bar is entirely outside visible timeline range — show indicator
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Outside timeline range</span>
+            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>Outside timeline range</span>
           </div>
         )}
       </div>
@@ -118,7 +118,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'}`,
               background: period.isCurrent ? 'var(--ds-background-information, rgba(37,99,235,0.03))' : 'transparent',
             }}
           />
@@ -130,7 +130,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
         <ScrollArea className="flex-1 w-full">
           <div style={{ minWidth: totalMinWidth }}>
             <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
@@ -139,8 +139,8 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
               {groups.map(group => (
                 <div key={group.key}>
-                  <div style={{ height: 50, background: 'var(--ds-surface-sunken, #FAFBFC)', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', paddingLeft: 16, lineHeight: '36px' }}>
+                  <div style={{ height: 50, background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}
                     </span>
                   </div>
@@ -157,7 +157,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
 
   // Flat view
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
       <ScrollArea className="flex-1 w-full">
         <div style={{ minWidth: totalMinWidth }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />

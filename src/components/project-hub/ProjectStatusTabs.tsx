@@ -34,18 +34,18 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
           <button
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
-            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${
+            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] ${
               isActive
-                ? isDark ? 'bg-[var(--ds-text, #172B4D)] border-[var(--ds-text, #172B4D)]' : 'bg-[var(--ds-background-information, #E9F2FF)] border-[var(--ds-background-information, #E9F2FF)]'
+                ? isDark ? 'bg-[var(--ds-text)] border-[var(--ds-text)]' : 'bg-[var(--ds-background-information)] border-[var(--ds-background-information)]'
                 : 'bg-transparent border-transparent'
             }`}
             style={{
               height: 32,
               padding: '0 12px',
               lineHeight: '32px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? ('var(--cp-text-link, var(--cp-primary-60, #0052CC))') : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))'),
+              color: isActive ? ('var(--cp-text-link, var(--cp-primary-60))') : ('var(--cp-text-tertiary, var(--cp-text-secondary))'),
               borderWidth: 1,
               borderStyle: 'solid',
               cursor: 'pointer',
@@ -56,8 +56,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               <Star
                 size={13}
                 strokeWidth={2}
-                fill={isActive ? 'var(--ds-background-warning-bold, #E2B203)' : 'none'}
-                color={isActive ? 'var(--ds-background-warning-bold, #E2B203)' : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))')}
+                fill={isActive ? 'var(--ds-background-warning-bold)' : 'none'}
+                color={isActive ? 'var(--ds-background-warning-bold)' : ('var(--cp-text-tertiary, var(--cp-text-secondary))')}
               />
             )}
             {tab.label}
@@ -67,10 +67,10 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 minWidth: 18,
                 height: 18,
                 padding: '0 5px',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
-                backgroundColor: isActive ? 'var(--cp-primary-60, #0052CC)' : ('var(--cp-border, #EBECF0)'),
-                color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))'),
+                backgroundColor: isActive ? 'var(--cp-primary-60)' : ('var(--cp-border)'),
+                color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : ('var(--cp-text-tertiary, var(--cp-text-secondary))'),
                 fontFamily: 'var(--cp-font-body)',
               }}
             >

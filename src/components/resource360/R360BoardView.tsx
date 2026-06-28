@@ -5,31 +5,31 @@ import { initials as getInitials } from './r360-helpers';
 // STATUS COLORS — 100% inline, no CSS classes
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
-  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
-  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
-  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Backlog' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Requirements' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Awaiting' },
-  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress' },
-  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress' },
-  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review' },
-  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In QA' },
-  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Ready QA' },
-  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Retest' },
-  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review' },
-  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: 'var(--ds-text-discovery, #4C1D95)', label: 'In UAT' },
-  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: 'var(--ds-text-discovery, #4C1D95)', label: 'UAT Ready' },
-  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done' },
-  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done' },
-  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done' },
-  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done' },
-  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #AE2A19)', label: 'Blocked' },
-  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #AE2A19)', label: 'Rejected' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Backlog' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Re-Open' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Requirements' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Awaiting' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' },
+  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'In Review' },
+  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'In QA' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Ready QA' },
+  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Retest' },
+  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'In Review' },
+  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', bg: 'var(--ds-background-discovery)', tx: 'var(--ds-text-discovery)', label: 'In UAT' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', bg: 'var(--ds-background-discovery)', tx: 'var(--ds-text-discovery)', label: 'UAT Ready' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', tx: 'var(--ds-text-success)', label: 'Done' },
+  'Blocked':              { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Blocked' },
+  'Rejected':             { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Rejected' },
 };
-const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Unknown' };
+const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Unknown' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -42,18 +42,18 @@ function resolveStatus(item: any) {
   return SCD;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', SEN: 'var(--ds-text-warning, var(--cp-warning))', FAC: 'var(--ds-text-success, var(--cp-success))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
 
 const PRI_DOT: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #EF4444)', highest: 'var(--ds-text-danger, #EF4444)', high: 'var(--ds-text-warning, var(--cp-warning, #D97706))', medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))', low: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', lowest: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+  critical: 'var(--ds-text-danger)', highest: 'var(--ds-text-danger)', high: 'var(--ds-text-warning, var(--cp-warning))', medium: 'var(--ds-text-warning, var(--cp-warning))', low: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', lowest: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
 };
 
 const COLS = [
-  { key: 'todo', label: 'TO DO', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', cats: ['unstarted', 'blocked'] },
-  { key: 'ip', label: 'IN PROGRESS', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cats: ['started'] },
-  { key: 'done', label: 'DONE', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', cats: ['completed'] },
+  { key: 'todo', label: 'TO DO', color: 'var(--ds-text-warning, var(--cp-warning))', cats: ['unstarted', 'blocked'] },
+  { key: 'ip', label: 'IN PROGRESS', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cats: ['started'] },
+  { key: 'done', label: 'DONE', color: 'var(--ds-text-success, var(--cp-success))', cats: ['completed'] },
 ];
 
 interface Props {
@@ -71,8 +71,8 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
   if (items.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
-        <div style={{ fontSize: 13 }}>Items assigned to {memberName || 'this member'} will appear here.</div>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
     );
   }
@@ -87,24 +87,24 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
             paddingBottom: '10px', marginBottom: '10px', borderBottom: `2px solid ${col.color}`,
           }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color }} />
-            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--fg-1)' }}>{col.label}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--fg-1)' }}>{col.label}</span>
             <div style={{
               width: '22px', height: '22px', borderRadius: '50%', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', background: col.color, marginLeft: 'auto',
+              alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))', background: col.color, marginLeft: 'auto',
             }}>{col.items.length}</div>
           </div>
 
           {/* Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {col.items.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--fg-4)', fontSize: 12, fontWeight: 500, border: '1px dashed var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: '1px dashed var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
                 No items
               </div>
             ) : col.items.map(item => {
               const s = resolveStatus(item);
               const projColor = pColor(item.project_key, item.project_color);
-              const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+              const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
               return (
                 <div key={item.id} onClick={() => onItemClick(item)} style={{
                   background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
@@ -121,14 +121,14 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                     <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                     {item.project_key && (
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
                     )}
-                    <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0) }}>{item.age_days ?? 0}d</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(item.age_days ?? 0) }}>{item.age_days ?? 0}d</span>
                   </div>
 
                   {/* Title */}
                   <div style={{
-                    fontSize: '13.5px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '1.35', marginBottom: '8px',
+                    fontSize: '13.5px', fontWeight: 500, color: 'var(--ds-text)', lineHeight: '1.35', marginBottom: '8px',
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   } as React.CSSProperties}>
                     {item.title}
@@ -138,7 +138,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: priDot }} />
-                      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--fg-2)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
                     </div>
                     <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--fg-2)', maxWidth: '70px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}

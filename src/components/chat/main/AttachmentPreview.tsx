@@ -55,7 +55,7 @@ function AttachmentTile({ a }: { a: ChatAttachment }) {
           marginRight: 6,
           borderRadius: 4,
           overflow: 'hidden',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          border: '1px solid var(--ds-border)',
           maxWidth: 320,
           maxHeight: 240,
         }}
@@ -86,11 +86,11 @@ function AttachmentTile({ a }: { a: ChatAttachment }) {
         marginTop: 6,
         marginRight: 6,
         padding: '6px 10px',
-        background: 'var(--ds-background-neutral, #F1F2F4)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-background-neutral)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
-        color: 'var(--ds-text, #172B4D)',
-        fontSize: 13,
+        color: 'var(--ds-text)',
+        fontSize: 'var(--ds-font-size-300)',
         textDecoration: 'none',
         maxWidth: 320,
       }}
@@ -111,11 +111,11 @@ function AttachmentTile({ a }: { a: ChatAttachment }) {
       >
         {a.filename}
       </span>
-      <span style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 12 }}>
+      <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
         {formatBytes(a.byteSize)}
       </span>
       {errored && (
-        <span style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 11 }}>error</span>
+        <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-100)' }}>error</span>
       )}
     </a>
   );

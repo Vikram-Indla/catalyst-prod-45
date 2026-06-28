@@ -7,10 +7,10 @@
 import { useTheme } from '@/hooks/useTheme';
 
 const SEV_STYLES: Record<string, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
-  SEV1: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #991B1B)', border: 'var(--ds-background-danger, #FFECEB)', darkBg: 'rgba(248,113,113,0.12)', darkText: 'var(--ds-border-danger, #FCA5A5)', darkBorder: 'rgba(248,113,113,0.25)' },
-  SEV2: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-background-warning, #FFF7D6)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkText: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
-  SEV3: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-background-information, #E9F2FF)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkText: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' },
-  SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', darkBg: 'var(--ds-border, var(--cp-ink-1, #292929))', darkText: 'var(--ds-text-subtlest, #A1A1A1)', darkBorder: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' },
+  SEV1: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', border: 'var(--ds-background-danger)', darkBg: 'rgba(248,113,113,0.12)', darkText: 'var(--ds-border-danger)', darkBorder: 'rgba(248,113,113,0.25)' },
+  SEV2: { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', border: 'var(--ds-background-warning)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkText: 'var(--ds-background-warning, var(--ds-background-warning))', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
+  SEV3: { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', border: 'var(--ds-background-information)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkText: 'var(--ds-background-information-bold, var(--ds-link))', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' },
+  SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtle)', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', darkBg: 'var(--ds-border, var(--cp-ink-1))', darkText: 'var(--ds-text-subtlest)', darkBorder: 'var(--ds-border, var(--cp-ink-1))' },
 };
 
 interface SeverityChipProps {
@@ -27,7 +27,7 @@ export function SeverityChip({ severity }: SeverityChipProps) {
     <span
       style={{
         height: 18,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.02em',

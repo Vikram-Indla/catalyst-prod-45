@@ -50,10 +50,10 @@ export interface HealthResult {
 }
 
 export const HEALTH_THRESHOLDS: Record<HealthLevel, { min: number; color: string; borderColor: string; bgColor: string }> = {
-  healthy: { min: 85, color: 'var(--ds-text-success, #22c55e)', borderColor: 'border-l-green-500', bgColor: 'bg-white' },
-  attention: { min: 70, color: 'var(--ds-background-warning-bold, #E2B203)', borderColor: 'border-l-yellow-500', bgColor: 'bg-white' },
-  at_risk: { min: 50, color: 'var(--ds-background-warning-bold, #f97316)', borderColor: 'border-l-orange-500', bgColor: 'bg-orange-50' },
-  critical: { min: 0, color: 'var(--ds-text-danger, #ef4444)', borderColor: 'border-l-red-500', bgColor: 'bg-red-50' },
+  healthy: { min: 85, color: 'var(--ds-text-success)', borderColor: 'border-l-green-500', bgColor: 'bg-white' },
+  attention: { min: 70, color: 'var(--ds-background-warning-bold)', borderColor: 'border-l-yellow-500', bgColor: 'bg-white' },
+  at_risk: { min: 50, color: 'var(--ds-background-warning-bold)', borderColor: 'border-l-orange-500', bgColor: 'bg-orange-50' },
+  critical: { min: 0, color: 'var(--ds-text-danger)', borderColor: 'border-l-red-500', bgColor: 'bg-red-50' },
 };
 
 function calculatePassRate(passed: number, executed: number): number {

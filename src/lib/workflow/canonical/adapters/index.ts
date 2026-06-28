@@ -13,9 +13,46 @@ export const DOMAIN_ADAPTER_CONFIGS: Record<EntityKey, DomainAdapterConfig> = {
   product_milestone: { entityKey: 'product_milestone', table: 'product_milestones', statusColumn: 'status', workflowKeyColumn: null, storageOption: 'A_lite' },
   sprint: { entityKey: 'sprint', table: 'ph_jira_sprints', statusColumn: 'status', workflowKeyColumn: null, storageOption: 'A_lite' },
   task: { entityKey: 'task', table: 'tasks', statusColumn: 'status_id', workflowKeyColumn: 'workflow_status_key', storageOption: 'A_projection' },
-  defect: { entityKey: 'defect', table: 'tm_defects', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
-  incident: { entityKey: 'incident', table: 'incidents', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
-  release: { entityKey: 'release', table: 'rh_releases', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
+  defect: {
+    entityKey: 'defect', table: 'tm_defects', statusColumn: 'status',
+    workflowKeyColumn: 'workflow_status_key', storageOption: 'A',
+    // canonical key -> nearest SAFE existing tm_defect_status enum value.
+    // Adapter writes workflow_status_key (canonical) + status (compat); enum
+    // is never widened. Keys absent here leave the enum unchanged.
+    enumCompatMap: {
+      new: 'open', triage: 'open', deferred: 'open',
+      accepted: 'in_progress', assigned_for_fix: 'in_progress', in_fix: 'in_progress',
+      ready_for_retest: 'in_progress', retest: 'in_progress', retest_failed: 'in_progress', uat_failed: 'in_progress',
+      verified: 'resolved', uat_ready: 'resolved', uat_passed: 'resolved', ready_for_release: 'resolved',
+      closed: 'closed', rejected: 'closed', duplicate: 'closed',
+      reopened: 'reopened',
+    },
+  },
+  incident: {
+    entityKey: 'incident', table: 'incidents', statusColumn: 'status',
+    workflowKeyColumn: 'workflow_status_key', storageOption: 'A',
+    // canonical key -> nearest SAFE existing incident_status enum value.
+    enumCompatMap: {
+      reported: 'open', acknowledged: 'triage', triage: 'triage', major_declared: 'triage',
+      workaround: 'in_progress', in_resolution: 'in_progress', fix_ready: 'in_progress',
+      deploying_fix: 'in_progress', monitoring: 'in_progress', resolved: 'resolved', rca_pending: 'resolved',
+      closed: 'closed', duplicate: 'closed', canceled: 'closed', reopened: 'open',
+    },
+  },
+  release: {
+    entityKey: 'release', table: 'rh_releases', statusColumn: 'status',
+    workflowKeyColumn: 'workflow_status_key', storageOption: 'A',
+    // rh_releases.status is FREE TEXT (not an enum) → safe to mirror the canonical
+    // key as the compat value. Never widens anything; releases/release_versions
+    // are untouched.
+    enumCompatMap: {
+      draft: 'draft', scope_planning: 'scope_planning', scope_locked: 'scope_locked',
+      build_packaging: 'build_packaging', qa_signoff_pending: 'qa_signoff_pending',
+      uat_signoff_pending: 'uat_signoff_pending', golive_approval_pending: 'golive_approval_pending',
+      scheduled: 'scheduled', deploying: 'deploying', deployed: 'deployed',
+      hypercare: 'hypercare', closed: 'closed', rolled_back: 'rolled_back', canceled: 'canceled',
+    },
+  },
   test_case: { entityKey: 'test_case', table: 'tm_test_cases', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
   test_plan: { entityKey: 'test_plan', table: 'tm_test_plans', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
   test_cycle: { entityKey: 'test_cycle', table: 'tm_test_cycles', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },

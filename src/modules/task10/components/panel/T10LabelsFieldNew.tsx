@@ -103,8 +103,8 @@ export function T10LabelsFieldNew({
         top: position.top,
         left: position.left,
         width: position.width,
-        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+        border: '1px solid var(--ds-border)',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         // Must be above the side panel overlay (z=100000) and panel (z=100001)
@@ -120,7 +120,7 @@ export function T10LabelsFieldNew({
       <div
         style={{
           padding: '12px',
-          borderBottom: '1px solid var(--ds-background-neutral-subtle, #F7F8F9)',
+          borderBottom: '1px solid var(--ds-background-neutral-subtle)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -147,8 +147,8 @@ export function T10LabelsFieldNew({
                   position: 'absolute',
                   top: 'calc(100% + 4px)',
                   left: 0,
-                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
                   boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
                   padding: '8px',
@@ -177,13 +177,13 @@ export function T10LabelsFieldNew({
                         backgroundColor: color.value,
                         border:
                           newLabelColor === color.value
-                            ? '2px solid var(--ds-text, #172B4D)'
+                            ? '2px solid var(--ds-text)'
                             : '2px solid transparent',
                         borderRadius: '6px',
                         cursor: 'pointer',
                         boxShadow:
                           newLabelColor === color.value
-                            ? '0 0 0 2px var(--ds-surface, #FFFFFF)'
+                            ? '0 0 0 2px var(--ds-surface)'
                             : 'none',
                       }}
                     />
@@ -205,8 +205,8 @@ export function T10LabelsFieldNew({
               flex: 1,
               height: '50px',
               padding: '8px 12px',
-              fontSize: '14px',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              fontSize: 'var(--ds-font-size-400)',
+              border: '1px solid var(--ds-border)',
               borderRadius: '6px',
               outline: 'none',
             }}
@@ -219,10 +219,10 @@ export function T10LabelsFieldNew({
             style={{
               height: '50px',
               padding: '8px 12px',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
               border: 'none',
               borderRadius: '6px',
               cursor: !newLabelName.trim() ? 'not-allowed' : 'pointer',
@@ -241,8 +241,8 @@ export function T10LabelsFieldNew({
             style={{
               padding: '20px',
               textAlign: 'center',
-              color: 'var(--ds-text-disabled, #8590A2)',
-              fontSize: '14px',
+              color: 'var(--ds-text-disabled)',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             Loading...
@@ -254,8 +254,8 @@ export function T10LabelsFieldNew({
             style={{
               padding: '20px',
               textAlign: 'center',
-              color: 'var(--ds-text-disabled, #8590A2)',
-              fontSize: '14px',
+              color: 'var(--ds-text-disabled)',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             No labels yet. Create one above!
@@ -277,12 +277,12 @@ export function T10LabelsFieldNew({
                   width: '100%',
                   padding: '10px 12px',
                   marginBottom: '4px',
-                  backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
-                  border: isSelected ? '1px solid var(--ds-background-information, #E9F2FF)' : '1px solid transparent',
+                  backgroundColor: isSelected ? 'var(--ds-background-selected)' : 'transparent',
+                  border: isSelected ? '1px solid var(--ds-background-information)' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
-                  fontSize: '14px',
-                  color: 'var(--ds-text-subtle, #44546F)',
+                  fontSize: 'var(--ds-font-size-400)',
+                  color: 'var(--ds-text-subtle)',
                 }}
               >
                 <div
@@ -290,16 +290,16 @@ export function T10LabelsFieldNew({
                     width: '16px',
                     height: '16px',
                     border: isSelected
-                      ? '2px solid var(--ds-link, #2563eb)'
-                      : '2px solid var(--ds-border, #DFE1E6)',
+                      ? '2px solid var(--ds-link)'
+                      : '2px solid var(--ds-border)',
                     borderRadius: '4px',
-                    backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
+                    backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  {isSelected && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
+                  {isSelected && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />}
                 </div>
                 <span
                   style={{
@@ -329,7 +329,7 @@ export function T10LabelsFieldNew({
               alignItems: 'center',
               gap: '6px',
               padding: '6px 10px',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               backgroundColor: `${label.color}20`,
               color: label.color,
@@ -377,11 +377,11 @@ export function T10LabelsFieldNew({
             alignItems: 'center',
             gap: '4px',
             padding: '6px 12px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
-            color: 'var(--ds-text-subtlest, #626F86)',
-            backgroundColor: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-            border: '1px dashed var(--ds-border, #DFE1E6)',
+            color: 'var(--ds-text-subtlest)',
+            backgroundColor: 'var(--ds-background-neutral-subtle)',
+            border: '1px dashed var(--ds-border)',
             borderRadius: '9999px',
             cursor: 'pointer',
           }}

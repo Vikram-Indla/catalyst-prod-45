@@ -71,7 +71,7 @@ export function CatyIconCTA({
         }}
         onMouseEnter={e => {
           if (!disabled && !isLoading) {
-            e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)';
+            e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)';
           }
         }}
         onMouseLeave={e => {

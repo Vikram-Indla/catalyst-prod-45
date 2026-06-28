@@ -252,9 +252,9 @@ export function GenerateEpicsModal({
                 onChange={(option) => setSelectedProject(option as typeof PROJECT_OPTIONS[0])}
                 placeholder="Choose a project..."
               />
-              <div style={{ marginTop: 16, padding: '12px', backgroundColor: 'var(--ds-background-success, #DFFCF0)', borderRadius: '4px' }}>
+              <div style={{ marginTop: 16, padding: '12px', backgroundColor: 'var(--ds-background-success)', borderRadius: '4px' }}>
                 <strong>Evidence Summary:</strong>
-                <div style={{ fontSize: '13px', marginTop: 8, color: 'var(--ds-text, #172B4D)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', marginTop: 8, color: 'var(--ds-text)' }}>
                   Expected output: <strong>12 draft work items</strong> (1 Epic + 3 Features + 8 Stories)
                 </div>
               </div>
@@ -267,7 +267,7 @@ export function GenerateEpicsModal({
                 <Heading as="h3" level="h500">
                   Generated Hierarchy — {selectedProject?.label}
                 </Heading>
-                <div style={{ fontSize: '13px', color: 'var(--ds-icon-subtle, #626F86)', marginTop: 4 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon-subtle)', marginTop: 4 }}>
                   {approvedCount} of {items.length} items approved for creation
                 </div>
               </div>
@@ -278,9 +278,9 @@ export function GenerateEpicsModal({
                     key={item.id}
                     style={{
                       padding: '12px',
-                      backgroundColor: item.approved ? 'var(--ds-background-success, #DFFCF0)' : 'var(--ds-surface-sunken, #F7F8F9)',
+                      backgroundColor: item.approved ? 'var(--ds-background-success)' : 'var(--ds-surface-sunken)',
                       borderRadius: '4px',
-                      border: `1px solid ${item.approved ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-border, #DFE1E6)'}`,
+                      border: `1px solid ${item.approved ? 'var(--ds-background-success-bold)' : 'var(--ds-border)'}`,
                       marginLeft: `${getIndent(item.type)}px`,
                     }}
                   >
@@ -291,11 +291,11 @@ export function GenerateEpicsModal({
                         onChange={() => toggleApproval(item.id)}
                         style={{ cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: '18px' }}>{typeIcon[item.type]}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-600)' }}>{typeIcon[item.type]}</span>
                       <strong style={{ flex: 1 }}>{item.title}</strong>
                       <Badge appearance="default">{item.confidence}%</Badge>
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: 30 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)', marginLeft: 30 }}>
                       <strong>Source:</strong> {item.sourceReferences.join(' • ')}
                     </div>
                   </div>
@@ -310,26 +310,26 @@ export function GenerateEpicsModal({
               <Heading as="h3" level="h500" style={{ marginBottom: 8 }}>
                 Ready to Create
               </Heading>
-              <p style={{ color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 20 }}>
+              <p style={{ color: 'var(--ds-icon-subtle)', marginBottom: 20 }}>
                 {approvedCount} draft work items would be created in {selectedProject?.label}.
               </p>
               <div
                 style={{
                   padding: '16px',
-                  backgroundColor: 'var(--ds-background-success, #DFFCF0)',
+                  backgroundColor: 'var(--ds-background-success)',
                   borderRadius: '4px',
                   border: '1px solid #4CE97', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                   marginBottom: 16,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: '20px' }}>✅</span>
-                  <span style={{ color: 'var(--ds-text-success, #216E4E)', fontWeight: 500 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-700)' }}>✅</span>
+                  <span style={{ color: 'var(--ds-text-success)', fontWeight: 500 }}>
                     In production, these items would now be created as drafts in your project.
                   </span>
                 </div>
               </div>
-              <p style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+              <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)' }}>
                 This is a prototype. Actual creation is mocked.
               </p>
             </div>

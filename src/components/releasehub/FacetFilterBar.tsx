@@ -20,13 +20,13 @@ import { ChevronDown, Check, X } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-overlay, #FFFFFF)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  selectedBg: 'var(--ds-background-selected, #E9F2FE)',
+  card: 'var(--ds-surface-overlay)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  selectedBg: 'var(--ds-background-selected)',
   hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
 };
 
@@ -83,7 +83,7 @@ function FacetDropdown({ facet, selected, onChange }: {
         aria-expanded={open}
         style={{
           display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', borderRadius: 6, cursor: 'pointer',
-          fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500,
+          fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
           border: `1px solid ${count > 0 ? T.link : T.border}`,
           background: count > 0 ? T.selectedBg : T.card,
           color: count > 0 ? T.link : T.subtle,
@@ -91,7 +91,7 @@ function FacetDropdown({ facet, selected, onChange }: {
       >
         {facet.label}
         {count > 0 && (
-          <span style={{ fontSize: 11, fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8, padding: '0 4px', background: T.link, color: 'var(--ds-text-inverse, #FFFFFF)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8, padding: '0 4px', background: T.link, color: 'var(--ds-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{count}</span>
         )}
         <ChevronDown size={14} style={{ color: count > 0 ? T.link : T.subtlest }} />
       </button>
@@ -109,7 +109,7 @@ function FacetDropdown({ facet, selected, onChange }: {
           }}
         >
           {facet.options.length === 0 && (
-            <div style={{ padding: '8px 12px', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No options</div>
+            <div style={{ padding: '8px 12px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No options</div>
           )}
           {facet.options.map((opt) => {
             const checked = selected.includes(opt.id);
@@ -121,7 +121,7 @@ function FacetDropdown({ facet, selected, onChange }: {
                 onClick={() => toggle(opt.id)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', cursor: 'pointer',
-                  fontFamily: RH.fontBody, fontSize: 13, color: T.text,
+                  fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text,
                   background: checked ? T.selectedBg : 'transparent',
                 }}
                 onMouseEnter={(e) => { if (!checked) (e.currentTarget as HTMLElement).style.background = T.hover; }}
@@ -151,7 +151,7 @@ export function FacetFilterBar({ facets, value, onChange, onClear }: FacetFilter
       {total > 0 && (
         <button
           onClick={onClear}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px', borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px', borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}
         >
           <X size={14} style={{ color: T.subtlest }} /> Clear filters
         </button>

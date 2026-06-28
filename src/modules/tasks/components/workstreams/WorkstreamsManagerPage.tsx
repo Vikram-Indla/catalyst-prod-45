@@ -136,10 +136,10 @@ export default function WorkstreamsManagerPage() {
   const emptyView = (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBlock: token('space.600'), textAlign: 'center', gap: token('space.150') }}>
       <FolderKanban size={40} style={{ color: token('color.icon.subtle') }} strokeWidth={1.25} />
-      <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: token('color.text') }}>
+      <h3 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text') }}>
         {search ? 'No workstreams match your search' : 'No workstreams yet'}
       </h3>
-      <p style={{ margin: 0, fontSize: 13, color: token('color.text.subtle'), maxWidth: 360 }}>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle'), maxWidth: 360 }}>
         {search ? 'Try a different name or key.' : 'Create a workstream to group and track related tasks.'}
       </p>
       {!search && <Button appearance="primary" iconBefore={<Plus size={16} />} onClick={openCreate}>Create workstream</Button>}

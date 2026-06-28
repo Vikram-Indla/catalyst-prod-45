@@ -45,7 +45,7 @@ function StatusDropdownItem({ value, color, isSelected, onClick }: { value: stri
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>{value}</span>
       {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );
@@ -68,7 +68,7 @@ export const StatusDropdown = memo(function StatusDropdown({ task, statuses, sta
 
   const currentStatus = statuses.find(s => s.id === task.status_id);
   const displayName = currentStatus?.name || task.status_name || 'Select status...';
-  const displayColor = currentStatus?.color || statusConfig.dotColor || 'var(--ds-text-subtlest, #94a3b8)';
+  const displayColor = currentStatus?.color || statusConfig.dotColor || 'var(--ds-text-subtlest)';
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
@@ -100,7 +100,7 @@ export const StatusDropdown = memo(function StatusDropdown({ task, statuses, sta
               flexShrink: 0,
             }}
           />
-          <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+          <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: COLORS.textPrimary }}>
             {displayName}
           </span>
           <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
@@ -124,7 +124,7 @@ export const StatusDropdown = memo(function StatusDropdown({ task, statuses, sta
           >
             {statuses.map((status) => {
               const isSelected = status.id === task.status_id;
-              const color = status.color || STATUS_COLORS[status.name] || 'var(--ds-text-subtlest, #94a3b8)';
+              const color = status.color || STATUS_COLORS[status.name] || 'var(--ds-text-subtlest)';
               return (
                 <StatusDropdownItem
                   key={status.id}

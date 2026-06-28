@@ -16,12 +16,12 @@ interface ConvertDialogProps {
 }
 
 const TYPES = [
-  { key: 'bug', label: 'Bug', desc: 'Software defect or malfunction', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  { key: 'task', label: 'Task', desc: 'General work item', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  { key: 'story', label: 'Story', desc: 'User story for backlog', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  { key: 'epic', label: 'Epic', desc: 'Large body of work', color: 'var(--cp-purple-60, #7C3AED)' },
-  { key: 'feature', label: 'New Feature', desc: 'New functionality', color: 'var(--cp-teal-60, #0D9488)' },
-  { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  { key: 'bug', label: 'Bug', desc: 'Software defect or malfunction', color: 'var(--ds-text-danger, var(--cp-danger))' },
+  { key: 'task', label: 'Task', desc: 'General work item', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { key: 'story', label: 'Story', desc: 'User story for backlog', color: 'var(--ds-text-success, var(--cp-success))' },
+  { key: 'epic', label: 'Epic', desc: 'Large body of work', color: 'var(--cp-purple-60)' },
+  { key: 'feature', label: 'New Feature', desc: 'New functionality', color: 'var(--cp-teal-60)' },
+  { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, var(--cp-warning))' },
 ];
 
 export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps) {
@@ -39,7 +39,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[640px]" style={{ borderRadius: 8, padding: 0 }}>
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
-          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>Convert Incident</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700 }}>Convert Incident</DialogTitle>
         </DialogHeader>
 
         <div className="px-6 py-4">
@@ -51,8 +51,8 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 className="p-3 text-left transition-all"
                 style={{
                   borderRadius: 6,
-                  border: `1.5px solid ${selected === t.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-border-default, rgba(15,23,42,0.12))')}`,
-                  backgroundColor: selected === t.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+                  border: `1.5px solid ${selected === t.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-border-default, rgba(15,23,42,0.12))')}`,
+                  backgroundColor: selected === t.key ? ('var(--cp-primary-light)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'),
                 }}
               >
                 {/* Type icon circle */}
@@ -61,8 +61,8 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                     <rect x="2" y="2" width="12" height="12" rx="2" fill={t.color} opacity="0.8" />
                   </svg>
                 </div>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 2 }}>{t.label}</div>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{t.desc}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 2 }}>{t.label}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{t.desc}</div>
               </button>
             ))}
           </div>
@@ -70,7 +70,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
 
         <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
-          <Button disabled={!selected} onClick={handleConvert} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6, opacity: selected ? 1 : 0.5 }}>
+          <Button disabled={!selected} onClick={handleConvert} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 6, opacity: selected ? 1 : 0.5 }}>
             Convert
           </Button>
         </DialogFooter>

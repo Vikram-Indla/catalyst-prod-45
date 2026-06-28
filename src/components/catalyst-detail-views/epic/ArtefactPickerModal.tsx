@@ -102,20 +102,20 @@ export function ArtefactPickerModal({
           <div style={{
             padding: 24,
             textAlign: 'center',
-            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
           }}>
-            <p style={{ fontSize: 14, fontWeight: 500, margin: '0 0 8px' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, margin: '0 0 8px' }}>
               Not enough details
             </p>
-            <p style={{ fontSize: 14, margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>
               Add a description or attach PDF documentation to this epic before generating stories.
             </p>
           </div>
         ) : (
           <>
             <p style={{
-              fontSize: 14,
-              color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+              fontSize: 'var(--ds-font-size-400)',
+              color: token('color.text.subtle', 'var(--ds-text-subtle)'),
               margin: '0 0 16px',
             }}>
               Select which artefacts to analyze for story generation:
@@ -124,20 +124,20 @@ export function ArtefactPickerModal({
             {/* Description checkbox */}
             <div style={{
               padding: '8px 0',
-              borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             }}>
               <Checkbox
                 isChecked={useDescription && hasDescription}
                 isDisabled={!hasDescription}
                 onChange={() => setUseDescription(!useDescription)}
                 label={
-                  <span style={{ fontSize: 14 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)' }}>
                     Epic description
                     {!hasDescription && (
                       <span style={{
-                        color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                        color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                         marginLeft: 8,
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                       }}>
                         (empty)
                       </span>
@@ -155,9 +155,9 @@ export function ArtefactPickerModal({
             ) : attachments.length > 0 ? (
               <div style={{ padding: '8px 0' }}>
                 <div style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
-                  color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                  color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                   textTransform: 'uppercase' as const,
                   letterSpacing: 0.5,
                   padding: '8px 0 4px',
@@ -167,19 +167,19 @@ export function ArtefactPickerModal({
                 {attachments.map((att) => (
                   <div key={att.id} style={{
                     padding: '4px 0',
-                    borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                    borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   }}>
                     <Checkbox
                       isChecked={selectedAttachments.has(att.id)}
                       onChange={() => toggleAttachment(att.id)}
                       label={
-                        <span style={{ fontSize: 14 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-400)' }}>
                           {att.file_name}
                           {att.file_size != null && (
                             <span style={{
-                              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                              color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                               marginLeft: 8,
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                             }}>
                               ({formatSize(att.file_size)})
                             </span>
@@ -193,8 +193,8 @@ export function ArtefactPickerModal({
             ) : (
               <div style={{
                 padding: '8px 0',
-                color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-                fontSize: 14,
+                color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
+                fontSize: 'var(--ds-font-size-400)',
               }}>
                 No PDF attachments on this epic.
               </div>

@@ -89,7 +89,7 @@ const formatDate = (dateString: string): string => {
 
 // Generate avatar color from name
 const getAvatarColor = (name: string): string => {
-  const colors = ['var(--ds-background-discovery-bold, #8b5cf6)', 'var(--ds-text-brand, #3B82F6)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+  const colors = ['var(--ds-background-discovery-bold)', 'var(--ds-text-brand)', 'var(--ds-background-success-bold)', 'var(--ds-text-warning, var(--cp-amber))', 'var(--ds-text-danger)', 'var(--ds-background-accent-magenta-bolder)', 'var(--ds-background-discovery-bold)'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -103,21 +103,21 @@ const getAvatarColor = (name: string): string => {
 
 const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; label: string }> = {
   'healthy': {
-    color: 'var(--ds-text-success, #16a34a)',
-    bgColor: 'var(--ds-background-success, #DFFCF0)',
-    borderColor: 'var(--ds-background-success, #DFFCF0)',
+    color: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
+    borderColor: 'var(--ds-background-success)',
     label: 'On Track'
   },
   'at-risk': {
-    color: 'var(--ds-text-warning, #f59e0b)',
-    bgColor: 'var(--ds-background-warning, #FFF7D6)',
-    borderColor: 'var(--ds-background-warning, #FFF7D6)',
+    color: 'var(--ds-text-warning)',
+    bgColor: 'var(--ds-background-warning)',
+    borderColor: 'var(--ds-background-warning)',
     label: 'At Risk'
   },
   'critical': {
-    color: 'var(--ds-text-danger, #dc2626)',
-    bgColor: 'var(--ds-background-danger, #fef2f2)',
-    borderColor: 'var(--ds-background-danger, #FFECEB)',
+    color: 'var(--ds-text-danger)',
+    bgColor: 'var(--ds-background-danger)',
+    borderColor: 'var(--ds-background-danger)',
     label: 'Critical'
   }
 };
@@ -505,7 +505,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           width: '420px',
           maxWidth: '100vw',
           height: '100vh',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
           boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
           zIndex: 999,
           display: 'flex',
@@ -517,7 +517,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         {/* ============================================================ */}
         {/* HEADER SECTION */}
         {/* ============================================================ */}
-        <div style={{ padding: '20px 20px 16px 20px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div style={{ padding: '20px 20px 16px 20px', borderBottom: '1px solid var(--ds-border)' }}>
           {/* TOP ROW: Health dot + Title + Actions */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
             {/* Left: Health dot + Title */}
@@ -536,11 +536,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
               {/* Title & Meta */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h1 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--ds-text, #0f172a)', margin: 0, lineHeight: 1.3 }}>
+                <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: 'var(--ds-text)', margin: 0, lineHeight: 1.3 }}>
                   {workstream.name}
                 </h1>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)' }}>
-                  <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle, #475569)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
+                  <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
                     {workstream.key_prefix || workstream.code}
                   </span>
                   <span>·</span>
@@ -572,7 +572,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </div>
 
           {/* SAVE INDICATOR */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--ds-text-success, #16a34a)', minHeight: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-success)', minHeight: '16px' }}>
             {showSaved && (
               <>
                 <Check size={14} />
@@ -593,9 +593,9 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               top: 0,
               zIndex: 20,
               padding: '16px 20px',
-              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-              borderTop: '1px solid var(--ds-border, #DFE1E6)',
-              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+              borderTop: '1px solid var(--ds-border)',
+              borderBottom: '1px solid var(--ds-border)',
             }}
           >
             <div style={{ marginBottom: '12px' }}>
@@ -610,11 +610,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   onClose();
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'; e.currentTarget.style.borderColor = 'var(--ds-text-disabled)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken))'; }}
               >
-                <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text, #0f172a)', lineHeight: 1 }}>{taskCount}</div>
-                <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Total Tasks</div>
+                <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)', lineHeight: 1 }}>{taskCount}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '4px' }}>Total Tasks</div>
               </button>
               <button
                 onClick={() => {
@@ -622,26 +622,26 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   onClose();
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #fef2f2)'; e.currentTarget.style.borderColor = 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger)'; e.currentTarget.style.borderColor = 'var(--ds-background-danger, var(--ds-background-danger))'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken))'; }}
               >
-                <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text-danger, #dc2626)', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
-                <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Overdue</div>
+                <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text-danger)', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '4px' }}>Overdue</div>
               </button>
               <div style={statCardStyle}>
-                <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text, #0f172a)', lineHeight: 1 }}>{memberCount}</div>
-                <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Members</div>
+                <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)', lineHeight: 1 }}>{memberCount}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '4px' }}>Members</div>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)' }}>Task Completion</span>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{progress}% complete</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>Task Completion</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>{progress}% complete</span>
               </div>
-              <div style={{ height: '8px', backgroundColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+              <div style={{ height: '8px', backgroundColor: 'var(--ds-border, var(--cp-bg-sunken))', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: '4px', transition: 'width 0.3s ease' }} />
               </div>
             </div>
           </div>
@@ -666,10 +666,10 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       width: '100%',
                       minHeight: '100px',
                       padding: '12px',
-                      fontSize: '14px',
+                      fontSize: 'var(--ds-font-size-400)',
                       lineHeight: 1.6,
-                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
-                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
+                      border: '1px solid var(--ds-border)',
                       borderRadius: '8px',
                       resize: 'vertical',
                       fontFamily: 'inherit',
@@ -687,8 +687,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', margin: 0 }}>
-                  {workstream.description || <span style={{ color: 'var(--ds-text-subtlest, #94a3b8)', fontStyle: 'italic' }}>No description added.</span>}
+                <p style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.7, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', margin: 0 }}>
+                  {workstream.description || <span style={{ color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>No description added.</span>}
                 </p>
               )}
             </div>
@@ -697,7 +697,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             <div style={{ marginBottom: '28px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <span style={sectionLabelStyle}>Team</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', letterSpacing: '0.03em' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', letterSpacing: '0.03em' }}>
                   {memberCount} {memberCount === 1 ? 'MEMBER' : 'MEMBERS'}
                 </span>
               </div>
@@ -705,7 +705,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               {/* Lead Picker */}
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)' }}>Lead</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>Lead</span>
                   <div ref={leadPickerRef} style={{ position: 'relative' }}>
                     <button
                       onClick={() => setShowLeadPicker(!showLeadPicker)}
@@ -714,8 +714,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                         alignItems: 'center',
                         gap: '10px',
                         padding: '8px 12px',
-                        backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
-                        border: '1px solid var(--ds-border, #DFE1E6)',
+                        backgroundColor: 'var(--ds-surface-sunken)',
+                        border: '1px solid var(--ds-border)',
                         borderRadius: '8px',
                         cursor: 'pointer',
                         minWidth: '200px',
@@ -725,20 +725,20 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       {lead ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           <div style={avatarStyle(lead.avatarColor)}>{lead.initials}</div>
-                          <span style={{ fontSize: '14px', color: 'var(--ds-text, #0f172a)', fontWeight: 500 }}>{lead.name}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontWeight: 500 }}>{lead.name}</span>
                         </div>
                       ) : (
-                        <span style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #94a3b8)' }}>Select lead...</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest)' }}>Select lead...</span>
                       )}
-                      <ChevronDown size={16} style={{ color: 'var(--ds-text-subtlest, #64748b)' }} />
+                      <ChevronDown size={16} style={{ color: 'var(--ds-text-subtlest)' }} />
                     </button>
 
                     {/* Lead Dropdown */}
                     {showLeadPicker && (
                       <div style={dropdownStyle}>
-                        <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border)' }}>
                           <div style={{ position: 'relative' }}>
-                            <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94a3b8)' }} />
+                            <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)' }} />
                             <input
                               type="text"
                               value={leadSearchQuery}
@@ -752,7 +752,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                         <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
                           {lead && (
                             <button onClick={() => handleChangeLead(null)} style={dropdownItemStyle}>
-                              <span style={{ color: 'var(--ds-text-danger, #dc2626)', fontSize: '13px' }}>Remove lead</span>
+                              <span style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-300)' }}>Remove lead</span>
                             </button>
                           )}
                           {filteredUsersForLead.map(user => (
@@ -762,12 +762,12 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                               style={dropdownItemStyle}
                             >
                               <div style={avatarStyle(user.avatarColor, 28)}>{user.initials}</div>
-                              <span style={{ fontSize: '14px', color: 'var(--ds-text, #0f172a)' }}>{user.name}</span>
-                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />}
+                              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{user.name}</span>
+                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />}
                             </button>
                           ))}
                           {filteredUsersForLead.length === 0 && !isLoadingUsers && (
-                            <div style={{ padding: '16px', textAlign: 'center', color: 'var(--ds-text-subtlest, #94a3b8)', fontSize: '13px' }}>No users found</div>
+                            <div style={{ padding: '16px', textAlign: 'center', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No users found</div>
                           )}
                         </div>
                       </div>
@@ -783,8 +783,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   <div style={memberCardStyle}>
                     <div style={avatarStyle(lead.avatarColor, 40)}>{lead.initials}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #0f172a)' }}>{lead.name}</div>
-                      <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)' }}>{lead.role}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>{lead.name}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{lead.role}</div>
                     </div>
                   </div>
                 )}
@@ -795,14 +795,14 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                     <div key={member.id} style={memberCardStyle} className="group">
                       <div style={avatarStyle(member.avatarColor, 40)}>{member.initials}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #0f172a)' }}>{member.name}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)' }}>{member.role}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>{member.name}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{member.role}</div>
                       </div>
                       <button
                         onClick={() => handleRemoveMember(member.id)}
                         title="Remove"
                         aria-label={`Remove ${member.name}`}
-                        style={{ transition: 'opacity 0.15s', padding: '4px', borderRadius: '4px', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        style={{ transition: 'opacity 0.15s', padding: '4px', borderRadius: '4px', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest)' }}
                         className="opacity-0 group-hover:opacity-100"
                       >
                         <X size={16} />
@@ -823,11 +823,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       width: '100%',
                       padding: '14px',
                       backgroundColor: 'transparent',
-                      border: '2px dashed var(--ds-border, #DFE1E6)',
+                      border: '2px dashed var(--ds-border)',
                       borderRadius: '12px',
                       cursor: 'pointer',
-                      color: 'var(--ds-text-subtlest, #64748b)',
-                      fontSize: '14px',
+                      color: 'var(--ds-text-subtlest)',
+                      fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 500,
                       transition: 'all 0.15s ease'
                     }}
@@ -839,9 +839,9 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   {/* Member Dropdown */}
                   {showMemberPicker && (
                     <div style={{ ...dropdownStyle, bottom: '100%', top: 'auto', marginBottom: '4px' }}>
-                      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border)' }}>
                         <div style={{ position: 'relative' }}>
-                          <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94a3b8)' }} />
+                          <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)' }} />
                           <input
                             type="text"
                             value={memberSearchQuery}
@@ -860,11 +860,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                             style={dropdownItemStyle}
                           >
                             <div style={avatarStyle(user.avatarColor, 28)}>{user.initials}</div>
-                            <span style={{ fontSize: '14px', color: 'var(--ds-text, #0f172a)' }}>{user.name}</span>
+                            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{user.name}</span>
                           </button>
                         ))}
                         {availableUsersForMember.length === 0 && !isLoadingUsers && (
-                          <div style={{ padding: '16px', textAlign: 'center', color: 'var(--ds-text-subtlest, #94a3b8)', fontSize: '13px' }}>
+                          <div style={{ padding: '16px', textAlign: 'center', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>
                             No users with linked profiles available
                           </div>
                         )}
@@ -890,8 +890,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             display: 'flex',
             gap: '8px',
             padding: '12px 20px',
-            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-            borderTop: '1px solid var(--ds-border, #DFE1E6)'
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+            borderTop: '1px solid var(--ds-border)'
           }}
         >
           <button onClick={navigateToTasks} style={navTabStyle(true)}>
@@ -945,22 +945,22 @@ const iconButtonStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: '8px',
   cursor: 'pointer',
-  color: 'var(--ds-text-subtlest, #64748b)',
+  color: 'var(--ds-text-subtlest)',
   transition: 'all 0.15s ease'
 };
 
 const sectionLabelStyle: React.CSSProperties = {
-  fontSize: '11px',
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 600,
-  color: 'var(--ds-text-subtlest, #64748b)',
+  color: 'var(--ds-text-subtlest)',
   textTransform: 'uppercase',
   letterSpacing: '0.05em'
 };
 
 const editLinkStyle: React.CSSProperties = {
-  fontSize: '13px',
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
-  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
   backgroundColor: 'transparent',
   border: 'none',
   cursor: 'pointer',
@@ -974,22 +974,22 @@ const primaryButtonStyle: React.CSSProperties = {
   justifyContent: 'center',
   gap: '6px',
   padding: '8px 16px',
-  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
+  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))',
   border: 'none',
   borderRadius: '6px',
-  fontSize: '13px',
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'pointer'
 };
 
 const secondaryButtonStyle: React.CSSProperties = {
   padding: '8px 16px',
-  backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
-  color: 'var(--ds-text-subtle, #475569)',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  backgroundColor: 'var(--ds-surface-sunken)',
+  color: 'var(--ds-text-subtle)',
+  border: '1px solid var(--ds-border)',
   borderRadius: '6px',
-  fontSize: '13px',
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'pointer'
 };
@@ -1004,7 +1004,7 @@ const avatarStyle = (color: string, size = 32): React.CSSProperties => ({
   justifyContent: 'center',
   fontSize: size > 32 ? '14px' : '12px',
   fontWeight: 600,
-  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))',
   flexShrink: 0
 });
 
@@ -1013,15 +1013,15 @@ const memberCardStyle: React.CSSProperties = {
   alignItems: 'center',
   gap: '12px',
   padding: '12px 14px',
-  backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  backgroundColor: 'var(--ds-surface-sunken)',
+  border: '1px solid var(--ds-border)',
   borderRadius: '12px'
 };
 
 const statCardStyle: React.CSSProperties = {
   padding: '16px',
-  backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  backgroundColor: 'var(--ds-surface-sunken)',
+  border: '1px solid var(--ds-border)',
   borderRadius: '12px',
   textAlign: 'center'
 };
@@ -1032,8 +1032,8 @@ const dropdownStyle: React.CSSProperties = {
   left: 0,
   right: 0,
   marginTop: '4px',
-  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+  border: '1px solid var(--ds-border)',
   borderRadius: '12px',
   boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
   zIndex: 9999,
@@ -1043,8 +1043,8 @@ const dropdownStyle: React.CSSProperties = {
 const searchInputStyle: React.CSSProperties = {
   width: '100%',
   padding: '8px 8px 8px 36px',
-  fontSize: '14px',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  fontSize: 'var(--ds-font-size-400)',
+  border: '1px solid var(--ds-border)',
   borderRadius: '6px',
   outline: 'none'
 };
@@ -1069,11 +1069,11 @@ const navTabStyle = (isActive: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   gap: '6px',
   padding: '10px 16px',
-  backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-  color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtle, #475569)',
-  border: isActive ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
+  backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+  color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : 'var(--ds-text-subtle)',
+  border: isActive ? 'none' : '1px solid var(--ds-border)',
   borderRadius: '8px',
-  fontSize: '13px',
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   cursor: 'pointer',
   transition: 'all 0.15s ease'

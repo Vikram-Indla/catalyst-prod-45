@@ -135,7 +135,7 @@ export function LinkTypeGroup({
                 />
               ) : (
                 <span className="lwi-row__avatar-empty" aria-label="Unassigned">
-                  <PersonIcon label="" primaryColor="var(--ds-text-subtle, #505258)" size="small" />
+                  <PersonIcon label="" primaryColor="var(--ds-text-subtle)" size="small" />
                 </span>
               )}
             </span>

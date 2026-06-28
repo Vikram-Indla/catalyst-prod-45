@@ -23,10 +23,10 @@ interface NewIncidentModalProps {
 
 const SEVERITIES = ['SEV1', 'SEV2', 'SEV3', 'SEV4'] as const;
 const SEV_STYLES: Record<string, { bg: string; border: string; text: string; darkBg: string; darkBorder: string; darkText: string }> = {
-  SEV1: { bg: 'var(--ds-background-danger, #FFECEB)', border: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #991B1B)', darkBg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', darkBorder: 'var(--ds-background-danger, rgba(239,68,68,0.2))', darkText: 'var(--ds-border-danger, #FCA5A5)' },
-  SEV2: { bg: 'var(--ds-background-warning, #FFF7D6)', border: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))', darkText: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
-  SEV3: { bg: 'var(--ds-background-information, #E9F2FF)', border: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.2))', darkText: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
-  SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', text: 'var(--ds-text-subtle, #475569)', darkBg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', darkBorder: 'var(--ds-border-bold, #454545)', darkText: 'var(--ds-text-subtlest, #A1A1A1)' },
+  SEV1: { bg: 'var(--ds-background-danger)', border: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', darkBg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', darkBorder: 'var(--ds-background-danger, rgba(239,68,68,0.2))', darkText: 'var(--ds-border-danger)' },
+  SEV2: { bg: 'var(--ds-background-warning)', border: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))', darkText: 'var(--ds-background-warning, var(--ds-background-warning))' },
+  SEV3: { bg: 'var(--ds-background-information)', border: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.2))', darkText: 'var(--ds-background-information-bold, var(--ds-link))' },
+  SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtle)', darkBg: 'var(--ds-border, var(--cp-ink-1))', darkBorder: 'var(--ds-border-bold)', darkText: 'var(--ds-text-subtlest)' },
 };
 
 export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
@@ -69,9 +69,9 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
-          <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>
-            <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: 'var(--ds-background-danger, #FFECEB)' }}>
-              <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
+          <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700 }}>
+            <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: 'var(--ds-background-danger)' }}>
+              <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger))' }} />
             </div>
             New Incident
           </DialogTitle>
@@ -79,17 +79,17 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
 
         <div className="px-6 py-4 space-y-4">
           <div>
-            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650 }}>Title *</Label>
+            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650 }}>Title *</Label>
             <Input
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Brief description of the incident"
-              style={{ borderRadius: 4, fontFamily: 'var(--cp-font-body)', fontSize: 13, marginTop: 4 }}
+              style={{ borderRadius: 4, fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', marginTop: 4 }}
             />
           </div>
 
           <div>
-            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, marginBottom: 8 }}>Severity *</Label>
+            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, marginBottom: 8 }}>Severity *</Label>
             <div className="grid grid-cols-4 gap-2 mt-1">
               {SEVERITIES.map(sev => {
                 const s = SEV_STYLES[sev];
@@ -102,9 +102,9 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
                     style={{
                       borderRadius: 4,
                       border: `1.5px solid ${selected ? (isDark ? s.darkText : s.text) : (isDark ? s.darkBorder : s.border)}`,
-                      backgroundColor: selected ? (isDark ? s.darkBg : s.bg) : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+                      backgroundColor: selected ? (isDark ? s.darkBg : s.bg) : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'),
                       fontFamily: 'var(--cp-font-mono)',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 700,
                       color: isDark ? s.darkText : s.text,
                     }}
@@ -117,19 +117,19 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
           </div>
 
           <div>
-            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650 }}>Description</Label>
+            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650 }}>Description</Label>
             <Textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Detailed description of the incident..."
-              style={{ borderRadius: 4, fontFamily: 'var(--cp-font-body)', fontSize: 13, marginTop: 4, minHeight: 80 }}
+              style={{ borderRadius: 4, fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', marginTop: 4, minHeight: 80 }}
             />
           </div>
         </div>
 
         <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }}>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 6 }}>
             {isSubmitting ? 'Creating...' : 'Create Incident'}
           </Button>
         </DialogFooter>

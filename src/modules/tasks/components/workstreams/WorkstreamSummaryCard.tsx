@@ -28,7 +28,7 @@ export const SummaryCard: React.FC<{
     <div>
       <div
         style={{
-          fontSize: '28px',
+          fontSize: 'var(--ds-font-size-800)',
           fontWeight: 700,
           color: isActive ? COLORS.accent : COLORS.textPrimary,
           lineHeight: 1,
@@ -36,7 +36,7 @@ export const SummaryCard: React.FC<{
       >
         {value}
       </div>
-      <div style={{ fontSize: '13px', color: COLORS.textMuted, marginTop: '2px' }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted, marginTop: '2px' }}>{label}</div>
     </div>
   </div>
 );

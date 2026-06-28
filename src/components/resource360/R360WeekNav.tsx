@@ -28,11 +28,11 @@ export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeF
   return (
     <div className="r3-week-nav" role="toolbar" aria-label="Week navigation">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Calendar size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" aria-hidden="true" />
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>
+        <Calendar size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" aria-hidden="true" />
+        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text)' }}>
           {isThisWeek ? 'This Week' : `Week of ${fmt(startOfWeek).split(',')[0]}`}
         </span>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
           {fmt(startOfWeek)} – {fmt(endOfWeek)}
         </span>
         <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset - 1)} aria-label="Previous week">

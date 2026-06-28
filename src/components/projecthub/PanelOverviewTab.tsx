@@ -36,12 +36,12 @@ export function PanelOverviewTab({ project, members }: Props) {
     <div className="p-4 space-y-5">
       {/* Details table */}
       <div className="rounded-lg" style={{ background: 'var(--bg-1)', padding: '12px 16px' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>Project Details</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>Project Details</div>
         <div className="space-y-0">
           {details.map(d => (
             <div key={d.label} className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--cp-bd-zone)' }}>
-              <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{d.label}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', fontFamily: d.label === 'Key' || d.label === 'Progress' ? 'var(--cp-font-mono)' : 'inherit' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>{d.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: d.label === 'Key' || d.label === 'Progress' ? 'var(--cp-font-mono)' : 'inherit' }}>
                 {d.value}
               </span>
             </div>
@@ -52,15 +52,15 @@ export function PanelOverviewTab({ project, members }: Props) {
       {/* Role distribution */}
       {roleDist.length > 0 && (
         <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>Role Distribution</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>Role Distribution</div>
           <div className="space-y-2">
             {roleDist.map(r => (
               <div key={r.category} className="flex items-center gap-3">
-                <span className="truncate" style={{ width: 160, fontSize: 12, color: 'var(--fg-2)', flexShrink: 0 }}>{r.category}</span>
+                <span className="truncate" style={{ width: 160, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', flexShrink: 0 }}>{r.category}</span>
                 <div className="flex-1 rounded-full overflow-hidden" style={{ height: 8, background: 'var(--cp-bd-zone)' }}>
                   <div className="rounded-full" style={{ width: `${r.pct}%`, height: '100%', background: 'var(--cp-blue)', minWidth: r.pct > 0 ? 4 : 0 }} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)', minWidth: 20, textAlign: 'right' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)', minWidth: 20, textAlign: 'right' }}>
                   {r.count}
                 </span>
               </div>

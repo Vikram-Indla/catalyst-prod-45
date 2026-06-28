@@ -30,10 +30,10 @@ interface TaskContextMenuProps {
 }
 
 const PRIORITIES = [
-  { value: 'critical', label: 'Critical', shape: '◆', color: 'var(--ds-text-danger, #dc2626)' },
-  { value: 'high', label: 'High', shape: '▲', color: 'var(--ds-background-warning-bold, #E2B203)' },
-  { value: 'medium', label: 'Medium', shape: '●', color: 'var(--ds-text-warning, #974F0C)' },
-  { value: 'low', label: 'Low', shape: '○', color: 'var(--ds-text-subtlest, #64748b)' },
+  { value: 'critical', label: 'Critical', shape: '◆', color: 'var(--ds-text-danger)' },
+  { value: 'high', label: 'High', shape: '▲', color: 'var(--ds-background-warning-bold)' },
+  { value: 'medium', label: 'Medium', shape: '●', color: 'var(--ds-text-warning)' },
+  { value: 'low', label: 'Low', shape: '○', color: 'var(--ds-text-subtlest)' },
 ];
 
 export function TaskContextMenu({ 

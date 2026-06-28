@@ -9,9 +9,15 @@
 import { useMemo, useCallback } from 'react';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useDefects, useCreateDefect, useUpdateDefect, useDeleteDefect } from '@/hooks/test-management/useDefects';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
+
+// Map a canonical status category → ADS Lozenge appearance (component owns color).
+const CATEGORY_APPEARANCE: Record<string, LozengeAppearance> = {
+  todo: 'new', in_progress: 'inprogress', done: 'success',
+};
 
 // Values MUST match the tm_defect_status enum exactly (lowercase): the chosen
 // value is written straight to tm_defects.status via onUpdate. The prior list
@@ -33,7 +39,8 @@ function defectToBacklogStory(d: any): BacklogStory {
     title: d.title ?? '',
     name: d.title ?? null,
     description: d.description ?? null,
-    status: d.status ?? null,
+    // Canonical status: workflow_status_key is the source of truth; enum is fallback.
+    status: d.workflow_status_key ?? d.status ?? null,
     feature_id: null,
     assignee_id: d.assignee_id ?? d.assigned_to ?? null,
     assignee_name: d.assignee?.full_name ?? null,
@@ -79,30 +86,52 @@ export function useDefectsSource(): BacklogDataSource | null {
   const deleteMutation = useDeleteDefect();
   const createMutation = useCreateDefect();
 
+  // Canonical Defect workflow (bridged): drives the 18-status dropdown + labels.
+  const canonical = useCanonicalIssueWorkflow('Defect');
+  const canonicalReady = canonical.isCanonical && (canonical.statusGroups?.length ?? 0) > 0;
+
   const rows = (defectsData as any)?.data ?? (defectsData as any)?.defects ?? [];
   const isLoading = pl || dl;
 
   const extraStories = useMemo(() => rows.map(defectToBacklogStory), [rows]);
 
-  const statusOptions = useMemo<StatusOption[]>(
-    () => DEFECT_STATUSES.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance, group: 'Status' })),
-    [],
-  );
-  const allStatuses = useMemo(() => DEFECT_STATUSES.map((s) => s.value), []);
+  // label/value/appearance derived from canonical statusGroups when available.
+  const appearanceByLabel = useMemo(() => {
+    const m = new Map<string, LozengeAppearance>();
+    for (const g of canonical.statusGroups ?? []) {
+      for (const label of g.statuses) m.set(label, CATEGORY_APPEARANCE[g.category] ?? 'default');
+    }
+    return m;
+  }, [canonical.statusGroups]);
+
+  const statusOptions = useMemo<StatusOption[]>(() => {
+    if (canonicalReady) {
+      return (canonical.statusGroups ?? []).flatMap((g) =>
+        g.statuses.map((label) => ({
+          value: label, label, appearance: CATEGORY_APPEARANCE[g.category] ?? 'default', group: g.groupLabel,
+        })),
+      );
+    }
+    return DEFECT_STATUSES.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance, group: 'Status' }));
+  }, [canonicalReady, canonical.statusGroups]);
+
+  const allStatuses = useMemo(() => statusOptions.map((s) => s.value), [statusOptions]);
 
   const resolvedStatusAppearance = useCallback(
     (status: string | null | undefined): LozengeAppearance => {
       if (!status) return 'default';
+      if (canonicalReady) return appearanceByLabel.get(canonical.labelForStatus(status)) ?? 'default';
       return STATUS_BY_VALUE.get(status.toLowerCase())?.appearance ?? 'default';
     },
-    [],
+    [canonicalReady, appearanceByLabel, canonical],
   );
   const resolvedStatusLabel = useCallback(
     (status: string | null | undefined): string => {
       if (!status) return '—';
+      if (canonicalReady) return canonical.labelForStatus(status) || status;
       return STATUS_BY_VALUE.get(status.toLowerCase())?.label ?? status;
     },
-    [],
+    [canonicalReady, canonical],
   );
 
   return useMemo((): BacklogDataSource | null => {
@@ -121,12 +150,21 @@ export function useDefectsSource(): BacklogDataSource | null {
       },
       onUpdate: async (id, patch) => {
         const mapped: Record<string, any> = {};
+        let canonicalKey: string | null = null;
         for (const [k, v] of Object.entries(patch)) {
           if (k === 'updated_at' || k === 'jira_updated_at') continue;
+          if (k === 'status' && canonicalReady) {
+            // Picked value is a canonical label → resolve to its status_key and
+            // write via the bridged workflow_status_key path (enum stays compat).
+            canonicalKey = canonical.resolveStatusKey(v as string);
+            continue;
+          }
           const target = DEFECT_PATCH_MAP[k];
           if (target) mapped[target] = v;
         }
-        if (Object.keys(mapped).length > 0) {
+        if (canonicalKey) {
+          await updateMutation.mutateAsync({ id, project_id: effectiveProjectId, ...mapped, workflowStatusKey: canonicalKey } as any);
+        } else if (Object.keys(mapped).length > 0) {
           await updateMutation.mutateAsync({ id, project_id: effectiveProjectId, ...mapped } as any);
         }
       },
@@ -156,5 +194,6 @@ export function useDefectsSource(): BacklogDataSource | null {
     projectId, extraStories, isLoading,
     statusOptions, allStatuses, resolvedStatusAppearance, resolvedStatusLabel,
     updateMutation, deleteMutation, createMutation,
+    canonicalReady, canonical,
   ]);
 }

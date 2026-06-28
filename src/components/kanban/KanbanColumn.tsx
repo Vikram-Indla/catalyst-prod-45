@@ -23,12 +23,12 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
   // so column dots match the lozenges rendered on cards/rows elsewhere.
   const c = category?.toLowerCase?.();
   const categoryDot =
-    c === 'done' || c === 'success'           ? 'var(--ds-text-success, #006644)' :  // Atlaskit "success"
-    c === 'in_progress' || c === 'inprogress' ? 'var(--ds-link-pressed, #0747A6)' :  // Atlaskit "inprogress"
-    c === 'removed'                           ? 'var(--ds-text-danger, #AE2A19)' :  // Atlaskit "removed"
-    c === 'new'                               ? 'var(--ds-background-discovery-bold, #6E5DC6)' :  // Atlaskit "new"
-    c === 'moved'                             ? 'var(--ds-chart-orange-bold, #A54800)' :  // Atlaskit "moved"
-    'var(--ds-text-subtle, #44546F)';                                                // Atlaskit "default" / todo
+    c === 'done' || c === 'success'           ? 'var(--ds-text-success)' :  // Atlaskit "success"
+    c === 'in_progress' || c === 'inprogress' ? 'var(--ds-link-pressed)' :  // Atlaskit "inprogress"
+    c === 'removed'                           ? 'var(--ds-text-danger)' :  // Atlaskit "removed"
+    c === 'new'                               ? 'var(--ds-background-discovery-bold)' :  // Atlaskit "new"
+    c === 'moved'                             ? 'var(--ds-chart-orange-bold)' :  // Atlaskit "moved"
+    'var(--ds-text-subtle)';                                                // Atlaskit "default" / todo
   return (
     <div className="flex items-center gap-2 sticky top-0 z-10" style={{
       height: 48,                                       /* Jira parity: 48px */
@@ -41,7 +41,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
         width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
       }} />
       <span style={{
-        fontSize: 12, fontWeight: 500,
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
         color: tk.textMuted,                            /* no letter-spacing (Jira: normal) */
         fontFamily: 'var(--cp-font-body)',
         lineHeight: '16px',
@@ -49,7 +49,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
       }}>{name}</span>
       <span style={{
         /* Jira parity: plain text, no pill */
-        fontSize: 12, fontWeight: 500,
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
         color: tk.textPrimary,
         background: 'transparent',
         padding: 0, lineHeight: '16px',
@@ -120,11 +120,11 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
         <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
           {issueIds.length === 0 && (
             <div className="flex flex-col items-center justify-center" style={{
-              minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: SPACING_TOKENS.gap8,
+              minHeight: 100, color: tk.textDisabled, fontSize: 'var(--ds-font-size-200)', gap: SPACING_TOKENS.gap8,
               fontFamily: 'var(--cp-font-body)',
             }}>
               {isOver ? (
-                <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 13 }}>Drop here</span>
+                <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 'var(--ds-font-size-300)' }}>Drop here</span>
               ) : (
                 <span style={{ opacity: 0.5 }}>No work items</span>
               )}

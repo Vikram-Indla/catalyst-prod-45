@@ -27,18 +27,18 @@ export interface LabelsDropdownProps {
 
 // Predefined label colors for color picker
 const LABEL_COLORS = [
-  { name: 'Red', value: 'var(--ds-text-danger, #dc2626)' },
-  { name: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Green', value: 'var(--ds-text-success, #16a34a)' },
-  { name: 'Teal', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Blue', value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
-  { name: 'Gray', value: 'var(--ds-text-subtlest, #64748b)' },
-  { name: 'Lime', value: 'var(--ds-background-success-bold, #1F845A)' }
+  { name: 'Red', value: 'var(--ds-text-danger)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Green', value: 'var(--ds-text-success)' },
+  { name: 'Teal', value: 'var(--ds-icon-information)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information)' },
+  { name: 'Blue', value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { name: 'Indigo', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder)' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest)' },
+  { name: 'Lime', value: 'var(--ds-background-success-bold)' }
 ];
 
 export const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {

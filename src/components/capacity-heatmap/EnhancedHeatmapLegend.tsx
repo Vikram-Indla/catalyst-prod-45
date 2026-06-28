@@ -33,16 +33,16 @@ export const EnhancedHeatmapLegend = memo(function EnhancedHeatmapLegend({
         
         <div className="flex items-center gap-4">
           <ContractStatusItem 
-            color="var(--ds-text-danger, #be123c)" 
+            color="var(--ds-text-danger)" 
             label="<30d" 
             pulse 
           />
           <ContractStatusItem 
-            color="var(--ds-text-warning, #974F0C)" 
+            color="var(--ds-text-warning)" 
             label="30-60d" 
           />
           <ContractStatusItem 
-            color="var(--ds-chart-teal-bold, #0d9488)" 
+            color="var(--ds-chart-teal-bold)" 
             label="60+d" 
           />
           <ContractStatusItem 

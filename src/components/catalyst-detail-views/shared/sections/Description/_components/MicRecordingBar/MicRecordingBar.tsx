@@ -87,8 +87,8 @@ export function MicRecordingBar({
             gap: 8,
             padding: '6px 10px 6px 10px',
             borderRadius: 999,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface-overlay)',
+            border: '1px solid var(--ds-border)',
             boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
             animation: 'caty-pill-enter 220ms ease forwards',
             maxWidth: 480,
@@ -121,13 +121,13 @@ export function MicRecordingBar({
           >
             <span
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: isPaused
-                  ? 'var(--ds-text-subtlest, #97A0AF)'
+                  ? 'var(--ds-text-subtlest)'
                   : effectivePhase === 'translating'
-                    ? 'var(--ds-text-warning, #974F0C)'
-                    : 'var(--ds-text-information, #0C66E4)',
+                    ? 'var(--ds-text-warning)'
+                    : 'var(--ds-text-information)',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -154,8 +154,8 @@ export function MicRecordingBar({
             {preview && (
               <span
                 style={{
-                  fontSize: 11,
-                  color: 'var(--ds-text-subtle, #44546F)',
+                  fontSize: 'var(--ds-font-size-100)',
+                  color: 'var(--ds-text-subtle)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
@@ -218,15 +218,15 @@ function PillBtn({
         borderRadius: '50%',
         background: 'transparent',
         color: danger
-          ? 'var(--ds-text-danger, #AE2A19)'
-          : 'var(--ds-text, #292A2E)',
+          ? 'var(--ds-text-danger)'
+          : 'var(--ds-text)',
         cursor: 'pointer',
         padding: 0,
         flexShrink: 0,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background = danger
-          ? 'var(--ds-background-danger, #FFEBE6)'
+          ? 'var(--ds-background-danger)'
           : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))';
       }}
       onMouseLeave={(e) => {

@@ -144,7 +144,7 @@ function ThemeCardSkeleton() {
     width: w,
     height: h,
     borderRadius: 4,
-    background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+    background: token('color.background.neutral', 'var(--ds-background-neutral)'),
   });
   return (
     <div
@@ -154,8 +154,8 @@ function ThemeCardSkeleton() {
         gap: 12,
         padding: 16,
         borderRadius: 8,
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-        background: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+        background: token('elevation.surface.raised', 'var(--ds-surface)'),
         animation: 'catyShimmerPulse 1.4s ease-in-out infinite',
       }}
     >
@@ -280,7 +280,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             display: 'inline-flex',
             gap: 2,
             padding: 4,
-            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             borderRadius: 8,
           }}
         >
@@ -334,20 +334,20 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             paddingInline: '6px',
             paddingBlock: '2px',
             borderRadius: 4,
-            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             font: `400 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             whiteSpace: 'nowrap',
           }}>
             {/* Green dot when data is fresh (within 2h); grey otherwise */}
             <span style={{
               width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
               background: (() => {
-                if (!data.generatedAt) return token('color.icon.disabled', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))');
+                if (!data.generatedAt) return token('color.icon.disabled', 'var(--ds-text-disabled, var(--ds-border-bold))');
                 const ageMs = Date.now() - new Date(data.generatedAt).getTime();
                 return ageMs < 2 * 3_600_000
-                  ? token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')
-                  : token('color.icon.disabled', 'var(--ds-text-disabled, #8590A2)');
+                  ? token('color.icon.success', 'var(--ds-background-success-bold)')
+                  : token('color.icon.disabled', 'var(--ds-text-disabled)');
               })(),
             }} />
             {formatGeneratedAt(data.generatedAt)}

@@ -62,8 +62,8 @@ export const CreateSubtaskDialog: React.FC<CreateSubtaskDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="summary" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="summary" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Summary <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Textfield
               id="summary"
@@ -74,8 +74,8 @@ export const CreateSubtaskDialog: React.FC<CreateSubtaskDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="story" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="story" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Story <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Select
               inputId="story"
@@ -84,13 +84,13 @@ export const CreateSubtaskDialog: React.FC<CreateSubtaskDialogProps> = ({
               onChange={(opt: any) => setStory(opt ? opt.value : '')}
               placeholder="Select parent story (required)"
             />
-            <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 4 }}>
               Subtasks must belong to a Story
             </p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Description
             </label>
             <TextArea

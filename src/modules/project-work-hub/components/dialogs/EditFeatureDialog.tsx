@@ -135,8 +135,8 @@ export const EditFeatureDialog: React.FC<EditFeatureDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="name" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Name <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="name" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Name <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Textfield
               id="name"
@@ -148,7 +148,7 @@ export const EditFeatureDialog: React.FC<EditFeatureDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="epic" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="epic" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Epic
             </label>
             <Select
@@ -162,7 +162,7 @@ export const EditFeatureDialog: React.FC<EditFeatureDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="status" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="status" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Status
             </label>
             <Select
@@ -175,7 +175,7 @@ export const EditFeatureDialog: React.FC<EditFeatureDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Description
             </label>
             <TextArea

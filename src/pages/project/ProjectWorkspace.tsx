@@ -29,10 +29,10 @@ export default function ProjectWorkspace() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white dark:bg-[var(--ds-surface,#0A0A0A)]">
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-[var(--ds-surface)]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] mx-auto mb-4" />
-          <p className="text-neutral-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">Loading project...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] mx-auto mb-4" />
+          <p className="text-neutral-500 dark:text-[var(--ds-text-subtlest)]">Loading project...</p>
         </div>
       </div>
     );
@@ -40,10 +40,10 @@ export default function ProjectWorkspace() {
 
   if (error || !project) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white dark:bg-[var(--ds-surface,#0A0A0A)]">
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-[var(--ds-surface)]">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Project Not Found</h2>
-          <p className="text-neutral-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] mb-4">
+          <h2 className="text-xl font-semibold mb-2 dark:text-[var(--ds-text,var(--cp-bg-neutral))]">Project Not Found</h2>
+          <p className="text-neutral-500 dark:text-[var(--ds-text-subtlest)] mb-4">
             The project you're looking for doesn't exist or you don't have access.
           </p>
           <Button onClick={() => navigate('/projects')}>
@@ -55,7 +55,7 @@ export default function ProjectWorkspace() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-[var(--ds-surface,#0A0A0A)]">
+    <div className="h-screen flex flex-col bg-white dark:bg-[var(--ds-surface)]">
       {/* Project Header with View Selector */}
       <ProjectHeader 
         project={project} 

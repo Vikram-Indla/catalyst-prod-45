@@ -7,33 +7,33 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // ─── Atlassian Design Tokens ──────────────────────────────────────────────────
 const T = {
-  card:           'var(--ds-surface-raised, #FFFFFF)',
-  sunken:         'var(--ds-surface-sunken, #F7F8F9)',
-  border:         'var(--ds-border, #DFE1E6)',
-  borderSub:      'var(--ds-border-subtle, #F1F2F4)',
-  text:           'var(--ds-text, #172B4D)',
-  subtle:         'var(--ds-text-subtle, #44546F)',
-  subtlest:       'var(--ds-text-subtlest, #626F86)',
-  neutral:        'var(--ds-background-neutral, #F1F2F4)',
-  textInverse:    'var(--ds-text-inverse, #FFFFFF)',
+  card:           'var(--ds-surface-raised)',
+  sunken:         'var(--ds-surface-sunken)',
+  border:         'var(--ds-border)',
+  borderSub:      'var(--ds-border-subtle)',
+  text:           'var(--ds-text)',
+  subtle:         'var(--ds-text-subtle)',
+  subtlest:       'var(--ds-text-subtlest)',
+  neutral:        'var(--ds-background-neutral)',
+  textInverse:    'var(--ds-text-inverse)',
   shadow:         'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.25))',
   // Active release — blue
-  activeSolid:    'var(--ds-link, #0C66E4)',
-  activeBoldBg:   'var(--ds-background-information-bold, #0C66E4)',
-  activeBg:       'var(--ds-background-information, #E9F2FF)',
-  activeText:     'var(--ds-link, #0C66E4)',
+  activeSolid:    'var(--ds-link)',
+  activeBoldBg:   'var(--ds-background-information-bold)',
+  activeBg:       'var(--ds-background-information)',
+  activeText:     'var(--ds-link)',
   // Upcoming — purple
-  upcomingBar:    'var(--ds-icon-discovery, #8270DB)',
-  upcomingBoldBg: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  upcomingBg:     'var(--ds-background-discovery, #F3F0FF)',
-  upcomingText:   'var(--ds-text-discovery, #6E5DC6)',
+  upcomingBar:    'var(--ds-icon-discovery)',
+  upcomingBoldBg: 'var(--ds-background-discovery-bold)',
+  upcomingBg:     'var(--ds-background-discovery)',
+  upcomingText:   'var(--ds-text-discovery)',
   // Released — green
-  doneBar:        'var(--ds-icon-success, #22A06B)',
-  doneBoldBg:     'var(--ds-background-success-bold, #1F845A)',
-  doneBg:         'var(--ds-background-success, #DCFFF1)',
-  doneText:       'var(--ds-text-success, #1F845A)',
+  doneBar:        'var(--ds-icon-success)',
+  doneBoldBg:     'var(--ds-background-success-bold)',
+  doneBg:         'var(--ds-background-success)',
+  doneText:       'var(--ds-text-success)',
   // Draft / low confidence — neutral
-  neutralBoldBg:  'var(--ds-background-neutral-bold, #626F86)',
+  neutralBoldBg:  'var(--ds-background-neutral-bold)',
 };
 
 type ReleaseStatus = 'released' | 'active' | 'upcoming';
@@ -104,8 +104,8 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
           style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', cursor: 'pointer' }}
         >
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Release Timeline</div>
-            <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Product release schedule and delivery milestones</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Release Timeline</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 4 }}>Product release schedule and delivery milestones</div>
           </div>
           <ChevronDown size={16} color={T.subtlest} style={{ marginTop: 4, flexShrink: 0, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
         </div>
@@ -118,8 +118,8 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
             }}>
               <Tag size={24} color={T.textInverse} strokeWidth={1.5} />
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>No releases yet</div>
-            <div style={{ fontSize: 12, color: T.subtle }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, marginBottom: 4 }}>No releases yet</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
               Create releases in the Product Hub to track delivery milestones here.
             </div>
           </div>
@@ -208,7 +208,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
             <Tag size={11} color={T.textInverse} strokeWidth={2} />
           </div>
           <span style={{
-            fontSize: 12, fontWeight: dimmed ? 400 : 500,
+            fontSize: 'var(--ds-font-size-200)', fontWeight: dimmed ? 400 : 500,
             color: dimmed ? T.subtlest : T.text,
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
@@ -240,7 +240,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
             <span style={{
               position: 'absolute',
               left: `calc(${barRight * 100}% + 5px)`,
-              fontSize: 10, color: T.subtlest, whiteSpace: 'nowrap',
+              fontSize: 'var(--ds-font-size-50)', color: T.subtlest, whiteSpace: 'nowrap',
             }}>
               {format(new Date(release.endDate), 'MMM d')}
             </span>
@@ -254,7 +254,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
         }}>
           {release.brCount > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 600, borderRadius: 10, padding: '0 8px',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, borderRadius: 10, padding: '0 8px',
               background: dimmed ? T.neutral : sm.bg,
               color: dimmed ? T.subtle : sm.text,
               whiteSpace: 'nowrap',
@@ -279,11 +279,11 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
         style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
       >
         <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Release Timeline</div>
-          <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Product release schedule and delivery milestones</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Release Timeline</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 4 }}>Product release schedule and delivery milestones</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 16 }}>
-          <span style={{ fontSize: 11, color: T.subtlest, flexShrink: 0 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, flexShrink: 0 }}>
             {format(rangeStart, 'MMM d')} – {format(rangeEnd, 'MMM d, yyyy')}
           </span>
           <ChevronDown size={16} color={T.subtlest} style={{ flexShrink: 0, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
@@ -305,7 +305,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
               width: 2, background: T.activeSolid, opacity: 0.35,
             }} />
             <div style={{ width: NAME_W, flexShrink: 0, paddingLeft: 40, display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: T.subtlest }}>Release</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Release</span>
             </div>
             <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', padding: '0 8px' }}>
               {ticks.map((tick, i) => {
@@ -314,7 +314,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
                 return (
                   <span key={i} style={{
                     position: 'absolute', left: `${ratio * 100}%`, transform: 'translateX(-50%)',
-                    fontSize: 10, whiteSpace: 'nowrap',
+                    fontSize: 'var(--ds-font-size-50)', whiteSpace: 'nowrap',
                     color: isNear ? T.activeSolid : T.subtlest,
                     fontWeight: isNear ? 700 : 400,
                   }}>
@@ -340,7 +340,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
                 left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
                 top: '50%', transform: 'translate(-50%, -50%)',
                 background: T.activeSolid, color: T.textInverse,
-                fontSize: 9, fontWeight: 800, padding: '0 8px',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0 8px',
                 borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',
                 zIndex: 6,
               }}>
@@ -359,8 +359,8 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
                     background: T.sunken, cursor: 'pointer', padding: '0 16px',
                   }}
                 >
-                  <span style={{ fontSize: 9, color: T.subtlest }}>{effectiveShowReleased ? '▼' : '▶'}</span>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: T.subtlest }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{effectiveShowReleased ? '▼' : '▶'}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.subtlest }}>
                     {noActiveOrUpcoming
                       ? `Released — showing ${shownReleased.length} of ${released.length}`
                       : `Released — ${released.length} release${released.length !== 1 ? 's' : ''}`}
@@ -377,7 +377,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
                 borderBottom: `1px solid ${T.borderSub}`, padding: '0 16px',
               }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.neutral, flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: T.subtlest, fontStyle: 'italic' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, fontStyle: 'italic' }}>
                   No active release in progress
                 </span>
               </div>
@@ -395,11 +395,11 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
             {([['active', T.activeSolid, 'Active'], ['upcoming', T.upcomingBar, 'Upcoming'], ['released', T.doneBar, 'Released']] as const).map(([, bar, label]) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{ width: 12, height: 8, borderRadius: 2, background: bar, flexShrink: 0 }} />
-                <span style={{ fontSize: 10, color: T.subtle }}>{label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{label}</span>
               </div>
             ))}
             <div style={{ flex: 1 }} />
-            <span style={{ fontSize: 10, color: T.subtlest, fontStyle: 'italic' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', color: T.subtlest, fontStyle: 'italic' }}>
               Click release → opens filter
             </span>
           </div>

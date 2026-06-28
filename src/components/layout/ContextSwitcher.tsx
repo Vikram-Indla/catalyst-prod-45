@@ -197,8 +197,8 @@ function SwitcherPanel({
         width: 288,
         maxHeight: 440,
         overflowY: 'auto',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.20)), 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14))',
         zIndex: 9999,
@@ -213,10 +213,10 @@ function SwitcherPanel({
         alignItems: 'center',
         gap: 8,
         padding: '8px 12px',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        borderBottom: '1px solid var(--ds-border)',
         flexShrink: 0,
       }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-subtle, #626F86)" strokeWidth="2.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-subtle)" strokeWidth="2.5">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input
@@ -233,8 +233,8 @@ function SwitcherPanel({
             border: 'none',
             outline: 'none',
             background: 'transparent',
-            fontSize: 13,
-            color: 'var(--ds-text, #172B4D)',
+            fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text)',
             fontFamily: 'inherit',
           }}
         />
@@ -242,7 +242,7 @@ function SwitcherPanel({
           <button
             onClick={() => onSearchChange('')}
             style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0,
-              color: 'var(--ds-icon-subtle, #626F86)', fontSize: 14, lineHeight: 1 }}
+              color: 'var(--ds-icon-subtle)', fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}
             aria-label="Clear search"
           >×</button>
         )}
@@ -255,7 +255,7 @@ function SwitcherPanel({
         {showStarred && (
           <Section
             label="STARRED"
-            icon={<StarFilledIcon size="small" label="" primaryColor="var(--ds-icon-warning, #FFC400)" />}
+            icon={<StarFilledIcon size="small" label="" primaryColor="var(--ds-icon-warning)" />}
             items={filtered(starredItems)}
             currentKey={currentKey}
             onNavigate={onNavigate}
@@ -264,7 +264,7 @@ function SwitcherPanel({
 
         {/* Divider between starred and the full recency-ordered list */}
         {showStarred && filteredMain.length > 0 && (
-          <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+          <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
         )}
 
         {/* Full list — every item, recency-ordered (recently-opened float to top) */}
@@ -279,16 +279,16 @@ function SwitcherPanel({
 
         {/* Empty state when search returns nothing */}
         {q && filteredMain.length === 0 && filtered(starredItems).length === 0 && (
-          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
-            color: 'var(--ds-text-subtlest, #626F86)' }}>
+          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text-subtlest)' }}>
             No results for "{search}"
           </div>
         )}
 
         {/* Empty state — no items at all */}
         {!q && allItems.length === 0 && starredItems.length === 0 && (
-          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
-            color: 'var(--ds-text-subtlest, #626F86)' }}>
+          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text-subtlest)' }}>
             {mode === 'tasks' ? 'No active workstreams' :
              mode === 'project' ? 'No projects yet' : 'No products yet'}
           </div>
@@ -297,7 +297,7 @@ function SwitcherPanel({
 
       {/* Footer */}
       <div style={{
-        borderTop: '1px solid var(--ds-border, #DFE1E6)',
+        borderTop: '1px solid var(--ds-border)',
         padding: '6px 8px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -308,10 +308,10 @@ function SwitcherPanel({
           onClick={() => { onManagementNav(managementPath); onClose(); }}
           style={{
             border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-link, #0052CC)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-link)',
             borderRadius: 3, fontFamily: 'inherit',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'none')}
         >
           {managementLabel}
@@ -321,13 +321,13 @@ function SwitcherPanel({
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)',
             borderRadius: 3, fontFamily: 'inherit',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'none')}
         >
-          <AddIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+          <AddIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
           {newLabel}
         </button>
       </div>
@@ -351,8 +351,8 @@ function Section({
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '2px 12px 4px',
-          fontSize: 11, fontWeight: 700,
-          color: 'var(--ds-text-subtlest, #626F86)',
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+          color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
         }}>
@@ -398,9 +398,9 @@ function ItemRow({ item, isCurrent, onNavigate }: {
         padding: '7px 12px',
         border: 'none', cursor: 'pointer', textAlign: 'left',
         background: isCurrent
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : hovered
-            ? 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'
+            ? 'var(--ds-background-neutral-subtle-hovered)'
             : 'transparent',
         transition: 'background 80ms',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
@@ -410,7 +410,7 @@ function ItemRow({ item, isCurrent, onNavigate }: {
           ProductHeaderChip exactly (CLAUDE.md adopt-canonical). Workstreams
           keep the colored dot (no avatar registry). */}
       {item.type === 'workstream'
-        ? (colorSwatch ?? <TaskIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />)
+        ? (colorSwatch ?? <TaskIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />)
         : (
           <ProjectIcon
             size="small"
@@ -422,15 +422,15 @@ function ItemRow({ item, isCurrent, onNavigate }: {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 13, fontWeight: isCurrent ? 600 : 400,
-          color: isCurrent ? 'var(--ds-text-selected, #0052CC)' : 'var(--ds-text, #172B4D)',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: isCurrent ? 600 : 400,
+          color: isCurrent ? 'var(--ds-text-selected)' : 'var(--ds-text)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {item.name}
         </div>
         <div style={{
-          fontSize: 11, fontFamily: 'monospace',
-          color: 'var(--ds-text-subtlest, #626F86)',
+          fontSize: 'var(--ds-font-size-100)', fontFamily: 'monospace',
+          color: 'var(--ds-text-subtlest)',
           marginTop: 1,
         }}>
           {item.key}
@@ -438,7 +438,7 @@ function ItemRow({ item, isCurrent, onNavigate }: {
       </div>
 
       {isCurrent && (
-        <CheckCircleIcon size="small" label="current" primaryColor="var(--ds-icon-accent-blue, #1D7AFC)" />
+        <CheckCircleIcon size="small" label="current" primaryColor="var(--ds-icon-accent-blue)" />
       )}
     </button>
   );
@@ -681,12 +681,12 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
               fontSize: token('font.size.100', '14px'),
               fontWeight: 500,
               letterSpacing: '-0.3px',
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
             }}
           >
             {triggerDisplayName}
           </span>
-          <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+          <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
         </>
       )}
     </button>
@@ -707,14 +707,14 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
         height: 32, padding: '0 8px 0 6px',
         background: triggerBg,
         border: open
-          ? '1px solid var(--ds-border-focused, #4C9AFF)'
+          ? '1px solid var(--ds-border-focused)'
           : '1px solid var(--ds-border, rgba(161,189,217,0.14))',
         borderRadius: 4,
         cursor: 'pointer',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
         fontWeight: 500,
-        color: 'var(--ds-text, #172B4D)',
+        color: 'var(--ds-text)',
         maxWidth: 220,
         flexShrink: 0,
         transition: 'background 80ms, border-color 80ms',
@@ -728,8 +728,8 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
       <span style={{ display: 'flex', alignItems: 'baseline', gap: 4, overflow: 'hidden' }}>
         {triggerDisplayKey && (
           <span style={{
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.02em',
-            color: 'var(--ds-text-subtle, #44546F)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 700, letterSpacing: '0.02em',
+            color: 'var(--ds-text-subtle)',
             flexShrink: 0,
           }}>
             {triggerDisplayKey}
@@ -738,14 +738,14 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
         {triggerDisplayName && (
           <span style={{
             overflow: 'hidden', textOverflow: 'ellipsis',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
           }}>
             {triggerDisplayName}
           </span>
         )}
       </span>
 
-      <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+      <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
     </button>
   );
 

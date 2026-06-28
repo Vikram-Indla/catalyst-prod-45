@@ -31,12 +31,12 @@ describe('CatalystParentLinker — parent chip canonical parity (Jira probe 2026
     }
   });
 
-  it('every PARENT_TOKENS entry uses Jira canonical text color var(--ds-text-subtle, #505258)', () => {
+  it('every PARENT_TOKENS entry uses Jira canonical text color var(--ds-text-subtle)', () => {
     for (const [type, tok] of Object.entries(PARENT_TOKENS_FOR_TEST)) {
       expect(
         tok.text,
-        `PARENT_TOKENS["${type}"].text must be "var(--ds-text-subtle, #505258)" — got "${tok.text}"`,
-      ).toBe('var(--ds-text-subtle, #505258)');
+        `PARENT_TOKENS["${type}"].text must be "var(--ds-text-subtle)" — got "${tok.text}"`,
+      ).toBe('var(--ds-text-subtle)');
     }
   });
 

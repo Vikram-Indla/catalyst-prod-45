@@ -6,7 +6,7 @@
  *
  * Values:  Critical | High | Medium | Low
  * Visual:  4 colored bars (filled count = level) + optional text label
- * Colors:  Critical=var(--cp-danger, #DC2626)  High=var(--ds-background-warning-bold, #F97316)  Medium=#EAB308  Low=var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))
+ * Colors:  Critical=var(--cp-danger)  High=var(--ds-background-warning-bold)  Medium=#EAB308  Low=var(--cp-ink-4, var(--cp-border-neutral-light))
  */
 
 import React from 'react';
@@ -22,10 +22,10 @@ export interface PriorityConfig {
 }
 
 export const PRIORITY_MAP: Record<PriorityLevel, PriorityConfig> = {
-  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', textColor: 'var(--ds-text-danger, #991B1B)', textColorDark: 'var(--ds-background-danger, #FFECEB)' },
-  high:     { label: 'High',     level: 3, filledColor: 'var(--ds-background-warning-bold, #f97316)', textColor: 'var(--ds-text-danger, #AE2A19)', textColorDark: 'var(--ds-background-warning-bold, #E2B203)' },
-  medium:   { label: 'Medium',   level: 2, filledColor: 'var(--ds-background-warning-bold, #E2B203)', textColor: 'var(--ds-text-warning, #974F0C)', textColorDark: 'var(--ds-background-warning-bold, #E2B203)' },
-  low:      { label: 'Low',      level: 1, filledColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textColorDark: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, var(--cp-danger))', textColor: 'var(--ds-text-danger)', textColorDark: 'var(--ds-background-danger)' },
+  high:     { label: 'High',     level: 3, filledColor: 'var(--ds-background-warning-bold)', textColor: 'var(--ds-text-danger)', textColorDark: 'var(--ds-background-warning-bold)' },
+  medium:   { label: 'Medium',   level: 2, filledColor: 'var(--ds-background-warning-bold)', textColor: 'var(--ds-text-warning)', textColorDark: 'var(--ds-background-warning-bold)' },
+  low:      { label: 'Low',      level: 1, filledColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', textColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', textColorDark: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
 };
 
 /** Normalise any priority string to our canonical PriorityLevel. */
@@ -38,8 +38,8 @@ export function normalisePriority(raw: string | null | undefined): PriorityLevel
   return 'medium'; // default — medium, p3, or anything else
 }
 
-const EMPTY_BAR_LIGHT = 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
-const EMPTY_BAR_DARK  = 'var(--ds-border, var(--cp-ink-1, #292929))';
+const EMPTY_BAR_LIGHT = 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))';
+const EMPTY_BAR_DARK  = 'var(--ds-border, var(--cp-ink-1))';
 
 interface PriorityBarsProps {
   priority: PriorityLevel;
@@ -77,8 +77,8 @@ interface PriorityIndicatorProps {
   showLabel?: boolean;
   /** Dark mode flag — auto-detected from CSS var if omitted */
   isDark?: boolean;
-  /** Font size for label (default: 13) */
-  fontSize?: number;
+  /** Font size for label */
+  fontSize?: string | number;
   /** Bar dimensions */
   barWidth?: number;
   barHeight?: number;
@@ -88,7 +88,7 @@ export function PriorityIndicator({
   priority: raw,
   showLabel = true,
   isDark = false,
-  fontSize = 13,
+  fontSize = 'var(--ds-font-size-300)',
   barWidth,
   barHeight,
 }: PriorityIndicatorProps) {

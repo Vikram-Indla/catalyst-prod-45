@@ -350,7 +350,7 @@ export function FilterResultsPanel({
       sortable: true,
       accessor: r => r.projectKey,
       cell: ({ row }) => (
-        <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
           {row.projectKey || '—'}
         </span>
       ),
@@ -417,14 +417,14 @@ export function FilterResultsPanel({
       }}>
         <h2 style={{
           margin: 0,
-          fontSize: 16,
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 653,
           color: token('color.text'),
         }}>
           Results
         </h2>
         {hasJql && totalCount > 0 && (
-          <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
             {totalCount > JQL_RESULTS_LIMIT
               ? `${JQL_RESULTS_LIMIT} of ${totalCount}`
               : `${totalCount}`} work item{totalCount === 1 ? '' : 's'}
@@ -446,11 +446,11 @@ export function FilterResultsPanel({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 2,
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               padding: '2px 6px',
               borderRadius: 3,
-              background: `var(--ds-background-neutral, #F1F2F4)`,
+              background: `var(--ds-background-neutral)`,
               color: token('color.text.subtle'),
               border: `1px solid ${token('color.border')}`,
             }}>
@@ -474,11 +474,11 @@ export function FilterResultsPanel({
         <div style={{
           padding: '32px 24px',
           textAlign: 'center',
-          background: `var(--ds-surface-sunken, #F7F8F9)`,
+          background: `var(--ds-surface-sunken)`,
           border: `1px dashed ${token('color.border')}`,
           borderRadius: 4,
           color: token('color.text.subtle'),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}>
           {emptyHint}
         </div>
@@ -501,7 +501,7 @@ export function FilterResultsPanel({
               padding: '32px 24px',
               textAlign: 'center',
               color: token('color.text.subtle'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}>
               No work items match this filter yet. Adjust the criteria above.
             </div>

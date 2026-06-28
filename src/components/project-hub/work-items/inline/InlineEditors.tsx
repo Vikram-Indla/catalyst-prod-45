@@ -78,7 +78,7 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
 
 // ─── Inline Status Picker ──────────────────────────────────
 const STATUS_COLORS: Record<string, string> = {
-  todo: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))', terminal: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  todo: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', done: 'var(--ds-text-success, var(--cp-success))', terminal: 'var(--ds-text-danger, var(--cp-danger))',
 };
 
 export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSelect, onClose }: {
@@ -95,12 +95,12 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
           <button
             key={s.id}
             onClick={() => { onSelect(s.id); onClose(); }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors text-left"
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken)] transition-colors text-left"
             style={{ color: 'var(--fg-1)' }}
           >
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
             <span className="flex-1">{s.name}</span>
-            {s.id === currentStatusId && <Check size={12} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
+            {s.id === currentStatusId && <Check size={12} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />}
           </button>
         ))}
       </div>
@@ -110,10 +110,10 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
 
 // ─── Inline Priority Picker ─────────────────────────────────
 const PRIORITIES = [
-  { value: 'Critical', icon: ChevronsUp, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  { value: 'High', icon: ArrowUp, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  { value: 'Medium', icon: ArrowRight, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  { value: 'Low', icon: ArrowDown, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  { value: 'Critical', icon: ChevronsUp, color: 'var(--ds-text-danger, var(--cp-danger))' },
+  { value: 'High', icon: ArrowUp, color: 'var(--ds-text-warning, var(--cp-warning))' },
+  { value: 'Medium', icon: ArrowRight, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { value: 'Low', icon: ArrowDown, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
 ];
 
 export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: {
@@ -131,12 +131,12 @@ export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: 
             <button
               key={p.value}
               onClick={() => { onSelect(p.value); onClose(); }}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors text-left"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken)] transition-colors text-left"
               style={{ color: 'var(--fg-1)' }}
             >
               <Icon size={13} style={{ color: p.color }} />
               <span className="flex-1">{p.value}</span>
-              {current === p.value && <Check size={12} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
+              {current === p.value && <Check size={12} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />}
             </button>
           );
         })}
@@ -207,7 +207,7 @@ export function InlineDatePicker({ current, anchorRef, onSelect, onClose }: {
         {current && (
           <button
             onClick={() => { onSelect(null); onClose(); }}
-            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[var(--ds-background-danger,#FEF2F2)]"
+            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[var(--ds-background-danger)]"
             style={{ color: 'var(--sem-danger)' }}
           >
             Clear date
@@ -222,7 +222,7 @@ function AvatarCircle({ name, size = 20 }: { name: string; size?: number }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-success, var(--cp-success))'];
   return (
     <div
       className="rounded-full flex items-center justify-center font-bold text-white shrink-0"

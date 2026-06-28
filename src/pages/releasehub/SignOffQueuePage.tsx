@@ -21,13 +21,13 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
+  surface: 'var(--ds-surface)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -62,18 +62,18 @@ function ApprovalWindow({ approval, onClose }: { approval: PendingApproval; onCl
         <ModalBody>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.link }}>{approval.chgNumber ?? '—'}</span>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text }}>{approval.changeTitle ?? ''}</span>
+              <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.link }}>{approval.chgNumber ?? '—'}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text }}>{approval.changeTitle ?? ''}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {approval.role && <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{approval.role}</span>}
+              {approval.role && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{approval.role}</span>}
               <Avatar name={approval.approverName ?? 'Unassigned'} src={approval.approverAvatarUrl ?? undefined} size="small" />
-              <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{approval.approverName ?? 'Unassigned'}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{approval.approverName ?? 'Unassigned'}</span>
             </div>
           </div>
-          <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtle, marginBottom: 4 }} htmlFor="signoff-comment">Comment</label>
+          <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtle, marginBottom: 4 }} htmlFor="signoff-comment">Comment</label>
           <TextArea id="signoff-comment" value={comment} onChange={(e) => setComment((e.target as HTMLTextAreaElement).value)} placeholder="Optional for approve, required for reject" minimumRows={3} />
-          {error && <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>{error}</div>}
+          {error && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', marginTop: 4 }}>{error}</div>}
         </ModalBody>
         <ModalFooter>
           <Button appearance="subtle" onClick={onClose}>Cancel</Button>
@@ -103,7 +103,7 @@ export default function SignOffQueuePage() {
       {error ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : isLoading ? (
-        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>
+        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>Loading…</div>
       ) : approvals.length === 0 ? (
         <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="Approvals requested on changes will appear here for review." />
       ) : (
@@ -113,15 +113,15 @@ export default function SignOffQueuePage() {
               <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="medium" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{a.approverName ?? 'Unassigned'}</span>
-                  {a.role && <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{a.role}</span>}
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{a.approverName ?? 'Unassigned'}</span>
+                  {a.role && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{a.role}</span>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                  {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'} · {waitLabel(a.waitStartedAt)}</span>
+                  {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'} · {waitLabel(a.waitStartedAt)}</span>
                 </div>
               </div>
-              <button onClick={() => setSelected(a)} style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              <button onClick={() => setSelected(a)} style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Review <ChevronRight size={14} style={{ color: T.link }} />
               </button>
             </div>

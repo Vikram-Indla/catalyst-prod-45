@@ -54,7 +54,7 @@ export default function ReportsCommandCenterPage() {
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       <span
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           padding: '3px 8px',
           borderRadius: 4,
@@ -70,7 +70,7 @@ export default function ReportsCommandCenterPage() {
         type="button"
         onClick={handleRefresh}
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           padding: '5px 10px',
           background: 'var(--ds-surface)',
           border: '1px solid var(--ds-border)',
@@ -132,7 +132,7 @@ export default function ReportsCommandCenterPage() {
               <h1
                 style={{
                   margin: 0,
-                  fontSize: 16,
+                  fontSize: 'var(--ds-font-size-500)',
                   fontWeight: 700,
                   color: 'var(--ds-text)',
                   lineHeight: 1.2,
@@ -143,7 +143,7 @@ export default function ReportsCommandCenterPage() {
               <p
                 style={{
                   margin: '3px 0 0',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtlest)',
                   lineHeight: 1.3,
                 }}

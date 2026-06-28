@@ -24,44 +24,44 @@ interface T10EnterpriseSidePanelProps {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 const COLORS = {
-  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  gray50: 'var(--ds-surface-sunken, #f8fafc)',
-  gray100: 'var(--ds-surface-sunken, #f1f5f9)',
-  gray200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  gray300: 'var(--ds-text-disabled, #cbd5e1)',
-  gray400: 'var(--ds-text-subtlest, #94a3b8)',
-  gray500: 'var(--ds-text-subtlest, #64748b)',
-  gray600: 'var(--ds-text-subtle, #475569)',
-  gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  gray800: 'var(--ds-text, #172B4D)',
-  gray900: 'var(--ds-text, #0f172a)',
-  blue: 'var(--ds-text-brand, #3b82f6)',
-  blue50: 'var(--ds-background-selected, #eff6ff)',
-  blueDark: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',
-  teal50: 'var(--ds-background-success, #DFFCF0)',
-  green: 'var(--ds-text-success, #22c55e)',
-  green50: 'var(--ds-background-success, #DFFCF0)',
-  red: 'var(--ds-text-danger, #ef4444)',
-  red50: 'var(--ds-background-danger, #fef2f2)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  gray50: 'var(--ds-surface-sunken)',
+  gray100: 'var(--ds-surface-sunken)',
+  gray200: 'var(--ds-border, var(--cp-bg-sunken))',
+  gray300: 'var(--ds-text-disabled)',
+  gray400: 'var(--ds-text-subtlest)',
+  gray500: 'var(--ds-text-subtlest)',
+  gray600: 'var(--ds-text-subtle)',
+  gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+  gray800: 'var(--ds-text)',
+  gray900: 'var(--ds-text)',
+  blue: 'var(--ds-text-brand)',
+  blue50: 'var(--ds-background-selected)',
+  blueDark: 'var(--ds-background-brand-bold-hovered)',
+  teal: 'var(--ds-chart-teal-bold)',
+  teal50: 'var(--ds-background-success)',
+  green: 'var(--ds-text-success)',
+  green50: 'var(--ds-background-success)',
+  red: 'var(--ds-text-danger)',
+  red50: 'var(--ds-background-danger)',
 };
 
 const LABEL_COLORS = [
-  { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Orange', value: 'var(--ds-background-warning-bold, #f97316)' },
-  { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
-  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Lime', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
-  { name: 'Emerald', value: 'var(--ds-background-success-bold, #059669)' },
-  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
-  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
-  { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6366f1)' },
-  { name: 'Violet', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
-  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #a855f7)' },
-  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
-  { name: 'Gray', value: 'var(--ds-text-subtlest, #626F86)' },
+  { name: 'Red', value: 'var(--ds-text-danger)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Amber', value: 'var(--ds-text-warning)' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Lime', value: 'var(--ds-background-success-bold)' },
+  { name: 'Green', value: 'var(--ds-text-success)' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold)' },
+  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information)' },
+  { name: 'Blue', value: 'var(--ds-text-brand)' },
+  { name: 'Indigo', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Violet', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder)' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest)' },
 ];
 
 export function T10EnterpriseSidePanel({
@@ -86,7 +86,7 @@ export function T10EnterpriseSidePanel({
   const [labelSearch, setLabelSearch] = useState('');
   const [showCreateLabel, setShowCreateLabel] = useState(false);
   const [newLabelName, setNewLabelName] = useState('');
-  const [newLabelColor, setNewLabelColor] = useState('var(--ds-text-subtlest, #626F86)');
+  const [newLabelColor, setNewLabelColor] = useState('var(--ds-text-subtlest)');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [editDate, setEditDate] = useState('');
   
@@ -339,7 +339,7 @@ export function T10EnterpriseSidePanel({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '16px',
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 800,
                 background: rankTier === 'top' 
                   ? `linear-gradient(135deg, ${COLORS.blue} 0%, ${COLORS.blueDark} 100%)`
@@ -356,7 +356,7 @@ export function T10EnterpriseSidePanel({
             
             <div>
               <div style={{ 
-                fontSize: '11px', 
+                fontSize: 'var(--ds-font-size-100)', 
                 fontWeight: 700, 
                 color: COLORS.gray500,
                 textTransform: 'uppercase',
@@ -376,7 +376,7 @@ export function T10EnterpriseSidePanel({
                     padding: 0,
                     cursor: 'pointer',
                     fontFamily: "'SF Mono', Monaco, monospace",
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     color: COLORS.teal,
                   }}
@@ -429,7 +429,7 @@ export function T10EnterpriseSidePanel({
           <h2
             style={{
               margin: 0,
-              fontSize: '18px',
+              fontSize: 'var(--ds-font-size-600)',
               fontWeight: 600,
               color: COLORS.gray900,
               lineHeight: 1.4,
@@ -455,7 +455,7 @@ export function T10EnterpriseSidePanel({
               onClick={() => setActiveTab(tab)}
               style={{
                 padding: '12px 16px',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
                 color: activeTab === tab ? COLORS.blue : COLORS.gray500,
                 background: 'none',
@@ -490,7 +490,7 @@ export function T10EnterpriseSidePanel({
                     gap: '12px',
                     padding: '14px',
                     background: isCompleted ? COLORS.green50 : COLORS.gray50,
-                    border: `1px solid ${isCompleted ? 'var(--ds-background-success, #DFFCF0)' : COLORS.gray200}`,
+                    border: `1px solid ${isCompleted ? 'var(--ds-background-success)' : COLORS.gray200}`,
                     borderRadius: '12px',
                     cursor: isReadOnly ? 'default' : 'pointer',
                     transition: 'all 0.15s',
@@ -516,7 +516,7 @@ export function T10EnterpriseSidePanel({
                     {isCompleted && <Check size={14} color="white" strokeWidth={3} />}
                   </div>
                   <span style={{
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: isCompleted ? 600 : 400,
                     color: isCompleted ? COLORS.green : COLORS.gray600,
                   }}>
@@ -550,7 +550,7 @@ export function T10EnterpriseSidePanel({
                     {item.assignee_name ? (
                       <>
                         <Avatar initials={item.assignee_initials || 'U'} size={28} />
-                        <span style={{ flex: 1, fontSize: '14px', color: COLORS.gray800 }}>
+                        <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: COLORS.gray800 }}>
                           {item.assignee_name}
                         </span>
                         {!isReadOnly && (
@@ -586,7 +586,7 @@ export function T10EnterpriseSidePanel({
                         }}>
                           <Plus size={14} color={COLORS.gray400} />
                         </div>
-                        <span style={{ fontSize: '14px', color: COLORS.gray400 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.gray400 }}>
                           Add assignee
                         </span>
                       </>
@@ -617,10 +617,10 @@ export function T10EnterpriseSidePanel({
                             >
                               <Avatar initials={user.initials} avatarUrl={user.avatar_url} size={32} />
                               <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '14px', fontWeight: 500, color: COLORS.gray800 }}>
+                                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: COLORS.gray800 }}>
                                   {user.full_name || 'Unnamed User'}
                                 </div>
-                                <div style={{ fontSize: '12px', color: COLORS.gray500 }}>
+                                <div style={{ fontSize: 'var(--ds-font-size-200)', color: COLORS.gray500 }}>
                                   {user.email}
                                 </div>
                               </div>
@@ -661,7 +661,7 @@ export function T10EnterpriseSidePanel({
                     <Calendar size={18} color={item.due_date ? COLORS.blue : COLORS.gray400} />
                     <span style={{ 
                       flex: 1, 
-                      fontSize: '14px', 
+                      fontSize: 'var(--ds-font-size-400)', 
                       color: item.due_date ? COLORS.gray800 : COLORS.gray400 
                     }}>
                       {item.due_date 
@@ -709,7 +709,7 @@ export function T10EnterpriseSidePanel({
                             padding: '10px 12px',
                             border: `1px solid ${COLORS.gray200}`,
                             borderRadius: '8px',
-                            fontSize: '14px',
+                            fontSize: 'var(--ds-font-size-400)',
                             outline: 'none',
                           }}
                         />
@@ -742,7 +742,7 @@ export function T10EnterpriseSidePanel({
                           background: 'transparent',
                           border: `1px dashed ${COLORS.gray300}`,
                           borderRadius: '6px',
-                          fontSize: '12px',
+                          fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 500,
                           color: COLORS.gray500,
                           cursor: 'pointer',
@@ -783,7 +783,7 @@ export function T10EnterpriseSidePanel({
                                     borderRadius: '4px',
                                     background: label.color,
                                   }} />
-                                  <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.gray800 }}>
+                                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: COLORS.gray800 }}>
                                     {label.name}
                                   </span>
                                   {isSelected && <Check size={16} color={COLORS.blue} />}
@@ -816,7 +816,7 @@ export function T10EnterpriseSidePanel({
                                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                               >
                                 <Plus size={16} color={COLORS.blue} />
-                                <span style={{ fontSize: '14px', color: COLORS.blue, fontWeight: 500 }}>
+                                <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.blue, fontWeight: 500 }}>
                                   Create "{labelSearch}"
                                 </span>
                               </button>
@@ -834,7 +834,7 @@ export function T10EnterpriseSidePanel({
                         }}>
                           <div style={{ marginBottom: '10px' }}>
                             <div style={{ 
-                              fontSize: '12px', 
+                              fontSize: 'var(--ds-font-size-200)', 
                               fontWeight: 600, 
                               color: COLORS.gray600,
                               marginBottom: '6px',
@@ -852,7 +852,7 @@ export function T10EnterpriseSidePanel({
                                     borderRadius: '4px',
                                     background: color.value,
                                     border: newLabelColor === color.value 
-                                      ? '2px solid var(--ds-text, #172B4D)' 
+                                      ? '2px solid var(--ds-text)' 
                                       : '2px solid transparent',
                                     cursor: 'pointer',
                                   }}
@@ -870,7 +870,7 @@ export function T10EnterpriseSidePanel({
                                 border: `1px solid ${COLORS.gray200}`,
                                 borderRadius: '6px',
                                 background: COLORS.white,
-                                fontSize: '13px',
+                                fontSize: 'var(--ds-font-size-300)',
                                 fontWeight: 500,
                                 color: COLORS.gray600,
                                 cursor: 'pointer',
@@ -887,7 +887,7 @@ export function T10EnterpriseSidePanel({
                                 border: 'none',
                                 borderRadius: '6px',
                                 background: COLORS.blue,
-                                fontSize: '13px',
+                                fontSize: 'var(--ds-font-size-300)',
                                 fontWeight: 600,
                                 color: 'white',
                                 cursor: 'pointer',
@@ -919,7 +919,7 @@ export function T10EnterpriseSidePanel({
                   {/* Auto-save status indicator */}
                   {saveStatus !== 'idle' && (
                     <span style={{
-                      fontSize: '11px',
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 500,
                       color: saveStatus === 'saved' ? COLORS.green : COLORS.gray500,
                       display: 'flex',
@@ -952,7 +952,7 @@ export function T10EnterpriseSidePanel({
                     padding: '14px',
                     border: `1px solid ${COLORS.gray200}`,
                     borderRadius: '12px',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     lineHeight: 1.6,
                     color: COLORS.gray800,
                     background: COLORS.white,
@@ -995,7 +995,7 @@ export function T10EnterpriseSidePanel({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: '12px', color: COLORS.gray400 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: COLORS.gray400 }}>
             Created {getRelativeTime(item.created_at)}
           </span>
           {!isReadOnly && (
@@ -1010,7 +1010,7 @@ export function T10EnterpriseSidePanel({
                 background: 'transparent',
                 color: COLORS.red,
                 fontFamily: 'inherit',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 600,
                 cursor: 'pointer',
                 borderRadius: '6px',
@@ -1053,7 +1053,7 @@ function FieldLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
         display: 'flex',
         alignItems: 'center',
         gap: '6px',
-        fontSize: '11px',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
@@ -1116,7 +1116,7 @@ function LabelChip({ label, onRemove }: { label: T10Label; onRemove?: () => void
         background: `${label.color}15`,
         border: `1px solid ${label.color}40`,
         borderRadius: '6px',
-        fontSize: '12px',
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         color: label.color,
       }}
@@ -1163,7 +1163,7 @@ function MoreMenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: 
         padding: '10px 14px',
         border: 'none',
         background: 'transparent',
-        fontSize: '14px',
+        fontSize: 'var(--ds-font-size-400)',
         color: COLORS.gray700,
         cursor: 'pointer',
         textAlign: 'left',
@@ -1228,7 +1228,7 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, {
             flex: 1,
             border: 'none',
             background: 'transparent',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             color: COLORS.gray800,
             outline: 'none',
           }}
@@ -1268,7 +1268,7 @@ function DropdownLoading() {
 
 function DropdownEmpty({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ padding: '20px', textAlign: 'center', color: COLORS.gray500, fontSize: '14px' }}>
+    <div style={{ padding: '20px', textAlign: 'center', color: COLORS.gray500, fontSize: 'var(--ds-font-size-400)' }}>
       {children}
     </div>
   );

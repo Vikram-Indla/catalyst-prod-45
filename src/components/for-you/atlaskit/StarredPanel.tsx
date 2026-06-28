@@ -51,7 +51,7 @@ function StarredSkeletonLine({ width = '100%', height = 12 }: { width?: string |
         width,
         height,
         borderRadius: 4,
-        background: `linear-gradient(90deg, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)')} 25%, ${token('color.background.neutral', '#E4E5E7')} 50%, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')} 75%)`,
+        background: `linear-gradient(90deg, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral)')} 25%, ${token('color.background.neutral', '#E4E5E7')} 50%, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, var(--ds-background-neutral))')} 75%)`,
         backgroundSize: '200% 100%',
         animation: 'catalyst-shimmer 1.4s infinite',
       }}

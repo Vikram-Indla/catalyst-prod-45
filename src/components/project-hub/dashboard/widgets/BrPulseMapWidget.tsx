@@ -31,24 +31,24 @@ function toWidgetHealth(s: string | null): string {
 
 const HEALTH_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   Healthy: {
-    bg: 'var(--ds-background-accent-green-subtler, #DCFFF1)',
-    text: 'var(--ds-text-accent-green-bolder, #216E4E)',
-    border: 'var(--ds-border-accent-green, #1F845A)',
+    bg: 'var(--ds-background-accent-green-subtler)',
+    text: 'var(--ds-text-accent-green-bolder)',
+    border: 'var(--ds-border-accent-green)',
   },
   'At Risk': {
-    bg: 'var(--ds-background-accent-orange-subtler, #FFF3D9)',
-    text: 'var(--ds-text-accent-orange-bolder, #974F0C)',
-    border: 'var(--ds-border-accent-orange, #C25100)',
+    bg: 'var(--ds-background-accent-orange-subtler)',
+    text: 'var(--ds-text-accent-orange-bolder)',
+    border: 'var(--ds-border-accent-orange)',
   },
   Overdue: {
-    bg: 'var(--ds-background-accent-red-subtler, #FFECEB)',
-    text: 'var(--ds-text-accent-red-bolder, #AE2A19)',
-    border: 'var(--ds-border-accent-red, #C9372C)',
+    bg: 'var(--ds-background-accent-red-subtler)',
+    text: 'var(--ds-text-accent-red-bolder)',
+    border: 'var(--ds-border-accent-red)',
   },
   Uncommitted: {
-    bg: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-    text: 'var(--ds-text-subtle, #626F86)',
-    border: 'var(--ds-border, #DFE1E6)',
+    bg: 'var(--ds-background-neutral-subtle)',
+    text: 'var(--ds-text-subtle)',
+    border: 'var(--ds-border)',
   },
 };
 
@@ -97,7 +97,7 @@ export default function BrPulseMapWidget({
                 flex: 1,
                 height: 96,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -117,7 +117,7 @@ export default function BrPulseMapWidget({
               borderRadius: 6,
               overflow: 'hidden',
               display: 'flex',
-              background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             }}
           >
             {STATUS_ORDER.filter((s) => distribution[s] > 0).map((s) => (
@@ -174,7 +174,7 @@ export default function BrPulseMapWidget({
           <div
             style={{
               ...SMALL,
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textAlign: 'right',
             }}
           >

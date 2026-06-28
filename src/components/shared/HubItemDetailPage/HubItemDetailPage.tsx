@@ -135,7 +135,7 @@ export default function HubItemDetailPage({
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-body)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtle)', fontFamily: 'var(--ds-font-family-body)' }}>
         Loading…
       </div>
     );
@@ -144,14 +144,14 @@ export default function HubItemDetailPage({
   if (!issue) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--ds-font-family-body)', gap: 12 }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Issue not found</span>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>{issueKey} could not be found.</span>
+        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text)' }}>Issue not found</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>{issueKey} could not be found.</span>
         {debugInfo && (
-          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'var(--ds-font-family-code, monospace)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', border: `1px solid var(--ds-border-danger, #FF8F73)`, borderRadius: 4 }}>
+          <span style={{ fontSize: 11, color: 'var(--ds-text-danger)', fontFamily: 'var(--ds-font-family-code, monospace)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger)', border: `1px solid var(--ds-border-danger)`, borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}
-        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 3, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           {backLabel}
         </button>
       </div>

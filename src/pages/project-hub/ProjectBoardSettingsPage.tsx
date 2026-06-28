@@ -36,7 +36,7 @@ export default function ProjectBoardSettingsPage() {
         name: data.name,
         description: data.description ?? null,
         icon: data.icon ?? '',
-        color: data.color ?? 'var(--ds-link, #0052CC)',
+        color: data.color ?? 'var(--ds-link)',
         projectId: data.project_id ?? null,
         isPersonal: data.is_personal ?? false,
         visibility: data.visibility ?? 'project',
@@ -85,14 +85,14 @@ export default function ProjectBoardSettingsPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--ds-background-brand-bold, #0052CC)' }} />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--ds-background-brand-bold)' }} />
       </div>
     );
   }
 
   if (!board || !key) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
         Board not found
       </div>
     );

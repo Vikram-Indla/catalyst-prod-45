@@ -36,11 +36,11 @@ function StatusPill({
 
   const catColor = mapping.bucketType === 'column'
     ? (mapping.statusName.toLowerCase().includes('done') || mapping.statusName.toLowerCase().includes('closed') || mapping.statusName.toLowerCase().includes('production') || mapping.statusName.toLowerCase().includes('resolved')
-      ? 'var(--ds-text-success, #006644)' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
-        ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text, #253858)')
-    : 'var(--ds-text, #253858)';
+      ? 'var(--ds-text-success)' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
+        ? 'var(--ds-link-pressed)' : 'var(--ds-text)')
+    : 'var(--ds-text)';
 
-  const catBg = catColor === 'var(--ds-text-success, #006644)' ? 'var(--ds-background-success, #DFFCF0)' : catColor === 'var(--ds-link-pressed, #0747A6)' ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const catBg = catColor === 'var(--ds-text-success)' ? 'var(--ds-background-success)' : catColor === 'var(--ds-link-pressed)' ? 'var(--ds-background-information)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
 
   return (
     <div
@@ -54,7 +54,7 @@ function StatusPill({
       <div className="flex items-center gap-2 flex-1 min-w-0" style={{ padding: '5px 0' }}>
         <GripVertical size={14} color={tk.textDisabled} className="flex-shrink-0" />
         <span style={{
-          fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', color: catColor, background: catBg,
           borderRadius: 3, padding: '2px 8px', lineHeight: '20px',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -63,7 +63,7 @@ function StatusPill({
         </span>
       </div>
       <span style={{
-        fontSize: 11, fontWeight: 600, color: tk.textMuted,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
         fontFamily: 'var(--cp-font-mono)', flexShrink: 0,
       }}>
         {count}
@@ -82,7 +82,7 @@ function OverlayPill({ name, tk }: { name: string; tk: any }) {
     }}>
       <GripVertical size={14} color={tk.textDisabled} />
       <span style={{
-        fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
         letterSpacing: '0.03em', color: 'var(--cp-text-secondary)', background: 'var(--cp-border-default)',
         borderRadius: 3, padding: '2px 8px', lineHeight: '20px',
       }}>
@@ -162,7 +162,7 @@ function ColumnCard({
               onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setEditing(false); }}
               maxLength={40}
               style={{
-                flex: 1, fontSize: 12, fontWeight: 700, textTransform: 'uppercase',
+                flex: 1, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase',
                 letterSpacing: '0.04em', color: tk.textPrimary,
                 background: tk.inputBg, border: `1px solid ${tk.selectedAccent}`,
                 borderRadius: 3, padding: '2px 6px', outline: 'none',
@@ -170,7 +170,7 @@ function ColumnCard({
               }}
             />
             <button onClick={commitRename} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-              <Check size={14} color="var(--ds-background-success-bold, #1F845A)" />
+              <Check size={14} color="var(--ds-background-success-bold)" />
             </button>
             <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <X size={14} color={tk.textMuted} />
@@ -179,7 +179,7 @@ function ColumnCard({
         ) : (
           <div className="flex items-center gap-1 flex-1 min-w-0">
             <span style={{
-              fontSize: 12, fontWeight: 700, textTransform: 'uppercase',
+              fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase',
               letterSpacing: '0.04em', color: tk.textPrimary,
               fontFamily: 'var(--cp-font-body)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -187,7 +187,7 @@ function ColumnCard({
               {column.name}
             </span>
             <span style={{
-              fontSize: 11, fontWeight: 600, color: tk.textSecondary,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textSecondary,
               background: tk.badgeBg, borderRadius: 10,
               padding: '1px 7px', lineHeight: '18px', flexShrink: 0,
             }}>
@@ -224,7 +224,7 @@ function ColumnCard({
       >
         <SortableContext items={mappings.map(m => m.statusId)} strategy={verticalListSortingStrategy}>
           {mappings.length === 0 ? (
-            <div style={{ fontSize: 12, color: tk.textDisabled, textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textDisabled, textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>
               Drag statuses here
             </div>
           ) : (
@@ -260,14 +260,14 @@ function BucketPanel({
     }}>
       <div className="flex items-center gap-2 px-3 py-2" style={{ borderBottom: `1px solid ${tk.borderSubtle}` }}>
         <span style={{
-          fontSize: 12, fontWeight: 700, textTransform: 'uppercase',
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.04em', color: tk.textPrimary,
           fontFamily: 'var(--cp-font-body)',
         }}>
           {title}
         </span>
         <span style={{
-          fontSize: 11, fontWeight: 600, color: tk.textSecondary,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textSecondary,
           background: tk.badgeBg, borderRadius: 10,
           padding: '1px 7px', lineHeight: '18px',
         }}>
@@ -277,7 +277,7 @@ function BucketPanel({
       <div data-bucket={bucketType} className="flex-1 px-3 py-2" style={{ minHeight: 60 }}>
         <SortableContext items={mappings.map(m => m.statusId)} strategy={verticalListSortingStrategy}>
           {mappings.length === 0 ? (
-            <div style={{ fontSize: 12, color: tk.textDisabled, textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textDisabled, textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>
               {bucketType === 'unmapped' ? 'No unmapped statuses' : 'Drag statuses here'}
             </div>
           ) : (
@@ -312,7 +312,7 @@ function AddColumnBtn({ tk, onAdd }: { tk: any; onAdd: (name: string) => void })
         style={{
           height: 36, padding: '0 12px', borderRadius: 6,
           border: `1px dashed ${tk.border}`, background: 'transparent',
-          color: tk.textSecondary, fontSize: 12, fontWeight: 600,
+          color: tk.textSecondary, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -332,14 +332,14 @@ function AddColumnBtn({ tk, onAdd }: { tk: any; onAdd: (name: string) => void })
         placeholder="Column name"
         maxLength={40}
         style={{
-          width: 160, height: 32, fontSize: 12, padding: '0 8px',
+          width: 160, height: 32, fontSize: 'var(--ds-font-size-200)', padding: '0 8px',
           border: `1px solid ${tk.selectedAccent}`, borderRadius: 4,
           background: tk.inputBg, color: tk.textPrimary, outline: 'none',
           fontFamily: 'var(--cp-font-body)',
         }}
       />
       <button onClick={submit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-        <Check size={16} color="var(--ds-background-success-bold, #1F845A)" />
+        <Check size={16} color="var(--ds-background-success-bold)" />
       </button>
       <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
         <X size={16} color={tk.textMuted} />
@@ -365,10 +365,10 @@ function DeleteConfirm({
         borderRadius: 8, padding: 24, width: 360,
         boxShadow: tk.cardDragShadow,
       }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary, marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>
           Delete column
         </div>
-        <div style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 16, fontFamily: 'var(--cp-font-body)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: tk.textSecondary, marginBottom: 16, fontFamily: 'var(--cp-font-body)' }}>
           Are you sure you want to delete <strong>{columnName}</strong>? Mapped statuses will be moved to Unmapped.
         </div>
         <div className="flex items-center justify-end gap-2">
@@ -377,7 +377,7 @@ function DeleteConfirm({
             style={{
               height: 32, padding: '0 12px', borderRadius: 6,
               border: `1px solid ${tk.border}`, background: 'transparent',
-              color: tk.textSecondary, fontSize: 13, cursor: 'pointer',
+              color: tk.textSecondary, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -387,8 +387,8 @@ function DeleteConfirm({
             onClick={onConfirm}
             style={{
               height: 32, padding: '0 12px', borderRadius: 6,
-              border: 'none', background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-surface, #fff)',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              border: 'none', background: 'var(--ds-background-danger-bold)', color: 'var(--ds-surface)',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -544,7 +544,7 @@ export default function MapStatusesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center" style={{ height: '100%', background: tk.pageBg }}>
-        <div style={{ fontSize: 13, color: tk.textMuted }}>Loading status mappings…</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: tk.textMuted }}>Loading status mappings…</div>
       </div>
     );
   }
@@ -552,7 +552,7 @@ export default function MapStatusesPage() {
   if (!draft) {
     return (
       <div className="flex items-center justify-center" style={{ height: '100%', background: tk.pageBg }}>
-        <div style={{ fontSize: 13, color: tk.textMuted }}>No board configuration found</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: tk.textMuted }}>No board configuration found</div>
       </div>
     );
   }
@@ -573,7 +573,7 @@ export default function MapStatusesPage() {
             className="flex items-center gap-1"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: tk.textSecondary, fontSize: 13, fontFamily: 'var(--cp-font-body)',
+              color: tk.textSecondary, fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)',
             }}
           >
             <ArrowLeft size={16} />
@@ -581,15 +581,15 @@ export default function MapStatusesPage() {
           </button>
           <div style={{ width: 1, height: 20, background: tk.border }} />
           <span style={{
-            fontSize: 15, fontWeight: 600, color: tk.textPrimary,
+            fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary,
             fontFamily: 'var(--cp-font-heading)',
           }}>
             Map statuses
           </span>
           {hasChanges && (
             <span style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-background-danger-bold, #C9372C)',
-              background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 3, padding: '2px 8px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-background-danger-bold)',
+              background: 'var(--ds-background-danger)', borderRadius: 3, padding: '2px 8px',
             }}>
               Unsaved changes
             </span>
@@ -597,7 +597,7 @@ export default function MapStatusesPage() {
         </div>
         <div className="flex items-center gap-2">
           {saveError && (
-            <span style={{ fontSize: 12, color: 'var(--ds-background-danger-bold, #C9372C)' }}>{saveError}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold)' }}>{saveError}</span>
           )}
           <button
             onClick={() => { cancel(); }}
@@ -606,7 +606,7 @@ export default function MapStatusesPage() {
               height: 32, padding: '0 14px', borderRadius: 6,
               border: `1px solid ${tk.border}`, background: 'transparent',
               color: hasChanges ? tk.textSecondary : tk.textDisabled,
-              fontSize: 13, fontWeight: 500, cursor: hasChanges ? 'pointer' : 'default',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: hasChanges ? 'pointer' : 'default',
               fontFamily: 'var(--cp-font-body)',
               opacity: hasChanges ? 1 : 0.5,
             }}
@@ -618,9 +618,9 @@ export default function MapStatusesPage() {
             disabled={!hasChanges || saving}
             style={{
               height: 32, padding: '0 14px', borderRadius: 6,
-              border: 'none', background: hasChanges ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
-              color: hasChanges ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textDisabled,
-              fontSize: 13, fontWeight: 600, cursor: hasChanges ? 'pointer' : 'default',
+              border: 'none', background: hasChanges ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : tk.chipBg,
+              color: hasChanges ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : tk.textDisabled,
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: hasChanges ? 'pointer' : 'default',
               fontFamily: 'var(--cp-font-body)',
             }}
           >

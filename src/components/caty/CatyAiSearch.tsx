@@ -74,11 +74,11 @@ export function CatyAiSearch({
         height: 36,
         padding: "0 8px 0 6px",
         boxSizing: "border-box",
-        background: "var(--ds-surface, #FFFFFF)",
+        background: "var(--ds-surface)",
         border: `1px solid ${
           focused
-            ? "var(--ds-border-focused, #388BFF)"
-            : "var(--ds-border, #DFE1E6)"
+            ? "var(--ds-border-focused)"
+            : "var(--ds-border)"
         }`,
         borderRadius: 8,
         transition: "border-color 120ms ease",
@@ -115,7 +115,7 @@ export function CatyAiSearch({
         style={{
           display: "inline-flex",
           alignItems: "center",
-          color: "var(--ds-text-subtlest, #6B778C)",
+          color: "var(--ds-text-subtlest)",
           flexShrink: 0,
         }}
       >
@@ -144,8 +144,8 @@ export function CatyAiSearch({
           background: "transparent",
           boxShadow: "none",
           font: "inherit",
-          fontSize: 14,
-          color: "var(--ds-text, #292A2E)",
+          fontSize: 'var(--ds-font-size-400)',
+          color: "var(--ds-text)",
           textAlign: isRtl ? "right" : "left",
           appearance: "none",
           WebkitAppearance: "none",
@@ -170,7 +170,7 @@ export function CatyAiSearch({
             borderRadius: 4,
             background: "transparent",
             cursor: "pointer",
-            color: "var(--ds-text-subtle, #505258)",
+            color: "var(--ds-text-subtle)",
             flexShrink: 0,
           }}
         >
@@ -181,9 +181,9 @@ export function CatyAiSearch({
           aria-hidden="true"
           style={{
             flexShrink: 0,
-            fontSize: 11,
-            color: "var(--ds-text-subtlest, #6B778C)",
-            border: "0.5px solid var(--ds-border, #DFE1E6)",
+            fontSize: 'var(--ds-font-size-100)',
+            color: "var(--ds-text-subtlest)",
+            border: "0.5px solid var(--ds-border)",
             borderRadius: 4,
             padding: "1px 6px",
           }}

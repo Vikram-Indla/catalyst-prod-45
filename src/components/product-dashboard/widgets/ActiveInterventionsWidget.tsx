@@ -4,8 +4,8 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
-const PHASE_APPROVAL = 'var(--ds-background-warning-bold, #F5A623)';
-const PHASE_PAUSED   = 'var(--ds-text-subtlest, #6B778C)';
+const PHASE_APPROVAL = 'var(--ds-background-warning-bold)';
+const PHASE_PAUSED   = 'var(--ds-text-subtlest)';
 
 function daysWaiting(iso: string | null): number {
   if (!iso) return 0;
@@ -38,34 +38,34 @@ function InterventionCard({
       data-testid={`intervention-item-${id}`}
       style={{
         padding: '10px 12px',
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderLeft: `3px solid ${PHASE_PAUSED}`,
         borderRadius: 6,
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
         cursor: 'pointer',
         transition: 'background 120ms',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral))'); }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface)'); }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
         <span
           style={{
             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            color: token('color.link', 'var(--ds-link, #0C66E4)'),
+            color: token('color.link', 'var(--ds-link)'),
           }}
         >
           {brKey(id)}
         </span>
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
             color: overdue
-              ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
-              : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              ? token('color.text.danger', 'var(--ds-text-danger)')
+              : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
           }}
@@ -76,9 +76,9 @@ function InterventionCard({
 
       <div
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
-          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
           marginTop: 2,
         }}
       >
@@ -91,8 +91,8 @@ function InterventionCard({
           justifyContent: 'space-between',
           alignItems: 'center',
           marginTop: 8,
-          fontSize: 11,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          fontSize: 'var(--ds-font-size-100)',
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
         }}
       >
         <span>Paused at: {stage}</span>
@@ -124,34 +124,34 @@ function ApprovalCard({
       data-testid={`intervention-item-${id}`}
       style={{
         padding: '10px 12px',
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderLeft: `3px solid ${PHASE_APPROVAL}`,
         borderRadius: 6,
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
         cursor: 'pointer',
         transition: 'background 120ms',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral))'); }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface)'); }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
         <span
           style={{
             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            color: token('color.link', 'var(--ds-link, #0C66E4)'),
+            color: token('color.link', 'var(--ds-link)'),
           }}
         >
           {brKey(id)}
         </span>
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
             color: overdue
-              ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
-              : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              ? token('color.text.danger', 'var(--ds-text-danger)')
+              : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
           }}
@@ -160,7 +160,7 @@ function ApprovalCard({
         </span>
       </div>
 
-      <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), marginTop: 2 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'), marginTop: 2 }}>
         {title}
       </div>
 
@@ -169,8 +169,8 @@ function ApprovalCard({
           display: 'flex',
           justifyContent: 'space-between',
           marginTop: 8,
-          fontSize: 11,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          fontSize: 'var(--ds-font-size-100)',
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
         }}
       >
         <span>{assigneeName ? `Approver: ${assigneeName}` : ''}</span>
@@ -190,14 +190,14 @@ function ColHeader({ label, summary }: { label: string; summary: string }) {
         justifyContent: 'space-between',
         alignItems: 'baseline',
         paddingBottom: 8,
-        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         marginBottom: 4,
       }}
     >
-      <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>
         {label}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>
         {summary}
       </span>
     </div>
@@ -238,7 +238,7 @@ export function ActiveInterventionsWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
@@ -271,8 +271,8 @@ export function ActiveInterventionsWidget() {
             data-testid="active-interventions-empty"
             style={{
               padding: 24,
-              fontSize: 13,
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              fontSize: 'var(--ds-font-size-300)',
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textAlign: 'center',
             }}
           >
@@ -305,7 +305,7 @@ export function ActiveInterventionsWidget() {
                 summary={`${holdItems.length} request${holdItems.length !== 1 ? 's' : ''} · paused with a reason`}
               />
               {holdItems.length === 0 ? (
-                <div style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), padding: '12px 0' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-disabled)'), padding: '12px 0' }}>
                   No requests on hold.
                 </div>
               ) : (

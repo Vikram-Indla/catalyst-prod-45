@@ -73,7 +73,7 @@ export function DraftRow({
           }}
         >
           {selected && (
-            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 13l4 4L19 7" />
             </svg>
           )}
@@ -94,7 +94,7 @@ export function DraftRow({
         />
         <span
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cv2-text-subtle)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -107,7 +107,7 @@ export function DraftRow({
       <span
         style={{
           flex: '0 0 auto',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: 'var(--cv2-text-muted)',
         }}
       >

@@ -13,32 +13,32 @@ export interface TierConfig {
 
 export const WORK_ITEM_HIERARCHY: Record<string, TierConfig> = {
   // TIER 1 — STRATEGIC (individual cards, 14-day window)
-  'Request':           { tier: 1, label: 'INITIATIVE',          freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  'Business Request':     { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  'BRD':                  { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  'BRD Task':             { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  'Request':           { tier: 1, label: 'INITIATIVE',          freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold)' },
+  'Business Request':     { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold)' },
+  'BRD':                  { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold)' },
+  'BRD Task':             { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold)' },
 
   // TIER 2 — PORTFOLIO (individual cards, 14-day window)
-  'Epic':                 { tier: 2, label: 'EPIC',                freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #531DAB)' },
+  'Epic':                 { tier: 2, label: 'EPIC',                freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold)' },
 
   // TIER 3 — DELIVERY (individual cards, 7-day window)
-  'Story':                { tier: 3, label: 'STORY',               freshnessDays: 7,  renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  'Story':                { tier: 3, label: 'STORY',               freshnessDays: 7,  renderMode: 'individual', color: 'var(--ds-background-discovery-bold)' },
 
   // TIER 4 — OPERATIONAL (individual cards, 14-day window — incidents are always urgent)
-  'Incident':             { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-danger-bold, #CF1322)' },
-  'Production Incident':  { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-danger-bold, #CF1322)' },
+  'Incident':             { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-danger-bold)' },
+  'Production Incident':  { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-danger-bold)' },
 
   // TIER 5 — QUALITY (collapsed, 3-day window)
-  'Bug':                  { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
-  'Defect':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
-  'QA Bug':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
+  'Bug':                  { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold)' },
+  'Defect':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold)' },
+  'QA Bug':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold)' },
 
   // TIER 6 — EXECUTION (collapsed, 3-day window)
-  'Sub-task':             { tier: 6, label: 'SUB-TASK',            freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-text-subtlest, #8B8FA3)' },
-  'Task':                 { tier: 6, label: 'TASK',                freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-chart-teal-bold, #13C2C2)' },
+  'Sub-task':             { tier: 6, label: 'SUB-TASK',            freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-text-subtlest)' },
+  'Task':                 { tier: 6, label: 'TASK',                freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-chart-teal-bold)' },
 };
 
-const DEFAULT_TIER: TierConfig = { tier: 6, label: 'ITEM', freshnessDays: 3, renderMode: 'collapsed', color: 'var(--ds-text-subtlest, #8B8FA3)' };
+const DEFAULT_TIER: TierConfig = { tier: 6, label: 'ITEM', freshnessDays: 3, renderMode: 'collapsed', color: 'var(--ds-text-subtlest)' };
 
 export function getTierConfig(type: string | null | undefined): TierConfig {
   if (!type) return DEFAULT_TIER;

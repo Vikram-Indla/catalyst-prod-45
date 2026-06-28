@@ -49,15 +49,15 @@ function SparkleIcon({ size = 16 }: { size?: number }) {
     >
       <path
         d="M12 2.5l1.7 5.3a2 2 0 0 0 1.3 1.3l5.3 1.7-5.3 1.7a2 2 0 0 0-1.3 1.3L12 19.1l-1.7-5.3a2 2 0 0 0-1.3-1.3L3.7 10.8l5.3-1.7a2 2 0 0 0 1.3-1.3L12 2.5z"
-        fill="var(--ds-text-subtle, #44546F)"
+        fill="var(--ds-text-subtle)"
       />
       <path
         d="M19 14l.6 1.7L21.3 16l-1.7.6L19 18l-.6-1.7L16.7 16l1.7-.6L19 14z"
-        fill="var(--ds-text-subtle, #44546F)"
+        fill="var(--ds-text-subtle)"
       />
       <path
         d="M5 14l.6 1.7L7.3 16l-1.7.6L5 18l-.6-1.7L2.7 16l1.7-.6L5 14z"
-        fill="var(--ds-text-subtle, #44546F)"
+        fill="var(--ds-text-subtle)"
       />
     </svg>
   );

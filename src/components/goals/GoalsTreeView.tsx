@@ -27,27 +27,27 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  hover: 'var(--ds-surface-overlay, #1F1F1F)',
+  border: 'var(--ds-border, var(--cp-ink-1))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1))',
+  hover: 'var(--ds-surface-overlay)',
 };
 
 // ── Status badge ──
 function statusBadge(status: string, isDark = false) {
   const map: Record<string, { dot: string; bg: string; text: string; bgDark: string; textDark: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', bgDark: 'var(--ds-text, var(--ds-text, #172B4D))', textDark: 'var(--ds-background-success, #DFFCF0)', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', bgDark: 'var(--ds-text, var(--ds-text, #172B4D))', textDark: 'var(--ds-background-success, #DFFCF0)', label: 'On Track' },
-    completed:   { dot: 'var(--ds-background-discovery-bold, #6E5DC6)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #4338ca))', bgDark: 'var(--ds-text, var(--ds-text, #172B4D))', textDark: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', label: 'Completed' },
-    achieved:    { dot: 'var(--ds-background-discovery-bold, #6E5DC6)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #4338ca))', bgDark: 'var(--ds-text, var(--ds-text, #172B4D))', textDark: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', label: 'Achieved' },
-    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #b45309))', bgDark: '#2A2418', textDark: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))', label: 'At Risk' },
-    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.08))',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDark: 'var(--ds-text, var(--ds-text, #172B4D))', textDark: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
-    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
-    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
-    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
+    active:      { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', bgDark: 'var(--ds-text, var(--ds-text))', textDark: 'var(--ds-background-success)', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', bgDark: 'var(--ds-text, var(--ds-text))', textDark: 'var(--ds-background-success)', label: 'On Track' },
+    completed:   { dot: 'var(--ds-background-discovery-bold)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))', bgDark: 'var(--ds-text, var(--ds-text))', textDark: 'var(--ds-background-information-bold, var(--ds-link))', label: 'Completed' },
+    achieved:    { dot: 'var(--ds-background-discovery-bold)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))', bgDark: 'var(--ds-text, var(--ds-text))', textDark: 'var(--ds-background-information-bold, var(--ds-link))', label: 'Achieved' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))', bgDark: '#2A2418', textDark: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))', label: 'At Risk' },
+    off_track:   { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.08))',  text: 'var(--ds-text-danger, var(--cp-danger))', bgDark: 'var(--ds-text, var(--ds-text))', textDark: 'var(--ds-border-danger)', label: 'Off Track' },
+    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: isDark ? s.textDark : s.text, background: isDark ? s.bgDark : s.bg, borderRadius: 99, whiteSpace: 'nowrap' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: isDark ? s.textDark : s.text, background: isDark ? s.bgDark : s.bg, borderRadius: 99, whiteSpace: 'nowrap' }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
       {s.label}
     </span>
@@ -55,9 +55,9 @@ function statusBadge(status: string, isDark = false) {
 }
 
 function progressBar(pct: number, height = 6, isDark = false) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return (
-    <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms ease' }} />
     </div>
   );
@@ -72,8 +72,8 @@ function ConfidenceDots({ level, isDark = false }: { level: number; isDark?: boo
           style={{
             width: 5, height: 5, borderRadius: '50%',
             background: i <= level
-              ? (level >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : level >= 3 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)')
-              : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)'),
+              ? (level >= 4 ? 'var(--ds-text-success, var(--cp-success))' : level >= 3 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)')
+              : (isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)'),
           }}
         />
       ))}
@@ -108,22 +108,22 @@ function computeThemeStatus(goals: Goal[]): string {
 }
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string; bgDark: string; textDark: string }> = {
-  'Nada Alfassam':      { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)', bgDark: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',  textDark: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
-  'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)', bgDark: 'rgba(99,102,241,0.15)',  textDark: 'var(--ds-background-discovery, #F3F0FF)' },
-  'Sulaiman Alessa':    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', bgDark: 'rgba(52,211,153,0.15)',  textDark: 'var(--ds-background-success, #DFFCF0)' },
-  'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', bgDark: 'var(--ds-background-warning-bold, rgba(251,191,36,0.15))',  textDark: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
-  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' },
-  'Izza Ali':           { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)', bgDark: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.15))',  textDark: 'var(--ds-background-discovery, #F3F0FF)' },
+  'Nada Alfassam':      { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', bgDark: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',  textDark: 'var(--ds-background-information-bold, var(--ds-link))' },
+  'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)', bgDark: 'rgba(99,102,241,0.15)',  textDark: 'var(--ds-background-discovery)' },
+  'Sulaiman Alessa':    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', bgDark: 'rgba(52,211,153,0.15)',  textDark: 'var(--ds-background-success)' },
+  'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', bgDark: 'var(--ds-background-warning-bold, rgba(251,191,36,0.15))',  textDark: 'var(--ds-background-warning, var(--ds-background-warning))' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: 'var(--ds-background-information, var(--ds-background-information))' },
+  'Izza Ali':           { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)', bgDark: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.15))',  textDark: 'var(--ds-background-discovery)' },
 };
 
 function getAvatarColors(name: string, isDark = false) {
   const palettes = [
-    { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)', bgDark: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',  textDark: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
-    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', bgDark: 'rgba(52,211,153,0.15)',  textDark: 'var(--ds-background-success, #DFFCF0)' },
-    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)', bgDark: 'rgba(99,102,241,0.15)',  textDark: 'var(--ds-background-discovery, #F3F0FF)' },
-    { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', bgDark: 'var(--ds-background-warning-bold, rgba(251,191,36,0.15))',  textDark: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
-    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' },
-    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)', bgDark: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.15))',  textDark: 'var(--ds-background-discovery, #F3F0FF)' },
+    { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', bgDark: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',  textDark: 'var(--ds-background-information-bold, var(--ds-link))' },
+    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', bgDark: 'rgba(52,211,153,0.15)',  textDark: 'var(--ds-background-success)' },
+    { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)', bgDark: 'rgba(99,102,241,0.15)',  textDark: 'var(--ds-background-discovery)' },
+    { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', bgDark: 'var(--ds-background-warning-bold, rgba(251,191,36,0.15))',  textDark: 'var(--ds-background-warning, var(--ds-background-warning))' },
+    { bg: '#CFFAFE', text: '#155E75', bgDark: 'rgba(34,211,238,0.15)',  textDark: 'var(--ds-background-information, var(--ds-background-information))' },
+    { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)', bgDark: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.15))',  textDark: 'var(--ds-background-discovery)' },
   ];
   let entry;
   if (AVATAR_COLORS[name]) {
@@ -137,7 +137,7 @@ function getAvatarColors(name: string, isDark = false) {
 }
 
 function OwnerAvatar({ name, size = 28, isDark = false }: { name?: string; size?: number; isDark?: boolean }) {
-  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>;
+  if (!name) return <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t4 : 'var(--ds-text-disabled)' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const colors = getAvatarColors(name, isDark);
   return (
@@ -160,7 +160,7 @@ export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
     <div style={{ border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, overflow: 'hidden' }}>
       <div style={{ height: 50, background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${isDark ? DK.border : 'var(--divider)'}` }} />
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--cp-bd-zone)'}`, background: isDark ? 'var(--ds-text, #172B4D)' : 'var(--bg-1)' }} />
+        <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--cp-bd-zone)'}`, background: isDark ? 'var(--ds-text)' : 'var(--bg-1)' }} />
       ))}
       <style>{`
         @keyframes phShimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
@@ -173,12 +173,12 @@ export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
 export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal: () => void; isDark?: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <Target size={24} color="var(--fg-4)" />
       </div>
-      <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals yet</div>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals yet</div>
       <div style={{ fontSize: 12.5, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>Create your first goal to start tracking progress.</div>
-      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
         + Create Goal
       </button>
     </div>
@@ -188,9 +188,9 @@ export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal
 function GoalsNoSearchResults({ query, onClear, isDark = false }: { query: string; onClear: () => void; isDark?: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
-      <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals matching "{query}"</div>
-      <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 14 }}>Try a different search term.</div>
-      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals matching "{query}"</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 14 }}>Try a different search term.</div>
+      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
         <X size={12} /> Clear search
       </button>
     </div>
@@ -256,14 +256,14 @@ export function GoalsTreeView({
   const headerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
-  const themeRowBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)';
-  const themeRowHover = 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))';
+  const themeRowBg = isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)';
+  const themeRowHover = 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
-  const goalRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
-  const krRowBg = isDark ? 'var(--ds-text, #172B4D)' : 'var(--bg-1)';
-  const krRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)';
-  const connectorColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
-  const footerBg = isDark ? 'var(--ds-text, #172B4D)' : 'var(--bg-1)';
+  const goalRowHover = isDark ? 'var(--ds-surface-overlay)' : 'var(--bg-1)';
+  const krRowBg = isDark ? 'var(--ds-text)' : 'var(--bg-1)';
+  const krRowHover = isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)';
+  const connectorColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)';
+  const footerBg = isDark ? 'var(--ds-text)' : 'var(--bg-1)';
 
   return (
     <div className="goals-tree-container" style={{ border: `1px solid ${tableBorder}`, borderRadius: 12, overflow: 'hidden', background: containerBg }}>
@@ -273,7 +273,7 @@ export function GoalsTreeView({
         height: 50, alignItems: 'center',
         background: headerBg, borderBottom: `2px solid ${tableBorder}`,
         padding: '0 16px',
-        fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase',
         letterSpacing: '0.05em', color: headerText,
       }}>
         <span>Goal / Key Result</span>
@@ -295,7 +295,7 @@ export function GoalsTreeView({
         const themeKRCount = themeGoals.reduce((s, g) => s + (krsByGoal.get(g.id)?.length || 0), 0);
         const avgConf = themeGoals.length > 0
           ? Math.round(themeGoals.reduce((s, g) => s + getConfidenceLevel(g.confidence_level), 0) / themeGoals.length) : 0;
-        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, var(--cp-success))' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
 
         return (
           <div key={theme.id}>
@@ -315,17 +315,17 @@ export function GoalsTreeView({
               onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color={'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86))))'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
-                <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
+                <ChevronRight size={14} color={'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest))))'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
               <div>{statusBadge(themeStatus, isDark)}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {progressBar(avgProgress, 6, isDark)}
-                <span style={{ fontSize: 13, fontWeight: 600, color: progressColor, minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: progressColor, minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
               </div>
               <div><ConfidenceDots level={avgConf} isDark={isDark} /></div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{themeKRCount}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{themeKRCount}</div>
               <div />
               <div />
             </div>
@@ -336,7 +336,7 @@ export function GoalsTreeView({
               const goalKRs = krsByGoal.get(goal.id) || [];
               const confLevel = getConfidenceLevel(goal.confidence_level);
               const goalPct = Math.round(goal.progress_pct || 0);
-              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : goalPct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : goalPct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
               const isLastGoal = gi === themeGoals.length - 1;
 
               return (
@@ -361,33 +361,33 @@ export function GoalsTreeView({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))'}
+                        size={13} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled))))'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                         {goal.goal_key}
                       </span>
-                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 14, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {goal.title}
                       </span>
                     </div>
                     <div onClick={e => e.stopPropagation()}>{statusBadge(goal.status, isDark)}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {progressBar(goalPct, 6, isDark)}
-                      <span style={{ fontSize: 13, fontWeight: 600, color: goalProgressColor, minWidth: 32, textAlign: 'right' }}>{goalPct}%</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: goalProgressColor, minWidth: 32, textAlign: 'right' }}>{goalPct}%</span>
                     </div>
                     <div><ConfidenceDots level={confLevel} isDark={isDark} /></div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goalKRs.length}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goalKRs.length}</div>
                     <div><OwnerAvatar name={goal.owner_name} size={28} isDark={isDark} /></div>
                     <div>
                       {goal.ai_health_score != null ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' : 'var(--cp-blue-wash)', padding: '2px 6px', borderRadius: 4 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' : 'var(--cp-blue-wash)', padding: '2px 6px', borderRadius: 4 }}>
                           <Sparkles size={10} />
                           {goal.ai_health_score}
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t4 : 'var(--ds-text-disabled)' }}>—</span>
                       )}
                     </div>
                   </div>
@@ -398,7 +398,7 @@ export function GoalsTreeView({
                       : kr.target < kr.baseline
                         ? Math.min(100, Math.max(0, Math.round(((kr.baseline - kr.current_value) / (kr.baseline - kr.target)) * 100)))
                         : Math.min(100, Math.max(0, Math.round(((kr.current_value - kr.baseline) / (kr.target - kr.baseline)) * 100)));
-                    const krProgressColor = krProgress >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : krProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+                    const krProgressColor = krProgress >= 60 ? 'var(--ds-text-success, var(--cp-success))' : krProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
                     const isLastKR = ki === goalKRs.length - 1;
 
                     return (
@@ -411,9 +411,9 @@ export function GoalsTreeView({
                           display: 'grid', gridTemplateColumns: GRID_COLS,
                           height: 40, alignItems: 'center', padding: '0 16px 0 58px',
                           background: krRowBg,
-                          borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--bg-1)'}`, fontSize: 13, position: 'relative',
+                          borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--bg-1)'}`, fontSize: 'var(--ds-font-size-300)', position: 'relative',
                           transition: 'background 150ms',
-                          color: isDark ? DK.t2 : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
+                          color: isDark ? DK.t2 : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = krRowHover)}
                         onMouseLeave={e => (e.currentTarget.style.background = krRowBg)}
@@ -423,7 +423,7 @@ export function GoalsTreeView({
                         <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: connectorColor }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                             {kr.kr_key}
                           </span>
                           <span style={{ fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -436,8 +436,8 @@ export function GoalsTreeView({
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 3,
                               padding: '2px 8px', fontSize: 10.5, fontWeight: 500,
-                              color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'transparent',
-                              border: '1px solid var(--ds-link, #2563eb)', borderRadius: 99, cursor: 'pointer',
+                              color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', background: 'transparent',
+                              border: '1px solid var(--ds-link)', borderRadius: 99, cursor: 'pointer',
                               opacity: 0, transition: 'opacity 150ms', flexShrink: 0,
                             }}
                           >
@@ -448,10 +448,10 @@ export function GoalsTreeView({
                         <div>{statusBadge(kr.status, isDark)}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           {progressBar(krProgress, 5, isDark)}
-                          <span style={{ fontSize: 13, fontWeight: 600, color: krProgressColor, minWidth: 32, textAlign: 'right' }}>{krProgress}%</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: krProgressColor, minWidth: 32, textAlign: 'right' }}>{krProgress}%</span>
                         </div>
                         <div><ConfidenceDots level={getConfidenceLevel(kr.confidence_level)} isDark={isDark} /></div>
-                        <div style={{ color: isDark ? DK.t3 : 'var(--fg-3)', fontSize: 11 }}>
+                        <div style={{ color: isDark ? DK.t3 : 'var(--fg-3)', fontSize: 'var(--ds-font-size-100)' }}>
                           {kr.current_value}/{kr.target}
                         </div>
                         <div />
@@ -471,7 +471,7 @@ export function GoalsTreeView({
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         height: 50, background: footerBg, borderTop: `1px solid ${tableBorder}`,
       }}>
-        <span style={{ fontSize: 12, fontWeight: 500, color: isDark ? DK.t3 : 'var(--fg-3)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: isDark ? DK.t3 : 'var(--fg-3)' }}>
           Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes
         </span>
       </div>

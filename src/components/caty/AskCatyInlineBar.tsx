@@ -178,7 +178,7 @@ export function AskCatyInlineBar({
         flexDirection: "column",
         gap: 6,
         padding: "8px 12px",
-        borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+        borderBottom: "1px solid var(--ds-border)",
         background: "transparent",
         flexShrink: 0,
         fontFamily: "var(--cp-font-body)",
@@ -241,9 +241,9 @@ export function AskCatyInlineBar({
                   aria-hidden="true"
                   style={{
                     flexShrink: 0,
-                    fontSize: 11,
-                    color: "var(--ds-text-subtlest, #6B778C)",
-                    border: "0.5px solid var(--ds-border, #DFE1E6)",
+                    fontSize: 'var(--ds-font-size-100)',
+                    color: "var(--ds-text-subtlest)",
+                    border: "0.5px solid var(--ds-border)",
                     borderRadius: 4,
                     padding: "1px 6px",
                   }}
@@ -270,13 +270,13 @@ export function AskCatyInlineBar({
                     borderRadius: 4,
                     background:
                       (query.trim() || ghostState.ghost) && !askCatyLoading
-                        ? "var(--ds-background-brand-bold, #0C66E4)"
-                        : "var(--ds-background-neutral, #F4F5F7)",
+                        ? "var(--ds-background-brand-bold)"
+                        : "var(--ds-background-neutral)",
                     color:
                       (query.trim() || ghostState.ghost) && !askCatyLoading
-                        ? "var(--ds-surface, #FFFFFF)"
-                        : "var(--ds-text-disabled, #8590A2)",
-                    fontSize: 13,
+                        ? "var(--ds-surface)"
+                        : "var(--ds-text-disabled)",
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                     cursor:
                       (query.trim() || ghostState.ghost) && !askCatyLoading
@@ -289,7 +289,7 @@ export function AskCatyInlineBar({
                   aria-label="Submit"
                 >
                   <span>Go</span>
-                  <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>
+                  <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>
                     ⏎
                   </span>
                 </button>
@@ -316,7 +316,7 @@ export function AskCatyInlineBar({
                       display: "inline-flex",
                       alignItems: "center",
                       flex: "0 0 auto",
-                      color: "var(--ds-text-subtlest, #6B778C)",
+                      color: "var(--ds-text-subtlest)",
                     }}
                   >
                     <SearchIconCore label="" color="currentColor" />
@@ -340,8 +340,8 @@ export function AskCatyInlineBar({
                       background: "transparent",
                       boxShadow: "none",
                       font: "inherit",
-                      fontSize: 14,
-                      color: "var(--ds-text, #292A2E)",
+                      fontSize: 'var(--ds-font-size-400)',
+                      color: "var(--ds-text)",
                       textAlign: containsArabic(catySecondaryQuery)
                         ? "right"
                         : "left",
@@ -363,8 +363,8 @@ export function AskCatyInlineBar({
             borderRadius: 4,
             background: "transparent",
             cursor: "pointer",
-            color: "var(--ds-text-subtle, #505258)",
-            fontSize: 16,
+            color: "var(--ds-text-subtle)",
+            fontSize: 'var(--ds-font-size-500)',
             lineHeight: 1,
             display: "flex",
             alignItems: "center",
@@ -399,9 +399,9 @@ export function AskCatyInlineBar({
                 border: "none",
                 borderRadius: 14,
                 padding: "4px 10px",
-                background: "var(--ds-background-neutral, #F1F2F4)",
-                color: "var(--ds-text-subtle, #505258)",
-                fontSize: 12,
+                background: "var(--ds-background-neutral)",
+                color: "var(--ds-text-subtle)",
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 400,
                 fontFamily: "inherit",
                 cursor: "pointer",
@@ -425,8 +425,8 @@ export function AskCatyInlineBar({
             justifyContent: "space-between",
             gap: 12,
             padding: "0 4px",
-            fontSize: 12,
-            color: "var(--ds-text-subtlest, #6B778C)",
+            fontSize: 'var(--ds-font-size-200)',
+            color: "var(--ds-text-subtlest)",
           }}
         >
           <div
@@ -447,7 +447,7 @@ export function AskCatyInlineBar({
             {askCatyHasResults && catyReason && (
               <span
                 style={{
-                  color: "var(--ds-text-subtle, #505258)",
+                  color: "var(--ds-text-subtle)",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -457,7 +457,7 @@ export function AskCatyInlineBar({
               </span>
             )}
             {askCatyHasError && catyErrorMessage && (
-              <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
+              <span style={{ color: "var(--ds-text-danger)" }}>
                 · {catyErrorMessage}
               </span>
             )}
@@ -480,8 +480,8 @@ export function AskCatyInlineBar({
                     justifyContent: "center",
                     color:
                       askCatyFeedback === "up"
-                        ? "var(--ds-text-brand, #0C66E4)"
-                        : "var(--ds-text-subtlest, #6B778C)",
+                        ? "var(--ds-text-brand)"
+                        : "var(--ds-text-subtlest)",
                   }}
                 >
                   <ThumbsUpIconCore label="" color="currentColor" />
@@ -503,8 +503,8 @@ export function AskCatyInlineBar({
                     justifyContent: "center",
                     color:
                       askCatyFeedback === "down"
-                        ? "var(--ds-text-danger, #AE2A19)"
-                        : "var(--ds-text-subtlest, #6B778C)",
+                        ? "var(--ds-text-danger)"
+                        : "var(--ds-text-subtlest)",
                   }}
                 >
                   <ThumbsDownIconCore label="" color="currentColor" />

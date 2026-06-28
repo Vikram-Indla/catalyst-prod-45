@@ -118,7 +118,7 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
               border: 'none',
               background: 'transparent',
               cursor: 'pointer',
-              color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+              color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
             }}
           >
             <MoreIcon label="More actions" size="small" />
@@ -145,7 +145,7 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
             elemBefore={<DeleteIcon label="" size="small" />}
             onClick={() => setDeleteDialogOpen(true)}
           >
-            <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Delete</span>
+            <span style={{ color: 'var(--ds-text-danger)' }}>Delete</span>
           </DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>

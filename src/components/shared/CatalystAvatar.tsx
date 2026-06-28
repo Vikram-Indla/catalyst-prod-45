@@ -44,16 +44,16 @@ const SIZE_PX: Record<CatalystAvatarSize, number> = {
 
 // ADS-palette deterministic colour pick. Same name → same colour across the app.
 const PALETTE = [
-  'var(--ds-link, #0C66E4)', // blue.bold
-  'var(--ds-text-success, #216E4E)', // green.bold
-  'var(--ds-background-discovery-bold, #6E5DC6)', // purple.bold
-  'var(--ds-text-warning, #974F0C)', // orange.bold
-  'var(--ds-text-danger, #AE2A19)', // red.bold
-  'var(--ds-background-information-bold, #1D7AFC)', // blue.bold (lighter)
-  'var(--ds-background-success-bold, #1F845A)', // green
-  'var(--ds-background-discovery-bold, #6E5DC6)', // purple
-  'var(--ds-link, #0C66E4)', // blue
-  'var(--ds-chart-teal-bold, #206A83)', // teal.bold
+  'var(--ds-link)', // blue.bold
+  'var(--ds-text-success)', // green.bold
+  'var(--ds-background-discovery-bold)', // purple.bold
+  'var(--ds-text-warning)', // orange.bold
+  'var(--ds-text-danger)', // red.bold
+  'var(--ds-background-information-bold)', // blue.bold (lighter)
+  'var(--ds-background-success-bold)', // green
+  'var(--ds-background-discovery-bold)', // purple
+  'var(--ds-link)', // blue
+  'var(--ds-chart-teal-bold)', // teal.bold
 ];
 
 export function getInitials(name: string): string {
@@ -130,7 +130,7 @@ export default function CatalystAvatar({
           height: px,
           borderRadius: appearance === 'square' ? Math.max(2, Math.floor(px * 0.15)) : '50%',
           backgroundColor: bg,
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          color: 'var(--ds-text-inverse)',
           fontWeight: 600,
           fontSize,
           lineHeight: 1,

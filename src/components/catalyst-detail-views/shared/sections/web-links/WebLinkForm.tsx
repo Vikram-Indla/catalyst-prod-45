@@ -79,20 +79,20 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
   const inputStyle = (focused: boolean, error: boolean): React.CSSProperties => ({
     width: '100%',
     padding: '6px 8px',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--cp-font-body)',
-    color: 'var(--ds-text, #292A2E)',
+    color: 'var(--ds-text)',
     background: error
-      ? 'var(--ds-background-danger, #FFEDEB)'
-      : 'var(--cp-bg-elevated, #FFFFFF)',
+      ? 'var(--ds-background-danger)'
+      : 'var(--cp-bg-elevated)',
     // Error always wins — even while the field is focused, the red
     // border + bg signals invalid input. Only when there is no error
     // do we paint the focused-blue border.
     border: error
-      ? `2px solid var(--ds-border-danger, #C9372C)`
+      ? `2px solid var(--ds-border-danger)`
       : `${focused ? 2 : 1}px solid ${focused
-          ? 'var(--ds-border-focused, #388BFF)'
-          : 'var(--ds-border, #DFE1E6)'}`,
+          ? 'var(--ds-border-focused)'
+          : 'var(--ds-border)'}`,
     borderRadius: 3,
     outline: 'none',
     boxSizing: 'border-box',
@@ -100,9 +100,9 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
   });
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 700,
-    color: 'var(--ds-text, #292A2E)',
+    color: 'var(--ds-text)',
     textTransform: 'uppercase',
     letterSpacing: '0.3px',
     fontFamily: 'var(--cp-font-body)',
@@ -162,8 +162,8 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
       {showUrlError && (
         <span
           style={{
-            fontSize: 12,
-            color: 'var(--ds-text-danger, #C9372C)',
+            fontSize: 'var(--ds-font-size-200)',
+            color: 'var(--ds-text-danger)',
             fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -188,14 +188,14 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
           disabled={!canSubmit}
           style={{
             padding: '6px 14px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: canSubmit
-              ? 'var(--ds-text-inverse, #FFFFFF)'
-              : 'var(--ds-text-disabled, #8590A2)',
+              ? 'var(--ds-text-inverse)'
+              : 'var(--ds-text-disabled)',
             background: canSubmit
-              ? 'var(--ds-background-brand-bold, #0052CC)'
-              : 'var(--ds-background-disabled, #F1F2F4)',
+              ? 'var(--ds-background-brand-bold)'
+              : 'var(--ds-background-disabled)',
             border: 'none',
             borderRadius: 3,
             cursor: canSubmit ? 'pointer' : 'not-allowed',
@@ -204,11 +204,11 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
           }}
           onMouseEnter={(e) => {
             if (!canSubmit) return;
-            e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #0747A6)';
+            e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)';
           }}
           onMouseLeave={(e) => {
             if (!canSubmit) return;
-            e.currentTarget.style.background = 'var(--ds-background-brand-bold, #0052CC)';
+            e.currentTarget.style.background = 'var(--ds-background-brand-bold)';
           }}
         >
           {isSubmitting ? 'Linking…' : 'Link'}
@@ -221,16 +221,16 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
             background: 'transparent',
             border: 'none',
             padding: '6px 12px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer',
             borderRadius: 3,
             fontFamily: 'inherit',
           }}
           onMouseEnter={(e) => {
             if (isSubmitting) return;
-            e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)';
+            e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';

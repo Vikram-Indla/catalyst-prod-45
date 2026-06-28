@@ -16,15 +16,15 @@ import { RoadmapScoreTab } from './RoadmapScoreTab';
 
 // Status bar colors matching the timeline bars
 const BAR_STATUS_COLORS: Record<string, { border: string; bg: string }> = {
-  new_request: { border: 'var(--ds-text-brand, #3B82F6)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' },
-  draft:       { border: 'var(--ds-text-subtlest, #737373)', bg: 'rgba(115,115,115,0.12)' },
-  submitted:   { border: 'var(--ds-text-brand, #3B82F6)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' },
-  in_review:   { border: 'var(--ds-text-discovery, #8B5CF6)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.12))' },
-  approved:    { border: 'var(--ds-text-information, #06B6D4)', bg: 'rgba(6,182,212,0.12)' },
-  in_progress: { border: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.12))' },
-  completed:   { border: 'var(--ds-text-success, #10B981)', bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))' },
-  rejected:    { border: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))' },
-  cancelled:   { border: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))' },
+  new_request: { border: 'var(--ds-text-brand)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' },
+  draft:       { border: 'var(--ds-text-subtlest)', bg: 'rgba(115,115,115,0.12)' },
+  submitted:   { border: 'var(--ds-text-brand)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' },
+  in_review:   { border: 'var(--ds-text-discovery)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.12))' },
+  approved:    { border: 'var(--ds-text-information)', bg: 'rgba(6,182,212,0.12)' },
+  in_progress: { border: 'var(--ds-text-warning, var(--cp-amber))', bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.12))' },
+  completed:   { border: 'var(--ds-text-success)', bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))' },
+  rejected:    { border: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))' },
+  cancelled:   { border: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))' },
 };
 
 const TABS = [
@@ -114,8 +114,8 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
           bottom: 0,
           width: '480px',
           maxWidth: '90vw',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          borderLeft: '1px solid var(--ds-border, #e4e4e7)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          borderLeft: '1px solid var(--ds-border)',
           boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
           zIndex: 201,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
@@ -128,27 +128,27 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
         {item && (
           <>
             {/* A) Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #f4f4f5)' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border)' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <span style={{
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       fontFamily: 'var(--cp-font-mono)',
                       backgroundColor: 'var(--ds-background-information-bold, rgba(59,130,246,0.1))',
-                      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+                      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                       flexShrink: 0,
                     }}>
                       {item.request_key}
                     </span>
                   </div>
                   <h2 style={{
-                    fontSize: '17px',
+                    fontSize: 'var(--ds-font-size-500)',
                     fontWeight: 600,
-                    color: 'var(--ds-text, #18181b)',
+                    color: 'var(--ds-text)',
                     lineHeight: 1.3,
                     margin: 0,
                     wordBreak: 'break-word',
@@ -161,7 +161,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       alignItems: 'center',
                       gap: '6px',
                       padding: '3px 10px',
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       borderRadius: '12px',
                       backgroundColor: barColor.bg,
@@ -179,11 +179,11 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: 6, border: 'none', cursor: 'pointer',
                     backgroundColor: 'transparent',
-                    color: 'var(--ds-text-subtlest, #a1a1aa)',
+                    color: 'var(--ds-text-subtlest)',
                     flexShrink: 0,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #f4f4f5)'; e.currentTarget.style.color = 'var(--ds-text-subtle, #52525b)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #a1a1aa)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral)'; e.currentTarget.style.color = 'var(--ds-text-subtle)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest)'; }}
                 >
                   <X size={18} />
                 </button>
@@ -191,17 +191,17 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             </div>
 
             {/* B) Action Bar */}
-            <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--ds-border, #f4f4f5)', display: 'flex', gap: '4px' }}>
+            <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--ds-border)', display: 'flex', gap: '4px' }}>
               {ACTION_BUTTONS.map(({ icon: Icon, label }) => (
                 <button
                   key={label}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '4px',
-                    padding: '4px 8px', fontSize: '12px', fontWeight: 500,
-                    color: 'var(--ds-text-subtle, #71717a)', backgroundColor: 'transparent',
+                    padding: '4px 8px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+                    color: 'var(--ds-text-subtle)', backgroundColor: 'transparent',
                     border: 'none', borderRadius: 6, cursor: 'pointer',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #f4f4f5)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral)'; }}
                   onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                   <Icon size={14} />
@@ -211,24 +211,24 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             </div>
 
             {/* C) Tab Bar */}
-            <div style={{ padding: '0 20px', borderBottom: '1px solid var(--ds-border, #e4e4e7)', display: 'flex', gap: '0' }}>
+            <div style={{ padding: '0 20px', borderBottom: '1px solid var(--ds-border)', display: 'flex', gap: '0' }}>
               {TABS.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   style={{
                     padding: '10px 12px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: activeTab === tab.key ? 600 : 400,
-                    color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtle, #71717a)',
+                    color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtle)',
                     backgroundColor: 'transparent',
                     border: 'none',
-                    borderBottom: activeTab === tab.key ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
+                    borderBottom: activeTab === tab.key ? '2px solid var(--ds-link)' : '2px solid transparent',
                     cursor: 'pointer',
                     marginBottom: '-1px',
                   }}
-                  onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = 'var(--ds-text, #3f3f46)'; }}
-                  onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = 'var(--ds-text-subtle, #71717a)'; }}
+                  onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = 'var(--ds-text)'; }}
+                  onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = 'var(--ds-text-subtle)'; }}
                 >
                   {tab.label}
                 </button>
@@ -287,19 +287,19 @@ function DetailsTabContent({
 
         <Field label="PROGRESS" value={
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '80px', height: '6px', backgroundColor: 'var(--ds-background-neutral, #f4f4f5)', borderRadius: '9999px', overflow: 'hidden' }}>
+            <div style={{ width: '80px', height: '6px', backgroundColor: 'var(--ds-background-neutral)', borderRadius: '9999px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${item.progress}%`, backgroundColor: barColor.border, borderRadius: '9999px' }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{item.progress}%</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{item.progress}%</span>
           </div>
         } />
         <Field label="RANK" value={item.rank != null ? `#${item.rank}` : '—'} />
       </div>
 
       {/* Description */}
-      <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--ds-border, #f4f4f5)' }}>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #3f3f46)', marginBottom: '8px' }}>Description</div>
-        <div style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #52525b)', lineHeight: 1.6 }}>
+      <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--ds-border)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: '8px' }}>Description</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', lineHeight: 1.6 }}>
           {item.description || 'No description provided for this initiative.'}
         </div>
       </div>
@@ -312,16 +312,16 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
       <div style={{
-        fontSize: '11px',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
-        color: 'var(--ds-text-subtlest, #a1a1aa)',
+        color: 'var(--ds-text-subtlest)',
         letterSpacing: '0.05em',
         textTransform: 'uppercase',
         marginBottom: '4px',
       }}>
         {label}
       </div>
-      <div style={{ fontSize: '13px', color: 'var(--ds-text, #27272a)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
         {value}
       </div>
     </div>
@@ -334,7 +334,7 @@ function PlaceholderTab({ name }: { name: string }) {
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
       <div style={{ fontSize: '32px', marginBottom: '12px' }}>{PLACEHOLDER_EMOJI[name] || '📄'}</div>
-      <div style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #a1a1aa)', fontWeight: 500 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest)', fontWeight: 500 }}>
         {displayName} — Coming soon
       </div>
     </div>

@@ -10,11 +10,11 @@ import { getInitials } from './types';
 
 // Department colors mapping
 const DEPT_COLORS: Record<string, string> = {
-  'Delivery': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'Product': 'var(--ds-background-discovery-bold, #8b5cf6)',
-  'Operations': 'var(--ds-background-warning-bold, #E2B203)',
-  'Technical Support': 'var(--ds-background-warning-bold, #f97316)',
-  'Governance': 'var(--ds-text-subtlest, #64748b)',
+  'Delivery': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'Product': 'var(--ds-background-discovery-bold)',
+  'Operations': 'var(--ds-background-warning-bold)',
+  'Technical Support': 'var(--ds-background-warning-bold)',
+  'Governance': 'var(--ds-text-subtlest)',
 };
 
 const DEFAULT_STATS: CapacityStats = {
@@ -171,7 +171,7 @@ export function useCapacityData() {
           count: deptData?.count || 0,
           critical: deptData?.critical || 0,
           warning: deptData?.warning || 0,
-          color: DEPT_COLORS[d.name] || 'var(--ds-text-subtlest, #626F86)',
+          color: DEPT_COLORS[d.name] || 'var(--ds-text-subtlest)',
           utilization: avgUtilization,
           trend,
           warningBreakdown: [

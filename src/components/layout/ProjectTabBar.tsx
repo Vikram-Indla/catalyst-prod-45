@@ -66,10 +66,10 @@ export function ProjectTabBar({ projectKey }: Props) {
                 data-testid={`catalyst-project-tabs.${t.id}.active`}
                 aria-current="page"
                 style={{
-                  fontSize: 14, fontWeight: 500,
-                  color: 'var(--ds-text-brand, #1558BC)',
+                  fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+                  color: 'var(--ds-text-brand)',
                   padding: '0 8px', display: 'inline-flex', alignItems: 'center', height: '100%',
-                  borderBottom: '2px solid var(--ds-border-brand, #1558BC)',
+                  borderBottom: '2px solid var(--ds-border-brand)',
                 }}
               >
                 {t.label}
@@ -79,13 +79,13 @@ export function ProjectTabBar({ projectKey }: Props) {
                 to={t.path}
                 data-testid={`catalyst-project-tabs.${t.id}.link`}
                 style={{
-                  fontSize: 14, fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #505258)',
+                  fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+                  color: 'var(--ds-text-subtle)',
                   padding: '0 8px', display: 'inline-flex', alignItems: 'center', height: '100%',
                   textDecoration: 'none',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #505258)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle)'; }}
               >
                 {t.label}
               </Link>

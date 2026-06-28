@@ -83,10 +83,10 @@ export function CommentsSummaryCard({
     >
       <div className="csc-surface">
         <header className="csc-header">
-          <SparklesIcon size="small" label="" primaryColor="var(--ds-icon, #44546F)" />
+          <SparklesIcon size="small" label="" primaryColor="var(--ds-icon)" />
           <span className="csc-header__title">Comments summary</span>
           <span className="csc-header__lock">
-            <LockIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
+            <LockIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
             Only visible to you
           </span>
           <button
@@ -96,7 +96,7 @@ export function CommentsSummaryCard({
             aria-label="Dismiss summary"
             data-testid="csc-dismiss"
           >
-            <CloseIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
+            <CloseIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
           </button>
         </header>
 
@@ -183,8 +183,8 @@ export function CommentsSummaryCard({
                     label=""
                     primaryColor={
                       selectedVote === 'up'
-                        ? 'var(--ds-text-information, #0c66e4)'
-                        : 'var(--ds-icon-subtle, #6b6e76)'
+                        ? 'var(--ds-text-information)'
+                        : 'var(--ds-icon-subtle)'
                     }
                   />
                 </button>
@@ -201,8 +201,8 @@ export function CommentsSummaryCard({
                     label=""
                     primaryColor={
                       selectedVote === 'down'
-                        ? 'var(--ds-text-information, #0c66e4)'
-                        : 'var(--ds-icon-subtle, #6b6e76)'
+                        ? 'var(--ds-text-information)'
+                        : 'var(--ds-icon-subtle)'
                     }
                   />
                 </button>
@@ -213,7 +213,7 @@ export function CommentsSummaryCard({
                   aria-label="Copy summary"
                   data-testid="csc-copy"
                 >
-                  <CopyIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
+                  <CopyIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
                 </button>
               </div>
             </footer>

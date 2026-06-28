@@ -25,9 +25,9 @@ function daysAgo(iso: string | null): number {
 }
 
 function slaColor(days: number): string {
-  if (days <= 7) return token('color.background.success.bold', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))');
-  if (days <= 21) return token('color.background.warning.bold', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))');
-  return token('color.background.danger.bold', 'var(--ds-text-danger, #AE2A19)');
+  if (days <= 7) return token('color.background.success.bold', 'var(--ds-background-success-bold, var(--ds-background-success-bold))');
+  if (days <= 21) return token('color.background.warning.bold', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))');
+  return token('color.background.danger.bold', 'var(--ds-text-danger)');
 }
 
 export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageDrillDownDrawerProps) {
@@ -70,8 +70,8 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         right: 0,
         width: 420,
         height: '100%',
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-        borderLeft: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+        borderLeft: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         boxShadow: token('elevation.shadow.overlay', '-4px 0 12px var(--ds-shadow-raised, rgba(0,0,0,0.12))'),
         display: 'flex',
         flexDirection: 'column',
@@ -85,15 +85,15 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: `${token('space.200', '16px')} ${token('space.200', '16px')} ${token('space.150', '12px')}`,
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         }}
       >
         <h2
           style={{
             margin: 0,
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 600,
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
           }}
         >
           {stageLabel}
@@ -106,8 +106,8 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
-            fontSize: 18,
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
+            fontSize: 'var(--ds-font-size-600)',
             lineHeight: 1,
             padding: 4,
             borderRadius: 4,
@@ -133,9 +133,9 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <h3
             style={{
               margin: '0 0 8px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}
@@ -145,10 +145,10 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <div
             style={{
               padding: token('space.150', '12px'),
-              background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
+              background: token('color.background.information', 'var(--ds-background-selected)'),
               borderRadius: 6,
-              fontSize: 13,
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+              fontSize: 'var(--ds-font-size-300)',
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
               lineHeight: 1.5,
             }}
           >
@@ -163,9 +163,9 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <h3
             style={{
               margin: '0 0 8px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}
@@ -174,7 +174,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {brs.length === 0 ? (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
                 No items
               </span>
             ) : (
@@ -189,8 +189,8 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                       gap: 8,
                       padding: `6px ${token('space.100', '8px')}`,
                       borderRadius: 4,
-                      background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                      background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                     }}
                   >
                     <div
@@ -205,8 +205,8 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                     <span
                       style={{
                         flex: 1,
-                        fontSize: 13,
-                        color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                        fontSize: 'var(--ds-font-size-300)',
+                        color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -216,8 +216,8 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                     </span>
                     <span
                       style={{
-                        fontSize: 11,
-                        color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+                        fontSize: 'var(--ds-font-size-100)',
+                        color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
                         flexShrink: 0,
                       }}
                     >
@@ -228,11 +228,11 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                       onClick={e => { e.stopPropagation(); setPostMortem({ id: br.id, title: br.title }); }}
                       style={{
                         background: 'none',
-                        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                         borderRadius: 4,
                         cursor: 'pointer',
-                        fontSize: 11,
-                        color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+                        fontSize: 'var(--ds-font-size-100)',
+                        color: token('color.text.subtle', 'var(--ds-text-subtle)'),
                         padding: '2px 6px',
                         flexShrink: 0,
                         lineHeight: 1.4,
@@ -252,9 +252,9 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <h3
             style={{
               margin: '0 0 8px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}
@@ -269,10 +269,10 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
             ].map(band => (
               <div key={band.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 10, height: 10, borderRadius: 2, background: band.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), flex: 1 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), flex: 1 }}>
                   {band.label}
                 </span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>
                   {band.count}
                 </span>
               </div>
@@ -291,16 +291,16 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
       <div
         data-testid="stage-owner-footer"
         style={{
-          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           padding: token('space.150', '12px'),
-          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
         }}
       >
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
             display: 'block',
@@ -311,7 +311,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         </span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {ownerMap.size === 0 ? (
-            <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>—</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>—</span>
           ) : (
             Array.from(ownerMap.entries()).map(([name, count]) => (
               <div
@@ -321,17 +321,17 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                   alignItems: 'center',
                   gap: 4,
                   padding: '3px 8px',
-                  background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                  background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
                   borderRadius: 12,
-                  fontSize: 12,
-                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                  fontSize: 'var(--ds-font-size-200)',
+                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                 }}
               >
                 <span>{name}</span>
                 <span
                   style={{
                     fontWeight: 700,
-                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle)'),
                   }}
                 >
                   {count}

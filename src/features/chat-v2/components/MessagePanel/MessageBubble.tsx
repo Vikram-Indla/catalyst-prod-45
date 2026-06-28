@@ -175,7 +175,7 @@ export function MessageBubble({
             style={{
               display: 'inline-block',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               lineHeight: '20px',
               color: 'var(--cv2-text-muted)',
               opacity: hovered ? 1 : 0,
@@ -244,7 +244,7 @@ export function MessageBubble({
           />
         )}
         {message.editedAt && !editing && (
-          <span style={{ fontSize: 11, color: 'var(--cv2-text-muted)', marginLeft: 6 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', marginLeft: 6 }}>
             (edited)
           </span>
         )}
@@ -332,7 +332,7 @@ export function MessageBubble({
             boxShadow: 'var(--cv2-shadow-modal)',
             padding: '10px 16px',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             zIndex: 'var(--cv2-modal-z, 1000)' as unknown as number,
           }}
         >
@@ -390,14 +390,14 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
       >
         <PresenceAvatar name={info.sourceAuthorName ?? 'Someone'} size={28} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             {info.sourceAuthorName ?? 'Someone'}
           </div>
           {info.sourceBodyText && (
             <div
               style={{
                 marginTop: 2,
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: 'var(--cv2-text)',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
@@ -409,7 +409,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
           <div
             style={{
               marginTop: 6,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-muted)',
               display: 'flex',
               alignItems: 'center',
@@ -433,10 +433,10 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
-                color: 'var(--cv2-accent, #1264A3)',
+                color: 'var(--cv2-accent)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
               }}
             >

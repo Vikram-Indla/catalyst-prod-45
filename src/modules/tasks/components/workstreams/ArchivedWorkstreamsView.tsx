@@ -99,8 +99,8 @@ export function ArchivedWorkstreamsView({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 24px',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          borderBottom: '1px solid var(--ds-border)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -108,7 +108,7 @@ export function ArchivedWorkstreamsView({
             onClick={onBack}
             style={{
               padding: '8px',
-              color: 'var(--ds-text-subtlest, #64748b)',
+              color: 'var(--ds-text-subtlest)',
               backgroundColor: 'transparent',
               border: 'none',
               borderRadius: '8px',
@@ -117,7 +117,7 @@ export function ArchivedWorkstreamsView({
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             title="Back to workstreams"
           >
@@ -125,16 +125,16 @@ export function ArchivedWorkstreamsView({
           </button>
           <div>
             <h1 style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 700,
-              color: 'var(--ds-text, #0f172a)',
+              color: 'var(--ds-text)',
               margin: 0,
             }}>
               Archived Workstreams
             </h1>
             <p style={{
-              fontSize: '14px',
-              color: 'var(--ds-text-subtlest, #64748b)',
+              fontSize: 'var(--ds-font-size-400)',
+              color: 'var(--ds-text-subtlest)',
               marginTop: '2px',
               margin: 0,
             }}>

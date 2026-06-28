@@ -1,7 +1,7 @@
 /**
  * CleanupPage — AI Cleanup Governance
  * Full page for managing stale work items.
- * Light mode only. Page bg var(--ds-surface-sunken, #F8FAFC), cards var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)).
+ * Light mode only. Page bg var(--ds-surface-sunken), cards var(--cp-bg-elevated, var(--cp-bg-elevated)).
  */
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -115,18 +115,18 @@ const CAT_SHORT: Record<number, string> = {
 // ── Status Lozenge ──────────────────────────────
 function StatusLozenge({ value }: { value: string }) {
   const lower = (value || '').toLowerCase();
-  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = 'var(--ds-text, #253858)';
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color = 'var(--ds-text)';
   if (lower.includes('progress') || lower.includes('review') || lower.includes('active') || lower.includes('integration') || lower.includes('ready for development')) {
-    bg = 'var(--ds-background-information, #DEEBFF)'; color = 'var(--ds-background-information-bold, #0747A6)';
+    bg = 'var(--ds-background-information)'; color = 'var(--ds-background-information-bold)';
   } else if (lower.includes('done') || lower.includes('approved') || lower.includes('complete')) {
-    bg = 'var(--ds-background-success, #E3FCEF)'; color = 'var(--ds-text-success, #006644)';
+    bg = 'var(--ds-background-success)'; color = 'var(--ds-text-success)';
   }
   return (
     <span
       title={value}
       style={{
         display: 'inline-block', height: 20, lineHeight: '20px',
-        fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
         letterSpacing: '0.03em', borderRadius: 3, padding: '0 6px',
         background: bg, color, fontFamily: 'var(--cp-font-body)',
         whiteSpace: 'nowrap', maxWidth: 120, overflow: 'hidden',
@@ -140,9 +140,9 @@ function StatusLozenge({ value }: { value: string }) {
 
 // ── Helpers ──────────────────────────────────────
 function daysColor(d: number): string {
-  if (d > 90) return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-  if (d >= 60) return 'var(--ds-text-warning, #92400E)';
-  return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+  if (d > 90) return 'var(--ds-text-danger, var(--cp-danger))';
+  if (d >= 60) return 'var(--ds-text-warning)';
+  return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
 }
 
 function relativeTime(iso: string): string {
@@ -421,9 +421,9 @@ export default function CleanupPage() {
   const breachStreak = govScore?.breachStreak ?? 0;
   const itemCount = sharedItems.length;
   const ragCfg = {
-    green: { bg: 'var(--ds-background-success, #ECFDF5)', border: 'var(--ds-border-success, #6EE7B7)', color: 'var(--ds-text-success, #065F46)' },
-    amber: { bg: 'var(--ds-background-warning, #FFFBEB)', border: 'var(--ds-border-warning, #FCD34D)', color: 'var(--ds-text-warning, #92400E)' },
-    red:   { bg: 'var(--ds-background-danger, #FEF2F2)', border: 'var(--ds-border-danger, #FCA5A5)', color: 'var(--ds-text-danger, #991B1B)' },
+    green: { bg: 'var(--ds-background-success)', border: 'var(--ds-border-success)', color: 'var(--ds-text-success)' },
+    amber: { bg: 'var(--ds-background-warning)', border: 'var(--ds-border-warning)', color: 'var(--ds-text-warning)' },
+    red:   { bg: 'var(--ds-background-danger)', border: 'var(--ds-border-danger)', color: 'var(--ds-text-danger)' },
   }[ragStatus];
 
   // ── Select all in category ──
@@ -543,24 +543,24 @@ export default function CleanupPage() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100vh',
-      background: 'var(--ds-surface-sunken, #F8FAFC)', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--ds-surface-sunken)', fontFamily: 'var(--cp-font-body)',
     }}>
       {/* ═══ PAGE HEADER ═══ */}
       <div style={{
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
         padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12,
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>
             AI Cleanup
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Last scan: today 02:00 AST</span>
+          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>Last scan: today 02:00 AST</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 20,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, padding: '2px 8px', borderRadius: 20,
             background: ragCfg.bg, border: `1px solid ${ragCfg.border}`, color: ragCfg.color,
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: ragCfg.color, display: 'inline-block' }} />
@@ -572,12 +572,12 @@ export default function CleanupPage() {
       {/* ═══ GOVERNANCE BREACH BANNER ═══ */}
       {(ragStatus === 'red' || ragStatus === 'amber') && (
         <div style={{
-          background: ragStatus === 'red' ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-background-warning, #FFFBEB)',
-          borderBottom: '1px solid ' + (ragStatus === 'red' ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--ds-border-warning, #FCD34D)'),
+          background: ragStatus === 'red' ? 'var(--ds-background-danger)' : 'var(--ds-background-warning)',
+          borderBottom: '1px solid ' + (ragStatus === 'red' ? 'var(--ds-border-danger)' : 'var(--ds-border-warning)'),
           padding: '8px 24px', display: 'flex', alignItems: 'flex-start', gap: 8,
         }}>
-          <AlertTriangle size={14} color={ragStatus === 'red' ? 'var(--ds-text-danger, #991B1B)' : 'var(--ds-text-warning, #92400E)'} style={{ flexShrink: 0, marginTop: 1 }} />
-          <span style={{ fontSize: 13, color: ragStatus === 'red' ? 'var(--ds-text-danger, #991B1B)' : 'var(--ds-text-warning, #92400E)', lineHeight: 1.5 }}>
+          <AlertTriangle size={14} color={ragStatus === 'red' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)'} style={{ flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: ragStatus === 'red' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)', lineHeight: 1.5 }}>
             {ragStatus === 'red'
               ? `Governance breach — ${itemCount} aging items, ${breachStreak}d streak. Force closures bypass status workflow. Reporters notified automatically. Audit trail is permanent. Restore window: 90 days. REPORTER items — onus is on the reporter, not you.`
               : `Governance warning — ${itemCount} aging items. Review and close stale work to prevent a breach.`
@@ -589,7 +589,7 @@ export default function CleanupPage() {
       {/* ═══ TABS + VIEW TOGGLE ═══ */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', flexShrink: 0,
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', flexShrink: 0,
         padding: '0 16px 0 0',
       }}>
         <div style={{ display: 'flex', gap: 0 }}>
@@ -603,9 +603,9 @@ export default function CleanupPage() {
               style={{
                 padding: '10px 24px', border: 'none', cursor: 'pointer',
                 background: 'transparent', fontFamily: 'var(--cp-font-body)',
-                fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
-                color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-                borderBottom: activeTab === tab.key ? '2px solid var(--ds-link, #2563EB)' : '2px solid transparent',
+                fontSize: 'var(--ds-font-size-300)', fontWeight: activeTab === tab.key ? 700 : 500,
+                color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+                borderBottom: activeTab === tab.key ? '2px solid var(--ds-link)' : '2px solid transparent',
               }}
             >
               {tab.label}
@@ -614,7 +614,7 @@ export default function CleanupPage() {
         </div>
 
         {activeTab === 'cleanup' && (
-          <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))' }}>
+          <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))' }}>
             {[
               { key: 'group' as const, icon: LayoutGrid, label: 'Group' },
               { key: 'list' as const, icon: ListIcon, label: 'List' },
@@ -625,9 +625,9 @@ export default function CleanupPage() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
                   height: 32, padding: '0 12px', border: 'none', cursor: 'pointer',
-                  fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
-                  background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-                  color: viewMode === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+                  fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+                  background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                  color: viewMode === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                   transition: 'background 100ms, color 100ms',
                 }}
               >
@@ -644,7 +644,7 @@ export default function CleanupPage() {
           {/* ═══ STATS ROW ═══ */}
           <div style={{
             display: 'flex', gap: 32, padding: '16px 24px',
-            borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', flexShrink: 0,
+            borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', flexShrink: 0,
           }}>
             {[
               { label: 'AI FLAGGED', value: stats.aiFlagged },
@@ -655,13 +655,13 @@ export default function CleanupPage() {
             ].map(cell => (
               <div key={cell.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                   fontFamily: 'var(--cp-font-mono)', fontSize: 24,
-                   fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+                   fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-800)',
+                   fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))',
                  }}>
                   {cell.value}
                 </div>
                 <div style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                   textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4,
                 }}>
                   {cell.label}
@@ -678,11 +678,11 @@ export default function CleanupPage() {
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
                   justifyContent: 'center', marginTop: 64, gap: 12,
                 }}>
-                  <CheckCircle size={48} color="var(--ds-text-success, #10B981)" strokeWidth={1.5} />
-                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--ds-text-success, #065F46)' }}>
+                  <CheckCircle size={48} color="var(--ds-text-success)" strokeWidth={1.5} />
+                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--ds-text-success)' }}>
                     Governance: GREEN
                   </span>
-                  <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
                     All items are in compliance. Check back tomorrow.
                   </span>
                 </div>
@@ -690,7 +690,7 @@ export default function CleanupPage() {
                 <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                   <div style={{
                     width: 24, height: 24,
-                    border: '2.5px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                    border: '2.5px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                     borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                   }} />
                 </div>
@@ -709,7 +709,7 @@ export default function CleanupPage() {
                          style={{
                            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                            height: 48, padding: '0 16px',
-                           background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+                           background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
                            fontFamily: 'var(--cp-font-body)',
                          }}
                        >
@@ -722,22 +722,22 @@ export default function CleanupPage() {
                              height: '100%',
                            }}
                          >
-                           <CatIcon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
-                           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+                           <CatIcon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" />
+                           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>
                              {cat.name}
                            </span>
                            <span style={{
-                             fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
-                             background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+                             fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
+                             background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
                              padding: '2px 8px', borderRadius: 20,
                            }}>
                              {items.length}
                            </span>
-                           <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginLeft: 4 }}>
+                           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginLeft: 4 }}>
                              {cat.subtitle}
                            </span>
                            <div style={{ flex: 1 }} />
-                           {isOpen ? <ChevronUp size={14} color="var(--ds-text-disabled, #CBD5E1)" /> : <ChevronDown size={14} color="var(--ds-text-disabled, #CBD5E1)" />}
+                           {isOpen ? <ChevronUp size={14} color="var(--ds-text-disabled)" /> : <ChevronDown size={14} color="var(--ds-text-disabled)" />}
                         </button>
 
                         {/* Select all link in expanded header */}
@@ -752,7 +752,7 @@ export default function CleanupPage() {
                               }
                             }}
                             style={{
-                              fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer',
+                              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer',
                               whiteSpace: 'nowrap', flexShrink: 0,
                             }}
                           >
@@ -766,11 +766,11 @@ export default function CleanupPage() {
                         <div
                           key={item.id}
                           style={{
-                            padding: '12px 16px', borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))',
-                            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', transition: 'background 150ms',
+                            padding: '12px 16px', borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))',
+                            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', transition: 'background 150ms',
                           }}
-                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))')}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))')}
                         >
                           {/* LINE 1 */}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -783,7 +783,7 @@ export default function CleanupPage() {
                             )}
                             <span style={{
                               fontFamily: 'var(--cp-font-mono)',
-                              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                              fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                             }}>
                               {item.issue_key}
                             </span>
@@ -795,12 +795,12 @@ export default function CleanupPage() {
                                   onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
                                   defaultOpen
                                 >
-                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid var(--ds-link, #2563EB)', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
+                                  <SelectTrigger style={{ height: 24, fontSize: 'var(--ds-font-size-100)', border: '1px solid var(--ds-link)', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', zIndex: 100 }}>
+                                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', zIndex: 100 }}>
                                     {distinctStatuses.map(s => (
-                                      <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
+                                      <SelectItem key={s} value={s} style={{ fontSize: 'var(--ds-font-size-100)' }}>{s}</SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
@@ -812,14 +812,14 @@ export default function CleanupPage() {
                             )}
                             <span style={{
                               fontFamily: 'var(--cp-font-mono)',
-                              fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
+                              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: daysColor(item.days_stale),
                             }}>
                               {item.days_stale}d
                             </span>
                             {cat.isReporterOnus && (
                               <span style={{
-                                fontSize: 11, fontWeight: 600,
-                                background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', border: '1px solid var(--ds-border-danger, #FCA5A5)',
+                                fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                                background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', border: '1px solid var(--ds-border-danger)',
                                 padding: '2px 8px', borderRadius: 4,
                               }}>
                                 REPORTER
@@ -833,13 +833,13 @@ export default function CleanupPage() {
                                 padding: 4, display: 'flex',
                               }}
                             >
-                              <ChevronRight size={14} color="var(--ds-text-disabled, #CBD5E1)" />
+                              <ChevronRight size={14} color="var(--ds-text-disabled)" />
                             </button>
                           </div>
 
                           {/* LINE 2 — Title */}
                           <div style={{
-                            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+                            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))',
                             marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>
@@ -851,16 +851,16 @@ export default function CleanupPage() {
                             display: 'flex', gap: 16, marginTop: 4,
                             paddingLeft: cat.isReporterOnus ? 0 : 28, flexWrap: 'wrap',
                           }}>
-                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                               Assignee: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                               Reporter: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                               Project: {item.project_key || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                               Fix ver: {item.fixed_versions || '\u2014'}
                             </span>
                           </div>
@@ -874,9 +874,9 @@ export default function CleanupPage() {
                                 marginTop: 8, paddingLeft: cat.isReporterOnus ? 0 : 28,
                               }}>
                                 <div style={{
-                                  background: 'var(--ds-surface-sunken, #F8FAFC)', borderLeft: '2px solid var(--ds-border, #CBD5E1)',
+                                  background: 'var(--ds-surface-sunken)', borderLeft: '2px solid var(--ds-border)',
                                   paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
-                                  fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
+                                  fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
                                 }}>
                                   {reason}
                                 </div>
@@ -887,7 +887,7 @@ export default function CleanupPage() {
                           {/* Reporter onus note */}
                           {cat.isReporterOnus && (
                             <div style={{
-                              fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4,
+                              fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 4,
                               paddingLeft: cat.isReporterOnus ? 0 : 28,
                             }}>
                               Reporter must action — {item.reporter_name || 'Unknown'}
@@ -899,8 +899,8 @@ export default function CleanupPage() {
                       {isOpen && items.length === 0 && (
                         <div style={{
                           padding: '16px', textAlign: 'center',
-                          fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-                          borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))',
+                          fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                          borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))',
                         }}>
                           No items in this category
                         </div>
@@ -918,7 +918,7 @@ export default function CleanupPage() {
               {/* Toolbar */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', flexShrink: 0,
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', flexShrink: 0,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Checkbox
@@ -927,7 +927,7 @@ export default function CleanupPage() {
                     onCheckedChange={handleMasterCheck}
                     style={{ width: 16, height: 16 }}
                   />
-                  <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', whiteSpace: 'nowrap' }}>
                     {someListChecked
                       ? `${listCheckableItems.filter(i => selected.has(i.id)).length} of ${listCheckableItems.length} selected`
                       : `Select all ${listCheckableItems.length}`
@@ -936,25 +936,25 @@ export default function CleanupPage() {
                 </div>
 
                 <Select value={listCatFilter} onValueChange={setListCatFilter}>
-                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 12, border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
+                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 'var(--ds-font-size-200)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
-                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
-                    <SelectItem value="all" style={{ fontSize: 12 }}>All categories</SelectItem>
+                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
+                    <SelectItem value="all" style={{ fontSize: 'var(--ds-font-size-200)' }}>All categories</SelectItem>
                     {CATEGORIES.map(c => (
-                      <SelectItem key={c.key} value={String(c.key)} style={{ fontSize: 12 }}>{c.name}</SelectItem>
+                      <SelectItem key={c.key} value={String(c.key)} style={{ fontSize: 'var(--ds-font-size-200)' }}>{c.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
                 <Select value={listStatusFilter} onValueChange={setListStatusFilter}>
-                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 12, border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
+                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 'var(--ds-font-size-200)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
-                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
-                    <SelectItem value="all" style={{ fontSize: 12 }}>All statuses</SelectItem>
+                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
+                    <SelectItem value="all" style={{ fontSize: 'var(--ds-font-size-200)' }}>All statuses</SelectItem>
                     {distinctStatuses.map(s => (
-                      <SelectItem key={s} value={s} style={{ fontSize: 12 }}>{s}</SelectItem>
+                      <SelectItem key={s} value={s} style={{ fontSize: 'var(--ds-font-size-200)' }}>{s}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -966,14 +966,14 @@ export default function CleanupPage() {
                   onClick={() => setShowForceCloseDialog(true)}
                   className="disabled:opacity-100"
                   style={{
-                    height: 32, fontSize: 12, fontWeight: 700,
-                    background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
-                    color: selected.size > 0 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-                    border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+                    height: 32, fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
+                    background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
+                    color: selected.size > 0 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
+                    border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
-                  onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, #B91C1C)'; }}
-                  onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; }}
+                  onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger)'; }}
+                  onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger))'; }}
                 >
                   Force Close ({selected.size})
                 </Button>
@@ -985,7 +985,7 @@ export default function CleanupPage() {
                   <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                     <div style={{
                       width: 24, height: 24,
-                      border: '2.5px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                      border: '2.5px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                       borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                     }} />
                   </div>
@@ -994,12 +994,12 @@ export default function CleanupPage() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
                     justifyContent: 'center', padding: '64px 0', gap: 12,
                   }}>
-                    <CheckCircle size={32} color="var(--ds-text-disabled, #CBD5E1)" />
-                    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>No items match this filter</span>
+                    <CheckCircle size={32} color="var(--ds-text-disabled)" />
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>No items match this filter</span>
                     {(listCatFilter !== 'all' || listStatusFilter !== 'all') && (
                       <span
                         onClick={() => { setListCatFilter('all'); setListStatusFilter('all'); }}
-                        style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', cursor: 'pointer' }}
+                        style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', textDecoration: 'underline', cursor: 'pointer' }}
                       >
                         Clear filters
                       </span>
@@ -1037,8 +1037,8 @@ export default function CleanupPage() {
                         ].map((col, i) => (
                           <th key={i} style={{
                             height: 44, padding: '10px 12px',
-                            background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
-                            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+                            background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                             textTransform: 'uppercase', letterSpacing: '0.06em',
                             textAlign: (col.align || 'left') as any, whiteSpace: 'nowrap',
                             verticalAlign: 'middle', fontFamily: 'var(--cp-font-body)',
@@ -1063,18 +1063,18 @@ export default function CleanupPage() {
                             key={item.id}
                             onClick={() => handleOpenDetailList(item, idx)}
                             style={{
-                              height: 44, borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))', cursor: 'pointer',
-                              background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-                              borderLeft: isSelected ? '2px solid var(--ds-link, #2563EB)' : '2px solid transparent',
+                              height: 44, borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))', cursor: 'pointer',
+                              background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+                              borderLeft: isSelected ? '2px solid var(--ds-link)' : '2px solid transparent',
                               transition: 'background .1s',
                             }}
-                            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)'; }}
-                            onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'; }}
+                            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken)'; }}
+                            onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))'; }}
                           >
                             {/* Checkbox */}
                             <td style={{ padding: '8px 12px', width: 36 }} onClick={e => e.stopPropagation()}>
                               {isReporter ? (
-                                <span style={{ color: 'var(--ds-text-disabled, #CBD5E1)', fontSize: 13 }}>{'\u2014'}</span>
+                                <span style={{ color: 'var(--ds-text-disabled)', fontSize: 'var(--ds-font-size-300)' }}>{'\u2014'}</span>
                               ) : (
                                 <Checkbox
                                   checked={isSelected}
@@ -1089,8 +1089,8 @@ export default function CleanupPage() {
                               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <JiraIssueTypeIcon type={item.issue_type} size={16} />
                                 <span style={{
-                                  fontFamily: 'var(--cp-font-mono)', fontSize: 12,
-                                  fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                                  fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)',
+                                  fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                                 }}>
                                   {item.issue_key}
                                 </span>
@@ -1099,8 +1099,8 @@ export default function CleanupPage() {
 
                             {/* Summary */}
                             <td style={{
-                              padding: '8px 12px', fontSize: 13, fontWeight: 500,
-                              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', maxWidth: 0,
+                              padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
+                              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', maxWidth: 0,
                               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             }}>
                               {item.title}
@@ -1112,21 +1112,21 @@ export default function CleanupPage() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                                   <JiraIssueTypeIcon type={parentIssueType} size={14} />
                                   <span style={{
-                                    fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
+                                    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)',
                                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                   }}>
                                     {parentTitle}
                                   </span>
                                 </div>
                               ) : (
-                                <span style={{ fontSize: 13, color: 'var(--ds-text-disabled, #CBD5E1)' }}>{'\u2014'}</span>
+                                <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-disabled)' }}>{'\u2014'}</span>
                               )}
                             </td>
 
                             {/* Project — full name */}
                             <td style={{ padding: '8px 12px', width: 160 }} title={projectName}>
                               <span style={{
-                                fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
+                                fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)',
                                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                 display: 'block',
                               }}>
@@ -1140,18 +1140,18 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--ds-link, #0284C7)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-discovery, #DB2777)'][ini.charCodeAt(0) % 5];
+                                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60, var(--ds-chart-teal-bold))', 'var(--ds-link)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-discovery)'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
                                         width: 24, height: 24, borderRadius: '50%', background: clr,
-                                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', display: 'flex', alignItems: 'center',
-                                        justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0,
+                                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
                                       }}>
                                         {ini}
                                       </div>
                                       <span style={{
-                                        fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
+                                        fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)',
                                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                       }}>
                                         {name}
@@ -1168,18 +1168,18 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--ds-link, #0284C7)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-discovery, #DB2777)'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60, var(--ds-chart-teal-bold))', 'var(--ds-link)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-discovery)'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
                                         width: 24, height: 24, borderRadius: '50%', background: clr,
-                                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', display: 'flex', alignItems: 'center',
-                                        justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0,
+                                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
                                       }}>
                                         {ini}
                                       </div>
                                       <span style={{
-                                        fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
+                                        fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)',
                                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                       }}>
                                         {name}
@@ -1199,12 +1199,12 @@ export default function CleanupPage() {
                                   onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
                                   defaultOpen
                                 >
-                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid var(--ds-link, #2563EB)', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', minWidth: 100 }}>
+                                  <SelectTrigger style={{ height: 28, fontSize: 'var(--ds-font-size-100)', border: '1px solid var(--ds-link)', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', minWidth: 100 }}>
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', zIndex: 100 }}>
+                                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', zIndex: 100 }}>
                                     {distinctStatuses.map(s => (
-                                      <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
+                                      <SelectItem key={s} value={s} style={{ fontSize: 'var(--ds-font-size-100)' }}>{s}</SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
@@ -1222,7 +1222,7 @@ export default function CleanupPage() {
                             {/* Days */}
                             <td style={{
                               padding: '8px 12px', width: 60, textAlign: 'right',
-                              fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600,
+                              fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                               color: daysColor(item.days_stale),
                             }}>
                               {item.days_stale}d
@@ -1231,8 +1231,8 @@ export default function CleanupPage() {
                             {/* Category */}
                             <td style={{ padding: '8px 8px', width: 110 }}>
                               <span style={{
-                                display: 'inline-block', fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
-                                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+                                display: 'inline-block', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
+                                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
                                 padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
                                 maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
                               }}>
@@ -1242,7 +1242,7 @@ export default function CleanupPage() {
 
                             {/* Detail chevron */}
                             <td style={{ padding: '4px', width: 32, textAlign: 'center' }}>
-                              <ChevronRight size={14} color="var(--ds-text-disabled, #CBD5E1)" />
+                              <ChevronRight size={14} color="var(--ds-text-disabled)" />
                             </td>
                           </tr>
                         );
@@ -1258,12 +1258,12 @@ export default function CleanupPage() {
           {selected.size > 0 && (
             <div style={{
               position: 'fixed', bottom: 0, left: 0, right: 0,
-              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', borderTop: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderTop: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
               padding: '12px 24px', display: 'flex', alignItems: 'center',
               justifyContent: 'space-between', zIndex: 50,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>
                   {selected.size} selected
                 </span>
                 {firstSelectedCatKey !== null && viewMode === 'group' && (
@@ -1276,7 +1276,7 @@ export default function CleanupPage() {
                         handleSelectAllInCategory(firstSelectedCatKey);
                       }
                     }}
-                    style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', cursor: 'pointer' }}
+                    style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', textDecoration: 'underline', cursor: 'pointer' }}
                   >
                     {(catData[firstSelectedCatKey] ?? []).every(i => selected.has(i.id)) ? 'Deselect all' : `Select all ${(catData[firstSelectedCatKey] ?? []).length} in category`}
                   </span>
@@ -1285,26 +1285,26 @@ export default function CleanupPage() {
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button
                   variant="outline"
-                  style={{ height: 36, fontSize: 14 }}
+                  style={{ height: 36, fontSize: 'var(--ds-font-size-400)' }}
                   onClick={handlePreviewReporterNotifications}
                 >
                   Preview reporter notifications
                 </Button>
                 <Button
                   variant="outline"
-                  style={{ height: 36, fontSize: 14, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
+                  style={{ height: 36, fontSize: 'var(--ds-font-size-400)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}
                   onClick={() => catalystToast.info('Force Close via workflow — coming soon')}
                 >
                   Force Close (via workflow)
                 </Button>
                 <Button
                   style={{
-                    height: 36, fontSize: 14, fontWeight: 700,
-                    background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: 'none',
+                    height: 36, fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
+                    background: 'var(--ds-text-danger, var(--cp-danger))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: 'none',
                   }}
                   onClick={() => setShowForceCloseDialog(true)}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-danger, #B91C1C)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-danger)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger))')}
                 >
                   Force Close (bypass)
                 </Button>
@@ -1314,15 +1314,15 @@ export default function CleanupPage() {
         </>
       ) : (
         /* ═══ RESTORE TAB ═══ */
-        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
+        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))' }}>
+              <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))' }}>
                 {['KEY', 'SUMMARY', 'CATEGORY', 'CLOSED', 'RESTORE DEADLINE', 'ACTION'].map(h => (
                   <th key={h} style={{
-                    padding: '10px 12px', fontSize: 11, fontWeight: 700,
+                    padding: '10px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                     textTransform: 'uppercase', letterSpacing: '0.04em',
-                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                   }}>
                     {h}
                   </th>
@@ -1332,7 +1332,7 @@ export default function CleanupPage() {
             <tbody>
               {restoreData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
                     No closed items found
                   </td>
                 </tr>
@@ -1345,30 +1345,30 @@ export default function CleanupPage() {
                   : 0;
 
                 return (
-                  <tr key={entry.id} style={{ borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))', height: 36 }}>
+                  <tr key={entry.id} style={{ borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))', height: 36 }}>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
                         fontFamily: 'var(--cp-font-mono)',
-                        fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                        fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                       }}>
                         {entry.item_key}
                       </span>
                     </td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.item_key}
                     </td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                       {catLabel}
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                         {entry.closed_at ? relativeTime(entry.closed_at) : '\u2014'}
                       </span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
-                        fontFamily: 'var(--cp-font-mono)', fontSize: 13,
-                        color: deadlinePassed || alreadyRestored ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : 'var(--ds-text-success, #065F46)',
+                        fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)',
+                        color: deadlinePassed || alreadyRestored ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' : 'var(--ds-text-success)',
                       }}>
                         {alreadyRestored ? 'Restored' : deadlinePassed ? 'Window expired' : `Expires in ${daysUntilDeadline}d`}
                       </span>
@@ -1378,13 +1378,13 @@ export default function CleanupPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          style={{ height: 28, fontSize: 13 }}
+                          style={{ height: 28, fontSize: 'var(--ds-font-size-300)' }}
                           onClick={() => handleRestore(entry)}
                         >
                           Restore
                         </Button>
                       ) : (
-                        <span style={{ color: 'var(--ds-text-disabled, #CBD5E1)' }}>{'\u2014'}</span>
+                        <span style={{ color: 'var(--ds-text-disabled)' }}>{'\u2014'}</span>
                       )}
                     </td>
                   </tr>
@@ -1400,7 +1400,7 @@ export default function CleanupPage() {
         <DialogContent
           style={{
             maxWidth: 680, width: '90vw', borderRadius: 8,
-            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: 'none',
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: 'none',
             boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.18)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.10))',
             padding: 0,
           }}
@@ -1408,22 +1408,22 @@ export default function CleanupPage() {
           {/* HEADER */}
           <div style={{ padding: '24px 24px 0' }}>
             <h2 style={{
-              fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700,
-              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0,
+              fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700,
+              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', margin: 0,
             }}>
               Force close {selected.size} item{selected.size !== 1 ? 's' : ''}?
             </h2>
-            <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 6, marginBottom: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 6, marginBottom: 0 }}>
               These items will be marked Done and locked. Reporters will be notified. A comment will be added to each issue. The action is permanent in the audit trail.
             </p>
-            <div style={{ height: 1, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginTop: 20 }} />
+            <div style={{ height: 1, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', marginTop: 20 }} />
           </div>
 
           {/* BODY */}
           <div style={{ padding: '16px 24px', maxHeight: '60vh', overflowY: 'auto' }}>
             {/* Section 1 */}
             <div style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               WHAT WILL HAPPEN
@@ -1435,16 +1435,16 @@ export default function CleanupPage() {
               { Icon: Clock, text: 'Restore window: 90 days from today' },
             ].map((row, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '8px 0' }}>
-                <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" style={{ flexShrink: 0, marginTop: 1 }} />
-                <span style={{ fontSize: 14, color: 'var(--ds-text, #1E293B)', lineHeight: 1.5 }}>{row.text}</span>
+                <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" style={{ flexShrink: 0, marginTop: 1 }} />
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{row.text}</span>
               </div>
             ))}
 
-            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', margin: '16px 0' }} />
+            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', margin: '16px 0' }} />
 
             {/* Section 2 — Reporters */}
             <div style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               REPORTERS BEING NOTIFIED
@@ -1459,21 +1459,21 @@ export default function CleanupPage() {
               });
               const reporters = Array.from(reporterMap.values());
               if (reporters.length === 0) {
-                return <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>No reporters linked to selected items.</p>;
+                return <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>No reporters linked to selected items.</p>;
               }
               return (
                 <div style={{ maxHeight: 160, overflowY: 'auto' }}>
                   {reporters.map((r, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                       <div style={{
-                        width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+                        width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>{initials(r.name)}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>{initials(r.name)}</span>
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{r.name}</div>
-                        <div style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>{r.name}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
                           {r.items.length} item{r.items.length !== 1 ? 's' : ''}
                         </div>
                       </div>
@@ -1483,26 +1483,26 @@ export default function CleanupPage() {
               );
             })()}
 
-            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', margin: '16px 0' }} />
+            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', margin: '16px 0' }} />
 
             {/* Section 3 — Closure reason */}
             <div style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
             }}>
               CLOSURE REASON
             </div>
             <Select value={closureReason} onValueChange={setClosureReason}>
               <SelectTrigger style={{
-                width: '100%', height: 40, border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
-                borderRadius: 6, fontSize: 14, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', padding: '0 12px',
+                width: '100%', height: 40, border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
+                borderRadius: 6, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', padding: '0 12px',
               }}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
+              <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
                 {CLOSURE_REASONS.map(r => (
-                  <SelectItem key={r} value={r} style={{ fontSize: 14 }}>{r}</SelectItem>
+                  <SelectItem key={r} value={r} style={{ fontSize: 'var(--ds-font-size-400)' }}>{r}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -1510,12 +1510,12 @@ export default function CleanupPage() {
 
           {/* FOOTER */}
           <div style={{
-            padding: '16px 24px', borderTop: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+            padding: '16px 24px', borderTop: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <span
               onClick={() => { setShowForceCloseDialog(false); navigate('/audit-trail'); }}
-              style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', cursor: 'pointer' }}
+              style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', textDecoration: 'underline', cursor: 'pointer' }}
             >
               Audit trail
             </span>
@@ -1524,8 +1524,8 @@ export default function CleanupPage() {
                 onClick={() => setShowForceCloseDialog(false)}
                 style={{
                   height: 36, padding: '0 20px', borderRadius: 6,
-                  background: 'transparent', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
-                  color: 'var(--ds-text-subtle, #475569)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                  background: 'transparent', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
+                  color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, cursor: 'pointer',
                 }}
               >
                 Cancel
@@ -1534,11 +1534,11 @@ export default function CleanupPage() {
                 onClick={handleForceClose}
                 style={{
                   height: 36, padding: '0 24px', borderRadius: 6,
-                  background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: 'none',
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                  background: 'var(--ds-text-danger, var(--cp-danger))', border: 'none',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, cursor: 'pointer',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-danger, #B91C1C)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-danger)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger))')}
               >
                 Close {selected.size} item{selected.size !== 1 ? 's' : ''}
               </button>

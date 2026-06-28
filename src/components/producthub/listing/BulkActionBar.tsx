@@ -18,14 +18,14 @@ export function BulkActionBar({ selectedCount, onAction, onCancel }: Props) {
       {selectedCount > 0 && (
         <motion.div
           className="h-11 flex items-center justify-between px-6 shrink-0"
-          style={{ background: 'var(--cp-blue-wash)', borderBottom: '1px solid var(--ds-background-information, #E9F2FF)' }}
+          style={{ background: 'var(--cp-blue-wash)', borderBottom: '1px solid var(--ds-background-information)' }}
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 44 }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.15 }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-[13px] font-bold" style={{ color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' }}>
+            <span className="text-[13px] font-bold" style={{ color: 'var(--ds-background-brand-bold-hovered)' }}>
               {selectedCount} selected
             </span>
             <div className="w-px h-4 bg-blue-300" />

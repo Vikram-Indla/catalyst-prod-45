@@ -15,16 +15,16 @@ import { getContractStatus } from '@/hooks/useResourceProfiles';
 
 // Assignment colors - Catalyst V5 compliant
 const ASSIGNMENT_COLORS: Record<string, string> = {
-  'Senaei BAU': 'var(--ds-link, #2563eb)',
-  'Innovation Platform': 'var(--ds-link-pressed, #1d4ed8)',
-  'Inspection Project': 'var(--ds-chart-teal-bold, #0d9488)',
-  'International Relations': 'var(--ds-chart-teal-bolder, #0f766e)',
-  'MIM Website': 'var(--ds-background-accent-teal-bolder, #14b8a6)',
-  'Senaei OPS': 'var(--ds-background-information-bold, #3b82f6)',
-  'Sectorial Services': 'var(--ds-text-subtlest, #626F86)',
-  'Tahommena': 'var(--ds-chart-teal-bold, #0d9488)',
-  'Data Platform': 'var(--ds-background-information-bold, #3b82f6)',
-  'Unassigned': 'var(--ds-text-disabled, #8590A2)',
+  'Senaei BAU': 'var(--ds-link)',
+  'Innovation Platform': 'var(--ds-link-pressed)',
+  'Inspection Project': 'var(--ds-chart-teal-bold)',
+  'International Relations': 'var(--ds-chart-teal-bolder)',
+  'MIM Website': 'var(--ds-background-accent-teal-bolder)',
+  'Senaei OPS': 'var(--ds-background-information-bold)',
+  'Sectorial Services': 'var(--ds-text-subtlest)',
+  'Tahommena': 'var(--ds-chart-teal-bold)',
+  'Data Platform': 'var(--ds-background-information-bold)',
+  'Unassigned': 'var(--ds-text-disabled)',
 };
 
 function getAssignmentColor(name: string | null | undefined): string {

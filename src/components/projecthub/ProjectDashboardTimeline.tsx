@@ -17,41 +17,41 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // ─── Atlassian Design Tokens ──────────────────────────────────────────────────
 const T = {
-  card:          'var(--ds-surface-raised, #FFFFFF)',
-  sunken:        'var(--ds-surface-sunken, #F7F8F9)',
-  border:        'var(--ds-border, #DFE1E6)',
-  borderSub:     'var(--ds-border-subtle, #F1F2F4)',
-  text:          'var(--ds-text, #172B4D)',
-  subtle:        'var(--ds-text-subtle, #44546F)',
-  subtlest:      'var(--ds-text-subtlest, #626F86)',
-  neutral:       'var(--ds-background-neutral, #F1F2F4)',
-  textInverse:   'var(--ds-text-inverse, #FFFFFF)',
+  card:          'var(--ds-surface-raised)',
+  sunken:        'var(--ds-surface-sunken)',
+  border:        'var(--ds-border)',
+  borderSub:     'var(--ds-border-subtle)',
+  text:          'var(--ds-text)',
+  subtle:        'var(--ds-text-subtle)',
+  subtlest:      'var(--ds-text-subtlest)',
+  neutral:       'var(--ds-background-neutral)',
+  textInverse:   'var(--ds-text-inverse)',
   // Active sprint — Jira "In Progress" (blue)
-  activeSolid:   'var(--ds-link, #0C66E4)',
-  activeBoldBg:  'var(--ds-background-information-bold, #0C66E4)',
-  activeBg:      'var(--ds-background-information, #E9F2FF)',
-  activeText:    'var(--ds-link, #0C66E4)',
+  activeSolid:   'var(--ds-link)',
+  activeBoldBg:  'var(--ds-background-information-bold)',
+  activeBg:      'var(--ds-background-information)',
+  activeText:    'var(--ds-link)',
   // Upcoming — Jira "New" / discovery (purple)
-  upcomingBar:   'var(--ds-icon-discovery, #8270DB)',
-  upcomingBoldBg:'var(--ds-background-discovery-bold, #6E5DC6)',
-  upcomingBg:    'var(--ds-background-discovery, #F3F0FF)',
-  upcomingText:  'var(--ds-text-discovery, #6E5DC6)',
+  upcomingBar:   'var(--ds-icon-discovery)',
+  upcomingBoldBg:'var(--ds-background-discovery-bold)',
+  upcomingBg:    'var(--ds-background-discovery)',
+  upcomingText:  'var(--ds-text-discovery)',
   // Completed — Jira "Success" (green)
-  doneBar:       'var(--ds-icon-success, #22A06B)',
-  doneBoldBg:    'var(--ds-background-success-bold, #1F845A)',
-  doneBg:        'var(--ds-background-success, #DCFFF1)',
-  doneText:      'var(--ds-text-success, #1F845A)',
+  doneBar:       'var(--ds-icon-success)',
+  doneBoldBg:    'var(--ds-background-success-bold)',
+  doneBg:        'var(--ds-background-success)',
+  doneText:      'var(--ds-text-success)',
   // Heavy load — Jira "Removed" (danger red)
-  heavyBoldBg:   'var(--ds-background-danger-bold, #AE2A19)',
-  heavyBg:       'var(--ds-background-danger, #FFEDEB)',
-  heavyText:     'var(--ds-text-danger, #AE2A19)',
+  heavyBoldBg:   'var(--ds-background-danger-bold)',
+  heavyBg:       'var(--ds-background-danger)',
+  heavyText:     'var(--ds-text-danger)',
   // Warning
-  warnBg:        'var(--ds-background-warning, #FFF7D6)',
-  warnText:      'var(--ds-text-warning, #974F0C)',
+  warnBg:        'var(--ds-background-warning)',
+  warnText:      'var(--ds-text-warning)',
   // Bar track
-  track:         'var(--ds-background-neutral, #F1F2F4)',
+  track:         'var(--ds-background-neutral)',
   // Unknown/neutral bold
-  neutralBoldBg: 'var(--ds-background-neutral-bold, #626F86)',
+  neutralBoldBg: 'var(--ds-background-neutral-bold)',
   // Card elevation — matches WidgetWrapper elevation.shadow.raised
   shadow:        'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.25))',
 };
@@ -165,7 +165,7 @@ function Lozenge({ children, bg, color }: { children: React.ReactNode; bg: strin
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '0 6px', height: 18, borderRadius: 3,
-      background: bg, color, fontSize: 11, fontWeight: 500,
+      background: bg, color, fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
       lineHeight: '18px', whiteSpace: 'nowrap', letterSpacing: '0.01em',
     }}>
       {children}
@@ -183,8 +183,8 @@ function SectionHeader({ title, meta, action }: { title: string; meta?: string; 
       background: T.sunken, borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: T.subtle }}>{title}</span>
-        {meta && <span style={{ fontSize: 11, color: T.subtlest, fontWeight: 400, marginLeft: 2 }}>{meta}</span>}
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{title}</span>
+        {meta && <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, fontWeight: 400, marginLeft: 2 }}>{meta}</span>}
       </div>
       {action}
     </div>
@@ -246,14 +246,14 @@ function SprintRow({ item, rangeStart, totalDays, todayRatio, onOpen, isLast }: 
               <Lozenge bg={T.upcomingBg} color={T.upcomingText}>Next</Lozenge>
             )}
             <span style={{
-              fontSize: 13, fontWeight: item.isCurrent ? 600 : 500,
+              fontSize: 'var(--ds-font-size-300)', fontWeight: item.isCurrent ? 600 : 500,
               color: item.isPast ? T.subtle : T.text,
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }} title={item.name}>
               {item.name}
             </span>
           </div>
-          <span style={{ fontSize: 11, color: T.subtlest }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
             {formatDateRange(item.startDate, item.endDate)}
             {item.status === 'upcoming' && <span style={{ fontStyle: 'italic' }}> · est. start</span>}
           </span>
@@ -350,8 +350,8 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
           style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', cursor: 'pointer' }}
         >
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Sprint Execution Timeline</div>
-            <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Sprint / iteration cadence and current execution window</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Sprint Execution Timeline</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 4 }}>Sprint / iteration cadence and current execution window</div>
           </div>
           <ChevronDown size={16} color={T.subtlest} style={{ marginTop: 4, flexShrink: 0, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
         </div>
@@ -363,8 +363,8 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
           }}>
             <Rocket size={24} color={T.textInverse} strokeWidth={1.5} />
           </div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>No sprint data</div>
-          <div style={{ fontSize: 12, color: T.subtle }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, marginBottom: 4 }}>No sprint data</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
             Once sprints are linked to this project, the execution timeline will appear here.
           </div>
         </div>
@@ -431,12 +431,12 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
         style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
       >
         <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Sprint Execution Timeline</div>
-          <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Sprint / iteration cadence and current execution window</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Sprint Execution Timeline</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 4 }}>Sprint / iteration cadence and current execution window</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
           <span style={{
-            fontSize: 12, fontWeight: 500, color: T.subtle, flexShrink: 0,
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.subtle, flexShrink: 0,
             background: T.neutral, borderRadius: 4, padding: '2px 8px',
           }}>
             {format(rangeStart, 'MMM d, yyyy')} – {format(rangeEnd, 'MMM d, yyyy')}
@@ -452,7 +452,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
         height: 32, background: T.sunken, borderBottom: `1px solid ${T.border}`,
       }}>
         <div style={{ paddingLeft: 40, display: 'flex', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: T.subtlest }}>Sprint / Iteration</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Sprint / Iteration</span>
         </div>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '0 8px' }}>
           {ticks.map((tick, i) => {
@@ -461,7 +461,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
             return (
               <span key={i} style={{
                 position: 'absolute', left: `${ratio * 100}%`, transform: 'translateX(-50%)',
-                fontSize: 10, whiteSpace: 'nowrap',
+                fontSize: 'var(--ds-font-size-50)', whiteSpace: 'nowrap',
                 color: isToday ? T.activeSolid : T.subtlest,
                 fontWeight: isToday ? 700 : 400,
               }}>
@@ -484,7 +484,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
         : (
           <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.subtlest, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: T.subtle }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
               No active sprint.{nextSprint?.startDate ? ` Next sprint starts ${format(nextSprint.startDate, 'MMM d')}.` : ''}
             </span>
           </div>
@@ -500,7 +500,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
           ))}
           {upcoming.length > 3 && (
             <div style={{ padding: '8px 16px', background: T.sunken, borderTop: `1px solid ${T.borderSub}` }}>
-              <span style={{ fontSize: 11, color: T.subtle }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
                 + {upcoming.length - 3} more upcoming sprint{upcoming.length - 3 > 1 ? 's' : ''}
               </span>
             </div>
@@ -518,7 +518,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
               ? (
                 <button onClick={() => setShowAllCompleted(v => !v)} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                  fontSize: 11, color: T.activeSolid, fontFamily: 'inherit', fontWeight: 500,
+                  fontSize: 'var(--ds-font-size-100)', color: T.activeSolid, fontFamily: 'inherit', fontWeight: 500,
                 }}>
                   {showAllCompleted ? 'Show fewer' : 'Show all'}
                 </button>
@@ -538,10 +538,10 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
         padding: '8px 16px', borderTop: `1px solid ${T.border}`,
         background: T.sunken, flexWrap: 'wrap', gap: 8,
       }}>
-        <span style={{ fontSize: 10, color: T.subtlest, fontStyle: 'italic' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', color: T.subtlest, fontStyle: 'italic' }}>
           Start dates estimated · End dates from Jira · Click any row to filter
         </span>
-        <span style={{ fontSize: 10, color: T.subtlest }}>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', color: T.subtlest }}>
           {items.length} sprint{items.length !== 1 ? 's' : ''} total
         </span>
       </div>

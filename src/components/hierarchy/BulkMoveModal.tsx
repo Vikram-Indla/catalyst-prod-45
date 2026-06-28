@@ -73,13 +73,13 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--fg-1)' }}>Move Items</h3>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--fg-3)' }}>
+            <h3 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)' }}>Move Items</h3>
+            <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
               Select a new parent for {selectedKeys.length} item{selectedKeys.length > 1 ? 's' : ''}
             </p>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={18} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
+            <X size={18} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" />
           </button>
         </div>
 
@@ -89,7 +89,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
             height: 32, background: 'var(--bg-1)', border: '1px solid var(--divider)', borderRadius: 6,
           }}>
-            <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+            <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -97,7 +97,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
               autoFocus
               style={{
                 flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                fontSize: 13, color: 'var(--fg-1)',
+                fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)',
               }}
             />
           </div>
@@ -127,15 +127,15 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
                   <button onClick={e => { e.stopPropagation(); toggle(item.id); }}
                     style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}>
                     {expanded.has(item.id)
-                      ? <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
-                      : <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />}
+                      ? <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
+                      : <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />}
                   </button>
                 ) : <div style={{ width: 14 }} />}
 
                 {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={14} />}
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', flexShrink: 0 }}>{item.key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', flexShrink: 0 }}>{item.key}</span>
                 <span style={{
-                  fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden',
+                  fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
                 }}>{item.title}</span>
               </div>
@@ -149,7 +149,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
           display: 'flex', justifyContent: 'flex-end', gap: 8,
         }}>
           <button onClick={onClose} style={{
-            height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500,
+            height: 32, padding: '0 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
             color: 'var(--fg-3)', background: 'var(--bg-app)', border: '1px solid var(--divider)',
             borderRadius: 6, cursor: 'pointer',
           }}>Cancel</button>
@@ -157,8 +157,8 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             onClick={() => selected && onConfirm(selected)}
             disabled={!selected}
             style={{
-              height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: selected ? 'var(--cp-blue)' : 'var(--fg-4)',
+              height: 32, padding: '0 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: selected ? 'var(--cp-blue)' : 'var(--fg-4)',
               border: 'none', borderRadius: 6, cursor: selected ? 'pointer' : 'not-allowed',
             }}>
             Move here

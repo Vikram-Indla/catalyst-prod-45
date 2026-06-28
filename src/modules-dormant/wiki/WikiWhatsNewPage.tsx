@@ -33,12 +33,12 @@ export default function WikiWhatsNewPage() {
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '16px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-          <span onClick={() => navigate('/wiki')} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') navigate('/wiki'); }} style={{ fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
+          <span onClick={() => navigate('/wiki')} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') navigate('/wiki'); }} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
-          <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)', fontWeight: 600 }}>What's New</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-secondary)', fontWeight: 600 }}>What's New</span>
         </nav>
 
-        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, margin: '0 0 24px', color: 'var(--cp-text-primary)' }}>What's New</h1>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, margin: '0 0 24px', color: 'var(--cp-text-primary)' }}>What's New</h1>
 
         {isLoading && (
           <div>
@@ -50,7 +50,7 @@ export default function WikiWhatsNewPage() {
         )}
 
         {!isLoading && (!groups || groups.length === 0) && (
-          <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 12 }}>
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 'var(--ds-font-size-200)' }}>
             No changes in the last 7 days.
           </div>
         )}
@@ -68,13 +68,13 @@ export default function WikiWhatsNewPage() {
                     background: 'var(--cp-bg-elevated)',
                   }}>
                     <span aria-label={`Change type: ${item.badge}`} style={{
-                      fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em',
                       padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap', marginTop: 2,
                       background: bs.bg, color: bs.color,
                     }}>{item.badge}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 2, ...truncateStyle(2) }}>{item.title}</div>
-                      <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', lineHeight: 1.4 }}>{item.desc}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 2, ...truncateStyle(2) }}>{item.title}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary)', lineHeight: 1.4 }}>{item.desc}</div>
                     </div>
                     <DomainBadge code={item.domain} />
                   </div>

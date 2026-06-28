@@ -41,19 +41,19 @@ import { OwnerAlignmentStrip } from '@/components/releasehub/OwnerAlignmentStrip
 import { useReleasePortfolio } from '@/hooks/useReleasePortfolio';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  brand: 'var(--ds-background-brand-bold, #0C66E4)',
-  inverse: 'var(--ds-text-inverse, #FFFFFF)',
-  danger: 'var(--ds-text-danger, #AE2A19)',
-  success: 'var(--ds-text-success, #216E4E)',
-  warning: 'var(--ds-text-warning, #A54800)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  brand: 'var(--ds-background-brand-bold)',
+  inverse: 'var(--ds-text-inverse)',
+  danger: 'var(--ds-text-danger)',
+  success: 'var(--ds-text-success)',
+  warning: 'var(--ds-text-warning)',
   hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
   mono: 'var(--ds-font-family-code, monospace)',
 };
@@ -82,7 +82,7 @@ function Panel({ title, sub, action, children }: { title: string; sub?: string; 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
           <Heading size="small">{title}</Heading>
-          {sub && <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{sub}</span>}
+          {sub && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{sub}</span>}
         </div>
         {action}
       </div>
@@ -92,7 +92,7 @@ function Panel({ title, sub, action, children }: { title: string; sub?: string; 
 }
 
 function ViewLink({ label, onClick }: { label: string; onClick: () => void }) {
-  return <button onClick={onClick} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>{label}</button>;
+  return <button onClick={onClick} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>{label}</button>;
 }
 
 function rowStyleClickable(onClick?: () => void): React.CSSProperties {
@@ -180,8 +180,8 @@ export default function CommandCenterPage() {
         <ProjectPageHeader projectKey="RELEASES" hubType="release" />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginBottom: 16 }}>
-        <button onClick={() => canManage && setShowCreateChg(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create change</button>
-        <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
+        <button onClick={() => canManage && setShowCreateChg(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Create change</button>
+        <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Create release</button>
       </div>
 
       {/* 5-metric command strip */}
@@ -200,9 +200,9 @@ export default function CommandCenterPage() {
             onMouseEnter={(e) => { e.currentTarget.style.background = T.hover; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em' }}>{m.label}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em' }}>{m.label}</span>
             <p style={{ fontFamily: RH.fontDisplay, fontSize: 32, fontWeight: 700, color: T.text, margin: '8px 0 4px', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{m.value}</p>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: m.subColor }}>{m.sub}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: m.subColor }}>{m.sub}</span>
           </button>
         ))}
       </div>
@@ -244,21 +244,21 @@ export default function CommandCenterPage() {
           {approvals.length === 0 ? (
             <div style={{ padding: 32, textAlign: 'center' }}>
               <CheckSquare size={20} style={{ color: T.success }} />
-              <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.success, margin: '8px 0 0' }}>No pending approvals</p>
+              <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.success, margin: '8px 0 0' }}>No pending approvals</p>
             </div>
           ) : approvals.slice(0, 5).map((a: PendingApproval) => (
             <div key={a.id} style={rowStyleClickable()}>
               <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="small" />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.approverName ?? 'Unassigned'}</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.changeTitle ?? '—'}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.approverName ?? 'Unassigned'}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.changeTitle ?? '—'}</p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                 {(() => {
                   const urgent = (a.role ?? '').toLowerCase().includes('emergency');
-                  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: urgent ? T.danger : T.subtlest }}>{shortWait(a.waitStartedAt)}</span>;
+                  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: urgent ? T.danger : T.subtlest }}>{shortWait(a.waitStartedAt)}</span>;
                 })()}
-                <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success, #4BCE97)`, borderRadius: 4, padding: '4px 8px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5 }}>Review</button>
+                <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success)`, borderRadius: 4, padding: '4px 8px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5 }}>Review</button>
               </div>
             </div>
           ))}
@@ -267,7 +267,7 @@ export default function CommandCenterPage() {
         {/* Change Execution Queue */}
         <Panel title="Change execution queue" action={<ViewLink label="All changes" onClick={() => navigate('/release-hub/changes')} />}>
           {execQueue.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No changes in flight</div>
+            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No changes in flight</div>
           ) : execQueue.map((c) => {
             const risk = (c.risk_level ?? '').toLowerCase();
             const riskColor = risk === 'high' ? T.danger : risk === 'medium' ? T.warning : T.subtlest;
@@ -276,11 +276,11 @@ export default function CommandCenterPage() {
               <div key={c.id} style={rowStyleClickable(() => navigate(`/release-hub/changes/${c.id}`))} onClick={() => navigate(`/release-hub/changes/${c.id}`)}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link, flexShrink: 0 }}>{c.chg_number}</span>
-                    {risk && risk !== 'low' && <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: riskColor, letterSpacing: '0.05em' }}>{risk.toUpperCase()} RISK</span>}
+                    <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link, flexShrink: 0 }}>{c.chg_number}</span>
+                    {risk && risk !== 'low' && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: riskColor, letterSpacing: '0.05em' }}>{risk.toUpperCase()} RISK</span>}
                   </div>
-                  <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title ?? '—'}</p>
-                  {windowStr && <p style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, margin: '4px 0 0' }}>{windowStr}</p>}
+                  <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title ?? '—'}</p>
+                  {windowStr && <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '4px 0 0' }}>{windowStr}</p>}
                 </div>
                 <div style={{ flexShrink: 0 }}><StatusLozenge status={c.status} /></div>
               </div>
@@ -292,7 +292,7 @@ export default function CommandCenterPage() {
       {/* Recent Production Events */}
       <Panel title="Recent production events" action={<ViewLink label="All events" onClick={() => navigate('/release-hub/production-events')} />}>
         {prodEvents.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No production events</div>
+          <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No production events</div>
         ) : prodEvents.slice(0, 4).map((ev) => {
           const ok = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'success';
           const partial = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'partial';
@@ -303,12 +303,12 @@ export default function CommandCenterPage() {
             <div key={ev.id} style={rowStyleClickable()}>
               <span style={{ flexShrink: 0 }}><StatusLozenge appearance={resultAppearance} label={titleCase(ev.result ?? ev.deploymentStatus)} /></span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>{ev.title}</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, margin: 0 }}>{ev.title}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0' }}>
                   {wi != null ? `${wi} work items · ` : ''}{br != null ? `${br} business requests · ` : ''}{ev.changeKey ? `change ${ev.changeKey}` : ev.deployedBy}
                 </p>
               </div>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap' }}>{ev.deployedAt ? format(new Date(ev.deployedAt), 'MMM d') : '—'}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap' }}>{ev.deployedAt ? format(new Date(ev.deployedAt), 'MMM d') : '—'}</span>
             </div>
           );
         })}

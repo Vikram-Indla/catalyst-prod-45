@@ -56,7 +56,7 @@ const DropdownMenuSubContent = React.forwardRef<
       className,
     )}
     style={{
-      background: 'var(--ds-surface-overlay, #FFFFFF)',
+      background: 'var(--ds-surface-overlay)',
       border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
       boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
       WebkitOverflowScrolling: 'touch',
@@ -85,7 +85,7 @@ const DropdownMenuContent = React.forwardRef<
         className,
       )}
       style={{
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
         WebkitOverflowScrolling: 'touch',

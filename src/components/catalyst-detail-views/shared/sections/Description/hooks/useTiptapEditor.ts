@@ -419,7 +419,7 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
           // the cursor element is appended to view.dom.offsetParent
           // (outside the editor DOM) so CSS scoping is brittle.
           dropcursor: {
-            color: 'var(--ds-link, #0C66E4)',
+            color: 'var(--ds-link)',
             width: 1,
             class: 'catalyst-drop-line',
           },

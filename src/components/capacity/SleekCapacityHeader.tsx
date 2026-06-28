@@ -364,28 +364,28 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
   // Catalyst V1 Style Guide colors
   const colorStyles = {
     default: {
-      dot: 'bg-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]',
+      dot: 'bg-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))]',
       activeBg: 'bg-white dark:bg-[var(--surface-3)]',
-      activeText: 'text-[var(--ds-text,#0f172a)] dark:text-[var(--text-primary)]',
-      inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
+      activeText: 'text-[var(--ds-text)] dark:text-[var(--text-primary)]',
+      inactiveText: 'text-[var(--ds-text-subtle)] dark:text-[var(--text-secondary)]',
     },
     emerald: {
-      dot: 'bg-[var(--quality-high, #059669)]',
-      activeBg: 'bg-[var(--ds-background-success, #DFFCF0)] dark:bg-emerald-900/50',
-      activeText: 'text-[var(--quality-high, #059669)] dark:text-emerald-300',
-      inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
+      dot: 'bg-[var(--quality-high)]',
+      activeBg: 'bg-[var(--ds-background-success)] dark:bg-emerald-900/50',
+      activeText: 'text-[var(--quality-high)] dark:text-emerald-300',
+      inactiveText: 'text-[var(--ds-text-subtle)] dark:text-[var(--text-secondary)]',
     },
     blue: {
-      dot: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
-      activeBg: 'bg-[var(--ds-background-selected,#eff6ff)] dark:bg-blue-900/50',
-      activeText: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-blue-300',
-      inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
+      dot: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
+      activeBg: 'bg-[var(--ds-background-selected)] dark:bg-blue-900/50',
+      activeText: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-blue-300',
+      inactiveText: 'text-[var(--ds-text-subtle)] dark:text-[var(--text-secondary)]',
     },
     rose: {
-      dot: 'bg-[var(--ds-text-danger,#dc2626)]',
-      activeBg: 'bg-[var(--ds-background-danger,#fef2f2)] dark:bg-rose-900/50',
-      activeText: 'text-[var(--ds-text-danger,#dc2626)] dark:text-rose-300',
-      inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
+      dot: 'bg-[var(--ds-text-danger)]',
+      activeBg: 'bg-[var(--ds-background-danger)] dark:bg-rose-900/50',
+      activeText: 'text-[var(--ds-text-danger)] dark:text-rose-300',
+      inactiveText: 'text-[var(--ds-text-subtle)] dark:text-[var(--text-secondary)]',
     },
   };
   
@@ -410,7 +410,7 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
       )} />
       <span className={cn(
         "font-bold tabular-nums text-base",
-        isZero && "text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]"
+        isZero && "text-[var(--ds-text-subtle)] dark:text-[var(--text-secondary)]"
       )}>
         {value}
       </span>
@@ -422,10 +422,10 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
 // Compact Utilization Badge - Catalyst V1 Style Guide
 function UtilizationBadge({ value }: { value: number }) {
   const bgColor = value > 100 
-    ? 'bg-[var(--ds-text-danger,#dc2626)]' 
+    ? 'bg-[var(--ds-text-danger)]' 
     : value > 90 
-      ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' 
-      : 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]';
+      ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' 
+      : 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]';
   
   return (
     <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg border" style={{
@@ -433,7 +433,7 @@ function UtilizationBadge({ value }: { value: number }) {
       borderColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.3))',
     }}>
       <div className="flex flex-col items-end">
-        <span className="text-xl font-extrabold tabular-nums leading-none" style={{ color: 'var(--ds-link-pressed, #1e40af)' }}>
+        <span className="text-xl font-extrabold tabular-nums leading-none" style={{ color: 'var(--ds-link-pressed)' }}>
           {value}%
         </span>
         <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'var(--fg-2)' }}>

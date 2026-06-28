@@ -29,8 +29,8 @@ export function ConnectionComingSoon({
             width: 56,
             height: 56,
             borderRadius: 12,
-            background: 'var(--ds-background-neutral, #F1F2F4)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-background-neutral)',
+            border: '1px solid var(--ds-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -46,7 +46,7 @@ export function ConnectionComingSoon({
               margin: 0,
               fontSize: 24,
               fontWeight: 653,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text)',
               lineHeight: '28px',
             }}
           >
@@ -64,7 +64,7 @@ export function ConnectionComingSoon({
           margin: '0 0 32px',
           fontSize: 14,
           lineHeight: '20px',
-          color: 'var(--ds-text-subtle, #42526E)',
+          color: 'var(--ds-text-subtle)',
         }}
       >
         {description}
@@ -74,8 +74,8 @@ export function ConnectionComingSoon({
       {features.length > 0 && (
         <div
           style={{
-            background: 'var(--ds-surface-sunken, #F7F8F9)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface-sunken)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 8,
             padding: '20px 24px',
             marginBottom: 32,
@@ -86,7 +86,7 @@ export function ConnectionComingSoon({
               margin: '0 0 12px',
               fontSize: 12,
               fontWeight: 653,
-              color: 'var(--ds-text-subtlest, #6B778C)',
+              color: 'var(--ds-text-subtlest)',
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
             }}
@@ -100,7 +100,7 @@ export function ConnectionComingSoon({
                 style={{
                   marginBottom: 8,
                   fontSize: 14,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 <strong>{f.label}</strong>
@@ -119,7 +119,7 @@ export function ConnectionComingSoon({
         style={{
           marginTop: 8,
           fontSize: 12,
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest)',
         }}
       >
         This integration is on the roadmap. Early access is available to select customers.

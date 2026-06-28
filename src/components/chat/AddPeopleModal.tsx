@@ -26,11 +26,11 @@ interface AddPeopleModalProps {
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
-  available: 'var(--ds-icon-success, #22A06B)',
-  busy: 'var(--ds-icon-danger, #E34935)',
-  away: 'var(--ds-icon-warning, #E2B203)',
-  offline: 'var(--ds-icon-disabled, #8590A2)',
-  on_leave: 'var(--ds-icon-disabled, #8590A2)',
+  available: 'var(--ds-icon-success)',
+  busy: 'var(--ds-icon-danger)',
+  away: 'var(--ds-icon-warning)',
+  offline: 'var(--ds-icon-disabled)',
+  on_leave: 'var(--ds-icon-disabled)',
 };
 
 const PRESENCE_LABEL: Record<ChatPresence, string> = {
@@ -44,12 +44,12 @@ const PRESENCE_LABEL: Record<ChatPresence, string> = {
 const GROUP_ORDER: ChatPresence[] = ['available', 'busy', 'away', 'offline', 'on_leave'];
 
 const AVATAR_PALETTE = [
-  'var(--ds-background-accent-blue-bolder, #0C66E4)',
-  'var(--ds-background-accent-green-bolder, #22A06B)',
-  'var(--ds-background-accent-purple-bolder, #6E5DC6)',
-  'var(--ds-background-accent-red-bolder, #E34935)',
-  'var(--ds-background-accent-magenta-bolder, #CD519D)',
-  'var(--ds-background-accent-teal-bolder, #1D7F8C)',
+  'var(--ds-background-accent-blue-bolder)',
+  'var(--ds-background-accent-green-bolder)',
+  'var(--ds-background-accent-purple-bolder)',
+  'var(--ds-background-accent-red-bolder)',
+  'var(--ds-background-accent-magenta-bolder)',
+  'var(--ds-background-accent-teal-bolder)',
 ];
 
 function initials(name: string): string {
@@ -76,7 +76,7 @@ function Avatar({ person, size = 32 }: { person: ChatPerson; size?: number }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          color: 'var(--ds-text-inverse)',
           fontSize: size <= 24 ? 9 : 12,
           fontWeight: 600,
           background: avatarColor(person.id),
@@ -93,7 +93,7 @@ function Avatar({ person, size = 32 }: { person: ChatPerson; size?: number }) {
           height: 10,
           borderRadius: '50%',
           background: PRESENCE_DOT[person.presence],
-          border: '2px solid var(--ds-surface, #FFFFFF)',
+          border: '2px solid var(--ds-surface)',
         }}
       />
     </span>
@@ -178,8 +178,8 @@ export function AddPeopleModal({
   };
 
   const hasResults = filteredGroups.length > 0;
-  const subtleText = 'var(--ds-text-subtle, #44546F)';
-  const subtlestText = 'var(--ds-text-subtlest, #6B778C)';
+  const subtleText = 'var(--ds-text-subtle)';
+  const subtlestText = 'var(--ds-text-subtlest)';
 
   return (
     <ModalDialog onClose={handleClose} width="medium" shouldScrollInViewport>
@@ -196,13 +196,13 @@ export function AddPeopleModal({
             flexWrap: 'wrap',
             gap: 8,
             padding: '8px 12px',
-            border: '2px solid var(--ds-border-focused, #0C66E4)',
+            border: '2px solid var(--ds-border-focused)',
             borderRadius: 3,
             minHeight: 40,
             marginBottom: 12,
           }}
         >
-          <span style={{ fontSize: 14, color: subtleText, fontWeight: 500 }}>To:</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: subtleText, fontWeight: 500 }}>To:</span>
           {selectedIds.map((id) => {
             const person = peopleById.get(id);
             if (!person) return null;
@@ -213,11 +213,11 @@ export function AddPeopleModal({
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 4,
-                  background: 'var(--ds-background-selected, #E9F2FE)',
-                  color: 'var(--ds-text-selected, #0C66E4)',
+                  background: 'var(--ds-background-selected)',
+                  color: 'var(--ds-text-selected)',
                   borderRadius: 12,
                   padding: '4px 8px 4px 4px',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                 }}
               >
@@ -231,7 +231,7 @@ export function AddPeopleModal({
                     border: 'none',
                     background: 'transparent',
                     cursor: 'pointer',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     lineHeight: '14px',
                     opacity: 0.7,
                     color: 'inherit',
@@ -243,7 +243,7 @@ export function AddPeopleModal({
               </span>
             );
           })}
-          <span style={{ fontSize: 14, color: subtlestText }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: subtlestText }}>
             {selectedIds.length === 0 ? 'Add people, or type a name' : ''}
           </span>
         </div>
@@ -262,13 +262,13 @@ export function AddPeopleModal({
         {/* Results */}
         <div style={{ maxHeight: 420, overflowY: 'auto', margin: '0 -8px' }}>
           {isLoading && (
-            <div style={{ padding: '24px 8px', fontSize: 14, color: subtlestText }}>
+            <div style={{ padding: '24px 8px', fontSize: 'var(--ds-font-size-400)', color: subtlestText }}>
               Loading people…
             </div>
           )}
 
           {!isLoading && !hasResults && (
-            <div style={{ padding: '24px 8px', fontSize: 14, color: subtlestText }}>
+            <div style={{ padding: '24px 8px', fontSize: 'var(--ds-font-size-400)', color: subtlestText }}>
               {q ? `No people match “${query}”.` : 'Everyone is already in this conversation.'}
             </div>
           )}
@@ -278,7 +278,7 @@ export function AddPeopleModal({
               <React.Fragment key={group.presence}>
                 <div
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     lineHeight: '16px',
                     fontWeight: 700,
                     color: subtlestText,
@@ -308,20 +308,20 @@ export function AddPeopleModal({
                         padding: 8,
                         borderRadius: 3,
                         cursor: 'pointer',
-                        background: isSelected ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                        background: isSelected ? 'var(--ds-background-selected)' : 'transparent',
                       }}
                     >
                       <Avatar person={person} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '18px' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)', lineHeight: '18px' }}>
                           {person.name}
                         </div>
-                        <div style={{ fontSize: 12, lineHeight: '16px', color: subtlestText }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: '16px', color: subtlestText }}>
                           {person.role}
                           {person.presenceNote ? ` · ${person.presenceNote}` : ''}
                         </div>
                       </div>
-                      <span style={{ fontSize: 12, color: subtleText, flex: '0 0 auto' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: subtleText, flex: '0 0 auto' }}>
                         {PRESENCE_LABEL[person.presence]}
                       </span>
                     </div>
@@ -333,7 +333,7 @@ export function AddPeopleModal({
       </ModalBody>
 
       <ModalFooter>
-        <span style={{ fontSize: 12, color: subtlestText, marginRight: 'auto' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: subtlestText, marginRight: 'auto' }}>
           {selectedIds.length > 0 ? `${selectedIds.length} selected` : ''}
         </span>
         <Button appearance="subtle" onClick={handleClose}>

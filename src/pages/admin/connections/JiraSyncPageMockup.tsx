@@ -21,22 +21,22 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 
 // ADS token colors
 const C = {
-  bgSurface: 'var(--ds-surface, #FFFFFF)',
-  bgSurfaceOverlay: 'var(--ds-surface-overlay, #FFFFFF)',
-  bgSurfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
-  bgSuccess: 'var(--ds-background-success, #DFFCF0)',
-  bgDanger: 'var(--ds-background-danger, #FFECEB)',
-  bgWarning: 'var(--ds-background-warning, #FFF7D6)',
-  bgInfo: 'var(--ds-background-information, #DEEBFF)',
-  textDefault: 'var(--ds-text, #172B4D)',
-  textSubtle: 'var(--ds-text-subtle, #42526E)',
-  textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
-  textSuccess: 'var(--ds-text-success, #216E4E)',
-  textDanger: 'var(--ds-text-danger, #AE2A19)',
-  textWarning: 'var(--ds-text-warning, #7F5F01)',
-  textInfo: 'var(--ds-text-information, #0747A6)',
-  border: 'var(--ds-border, #DFE1E6)',
+  bgSurface: 'var(--ds-surface)',
+  bgSurfaceOverlay: 'var(--ds-surface-overlay)',
+  bgSurfaceSunken: 'var(--ds-surface-sunken)',
+  bgNeutral: 'var(--ds-background-neutral)',
+  bgSuccess: 'var(--ds-background-success)',
+  bgDanger: 'var(--ds-background-danger)',
+  bgWarning: 'var(--ds-background-warning)',
+  bgInfo: 'var(--ds-background-information)',
+  textDefault: 'var(--ds-text)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  textSuccess: 'var(--ds-text-success)',
+  textDanger: 'var(--ds-text-danger)',
+  textWarning: 'var(--ds-text-warning)',
+  textInfo: 'var(--ds-text-information)',
+  border: 'var(--ds-border)',
 } as const;
 
 // Source badges (SVG inline)
@@ -50,9 +50,9 @@ const SOURCE_ICONS = {
 function SourceAwareTitle({ title, source, style = {} }: { title: string; source: 'jira' | 'catalyst' | 'notion' | null; style?: Record<string, any> }) {
   const [showSource, setShowSource] = useState(false);
   const sourceColors = {
-    jira: 'var(--ds-link-pressed, #0747A6)',
-    catalyst: 'var(--ds-text, #172B4D)',
-    notion: 'var(--ds-text, #172B4D)',
+    jira: 'var(--ds-link-pressed)',
+    catalyst: 'var(--ds-text)',
+    notion: 'var(--ds-text)',
   };
 
   return (
@@ -154,10 +154,10 @@ export function JiraSyncPageMockup() {
     <AdminGuard>
       <div style={{ padding: '24px 32px', background: C.bgSurfaceOverlay, minHeight: '100vh' }}>
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 600, color: C.textDefault, margin: 0, fontFamily: 'var(--ds-font-family-heading, sans-serif)' }}>
+          <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: C.textDefault, margin: 0, fontFamily: 'var(--ds-font-family-heading, sans-serif)' }}>
             Jira Integration
           </h1>
-          <p style={{ fontSize: 14, color: C.textSubtle, margin: '8px 0 0 0' }}>
+          <p style={{ fontSize: 'var(--ds-font-size-400)', color: C.textSubtle, margin: '8px 0 0 0' }}>
             Sync Jira data into Catalyst work items. Mapping-first: validate before sync. Preserve existing data; union with new ranges.
           </p>
         </div>
@@ -165,7 +165,7 @@ export function JiraSyncPageMockup() {
         {/* Connected banner */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: C.bgSuccess, border: `1px solid ${C.textSuccess}`, borderRadius: 8, padding: '12px 16px', marginBottom: 24 }}>
           <span style={{ fontWeight: 600, color: C.textSuccess }}>✓ Connected</span>
-          <code style={{ fontSize: 12, background: C.bgNeutral, padding: '2px 6px', borderRadius: 3 }}>https://digital-transformation.atlassian.net</code>
+          <code style={{ fontSize: 'var(--ds-font-size-200)', background: C.bgNeutral, padding: '2px 6px', borderRadius: 3 }}>https://digital-transformation.atlassian.net</code>
           <span style={{ color: C.textSubtle, marginLeft: 'auto' }}>Last tested 1 hour ago</span>
         </div>
 
@@ -225,24 +225,24 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
     <div style={{ marginTop: 20 }}>
       {/* MDT → Investor Journey Contract */}
       <div style={{ background: C.bgInfo, border: `2px solid ${C.textInfo}`, borderRadius: 8, padding: '16px', marginBottom: 24 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.textInfo, marginBottom: 4 }}>📋 Permanent Mapping Contract</div>
-        <div style={{ fontSize: 12, color: C.textInfo }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.textInfo, marginBottom: 4 }}>📋 Permanent Mapping Contract</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textInfo }}>
           <strong>MDT</strong> (Master Data Management) always syncs to <strong>Investor Journey</strong> Product. Same key in both systems: <code style={{ background: 'rgba(7,71,166,0.1)', padding: '2px 6px', borderRadius: 3 }}>MDT</code> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         </div>
       </div>
 
       {/* Mapping Validation Status */}
       <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDefault, margin: '0 0 16px 0' }}>Mapping Validation</h3>
+        <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, margin: '0 0 16px 0' }}>Mapping Validation</h3>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
           <div style={{ fontSize: 36, fontWeight: 600, color: C.textDefault }}>
             {mappingValid ? '✓' : '⚠'}
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: mappingValid ? C.textSuccess : C.textDanger }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: mappingValid ? C.textSuccess : C.textDanger }}>
               {mappingValid ? 'All mappings complete' : 'Mapping incomplete'}
             </div>
-            <div style={{ fontSize: 12, color: C.textSubtle, marginTop: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginTop: 4 }}>
               {mappingValid ? 'Sync is enabled. All projects mapped to modules.' : 'Fix mapping blockers before sync is allowed.'}
             </div>
           </div>
@@ -258,41 +258,41 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
           { label: 'Last Sync', value: '1 day ago' },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: C.bgSurfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8, padding: '20px 16px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 600, color: C.textDefault }}>{value}</div>
-            <div style={{ fontSize: 12, color: C.textSubtle, marginTop: 8 }}>{label}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.textDefault }}>{value}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginTop: 8 }}>{label}</div>
           </div>
         ))}
       </div>
 
       {/* Sync Scope Summary */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Sync Scope Summary</h3>
+        <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Sync Scope Summary</h3>
         <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: C.bgSurfaceSunken }}>
                 {['Project', 'Catalyst Target', 'Sync', 'Webhook', 'Date Filter', 'Status'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {projects.map((p: any, i: number) => (
                 <tr key={i} style={{ borderBottom: i < projects.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                     <span style={{ marginRight: 8 }}>{p.icon}</span>
                     <SourceAwareTitle title={p.key} source="jira" />
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: C.textSubtle }}>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: C.textSubtle }}>
                     <SourceAwareTitle title={p.module_target || '—'} source={p.module_target ? 'catalyst' : null} />
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                     <Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 12, color: C.textSubtle }}>All time</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>All time</td>
                   <td style={{ padding: '12px 16px' }}>
                     <Lozenge appearance={p.module_target ? 'success' : 'removed'}>{p.module_target ? 'Ready' : 'Incomplete'}</Lozenge>
                   </td>
@@ -306,12 +306,12 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
       {/* Blockers */}
       {deviations.filter(d => d.severity === 'blocker').length > 0 && (
         <div>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Blockers</h3>
+          <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Blockers</h3>
           {deviations.filter(d => d.severity === 'blocker').map(d => (
             <div key={d.id} style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: '16px', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: C.textDanger }}>{d.project} — {d.message}</div>
-                <div style={{ fontSize: 12, color: C.textDanger, marginTop: 4 }}>{d.action}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.textDanger }}>{d.project} — {d.message}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textDanger, marginTop: 4 }}>{d.action}</div>
               </div>
               <Button appearance="primary" size="small">Fix</Button>
             </div>
@@ -331,21 +331,21 @@ function SyncControlTab({ mappingValid, onRefreshClick }: any) {
 
       {/* Discovery Sync */}
       <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginTop: 20, marginBottom: 20 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Discover Jira Metadata</h3>
-        <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 16px 0' }}>Discover projects, issue types, statuses, fields from Jira. Always allowed, even before mappings.</p>
+        <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Discover Jira Metadata</h3>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, margin: '0 0 16px 0' }}>Discover projects, issue types, statuses, fields from Jira. Always allowed, even before mappings.</p>
         <Button appearance="primary">Discover Now</Button>
       </div>
 
       {/* Manual Sync */}
       <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Manual Sync</h3>
+        <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Manual Sync</h3>
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
           <Button appearance="primary" isDisabled={!mappingValid}>Run Full Sync</Button>
           <Button isDisabled={!mappingValid}>Run Incremental</Button>
           <Button>Dry Run</Button>
         </div>
         {!mappingValid && (
-          <div style={{ fontSize: 12, color: C.textDanger }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textDanger }}>
             ⚠ Sync disabled: Mapping incomplete. Complete type, status, field mappings to enable.
           </div>
         )}
@@ -353,8 +353,8 @@ function SyncControlTab({ mappingValid, onRefreshClick }: any) {
 
       {/* Refresh Data — Destructive */}
       <div style={{ background: C.bgWarning, border: `1px solid ${C.textWarning}`, borderRadius: 8, padding: '24px' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textWarning, margin: '0 0 12px 0' }}>⚠ Refresh Data</h3>
-        <p style={{ fontSize: 12, color: C.textWarning, margin: '0 0 16px 0' }}>
+        <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textWarning, margin: '0 0 12px 0' }}>⚠ Refresh Data</h3>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textWarning, margin: '0 0 16px 0' }}>
           Delete existing Jira-origin data and reload fresh. Preserves Catalyst-native records. Cannot be undone from this screen.
         </p>
         <Button appearance="warning" onClick={onRefreshClick}>Refresh Data</Button>
@@ -378,23 +378,23 @@ function ProjectsTab({ projects, onProjectClick }: any) {
           <thead>
             <tr style={{ background: C.bgSurfaceSunken }}>
               {['Key', 'Name', 'Sync', 'Catalyst Target', 'Issues', 'Filters', 'Status'].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map((p: any, i: number) => (
               <tr key={i} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                   <span style={{ marginRight: 8 }}>{p.icon}</span>
-                  <code style={{ fontSize: 11, background: C.bgNeutral, padding: '2px 6px', borderRadius: 3 }}>{p.key}</code>
+                  <code style={{ fontSize: 'var(--ds-font-size-100)', background: C.bgNeutral, padding: '2px 6px', borderRadius: 3 }}>{p.key}</code>
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>{p.name}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>{p.name}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Toggle isChecked={p.sync_enabled} onChange={() => {}} />
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: 13, color: C.textSubtle }}>{p.module_target || '—'}</td>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>{p.issues_cached > 0 ? p.issues_cached : '—'}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: C.textSubtle }}>{p.module_target || '—'}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>{p.issues_cached > 0 ? p.issues_cached : '—'}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Button appearance="subtle" size="small" onClick={() => onProjectClick(p.key)}>Manage</Button>
                 </td>
@@ -424,24 +424,24 @@ function TypeMappingTab() {
           <thead>
             <tr style={{ background: C.bgSurfaceSunken }}>
               {['Jira Type', 'Catalyst Type', 'Target Table', 'Hierarchy', 'Status Field', 'Status'].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {ISSUE_TYPES.map((t, i) => (
               <tr key={i} style={{ borderBottom: i < ISSUE_TYPES.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                   <span style={{ marginRight: 6 }}>{t.icon}</span>
                   <SourceAwareTitle title={t.jira} source="jira" />
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                   <span style={{ marginRight: 6 }}>{TYPE_ICONS[t.catalyst]}</span>
                   <SourceAwareTitle title={t.catalyst} source="catalyst" />
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: C.textSubtle }}>ph_issues</td>
-                <td style={{ padding: '12px 16px', fontSize: 12 }}>Parent or Standalone</td>
-                <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: C.textSubtle }}>status</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>ph_issues</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)' }}>Parent or Standalone</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>status</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Lozenge appearance="success">Mapped</Lozenge>
                 </td>
@@ -466,7 +466,7 @@ function StatusMappingTab() {
           <thead>
             <tr style={{ background: C.bgSurfaceSunken }}>
               {['Jira Status', 'Category', 'Catalyst Status', 'Deviation', 'Terminal', 'Actions'].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -479,11 +479,11 @@ function StatusMappingTab() {
               { jira: 'Cancelled', category: 'done', catalyst: '—', deviation: 'No equivalent', terminal: 'Yes' },
             ].map((row, i) => (
               <tr key={i} style={{ borderBottom: i < 5 - 1 ? `1px solid ${C.border}` : 'none' }}>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                   <SourceAwareTitle title={row.jira} source="jira" />
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: 12, color: C.textSubtle }}>{row.category}</td>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{row.category}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                   <SourceAwareTitle title={row.catalyst} source={row.catalyst !== '—' ? 'catalyst' : null} />
                 </td>
                 <td style={{ padding: '12px 16px' }}>
@@ -493,7 +493,7 @@ function StatusMappingTab() {
                     <Lozenge appearance="success">Exact</Lozenge>
                   )}
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>{row.terminal}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>{row.terminal}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Button appearance="subtle" size="small">Configure</Button>
                 </td>
@@ -527,7 +527,7 @@ function FieldMappingTab() {
           { label: 'Mapped (9)', value: 'mapped' },
           { label: 'Raw JSON (3)', value: 'raw' },
         ].map(tab => (
-          <button key={tab.value} onClick={() => setFilter(tab.value as any)} style={{ padding: '8px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: filter === tab.value ? C.bgInfo : C.bgNeutral, color: C.textDefault, fontSize: 13, fontWeight: 500 }}>
+          <button key={tab.value} onClick={() => setFilter(tab.value as any)} style={{ padding: '8px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: filter === tab.value ? C.bgInfo : C.bgNeutral, color: C.textDefault, fontSize: 'var(--ds-font-size-300)', fontWeight: 500 }}>
             {tab.label}
           </button>
         ))}
@@ -538,15 +538,15 @@ function FieldMappingTab() {
           <thead>
             <tr style={{ background: C.bgSurfaceSunken }}>
               {['Jira Field', 'Catalyst Column', 'Status'].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map((f, i) => (
               <tr key={i} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>{f.jira}</td>
-                <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: C.textSubtle }}>{f.catalyst}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>{f.jira}</td>
+                <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>{f.catalyst}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Lozenge appearance={f.status === 'mapped' ? 'success' : 'default'}>
                     {f.status === 'mapped' ? 'Mapped' : 'Raw JSON'}
@@ -569,13 +569,13 @@ function DatabaseSchemaTab() {
       </SectionMessage>
 
       <div style={{ marginTop: 20 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Work Item Type → Target Table</h3>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Work Item Type → Target Table</h3>
         <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: C.bgSurfaceSunken }}>
                 {['Catalyst Type', 'Supabase Table', 'Jira ID Column', 'Source Column', 'Status'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -586,10 +586,10 @@ function DatabaseSchemaTab() {
                 { type: 'QA Bug', table: 'ph_issues', jiraId: 'jira_issue_id', source: 'source_system', status: '✓' },
               ].map((row, i) => (
                 <tr key={i} style={{ borderBottom: i < 3 - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={{ padding: '12px 16px', fontSize: 13 }}>{row.type}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: C.textSubtle }}>{row.table}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: C.textSubtle }}>{row.jiraId}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'monospace', color: C.textSubtle }}>{row.source}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>{row.type}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>{row.table}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>{row.jiraId}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>{row.source}</td>
                   <td style={{ padding: '12px 16px', color: C.textSuccess }}>{row.status}</td>
                 </tr>
               ))}
@@ -605,19 +605,19 @@ function BackupAndLogsTab() {
   return (
     <div style={{ marginTop: 20 }}>
       <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '20px', marginBottom: 20 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, marginBottom: 8 }}>Daily Backup</h3>
-        <p style={{ fontSize: 12, color: C.textSubtle, marginBottom: 12 }}>Tables: ph_issues, ph_comments. Retention: 180 days. Schedule: 02:00 UTC daily.</p>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, marginBottom: 8 }}>Daily Backup</h3>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginBottom: 12 }}>Tables: ph_issues, ph_comments. Retention: 180 days. Schedule: 02:00 UTC daily.</p>
         <Button>Backup Now</Button>
       </div>
 
       <div>
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, marginBottom: 12 }}>Sync History</h3>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, marginBottom: 12 }}>Sync History</h3>
         <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: C.bgSurfaceSunken }}>
                 {['When', 'Type', 'Status', 'Records', 'Duration'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}` }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -627,15 +627,15 @@ function BackupAndLogsTab() {
                 { when: '1 day ago', type: 'Full', status: 'success', records: '758', duration: '18.6s' },
               ].map((log, i) => (
                 <tr key={i} style={{ borderBottom: i < 2 - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={{ padding: '12px 16px', fontSize: 12 }}>{log.when}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 12 }}>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)' }}>{log.when}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)' }}>
                     <Lozenge appearance={log.type === 'Full' ? 'default' : 'new'}>{log.type}</Lozenge>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 12 }}>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)' }}>
                     <Lozenge appearance={log.status === 'success' ? 'success' : 'removed'}>{log.status}</Lozenge>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 12 }}>{log.records}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 12, color: C.textSubtle }}>{log.duration}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)' }}>{log.records}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{log.duration}</td>
                 </tr>
               ))}
             </tbody>
@@ -660,24 +660,24 @@ function ProjectDetailModal({ projectKey, onClose }: { projectKey: string | null
       {project && (
         <Modal onClose={onClose} width="large" testId={`project-detail-${projectKey}`}>
           <div style={{ padding: 24 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600, color: C.textDefault, margin: '0 0 16px 0' }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.textDefault, margin: '0 0 16px 0' }}>
               {project.icon} {project.key} — {project.name}
             </h2>
 
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Date Filter</h3>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Date Filter</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
                 <div>
-                  <label style={{ fontSize: 12, color: C.textSubtle, display: 'block', marginBottom: 4 }}>Date Mode</label>
-                  <select style={{ width: '100%', padding: '8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13 }}>
+                  <label style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, display: 'block', marginBottom: 4 }}>Date Mode</label>
+                  <select style={{ width: '100%', padding: '8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-300)' }}>
                     <option>All time</option>
                     <option>Fixed date range</option>
                     <option>Last N months</option>
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: C.textSubtle, display: 'block', marginBottom: 4 }}>Date Basis</label>
-                  <select style={{ width: '100%', padding: '8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13 }}>
+                  <label style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, display: 'block', marginBottom: 4 }}>Date Basis</label>
+                  <select style={{ width: '100%', padding: '8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-300)' }}>
                     <option>Created date</option>
                     <option>Updated date</option>
                     <option>Resolved date</option>
@@ -687,12 +687,12 @@ function ProjectDetailModal({ projectKey, onClose }: { projectKey: string | null
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Issue Type Filter</h3>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Issue Type Filter</h3>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {['Epic', 'Story', 'Task', 'Bug', 'Change Request'].map(type => (
                   <label key={type} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', background: C.bgNeutral, borderRadius: 4, cursor: 'pointer' }}>
                     <input type="checkbox" defaultChecked style={{ width: 16, height: 16 }} />
-                    <span style={{ fontSize: 12 }}>{type}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)' }}>{type}</span>
                   </label>
                 ))}
               </div>
@@ -739,10 +739,10 @@ function RefreshDataModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       {isOpen && (
         <Modal onClose={onClose} width="large" testId="refresh-data-modal">
           <div style={{ padding: 24 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600, color: C.textDanger, margin: '0 0 16px 0' }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.textDanger, margin: '0 0 16px 0' }}>
               ⚠ Refresh Data
             </h2>
-            <p style={{ fontSize: 14, color: C.textDefault, margin: '0 0 20px 0' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: C.textDefault, margin: '0 0 20px 0' }}>
               Refresh Data deletes existing Jira-imported data and reloads it from Jira using configured project mappings and filters.
             </p>
 
@@ -761,7 +761,7 @@ function RefreshDataModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     border: mode === opt.value ? `2px solid ${C.textInfo}` : `1px solid ${C.border}`,
                     background: mode === opt.value ? C.bgInfo : C.bgSurface,
                     color: mode === opt.value ? C.textInfo : C.textDefault,
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                     cursor: 'pointer',
                   }}
@@ -774,10 +774,10 @@ function RefreshDataModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
             {/* Project Selection (only in byProject mode) */}
             {mode === 'byProject' && (
               <div style={{ marginBottom: 24, padding: '16px', background: C.bgNeutral, borderRadius: 8 }}>
-                <h3 style={{ fontSize: 12, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Select Projects</h3>
+                <h3 style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Select Projects</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {SAMPLE_JIRA_PROJECTS.filter(p => p.sync_enabled).map(p => (
-                    <label key={p.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13 }}>
+                    <label key={p.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)' }}>
                       <input
                         type="checkbox"
                         checked={selectedProjects.has(p.key)}
@@ -786,7 +786,7 @@ function RefreshDataModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                       />
                       <span>{p.icon}</span>
                       <span style={{ fontWeight: 500 }}>{p.key}</span>
-                      <span style={{ color: C.textSubtle, fontSize: 11 }}>({p.issues_cached} issues)</span>
+                      <span style={{ color: C.textSubtle, fontSize: 'var(--ds-font-size-100)' }}>({p.issues_cached} issues)</span>
                     </label>
                   ))}
                 </div>
@@ -794,27 +794,27 @@ function RefreshDataModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
             )}
 
             <div style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: '16px', marginBottom: 24 }}>
-              <div style={{ fontSize: 12, color: C.textDanger }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textDanger }}>
                 <strong>⚠ WARNING:</strong> This action cannot be undone from this screen. Native Catalyst records not imported from Jira will be preserved.
               </div>
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Affected Projects</h3>
-              <div style={{ fontSize: 12, color: C.textSubtle }}>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Affected Projects</h3>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>
                 {affectedProjects.map(p => `${p.key} (${p.issues_cached} issues)`).join(', ')} — Total {totalRecords} Jira-origin records
               </div>
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Active Filters</h3>
-              <div style={{ fontSize: 12, color: C.textSubtle }}>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Active Filters</h3>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>
                 BAU: All time | LIC: Last 2 months | OPS: Year 2026
               </div>
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: C.textDefault, display: 'block', marginBottom: 8 }}>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textDefault, display: 'block', marginBottom: 8 }}>
                 Type to confirm: "REFRESH JIRA DATA"
               </label>
               <input
@@ -822,7 +822,7 @@ function RefreshDataModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                 value={confirmPhrase}
                 onChange={e => setConfirmPhrase(e.target.value)}
                 placeholder="Type confirmation phrase"
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: 'monospace' }}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-300)', fontFamily: 'monospace' }}
               />
             </div>
 

@@ -82,7 +82,7 @@ function releaseRowToWorkItem(r: ReleaseAllWorkRow): WorkItem {
           name: r.manager_name,
           avatarUrl: r.manager_avatar ?? null,
           initials: initialsFromName(r.manager_name),
-          color: 'var(--ds-background-accent-purple-subtle, #6554C0)',
+          color: 'var(--ds-background-accent-purple-subtle)',
         }
       : undefined,
     reporterId: null,

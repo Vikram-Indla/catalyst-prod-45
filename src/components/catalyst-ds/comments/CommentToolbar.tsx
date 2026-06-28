@@ -69,13 +69,13 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         height: 28,
         padding: 0,
         border: active
-          ? '1.5px solid var(--ds-border-selected, #0C66E4)'
+          ? '1.5px solid var(--ds-border-selected)'
           : '1.5px solid transparent',
         borderRadius: 6,
         background: 'transparent',
         color: active
-          ? 'var(--ds-text-selected, #0C66E4)'
-          : 'var(--ds-text-subtle, #44546F)',
+          ? 'var(--ds-text-selected)'
+          : 'var(--ds-text-subtle)',
         cursor: 'pointer',
         transition:
           'background 100ms ease, color 100ms ease, border-color 100ms ease',
@@ -84,7 +84,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       onMouseEnter={(e) => {
         if (active) return;
         (e.currentTarget as HTMLButtonElement).style.background =
-          'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+          'var(--ds-background-neutral-subtle-hovered)';
       }}
       onMouseLeave={(e) => {
         if (active) return;
@@ -134,21 +134,21 @@ function ReactionChip({
         height: 24,
         padding: '0 8px',
         border: hasMine
-          ? '1.5px solid var(--ds-border-selected, #0C66E4)'
-          : '1px solid var(--ds-border-information, #B8DAFF)',
+          ? '1.5px solid var(--ds-border-selected)'
+          : '1px solid var(--ds-border-information)',
         borderRadius: 9999,
-        background: 'var(--ds-background-information, #E9F2FF)',
+        background: 'var(--ds-background-information)',
         color: hasMine
-          ? 'var(--ds-text-selected, #0055CC)'
-          : 'var(--ds-text-information, #0C66E4)',
+          ? 'var(--ds-text-selected)'
+          : 'var(--ds-text-information)',
         fontFamily: 'inherit',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         lineHeight: 1,
         cursor: 'pointer',
       }}
     >
-      <span style={{ fontSize: 14 }}>{emoji}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{emoji}</span>
       <span>{count}</span>
     </button>
   );
@@ -293,7 +293,7 @@ export function CommentToolbar({
               aria-label={`React with ${emoji}`}
               title={`React with ${emoji}`}
             >
-              <span style={{ fontSize: 14, lineHeight: 1 }}>{emoji}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>{emoji}</span>
             </IconButton>
           ))}
         </>
@@ -359,8 +359,8 @@ export function CommentToolbar({
                   top: menuPos.top,
                   left: menuPos.left,
                   width: 168,
-                  background: 'var(--ds-surface-overlay, #FFFFFF)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-surface-overlay)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 6,
                   boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
                   zIndex: 2000,
@@ -426,12 +426,12 @@ function MenuItem({ icon, onClick, children }: MenuItemProps) {
         padding: '8px 12px',
         border: 'none',
         background: hover
-          ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
+          ? 'var(--ds-background-neutral-subtle-hovered)'
           : 'transparent',
-        color: 'var(--ds-text, #172B4D)',
+        color: 'var(--ds-text)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 400,
         textAlign: 'left',
       }}
@@ -444,7 +444,7 @@ function MenuItem({ icon, onClick, children }: MenuItemProps) {
           width: 16,
           height: 16,
           flexShrink: 0,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text)',
         }}
       >
         {icon}

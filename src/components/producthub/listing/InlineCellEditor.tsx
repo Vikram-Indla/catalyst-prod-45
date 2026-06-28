@@ -34,14 +34,14 @@ function generateQuarters(): string[] {
 }
 
 const editorStyles: React.CSSProperties = {
-  border: '1.5px solid var(--ds-link, #2563eb)',
+  border: '1.5px solid var(--ds-link)',
   borderRadius: 4,
   boxShadow: '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.15))',
   outline: 'none',
   fontFamily: 'var(--cp-font-body)',
-  fontSize: 13,
-  color: 'var(--ds-text, #172B4D)',
-  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  fontSize: 'var(--ds-font-size-300)',
+  color: 'var(--ds-text)',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
 };
 
 export function InlineCellEditor({ type, value, cellRect, onSave, onCancel, onTab }: InlineCellEditorProps) {

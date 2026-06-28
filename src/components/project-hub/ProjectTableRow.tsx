@@ -31,7 +31,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
   return (
     <tr
-      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]'}`}
+      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[var(--ds-surface-overlay)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken))]'}`}
       style={{ height: 36, maxHeight: 36 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}
@@ -53,8 +53,8 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             style={{
               width: 28,
               height: 24,
-              backgroundColor: project.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              backgroundColor: project.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,
               borderRadius: 4,
@@ -64,15 +64,15 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           >
             {project.key}
           </div>
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+          <span className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))' }}>
             {project.name}
           </span>
           <span
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontFamily: 'var(--cp-font-mono)',
               fontWeight: 500,
-              color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
+              color: 'var(--cp-text-tertiary, var(--cp-text-secondary))',
             }}
           >
             {project.key}
@@ -94,10 +94,10 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
       <td style={{ padding: '0 12px', textAlign: 'right' }}>
         <span
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-mono)',
             fontWeight: 500,
-            color: 'var(--cp-text-secondary, #42526E)',
+            color: 'var(--cp-text-secondary)',
           }}
         >
           {project.item_count ?? 0}
@@ -111,7 +111,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
       {/* Updated */}
       <td style={{ padding: '0 12px' }}>
-        <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--cp-text-secondary))' }}>
           {formatRelativeTime(project.updated_at)}
         </span>
       </td>

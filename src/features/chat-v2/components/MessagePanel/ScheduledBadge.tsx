@@ -18,11 +18,11 @@ export function ScheduledBadge({ scheduledFor, onCancel }: ScheduledBadgeProps) 
         borderRadius: 4,
         background: 'var(--cv2-saved-bg, rgba(236,178,46,0.12))',
         color: 'var(--cv2-text)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
       }}
     >
-      <span style={{ display: 'inline-flex', color: 'var(--cv2-warning, #ECB22E)' }}>
+      <span style={{ display: 'inline-flex', color: 'var(--cv2-warning)' }}>
         <ClockIcon size={12} />
       </span>
       <span>Scheduled for {formatScheduled(scheduledFor)}</span>
@@ -36,7 +36,7 @@ export function ScheduledBadge({ scheduledFor, onCancel }: ScheduledBadgeProps) 
             background: 'transparent',
             color: 'var(--cv2-text-subtle)',
             border: 'none',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 700,
             cursor: 'pointer',
           }}

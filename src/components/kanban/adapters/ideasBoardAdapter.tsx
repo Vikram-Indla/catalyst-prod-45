@@ -139,7 +139,7 @@ export function ideaToCanonicalIssue(idea: IdeaRow): CanonicalBoardIssue {
    Icon resolver — idea_type → lucide icon.
    ═══════════════════════════════════════════════════════════════════════ */
 
-const IDEA_TYPE_ICON_COLOR = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'; // neutral slate; Ideas doesn't carry a type-colour system.
+const IDEA_TYPE_ICON_COLOR = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'; // neutral slate; Ideas doesn't carry a type-colour system.
 
 export function resolveIdeaIcon(card: BoardIssue): ReactNode | null {
   const raw = (card as CanonicalBoardIssue).raw as IdeaRow | undefined;

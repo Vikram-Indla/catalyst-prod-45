@@ -466,7 +466,7 @@ interface Member {
    var(--ds-text-subtle, rgb(80,82,88)). Pass color directly on each core icon to bypass
    the inheritance entirely. The text label is wrapped in a span at
    the call site for matching reasons. */
-const SUBTLE = "var(--ds-text-subtle, #505258)";
+const SUBTLE = "var(--ds-text-subtle)";
 const SearchIcon = () => <SearchIconCore label="" color={SUBTLE} />;
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
 // ListIcon + SplitIcon removed with view toggle (2026-05-04)
@@ -566,9 +566,9 @@ export function FilterTriggerAndPopup({
         style={{
           display: "inline-flex",
           background:
-            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
           border:
-            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
           borderRadius: 3,
         }}
       >
@@ -613,9 +613,9 @@ export function FilterTriggerAndPopup({
               left: pos.left,
               zIndex: 510, // above Atlaskit content layer (400) but below modals (700+)
               background:
-                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
               border:
-                "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+                "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
               borderRadius: 4,
               boxShadow:
                 "var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
@@ -659,12 +659,12 @@ function renderFacetRow(
         padding: "8px 8px",
         borderRadius: 3,
         cursor: "pointer",
-        fontSize: 13,
-        color: "var(--ds-text, #292A2E)",
+        fontSize: 'var(--ds-font-size-300)',
+        color: "var(--ds-text)",
       }}
       onMouseEnter={(e) =>
         ((e.currentTarget as HTMLElement).style.background =
-          "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))")
+          "var(--ds-surface-sunken, var(--cp-bg-sunken))")
       }
       onMouseLeave={(e) =>
         ((e.currentTarget as HTMLElement).style.background = "transparent")
@@ -825,9 +825,9 @@ export function FilterChip({
         style={{
           display: "inline-flex",
           background:
-            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
           border:
-            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
           borderRadius: 3,
         }}
       >
@@ -857,7 +857,7 @@ export function FilterChip({
                 label=""
                 primaryColor={
                   isActive
-                    ? "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))"
+                    ? "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))"
                     : SUBTLE
                 }
                 size="small"
@@ -889,9 +889,9 @@ export function FilterChip({
               display: "flex",
               flexDirection: "column",
               background:
-                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
               border:
-                "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+                "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
               borderRadius: 4,
               boxShadow:
                 "var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
@@ -903,9 +903,9 @@ export function FilterChip({
                 style={{
                   padding: "8px 12px",
                   borderBottom:
-                    "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
-                  fontSize: 12,
-                  color: "var(--ds-text-subtle, #505258)",
+                    "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
+                  fontSize: 'var(--ds-font-size-200)',
+                  color: "var(--ds-text-subtle)",
                 }}
               >
                 {headline}
@@ -915,7 +915,7 @@ export function FilterChip({
               style={{
                 padding: 8,
                 borderBottom:
-                  "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+                  "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
               }}
             >
               <input
@@ -927,14 +927,14 @@ export function FilterChip({
                 style={{
                   width: "100%",
                   padding: "8px 8px",
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   border:
-                    "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+                    "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
                   borderRadius: 3,
                   fontFamily: "inherit",
                   background:
-                    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
-                  color: "var(--ds-text, #292A2E)",
+                    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
+                  color: "var(--ds-text)",
                 }}
               />
             </div>
@@ -943,8 +943,8 @@ export function FilterChip({
                 <div
                   style={{
                     padding: 16,
-                    fontSize: 13,
-                    color: "var(--ds-text-subtle, #505258)",
+                    fontSize: 'var(--ds-font-size-300)',
+                    color: "var(--ds-text-subtle)",
                     textAlign: "center",
                   }}
                 >
@@ -962,9 +962,9 @@ export function FilterChip({
               style={{
                 padding: "8px 12px",
                 borderTop:
-                  "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
-                fontSize: 11,
-                color: "var(--ds-text-subtle, #505258)",
+                  "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
+                fontSize: 'var(--ds-font-size-100)',
+                color: "var(--ds-text-subtle)",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -984,8 +984,8 @@ export function FilterChip({
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "var(--ds-link, #0C66E4)",
-                    fontSize: 11,
+                    color: "var(--ds-link)",
+                    fontSize: 'var(--ds-font-size-100)',
                     padding: "2px 4px",
                     fontFamily: "inherit",
                   }}
@@ -1133,8 +1133,8 @@ function SavedFiltersDropdown({
               >
                 <span
                   style={{
-                    color: "var(--ds-text-danger, #DE350B)",
-                    fontSize: 11,
+                    color: "var(--ds-text-danger)",
+                    fontSize: 'var(--ds-font-size-100)',
                   }}
                 >
                   Delete
@@ -1144,7 +1144,7 @@ function SavedFiltersDropdown({
           >
             {row.name}
             {row.is_shared && (
-              <span style={{ marginLeft: 8, fontSize: 10, color: SUBTLE }}>
+              <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-50)', color: SUBTLE }}>
                 · shared
               </span>
             )}
@@ -1438,7 +1438,7 @@ export function AllWorkToolbar({
         gap: 8,
         padding: "8px 12px",
         borderBottom:
-          "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+          "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
         background: "transparent",
         flexShrink: 0,
         fontFamily: "var(--cp-font-body)",
@@ -1516,9 +1516,9 @@ export function AllWorkToolbar({
                 appearance={f.appearance}
                 icon={
                   f.appearance === "success" ? (
-                    <CheckCircleIcon label="" primaryColor="var(--ds-icon-success, #22A06B)" />
+                    <CheckCircleIcon label="" primaryColor="var(--ds-icon-success)" />
                   ) : (
-                    <ErrorIcon label="" primaryColor="var(--ds-icon-danger, #AE2A19)" />
+                    <ErrorIcon label="" primaryColor="var(--ds-icon-danger)" />
                   )
                 }
               />

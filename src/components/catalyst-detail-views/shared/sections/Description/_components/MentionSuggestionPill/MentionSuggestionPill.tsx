@@ -132,8 +132,8 @@ export function MentionSuggestionPill({ editor, workItemId }: Props) {
         alignItems: "center",
         gap: 4,
         padding: "4px",
-        background: "var(--ds-surface, #FFFFFF)",
-        border: "1px solid var(--ds-border, #DFE1E6)",
+        background: "var(--ds-surface)",
+        border: "1px solid var(--ds-border)",
         borderRadius: 6,
         maxWidth: "100%",
         minWidth: 0,
@@ -206,7 +206,7 @@ const iconBtnStyle: React.CSSProperties = {
   border: "none",
   borderRadius: 4,
   background: "transparent",
-  color: "var(--ds-text, #292A2E)",
+  color: "var(--ds-text)",
   cursor: "pointer",
   flexShrink: 0,
 };
@@ -230,11 +230,11 @@ function UserChip({
         gap: 6,
         padding: "1px 10px 1px 3px",
         height: 24,
-        border: "1px solid var(--ds-border, #DFE1E6)",
+        border: "1px solid var(--ds-border)",
         borderRadius: 4,
-        background: "var(--ds-surface, #FFFFFF)",
-        color: "var(--ds-text, #292A2E)",
-        fontSize: 12,
+        background: "var(--ds-surface)",
+        color: "var(--ds-text)",
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 500,
         cursor: "pointer",
         flexShrink: 0,
@@ -244,7 +244,7 @@ function UserChip({
           "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = "var(--ds-surface, #FFFFFF)";
+        e.currentTarget.style.background = "var(--ds-surface)";
       }}
     >
       <span
@@ -252,12 +252,12 @@ function UserChip({
           width: 18,
           height: 18,
           borderRadius: "50%",
-          background: "var(--ds-background-accent-blue-subtler, #CCE0FF)",
-          color: "var(--ds-text-information, #0C66E4)",
+          background: "var(--ds-background-accent-blue-subtler)",
+          color: "var(--ds-text-information)",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           fontWeight: 600,
           overflow: "hidden",
           flexShrink: 0,
@@ -276,8 +276,8 @@ function UserChip({
       <span
         aria-hidden
         style={{
-          color: "var(--ds-text-subtle, #44546F)",
-          fontSize: 16,
+          color: "var(--ds-text-subtle)",
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
           lineHeight: 1,
         }}

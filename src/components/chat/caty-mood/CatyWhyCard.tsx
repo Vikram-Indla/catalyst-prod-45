@@ -27,11 +27,11 @@ interface StateStyle {
 }
 
 const STATE_STYLE: Record<CatyState, StateStyle> = {
-  zen: { accent: 'var(--ds-text-success, #22A06B)', label: 'zen', appearance: 'success' },
-  content: { accent: 'var(--ds-text-subtle, #44546F)', label: 'content', appearance: 'default' },
-  focused: { accent: 'var(--ds-text-information, #0C66E4)', label: 'focused', appearance: 'inprogress' },
-  concerned: { accent: 'var(--ds-text-warning-inverse, #974F0C)', label: 'concerned', appearance: 'moved' },
-  alert: { accent: 'var(--ds-text-danger, #AE2E24)', label: 'alert', appearance: 'removed' },
+  zen: { accent: 'var(--ds-text-success)', label: 'zen', appearance: 'success' },
+  content: { accent: 'var(--ds-text-subtle)', label: 'content', appearance: 'default' },
+  focused: { accent: 'var(--ds-text-information)', label: 'focused', appearance: 'inprogress' },
+  concerned: { accent: 'var(--ds-text-warning-inverse)', label: 'concerned', appearance: 'moved' },
+  alert: { accent: 'var(--ds-text-danger)', label: 'alert', appearance: 'removed' },
 };
 
 
@@ -125,8 +125,8 @@ export function CatyWhyCard({
         top,
         bottom,
         width: CARD_W,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderTop: `2px solid ${style.accent}`,
         borderRadius: 8,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
@@ -142,10 +142,10 @@ export function CatyWhyCard({
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, marginBottom: 4 }}>
               <Lozenge appearance={style.appearance}>{style.label}</Lozenge>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
               {mood.message}
             </div>
           </div>
@@ -171,11 +171,11 @@ export function CatyWhyCard({
               }}
               style={{
                 padding: '6px 12px',
-                background: 'var(--ds-background-information-subtle, #DFFCF0)',
-                border: '1px solid var(--ds-border-information, #85E6C5)',
+                background: 'var(--ds-background-information-subtle)',
+                border: '1px solid var(--ds-border-information)',
                 borderRadius: 6,
-                fontSize: 12,
-                color: 'var(--ds-text, #172B4D)',
+                fontSize: 'var(--ds-font-size-200)',
+                color: 'var(--ds-text)',
                 cursor: 'pointer',
                 fontWeight: 500,
               }}
@@ -184,7 +184,7 @@ export function CatyWhyCard({
             </button>
           ))
         ) : (
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>No updates</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>No updates</div>
         )}
       </div>
 
@@ -193,11 +193,11 @@ export function CatyWhyCard({
         <div style={{
           marginBottom: 12,
           padding: 8,
-          background: 'var(--ds-background-danger-subtle, #FFECEB)',
-          border: '1px solid var(--ds-border-danger, #F87462)',
+          background: 'var(--ds-background-danger-subtle)',
+          border: '1px solid var(--ds-border-danger)',
           borderRadius: 4,
-          fontSize: 12,
-          color: 'var(--ds-text-danger, #AE2A19)',
+          fontSize: 'var(--ds-font-size-200)',
+          color: 'var(--ds-text-danger)',
           fontFamily: 'var(--ds-font-family-body, inherit)',
         }}>
           {triageError}
@@ -234,15 +234,15 @@ export function CatyWhyCard({
           catalystToast.info('Alert muted until tomorrow');
           onClose();
         }}
-        style={{ width: '100%', marginBottom: 12, fontSize: 12 }}
+        style={{ width: '100%', marginBottom: 12, fontSize: 'var(--ds-font-size-200)' }}
       >
         Dismiss for 24 hours
       </Button>
 
       {/* Help text */}
       <div style={{
-        fontSize: 11,
-        color: 'var(--ds-text-subtlest, #6B778C)',
+        fontSize: 'var(--ds-font-size-100)',
+        color: 'var(--ds-text-subtlest)',
         fontFamily: 'var(--ds-font-family-body, inherit)',
         lineHeight: '1.4',
       }}>

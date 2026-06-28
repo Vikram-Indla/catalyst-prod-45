@@ -52,7 +52,7 @@ export function ScheduledRow({ scheduled, conversation, onClick }: ScheduledRowP
         />
         <span
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cv2-text-subtle)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -65,7 +65,7 @@ export function ScheduledRow({ scheduled, conversation, onClick }: ScheduledRowP
       <span
         style={{
           flex: '0 0 auto',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: 'var(--cv2-text-muted)',
         }}
       >

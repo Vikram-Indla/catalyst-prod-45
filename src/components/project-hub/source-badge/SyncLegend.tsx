@@ -9,10 +9,10 @@ interface SyncLegendProps {
 }
 
 const LEGEND_ITEMS = [
-  { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Synced' },
-  { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Stale (>3 days)' },
-  { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Conflict' },
-  { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'Syncing', pulse: true },
+  { color: 'var(--ds-text-success, var(--cp-success))', label: 'Synced' },
+  { color: 'var(--ds-text-warning, var(--cp-warning))', label: 'Stale (>3 days)' },
+  { color: 'var(--ds-text-danger, var(--cp-danger))', label: 'Conflict' },
+  { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', label: 'Syncing', pulse: true },
 ];
 
 export function SyncLegend({ visible }: SyncLegendProps) {

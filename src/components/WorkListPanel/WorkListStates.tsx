@@ -16,7 +16,7 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
         justifyContent: 'center',
         padding: '48px 24px',
         gap: '16px',
-        color: 'var(--ds-icon-subtle, #626F86)',
+        color: 'var(--ds-icon-subtle)',
       }}
     >
       <div
@@ -24,13 +24,13 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
         style={{
           width: '32px',
           height: '32px',
-          border: '3px solid var(--ds-background-information, #E6EDFA)',
-          borderTop: '3px solid var(--ds-link, #0C66E4)',
+          border: '3px solid var(--ds-background-information)',
+          borderTop: '3px solid var(--ds-link)',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite',
         }}
       />
-      <p style={{ margin: 0, fontSize: '14px' }}>Loading work items...</p>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)' }}>Loading work items...</p>
       <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
@@ -51,7 +51,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
         justifyContent: 'center',
         padding: '48px 24px',
         gap: '12px',
-        color: 'var(--ds-icon-subtle, #626F86)',
+        color: 'var(--ds-icon-subtle)',
       }}
     >
       <div
@@ -65,34 +65,34 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
       <h3
         style={{
           margin: 0,
-          fontSize: '16px',
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
-          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse))',
         }}
       >
         No items found
       </h3>
-      <p style={{ margin: 0, fontSize: '14px', textAlign: 'center' }}>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', textAlign: 'center' }}>
         Create your first issue or adjust your filters to see items here.
       </p>
       <button
         style={{
           marginTop: '12px',
           padding: '8px 12px',
-          backgroundColor: 'var(--ds-link, #0C66E4)',
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          backgroundColor: 'var(--ds-link)',
+          color: 'var(--ds-text-inverse)',
           border: 'none',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           transition: 'background-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold, #0044A3)';
+          e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';
+          e.currentTarget.style.backgroundColor = 'var(--ds-link)';
         }}
       >
         Create issue

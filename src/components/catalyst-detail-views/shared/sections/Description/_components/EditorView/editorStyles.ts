@@ -26,7 +26,7 @@ export function injectEditorStyles(): void {
       outline: none;
       font-size: 14px;
       line-height: 24px;
-      color: var(--ds-text, #292A2E);
+      color: var(--ds-text);
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system,
         "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
       min-height: var(--cc-editor-min, 120px);
@@ -42,7 +42,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor h4 { font-size: 14px; font-weight: 600; margin: 10px 0 4px; }
     .catalyst-tiptap-editor h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; }
     .catalyst-tiptap-editor h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px;
-                                 color: var(--ds-text-subtle, #5E6C84); }
+                                 color: var(--ds-text-subtle); }
     .catalyst-tiptap-editor ul,
     .catalyst-tiptap-editor ol { margin: 4px 0 8px; padding-inline-start: 24px; }
     .catalyst-tiptap-editor ul { list-style-type: disc; }
@@ -53,11 +53,11 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor ol ol ol { list-style-type: lower-roman; }
     .catalyst-tiptap-editor li { margin-bottom: 4px; }
     .catalyst-tiptap-editor blockquote {
-      border-inline-start: 2px solid var(--ds-border, #DFE1E6);
+      border-inline-start: 2px solid var(--ds-border);
       padding-block: 8px;
       padding-inline: 12px;
       margin: 8px 0;
-      color: var(--ds-text-subtle, #5E6C84);
+      color: var(--ds-text-subtle);
     }
     /* Code block with line-number gutter.
        Font, font-size and line-height live on the wrapper and are
@@ -76,7 +76,7 @@ export function injectEditorStyles(): void {
       display: grid;
       grid-template-columns: auto 1fr;
       align-items: stretch;
-      background: var(--ds-surface-sunken, #F7F8F9);
+      background: var(--ds-surface-sunken);
       margin: 4px 0 8px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
@@ -87,8 +87,8 @@ export function injectEditorStyles(): void {
       box-shadow: none !important;
     }
     .catalyst-tiptap-editor .catalyst-code-block-gutter {
-      background: var(--ds-background-neutral, #E4E6EA);
-      color: var(--ds-text-subtle, #6B778C);
+      background: var(--ds-background-neutral);
+      color: var(--ds-text-subtle);
       padding: 8px 10px !important;
       margin: 0 !important;
       text-align: right;
@@ -161,12 +161,12 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.prolog,
     .adf-light-renderer .catalyst-code-block .token.doctype,
     .adf-light-renderer .catalyst-code-block .token.cdata {
-      color: var(--ds-text-subtlest, #6B778C);
+      color: var(--ds-text-subtlest);
       font-style: italic;
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.punctuation,
     .adf-light-renderer .catalyst-code-block .token.punctuation {
-      color: var(--ds-text-subtle, #44546F);
+      color: var(--ds-text-subtle);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.namespace,
     .adf-light-renderer .catalyst-code-block .token.namespace {
@@ -182,13 +182,13 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.constant,
     .adf-light-renderer .catalyst-code-block .token.symbol,
     .adf-light-renderer .catalyst-code-block .token.deleted {
-      color: var(--ds-text-danger, #AE2A19);
+      color: var(--ds-text-danger);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.boolean,
     .catalyst-tiptap-editor .catalyst-code-block .token.number,
     .adf-light-renderer .catalyst-code-block .token.boolean,
     .adf-light-renderer .catalyst-code-block .token.number {
-      color: var(--ds-text-warning, #974F0C);
+      color: var(--ds-text-warning);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.selector,
     .catalyst-tiptap-editor .catalyst-code-block .token.attr-name,
@@ -202,7 +202,7 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.char,
     .adf-light-renderer .catalyst-code-block .token.builtin,
     .adf-light-renderer .catalyst-code-block .token.inserted {
-      color: var(--ds-text-success, #216E4E);
+      color: var(--ds-text-success);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.operator,
     .catalyst-tiptap-editor .catalyst-code-block .token.entity,
@@ -212,7 +212,7 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.operator,
     .adf-light-renderer .catalyst-code-block .token.entity,
     .adf-light-renderer .catalyst-code-block .token.url {
-      color: var(--ds-background-discovery-bold, #6E5DC6);
+      color: var(--ds-background-discovery-bold);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.atrule,
     .catalyst-tiptap-editor .catalyst-code-block .token.attr-value,
@@ -220,14 +220,14 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.atrule,
     .adf-light-renderer .catalyst-code-block .token.attr-value,
     .adf-light-renderer .catalyst-code-block .token.keyword {
-      color: var(--ds-link, #0C66E4);
+      color: var(--ds-link);
       font-weight: 500;
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.function,
     .catalyst-tiptap-editor .catalyst-code-block .token.class-name,
     .adf-light-renderer .catalyst-code-block .token.function,
     .adf-light-renderer .catalyst-code-block .token.class-name {
-      color: var(--ds-background-discovery-bold, #6E5DC6);
+      color: var(--ds-background-discovery-bold);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.regex,
     .catalyst-tiptap-editor .catalyst-code-block .token.important,
@@ -235,7 +235,7 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.regex,
     .adf-light-renderer .catalyst-code-block .token.important,
     .adf-light-renderer .catalyst-code-block .token.variable {
-      color: var(--ds-text-warning, #B65C02);
+      color: var(--ds-text-warning);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.important,
     .catalyst-tiptap-editor .catalyst-code-block .token.bold,
@@ -263,7 +263,7 @@ export function injectEditorStyles(): void {
       word-break: break-word !important;
     }
     .catalyst-tiptap-editor code {
-      background: var(--ds-surface-sunken, #F7F8F9);
+      background: var(--ds-surface-sunken);
       padding: 2px 4px;
       border-radius: 3px;
       font-size: 12px;
@@ -271,13 +271,13 @@ export function injectEditorStyles(): void {
     }
     .catalyst-tiptap-editor pre code { background: none; padding: 0; }
     .catalyst-tiptap-editor a {
-      color: var(--ds-link, #0C66E4);
+      color: var(--ds-link);
       text-decoration: none;
     }
     .catalyst-tiptap-editor a:hover { text-decoration: underline; }
     .catalyst-tiptap-editor hr {
       border: none;
-      border-top: 1px solid var(--ds-border, #DFE1E6);
+      border-top: 1px solid var(--ds-border);
       margin: 16px 0;
     }
     .catalyst-tiptap-editor img {
@@ -359,7 +359,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor p.is-editor-empty:first-child::before {
       content: attr(data-placeholder);
       float: left;
-      color: var(--ds-text-subtlest, #97A0AF);
+      color: var(--ds-text-subtlest);
       pointer-events: none;
       height: 0;
     }
@@ -382,7 +382,7 @@ export function injectEditorStyles(): void {
        etc.) intentionally render with NO halo so the drag UX stays
        clean; images keep the halo so delete-on-select is discoverable. */
     .catalyst-tiptap-editor img.ProseMirror-selectednode {
-      outline: 2px solid var(--ds-border-selected, #0C66E4);
+      outline: 2px solid var(--ds-border-selected);
       outline-offset: 2px;
     }
 
@@ -402,22 +402,22 @@ export function injectEditorStyles(): void {
     @keyframes catalyst-translate-border {
       0% {
         box-shadow:
-          0 0 0 2px var(--ds-link, #0C66E4),
+          0 0 0 2px var(--ds-link),
           0 0 14px 3px var(--ds-link, rgba(12,102,228,0.30));
       }
       33% {
         box-shadow:
-          0 0 0 2px var(--ds-background-discovery-bold, #6E5DC6),
+          0 0 0 2px var(--ds-background-discovery-bold),
           0 0 14px 3px rgba(130,112,219,0.30); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       }
       66% {
         box-shadow:
-          0 0 0 2px var(--ds-text-warning, #E56910),
+          0 0 0 2px var(--ds-text-warning),
           0 0 14px 3px rgba(229,105,16,0.30); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       }
       100% {
         box-shadow:
-          0 0 0 2px var(--ds-link, #0C66E4),
+          0 0 0 2px var(--ds-link),
           0 0 14px 3px var(--ds-link, rgba(12,102,228,0.30));
       }
     }
@@ -439,7 +439,7 @@ export function injectEditorStyles(): void {
       width: 8px;
       height: 8px;
       margin-top: -4px;
-      border: 1px solid var(--ds-link, #0C66E4);
+      border: 1px solid var(--ds-link);
       border-radius: 50%;
       background: transparent;
       box-sizing: border-box;
@@ -457,7 +457,7 @@ export function injectEditorStyles(): void {
     }
     .catalyst-tiptap-editor table td,
     .catalyst-tiptap-editor table th {
-      border: 1px solid var(--ds-border, #DFE1E6);
+      border: 1px solid var(--ds-border);
       padding: 6px 10px;
       vertical-align: top;
       box-sizing: border-box;
@@ -465,7 +465,7 @@ export function injectEditorStyles(): void {
       min-width: 60px;
     }
     .catalyst-tiptap-editor table th {
-      background: var(--ds-surface-sunken, #F7F8F9);
+      background: var(--ds-surface-sunken);
       font-weight: 600;
       text-align: start;
     }
@@ -475,7 +475,7 @@ export function injectEditorStyles(): void {
     /* Header Row ON: first <tr>'s cells get sunken gray + bold. */
     .catalyst-tiptap-editor table[data-header-row="true"] tbody > tr:first-child > td,
     .catalyst-tiptap-editor table[data-header-row="true"] tbody > tr:first-child > th {
-      background: var(--ds-surface-sunken, #F7F8F9);
+      background: var(--ds-surface-sunken);
       font-weight: 600;
     }
     /* Header Row OFF: the <th> elements in the first row would still
@@ -489,7 +489,7 @@ export function injectEditorStyles(): void {
     /* Header Column ON: first cell of every row gets sunken gray + bold. */
     .catalyst-tiptap-editor table[data-header-column="true"] tbody > tr > td:first-child,
     .catalyst-tiptap-editor table[data-header-column="true"] tbody > tr > th:first-child {
-      background: var(--ds-surface-sunken, #F7F8F9);
+      background: var(--ds-surface-sunken);
       font-weight: 600;
     }
 
@@ -506,7 +506,7 @@ export function injectEditorStyles(): void {
        collapse resolution. */
     .catalyst-tiptap-editor table .catalyst-cell-selected {
       background: rgba(135, 184, 255, 0.18) !important; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      outline: 1px solid var(--ds-border-focused, #85B8FF) !important;
+      outline: 1px solid var(--ds-border-focused) !important;
       outline-offset: -1px !important;
     }
     /* Danger / delete-preview highlight — paints cells red. Declared
@@ -515,7 +515,7 @@ export function injectEditorStyles(): void {
        column"), red wins by source order. */
     .catalyst-tiptap-editor table .catalyst-cell-danger {
       background: rgba(255, 86, 48, 0.18) !important; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      outline: 1px solid var(--ds-background-danger-bold, #C9372C) !important;
+      outline: 1px solid var(--ds-background-danger-bold) !important;
       outline-offset: -1px !important;
     }
 
@@ -544,13 +544,13 @@ export function injectEditorStyles(): void {
       top: 0;
       bottom: 0;
       width: 32px;
-      background: var(--ds-surface-sunken, #F7F8F9);
-      border-inline-end: 1px solid var(--ds-border, #DFE1E6);
+      background: var(--ds-surface-sunken);
+      border-inline-end: 1px solid var(--ds-border);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 12px;
-      color: var(--ds-text, #292A2E);
+      color: var(--ds-text);
       font-weight: 500;
       user-select: none;
       -webkit-user-select: none;
@@ -590,7 +590,7 @@ export function injectEditorStyles(): void {
        grip-selection / chevron-hover blue exactly. */
     .catalyst-tiptap-editor table .selectedCell {
       background: rgba(135, 184, 255, 0.18) !important; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      outline: 1px solid var(--ds-border-focused, #85B8FF) !important;
+      outline: 1px solid var(--ds-border-focused) !important;
       outline-offset: -1px !important;
     }
     .catalyst-tiptap-editor table .column-resize-handle {
@@ -599,7 +599,7 @@ export function injectEditorStyles(): void {
       top: 0;
       bottom: -2px;
       width: 4px;
-      background: var(--ds-border-selected, #0C66E4);
+      background: var(--ds-border-selected);
       pointer-events: none;
     }
     .catalyst-tiptap-editor .tableWrapper {
@@ -637,45 +637,45 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor .catalyst-panel > *:last-child { margin-bottom: 0; }
 
     .catalyst-tiptap-editor .catalyst-panel-info {
-      background: var(--ds-background-information, #DEEBFF);
-      border-color: var(--ds-border-information, #1868DB);
-      color: var(--ds-text-information, #0C66E4);
+      background: var(--ds-background-information);
+      border-color: var(--ds-border-information);
+      color: var(--ds-text-information);
     }
     .catalyst-tiptap-editor .catalyst-panel-info::before {
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231868DB'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/></svg>");
     }
 
     .catalyst-tiptap-editor .catalyst-panel-warning {
-      background: var(--ds-background-warning, #FFF7D6);
-      border-color: var(--ds-border-warning, #FFAB00);
-      color: var(--ds-text-warning, #946F00);
+      background: var(--ds-background-warning);
+      border-color: var(--ds-border-warning);
+      color: var(--ds-text-warning);
     }
     .catalyst-tiptap-editor .catalyst-panel-warning::before {
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E56910'><path d='M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'/></svg>");
     }
 
     .catalyst-tiptap-editor .catalyst-panel-success {
-      background: var(--ds-background-success, #DFFCF0);
-      border-color: var(--ds-border-success, #22A06B);
-      color: var(--ds-text-success, #216E4E);
+      background: var(--ds-background-success);
+      border-color: var(--ds-border-success);
+      color: var(--ds-text-success);
     }
     .catalyst-tiptap-editor .catalyst-panel-success::before {
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2322A06B'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/></svg>");
     }
 
     .catalyst-tiptap-editor .catalyst-panel-error {
-      background: var(--ds-background-danger, #FFEBE6);
-      border-color: var(--ds-border-danger, #C9372C);
-      color: var(--ds-text-danger, #AE2A19);
+      background: var(--ds-background-danger);
+      border-color: var(--ds-border-danger);
+      color: var(--ds-text-danger);
     }
     .catalyst-tiptap-editor .catalyst-panel-error::before {
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23C9372C'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z'/></svg>");
     }
 
     .catalyst-tiptap-editor .catalyst-panel-note {
-      background: var(--ds-background-discovery, #DFD8FD);
-      border-color: var(--ds-border-discovery, #8270DB);
-      color: var(--ds-text-discovery, #5E4DB2);
+      background: var(--ds-background-discovery);
+      border-color: var(--ds-border-discovery);
+      color: var(--ds-text-discovery);
     }
     .catalyst-tiptap-editor .catalyst-panel-note::before {
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238270DB'><path d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/></svg>");
@@ -697,19 +697,19 @@ export function injectEditorStyles(): void {
     /* Per-type strong text colors (darker than the accent for AA contrast
        against the panel's light background). */
     .catalyst-tiptap-editor .catalyst-panel-info {
-      color: var(--ds-text-information, #0055CC);
+      color: var(--ds-text-information);
     }
     .catalyst-tiptap-editor .catalyst-panel-warning {
-      color: var(--ds-text-warning, #7F5F01);
+      color: var(--ds-text-warning);
     }
     .catalyst-tiptap-editor .catalyst-panel-success {
-      color: var(--ds-text-success, #216E4E);
+      color: var(--ds-text-success);
     }
     .catalyst-tiptap-editor .catalyst-panel-error {
-      color: var(--ds-text-danger, #AE2A19);
+      color: var(--ds-text-danger);
     }
     .catalyst-tiptap-editor .catalyst-panel-note {
-      color: var(--ds-text-discovery, #5E4DB2);
+      color: var(--ds-text-discovery);
     }
   `;
   document.head.appendChild(s);

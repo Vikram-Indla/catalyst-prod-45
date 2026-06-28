@@ -59,13 +59,13 @@ export function PinnedBanner({ pinnedMessages, pinnedByMap, onOpenMessage }: Pin
         <PinFilledIcon size={14} />
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
-        <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)', fontWeight: 600 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', fontWeight: 600 }}>
           {label}
           {pinnedMessages.length > 1 ? ` · +${pinnedMessages.length - 1} more` : ''}
         </span>
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--cv2-text)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

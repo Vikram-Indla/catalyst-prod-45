@@ -23,7 +23,7 @@ const baseProps = {
   height: 16,
   viewBox: '0 0 24 24',
   fill: 'none',
-  stroke: 'var(--ds-text-subtle, #505258)',
+  stroke: 'var(--ds-text-subtle)',
   strokeWidth: 1.5,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,

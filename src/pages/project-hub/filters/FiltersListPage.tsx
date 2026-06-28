@@ -56,7 +56,7 @@ interface FiltersListPageProps {
 }
 
 
-const ICON_COLOR = 'var(--ds-icon, #44546F)';
+const ICON_COLOR = 'var(--ds-icon)';
 
 // ── Permission entry builders ───────────────────────────────────────────────
 // Build PermissionEntry[] from Jira share/edit permissions or Catalyst-native
@@ -332,7 +332,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             style={{
               color: token('color.link'),
               fontWeight: token('font.weight.medium'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               textDecoration: 'none',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -345,7 +345,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           </Link>
           {f.jql_query && (
             <span style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.subtlest'),
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -370,10 +370,10 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <AkAvatar src={resolveAvatarUrl(name)} name={name} size="xsmall" />
             {/* aria-hidden avoids double screen-reader announcement (AkAvatar also labels with name) */}
-            <span aria-hidden="true" style={{ fontSize: 14, color: token('color.text') }}>{name}</span>
+            <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text') }}>{name}</span>
           </div>
         ) : (
-          <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>—</span>
         );
       },
     },
@@ -432,7 +432,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             {(tipProps) => (
               <span
                 {...tipProps}
-                style={{ fontSize: 14, color: n > 0 ? token('color.text') : token('color.text.subtlest'), cursor: 'default' }}
+                style={{ fontSize: 'var(--ds-font-size-400)', color: n > 0 ? token('color.text') : token('color.text.subtlest'), cursor: 'default' }}
               >
                 ★ {n}
               </span>
@@ -450,7 +450,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       accessor: (f: SavedFilterFull) => f.updated_at ?? '',
       cell: ({ row: f }) => (
         <span
-          style={{ fontSize: 14, color: token('color.text.subtle') }}
+          style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle') }}
           title={f.updated_at ? new Date(f.updated_at).toLocaleString() : undefined}
         >
           {relativeFromIso(f.updated_at)}
@@ -515,7 +515,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         background: 'none',
         border: 'none',
         padding: '0 4px',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: token('color.text.subtle'),
         cursor: 'pointer',
         whiteSpace: 'nowrap',
@@ -610,14 +610,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             gap: 12,
             color: token('color.text.subtle'),
           }}>
-            <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: token('font.weight.medium') }}>
               {search || ownerFilter || projectFilter || groupFilter
                 ? 'No filters match your search'
                 : 'No filters yet'}
             </span>
             {!search && !ownerFilter && !projectFilter && !groupFilter && (
               <>
-                <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
                   Save a JQL query as a filter to find and reuse it later.
                 </span>
                 <Button appearance="primary" onClick={() => navigate(createHref)}>

@@ -12,9 +12,9 @@ interface ProgressBarProps {
 }
 
 function getProgressColor(value: number): string {
-  if (value >= 70) return 'var(--exec-blue-700, #1E40AF)';
-  if (value >= 40) return 'var(--exec-signal-amber, var(--cp-warning, #D97706))';
-  return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
+  if (value >= 70) return 'var(--exec-blue-700)';
+  if (value >= 40) return 'var(--exec-signal-amber, var(--cp-warning))';
+  return 'var(--exec-signal-red, var(--cp-danger))';
 }
 
 export function ProgressBar({ value, color, height = 6, showLabel = false, animated = true, className = '' }: ProgressBarProps) {
@@ -28,7 +28,7 @@ export function ProgressBar({ value, color, height = 6, showLabel = false, anima
           flex: 1,
           height,
           borderRadius: height / 2,
-          background: 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+          background: 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
           overflow: 'hidden',
         }}
       >
@@ -43,7 +43,7 @@ export function ProgressBar({ value, color, height = 6, showLabel = false, anima
         />
       </div>
       {showLabel && (
-        <span style={{ fontSize: 11, fontWeight: 600, color: fillColor, minWidth: 32, textAlign: 'right' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: fillColor, minWidth: 32, textAlign: 'right' }}>
           {Math.round(clampedValue)}%
         </span>
       )}

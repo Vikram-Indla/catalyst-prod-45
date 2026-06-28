@@ -46,7 +46,7 @@ function WorkstreamDropdownItem({ value, color, isSelected, onClick }: { value: 
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: '14px', color: value === 'None' ? COLORS.textMuted : COLORS.textPrimary }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: value === 'None' ? COLORS.textMuted : COLORS.textPrimary }}>{value}</span>
       {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );
@@ -70,7 +70,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
 
   const selectedWorkstream = workstreams.find(w => w.id === task.workstream_id);
   const displayName = selectedWorkstream?.name || task.workstream_name || 'None';
-  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || workstreamColors.hex || 'var(--ds-text-subtlest, #94a3b8)';
+  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || workstreamColors.hex || 'var(--ds-text-subtlest)';
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
@@ -102,7 +102,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
               flexShrink: 0,
             }}
           />
-          <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+          <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: COLORS.textPrimary }}>
             {displayName}
           </span>
           <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
@@ -129,7 +129,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
             {/* None option */}
             <WorkstreamDropdownItem
               value="None"
-              color="var(--ds-text-subtlest, #94a3b8)"
+              color="var(--ds-text-subtlest)"
               isSelected={!task.workstream_id}
               onClick={() => { onUpdate(task.id, 'workstream_id', null); setIsOpen(false); }}
             />

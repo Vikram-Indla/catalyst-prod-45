@@ -29,7 +29,7 @@
  *   // Custom typography — rare; prefer default
  *   <TruncateCell
  *     text={inc.title}
- *     style={{ fontSize: 13, fontWeight: 650 }}
+ *     style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 650 }}
  *   />
  *
  *   // Tooltip off (text is short; usually don't need this escape)
@@ -90,7 +90,7 @@ export function TruncateCell({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: token('color.text'),
         ...style,
       }}

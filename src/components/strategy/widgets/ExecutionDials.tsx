@@ -16,8 +16,8 @@ interface DialData {
 }
 
 function getDialColor(v: number): string {
-  if (v < 40) return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
-  return 'var(--exec-blue-500, #3B82F6)';
+  if (v < 40) return 'var(--exec-signal-red, var(--cp-danger))';
+  return 'var(--exec-blue-500)';
 }
 
 export function ExecutionDials() {
@@ -75,10 +75,10 @@ export function ExecutionDials() {
           <div style={{ opacity: 0.9 }}>
             <CircularGauge value={dial.value} size={100} strokeWidth={8} color={dial.color} animated />
           </div>
-          <span style={{ fontSize: 11, color: 'var(--exec-text-secondary)', marginTop: 6, textAlign: 'center' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-secondary)', marginTop: 6, textAlign: 'center' }}>
             {dial.label}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--exec-text-tertiary)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-text-tertiary)' }}>
             {dial.subtitle}
           </span>
         </div>

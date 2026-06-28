@@ -75,10 +75,10 @@ export function BrDescriptionSection({ request, onUpdate, health }: Props) {
       <h2
         style={{
           margin: '0 0 8px 0',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           lineHeight: '20px',
-          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
           fontFamily: 'var(--cp-font-body)',
         }}
       >
@@ -114,9 +114,9 @@ export function BrDescriptionSection({ request, onUpdate, health }: Props) {
             border: 'none',
             borderRadius: 3,
             color: hasContent
-              ? token('color.text', 'var(--ds-text, #172B4D)')
-              : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
-            fontSize: 14,
+              ? token('color.text', 'var(--ds-text)')
+              : token('color.text.subtlest', 'var(--ds-text-disabled)'),
+            fontSize: 'var(--ds-font-size-400)',
             fontFamily: 'var(--cp-font-body)',
             cursor: 'text',
             lineHeight: '20px',

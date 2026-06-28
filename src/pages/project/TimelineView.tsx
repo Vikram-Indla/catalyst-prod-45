@@ -124,21 +124,21 @@ export default function TimelineView() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-[var(--ds-surface,#0A0A0A)]">
+    <div className="h-full flex flex-col bg-white dark:bg-[var(--ds-surface)]">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-b dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm">
+      <div className="sticky top-0 z-30 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-b dark:border-[var(--ds-border,var(--cp-ink-1))] shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold">Timeline</h1>
-                <span className="px-2 py-0.5 rounded text-xs font-medium bg-[var(--ds-background-success, rgba(13,148,136,0.15))] text-[var(--ds-icon-information, #1D7AFC)]">
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-[var(--ds-background-success, rgba(13,148,136,0.15))] text-[var(--ds-icon-information)]">
                   Roadmap
                 </span>
               </div>
@@ -153,8 +153,8 @@ export default function TimelineView() {
                     className={cn(
                       'px-3 py-1.5 text-xs border-r last:border-r-0 transition-colors',
                       zoom === level
-                        ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white'
-                        : 'bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-gray-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-gray-50 dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]'
+                        ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white'
+                        : 'bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] text-gray-600 dark:text-[var(--ds-text-subtlest)] hover:bg-gray-50 dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1))]'
                     )}
                   >
                     {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -165,7 +165,7 @@ export default function TimelineView() {
               <Button
                 variant="outline"
                 onClick={() => setShowDependencies(!showDependencies)}
-                className={cn(showDependencies && 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]')}
+                className={cn(showDependencies && 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]')}
               >
                 <Link2 className="w-4 h-4 mr-2" />
                 Dependencies
@@ -210,10 +210,10 @@ export default function TimelineView() {
             <div className="relative" style={{ width: `${gridWidth}px`, minHeight: `${totalContentHeight}px` }}>
               {/* Today Marker */}
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[var(--ds-text-danger,#ef4444)] z-20"
+                className="absolute top-0 bottom-0 w-0.5 bg-[var(--ds-text-danger)] z-20"
                 style={{ left: `${todayPosition}px`, height: `${totalContentHeight}px` }}
               >
-                <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-semibold text-[var(--ds-text-danger,#ef4444)] whitespace-nowrap">
+                <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-semibold text-[var(--ds-text-danger)] whitespace-nowrap">
                   Today
                 </span>
               </div>
@@ -225,7 +225,7 @@ export default function TimelineView() {
                   <div
                     className="h-9 flex items-center px-3"
                     style={{
-                      background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)'
+                      background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)'
                     }}
                   >
                     <span className="text-white text-xs font-semibold">

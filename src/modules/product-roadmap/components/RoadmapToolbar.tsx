@@ -75,7 +75,7 @@ export function RoadmapToolbar({
   const handleTimelineFilterChange = onTimelineFilterChange ?? setLocalTimelineFilter;
 
   const hc = highContrast;
-  const borderColor = hc ? 'var(--ds-text, #172B4D)' : tokens.border.default;
+  const borderColor = hc ? 'var(--ds-text)' : tokens.border.default;
 
   return (
     <div 
@@ -143,9 +143,9 @@ export function RoadmapToolbar({
               onClick={() => onViewModeChange(k)}
               style={{
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
-                fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
-                color: viewMode === k ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : (hc ? 'var(--ds-text-subtle, #44546F)' : 'var(--ds-text-subtlest, #626F86)')),
-                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : (hc ? 'var(--ds-background-neutral, #F0F0F0)' : 'var(--ds-surface, #fff)')),
+                fontSize: 'var(--ds-font-size-100)', fontWeight: viewMode === k ? 600 : 500,
+                color: viewMode === k ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : (isDark ? 'var(--ds-text-subtlest)' : (hc ? 'var(--ds-text-subtle)' : 'var(--ds-text-subtlest)')),
+                background: viewMode === k ? ('var(--cp-primary-light)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : (hc ? 'var(--ds-background-neutral)' : 'var(--ds-surface)')),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
               }}
             >
@@ -155,7 +155,7 @@ export function RoadmapToolbar({
         </div>
 
         {/* Item count */}
-        <span className="text-sm ml-2" style={{ color: hc ? 'var(--ds-text-subtle, #44546F)' : tokens.text.muted }}>
+        <span className="text-sm ml-2" style={{ color: hc ? 'var(--ds-text-subtle)' : tokens.text.muted }}>
           {itemCount} {itemCount === 1 ? 'demand' : 'demands'}
         </span>
       </div>
@@ -210,11 +210,11 @@ export function RoadmapToolbar({
             onClick={onToggleHighContrast}
             className="h-9 gap-1.5"
             style={{
-              border: `${hc ? 2 : 1}px solid ${hc ? 'var(--ds-text, #172B4D)' : borderColor}`,
-              background: hc ? 'var(--ds-text, #172B4D)' : 'var(--ds-surface, #fff)',
-              color: hc ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtle, #44546F)',
+              border: `${hc ? 2 : 1}px solid ${hc ? 'var(--ds-text)' : borderColor}`,
+              background: hc ? 'var(--ds-text)' : 'var(--ds-surface)',
+              color: hc ? 'var(--ds-surface)' : 'var(--ds-text-subtle)',
               fontWeight: 600,
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
             }}
           >
             <Contrast className="w-3.5 h-3.5" />
@@ -250,7 +250,7 @@ export function RoadmapToolbar({
         {/* Create */}
         <button
           onClick={onOpenCreateDialog}
-          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white"
           data-create-button
         >
           <Plus className="w-4 h-4" />

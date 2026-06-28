@@ -24,21 +24,21 @@ describe('canonical status palette', () => {
   // Bold bgs render vivid in both light+dark. moved uses dark text (not inverse)
   // because #E2B203 amber with white text fails WCAG AA (~1.9:1).
   it('pins each status to its ADS bold background token', () => {
-    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold, #1F845A)');
-    expect(statusBg('success')).toBe('var(--ds-background-success-bold, #1F845A)');
-    expect(STATUS_TEXT).toBe('var(--ds-text, #172B4D)');
+    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold)');
+    expect(statusBg('success')).toBe('var(--ds-background-success-bold)');
+    expect(STATUS_TEXT).toBe('var(--ds-text)');
   });
 
   it('maps each category to its canonical ADS bold bg', () => {
-    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold, #1F845A)');
-    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information-bold, #0055CC)');
-    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral, #DFE1E6)');
+    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold)');
+    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information-bold)');
+    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral)');
   });
 
   it('pairs each status bg with its matching text token (WCAG-correct)', () => {
-    expect(statusFg('success')).toBe('var(--ds-text-inverse, #FFFFFF)');
-    expect(statusFg('inprogress')).toBe('var(--ds-text-inverse, #FFFFFF)');
-    expect(statusFg('default')).toBe('var(--ds-text, #172B4D)');
+    expect(statusFg('success')).toBe('var(--ds-text-inverse)');
+    expect(statusFg('inprogress')).toBe('var(--ds-text-inverse)');
+    expect(statusFg('default')).toBe('var(--ds-text)');
   });
 });
 

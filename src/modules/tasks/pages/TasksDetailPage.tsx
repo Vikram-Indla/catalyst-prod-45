@@ -89,7 +89,7 @@ export default function TasksDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtle, #5E6C84)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtle)' }}>
         Loading…
       </div>
     );
@@ -98,16 +98,16 @@ export default function TasksDetailPage() {
   if (!task) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12 }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #344054)' }}>Task not found</span>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>{taskKey} could not be found or has been deleted.</span>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>Task not found</span>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>{taskKey} could not be found or has been deleted.</span>
         {debugInfo && (
-          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, #DE350B)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger, #FFF5F5)', border: '1px solid var(--ds-border-danger, #FFCDD2)', borderRadius: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger)', border: '1px solid var(--ds-border-danger)', borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}
         <button
           onClick={handleClose}
-          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand)', color: 'var(--ds-surface)', border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer' }}
         >
           Back to tasks
         </button>

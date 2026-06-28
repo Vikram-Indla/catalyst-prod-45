@@ -136,7 +136,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 510,
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         display: 'flex',
         flexDirection: 'column',
         fontFamily:
@@ -174,13 +174,13 @@ export function UniversalWorkView({ params, onClose }: Props) {
             alignItems: 'center',
             gap: 8,
             padding: '8px 16px',
-            borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-            background: 'var(--ds-surface-sunken, #F8FAFC)',
-            fontSize: 12,
+            borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken))',
+            background: 'var(--ds-surface-sunken)',
+            fontSize: 'var(--ds-font-size-200)',
             flexWrap: 'wrap',
           }}
         >
-          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Filtered:</span>
+          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>Filtered:</span>
           {filterChips.map((c) => (
             <span
               key={c.label}
@@ -189,13 +189,13 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 alignItems: 'center',
                 gap: 4,
                 padding: '2px 8px',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                border: '1px solid var(--cp-border, var(--cp-bg-sunken))',
                 borderRadius: 3,
-                color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+                color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))',
               }}
             >
-              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{c.label}:</span>
+              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{c.label}:</span>
               <span style={{ fontWeight: 500 }}>{c.value}</span>
             </span>
           ))}

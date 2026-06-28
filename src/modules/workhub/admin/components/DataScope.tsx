@@ -90,7 +90,7 @@ export function DataScope() {
   }
 
   if (configLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -98,12 +98,12 @@ export function DataScope() {
       onClick={() => onChange(!checked)}
       style={{
         width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-        background: checked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-disabled, #CBD5E1)', position: 'relative', flexShrink: 0,
+        background: checked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-disabled)', position: 'relative', flexShrink: 0,
         transition: 'background .2s',
       }}
     >
       <span style={{
-        width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app, #fff)', position: 'absolute',
+        width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app)', position: 'absolute',
         top: 2, left: checked ? 18 : 2, transition: 'left .2s',
         boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.2))',
       }} />
@@ -111,7 +111,7 @@ export function DataScope() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
+    background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
   }
 
@@ -121,10 +121,10 @@ export function DataScope() {
   return (
     <div style={{ maxWidth: 900, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: 0 }}>
           Data Scope
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 4 }}>
           Select projects to sync and configure time window and data quality rules.
         </p>
       </div>
@@ -132,11 +132,11 @@ export function DataScope() {
       {/* Card 1: Included Projects */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: 0 }}>
             Included Projects
           </h2>
           <span style={{
-            fontSize: 10, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: '2px 8px',
+            fontSize: 'var(--ds-font-size-50)', background: 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600,
           }}>
             {activeCount} of {totalCount} active
@@ -146,7 +146,7 @@ export function DataScope() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {accessibleProjects.map(p => {
             const isOn = includedProjects.includes(p.key)
-            const color = WORKSTREAM_COLORS[p.key] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'
+            const color = WORKSTREAM_COLORS[p.key] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'
             return (
               <button
                 key={p.key}
@@ -154,8 +154,8 @@ export function DataScope() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
-                  background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                  borderColor: isOn ? 'var(--ds-background-information, #E9F2FF)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+                  background: isOn ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
+                  borderColor: isOn ? 'var(--ds-background-information)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
                 }}
@@ -163,11 +163,11 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isOn ? 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>
                   {p.name}
                 </span>
                 <span style={{
-                  fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+                  fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                 }}>
                   {p.key}
                 </span>
@@ -175,13 +175,13 @@ export function DataScope() {
             )
           })}
           {accessibleProjects.length === 0 && (
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No projects discovered. Test your Jira connection first.</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>No projects discovered. Test your Jira connection first.</span>
           )}
         </div>
 
         <button onClick={handleSaveProjects} disabled={batchUpdate.isPending} style={{
-          marginTop: 14, padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+          marginTop: 14, padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer',
           opacity: batchUpdate.isPending ? 0.6 : 1,
         }}>
           Save Projects
@@ -190,14 +190,14 @@ export function DataScope() {
 
       {/* Card 2: Sync Window */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: '0 0 14px' }}>
           Sync Window
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', width: 260 }}>Default lookback period:</label>
+          <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={1}>1 month</option>
             <option value={2}>2 months</option>
             <option value={3}>3 months</option>
@@ -205,27 +205,27 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', width: 260 }}>Maximum lookback (hard limit):</label>
+          <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={3}>3 months</option>
             <option value={6}>6 months</option>
           </select>
         </div>
 
         <div style={{
-          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 8,
+          background: 'var(--ds-background-selected)', border: '1px solid var(--ds-background-information)', borderRadius: 8,
           padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
         }}>
-          <span style={{ fontSize: 14 }}>ℹ️</span>
-          <p style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', margin: 0, lineHeight: 1.5 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)' }}>ℹ️</span>
+          <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-brand-bold-hovered)', margin: 0, lineHeight: 1.5 }}>
             Time-bounded sync: Catalyst only caches recent data from Jira within the configured lookback window. Older issues are not synced.
           </p>
         </div>
 
         <button onClick={handleSaveWindow} disabled={batchUpdate.isPending} style={{
-          padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+          padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer',
         }}>
           Save Window
         </button>
@@ -233,14 +233,14 @@ export function DataScope() {
 
       {/* Card 3: Data Quality Flags */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: '0 0 14px' }}>
           Data Quality Flags
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', width: 260 }}>Mark items stale after:</label>
+          <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={7}>7 days</option>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
@@ -248,9 +248,9 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', width: 260 }}>Mark items critical after:</label>
+          <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
             <option value={60}>60 days</option>
@@ -266,14 +266,14 @@ export function DataScope() {
           ].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Toggle checked={t.checked} onChange={t.onChange} />
-              <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{t.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>{t.label}</span>
             </div>
           ))}
         </div>
 
         <button onClick={handleSaveQuality} disabled={batchUpdate.isPending} style={{
-          padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+          padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer',
         }}>
           Save Quality Rules
         </button>

@@ -107,7 +107,7 @@ function highlight(text: string, q: string) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark style={{ background: 'var(--ds-background-warning, #FFF7D6)', color: 'inherit', padding: 0 }}>
+      <mark style={{ background: 'var(--ds-background-warning)', color: 'inherit', padding: 0 }}>
         {text.slice(idx, idx + q.length)}
       </mark>
       {text.slice(idx + q.length)}
@@ -288,7 +288,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         aria-selected={active}
         onMouseEnter={() => setActiveIndex(i)}
         onClick={() => r.activate()}
-        style={active ? { ...rowBase, background: token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)') } : rowBase}
+        style={active ? { ...rowBase, background: token('color.background.neutral.hovered', 'var(--ds-background-neutral)') } : rowBase}
       >
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           {content}
@@ -310,7 +310,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
             </span>
           )}
           {right && (
-            <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontFamily: 'var(--cp-font-body)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon-subtle)'), fontFamily: 'var(--cp-font-body)' }}>
               {right}
             </div>
           )}
@@ -329,9 +329,9 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       style={{
         width: '100%',
         maxHeight: '60vh',
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         borderRadius: 8,
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16)), 0 2px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
         display: 'flex',
         flexDirection: 'column',
@@ -343,7 +343,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '10px 16px',
-        borderBottom: `1px solid ${token('color.border', 'var(--ds-background-neutral, #F1F2F4)')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--ds-background-neutral)')}`,
         flexShrink: 0,
       }}>
         <FilterDropdown
@@ -371,10 +371,10 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         {suggestionRows.map((r) =>
           renderRow(r,
             <>
-              <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+              <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
                 <SearchIcon label="" />
               </div>
-              <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text)') }}>
                 {(r as any).label}
               </span>
             </>,
@@ -388,11 +388,11 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 16px 4px',
           }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
               {isSearching ? 'Results' : 'Recent'}
             </span>
             {isSearching && (
-              <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
                 {formatCount(searchResults.length, totalCount, !!hasNextPage)}
               </span>
             )}
@@ -413,12 +413,12 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
                 <WorkItemIcon type={iconType} size={18} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <strong style={{ fontWeight: 600 }}>{formatWorkItemKey(it.item_key)}</strong>
                   {': '}
                   {highlight(it.title, debouncedQuery)}
                 </div>
-                <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon-subtle)'), display: 'flex', alignItems: 'center', gap: 4 }}>
                   {typeLabel}{projectLabel ? ` • ${projectLabel}` : ''}
                   {it.assignee_name ? ` • ${it.assignee_name}` : ''}
                   {it.archived_at && (
@@ -446,7 +446,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
 
         {/* Empty state */}
         {isSearching && itemRows.length === 0 && !isFetchingNextPage && (
-          <div style={{ padding: '24px 16px', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 14 }}>
+          <div style={{ padding: '24px 16px', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-icon-subtle)'), fontSize: 'var(--ds-font-size-400)' }}>
             No results for "<strong>{debouncedQuery}</strong>"
           </div>
         )}

@@ -16,10 +16,10 @@ interface DefectTrendChartProps {
 }
 
 const SEVERITY_COLORS = {
-  blocker: 'var(--ds-text-danger, #dc2626)',  // Red-600
-  critical: 'var(--ds-background-warning-bold, #E2B203)', // Orange-600
-  major: 'var(--ds-text-warning, #d97706)',    // Amber-600
-  minor: 'var(--ds-chart-lime-bold, #65a30d)',    // Lime-600
+  blocker: 'var(--ds-text-danger)',  // Red-600
+  critical: 'var(--ds-background-warning-bold)', // Orange-600
+  major: 'var(--ds-text-warning)',    // Amber-600
+  minor: 'var(--ds-chart-lime-bold)',    // Lime-600
 };
 
 export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) {
@@ -61,23 +61,23 @@ export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) 
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
                 <XAxis 
                   dataKey="dateLabel" 
-                  tick={{ fontSize: 11 }} 
-                  stroke="var(--ds-text-disabled, #8590A2)"
+                  tick={{ fontSize: 'var(--ds-font-size-100)' }} 
+                  stroke="var(--ds-text-disabled)"
                 />
                 <YAxis 
-                  tick={{ fontSize: 11 }} 
-                  stroke="var(--ds-text-disabled, #8590A2)"
+                  tick={{ fontSize: 'var(--ds-font-size-100)' }} 
+                  stroke="var(--ds-text-disabled)"
                   allowDecimals={false}
                 />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'white', 
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: '8px',
-                    fontSize: '12px'
+                    fontSize: 'var(--ds-font-size-200)'
                   }}
                 />
                 <Legend 

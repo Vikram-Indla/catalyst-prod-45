@@ -28,7 +28,7 @@ import './login-styles.css';
 function CMarkSvg({ size = 32, className = '' }: { size?: number; className?: string }) {
   return (
     <svg className={className} width={size} height={size} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Catalyst">
-      <rect width="512" height="512" rx="129.62" fill="var(--ds-background-brand-bold, #1868DB)" />
+      <rect width="512" height="512" rx="129.62" fill="var(--ds-background-brand-bold)" />
       <path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="white" />
     </svg>
   );
@@ -394,7 +394,7 @@ export function CatalystLoginPage() {
             <button type="button" className="clmp-nav-btn" onClick={toggleLang} aria-label={lang === 'en' ? 'Switch to Arabic' : 'Switch to English'}>
               {lang === 'en' ? t(lang, 'nav.ar') : t(lang, 'nav.en')}
             </button>
-            <a className="clmp-btn clmp-btn-quiet" style={{ height: 34, fontSize: 13 }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
+            <a className="clmp-btn clmp-btn-quiet" style={{ height: 34, fontSize: 'var(--ds-font-size-300)' }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
             <button
               type="button"
               className="clmp-ham"
@@ -605,7 +605,7 @@ export function CatalystLoginPage() {
         <div className="clmp-container clmp-rv">
           <h2>{t(lang, 'final.title')}</h2>
           <p>{t(lang, 'final.sub')}</p>
-          <a className="clmp-btn clmp-btn-primary" style={{ height: 46, paddingInline: 32, fontSize: 15 }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
+          <a className="clmp-btn clmp-btn-primary" style={{ height: 46, paddingInline: 32, fontSize: 'var(--ds-font-size-400)' }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
         </div>
       </div>
 

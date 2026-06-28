@@ -113,13 +113,13 @@ export function PrintableTable<T extends { id: string }>({
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
               font-size: 10pt;
               line-height: 1.4;
-              color: var(--ds-surface-raised, #1a1a1a);
+              color: var(--ds-surface-raised);
             }
             
             .print-header {
               text-align: center;
               margin-bottom: 20px;
-              border-bottom: 2px solid var(--ds-border, #DFE1E6);
+              border-bottom: 2px solid var(--ds-border);
               padding-bottom: 16px;
             }
             
@@ -131,7 +131,7 @@ export function PrintableTable<T extends { id: string }>({
             
             .print-subtitle {
               font-size: 10pt;
-              color: var(--ds-text-subtlest, #666);
+              color: var(--ds-text-subtlest);
             }
             
             table {
@@ -150,14 +150,14 @@ export function PrintableTable<T extends { id: string }>({
             }
             
             th, td {
-              border: 1px solid var(--ds-background-neutral-hovered, #D4D4D4);
+              border: 1px solid var(--ds-background-neutral-hovered);
               padding: 6px 8px;
               text-align: left;
               vertical-align: top;
             }
             
             th {
-              background: var(--ds-surface-sunken, #F7F8F9);
+              background: var(--ds-surface-sunken);
               font-weight: 600;
               font-size: 9pt;
               text-transform: uppercase;
@@ -165,7 +165,7 @@ export function PrintableTable<T extends { id: string }>({
             }
             
             tr:nth-child(even) td {
-              background: var(--ds-surface-sunken, #FAFAFA);
+              background: var(--ds-surface-sunken);
             }
             
             .text-right {
@@ -179,9 +179,9 @@ export function PrintableTable<T extends { id: string }>({
             .print-footer {
               margin-top: 20px;
               padding-top: 12px;
-              border-top: 1px solid var(--ds-border, #DFE1E6);
+              border-top: 1px solid var(--ds-border);
               font-size: 9pt;
-              color: var(--ds-text-subtlest, #666);
+              color: var(--ds-text-subtlest);
               display: flex;
               justify-content: space-between;
             }

@@ -9,6 +9,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import {
   type EntityConfig,
   RELEASE_CONFIG,
@@ -154,6 +155,35 @@ export const useSprintProgressById   = (id: string) => useEntityProgressById(SPR
 export const useCreateSprint         = () => useCreateEntity(SPRINT_CONFIG);
 export const useUpdateSprint         = () => useUpdateEntity(SPRINT_CONFIG);
 export const useDeleteSprint         = () => useDeleteEntity(SPRINT_CONFIG);
+
+/**
+ * Sprint canonical update — same as useUpdateSprint but writes advisory audit
+ * when the status field changes (A-lite: ph_jira_sprints.status IS canonical).
+ */
+export function useCanonicalSprintUpdate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
+      const { error } = await (supabase as any)
+        .from(SPRINT_CONFIG.table)
+        .update(updates)
+        .eq('id', id);
+      if (error) throw new Error(error.message);
+      // Advisory audit for status changes (A-lite: status IS the canonical store).
+      if (updates.status) {
+        recordAdvisoryStatusChange({
+          entityKey: 'sprint', entityId: id, projectKey: null,
+          fromStatusRaw: null, toStatusRaw: updates.status, sourceSurface: 'sprint_manager',
+        }).catch(() => {/* advisory — non-blocking */});
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [SPRINT_CONFIG.queryKeyPrefix] });
+      catalystToast.success(`${SPRINT_CONFIG.label.singular} updated`);
+    },
+    onError: (err: Error) => catalystToast.error(err.message),
+  });
+}
 
 // Re-export RELEASE_CONFIG-bound wrappers for symmetry (existing callsites
 // still use useWHReleases from useReleases.ts; both paths work).

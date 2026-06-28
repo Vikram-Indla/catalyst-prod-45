@@ -19,23 +19,23 @@ export function getInitials(name: string): string {
  * Brand Colors - Catalyst V5 compliant
  */
 export const BRAND_COLORS = {
-  primary: 'var(--ds-link, #2563eb)',      // Blue - Primary buttons, group headers
-  primaryHover: 'var(--ds-link-pressed, #1d4ed8)', // Blue hover
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',         // Teal - Avatars, available, FAB
-  orange: 'var(--ds-background-warning-bold, #f97316)',       // Orange - At capacity, utilization
-  orangeDark: 'var(--ds-background-warning-bold, #E2B203)',   // Orange dark for timeline
-  red: 'var(--ds-background-danger-bold, #dc2626)',          // Red - Over allocated
+  primary: 'var(--ds-link)',      // Blue - Primary buttons, group headers
+  primaryHover: 'var(--ds-link-pressed)', // Blue hover
+  teal: 'var(--ds-chart-teal-bold)',         // Teal - Avatars, available, FAB
+  orange: 'var(--ds-background-warning-bold)',       // Orange - At capacity, utilization
+  orangeDark: 'var(--ds-background-warning-bold)',   // Orange dark for timeline
+  red: 'var(--ds-background-danger-bold)',          // Red - Over allocated
   grey: {
-    50: 'var(--ds-surface-sunken, #FAFAFA)',
-    100: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-    200: 'var(--ds-border, #DFE1E6)',
-    300: 'var(--ds-background-neutral-hovered, #D4D4D4)',
-    400: 'var(--ds-text-disabled, #8590A2)',
-    500: 'var(--ds-text-subtlest, #626F86)',
-    600: 'var(--ds-text-subtle, #44546F)',
-    700: 'var(--ds-text-subtle, #44546F)',
-    800: 'var(--ds-text, #172B4D)',
-    900: 'var(--ds-text, #172B4D)',
+    50: 'var(--ds-surface-sunken)',
+    100: 'var(--ds-background-neutral-subtle)',
+    200: 'var(--ds-border)',
+    300: 'var(--ds-background-neutral-hovered)',
+    400: 'var(--ds-text-disabled)',
+    500: 'var(--ds-text-subtlest)',
+    600: 'var(--ds-text-subtle)',
+    700: 'var(--ds-text-subtle)',
+    800: 'var(--ds-text)',
+    900: 'var(--ds-text)',
   }
 } as const;
 
@@ -49,7 +49,7 @@ export const AVATAR_COLOR = BRAND_COLORS.teal;
  */
 export const DEPARTMENT_BADGE = {
   bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
-  text: 'var(--ds-link, #2563eb)',
+  text: 'var(--ds-link)',
 };
 
 /**

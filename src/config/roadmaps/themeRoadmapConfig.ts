@@ -159,7 +159,7 @@ export const themeRoadmapConfig: RoadmapConfig = {
 
 header: {
     icon: 'TH',
-    iconGradient: 'linear-gradient(135deg, var(--cp-workstream-catalyst-primary, #2563eb), var(--ds-background-information-bold, #0C66E4))',
+    iconGradient: 'linear-gradient(135deg, var(--cp-workstream-catalyst-primary), var(--ds-background-information-bold))',
   },
 
   legend: {

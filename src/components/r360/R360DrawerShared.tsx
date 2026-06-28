@@ -9,23 +9,23 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 
 // ── Colour tokens ──
-export const INK1 = 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
-export const INK2 = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
-export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-export const MUTED = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
-export const SUCCESS = 'var(--ds-text-success, var(--cp-success, #16A34A))';
-export const WARNING = 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-export const DANGER = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-export const BRAND = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+export const INK1 = 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))';
+export const INK2 = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))';
+export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
+export const MUTED = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
+export const SUCCESS = 'var(--ds-text-success, var(--cp-success))';
+export const WARNING = 'var(--ds-text-warning, var(--cp-warning))';
+export const DANGER = 'var(--ds-text-danger, var(--cp-danger))';
+export const BRAND = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
 export const BORDER = 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))';
 export const BORDER_LIGHT = 'var(--ds-shadow-overlay, rgba(15,23,42,0.06))';
-export const SLATE = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+export const SLATE = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
 
 export const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
-  Bug:      { color: 'var(--ds-background-danger-bold, #C9372C)', opacity: 0.75 },
-  Story:    { color: 'var(--ds-background-success-bold, #1F845A)', opacity: 0.80 },
-  Subtask:  { color: 'var(--ds-link, #0C66E4)', opacity: 0.75 },
-  Incident: { color: 'var(--ds-background-danger-bold, #C9372C)', opacity: 0.50 },
+  Bug:      { color: 'var(--ds-background-danger-bold)', opacity: 0.75 },
+  Story:    { color: 'var(--ds-background-success-bold)', opacity: 0.80 },
+  Subtask:  { color: 'var(--ds-link)', opacity: 0.75 },
+  Incident: { color: 'var(--ds-background-danger-bold)', opacity: 0.50 },
 };
 
 // ── Panel stack types ──
@@ -48,7 +48,7 @@ export function Skeleton({ h = 20, w = '100%', r = 4 }: { h?: number; w?: string
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500,
+      fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
       textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 12,
     }}>{children}</div>
   );
@@ -56,18 +56,18 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export function R360StatusLozenge({ status }: { status: string }) {
   const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
-  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
-  let color = 'var(--ds-text-subtle, #42526E)';
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
+  let color = 'var(--ds-text-subtle)';
   if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
-    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+    bg = 'var(--cp-lozenge-green-bg)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
   } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
-    bg = 'var(--ds-link, #0C66E4)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+    bg = 'var(--ds-link)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
   }
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       backgroundColor: bg, color,
-      fontSize: '11px', fontWeight: 700,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
       letterSpacing: '0.03em', textTransform: 'uppercase' as const,
       padding: '0 6px', height: '20px', borderRadius: '4px',
       lineHeight: '20px', whiteSpace: 'nowrap' as const,
@@ -106,14 +106,14 @@ export function FilteredListPanel({
           border: 'none', cursor: 'pointer', padding: 0,
         }}>
           <ChevronLeft size={16} color={INK4} />
-          <span style={{ fontSize: 13, color: INK2 }}>Back</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK2 }}>Back</span>
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: INK1 }}>{label}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: INK1 }}>{label}</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center',
-            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)',
-            fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '4px',
+            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '4px',
           }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
         </div>
       </div>
@@ -125,7 +125,7 @@ export function FilteredListPanel({
             gap: 8, padding: '48px 16px',
           }}>
             <Inbox size={24} color={MUTED} />
-            <span style={{ fontSize: 13, color: INK4 }}>No items found</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK4 }}>No items found</span>
           </div>
         ) : (
           items.map((item: any, idx: number) => (
@@ -143,13 +143,13 @@ export function FilteredListPanel({
               <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
               </span>
-              <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
               <span style={{
-                flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
+                flex: 1, fontSize: 'var(--ds-font-size-300)', color: INK2, overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
               }}>{item.title}</span>
               <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
-              <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relTime(item.updated_at)}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED, flexShrink: 0 }}>{relTime(item.updated_at)}</span>
             </div>
           ))
         )}
@@ -195,9 +195,9 @@ export function ItemDetailPanel({
           border: 'none', cursor: 'pointer', padding: 0,
         }}>
           <ChevronLeft size={16} color={INK4} />
-          <span style={{ fontSize: 13, color: INK2 }}>{backLabel}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK2 }}>{backLabel}</span>
         </button>
-        <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{itemKey}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{itemKey}</span>
       </div>
       {/* Body */}
       <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
@@ -211,23 +211,23 @@ export function ItemDetailPanel({
         ) : !detail ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '48px 0' }}>
             <Inbox size={24} color={MUTED} />
-            <span style={{ fontSize: 13, color: INK4 }}>Item not found</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK4 }}>Item not found</span>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* Type + Key */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <JiraIssueTypeIcon type={detail.type || 'Task'} size={16} />
-              <span style={{ fontSize: 13, fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{detail.key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{detail.key}</span>
             </div>
 
             {/* Title */}
-            <div style={{ fontSize: 16, fontWeight: 650, color: INK1, lineHeight: 1.4 }}>{detail.title}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: INK1, lineHeight: 1.4 }}>{detail.title}</div>
 
             {/* Status + Priority */}
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <R360StatusLozenge status={detail.status} />
-              <span style={{ fontSize: 12, color: INK4 }}>Priority: {detail.priority}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: INK4 }}>Priority: {detail.priority}</span>
             </div>
 
             {/* Metadata grid */}
@@ -247,8 +247,8 @@ export function ItemDetailPanel({
                   height: 50, padding: '0 14px',
                   borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 }}>
-                  <span style={{ fontSize: 12, color: INK4 }}>{row.label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: INK1 }}>{row.value}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: INK4 }}>{row.label}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: INK1 }}>{row.value}</span>
                 </div>
               ))}
             </div>
@@ -256,17 +256,17 @@ export function ItemDetailPanel({
             {/* Parent */}
             {detail.parentKey && (
               <div style={{ border: '1px solid var(--divider)', borderRadius: 8, padding: '10px 14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>PARENT</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>PARENT</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{detail.parentKey}</span>
-                  <span style={{ fontSize: 13, color: INK2 }}>{detail.parentName || '—'}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{detail.parentKey}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK2 }}>{detail.parentName || '—'}</span>
                 </div>
               </div>
             )}
 
             {/* Days Sitting Progress */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>TIME IN ASSIGNMENT</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>TIME IN ASSIGNMENT</div>
               <div style={{ height: 6, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 4,
@@ -275,7 +275,7 @@ export function ItemDetailPanel({
                   transition: 'width 300ms',
                 }} />
               </div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 4 }}>{daysSitting}d sitting · {daysSitting >= 29 ? 'Critical' : daysSitting >= 15 ? 'Aging' : 'Healthy'}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED, marginTop: 4 }}>{daysSitting}d sitting · {daysSitting >= 29 ? 'Critical' : daysSitting >= 15 ? 'Aging' : 'Healthy'}</div>
             </div>
           </div>
         )}

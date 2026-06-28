@@ -211,7 +211,7 @@ function MentionRow({
             background: 'var(--cv2-bg-row-active)',
             color: 'var(--cv2-text-subtle)',
             borderRadius: 4,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           📣
@@ -226,7 +226,7 @@ function MentionRow({
       )}
       <span
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           whiteSpace: 'nowrap',
@@ -239,7 +239,7 @@ function MentionRow({
       )}
       <span
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--cv2-text-muted)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -251,7 +251,7 @@ function MentionRow({
       </span>
       <span
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: 'var(--cv2-text-muted)',
           background: active ? 'var(--cv2-bg-row-active)' : 'transparent',
           padding: active ? '2px 8px' : '0',

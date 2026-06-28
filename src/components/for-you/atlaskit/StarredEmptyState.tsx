@@ -37,25 +37,25 @@ interface StarredEmptyStateProps {
   onBrowseFilters?: () => void;
 }
 
-const STAR_GOLD = 'var(--ds-icon-warning, #E2B203)';
-const BLUE_BG = 'var(--ds-background-information, #E9F2FE)';
-const BLUE_FG = 'var(--ds-icon-information, #1868DB)';
-const BLUE_TXT = 'var(--ds-text-information, #0055CC)';
-const PURPLE_BG = 'var(--ds-background-accent-purple-subtler, #F3F0FF)';
-const PURPLE_FG = 'var(--ds-icon-accent-purple, #5E4DB2)';
-const GREEN_BG = 'var(--ds-background-accent-green-subtler, #DCFFF1)';
-const GREEN_FG = 'var(--ds-icon-accent-green, #216E4E)';
-const ORANGE_BG = 'var(--ds-background-accent-orange-subtler, #FFF3D6)';
-const ORANGE_FG = 'var(--ds-icon-accent-orange, #974F0C)';
-const RED_BG = 'var(--ds-background-accent-red-subtler, #FFECEB)';
-const RED_FG = 'var(--ds-icon-accent-red, #AE2E24)';
+const STAR_GOLD = 'var(--ds-icon-warning)';
+const BLUE_BG = 'var(--ds-background-information)';
+const BLUE_FG = 'var(--ds-icon-information)';
+const BLUE_TXT = 'var(--ds-text-information)';
+const PURPLE_BG = 'var(--ds-background-accent-purple-subtler)';
+const PURPLE_FG = 'var(--ds-icon-accent-purple)';
+const GREEN_BG = 'var(--ds-background-accent-green-subtler)';
+const GREEN_FG = 'var(--ds-icon-accent-green)';
+const ORANGE_BG = 'var(--ds-background-accent-orange-subtler)';
+const ORANGE_FG = 'var(--ds-icon-accent-orange)';
+const RED_BG = 'var(--ds-background-accent-red-subtler)';
+const RED_FG = 'var(--ds-icon-accent-red)';
 
-const SURFACE = 'var(--ds-surface, #FFFFFF)';
-const SUNKEN = 'var(--ds-surface-sunken, #F7F8F9)';
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const TEXT = 'var(--ds-text, #172B4D)';
-const TEXT_SUBTLE = 'var(--ds-text-subtle, #44546F)';
-const TEXT_SUBTLEST = 'var(--ds-text-subtlest, #626F86)';
+const SURFACE = 'var(--ds-surface)';
+const SUNKEN = 'var(--ds-surface-sunken)';
+const BORDER = 'var(--ds-border)';
+const TEXT = 'var(--ds-text)';
+const TEXT_SUBTLE = 'var(--ds-text-subtle)';
+const TEXT_SUBTLEST = 'var(--ds-text-subtlest)';
 const BODY_FONT = 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif';
 
 function Tile({ bg, fg, icon, label, hint }: { bg: string; fg: string; icon: React.ReactNode; label: string; hint: string }) {
@@ -63,8 +63,8 @@ function Tile({ bg, fg, icon, label, hint }: { bg: string; fg: string; icon: Rea
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', border: `1px solid ${BORDER}`, borderRadius: 8 }}>
       <span style={{ width: 28, height: 28, borderRadius: 6, background: bg, color: fg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</span>
       <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>{label}</p>
-        <p style={{ margin: 0, fontSize: 11, color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>{hint}</p>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>{label}</p>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>{hint}</p>
       </div>
     </div>
   );
@@ -78,7 +78,7 @@ function GhostRow({ bg, fg, icon, badge, badgeBg, badgeTxt, w1, w2 }: { bg: stri
         <div style={{ width: w1, height: 9, borderRadius: 4, background: SUNKEN }} />
         <div style={{ width: w2, height: 7, borderRadius: 4, background: SUNKEN, marginTop: 4 }} />
       </div>
-      <span style={{ fontSize: 10, padding: '4px 8px', borderRadius: 6, background: badgeBg, color: badgeTxt, fontFamily: BODY_FONT }}>{badge}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-50)', padding: '4px 8px', borderRadius: 6, background: badgeBg, color: badgeTxt, fontFamily: BODY_FONT }}>{badge}</span>
       <Star size={14} color={STAR_GOLD} fill={STAR_GOLD} />
     </div>
   );
@@ -87,7 +87,7 @@ function GhostRow({ bg, fg, icon, badge, badgeBg, badgeTxt, w1, w2 }: { bg: stri
 export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }: StarredEmptyStateProps) {
   const ctaBase: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-    padding: '8px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+    padding: '8px 16px', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
     cursor: 'pointer', fontFamily: BODY_FONT,
   };
 
@@ -99,11 +99,11 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
           <span style={{ position: 'relative', width: 52, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
             <Star size={38} color={STAR_GOLD} fill={STAR_GOLD} />
             <span style={{ position: 'absolute', bottom: 0, right: -2, width: 20, height: 20, borderRadius: '50%', background: BLUE_FG, border: `2px solid ${SURFACE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Plus size={11} color="var(--ds-text-inverse, #FFFFFF)" />
+              <Plus size={11} color="var(--ds-text-inverse)" />
             </span>
           </span>
-          <p style={{ margin: 0, fontSize: 18, fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>Build your starred shortcuts</p>
-          <p data-testid="starred-empty-description" style={{ margin: '8px 0 0', fontSize: 14, color: TEXT_SUBTLE, lineHeight: 1.5, maxWidth: 420, fontFamily: BODY_FONT }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-600)', fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>Build your starred shortcuts</p>
+          <p data-testid="starred-empty-description" style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-400)', color: TEXT_SUBTLE, lineHeight: 1.5, maxWidth: 420, fontFamily: BODY_FONT }}>
             Star anything you return to often — boards, backlogs, filters, dashboards, products, or work items. It lands here and pins to your sidebar.
           </p>
         </div>
@@ -116,7 +116,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '16px 0 8px' }}>
-          <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: 0.4, color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>PREVIEW</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, letterSpacing: 0.4, color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>PREVIEW</span>
           <span style={{ flex: 1, height: 1, background: BORDER }} />
         </div>
 
@@ -126,7 +126,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16 }}>
-          <button type="button" onClick={onBrowseWork} style={{ ...ctaBase, flex: 1, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none' }}>
+          <button type="button" onClick={onBrowseWork} style={{ ...ctaBase, flex: 1, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none' }}>
             <Search size={15} />Browse work to star
           </button>
           <button type="button" onClick={onOpenBoard} style={{ ...ctaBase, background: 'transparent', color: TEXT, border: `1px solid ${BORDER}` }}>
@@ -139,7 +139,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
           )}
         </div>
 
-        <p style={{ margin: '16px 0 0', fontSize: 12, color: TEXT_SUBTLEST, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontFamily: BODY_FONT }}>
+        <p style={{ margin: '16px 0 0', fontSize: 'var(--ds-font-size-200)', color: TEXT_SUBTLEST, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontFamily: BODY_FONT }}>
           Look for the <Star size={13} color={STAR_GOLD} /> on any board, backlog, filter, or work item
         </p>
 

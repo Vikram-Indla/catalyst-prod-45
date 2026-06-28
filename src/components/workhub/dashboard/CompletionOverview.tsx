@@ -33,7 +33,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 600,
           color: 'var(--fg-1)',
           margin: 0,
@@ -44,7 +44,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           onClick={() => navigate('/projecthub/workitems')}
           style={{
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
@@ -75,7 +75,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         gap: 8,
         marginTop: 10,
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--fg-3)',
         flexWrap: 'wrap',
       }}>
@@ -103,14 +103,14 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           percent={kpis.overall_completion_percent}
           size={60}
           strokeWidth={5}
-          color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))"
+          color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
         />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <button
             onClick={() => navigate('/projecthub/themes')}
             style={{
               fontFamily: 'var(--cp-font-body)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--fg-3)',
               background: 'none',
               border: 'none',
@@ -126,7 +126,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
             onClick={() => navigate('/projecthub/resource360')}
             style={{
               fontFamily: 'var(--cp-font-body)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--fg-3)',
               background: 'none',
               border: 'none',
@@ -140,7 +140,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           </button>
           <span style={{
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: kpis.blocked_items > 0 ? 'var(--sem-danger)' : 'var(--fg-3)',
           }}>
             Blocked: <strong>{kpis.blocked_items}</strong>

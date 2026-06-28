@@ -46,7 +46,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
             style={{
               width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
-              fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+              fontSize: 'var(--ds-font-size-200)', color: tk.textPrimary, background: tk.inputBg,
               outline: 'none', fontFamily: 'var(--cp-font-body)',
               boxSizing: 'border-box',
             }}
@@ -59,11 +59,11 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
         {KANBAN_COLUMNS.map(col => {
           const statuses = col.statuses.filter(s => !q || s.toLowerCase().includes(q));
           if (statuses.length === 0) return null;
-          const categoryDot = col.category === 'done' ? 'var(--ds-text-success, #006644)' : col.category === 'in_progress' ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #44546F)';
+          const categoryDot = col.category === 'done' ? 'var(--ds-text-success)' : col.category === 'in_progress' ? 'var(--ds-link-pressed)' : 'var(--ds-text-subtle)';
           return (
             <div key={col.id}>
               <div style={{
-                padding: '6px 12px 2px', fontSize: 10, fontWeight: 700,
+                padding: '6px 12px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                 textTransform: 'uppercase', color: tk.textDisabled,
                 letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 8,
               }}>
@@ -85,7 +85,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
                       width: '100%', padding: '6px 12px', border: 'none',
                       background: isCurrent ? tk.dropHighlight : 'transparent',
                       cursor: isCurrent ? 'default' : 'pointer',
-                      fontSize: 12, color: isCurrent ? tk.selectedAccent : tk.textPrimary,
+                      fontSize: 'var(--ds-font-size-200)', color: isCurrent ? tk.selectedAccent : tk.textPrimary,
                       fontWeight: isCurrent ? 600 : 400,
                       fontFamily: 'var(--cp-font-body)', textAlign: 'left',
                     }}

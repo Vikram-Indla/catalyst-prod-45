@@ -26,10 +26,10 @@ export function RoadmapToolbar({
       padding: '0 24px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)',
     }}>
       <div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
           Ideas Roadmap
         </div>
-        <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: -1 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: -1 }}>
           FY 2026 delivery pipeline
         </div>
       </div>
@@ -37,9 +37,9 @@ export function RoadmapToolbar({
       <div style={{ flex: 1 }} />
 
       {/* Stat pills — EC-04: grey when 0 committed */}
-      <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ display: 'flex', gap: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
         <span style={{
-          background: hasCommitted ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-1)',
+          background: hasCommitted ? 'var(--ds-background-success)' : 'var(--bg-1)',
           color: hasCommitted ? 'var(--sem-success)' : 'var(--fg-4)',
           padding: '4px 10px', borderRadius: 100,
         }}>
@@ -59,10 +59,10 @@ export function RoadmapToolbar({
             key={v}
             onClick={() => onViewChange(v)}
             style={{
-              padding: '4px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
+              padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, border: 'none', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)', outline: 'none', transition: 'all 150ms',
               background: view === v ? 'var(--bg-app)' : 'transparent',
-              color: view === v ? 'var(--ds-text, #172B4D)' : 'var(--fg-3)',
+              color: view === v ? 'var(--ds-text)' : 'var(--fg-3)',
               boxShadow: view === v ? '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.06))' : 'none',
             }}
           >
@@ -77,14 +77,14 @@ export function RoadmapToolbar({
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '4px 10px', borderRadius: 100, border: '1px solid var(--divider)',
-          background: committedOnly ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-app)', cursor: 'pointer',
-          fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+          background: committedOnly ? 'var(--ds-background-success)' : 'var(--bg-app)', cursor: 'pointer',
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
           color: committedOnly ? 'var(--sem-success)' : 'var(--fg-3)', transition: 'all 150ms',
         }}
       >
         <span style={{
           width: 28, height: 16, borderRadius: 8, position: 'relative',
-          background: committedOnly ? 'var(--sem-success)' : 'var(--ds-text-disabled, #CBD5E1)',
+          background: committedOnly ? 'var(--sem-success)' : 'var(--ds-text-disabled)',
           display: 'inline-block', transition: 'background 150ms',
         }}>
           <span style={{
@@ -104,18 +104,18 @@ export function RoadmapToolbar({
         background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
-        <MonitorPlay size={15} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
+        <MonitorPlay size={15} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" />
       </button>
       <button onClick={onGantt} title="Gantt view" style={{
         width: 32, height: 32, borderRadius: 6, border: '1px solid var(--divider)',
         background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
-        <BarChart3 size={15} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
+        <BarChart3 size={15} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" />
       </button>
       <button onClick={onExport} style={{
         height: 32, padding: '8px 12px', borderRadius: 6, border: 'none',
-        background: 'var(--ds-text, #172B4D)', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
+        background: 'var(--ds-text)', color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
         fontFamily: 'var(--cp-font-body)', cursor: 'pointer', transition: 'all 150ms',
       }}>
         Export PPTX

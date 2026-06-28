@@ -123,20 +123,20 @@ function useResourceUtilById(id: string) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  'To Do': 'var(--ds-text-subtlest, #94a3b8)',
-  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'In Review': 'var(--ds-background-discovery-bold, #7C3AED)',
-  'Done': 'var(--ds-text-success, #16a34a)',
-  'Blocked': 'var(--ds-text-danger, #ef4444)',
-  'Cancelled': 'var(--ds-text-subtlest, #626F86)',
+  'To Do': 'var(--ds-text-subtlest)',
+  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'In Review': 'var(--ds-background-discovery-bold)',
+  'Done': 'var(--ds-text-success)',
+  'Blocked': 'var(--ds-text-danger)',
+  'Cancelled': 'var(--ds-text-subtlest)',
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': 'var(--ds-link-pressed, #1e40af)',
-  'Story': 'var(--ds-text-success, #216E4E)',
-  'Sub-task': 'var(--ds-background-discovery, #312e81)',
-  'Bug': 'var(--ds-text-danger, #dc2626)',
-  'Task': 'var(--ds-chart-teal-bold, #0d9488)',
+  'Epic': 'var(--ds-link-pressed)',
+  'Story': 'var(--ds-text-success)',
+  'Sub-task': 'var(--ds-background-discovery)',
+  'Bug': 'var(--ds-text-danger)',
+  'Task': 'var(--ds-chart-teal-bold)',
 };
 
 export function ResourceDetail() {
@@ -164,7 +164,7 @@ export function ResourceDetail() {
     padding: '6px 16px',
     borderRadius: 9999,
     border: 'none',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     cursor: 'pointer',
     background: active ? 'var(--cp-blue)' : 'var(--bg-1)',
@@ -176,7 +176,7 @@ export function ResourceDetail() {
   if (loadingUtil || !utilData) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div style={{ color: 'var(--fg-4)', fontSize: 14 }}>Loading resource...</div>
+        <div style={{ color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-400)' }}>Loading resource...</div>
       </div>
     );
   }
@@ -193,7 +193,7 @@ export function ResourceDetail() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: 13, color: 'var(--cp-blue)',
+            fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)',
             fontFamily: 'var(--cp-font-body)', marginBottom: 16,
             padding: 0,
           }}
@@ -202,7 +202,7 @@ export function ResourceDetail() {
           Back to Resource 360
         </button>
 
-        <div style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 500 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 500 }}>
           ProjectHub &gt; Resource 360 &gt; {r.name}
         </div>
 
@@ -211,18 +211,18 @@ export function ResourceDetail() {
           <AvatarChip name={r.name} color={r.color} size={48} avatarUrl={r.avatar_url} />
           <div>
             <h1 style={{
-              fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700,
+              fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700,
               color: 'var(--fg-1)', margin: 0,
             }}>
               {r.name}
             </h1>
-            <div style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-3)', marginTop: 2 }}>
               {r.role || 'Team Member'} · {r.department || 'Unassigned'} · {r.capacity_hours_per_week}h/wk
             </div>
             {r.email && (
               <a
                 href={`mailto:${r.email}`}
-                style={{ fontSize: 13, color: 'var(--cp-blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 2 }}
+                style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 2 }}
               >
                 <Mail style={{ width: 12, height: 12 }} />
                 {r.email}
@@ -238,7 +238,7 @@ export function ResourceDetail() {
           borderBottom: '1px solid var(--divider)',
           marginBottom: 16,
         }}>
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-4)', alignSelf: 'center', marginRight: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-4)', alignSelf: 'center', marginRight: 4 }}>
             FILTER:
           </span>
           <button onClick={() => setStatusFilter('all')} style={pillStyle(statusFilter === 'all')}>
@@ -269,9 +269,9 @@ export function ResourceDetail() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
                 <kpi.icon style={{ width: 13, height: 13, color: 'var(--fg-4)' }} />
-                <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>{kpi.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>{kpi.label}</span>
               </div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
             </div>
           ))}
         </div>
@@ -284,14 +284,14 @@ export function ResourceDetail() {
         {/* Work Items Table */}
         <div style={{ marginBottom: 24 }}>
           <h2 style={{
-            fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 600,
+            fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
             color: 'var(--fg-1)', marginBottom: 12,
           }}>
             Jira Issues ({filtered.length})
           </h2>
 
           {loadingItems ? (
-            <div style={{ padding: 32, textAlign: 'center', color: 'var(--fg-4)', fontSize: 13 }}>
+            <div style={{ padding: 32, textAlign: 'center', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)' }}>
               Loading issues...
             </div>
           ) : filtered.length === 0 ? (
@@ -300,7 +300,7 @@ export function ResourceDetail() {
               background: 'var(--cp-float)',
               border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-lg, 8px)',
-              color: 'var(--fg-4)', fontSize: 14,
+              color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-400)',
             }}>
               No issues found for this filter.
             </div>
@@ -310,13 +310,13 @@ export function ResourceDetail() {
               borderRadius: 'var(--wh-radius-lg, 8px)',
               overflow: 'hidden',
             }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--divider)', background: 'var(--bg-1)' }}>
                     {['KEY', 'TYPE', 'SUMMARY', 'STATUS', 'PRIORITY', 'DUE DATE', 'PROJECT', 'SPRINT'].map(h => (
                       <th key={h} style={{
                         padding: '10px 12px', textAlign: 'left',
-                        fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase',
                         color: 'var(--fg-4)', letterSpacing: '0.04em',
                       }}>
                         {h}
@@ -333,7 +333,7 @@ export function ResourceDetail() {
                         style={{
                           height: 44,
                           borderBottom: '1px solid var(--bg-1)',
-                          background: overdue ? 'var(--ds-background-danger, #fef2f2)' : 'var(--cp-float)',
+                          background: overdue ? 'var(--ds-background-danger)' : 'var(--cp-float)',
                           transition: 'background 100ms',
                         }}
                         className="wh-detail-row"
@@ -344,7 +344,7 @@ export function ResourceDetail() {
                         <td style={{ padding: '8px 12px' }}>
                           <span style={{
                             display: 'inline-block', padding: '2px 8px', borderRadius: 4,
-                            fontSize: 11, fontWeight: 600,
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                             backgroundColor: (TYPE_COLORS[item.issue_type] || 'var(--fg-4)') + '18',
                             color: TYPE_COLORS[item.issue_type] || 'var(--fg-4)',
                           }}>
@@ -361,14 +361,14 @@ export function ResourceDetail() {
                         <td style={{ padding: '8px 12px' }}>
                           <span style={{
                             display: 'inline-block', padding: '2px 8px', borderRadius: 4,
-                            fontSize: 11, fontWeight: 600,
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                             backgroundColor: (STATUS_COLORS[item.status] || 'var(--fg-4)') + '18',
                             color: STATUS_COLORS[item.status] || 'var(--fg-4)',
                           }}>
                             {item.status}
                           </span>
                         </td>
-                        <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }}>
+                        <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
                           {item.priority || '—'}
                         </td>
                         <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
@@ -385,10 +385,10 @@ export function ResourceDetail() {
                             <span style={{ color: 'var(--fg-4)' }}>—</span>
                           )}
                         </td>
-                        <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 12, color: 'var(--fg-3)' }}>
+                        <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
                           {item.project_key || '—'}
                         </td>
-                        <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }}>
+                        <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
                           {item.sprint_name || '—'}
                         </td>
                       </tr>
@@ -397,7 +397,7 @@ export function ResourceDetail() {
                 </tbody>
               </table>
               {filtered.length > 100 && (
-                <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center', borderTop: '1px solid var(--bg-1)' }}>
+                <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', textAlign: 'center', borderTop: '1px solid var(--bg-1)' }}>
                   Showing first 100 of {filtered.length} issues
                 </div>
               )}

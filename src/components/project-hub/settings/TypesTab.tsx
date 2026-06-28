@@ -26,10 +26,10 @@ interface WorkType {
 }
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  top:   { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, #7C3AED)' },
-  mid:   { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link, #2563eb)' },
-  work:  { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
-  child: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))' },
+  top:   { bg: 'var(--ds-background-discovery)', text: 'var(--cp-purple-60)' },
+  mid:   { bg: 'var(--ds-background-information)', text: 'var(--ds-link)' },
+  work:  { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken))', text: 'var(--cp-ink-2, var(--cp-ink-2))' },
+  child: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken))', text: 'var(--cp-ink-4, var(--cp-border-neutral-light))' },
 };
 
 const COL_WIDTHS = {
@@ -77,7 +77,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
       <div className="ph-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px 12px' }}>
           <h3 className="ph-card-title" style={{ marginBottom: 2 }}>Work Types</h3>
-          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+          <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', margin: 0 }}>
             Configure the workflow, field layout, and screens used by each work type.
           </p>
         </div>
@@ -89,7 +89,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
             gridTemplateColumns: `${COL_WIDTHS.type}px ${COL_WIDTHS.level}px 1fr 1fr 1fr ${COL_WIDTHS.actions}px`,
             borderTop: '1px solid var(--divider)',
             borderBottom: '1px solid var(--divider)',
-            background: 'var(--ds-surface-sunken, #F8FAFC)',
+            background: 'var(--ds-surface-sunken)',
             padding: '0 20px',
           }}
         >
@@ -98,7 +98,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
               key={h}
               style={{
                 padding: '8px 8px 8px 0',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
@@ -114,11 +114,11 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
 
         {/* Table body */}
         {isLoading ? (
-          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>
             Loading…
           </div>
         ) : types.length === 0 ? (
-          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>
             No work types configured
           </div>
         ) : (
@@ -135,17 +135,17 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                       gridTemplateColumns: `${COL_WIDTHS.type}px ${COL_WIDTHS.level}px 1fr 1fr 1fr ${COL_WIDTHS.actions}px`,
                       padding: '0 20px',
                       borderBottom: i < types.length - 1 ? '1px solid var(--divider)' : 'none',
-                      background: isSelected ? 'var(--ds-background-selected, #EFF6FF)' : 'transparent',
+                      background: isSelected ? 'var(--ds-background-selected)' : 'transparent',
                       opacity: disabled ? 0.45 : 1,
                       transition: 'background 80ms',
                     }}
-                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken,#F8FAFC)'; }}
+                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken)'; }}
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                   >
                     {/* Work type — icon + name */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 8px 12px 0', minWidth: 0 }}>
                       <WorkItemTypeIcon type={t.icon} size={18} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.name}
                       </span>
                     </div>
@@ -154,7 +154,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0' }}>
                       <span
                         style={{
-                          fontSize: 10, fontWeight: 600, padding: '2px 8px',
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 8px',
                           borderRadius: 10, background: ls.bg, color: ls.text,
                           whiteSpace: 'nowrap',
                         }}
@@ -165,21 +165,21 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
 
                     {/* Workflow */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.workflow_name ?? '—'}
                       </span>
                     </div>
 
                     {/* Field config */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.field_config}
                       </span>
                     </div>
 
                     {/* Screen */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.screen_name ?? '—'}
                       </span>
                     </div>
@@ -187,16 +187,16 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     {/* Actions */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {disabled ? (
-                        <span style={{ fontSize: 10, fontStyle: 'italic', color: 'var(--fg-4)' }}>Off</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-50)', fontStyle: 'italic', color: 'var(--fg-4)' }}>Off</span>
                       ) : (
                         <button
                           onClick={() => setSelectedTypeId(isSelected ? null : t.id)}
                           style={{
                             width: 28, height: 28, border: 'none', borderRadius: 4,
-                            background: isSelected ? 'var(--ds-background-selected-bold,var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
+                            background: isSelected ? 'var(--ds-background-selected-bold,var(--cp-workstream-catalyst-primary))' : 'transparent',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: isSelected ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-3)',
-                            fontSize: 16, fontWeight: 700, lineHeight: 1,
+                            color: isSelected ? 'var(--ds-text-inverse)' : 'var(--fg-3)',
+                            fontSize: 'var(--ds-font-size-500)', fontWeight: 700, lineHeight: 1,
                             transition: 'background 80ms',
                           }}
                           title="Configure fields"

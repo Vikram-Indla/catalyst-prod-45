@@ -229,14 +229,14 @@ export function EditStatusModal({
                                 borderRadius: 4,
                                 border: isSelected
                                   ? `2px solid ${catColor}`
-                                  : '2px solid var(--ds-border, #DFE1E6)',
+                                  : '2px solid var(--ds-border)',
                                 background: isSelected
                                   ? `${catColor}18`
-                                  : 'var(--ds-surface, #FFFFFF)',
+                                  : 'var(--ds-surface)',
                                 cursor: 'pointer',
                                 fontSize: 13,
                                 fontWeight: isSelected ? 600 : 400,
-                                color: isSelected ? catColor : 'var(--ds-text, #172B4D)',
+                                color: isSelected ? catColor : 'var(--ds-text)',
                               }}
                               aria-pressed={isSelected}
                             >
@@ -268,11 +268,11 @@ export function EditStatusModal({
                               height: 28,
                               borderRadius: 4,
                               background: color,
-                              border: '1px solid var(--ds-border, #DFE1E6)',
+                              border: '1px solid var(--ds-border)',
                               flexShrink: 0,
                             }}
                           />
-                          <span style={{ fontSize: 13, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                          <span style={{ fontSize: 13, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle)' }}>
                             {color}
                           </span>
                         </div>
@@ -315,7 +315,7 @@ export function EditStatusModal({
               {/* Tab 1 — Work item types */}
               <TabPanel>
                 <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', margin: 0 }}>
+                  <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: 0 }}>
                     Select which work item types this status is available for. Unchecked types won't see this status in their workflow.
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -336,12 +336,12 @@ export function EditStatusModal({
               <TabPanel>
                 <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {consumers.length === 0 ? (
-                    <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', margin: 0 }}>
+                    <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest)', margin: 0 }}>
                       This status has no active consumers.
                     </p>
                   ) : (
                     <>
-                      <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', margin: 0 }}>
+                      <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: 0 }}>
                         The following application surfaces currently use this status:
                       </p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -353,23 +353,23 @@ export function EditStatusModal({
                               alignItems: 'center',
                               justifyContent: 'space-between',
                               padding: '8px 12px',
-                              border: '1px solid var(--ds-border, #DFE1E6)',
+                              border: '1px solid var(--ds-border)',
                               borderRadius: 4,
-                              background: 'var(--ds-surface, #FFFFFF)',
+                              background: 'var(--ds-surface)',
                             }}
                           >
-                            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text)' }}>
                               {CONSUMER_LABELS[c.consumer] ?? c.consumer}
                             </span>
                             {c.detail && (
-                              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
                                 {c.detail}
                               </span>
                             )}
                           </div>
                         ))}
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', margin: 0 }}>
+                      <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: 0 }}>
                         Deleting this status is disabled while it has consumers.
                       </p>
                     </>

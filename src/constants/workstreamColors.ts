@@ -19,18 +19,18 @@
  *   import { WORKSTREAM_COLORS } from '@/constants/workstreamColors';
  */
 export const WORKSTREAM_COLORS: Record<string, string> = {
-  BAU:  'var(--ds-background-discovery-bold, #6E5DC6)',
-  ICP:  'var(--ds-background-discovery-bold, #6E5DC6)',
-  SIMP: 'var(--ds-background-warning-bold, #FA8C16)',
-  MDT:  'var(--ds-background-success-bold, #52C41A)',
-  MWR:  'var(--ds-chart-teal-bold, #13C2C2)',
-  IRP:  'var(--ds-background-accent-magenta-bolder, #EB2F96)',
-  IP:   'var(--ds-chart-teal-bold, #36CFC9)',
-  TAH:  'var(--ds-background-information-bold, #2F54EB)',
+  BAU:  'var(--ds-background-discovery-bold)',
+  ICP:  'var(--ds-background-discovery-bold)',
+  SIMP: 'var(--ds-background-warning-bold)',
+  MDT:  'var(--ds-background-success-bold)',
+  MWR:  'var(--ds-chart-teal-bold)',
+  IRP:  'var(--ds-background-accent-magenta-bolder)',
+  IP:   'var(--ds-chart-teal-bold)',
+  TAH:  'var(--ds-background-information-bold)',
 };
 
 /** Fallback for any key not in the map — neutral, theme-aware. */
-export const WORKSTREAM_COLOR_DEFAULT = 'var(--ds-text-subtlest, #626F86)';
+export const WORKSTREAM_COLOR_DEFAULT = 'var(--ds-text-subtlest)';
 
 export const workstreamColor = (key: string): string =>
   WORKSTREAM_COLORS[key?.toUpperCase?.()] ?? WORKSTREAM_COLOR_DEFAULT;

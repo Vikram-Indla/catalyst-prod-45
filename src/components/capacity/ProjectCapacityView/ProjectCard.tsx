@@ -64,12 +64,12 @@ export function ProjectCard({ utilization, onViewDetails, onResourceClick }: Pro
         </div>
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
+            <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
             <span className="text-muted-foreground">{formatFTE(committedFTE)} committed</span>
           </div>
           {forecastFTE > 0 && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-[var(--ds-text-subtlest, #626F86)]" />
+              <div className="w-2 h-2 rounded-full bg-[var(--ds-text-subtlest)]" />
               <span className="text-muted-foreground">{formatFTE(forecastFTE)} forecast</span>
             </div>
           )}
@@ -86,13 +86,13 @@ export function ProjectCard({ utilization, onViewDetails, onResourceClick }: Pro
           />
           {/* Committed bar */}
           <div
-            className="absolute top-0 bottom-0 left-0 rounded-l-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] transition-all"
+            className="absolute top-0 bottom-0 left-0 rounded-l-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] transition-all"
             style={{ width: `${committedWidth}%` }}
           />
           {/* Forecast bar */}
           {forecastWidth > 0 && (
             <div
-              className="absolute top-0 bottom-0 bg-[var(--ds-text-subtlest, #626F86)] transition-all"
+              className="absolute top-0 bottom-0 bg-[var(--ds-text-subtlest)] transition-all"
               style={{ 
                 left: `${committedWidth}%`,
                 width: `${forecastWidth}%` 

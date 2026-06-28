@@ -28,28 +28,28 @@ interface ColorSwatch {
 const PALETTE: ColorSwatch[] = [
   // Row 1 — subtle
   { name: 'No fill', value: null },
-  { name: 'Subtle gray', value: 'var(--ds-background-neutral, #F1F2F4)' },
-  { name: 'Subtle red', value: 'var(--ds-background-danger, #FFECEB)' },
+  { name: 'Subtle gray', value: 'var(--ds-background-neutral)' },
+  { name: 'Subtle red', value: 'var(--ds-background-danger)' },
   { name: 'Subtle orange', value: '#FFEFD6' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  { name: 'Subtle yellow', value: 'var(--ds-background-warning, #FFF7D6)' },
+  { name: 'Subtle yellow', value: 'var(--ds-background-warning)' },
   // Row 2 — light
-  { name: 'Light green', value: 'var(--ds-background-success, #DFFCF0)' },
+  { name: 'Light green', value: 'var(--ds-background-success)' },
   { name: 'Light teal', value: '#E6FCFF' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  { name: 'Light blue', value: 'var(--ds-background-information, #E9F2FF)' },
-  { name: 'Light purple', value: 'var(--ds-background-discovery, #F3F0FF)' },
+  { name: 'Light blue', value: 'var(--ds-background-information)' },
+  { name: 'Light purple', value: 'var(--ds-background-discovery)' },
   { name: 'Light pink', value: '#FFE5F2' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   // Row 3 — medium
-  { name: 'Medium gray', value: 'var(--ds-text-disabled, #8590A2)' },
+  { name: 'Medium gray', value: 'var(--ds-text-disabled)' },
   { name: 'Medium blue', value: '#B8DAFF' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   { name: 'Medium violet', value: '#C0B6F2' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   { name: 'Medium magenta', value: '#FFB8E6' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   { name: 'Medium mint', value: '#B8E8C9' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   // Row 4 — bold / dark
-  { name: 'Bold gray', value: 'var(--ds-text-subtlest, #626F86)' },
-  { name: 'Bold red', value: 'var(--ds-background-danger-bold, #C9372C)' },
-  { name: 'Bold orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Bold yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Bold green', value: 'var(--ds-background-success-bold, #1F845A)' },
+  { name: 'Bold gray', value: 'var(--ds-text-subtlest)' },
+  { name: 'Bold red', value: 'var(--ds-background-danger-bold)' },
+  { name: 'Bold orange', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Bold yellow', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Bold green', value: 'var(--ds-background-success-bold)' },
 ];
 
 interface Props {
@@ -93,9 +93,9 @@ export function BackgroundPickerItem({
             ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
             : 'transparent',
           color: disabled
-            ? 'var(--ds-text-disabled, #B3B9C4)'
-            : 'var(--ds-text, #292A2E)',
-          fontSize: 13,
+            ? 'var(--ds-text-disabled)'
+            : 'var(--ds-text)',
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 400,
           cursor: disabled ? 'not-allowed' : 'pointer',
           textAlign: 'start',
@@ -117,7 +117,7 @@ export function BackgroundPickerItem({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
             flexShrink: 0,
           }}
         >
@@ -129,7 +129,7 @@ export function BackgroundPickerItem({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
           }}
         >
           <ColorSwatchBox color={currentColor} />
@@ -158,8 +158,8 @@ function ColorSwatchBox({ color }: { color: string | null }) {
         width: 14,
         height: 14,
         borderRadius: 3,
-        background: color ?? 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: color ?? 'var(--ds-surface)',
+        border: '1px solid var(--ds-border)',
         display: 'inline-block',
       }}
     />
@@ -212,8 +212,8 @@ function PalettePopover({
         position: 'fixed',
         top: pos.top,
         left: pos.left,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         padding: 8,
@@ -269,10 +269,10 @@ function SwatchButton({
         height: 22,
         padding: 0,
         border: selected
-          ? '2px solid var(--ds-link, #0C66E4)'
-          : '1px solid var(--ds-border, #DFE1E6)',
+          ? '2px solid var(--ds-link)'
+          : '1px solid var(--ds-border)',
         borderRadius: 4,
-        background: swatch.value ?? 'var(--ds-surface, #FFFFFF)',
+        background: swatch.value ?? 'var(--ds-surface)',
         cursor: 'pointer',
       }}
     />

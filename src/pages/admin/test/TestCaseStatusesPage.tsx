@@ -59,14 +59,14 @@ export default function TestCaseStatusesPage() {
         }
       />
 
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle)', margin: '4px 0 24px' }}>
         Test case lifecycle statuses are system-defined. Contact your administrator to change the workflow.
       </p>
 
       {/* Lifecycle flow diagram */}
       <div style={{
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-sunken)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 8,
         padding: '16px 20px',
         marginBottom: 24,
@@ -75,12 +75,12 @@ export default function TestCaseStatusesPage() {
         gap: 8,
         flexWrap: 'wrap',
       }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginRight: 4 }}>Lifecycle:</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginRight: 4 }}>Lifecycle:</span>
         {CASE_STATUSES.map((s, i) => (
           <React.Fragment key={s.value}>
             <Lozenge appearance={s.appearance}>{s.label}</Lozenge>
             {i < CASE_STATUSES.length - 1 && (
-              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>→</span>
+              <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 14 }}>→</span>
             )}
           </React.Fragment>
         ))}
@@ -92,10 +92,10 @@ export default function TestCaseStatusesPage() {
           <div
             key={s.value}
             style={{
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 8,
               padding: '16px 20px',
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--ds-surface)',
               display: 'grid',
               gridTemplateColumns: '160px 1fr auto',
               alignItems: 'start',
@@ -104,22 +104,22 @@ export default function TestCaseStatusesPage() {
           >
             <div>
               <Lozenge appearance={s.appearance}>{s.label}</Lozenge>
-              <div style={{ marginTop: 6, fontSize: 11, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <div style={{ marginTop: 6, fontSize: 11, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtlest)' }}>
                 {s.value}
               </div>
             </div>
             <div>
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text)', lineHeight: 1.5 }}>
                 {s.description}
               </p>
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 6 }}>
                 CAN MOVE TO
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {s.transitions.length === 0 ? (
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>—</span>
                 ) : s.transitions.map(to => {
                   const target = CASE_STATUSES.find(x => x.value === to);
                   return target ? (
@@ -132,7 +132,7 @@ export default function TestCaseStatusesPage() {
         ))}
       </div>
 
-      <p style={{ marginTop: 24, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+      <p style={{ marginTop: 24, fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
         These statuses are built into the Test Hub platform. Custom status workflows are not supported in this release.
       </p>
     </div>

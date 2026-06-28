@@ -39,12 +39,12 @@ function EventCard({ event, onClick }: { event: CalendarEvent; onClick: () => vo
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: event.event_color, flexShrink: 0 }} />
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {event.event_title}
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12, color: 'var(--fg-3)', marginBottom: 8, paddingLeft: 16 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginBottom: 8, paddingLeft: 16 }}>
         <span>{event.event_status}</span>
         {event.event_start && event.event_end && (
           <span>
@@ -57,7 +57,7 @@ function EventCard({ event, onClick }: { event: CalendarEvent; onClick: () => vo
       </div>
 
       <div style={{ paddingLeft: 16 }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', cursor: 'pointer' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)', cursor: 'pointer' }}>
           View {event.event_type === 'release' ? 'Release' : event.event_type === 'theme' ? 'Theme' : 'Item'} <ArrowRight style={{ width: 12, height: 12 }} />
         </span>
       </div>
@@ -69,7 +69,7 @@ function SectionHeader({ icon: Icon, label }: { icon: React.ComponentType<{ styl
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, marginTop: 16 }}>
       <Icon style={{ width: 16, height: 16, color: 'var(--fg-3)' }} />
-      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', fontFamily: 'var(--wh-font-sans)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-3)', fontFamily: 'var(--wh-font-sans)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {label}
       </span>
     </div>
@@ -99,7 +99,7 @@ export function CalendarEventDrawer({ isOpen, onClose, dateStr, events }: Props)
       width={380}
     >
       {events.length === 0 ? (
-        <p style={{ color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)', fontSize: 14, textAlign: 'center', padding: '32px 0' }}>
+        <p style={{ color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)', fontSize: 'var(--ds-font-size-400)', textAlign: 'center', padding: '32px 0' }}>
           No events on this date.
         </p>
       ) : (

@@ -136,16 +136,16 @@ export const WorkstreamRow: React.FC<{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '16px',
+              fontSize: 'var(--ds-font-size-500)',
               fontWeight: 700,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               flexShrink: 0,
             }}
           >
             {workstream.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <div style={{ fontSize: '15px', fontWeight: 600, color: COLORS.textPrimary }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: COLORS.textPrimary }}>
               {workstream.name}
             </div>
             <div
@@ -153,14 +153,14 @@ export const WorkstreamRow: React.FC<{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontSize: '12px',
+                fontSize: 'var(--ds-font-size-200)',
                 color: COLORS.textMuted,
               }}
             >
               <span
                 style={{
                   fontFamily: '"SF Mono", Monaco, monospace',
-                  fontSize: '11px',
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 500,
                   backgroundColor: COLORS.surfaceHover,
                   padding: '2px 6px',
@@ -210,9 +210,9 @@ export const WorkstreamRow: React.FC<{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '11px',
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
-                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     flexShrink: 0,
                   }}
                 >
@@ -220,7 +220,7 @@ export const WorkstreamRow: React.FC<{
                 </div>
                 <span
                   style={{
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 500,
                     color: COLORS.textPrimary,
                   }}
@@ -234,7 +234,7 @@ export const WorkstreamRow: React.FC<{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   color: COLORS.textLight,
                 }}
               >
@@ -272,7 +272,7 @@ export const WorkstreamRow: React.FC<{
             padding: '4px 10px',
             backgroundColor: healthConfig.bg,
             borderRadius: '6px',
-            fontSize: '12px',
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: healthConfig.color,
           }}
@@ -294,7 +294,7 @@ export const WorkstreamRow: React.FC<{
         style={{
           padding: '16px 20px',
           textAlign: 'center',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           color: COLORS.textSecondary,
         }}
@@ -307,7 +307,7 @@ export const WorkstreamRow: React.FC<{
         style={{
           padding: '16px 20px',
           textAlign: 'center',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 600,
           color: (workstream.overdueCount || 0) > 0 ? COLORS.danger : COLORS.textLight,
         }}
@@ -334,7 +334,7 @@ export const WorkstreamRow: React.FC<{
             backgroundColor: (workstream.members?.length || 0) > 0 ? COLORS.accentLighter : 'transparent',
             border: `1px solid ${(workstream.members?.length || 0) > 0 ? COLORS.accent : COLORS.borderLight}`,
             borderRadius: '14px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             color: (workstream.members?.length || 0) > 0 ? COLORS.accent : COLORS.textMuted,
             cursor: 'pointer',

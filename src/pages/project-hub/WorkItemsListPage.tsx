@@ -240,7 +240,7 @@ export default function WorkItemsListPage() {
   const assignees = useMemo(() => {
     const seen = new Set<string>();
     const result: { name: string; color: string }[] = [];
-    const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+    const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-success, var(--cp-success))'];
     for (const item of items) {
       if (item.assignee_name && !seen.has(item.assignee_name)) {
         seen.add(item.assignee_name);
@@ -253,7 +253,7 @@ export default function WorkItemsListPage() {
   }, [items]);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', minHeight: '100%' }}>
       {/* Sync Banner — conflictCount from real DB */}
       {!bannerDismissed && (
         <SyncBanner
@@ -268,11 +268,11 @@ export default function WorkItemsListPage() {
       <div style={{ paddingInline: token('space.300', '24px'), paddingBlock: token('space.200', '16px'), maxWidth: 1400, marginInline: 'auto' }}>
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), marginBlockEnd: token('space.150', '12px') }}>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>ProjectHub</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>List</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>ProjectHub</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-disabled)' }}>/</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-disabled)' }}>/</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>List</span>
         </div>
 
         {/* Page header */}
@@ -282,8 +282,8 @@ export default function WorkItemsListPage() {
             onClick={() => setSyncDrawerOpen(true)}
             style={{
               height: 32, paddingInline: token('space.150', '12px'), borderRadius: 4,
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, background: 'none',
-              fontSize: 11, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`, background: 'none',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle)'),
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
             }}
@@ -330,7 +330,7 @@ export default function WorkItemsListPage() {
 
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBlock: token('space.600', '80px') }}>
-            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
           </div>
         ) : (
           <WorkItemsTable

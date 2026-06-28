@@ -2,14 +2,14 @@ import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { WorkItemTypeIcon } from '@/components/icons';
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  Top: { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, #7C3AED)' },
-  Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  Work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
-  Child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  top: { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, #7C3AED)' },
-  mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
-  child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  Top: { bg: 'var(--ds-background-discovery)', text: 'var(--cp-purple-60)' },
+  Mid: { bg: 'var(--ds-background-selected)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  Work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' },
+  Child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
+  top: { bg: 'var(--ds-background-discovery)', text: 'var(--cp-purple-60)' },
+  mid: { bg: 'var(--ds-background-selected)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' },
+  child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
 };
 
 interface TypeRowProps {
@@ -31,29 +31,29 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
 
   return (
     <div
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken)] transition-colors"
       style={{ height: 48, opacity: isDisabledFeature ? 0.5 : 1 }}
     >
       {/* Work item type icon — canonical, no colored circles (A3) */}
       <WorkItemTypeIcon type={icon} size={20} />
 
       {/* Name */}
-      <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>
+      <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)' }}>
         {name}
       </span>
 
       {/* Level badge */}
       <span
         className="flex-shrink-0 rounded-full"
-        style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: ls.bg, color: ls.text }}
+        style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 10px', background: ls.bg, color: ls.text }}
       >
         {normalizedLevel}
       </span>
 
       {/* Item count or disabled label */}
-      <span className="flex-shrink-0 text-right" style={{ fontSize: 12, color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? 'var(--cp-font-body)' : 'var(--cp-font-mono)' }}>
+      <span className="flex-shrink-0 text-right" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? 'var(--cp-font-body)' : 'var(--cp-font-mono)' }}>
         {isDisabledFeature ? (
-          <span style={{ fontSize: 11, fontStyle: 'italic' }}>Disabled — enable Feature Layer</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontStyle: 'italic' }}>Disabled — enable Feature Layer</span>
         ) : (
           itemCount
         )}
@@ -63,7 +63,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       <div className="relative">
         <button
           onClick={onViewFields}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >

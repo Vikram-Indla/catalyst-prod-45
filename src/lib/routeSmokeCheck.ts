@@ -83,12 +83,12 @@ export async function runRouteSmokeCheck(): Promise<RouteCheckResult> {
   if (failed.length === 0) {
     console.info(
       `%c[RouteCheck] ✅ ${total} route modules loaded cleanly in ${result.durationMs}ms`,
-      'color:var(--ds-background-success-bold, #1F845A);font-weight:600',
+      'color:var(--ds-background-success-bold);font-weight:600',
     );
   } else {
     console.group(
       `%c[RouteCheck] ❌ ${failed.length}/${total} route modules failed (${result.durationMs}ms)`,
-      'color:var(--ds-background-danger-bold, #dc2626);font-weight:600',
+      'color:var(--ds-background-danger-bold);font-weight:600',
     );
     for (const f of failed) console.error(`✗ ${f.path}\n   → ${f.error}`);
     console.info('Full report: window.__catalystRouteCheckResult');

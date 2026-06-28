@@ -32,7 +32,7 @@ export const TimelineTimeHeader: React.FC<TimelineTimeHeaderProps> = ({ scrollLe
               className="flex items-center justify-center border-r border-border text-muted-foreground"
               style={{
                 width: pg.span * colWidth,
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
@@ -58,7 +58,7 @@ export const TimelineTimeHeader: React.FC<TimelineTimeHeaderProps> = ({ scrollLe
                 )}
                 style={{
                   width: colWidth,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: isCurrent ? 600 : 500,
                 }}
               >

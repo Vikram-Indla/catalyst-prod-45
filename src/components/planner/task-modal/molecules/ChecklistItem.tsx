@@ -36,7 +36,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         gap: '14px',
         padding: '14px 16px',
         backgroundColor: completed ? COLORS.surfacePage : COLORS.surfaceCard,
-        border: `1px solid ${isHovered ? 'var(--ds-text-disabled, #cbd5e1)' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'}`,
+        border: `1px solid ${isHovered ? 'var(--ds-text-disabled)' : 'var(--ds-border, var(--cp-bg-sunken))'}`,
         borderRadius: '12px',
         transition: 'all 0.15s ease'
         // NO box-shadow on hover for checklist items - FIX 5
@@ -52,7 +52,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
       <span
         style={{
           flex: 1,
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           color: completed ? COLORS.textMuted : COLORS.textPrimary,
           textDecoration: completed ? 'line-through' : 'none'
         }}

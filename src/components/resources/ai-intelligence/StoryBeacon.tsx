@@ -53,7 +53,7 @@ export const StoryBeacon: React.FC<Props> = ({ hook, onScrollToStory }) => {
         <span style={{ fontStyle: 'italic', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           "{displayHook}"
         </span>
-        <span style={{ fontSize: 10, opacity: 0.7 }}>↓ عربي</span>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', opacity: 0.7 }}>↓ عربي</span>
       </div>
     </div>
   );

@@ -271,9 +271,9 @@ export function InlineCreateWithAI({
           {(suggestions.length > 0 || aiLoading) && (
             <>
               <div className="sp-create-section-label">
-                <Sparkles size={11} color="var(--cp-purple-60, #7C3AED)" />
+                <Sparkles size={11} color="var(--cp-purple-60)" />
                 <span>Suggestions</span>
-                {aiLoading && <Loader2 size={11} className="animate-spin" color="var(--cp-purple-60, #7C3AED)" />}
+                {aiLoading && <Loader2 size={11} className="animate-spin" color="var(--cp-purple-60)" />}
               </div>
               {suggestions.map((s, i) => {
                 const active = highlight?.kind === 'suggestion' && highlight.index === i;
@@ -286,7 +286,7 @@ export function InlineCreateWithAI({
                     className={`sp-create-option ${active ? 'is-active' : ''}`}
                     onClick={() => { onCreate(s); setDraft(''); }}
                   >
-                    <Sparkles size={12} color="var(--cp-purple-60, #7C3AED)" />
+                    <Sparkles size={12} color="var(--cp-purple-60)" />
                     <span>{s}</span>
                   </button>
                 );
@@ -299,9 +299,9 @@ export function InlineCreateWithAI({
             <>
               {(suggestions.length > 0 || aiLoading) && <div className="sp-pop-divider" />}
               <div className="sp-create-section-label">
-                <Search size={11} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                <Search size={11} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
                 <span>Choose existing</span>
-                {searchLoading && <Loader2 size={11} className="animate-spin" color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />}
+                {searchLoading && <Loader2 size={11} className="animate-spin" color="var(--ds-text-subtlest, var(--cp-text-secondary))" />}
               </div>
               {existing.map((r, i) => {
                 const active = highlight?.kind === 'existing' && highlight.index === i;
@@ -315,7 +315,7 @@ export function InlineCreateWithAI({
                     onClick={() => { onLinkExisting(r.id); setDraft(''); }}
                   >
                     <JiraIssueTypeIcon type={r.issue_type} size={14} />
-                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-selected, #1868DB)', marginRight: 8 }}>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-selected)', marginRight: 8 }}>
                       {r.issue_key}
                     </span>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

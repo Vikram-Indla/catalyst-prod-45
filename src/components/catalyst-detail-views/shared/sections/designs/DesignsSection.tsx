@@ -112,22 +112,22 @@ export function DesignsSection({ workItemId }: DesignsSectionProps) {
             cursor: 'pointer',
             padding: 0,
             borderRadius: 3,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
           }}
         >
           {expanded
-            ? <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
-            : <ChevronRightIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
+            ? <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
+            : <ChevronRightIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
           }
         </button>
 
         <h2
           style={{
             margin: 0,
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 653,
             lineHeight: '20px',
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
             fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -151,7 +151,7 @@ export function DesignsSection({ workItemId }: DesignsSectionProps) {
             cursor: 'pointer',
             padding: 0,
             borderRadius: 3,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
@@ -160,7 +160,7 @@ export function DesignsSection({ workItemId }: DesignsSectionProps) {
             e.currentTarget.style.background = 'transparent';
           }}
         >
-          <AddIcon label="" color="var(--ds-text-subtle, #505258)" />
+          <AddIcon label="" color="var(--ds-text-subtle)" />
         </button>
       </div>
 

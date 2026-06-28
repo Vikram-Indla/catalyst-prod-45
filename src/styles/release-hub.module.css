@@ -19,33 +19,33 @@
   --rh-type-micro: 10px;
 
   /* Colors */
-  --rh-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --rh-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
-  --rh-teal: var(--ds-background-accent-teal-bolder, #14b8a6);
-  --rh-teal-bg: var(--ds-background-success, #DCFFF1);
-  --rh-success: var(--ds-text-success, #22C55E);
-  --rh-success-bg: var(--ds-background-success, #DFFCF0);
-  --rh-warning: var(--ds-text-warning, var(--cp-amber, #F59E0B));
-  --rh-warning-bg: var(--ds-background-warning, #FFF7D6);
-  --rh-danger: var(--ds-text-danger, #EF4444);
-  --rh-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --rh-ai-primary: var(--ds-background-discovery-bold, #8b5cf6);
+  --rh-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --rh-primary-hover: var(--ds-background-brand-bold-hovered);
+  --rh-teal: var(--ds-background-accent-teal-bolder);
+  --rh-teal-bg: var(--ds-background-success);
+  --rh-success: var(--ds-text-success);
+  --rh-success-bg: var(--ds-background-success);
+  --rh-warning: var(--ds-text-warning, var(--cp-amber));
+  --rh-warning-bg: var(--ds-background-warning);
+  --rh-danger: var(--ds-text-danger);
+  --rh-danger-bg: var(--ds-background-danger);
+  --rh-ai-primary: var(--ds-background-discovery-bold);
 
   /* Backgrounds */
-  --rh-bg-page: var(--ds-surface-sunken, #F8FAFC);
-  --rh-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --rh-bg-muted: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
+  --rh-bg-page: var(--ds-surface-sunken);
+  --rh-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --rh-bg-muted: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
 
   /* Text */
-  --rh-text-primary: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
-  --rh-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --rh-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
-  --rh-text-muted: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
+  --rh-text-primary: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)));
+  --rh-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --rh-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)));
+  --rh-text-muted: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)));
 
   /* Borders */
-  --rh-border-subtle: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
-  --rh-border-default: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
-  --rh-border-strong: var(--ds-text-disabled, #CBD5E1);
+  --rh-border-subtle: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
+  --rh-border-default: var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
+  --rh-border-strong: var(--ds-text-disabled);
 
   /* Spacing */
   --rh-space-1: 4px;
@@ -254,7 +254,7 @@
   padding: 0 14px;
   font-size: var(--rh-type-body-sm);
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
   background: linear-gradient(135deg, var(--rh-primary), var(--rh-primary-hover));
   border: none;
   border-radius: var(--rh-radius-md);
@@ -293,8 +293,8 @@
   padding: 0 14px;
   font-size: var(--rh-type-body-sm);
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
-  background: linear-gradient(135deg, var(--rh-success), var(--ds-text-success, var(--cp-success, #16A34A)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
+  background: linear-gradient(135deg, var(--rh-success), var(--ds-text-success, var(--cp-success)));
   border: none;
   border-radius: var(--rh-radius-md);
   cursor: pointer;
@@ -458,15 +458,15 @@
 }
 .healthChipHealthy {
   background: var(--rh-success-bg);
-  color: var(--ds-background-success-bold, #1F845A);
+  color: var(--ds-background-success-bold);
 }
 .healthChipAtRisk {
   background: var(--rh-warning-bg);
-  color: var(--ds-background-warning-bold, #b45309);
+  color: var(--ds-background-warning-bold);
 }
 .healthChipCritical {
   background: var(--rh-danger-bg);
-  color: var(--ds-text-danger, var(--cp-danger, #DC2626));
+  color: var(--ds-text-danger, var(--cp-danger));
 }
 
 /* ─── Status Badge ─── */
@@ -488,16 +488,16 @@
   border-radius: var(--rh-radius-full);
 }
 .statusPlanned { background: var(--rh-bg-muted); color: var(--rh-text-tertiary); }
-.statusPlanned .statusDot { background: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))); }
-.statusDevelopment { background: var(--ds-background-selected, #EFF6FF); color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
-.statusDevelopment .statusDot { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
-.statusStaging { background: var(--rh-teal-bg); color: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488)); }
+.statusPlanned .statusDot { background: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light))); }
+.statusDevelopment { background: var(--ds-background-selected); color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); }
+.statusDevelopment .statusDot { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); }
+.statusStaging { background: var(--rh-teal-bg); color: var(--cp-teal-60, var(--ds-chart-teal-bold)); }
 .statusStaging .statusDot { background: var(--rh-teal); }
-.statusTesting { background: var(--rh-warning-bg); color: var(--ds-background-warning-bold, #b45309); }
+.statusTesting { background: var(--rh-warning-bg); color: var(--ds-background-warning-bold); }
 .statusTesting .statusDot { background: var(--rh-warning); }
-.statusUat { background: var(--ds-background-warning, #FFF7D6); color: var(--ds-text-danger, #AE2A19); }
-.statusUat .statusDot { background: var(--ds-background-warning-bold, #E2B203); }
-.statusReleased { background: var(--rh-success-bg); color: var(--ds-background-success-bold, #1F845A); }
+.statusUat { background: var(--ds-background-warning); color: var(--ds-text-danger); }
+.statusUat .statusDot { background: var(--ds-background-warning-bold); }
+.statusReleased { background: var(--rh-success-bg); color: var(--ds-background-success-bold); }
 .statusReleased .statusDot { background: var(--rh-success); }
 
 /* ─── Overdue Badge ─── */
@@ -643,7 +643,7 @@
   font-family: var(--rh-font-mono);
   font-size: var(--rh-type-micro);
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
   overflow: hidden;
   cursor: pointer;
   transition: opacity var(--rh-duration) var(--rh-ease);
@@ -659,7 +659,7 @@
   left: 0;
   top: 0;
   height: 100%;
-  background: var(--ds-border-bold, #454545);
+  background: var(--ds-border-bold);
   border-radius: var(--rh-radius-sm) 0 0 var(--rh-radius-sm);
 }
 .todayLine {
@@ -688,7 +688,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--rh-text-primary);
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
   padding: 6px 10px;
   border-radius: var(--rh-radius-md);
   font-size: var(--rh-type-caption);
@@ -851,7 +851,7 @@
 }
 .filterChip:hover { border-color: var(--rh-border-strong); }
 .filterChipActive {
-  background: var(--ds-background-selected, #EFF6FF);
+  background: var(--ds-background-selected);
   color: var(--rh-primary);
   border-color: var(--rh-primary);
 }
@@ -893,16 +893,16 @@
    DARK MODE — ADS neutral dark OVERRIDES (variable-level)
    ═══════════════════════════════════════════════════════════════════ */
 .dark .releaseHub , [data-theme="dark"] .releaseHub {
-  --rh-bg-page: var(--bg-0, var(--cp-bg-page, var(--ds-surface, #FFFFFF)));
-  --rh-bg-card: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))));
-  --rh-bg-muted: var(--ds-surface-overlay, #1F1F1F);
-  --rh-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
-  --rh-text-secondary: var(--fg-2, var(--ds-text-subtlest, #626F86));
-  --rh-text-tertiary: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
+  --rh-bg-page: var(--bg-0, var(--cp-bg-page, var(--ds-surface)));
+  --rh-bg-card: var(--bg-2, var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))));
+  --rh-bg-muted: var(--ds-surface-overlay);
+  --rh-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --rh-text-secondary: var(--fg-2, var(--ds-text-subtlest));
+  --rh-text-tertiary: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
   --rh-text-muted: var(--fg-4, rgba(237,237,237,0.30));
-  --rh-border-subtle: var(--ds-border, var(--cp-ink-1, #292929));
-  --rh-border-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --rh-border-strong: var(--ds-border-bold, #454545);
+  --rh-border-subtle: var(--ds-border, var(--cp-ink-1));
+  --rh-border-default: var(--ds-border, var(--cp-ink-1));
+  --rh-border-strong: var(--ds-border-bold);
   --rh-success-bg: var(--ds-background-success-bold, rgba(74,222,128,0.12));
   --rh-warning-bg: var(--ds-background-warning, rgba(253,230,138,0.10));
   --rh-danger-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
@@ -912,14 +912,14 @@
   --rh-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.3));
 }
 /* Dark health chips */
-.dark .healthChipHealthy , [data-theme="dark"] .healthChipHealthy { color: var(--ds-background-success, #DFFCF0); }
-.dark .healthChipAtRisk , [data-theme="dark"] .healthChipAtRisk { color: var(--ds-background-warning, #FFF7D6); }
+.dark .healthChipHealthy , [data-theme="dark"] .healthChipHealthy { color: var(--ds-background-success); }
+.dark .healthChipAtRisk , [data-theme="dark"] .healthChipAtRisk { color: var(--ds-background-warning); }
 /* Dark status badges */
-.dark .statusDevelopment , [data-theme="dark"] .statusDevelopment { background: var(--ds-background-information-bold, rgba(59,130,246,0.12)); color: var(--ds-text-brand, #60A5FA); }
-.dark .statusStaging , [data-theme="dark"] .statusStaging { background: rgba(20,184,166,0.12); color: var(--ds-background-success, #DCFFF1); }
-.dark .statusTesting , [data-theme="dark"] .statusTesting { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, var(--ds-background-warning, #FFF7D6)); }
-.dark .statusUat , [data-theme="dark"] .statusUat { background: var(--ds-background-warning-bold, rgba(234,88,12,0.12)); color: var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203)); }
-.dark .statusReleased , [data-theme="dark"] .statusReleased { background: var(--ds-background-success-bold, rgba(74,222,128,0.12)); color: var(--ds-background-success, #DFFCF0); }
+.dark .statusDevelopment , [data-theme="dark"] .statusDevelopment { background: var(--ds-background-information-bold, rgba(59,130,246,0.12)); color: var(--ds-text-brand); }
+.dark .statusStaging , [data-theme="dark"] .statusStaging { background: rgba(20,184,166,0.12); color: var(--ds-background-success); }
+.dark .statusTesting , [data-theme="dark"] .statusTesting { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, var(--ds-background-warning)); }
+.dark .statusUat , [data-theme="dark"] .statusUat { background: var(--ds-background-warning-bold, rgba(234,88,12,0.12)); color: var(--ds-background-warning-bold, var(--ds-background-warning-bold)); }
+.dark .statusReleased , [data-theme="dark"] .statusReleased { background: var(--ds-background-success-bold, rgba(74,222,128,0.12)); color: var(--ds-background-success); }
 .dark .statusPlanned .statusDot , [data-theme="dark"] .statusPlanned .statusDot { background: var(--fg-4, rgba(237,237,237,0.30)); }
 /* Dark filter chip active */
 .dark .filterChipActive , [data-theme="dark"] .filterChipActive { background: var(--ds-background-information-bold, rgba(59,130,246,0.10)); }

@@ -58,6 +58,8 @@ export const adminPockets: AdminNavPocket[] = [
     children: [
       { label: 'Statuses', path: '/admin/workflows' },
       { label: 'Hierarchy', path: '/admin/workflows/hierarchy' },
+      { label: 'Versions', path: '/admin/workflows/versions' },
+      { label: 'Test Ops', path: '/admin/test-ops' },
     ],
   },
   {

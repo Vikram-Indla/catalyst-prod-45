@@ -48,10 +48,10 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
           padding: 22,
         }}
       >
-        <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
           Clear completed items?
         </div>
-        <div style={{ marginTop: 10, fontSize: 14, color: 'var(--cv2-text-subtle)' }}>
+        <div style={{ marginTop: 10, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text-subtle)' }}>
           {count > 0
             ? `This will permanently remove ${count} completed item${count === 1 ? '' : 's'} from Later.`
             : 'There are no completed items.'}
@@ -68,7 +68,7 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               cursor: 'pointer',
             }}
@@ -83,11 +83,11 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
               height: 34,
               padding: '0 16px',
               background: count === 0 ? 'var(--cv2-bg-row-hover)' : '#C7242E',
-              color: count === 0 ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+              color: count === 0 ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
               border: 'none',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               cursor: count === 0 ? 'not-allowed' : 'pointer',
             }}

@@ -180,7 +180,7 @@ export function AssignModal({
                 Current Owner
               </p>
               {selectedOwnerData ? (
-                <div className="flex items-center justify-between p-3 rounded-lg border bg-[var(--ds-background-information, rgba(37,99,235,0.12))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
+                <div className="flex items-center justify-between p-3 rounded-lg border bg-[var(--ds-background-information, rgba(37,99,235,0.12))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]">
                   <div className="flex items-center gap-3">
                     <Avatar src={resolveAvatarUrl(selectedOwnerData.full_name) ?? selectedOwnerData.avatar_url ?? undefined} name={selectedOwnerData.full_name} size="small" />
                     <div>
@@ -194,7 +194,7 @@ export function AssignModal({
                     variant="ghost" 
                     size="sm" 
                     onClick={handleRemoveOwner}
-                    className="text-[var(--ds-text-danger,#ef4444)] hover:text-[var(--ds-text-danger,#dc2626)] hover:bg-[var(--ds-background-danger, rgba(239,68,68,0.1))]"
+                    className="text-[var(--ds-text-danger)] hover:text-[var(--ds-text-danger)] hover:bg-[var(--ds-background-danger, rgba(239,68,68,0.1))]"
                   >
                     Remove
                   </Button>
@@ -242,7 +242,7 @@ export function AssignModal({
                           className={cn(
                             "w-full flex items-center justify-between p-2.5 rounded-lg transition-colors text-left",
                             isSelected 
-                              ? "bg-[var(--ds-background-information, rgba(37,99,235,0.12))] border-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" 
+                              ? "bg-[var(--ds-background-information, rgba(37,99,235,0.12))] border-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" 
                               : "hover:bg-muted/50 border-2 border-transparent"
                           )}
                         >
@@ -256,7 +256,7 @@ export function AssignModal({
                             </div>
                           </div>
                           {isSelected && (
-                            <Check className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
+                            <Check className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
                           )}
                         </button>
                       );
@@ -296,7 +296,7 @@ export function AssignModal({
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-[var(--ds-text-danger,#ef4444)]"
+                          className="h-7 w-7 text-muted-foreground hover:text-[var(--ds-text-danger)]"
                           onClick={() => handleRemoveContributor(memberId)}
                         >
                           <X className="h-4 w-4" />
@@ -344,7 +344,7 @@ export function AssignModal({
                       >
                         <div className="h-5 w-5 rounded border-2 border-muted-foreground/30 flex items-center justify-center">
                           {selectedContributorIds.includes(member.id) && (
-                            <Check className="h-3 w-3 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
+                            <Check className="h-3 w-3 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
                           )}
                         </div>
                         <Avatar src={resolveAvatarUrl(member.full_name) ?? member.avatar_url ?? undefined} name={member.full_name} size="xsmall" />
@@ -378,7 +378,7 @@ export function AssignModal({
             <Button 
               onClick={() => saveMutation.mutate()}
               disabled={!hasChanges || saveMutation.isPending}
-              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white"
             >
               {saveMutation.isPending ? (
                 <>

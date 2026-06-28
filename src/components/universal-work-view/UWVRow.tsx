@@ -40,9 +40,9 @@ const CELL_BASE: React.CSSProperties = {
   alignItems: 'center',
   height: JIRA_ROW_HEIGHT,
   padding: '0 8px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 400,
-  color: 'var(--ds-text, #172B4D)',
+  color: 'var(--ds-text)',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
@@ -76,12 +76,12 @@ function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void })
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 600,
         color: 'var(--cp-blue)',
         fontFamily: 'var(--cp-font-mono)',
         textDecoration: hover ? 'underline' : 'none',
-        background: hover ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+        background: hover ? 'var(--ds-background-selected)' : 'transparent',
         padding: '1px 4px',
         borderRadius: 3,
         whiteSpace: 'nowrap',
@@ -138,9 +138,9 @@ function renderCell(
               }}
             >
               {isExpanded ? (
-                <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
               ) : (
-                <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
               )}
             </button>
           ) : (
@@ -158,8 +158,8 @@ function renderCell(
         <span
           dir="auto"
           style={{
-            color: 'var(--ds-text, #172B4D)',
-            fontSize: 13,
+            color: 'var(--ds-text)',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 400,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -180,8 +180,8 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 13,
+            color: 'var(--ds-text-subtle)',
+            fontSize: 'var(--ds-font-size-300)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -200,7 +200,7 @@ function renderCell(
             background: c.bg,
             color: c.text,
             border: `1px solid ${c.border}20`,
-            fontSize: 10,
+            fontSize: 'var(--ds-font-size-50)',
             fontWeight: 600,
             padding: '2px 8px',
             borderRadius: 3,
@@ -225,8 +225,8 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 13,
+            color: 'var(--ds-text-subtle)',
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--cp-font-mono)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -240,7 +240,7 @@ function renderCell(
       const display = item.assigneeName ?? null;
       if (!display) {
         return (
-          <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 12, fontStyle: 'italic' }}>
+          <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)', fontStyle: 'italic' }}>
             Unassigned
           </span>
         );
@@ -255,8 +255,8 @@ function renderCell(
           />
           <span
             style={{
-              fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              fontSize: 'var(--ds-font-size-400)',
+              color: 'var(--ds-text)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -275,8 +275,8 @@ function renderCell(
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            color: 'var(--ds-text-subtlest, #6B6E76)',
-            fontSize: 13,
+            color: 'var(--ds-text-subtlest)',
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -296,8 +296,8 @@ function renderCell(
       return (
         <span
           style={{
-            color: overdue ? 'var(--sem-danger)' : 'var(--ds-text-subtle, #505258)',
-            fontSize: 13,
+            color: overdue ? 'var(--sem-danger)' : 'var(--ds-text-subtle)',
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           {formatDate(item.dueDate)}
@@ -306,7 +306,7 @@ function renderCell(
     }
     case 'created':
       return (
-        <span style={{ color: 'var(--ds-text-subtle, #505258)', fontSize: 13 }}>
+        <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
           {formatDate(item.created)}
         </span>
       );
@@ -314,8 +314,8 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 12,
+            color: 'var(--ds-text-subtle)',
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-mono)',
             maxWidth: 260,
             overflow: 'hidden',
@@ -327,7 +327,7 @@ function renderCell(
         </span>
       );
     default:
-      return <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>;
+      return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
   }
 }
 
@@ -342,8 +342,8 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
-  const restShadow = 'inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
+  const selectedShadow = 'inset 3px 0 0 var(--ds-link), inset 0 -1px 0 0 var(--ds-border)';
+  const restShadow = 'inset 0 -1px 0 0 var(--ds-border)';
 
   return (
     <div
@@ -354,18 +354,18 @@ export const UWVRow = React.memo(function UWVRow({
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
         boxShadow: isSelected ? selectedShadow : restShadow,
-        backgroundColor: isSelected ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        backgroundColor: isSelected ? 'var(--ds-surface-sunken, var(--cp-bg-sunken))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         cursor: 'pointer',
         transition: 'background-color 80ms ease',
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))';
         }
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
         }
       }}
     >

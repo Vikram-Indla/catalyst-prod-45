@@ -53,15 +53,15 @@ export function DesignRow({ design, onUnlink }: DesignRowProps) {
         padding: '8px 10px',
         borderRadius: 4,
         background: rowHovered
-          ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
-          : 'var(--cp-bg-elevated, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+          ? 'var(--ds-background-neutral-hovered)'
+          : 'var(--cp-bg-elevated)',
+        border: '1px solid var(--ds-border)',
         boxShadow: '0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08))',
         transition: 'background 0.12s, box-shadow 0.12s',
         cursor: 'default',
       }}
     >
-      <LinkIcon label="" color="var(--ds-text-subtle, #505258)" />
+      <LinkIcon label="" color="var(--ds-text-subtle)" />
       <a
         href={design.url}
         target="_blank"
@@ -72,12 +72,12 @@ export function DesignRow({ design, onUnlink }: DesignRowProps) {
           flex: '0 1 auto',
           minWidth: 0,
           maxWidth: '100%',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: linkHovered
-            ? 'var(--ds-text-subtle, #6B6E76)'
-            : 'var(--ds-text, #292A2E)',
+            ? 'var(--ds-text-subtle)'
+            : 'var(--ds-text)',
           textDecoration: linkHovered ? 'underline' : 'none',
-          textDecorationColor: linkHovered ? 'var(--ds-text, #000000)' : 'transparent',
+          textDecorationColor: linkHovered ? 'var(--ds-text)' : 'transparent',
           textUnderlineOffset: 2,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -104,7 +104,7 @@ export function DesignRow({ design, onUnlink }: DesignRowProps) {
             background: 'transparent',
             cursor: 'pointer',
             borderRadius: 3,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             padding: 0,
           }}
           onMouseEnter={(e) => {
@@ -114,7 +114,7 @@ export function DesignRow({ design, onUnlink }: DesignRowProps) {
             e.currentTarget.style.background = 'transparent';
           }}
         >
-          <CrossIcon size="small" label="" primaryColor="var(--ds-text-subtle, #505258)" />
+          <CrossIcon size="small" label="" primaryColor="var(--ds-text-subtle)" />
         </button>
       )}
     </div>

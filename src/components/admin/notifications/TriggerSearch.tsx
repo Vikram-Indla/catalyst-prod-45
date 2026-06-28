@@ -134,7 +134,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           />
         </div>
 
-        <div style={{ width: '1px', height: '24px', background: 'var(--ds-border-layout, #EBECF0)', flexShrink: 0 }} />
+        <div style={{ width: '1px', height: '24px', background: 'var(--ds-border-layout)', flexShrink: 0 }} />
 
         {/* Toggle filters */}
         <Button
@@ -172,13 +172,13 @@ export const TriggerSearch = memo(function TriggerSearch({
 
       {/* ── Status row ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">
+        <span className="text-xs text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]">
           Showing{' '}
-          <span className="font-medium font-['JetBrains_Mono'] text-[var(--ds-text-subtle,#475569)]">{filteredCount}</span>{' '}
+          <span className="font-medium font-['JetBrains_Mono'] text-[var(--ds-text-subtle)]">{filteredCount}</span>{' '}
           of{' '}
-          <span className="font-medium font-['JetBrains_Mono'] text-[var(--ds-text-subtle,#475569)]">{totalCount}</span>{' '}
+          <span className="font-medium font-['JetBrains_Mono'] text-[var(--ds-text-subtle)]">{totalCount}</span>{' '}
           triggers across{' '}
-          <span className="font-medium font-['JetBrains_Mono'] text-[var(--ds-text-subtle,#475569)]">{groupCount}</span>{' '}
+          <span className="font-medium font-['JetBrains_Mono'] text-[var(--ds-text-subtle)]">{groupCount}</span>{' '}
           categories
         </span>
 

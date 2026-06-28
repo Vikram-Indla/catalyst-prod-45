@@ -17,12 +17,12 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  surface: 'var(--ds-surface)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -35,13 +35,13 @@ function ResultBadge({ result }: { result: string | null }) {
   if (!result) return <span style={{ color: T.subtlest }}>—</span>;
   const norm = result.toLowerCase();
   const map: Record<string, { fg: string; bg: string }> = {
-    success: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-    partial: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
-    failed: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    rolled_back: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    success: { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
+    partial: { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' },
+    failed: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    rolled_back: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
   };
   const m = map[norm] ?? { fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{result.replace(/_/g, ' ')}</span>;
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{result.replace(/_/g, ' ')}</span>;
 }
 
 function snapCount(snap: any): number | null {
@@ -53,8 +53,8 @@ function snapCount(snap: any): number | null {
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, minWidth: 160 }}>{label}</span>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>{value ?? '—'}</span>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest, minWidth: 160 }}>{label}</span>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>{value ?? '—'}</span>
     </div>
   );
 }
@@ -95,19 +95,19 @@ export default function ProductionEventsPage() {
       id: 'title', label: 'Event', flex: true, sortable: true,
       cell: ({ row }) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{row.title}</span>
-          {(row.releaseKey || row.changeKey) && <span style={{ fontFamily: T.mono, fontSize: 11, color: T.subtlest }}>{row.releaseKey ?? row.changeKey}</span>}
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{row.title}</span>
+          {(row.releaseKey || row.changeKey) && <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{row.releaseKey ?? row.changeKey}</span>}
         </div>
       ),
     },
-    { id: 'eventType', label: 'Type', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.eventType)}</span> },
-    { id: 'targetEnv', label: 'Env', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.targetEnv)}</span> },
+    { id: 'eventType', label: 'Type', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.eventType)}</span> },
+    { id: 'targetEnv', label: 'Env', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.targetEnv)}</span> },
     { id: 'result', label: 'Result', width: 12, cell: ({ row }) => <ResultBadge result={row.result ?? row.deploymentStatus} /> },
     {
       id: 'deployedAt', label: 'Deployed', width: 16, sortable: true, accessor: (r) => r.deployedAt,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{row.deployedAt ? format(new Date(row.deployedAt), 'MMM d, yyyy HH:mm') : '—'}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.deployedAt ? format(new Date(row.deployedAt), 'MMM d, yyyy HH:mm') : '—'}</span>,
     },
-    { id: 'deployedBy', label: 'By', width: 14, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span> },
+    { id: 'deployedBy', label: 'By', width: 14, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span> },
   ], []);
 
   return (

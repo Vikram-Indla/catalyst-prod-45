@@ -11,21 +11,21 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 
 const COLOR_BG: Record<string, string> = {
-  neutral: 'var(--ds-background-neutral, #DFE1E6)',
-  purple: 'var(--ds-background-discovery, #DFD8FD)',
-  blue: 'var(--ds-background-information, #DEEBFF)',
-  red: 'var(--ds-background-danger, #FFEBE6)',
-  yellow: 'var(--ds-background-warning, #FFF7D6)',
-  green: 'var(--ds-background-success, #DFFCF0)',
+  neutral: 'var(--ds-background-neutral)',
+  purple: 'var(--ds-background-discovery)',
+  blue: 'var(--ds-background-information)',
+  red: 'var(--ds-background-danger)',
+  yellow: 'var(--ds-background-warning)',
+  green: 'var(--ds-background-success)',
 };
 
 const COLOR_FG: Record<string, string> = {
-  neutral: 'var(--ds-text-subtle, #44546F)',
-  purple: 'var(--ds-text-discovery, #5E4DB2)',
-  blue: 'var(--ds-text-information, #1868DB)',
-  red: 'var(--ds-text-danger, #AE2A19)',
-  yellow: 'var(--ds-text-warning, #946F00)',
-  green: 'var(--ds-text-success, #216E4E)',
+  neutral: 'var(--ds-text-subtle)',
+  purple: 'var(--ds-text-discovery)',
+  blue: 'var(--ds-text-information)',
+  red: 'var(--ds-text-danger)',
+  yellow: 'var(--ds-text-warning)',
+  green: 'var(--ds-text-success)',
 };
 
 export const Status = Node.create({

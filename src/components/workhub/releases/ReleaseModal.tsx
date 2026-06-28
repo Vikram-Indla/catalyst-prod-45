@@ -14,8 +14,8 @@ interface ReleaseModalProps {
 
 const STATUS_OPTIONS: ReleaseStatus[] = ['Planned', 'Active', 'At Risk', 'Completed', 'Cancelled'];
 const COLOR_PRESETS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-text-success, #16a34a)',
-  'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-subtle, #475569)', 'var(--ds-link, #0C66E4)',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-icon-information)', 'var(--ds-background-discovery-bold)', 'var(--ds-text-success)',
+  'var(--ds-text-warning)', 'var(--ds-text-danger)', 'var(--ds-text-subtle)', 'var(--ds-link)',
 ];
 
 export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
@@ -110,7 +110,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           padding: '20px 24px 0', marginBottom: 20,
         }}>
           <h2 style={{
-            fontSize: 18, fontWeight: 700, margin: 0,
+            fontSize: 'var(--ds-font-size-600)', fontWeight: 700, margin: 0,
             fontFamily: 'var(--cp-font-heading)',
             color: 'var(--fg-1)',
           }}>
@@ -158,7 +158,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
                     transition: 'border-color 150ms',
                   }}>
                   {form.color === c && (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #fff)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   )}
@@ -183,14 +183,14 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
             <button onClick={onClose} style={{
               height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
               border: '1px solid var(--divider)', background: 'var(--cp-float)',
-              fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
             }}>
               Cancel
             </button>
             <button onClick={handleSubmit} disabled={isSubmitting} style={{
               height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
               border: 'none', background: 'var(--cp-blue)', color: 'var(--bg-app)',
-              fontSize: 13, fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
               opacity: isSubmitting ? 0.7 : 1,
             }}>
               {isSubmitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Release'}
@@ -209,13 +209,13 @@ function Field({ label, required, error, children }: {
   return (
     <div>
       <label style={{
-        display: 'block', fontSize: 13, fontWeight: 500,
+        display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
         color: 'var(--fg-1)', marginBottom: 4,
       }}>
         {label}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
       </label>
       {children}
-      {error && <span style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
+      {error && <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
     </div>
   );
 }
@@ -225,7 +225,7 @@ const inputStyle: React.CSSProperties = {
   padding: '8px 12px',
   borderRadius: 'var(--wh-radius-md, 6px)',
   border: '1px solid var(--divider)',
-  fontSize: 14, fontFamily: 'var(--cp-font-body)',
+  fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-body)',
   color: 'var(--fg-1)',
   background: 'var(--cp-float)',
   outline: 'none',

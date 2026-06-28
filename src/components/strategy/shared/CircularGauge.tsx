@@ -13,9 +13,9 @@ interface CircularGaugeProps {
 }
 
 function getGaugeColor(value: number): string {
-  if (value >= 70) return 'var(--exec-blue-700, #1E40AF)';
-  if (value >= 40) return 'var(--exec-signal-amber, var(--cp-warning, #D97706))';
-  return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
+  if (value >= 70) return 'var(--exec-blue-700)';
+  if (value >= 40) return 'var(--exec-signal-amber, var(--cp-warning))';
+  return 'var(--exec-signal-red, var(--cp-danger))';
 }
 
 export function CircularGauge({ value, size = 100, strokeWidth = 10, color, label, animated = true, className = '' }: CircularGaugeProps) {
@@ -29,7 +29,7 @@ export function CircularGauge({ value, size = 100, strokeWidth = 10, color, labe
   return (
     <div className={`inline-flex flex-col items-center ${className}`}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={center} cy={center} r={radius} fill="none" stroke="var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))" strokeWidth={strokeWidth} />
+        <circle cx={center} cy={center} r={radius} fill="none" stroke="var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))" strokeWidth={strokeWidth} />
         <circle
           cx={center} cy={center} r={radius} fill="none"
           stroke={fillColor} strokeWidth={strokeWidth} strokeLinecap="round"
@@ -38,12 +38,12 @@ export function CircularGauge({ value, size = 100, strokeWidth = 10, color, labe
           style={{ transition: animated ? 'stroke-dashoffset 800ms ease-out' : undefined }}
         />
         <text x={center} y={label ? center - 4 : center} textAnchor="middle" dominantBaseline="central"
-          style={{ fontSize: size * 0.28, fontWeight: 700, fill: 'var(--exec-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+          style={{ fontSize: size * 0.28, fontWeight: 700, fill: 'var(--exec-text-primary, var(--cp-ink-1, var(--cp-ink-1)))' }}>
           {Math.round(clampedValue)}
         </text>
         {label && (
           <text x={center} y={center + size * 0.14} textAnchor="middle" dominantBaseline="central"
-            style={{ fontSize: size * 0.11, fill: 'var(--exec-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+            style={{ fontSize: size * 0.11, fill: 'var(--exec-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
             {label}
           </text>
         )}

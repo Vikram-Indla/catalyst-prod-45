@@ -35,22 +35,22 @@ export function BulkActionBar({
 
   return (
     <div style={{
-      height: 48, background: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8,
+      height: 48, background: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8,
       padding: '0 16px', fontFamily: 'var(--cp-font-body)', position: 'sticky', top: 0, zIndex: 50,
       borderRadius: '8px 8px 0 0',
     }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
         {selectedCount} item{selectedCount > 1 ? 's' : ''} selected
       </span>
 
       <button onClick={onClear} style={{
         background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
-        display: 'flex', alignItems: 'center', gap: 4, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 12,
+        display: 'flex', alignItems: 'center', gap: 4, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-200)',
       }}>
         <X size={14} /> Clear
       </button>
 
-      <div style={{ width: 1, height: 20, background: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 20, background: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', margin: '0 4px' }} />
 
       {/* Status */}
       <div style={{ position: 'relative' }}>
@@ -98,14 +98,14 @@ export function BulkActionBar({
       {/* Delete */}
       {confirmDelete ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 12, color: 'var(--ds-border-danger, #FCA5A5)' }}>Delete {selectedCount} items?</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-border-danger)' }}>Delete {selectedCount} items?</span>
           <button onClick={() => { onBulkDelete(); setConfirmDelete(false); }} style={{
-            fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-            background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 10px', borderRadius: 4,
+            background: 'var(--ds-text-danger, var(--cp-danger))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', cursor: 'pointer',
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
-            fontSize: 11, padding: '4px 10px', borderRadius: 4,
-            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', border: '1px solid var(--ds-text-subtle, #44546F)', cursor: 'pointer',
+            fontSize: 'var(--ds-font-size-100)', padding: '4px 10px', borderRadius: 4,
+            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', border: '1px solid var(--ds-text-subtle)', cursor: 'pointer',
           }}>Cancel</button>
         </div>
       ) : (
@@ -121,13 +121,13 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
 }) {
   return (
     <button onClick={onClick} style={{
-      height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
+      height: 30, padding: '0 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
       fontFamily: 'var(--cp-font-body)',
-      color: danger ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-      background: 'transparent', border: '1px solid var(--ds-text-subtle, #44546F)', borderRadius: 4,
+      color: danger ? 'var(--ds-border-danger)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
+      background: 'transparent', border: '1px solid var(--ds-text-subtle)', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       <Icon size={13} /> {label}

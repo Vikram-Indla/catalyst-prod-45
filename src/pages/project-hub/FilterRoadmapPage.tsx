@@ -164,7 +164,7 @@ function FilterRoadmapPageInner({ projectKey, viewId, navigate }: InnerProps) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
         <Spinner size="medium" />
-        <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 14 }}>Loading roadmap…</span>
+        <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)' }}>Loading roadmap…</span>
       </div>
     );
   }
@@ -221,11 +221,11 @@ function FilterRoadmapPageInner({ projectKey, viewId, navigate }: InnerProps) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            color: 'var(--ds-text-subtle, #42526E)',
+            color: 'var(--ds-text-subtle)',
           }}
         >
-          <span style={{ fontSize: 16, fontWeight: 500 }}>No issues to display</span>
-          <span style={{ fontSize: 14 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500 }}>No issues to display</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)' }}>
             The filter returned no results, or none of the matched issues have a{' '}
             {dateField === 'due_date' ? 'due date' : dateField === 'created' ? 'created date' : 'updated date'}.
           </span>

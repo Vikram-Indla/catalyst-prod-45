@@ -41,58 +41,58 @@ export type ContractFilter = 'all' | 'delivery' | 'product' | 'operations' | 'te
 
 export const DEPARTMENT_COLORS: Record<string, { gradient: string; shadow: string; text: string }> = {
   Delivery: {
-    gradient: 'linear-gradient(145deg, var(--ds-background-information-bold, #3b82f6) 0%, var(--cp-workstream-catalyst-primary, #2563eb) 100%)',
+    gradient: 'linear-gradient(145deg, var(--ds-background-information-bold) 0%, var(--cp-workstream-catalyst-primary) 100%)',
     shadow: 'var(--ds-background-information, rgba(37, 99, 235, 0.3))',
-    text: 'var(--cp-workstream-catalyst-primary, #2563eb)'
+    text: 'var(--cp-workstream-catalyst-primary)'
   },
   Product: {
-    gradient: 'linear-gradient(145deg, var(--ds-text-discovery, #8b5cf6) 0%, var(--ds-text-discovery, #7c3aed) 100%)',
+    gradient: 'linear-gradient(145deg, var(--ds-text-discovery) 0%, var(--ds-text-discovery) 100%)',
     shadow: 'var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3))',
-    text: 'var(--ds-text-discovery, #7c3aed)'
+    text: 'var(--ds-text-discovery)'
   },
   Operations: {
-    gradient: 'linear-gradient(145deg, var(--ds-text-warning, #f97316) 0%, var(--ds-text-warning, #ea580c) 100%)',
+    gradient: 'linear-gradient(145deg, var(--ds-text-warning) 0%, var(--ds-text-warning) 100%)',
     shadow: 'var(--ds-background-warning-bold, rgba(234, 88, 12, 0.3))',
-    text: 'var(--ds-text-warning, #ea580c)'
+    text: 'var(--ds-text-warning)'
   },
   'Technical Support': {
-    gradient: 'linear-gradient(145deg, var(--ds-text-success, #14b8a6) 0%, var(--ds-text-success, #0d9488) 100%)',
+    gradient: 'linear-gradient(145deg, var(--ds-text-success) 0%, var(--ds-text-success) 100%)',
     shadow: 'var(--ds-background-success, rgba(13, 148, 136, 0.3))',
-    text: 'var(--ds-text-success, #0d9488)'
+    text: 'var(--ds-text-success)'
   },
   Support: {
-    gradient: 'linear-gradient(145deg, var(--ds-text-success, #14b8a6) 0%, var(--ds-text-success, #0d9488) 100%)',
+    gradient: 'linear-gradient(145deg, var(--ds-text-success) 0%, var(--ds-text-success) 100%)',
     shadow: 'var(--ds-background-success, rgba(13, 148, 136, 0.3))',
-    text: 'var(--ds-text-success, #0d9488)'
+    text: 'var(--ds-text-success)'
   }
 };
 
 export const STATUS_COLORS = {
   critical: {
-    bg: 'var(--ds-surface, #fef2f2)',
+    bg: 'var(--ds-surface)',
     bgDark: 'var(--ds-background-danger, rgba(239, 68, 68, 0.15))',
-    border: 'var(--ds-border, #fecaca)',
+    border: 'var(--ds-border)',
     borderDark: 'var(--ds-background-danger, rgba(239, 68, 68, 0.3))',
-    text: 'var(--ds-text-danger, #dc2626)',
-    textDark: 'var(--ds-text-danger, #fca5a5)',
-    gradient: 'linear-gradient(90deg, var(--ds-text-danger, #f87171), var(--ds-text-danger, #dc2626))'
+    text: 'var(--ds-text-danger)',
+    textDark: 'var(--ds-text-danger)',
+    gradient: 'linear-gradient(90deg, var(--ds-text-danger), var(--ds-text-danger))'
   },
   warning: {
-    bg: 'var(--ds-surface, #fffbeb)',
+    bg: 'var(--ds-surface)',
     bgDark: 'var(--ds-background-warning, rgba(217, 119, 6, 0.15))',
-    border: 'var(--ds-border, #fde68a)',
+    border: 'var(--ds-border)',
     borderDark: 'var(--ds-background-warning, rgba(217, 119, 6, 0.3))',
-    text: 'var(--ds-text-warning, #d97706)',
-    textDark: 'var(--ds-text-warning, #fcd34d)',
-    gradient: 'linear-gradient(90deg, var(--ds-text-warning, #fbbf24), var(--ds-text-warning, #d97706))'
+    text: 'var(--ds-text-warning)',
+    textDark: 'var(--ds-text-warning)',
+    gradient: 'linear-gradient(90deg, var(--ds-text-warning), var(--ds-text-warning))'
   },
   safe: {
-    bg: 'var(--ds-surface, #f0fdfa)',
+    bg: 'var(--ds-surface)',
     bgDark: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
-    border: 'var(--ds-border, #99f6e4)',
+    border: 'var(--ds-border)',
     borderDark: 'var(--ds-background-success, rgba(13, 148, 136, 0.3))',
-    text: 'var(--ds-text-success, #0d9488)',
-    textDark: 'var(--ds-text-success, #5eead4)',
-    gradient: 'linear-gradient(90deg, var(--ds-text-success, #2dd4bf), var(--ds-text-success, #0d9488))'
+    text: 'var(--ds-text-success)',
+    textDark: 'var(--ds-text-success)',
+    gradient: 'linear-gradient(90deg, var(--ds-text-success), var(--ds-text-success))'
   }
 };

@@ -28,16 +28,16 @@ import { catalystToast } from '@/lib/catalystToast';
 /* ═══ PRIORITY ICON — Jira-parity directional chevrons ═══ */
 
 const PRIORITY_COLORS: Record<string, string> = {
-  highest: 'var(--ds-background-danger-bold, #C9372C)',
+  highest: 'var(--ds-background-danger-bold)',
   high:    '#E97F33', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  medium:  'var(--ds-background-warning-bold, #E2B203)',
+  medium:  'var(--ds-background-warning-bold)',
   low:     '#2D8738', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   lowest:  '#57A55A', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 };
 
 function PriorityIcon({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
-  const color = PRIORITY_COLORS[p] || 'var(--ds-text-subtle, #44546F)';
+  const color = PRIORITY_COLORS[p] || 'var(--ds-text-subtle)';
   /* Jira renders priority as stacked upward (high) or downward (low) chevrons.
      Two chevrons = highest/lowest, one = high/low, dash = medium. */
   if (p === 'highest') {
@@ -139,16 +139,16 @@ function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThem
               display: 'inline-flex', alignItems: 'center', gap: 3,
               padding: '2px 6px',
               borderRadius: 3,
-              background: 'var(--ds-background-neutral, #F1F2F4)',
+              background: 'var(--ds-background-neutral)',
               color: tk.textMuted,
-              fontSize: 11, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-body)',
               lineHeight: '16px',
               cursor: 'default',
               userSelect: 'none',
               transition: 'background 120ms ease',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-border-disabled, #DCDFE4))'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-border-disabled))'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
           >
             <JiraIssueTypeIcon type={st.issueType} size={12} />
             <span>{st.issueKey}</span>
@@ -346,7 +346,7 @@ export function WorkItemCard({
                   }}
                   aria-label="Save"
                 >
-                  <CheckMarkIcon label="Save" size="small" primaryColor="var(--ds-background-success-bold, #1F845A)" />
+                  <CheckMarkIcon label="Save" size="small" primaryColor="var(--ds-background-success-bold)" />
                 </button>
                 <button
                   onClick={cancelEditing}
@@ -357,7 +357,7 @@ export function WorkItemCard({
                   }}
                   aria-label="Cancel"
                 >
-                  <CloseIcon label="Cancel" size="small" primaryColor="var(--ds-background-danger-bold, #C9372C)" />
+                  <CloseIcon label="Cancel" size="small" primaryColor="var(--ds-background-danger-bold)" />
                 </button>
               </div>
             </div>
@@ -405,7 +405,7 @@ export function WorkItemCard({
             title text, see above). Hidden during edit mode. */}
         {!isEditing && (
           <div className="flex items-center flex-shrink-0" style={{ gap: 2, marginLeft: 4, marginTop: 1 }}>
-            {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="var(--ds-background-danger-bold, #C9372C)" />}
+            {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="var(--ds-background-danger-bold)" />}
             <button
               ref={btnRef}
               onClick={handleMenuBtn}
@@ -435,7 +435,7 @@ export function WorkItemCard({
           marginBottom: 4, maxWidth: '100%',
         }}>
           <span style={{
-            fontSize: 11, fontWeight: 400, color: tk.epicLozengeText,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: tk.epicLozengeText,
             background: tk.epicLozengeBg,
             borderRadius: 3, padding: '4px 8px',
             lineHeight: '16px', fontFamily: 'var(--cp-font-body)',
@@ -569,7 +569,7 @@ export function WorkItemCard({
           // palette (var(--ds-background-information)) so the menu reads
           // as part of the same blue family rather than the neutral gray
           // we use elsewhere.
-          const hoverBg = 'var(--ds-background-information, #E9F2FE)';
+          const hoverBg = 'var(--ds-background-information)';
           // Mouse + keyboard parity — same blue on hover and focus.
           const activate = (e: React.SyntheticEvent<HTMLButtonElement>) => {
             (e.currentTarget as HTMLButtonElement).style.background = hoverBg;
@@ -614,7 +614,7 @@ export function WorkItemCard({
                     width: '100%', padding: '8px 12px', border: 'none',
                     background: statusSubmenuOpen ? hoverBg : 'transparent',
                     cursor: 'pointer', textAlign: 'left',
-                    fontSize: 13, color: tk.textPrimary,
+                    fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                     fontFamily: 'var(--cp-font-body)',
                     outline: 'none',
                   }}
@@ -660,7 +660,7 @@ export function WorkItemCard({
                           display: 'flex', alignItems: 'center', gap: 8,
                           width: '100%', padding: '8px 12px', border: 'none',
                           background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                          fontSize: 13, color: tk.textPrimary,
+                          fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                           fontFamily: 'var(--cp-font-body)',
                           textTransform: 'capitalize',
                           outline: 'none',
@@ -689,7 +689,7 @@ export function WorkItemCard({
                   display: 'flex', alignItems: 'center',
                   width: '100%', padding: '8px 12px', border: 'none',
                   background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                  fontSize: 13, color: tk.textPrimary,
+                  fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                   fontFamily: 'var(--cp-font-body)',
                   outline: 'none',
                 }}
@@ -710,7 +710,7 @@ export function WorkItemCard({
                   display: 'flex', alignItems: 'center',
                   width: '100%', padding: '8px 12px', border: 'none',
                   background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                  fontSize: 13, color: tk.textPrimary,
+                  fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                   fontFamily: 'var(--cp-font-body)',
                   outline: 'none',
                 }}

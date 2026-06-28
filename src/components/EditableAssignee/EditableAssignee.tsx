@@ -157,9 +157,9 @@ export const EditableAssignee = memo(function EditableAssignee({
           padding: '4px 8px',
           cursor: 'pointer',
           borderRadius: '3px',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text)',
           textAlign: 'left',
           fontFamily: 'var(--cp-font-body)',
           display: 'inline-flex',
@@ -181,9 +181,9 @@ export const EditableAssignee = memo(function EditableAssignee({
           >
             <div
               style={{
-                background: 'var(--ds-surface, #ffffff)',
+                background: 'var(--ds-surface)',
                 borderRadius: 8,
-                border: '1px solid var(--ds-border, #EBECF0)',
+                border: '1px solid var(--ds-border)',
                 boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
                 overflow: 'hidden',
               }}
@@ -195,8 +195,8 @@ export const EditableAssignee = memo(function EditableAssignee({
                   alignItems: 'center',
                   gap: 8,
                   padding: '8px 12px',
-                  borderBottom: '1px solid var(--ds-border, #EBECF0)',
-                  background: 'var(--ds-surface-sunken, #F4F5F7)',
+                  borderBottom: '1px solid var(--ds-border)',
+                  background: 'var(--ds-surface-sunken)',
                 }}
               >
                 <input
@@ -208,9 +208,9 @@ export const EditableAssignee = memo(function EditableAssignee({
                     flex: 1,
                     border: 'none',
                     outline: 'none',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 400,
-                    color: 'var(--ds-text, #172B4D)',
+                    color: 'var(--ds-text)',
                     background: 'transparent',
                     fontFamily: 'var(--cp-font-body)',
                   }}
@@ -224,19 +224,19 @@ export const EditableAssignee = memo(function EditableAssignee({
                   aria-live="polite"
                   style={{
                     padding: '8px 12px',
-                    background: 'var(--ds-background-warning, #FFF7D6)',
-                    borderBottom: `1px solid var(--ds-border-warning, #F8E6A0)`,
+                    background: 'var(--ds-background-warning)',
+                    borderBottom: `1px solid var(--ds-border-warning)`,
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: 8,
                   }}
                 >
-                  <span style={{ color: 'var(--ds-icon-warning, #D97008)', flexShrink: 0, fontSize: 16, lineHeight: '20px' }}>⚠</span>
+                  <span style={{ color: 'var(--ds-icon-warning)', flexShrink: 0, fontSize: 'var(--ds-font-size-500)', lineHeight: '20px' }}>⚠</span>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>
                       {leaveWarning.name} is on leave
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                       {leaveWarning.backOn ? `Back ${leaveWarning.backOn}. ` : ''}You can still assign.
                     </div>
                   </div>
@@ -251,9 +251,9 @@ export const EditableAssignee = memo(function EditableAssignee({
                   <div style={{ padding: '4px 12px' }}>
                     {/* AI section label */}
                     <div style={{
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
-                      color: 'var(--ds-text-subtlest, #6B778C)',
+                      color: 'var(--ds-text-subtlest)',
                       marginBottom: 4,
                       letterSpacing: '0.04em',
                     }}>
@@ -261,7 +261,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     </div>
                     {/* Rainbow-bordered suggestion button — CLAUDE.md AI CTA carve-out */}
                     <div style={{
-                      background: `conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder, #BE185D) 0deg, var(--ds-background-discovery-bold, #6E5DC6) 60deg, var(--ds-link, #0C66E4) 120deg, var(--ds-background-information-bold, #0C66E4) 180deg, var(--ds-background-success, #DFFCF0) 240deg, var(--ds-background-warning-bold, #E2B203) 300deg, var(--ds-background-accent-magenta-bolder, #BE185D) 360deg)`,
+                      background: `conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder) 0deg, var(--ds-background-discovery-bold) 60deg, var(--ds-link) 120deg, var(--ds-background-information-bold) 180deg, var(--ds-background-success) 240deg, var(--ds-background-warning-bold) 300deg, var(--ds-background-accent-magenta-bolder) 360deg)`,
                       animation: 'none',
                       padding: 1.8,
                       borderRadius: 20,
@@ -280,10 +280,10 @@ export const EditableAssignee = memo(function EditableAssignee({
                           border: 'none',
                           borderRadius: 17,
                           cursor: 'pointer',
-                          background: 'var(--ds-surface, #FFFFFF)',
-                          fontSize: 13,
+                          background: 'var(--ds-surface)',
+                          fontSize: 'var(--ds-font-size-300)',
                           fontWeight: 500,
-                          color: 'var(--ds-text, #172B4D)',
+                          color: 'var(--ds-text)',
                           textAlign: 'left',
                         }}
                       >
@@ -315,24 +315,24 @@ export const EditableAssignee = memo(function EditableAssignee({
                     cursor: 'pointer',
                     background:
                       currentAssignee === null
-                        ? 'var(--ds-surface-sunken, #F4F5F7)'
-                        : 'var(--ds-surface, #ffffff)',
+                        ? 'var(--ds-surface-sunken)'
+                        : 'var(--ds-surface)',
                     textAlign: 'left',
                     fontFamily: 'var(--cp-font-body)',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 400,
-                    color: 'var(--ds-text, #172B4D)',
+                    color: 'var(--ds-text)',
                     transition: 'background 150ms',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background =
-                      'var(--ds-surface-sunken, #F4F5F7)';
+                      'var(--ds-surface-sunken)';
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.background =
                       currentAssignee === null
-                        ? 'var(--ds-surface-sunken, #F4F5F7)'
-                        : 'var(--ds-surface, #ffffff)';
+                        ? 'var(--ds-surface-sunken)'
+                        : 'var(--ds-surface)';
                   }}
                 >
                   <UnassignedAvatar size={24} />
@@ -361,23 +361,23 @@ export const EditableAssignee = memo(function EditableAssignee({
                         border: 'none',
                         cursor: 'pointer',
                         background: isActive
-                          ? 'var(--ds-surface-sunken, #F4F5F7)'
-                          : 'var(--ds-surface, #ffffff)',
+                          ? 'var(--ds-surface-sunken)'
+                          : 'var(--ds-surface)',
                         textAlign: 'left',
                         fontFamily: 'var(--cp-font-body)',
-                        fontSize: 14,
+                        fontSize: 'var(--ds-font-size-400)',
                         fontWeight: 400,
-                        color: 'var(--ds-text, #172B4D)',
+                        color: 'var(--ds-text)',
                         transition: 'background 150ms',
                       }}
                       onMouseEnter={e => {
                         e.currentTarget.style.background =
-                          'var(--ds-surface-sunken, #F4F5F7)';
+                          'var(--ds-surface-sunken)';
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.background = isActive
-                          ? 'var(--ds-surface-sunken, #F4F5F7)'
-                          : 'var(--ds-surface, #ffffff)';
+                          ? 'var(--ds-surface-sunken)'
+                          : 'var(--ds-surface)';
                       }}
                     >
                       <PresenceRing
@@ -388,17 +388,17 @@ export const EditableAssignee = memo(function EditableAssignee({
                       />
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ fontSize: 14, fontWeight: 400 }}>{person.name}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400 }}>{person.name}</span>
                           {isOnLeave && person.backOn && (
                             <span style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: 4,
-                              background: 'var(--ds-background-danger, #FFECEB)',
-                              color: 'var(--ds-icon-danger, #C9372C)',
+                              background: 'var(--ds-background-danger)',
+                              color: 'var(--ds-icon-danger)',
                               padding: '0 8px',
                               borderRadius: 3,
-                              fontSize: 11,
+                              fontSize: 'var(--ds-font-size-100)',
                               fontWeight: 600,
                             }}>
                               Back {person.backOn}
@@ -406,7 +406,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           )}
                         </div>
                         {person.email && (
-                          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #5E6C84)' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
                             {person.email}
                           </div>
                         )}
@@ -421,8 +421,8 @@ export const EditableAssignee = memo(function EditableAssignee({
                     style={{
                       padding: '16px 12px',
                       textAlign: 'center',
-                      color: 'var(--ds-text-subtlest, #5E6C84)',
-                      fontSize: 13,
+                      color: 'var(--ds-text-subtlest)',
+                      fontSize: 'var(--ds-font-size-300)',
                     }}
                   >
                     No matches found

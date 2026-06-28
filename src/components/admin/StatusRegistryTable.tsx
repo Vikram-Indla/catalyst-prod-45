@@ -20,20 +20,20 @@ interface StatusRegistryTableProps {
 const CATEGORY_ORDER: StatusCategory[] = ['todo', 'in_progress', 'done'];
 
 const CAT_HEADER_BG: Record<StatusCategory, string> = {
-  todo:        'var(--ds-background-neutral-subtle, #F7F8F9)',
-  in_progress: 'var(--ds-background-information-subtle, #DEEBFF)',
-  done:        'var(--ds-background-success-subtle, #E3FCEF)',
+  todo:        'var(--ds-background-neutral-subtle)',
+  in_progress: 'var(--ds-background-information-subtle)',
+  done:        'var(--ds-background-success-subtle)',
 };
 
 const CAT_HEADER_COLOR: Record<StatusCategory, string> = {
-  todo:        'var(--ds-text, #292A2E)',
-  in_progress: 'var(--ds-text-information, #0055CC)',
-  done:        'var(--ds-text-success, #216E4E)',
+  todo:        'var(--ds-text)',
+  in_progress: 'var(--ds-text-information)',
+  done:        'var(--ds-text-success)',
 };
 
 function DragDots() {
   return (
-    <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor" style={{ color: 'var(--ds-text-subtlest, #6B6E76)', cursor: 'grab' }}>
+    <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor" style={{ color: 'var(--ds-text-subtlest)', cursor: 'grab' }}>
       <circle cx="3" cy="2.5" r="1.1" /><circle cx="7" cy="2.5" r="1.1" />
       <circle cx="3" cy="7" r="1.1" /><circle cx="7" cy="7" r="1.1" />
       <circle cx="3" cy="11.5" r="1.1" /><circle cx="7" cy="11.5" r="1.1" />
@@ -48,7 +48,7 @@ interface ConsumersCellProps {
 function ConsumersCell({ consumers }: ConsumersCellProps) {
   const [hovered, setHovered] = useState(false);
   if (consumers.length === 0) {
-    return <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 12 }}>—</span>;
+    return <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>—</span>;
   }
   const label = consumers.length === 1
     ? `${consumers[0].consumer}${consumers[0].detail ? ` (${consumers[0].detail})` : ''}`
@@ -62,9 +62,9 @@ function ConsumersCell({ consumers }: ConsumersCellProps) {
     >
       <span
         style={{
-          fontSize: 13,
-          color: 'var(--ds-text-subtle, #505258)',
-          borderBottom: '1px dashed var(--ds-border-bold, #8C8F97)',
+          fontSize: 'var(--ds-font-size-300)',
+          color: 'var(--ds-text-subtle)',
+          borderBottom: '1px dashed var(--ds-border-bold)',
           paddingBottom: 1,
           cursor: 'default',
         }}
@@ -77,15 +77,15 @@ function ConsumersCell({ consumers }: ConsumersCellProps) {
             position: 'absolute',
             bottom: 'calc(100% + 6px)',
             left: 0,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface-overlay)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
             padding: '8px 12px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             lineHeight: 1.6,
             whiteSpace: 'nowrap',
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
             zIndex: 30,
             pointerEvents: 'none',
           }}
@@ -110,10 +110,10 @@ function TypeChips({ types }: { types: string[] }) {
   if (types.length === 0) {
     return (
       <span style={{
-        display: 'inline-block', fontSize: 11, fontWeight: 500,
+        display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
         border: '1px solid transparent', borderRadius: 3, padding: '1px 6px',
-        background: 'var(--ds-background-neutral, #F1F2F4)',
-        color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap',
+        background: 'var(--ds-background-neutral)',
+        color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap',
       }}>All types</span>
     );
   }
@@ -123,20 +123,20 @@ function TypeChips({ types }: { types: string[] }) {
     <span style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 4px', alignItems: 'center' }}>
       {shown.map((t) => (
         <span key={t} style={{
-          display: 'inline-block', fontSize: 11, fontWeight: 500,
-          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-          padding: '1px 6px', background: 'var(--ds-surface-sunken, #F7F8F9)',
-          color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap',
+          display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+          border: '1px solid var(--ds-border)', borderRadius: 3,
+          padding: '1px 6px', background: 'var(--ds-surface-sunken)',
+          color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap',
         }}>{t}</span>
       ))}
       {extra.length > 0 && (
         <Tooltip content={extra.join(', ')}>
           {(p) => (
             <span {...p} style={{
-              display: 'inline-block', fontSize: 11, fontWeight: 500,
-              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-              padding: '1px 6px', background: 'var(--ds-surface-sunken, #F7F8F9)',
-              color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap', cursor: 'default',
+              display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+              border: '1px solid var(--ds-border)', borderRadius: 3,
+              padding: '1px 6px', background: 'var(--ds-surface-sunken)',
+              color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap', cursor: 'default',
             }}>+{extra.length}</span>
           )}
         </Tooltip>
@@ -148,28 +148,28 @@ function TypeChips({ types }: { types: string[] }) {
 function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
   return (
     <tr style={{
-      borderLeft: status.is_default ? '2px solid var(--ds-background-brand-bold, #0C66E4)' : '2px solid transparent',
-      background: 'var(--ds-surface, #FFFFFF)',
+      borderLeft: status.is_default ? '2px solid var(--ds-background-brand-bold)' : '2px solid transparent',
+      background: 'var(--ds-surface)',
       transition: 'background 120ms ease',
     }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface)'; }}
     >
       {/* Status name */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
         <button
           onClick={() => onEdit(status)}
           style={{
-            fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)',
+            fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)',
             padding: '2px 4px', marginLeft: -4, borderRadius: 3, background: 'none', border: 'none',
             cursor: 'pointer',
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, var(--ds-link, #0C66E4))';
+            (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, var(--ds-link))';
             (e.currentTarget as HTMLElement).style.textDecoration = 'underline';
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)';
+            (e.currentTarget as HTMLElement).style.color = 'var(--ds-text)';
             (e.currentTarget as HTMLElement).style.textDecoration = 'none';
           }}
         >
@@ -178,33 +178,33 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
       </td>
 
       {/* Color */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
             width: 16, height: 16, borderRadius: 3, background: status.color, flexShrink: 0,
-            border: '1px solid var(--ds-border, #DFE1E6)', display: 'inline-block', verticalAlign: 'middle',
+            border: '1px solid var(--ds-border)', display: 'inline-block', verticalAlign: 'middle',
           }} />
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', fontVariantNumeric: 'tabular-nums' }}>
             {status.color}
           </span>
         </span>
       </td>
 
       {/* Position */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle, #505258)' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)' }}>
           <span title="Drag to reorder"><DragDots /></span>
-          <span style={{ fontSize: 13 }}>{status.position}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{status.position}</span>
         </span>
       </td>
 
       {/* Default */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
         {status.is_default && (
           <span style={{
-            fontSize: 11, fontWeight: 500,
-            color: 'var(--ds-text-brand, #0C66E4)',
-            background: 'var(--ds-background-selected, #E9F2FF)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+            color: 'var(--ds-text-brand)',
+            background: 'var(--ds-background-selected)',
             borderRadius: 3, padding: '2px 6px', whiteSpace: 'nowrap',
           }}>
             Default
@@ -213,17 +213,17 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
       </td>
 
       {/* Available for */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
         <TypeChips types={status.work_item_types} />
       </td>
 
       {/* Consumers */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
         <ConsumersCell consumers={consumers} />
       </td>
 
       {/* Actions */}
-      <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
+      <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
         <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
           <Tooltip content="Edit status">
             {(p) => (
@@ -268,7 +268,7 @@ function CategorySection({ category, statuses, consumersMap, onEdit, onDelete, d
   const headerColor = CAT_HEADER_COLOR[category];
 
   return (
-    <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, marginBottom: 12, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
+    <div style={{ border: '1px solid var(--ds-border)', borderRadius: 4, marginBottom: 12, overflow: 'hidden', background: 'var(--ds-surface)' }}>
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
@@ -276,18 +276,18 @@ function CategorySection({ category, statuses, consumersMap, onEdit, onDelete, d
         style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 16px', background: headerBg, border: 'none',
-          cursor: 'pointer', textAlign: 'left', borderBottom: expanded ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
+          cursor: 'pointer', textAlign: 'left', borderBottom: expanded ? '1px solid var(--ds-border)' : 'none',
         }}
       >
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: catColor, flexShrink: 0 }} />
-        <span style={{ fontSize: 16, fontWeight: 653, color: headerColor, flex: 1 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: headerColor, flex: 1 }}>
           {catLabel}
         </span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)', marginRight: 8 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)', marginRight: 8 }}>
           ({statuses.length})
         </span>
         <span style={{
-          color: 'var(--ds-text-subtle, #505258)',
+          color: 'var(--ds-text-subtle)',
           transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
           transition: 'transform 180ms ease', display: 'flex',
         }}>
@@ -302,10 +302,10 @@ function CategorySection({ category, statuses, consumersMap, onEdit, onDelete, d
               <tr>
                 {['Status name', 'Color', 'Position', 'Default', 'Available for', 'Consumers', ''].map((h, i) => (
                   <th key={i} style={{
-                    fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #505258)',
+                    fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle)',
                     textAlign: i === 6 ? 'right' : 'left', padding: '8px 12px',
-                    borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    borderBottom: '1px solid var(--ds-border)',
+                    background: 'var(--ds-surface)',
                     width: i === 0 ? '21%' : i === 1 ? '12%' : i === 2 ? '8%' : i === 3 ? '8%' : i === 4 ? '20%' : i === 5 ? undefined : '80px',
                   }}>
                     {h}
@@ -326,8 +326,8 @@ function CategorySection({ category, statuses, consumersMap, onEdit, onDelete, d
               {statuses.length === 0 && (
                 <tr>
                   <td colSpan={7} style={{
-                    padding: '12px 16px', fontSize: 13,
-                    color: 'var(--ds-text-subtlest, #6B6E76)', fontStyle: 'italic',
+                    padding: '12px 16px', fontSize: 'var(--ds-font-size-300)',
+                    color: 'var(--ds-text-subtlest)', fontStyle: 'italic',
                   }}>
                     No statuses in this category.
                   </td>
@@ -360,7 +360,7 @@ export function StatusRegistryTable({
 
   if (filtered.length === 0) {
     return (
-      <div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 14 }}>
+      <div style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
         {searchQuery ? `No statuses match "${searchQuery}".` : 'No statuses found.'}
       </div>
     );

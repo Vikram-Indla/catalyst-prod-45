@@ -84,7 +84,7 @@ if (typeof document !== "undefined") {
       font-size: 12px !important;
       line-height: 16px !important;
       margin: 0 !important;
-      color: var(--ds-text, #172B4D) !important;
+      color: var(--ds-text) !important;
     }
     
     /* 2. NUCLEAR OPTION FOR JAVASCRIPT INLINE-STYLE INJECTIONS 
@@ -107,8 +107,8 @@ if (typeof document !== "undefined") {
       padding: 0 !important;
       
       /* Keeps your blinking cursor visible while cleaning the layout */
-      caret-color: var(--ds-text, #F4F5F7) !important; 
-      color: var(--ds-text, #F4F5F7) !important;
+      caret-color: var(--ds-text) !important; 
+      color: var(--ds-text) !important;
       
       appearance: none !important;
       -webkit-appearance: none !important;
@@ -121,12 +121,12 @@ if (typeof document !== "undefined") {
     /* Keep focus styling restricted to the neat external visual border */
     .cv-duedate .cv-duedate-select__control--is-focused {
       border-radius: 3px !important;
-      outline: 2px solid var(--ds-border-focused, #388BFF) !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       outline-offset: -1px !important;
     }
     /* When the calendar popup is open, render a neutral gray outline regardless of focus state */
     .cv-duedate .cv-duedate-select__control--menu-is-open {
-      outline: 2px solid var(--ds-border, #DFE1E6) !important;
+      outline: 2px solid var(--ds-border) !important;
       outline-offset: -1px !important;
       border-radius: 3px !important;
     }
@@ -326,9 +326,9 @@ export function CatalystDueDateField({
             alignItems: "center",
             gap: 4,
             color: overdue
-              ? "var(--ds-text-danger, #AE2E24)"
-              : "var(--ds-text, #172B4D)",
-            fontSize: 14,
+              ? "var(--ds-text-danger)"
+              : "var(--ds-text)",
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             lineHeight: "20px",
           }}
@@ -337,7 +337,7 @@ export function CatalystDueDateField({
             <WarningIcon
               label=""
               size="small"
-              primaryColor="var(--ds-icon-danger, #AE2E24)"
+              primaryColor="var(--ds-icon-danger)"
             />
           )}
           {displayText}
@@ -345,10 +345,10 @@ export function CatalystDueDateField({
       ) : (
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             lineHeight: "20px",
-            color: "var(--ds-text-subtlest, #626F86)",
+            color: "var(--ds-text-subtlest)",
           }}
         >
           None

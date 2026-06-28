@@ -10,8 +10,8 @@
  * Visuals (light mode — match BAU backlog exactly):
  *   Values taken verbatim from BacklogPage.atlaskit.tsx:1083–1112, which the
  *   team measured from Jira's live DOM on 2026-04-18:
- *     - Canvas bg:      var(--ds-background-selected, #E9F2FE)  (the light blue Jira uses — not var(--ds-surface-sunken, #F7F8F9))
- *     - Panel bg:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
+ *     - Canvas bg:      var(--ds-background-selected)  (the light blue Jira uses — not var(--ds-surface-sunken))
+ *     - Panel bg:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))
  *     - Frame padding:  24px
  *     - Panel radius:   8px
  *     - Panel border:   none
@@ -35,9 +35,9 @@
 import React, { ReactNode, CSSProperties } from 'react';
 
 /* ─── Uniform surface (2026-06-18, Vikram) ────────────────────────────────
-   Canvas + panel always track --cp-bg-elevated (= var(--ds-surface, #FFFFFF)
-   in light, var(--ds-surface, #FFFFFF) in dark), so hub pages match the rest of the shell — one
-   flat tone everywhere. Light: var(--ds-surface, #FFFFFF) (no regression). Dark: var(--ds-surface, #FFFFFF) (the
+   Canvas + panel always track --cp-bg-elevated (= var(--ds-surface)
+   in light, var(--ds-surface) in dark), so hub pages match the rest of the shell — one
+   flat tone everywhere. Light: var(--ds-surface) (no regression). Dark: var(--ds-surface) (the
    grayish raised tone, spread uniformly). Replaces the broken
    data-theme==='dark' check.
    ──────────────────────────────────────────────────────────────────────── */

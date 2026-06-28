@@ -15,15 +15,15 @@ interface Props {
 
 // Funnel status order & colors
 const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
-  { key: 'draft', label: 'Draft', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  { key: 'submitted', label: 'Submitted', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  { key: 'under_review', label: 'Under Review', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  { key: 'approved', label: 'Approved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  { key: 'converted', label: 'Converted', color: 'var(--cp-teal-60, #0D9488)' },
-  { key: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #EF4444)' },
+  { key: 'draft', label: 'Draft', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
+  { key: 'submitted', label: 'Submitted', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { key: 'under_review', label: 'Under Review', color: 'var(--ds-text-warning, var(--cp-warning))' },
+  { key: 'approved', label: 'Approved', color: 'var(--ds-text-success, var(--cp-success))' },
+  { key: 'converted', label: 'Converted', color: 'var(--cp-teal-60)' },
+  { key: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger)' },
 ];
 
-const DEPT_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+const DEPT_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--cp-purple-60)', 'var(--ds-text-success, var(--cp-success))', 'var(--ds-text-danger)', 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', 'var(--ds-chart-teal-bolder)', 'var(--ds-background-discovery-bold)', 'var(--ds-text-danger, var(--cp-danger))'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -90,7 +90,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const max = sorted.length > 0 ? sorted[0][1] : 1;
-    const colors = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+    const colors = ['var(--cp-teal-60)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-text-warning, var(--cp-warning))', 'var(--cp-purple-60)', 'var(--ds-text-success, var(--cp-success))'];
     return sorted.map(([name, count], idx) => ({
       name,
       initials: getInitials(name),
@@ -112,7 +112,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
   const maxWeek = Math.max(...weeks.map(w => w.c), 1);
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     border: `1px solid ${dk.border}`,
     borderRadius: '12px',
     padding: '20px',
@@ -120,15 +120,15 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     boxShadow: isDark ? 'none' : undefined,
   };
 
-  const barTrack = 'var(--cp-bg-sunken, #F4F4F5)';
+  const barTrack = 'var(--cp-bg-sunken)';
 
   // ── Metric cards ──
   const METRICS = [
-    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: dk.t1, sub: `${stats.total} ideas in backlog`, subColor: dk.t3, icon: ClipboardList, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-    { label: 'CONVERSION RATE', value: `${stats.convRate.toFixed(1)}%`, color: dk.greenText, sub: `${stats.converted} ideas → requests`, subColor: dk.greenText, icon: RefreshCw, iconBg: 'var(--cp-success-light, #F0FDFA)', iconColor: 'var(--cp-teal-60, #0D9488)' },
-    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: 'var(--ds-text-brand, #3B82F6)', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: 'var(--ds-text-brand, #3B82F6)' },
-    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: 'var(--cp-success-light, #F0FDF4)', iconColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: dk.t1, sub: `${stats.total} ideas in backlog`, subColor: dk.t3, icon: ClipboardList, iconBg: 'var(--cp-primary-light)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: 'var(--cp-primary-light)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+    { label: 'CONVERSION RATE', value: `${stats.convRate.toFixed(1)}%`, color: dk.greenText, sub: `${stats.converted} ideas → requests`, subColor: dk.greenText, icon: RefreshCw, iconBg: 'var(--cp-success-light)', iconColor: 'var(--cp-teal-60)' },
+    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: 'var(--ds-text-brand)', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: 'var(--cp-primary-light)', iconColor: 'var(--ds-text-brand)' },
+    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: 'var(--cp-success-light)', iconColor: 'var(--ds-text-success, var(--cp-success))' },
   ];
 
   return (
@@ -140,13 +140,13 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
           return (
             <div key={m.label} style={cardStyle}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: dk.t3 }}>{m.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: dk.t3 }}>{m.label}</span>
                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: m.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon size={16} style={{ color: m.iconColor }} />
                 </div>
               </div>
               <div style={{ fontFamily: MONO, fontSize: '32px', fontWeight: 800, color: m.color, letterSpacing: '-0.5px', lineHeight: 1 }}>{m.value}</div>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: m.subColor, marginTop: '6px' }}>{m.sub}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: m.subColor, marginTop: '6px' }}>{m.sub}</div>
             </div>
           );
         })}
@@ -155,14 +155,14 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
       {/* Row 2: Funnel + Departments */}
       <div style={{ display: 'flex', gap: '16px' }}>
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Conversion Funnel</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Conversion Funnel</div>
           {funnel.map(f => (
             <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <span style={{ width: '100px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0 }}>{f.label}</span>
+              <span style={{ width: '100px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0 }}>{f.label}</span>
               <div style={{ flex: 1, height: '50px', background: barTrack, borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${Math.max(f.pct, f.count > 0 ? 8 : 0)}%`, height: '100%', background: f.color, borderRadius: '6px',
-                  display: 'flex', alignItems: 'center', paddingLeft: '12px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', paddingLeft: '12px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
                   minWidth: f.count > 0 ? '40px' : undefined,
                 }}>
                   {f.count}
@@ -173,17 +173,17 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
         </div>
 
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Ideas by Department</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Ideas by Department</div>
           {depts.length > 0 ? depts.map(d => (
             <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
+              <span style={{ width: '140px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
               <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${(d.count / maxDept) * 100}%`, height: '100%', background: d.color, borderRadius: '4px' }} />
               </div>
-              <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: dk.t2, minWidth: '20px', textAlign: 'right' }}>{d.count}</span>
+              <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: dk.t2, minWidth: '20px', textAlign: 'right' }}>{d.count}</span>
             </div>
           )) : (
-            <span style={{ fontSize: '12px', color: dk.t3 }}>No department data</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>No department data</span>
           )}
         </div>
       </div>
@@ -191,41 +191,41 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
       {/* Row 3: Weekly + Contributors */}
       <div style={{ display: 'flex', gap: '16px' }}>
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Weekly Submissions</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Weekly Submissions</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '8px', height: '160px' }}>
             {weeks.map(w => (
               <div key={w.w} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: dk.t2 }}>{w.c}</span>
+                <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: dk.t2 }}>{w.c}</span>
                 <div style={{
-                  width: '32px', height: `${Math.max((w.c / maxWeek) * 120, 4)}px`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                  width: '32px', height: `${Math.max((w.c / maxWeek) * 120, 4)}px`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                   borderRadius: '4px 4px 0 0',
                 }} />
-                <span style={{ fontSize: '11px', color: dk.t3, fontWeight: 600 }}>{w.w}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, fontWeight: 600 }}>{w.w}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Top Contributors</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Top Contributors</div>
           {contributors.length > 0 ? contributors.map(c => (
             <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '40px' }}>
               <div style={{
                 width: '24px', height: '24px', borderRadius: '50%', background: c.color, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '9px', fontWeight: 700,
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
               }}>{c.initials}</div>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t2, width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t2, width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
               <span style={{
-                fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: dk.t3,
-                background: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
+                fontFamily: MONO, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: dk.t3,
+                background: 'var(--cp-bg-page)', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
               }}>{c.count}</span>
               <div style={{ flex: 1, height: '6px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: `${c.pct}%`, height: '100%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px' }} />
+                <div style={{ width: `${c.pct}%`, height: '100%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: '4px' }} />
               </div>
             </div>
           )) : (
-            <span style={{ fontSize: '12px', color: dk.t3 }}>No contributor data</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>No contributor data</span>
           )}
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
       {/* Row 4: Traceability */}
       <div style={{ display: 'flex', gap: '16px' }}>
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Traceability Map</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Traceability Map</div>
           {traces.length > 0 ? (
             <div style={{ border: `1px solid ${dk.border}`, borderRadius: '8px', overflow: 'hidden' }}>
               {traces.map((t, i) => (
@@ -241,25 +241,25 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
                   display: 'flex', alignItems: 'center', gap: '10px', height: '44px', padding: '8px 12px',
                   borderBottom: i < traces.length - 1 ? `1px solid ${dk.divider}` : 'none',
                 }}>
-                  <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 600, color: dk.blueKey }}>{t.idea}</span>
-                  <span style={{ fontSize: '12px', color: dk.t2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ideaTitle}</span>
-                  <span style={{ color: dk.t3, fontSize: '13px' }}>→</span>
-                  <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: dk.greenText }}>{t.init}</span>
+                  <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.blueKey }}>{t.idea}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ideaTitle}</span>
+                  <span style={{ color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>→</span>
+                  <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: dk.greenText }}>{t.init}</span>
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
-                    background: 'var(--cp-success-light, #DCFCE7)',
-                    color: 'var(--cp-success, #15803D)',
+                    background: 'var(--cp-success-light)',
+                    color: 'var(--cp-success)',
                     padding: '2px 8px', borderRadius: '20px',
-                    fontSize: '11px', fontWeight: 600,
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                   }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))' }} />
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success))' }} />
                     {t.status}
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: '13px' }}>
+            <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>
               No converted ideas yet
             </div>
           )}
@@ -267,16 +267,16 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
 
         {/* Pipeline Summary */}
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Pipeline Summary</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Pipeline Summary</div>
           {funnel.filter(f => f.count > 0).map(f => (
             <div key={f.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: f.color }} />
-                <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t2 }}>{f.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t2 }}>{f.label}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontFamily: MONO, fontSize: '14px', fontWeight: 700, color: dk.t1 }}>{f.count}</span>
-                <span style={{ fontSize: '11px', color: dk.t3 }}>
+                <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1 }}>{f.count}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3 }}>
                   ({stats.total > 0 ? ((f.count / stats.total) * 100).toFixed(0) : 0}%)
                 </span>
               </div>

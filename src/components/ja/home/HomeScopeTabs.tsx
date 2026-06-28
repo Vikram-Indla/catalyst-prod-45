@@ -69,7 +69,7 @@ export function HomeScopeTabs({ value, onChange, counts, className }: HomeScopeT
                 "min-w-[28px] h-[20px] px-2 rounded-[10px] text-xs font-semibold tabular-nums",
                 "inline-flex items-center justify-center",
                 isActive
-                  // Active count: teal badge (--brand-teal var(--ds-chart-teal-bold, #0d9488))
+                  // Active count: teal badge (--brand-teal var(--ds-chart-teal-bold))
                   ? "bg-[var(--status-success)] text-white"
                   // Inactive count: muted badge
                   : "bg-[var(--surface-muted)] text-[var(--text-4)]"

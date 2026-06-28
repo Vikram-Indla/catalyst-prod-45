@@ -82,9 +82,9 @@ const CYCLE_STATUS_APPEARANCE: Record<string, 'default' | 'inprogress' | 'succes
 const thStyle: React.CSSProperties = {
   padding: '8px 12px',
   textAlign: 'left',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
-  color: 'var(--ds-text-subtle, #42526E)',
+  color: 'var(--ds-text-subtle)',
 };
 
 const tdStyle: React.CSSProperties = { padding: '10px 12px' };
@@ -161,7 +161,7 @@ function AddCasesModal({
         transform: 'translate(-50%, -50%)',
         width: 560,
         maxHeight: '80vh',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         borderRadius: 8,
         boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
         zIndex: 301,
@@ -169,8 +169,8 @@ function AddCasesModal({
         flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-          <h2 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border)' }}>
+          <h2 style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)' }}>
             Add cases to set
           </h2>
           <input
@@ -182,19 +182,19 @@ function AddCasesModal({
             style={{
               width: '100%',
               padding: '6px 10px',
-              border: '2px solid var(--ds-border, #DFE1E6)',
+              border: '2px solid var(--ds-border)',
               borderRadius: 4,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontFamily: 'var(--ds-font-family-body)',
               boxSizing: 'border-box',
-              color: 'var(--ds-text, #172B4D)',
-              background: 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--ds-text)',
+              background: 'var(--ds-surface)',
             }}
           />
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px' }}>
           {filtered.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, padding: '16px 0' }}>
+            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: '16px 0' }}>
               {available.length === 0 ? 'All cases are already in this set.' : 'No cases match your search.'}
             </p>
           ) : (
@@ -207,29 +207,29 @@ function AddCasesModal({
                   gap: 12,
                   padding: '8px 0',
                   cursor: 'pointer',
-                  borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                  borderBottom: '1px solid var(--ds-border)',
                 }}
               >
                 <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggle(c.id)} />
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', minWidth: 72 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', minWidth: 72 }}>
                   {c.key}
                 </span>
-                <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', flex: 1 }}>{c.title}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1 }}>{c.title}</span>
               </label>
             ))
           )}
         </div>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border, #DFE1E6)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
             style={{
               padding: '8px 16px',
               background: 'none',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 4,
               cursor: 'pointer',
-              fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              fontSize: 'var(--ds-font-size-400)',
+              color: 'var(--ds-text)',
             }}
           >
             Cancel
@@ -239,12 +239,12 @@ function AddCasesModal({
             disabled={selected.size === 0 || saving}
             style={{
               padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--ds-background-brand-bold)',
+              color: 'var(--ds-text-inverse)',
               border: 'none',
               borderRadius: 4,
               cursor: selected.size === 0 || saving ? 'not-allowed' : 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               opacity: selected.size === 0 ? 0.7 : 1,
             }}
@@ -318,8 +318,8 @@ function AddToCycleDropdown({
         position: 'fixed',
         top: rect.bottom + 4,
         right: window.innerWidth - rect.right,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
@@ -329,7 +329,7 @@ function AddToCycleDropdown({
       }}
     >
       {cycles.length === 0 ? (
-        <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div style={{ padding: '10px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
           No cycles available
         </div>
       ) : (
@@ -346,10 +346,10 @@ function AddToCycleDropdown({
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              fontSize: 13,
-              color: 'var(--ds-text, #172B4D)',
+              fontSize: 'var(--ds-font-size-300)',
+              color: 'var(--ds-text)',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           >
             {cycle.name}
@@ -463,7 +463,7 @@ export default function SetDetailPage() {
   }
 
   if (!set) {
-    return <div style={{ padding: 32, color: 'var(--ds-text-danger, #AE2A19)' }}>Set not found</div>;
+    return <div style={{ padding: 32, color: 'var(--ds-text-danger)' }}>Set not found</div>;
   }
 
   const setTypeLabel = SET_TYPE_LABELS[set.set_type as SetType] ?? set.set_type;
@@ -483,11 +483,11 @@ export default function SetDetailPage() {
                 style={{
                   padding: '7px 14px',
                   background: 'none',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 4,
                   cursor: 'pointer',
-                  fontSize: 13,
-                  color: 'var(--ds-text, #172B4D)',
+                  fontSize: 'var(--ds-font-size-300)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 + Add cases
@@ -499,11 +499,11 @@ export default function SetDetailPage() {
                   style={{
                     padding: '7px 14px',
                     background: 'none',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: 4,
                     cursor: 'pointer',
-                    fontSize: 13,
-                    color: 'var(--ds-text, #172B4D)',
+                    fontSize: 'var(--ds-font-size-300)',
+                    color: 'var(--ds-text)',
                   }}
                 >
                   Add to cycle ▾
@@ -522,11 +522,11 @@ export default function SetDetailPage() {
                 style={{
                   padding: '7px 14px',
                   background: 'none',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 4,
                   cursor: 'pointer',
-                  fontSize: 13,
-                  color: 'var(--ds-text, #172B4D)',
+                  fontSize: 'var(--ds-font-size-300)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Edit
@@ -544,7 +544,7 @@ export default function SetDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border, #DFE1E6)', marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border)', marginBottom: 20 }}>
         {(['cases', 'cycles'] as const).map(tab => (
           <button
             key={tab}
@@ -554,10 +554,10 @@ export default function SetDetailPage() {
               border: 'none',
               background: 'none',
               cursor: 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: activeTab === tab ? 600 : 400,
-              color: activeTab === tab ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #42526E)',
-              borderBottom: activeTab === tab ? '2px solid var(--ds-border-brand, #0052CC)' : '2px solid transparent',
+              color: activeTab === tab ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
+              borderBottom: activeTab === tab ? '2px solid var(--ds-border-brand)' : '2px solid transparent',
               marginBottom: -2,
             }}
           >
@@ -581,12 +581,12 @@ export default function SetDetailPage() {
                   onClick={() => setShowAddCases(true)}
                   style={{
                     padding: '8px 16px',
-                    background: 'var(--ds-background-brand-bold, #0052CC)',
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
+                    background: 'var(--ds-background-brand-bold)',
+                    color: 'var(--ds-text-inverse)',
                     border: 'none',
                     borderRadius: 4,
                     cursor: 'pointer',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                   }}
                 >
@@ -595,10 +595,10 @@ export default function SetDetailPage() {
               }
             />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
                 <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
                     <th style={thStyle}>Key</th>
                     <th style={thStyle}>Title</th>
                     <th style={thStyle}>Status</th>
@@ -609,11 +609,11 @@ export default function SetDetailPage() {
                   {setCases.map(sc => {
                     const tc = sc.tm_test_cases;
                     return (
-                      <tr key={sc.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                      <tr key={sc.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
+                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
                           {tc?.case_key ?? '—'}
                         </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)' }}>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
                           {tc?.title ?? '—'}
                         </td>
                         <td style={tdStyle}>
@@ -629,7 +629,7 @@ export default function SetDetailPage() {
                               background: 'none',
                               border: 'none',
                               cursor: 'pointer',
-                              color: 'var(--ds-text-subtlest, #6B778C)',
+                              color: 'var(--ds-text-subtlest)',
                               padding: 4,
                               display: 'flex',
                               alignItems: 'center',
@@ -658,10 +658,10 @@ export default function SetDetailPage() {
           ) : cycleSets.length === 0 ? (
             <EmptyState message="This set has not been added to any cycles yet." />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
                 <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
                     <th style={thStyle}>Cycle name</th>
                     <th style={thStyle}>Status</th>
                     <th style={thStyle}>Start date</th>
@@ -673,8 +673,8 @@ export default function SetDetailPage() {
                   {cycleSets.map(cs => {
                     const cycle = cs.tm_test_cycles;
                     return (
-                      <tr key={cs.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>
+                      <tr key={cs.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text)', fontWeight: 500 }}>
                           {cycle?.name ?? '—'}
                         </td>
                         <td style={tdStyle}>
@@ -684,13 +684,13 @@ export default function SetDetailPage() {
                             </Lozenge>
                           ) : '—'}
                         </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)', fontSize: 12 }}>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
                           {cycle?.sprint?.name ?? '—'}
                         </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)' }}>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
                           {cycle?.planned_start_date ? formatDate(cycle.planned_start_date) : '—'}
                         </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)' }}>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
                           {cycle?.planned_end_date ? formatDate(cycle.planned_end_date) : '—'}
                         </td>
                         <td style={tdStyle}>
@@ -701,8 +701,8 @@ export default function SetDetailPage() {
                                 background: 'none',
                                 border: 'none',
                                 cursor: 'pointer',
-                                fontSize: 12,
-                                color: 'var(--ds-link, #0052CC)',
+                                fontSize: 'var(--ds-font-size-200)',
+                                color: 'var(--ds-link)',
                                 padding: 0,
                               }}
                             >
@@ -739,15 +739,15 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div style={{
       padding: '16px 20px',
-      border: '1px solid var(--ds-border, #DFE1E6)',
+      border: '1px solid var(--ds-border)',
       borderRadius: 8,
-      background: 'var(--ds-surface, #FFFFFF)',
+      background: 'var(--ds-surface)',
       minWidth: 140,
     }}>
-      <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 4 }}>
         {value}
       </div>
-      <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
         {label}
       </div>
     </div>
@@ -759,12 +759,12 @@ function EmptyState({ message, action }: { message: string; action?: React.React
     <div style={{
       textAlign: 'center',
       padding: '64px 32px',
-      color: 'var(--ds-text-subtlest, #6B778C)',
-      fontSize: 14,
-      border: '1px dashed var(--ds-border, #DFE1E6)',
+      color: 'var(--ds-text-subtlest)',
+      fontSize: 'var(--ds-font-size-400)',
+      border: '1px dashed var(--ds-border)',
       borderRadius: 8,
     }}>
-      <p style={{ margin: '0 0 16px', color: 'var(--ds-text-subtle, #42526E)' }}>{message}</p>
+      <p style={{ margin: '0 0 16px', color: 'var(--ds-text-subtle)' }}>{message}</p>
       {action}
     </div>
   );

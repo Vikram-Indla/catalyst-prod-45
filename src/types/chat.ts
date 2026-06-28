@@ -49,6 +49,10 @@ export interface ChatMessage {
   authorAvatarUrl: string | null;
   bodyText: string;
   bodyAdf: unknown | null;
+  /** Non-null for system/event rows (e.g. 'huddle_summary'). Normal messages: null. */
+  eventType?: string | null;
+  /** Event payload for event rows. Normal messages: null. */
+  eventMeta?: Record<string, unknown> | null;
   createdAt: string;
   editedAt: string | null;
   deletedAt: string | null;

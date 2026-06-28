@@ -130,7 +130,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
         <div 
           style={{
             padding: '20px',
-            backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
+            backgroundColor: 'var(--ds-surface-sunken)',
             borderRadius: '12px',
             textAlign: 'center',
             marginTop: '12px',
@@ -138,8 +138,8 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
         >
           <p 
             style={{
-              fontSize: '14px',
-              color: 'var(--ds-text-subtlest, #64748b)',
+              fontSize: 'var(--ds-font-size-400)',
+              color: 'var(--ds-text-subtlest)',
               marginBottom: '12px',
               margin: 0,
               marginBlockEnd: '12px',
@@ -159,10 +159,10 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               height: '50px',
               padding: '0 16px',
               fontFamily: 'var(--cp-font-body)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              backgroundColor: 'var(--ds-text-brand, #3b82f6)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              backgroundColor: 'var(--ds-text-brand)',
               border: 'none',
               borderRadius: '8px',
               cursor: createWeek.isPending ? 'not-allowed' : 'pointer',
@@ -170,7 +170,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               transition: 'all 0.15s ease',
             }}
           >
-            <Plus size={16} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
+            <Plus size={16} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }} />
             {createWeek.isPending ? 'Starting...' : 'Start this week'}
           </button>
         </div>

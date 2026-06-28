@@ -133,14 +133,14 @@ const OBSERVER_CAP = 60;
 type HubFilter = 'All' | 'Projects' | 'Products' | 'Home' | 'Incidents' | 'Admin';
 
 const HUB_COLORS: Record<string, string> = {
-  Projects:  'var(--ds-link, #0C66E4)',
-  Products:  'var(--ds-background-discovery-bold, #6E5DC6)',
-  Home:      'var(--ds-background-success-bold, #1F845A)',
-  Incidents: 'var(--ds-text-danger, #AE2A19)',
-  Admin:     'var(--ds-icon-subtle, #626F86)',
-  Shared:    'var(--ds-text-subtle, #44546F)',
-  Other:     'var(--ds-text-disabled, #8590A2)',
-  Deferred:  'var(--ds-border, #DFE1E6)',
+  Projects:  'var(--ds-link)',
+  Products:  'var(--ds-background-discovery-bold)',
+  Home:      'var(--ds-background-success-bold)',
+  Incidents: 'var(--ds-text-danger)',
+  Admin:     'var(--ds-icon-subtle)',
+  Shared:    'var(--ds-text-subtle)',
+  Other:     'var(--ds-text-disabled)',
+  Deferred:  'var(--ds-border)',
 };
 
 const HUB_ORDER = ['Projects', 'Products', 'Home', 'Incidents', 'Admin', 'Shared', 'Other', 'Deferred'];
@@ -387,14 +387,14 @@ const PANEL_BASE: React.CSSProperties = {
   marginTop: token('space.200', '16px'),
   borderRadius: 6,
   padding: token('space.200', '16px'),
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
 };
 
 const SNIPPET_STYLE: React.CSSProperties = {
   display: 'block',
-  fontSize: 12,
-  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+  fontSize: 'var(--ds-font-size-200)',
+  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+  border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
   borderRadius: 4,
   padding: token('space.150', '12px'),
   overflowX: 'auto',
@@ -455,13 +455,13 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
           gap: token('space.100', '8px'),
           flexWrap: 'wrap',
           paddingBottom: token('space.150', '12px'),
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
         }}
       >
         {status === 'observed' && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'), color: 'var(--ds-surface, #FFFFFF)' }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, background: token('color.background.brand.bold', 'var(--ds-link)'), color: 'var(--ds-surface)' }}
             onClick={() => setPanel(panel === 'mark-canonical' ? null : 'mark-canonical')}
           >
             Mark canonical
@@ -470,7 +470,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {(status === 'canonical' || status === 'observed') && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`, cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface)'), color: token('color.text', 'var(--ds-text, var(--ds-text))') }}
             onClick={() => setPanel(panel === 'deprecate' ? null : 'deprecate')}
           >
             Deprecate →
@@ -479,7 +479,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {(status === 'deprecated' || status === 'banned') && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`, cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface)'), color: token('color.text', 'var(--ds-text, var(--ds-text))') }}
             onClick={() => setPanel(panel === 'restore' ? null : 'restore')}
           >
             Restore ↑
@@ -488,7 +488,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {status !== 'banned' && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.danger.bold', 'var(--ds-text-danger, #AE2A19)'), color: 'var(--ds-surface, #FFFFFF)' }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, background: token('color.background.danger.bold', 'var(--ds-text-danger)'), color: 'var(--ds-surface)' }}
             onClick={() => setPanel(panel === 'ban' ? null : 'ban')}
           >
             Ban ✕
@@ -499,20 +499,20 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       {/* Inline action panels — expand below buttons, no portal needed */}
 
       {panel === 'ban' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.danger', 'var(--ds-background-danger)'), border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, var(--ds-background-danger))')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.danger', 'var(--ds-text-danger)'), marginBottom: 8 }}>
             Ban {entry.name}
           </div>
-          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 12 }}>
             Permanently bans this component. It will appear with a red BANNED badge so future engineers
             cannot re-introduce it.
             {entry.consumers.length > 0 && (
-              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
                 ⚠ {entry.consumers.length} live reference{entry.consumers.length === 1 ? '' : 's'} must be removed first.
               </span>
             )}
           </p>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
+          <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 4 }}>
             Ban reason (banned_reason)
           </label>
           <Textfield
@@ -520,7 +520,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             onChange={(e) => setBanReason((e.target as HTMLInputElement).value)}
             placeholder="One sentence — why this component must never be used"
           />
-          <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginTop: 12, marginBottom: 4 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon)'), marginTop: 12, marginBottom: 4 }}>
             Add to BANNED array in <code>src/registry/components.registry.ts</code>:
           </div>
           <code style={SNIPPET_STYLE}>{banSnippet}</code>
@@ -528,25 +528,25 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="danger" spacing="compact" onClick={() => { navigator.clipboard.writeText(banSnippet); }}>
               Copy snippet
             </Button>
-            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 'var(--ds-font-size-300)', background: "transparent", color: "var(--ds-text-subtle)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
 
       {panel === 'deprecate' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.warning', 'var(--ds-background-warning)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.warning', 'var(--ds-text-warning)'), marginBottom: 8 }}>
             Deprecate {entry.name}
           </div>
-          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 12 }}>
             Engineers will see a yellow DEPRECATED badge and a migration pointer.
             {entry.consumers.length > 0 && (
-              <span style={{ color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.warning', 'var(--ds-text-warning)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
                 ⚠ {entry.consumers.length} consumer{entry.consumers.length === 1 ? '' : 's'} will need migration.
               </span>
             )}
           </p>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
+          <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 4 }}>
             Replacement component id (deprecation_target)
           </label>
           <Textfield
@@ -559,17 +559,17 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="warning" spacing="compact" onClick={() => { navigator.clipboard.writeText(deprecateSnippet); }}>
               Copy snippet
             </Button>
-            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 'var(--ds-font-size-300)', background: "transparent", color: "var(--ds-text-subtle)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
 
       {panel === 'mark-canonical' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), border: `1px solid ${token('color.border.success', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text.success', 'var(--ds-text-success, #216E4E)'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.success', 'var(--ds-background-success)'), border: `1px solid ${token('color.border.success', 'var(--ds-background-success-bold, var(--ds-background-success-bold))')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.success', 'var(--ds-text-success)'), marginBottom: 8 }}>
             Mark {entry.name} as canonical
           </div>
-          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 12 }}>
             Promotes this component to canonical status — green badge, standard for its use case.
             Copy the snippet below and add it to the CANONICAL array, updating the fields marked ← update.
           </p>
@@ -578,20 +578,20 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="primary" spacing="compact" onClick={() => { navigator.clipboard.writeText(canonicalSnippet); }}>
               Copy snippet
             </Button>
-            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 'var(--ds-font-size-300)', background: "transparent", color: "var(--ds-text-subtle)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
 
       {panel === 'restore' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'), border: `1px solid ${token('color.border', 'var(--ds-border-disabled, var(--ds-border-disabled, #DCDFE4))')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'), border: `1px solid ${token('color.border', 'var(--ds-border-disabled, var(--ds-border-disabled))')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 8 }}>
             Restore {entry.name}
           </div>
-          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 12 }}>
             Restore from <strong>{entry.status}</strong> to canonical status.
             {entry.status === 'banned' && (
-              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
                 ⚠ Restoring a banned component requires Vikram's explicit approval.
               </span>
             )}
@@ -601,7 +601,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="default" spacing="compact" onClick={() => { navigator.clipboard.writeText(restoreSnippet); }}>
               Copy snippet
             </Button>
-            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 'var(--ds-font-size-300)', background: "transparent", color: "var(--ds-text-subtle)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
@@ -636,7 +636,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
         }}
       >
         <Heading size="xsmall">Hub breakdown</Heading>
-        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
           {hubEntries.length} hub{hubEntries.length === 1 ? '' : 's'} · tap to publish targeted
         </span>
       </div>
@@ -644,7 +644,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
         {hubEntries.map(([hub, files]) => {
           const isOpen = openHub === hub;
-          const color = HUB_COLORS[hub] ?? 'var(--ds-text-disabled, #8590A2)';
+          const color = HUB_COLORS[hub] ?? 'var(--ds-text-disabled)';
           const route = HUB_ROUTES[hub] ?? '/';
           const isDeferred = hub === 'Deferred';
 
@@ -668,7 +668,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
             <div
               key={hub}
               style={{
-                border: `1px solid ${isOpen ? color : token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                border: `1px solid ${isOpen ? color : token('color.border', 'var(--ds-border-disabled)')}`,
                 borderRadius: 6,
                 overflow: 'hidden',
               }}
@@ -695,9 +695,9 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                 />
                 <span
                   style={{
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
-                    color: token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: token('color.text', 'var(--ds-text)'),
                     flex: 1,
                   }}
                 >
@@ -705,8 +705,8 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                 </span>
                 <span
                   style={{
-                    fontSize: 11,
-                    color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+                    fontSize: 'var(--ds-font-size-100)',
+                    color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
                     marginRight: token('space.075', '6px'),
                   }}
                 >
@@ -715,8 +715,8 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                 {isDeferred ? (
                   <span
                     style={{
-                      fontSize: 11,
-                      color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'),
+                      fontSize: 'var(--ds-font-size-100)',
+                      color: token('color.text.disabled', 'var(--ds-text-disabled)'),
                       fontStyle: 'italic',
                     }}
                   >
@@ -730,10 +730,10 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                       borderRadius: 3,
                       border: 'none',
                       cursor: 'pointer',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       background: isOpen ? color : `${color}22`,
-                      color: isOpen ? 'var(--ds-text-inverse, #FFFFFF)' : color,
+                      color: isOpen ? 'var(--ds-text-inverse)' : color,
                     }}
                     onClick={() => setOpenHub(isOpen ? null : hub)}
                   >
@@ -747,16 +747,16 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                 <div
                   style={{
                     padding: token('space.150', '12px'),
-                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
-                    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
+                    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
                   }}
                 >
                   {/* File list with hub dots */}
                   <div
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
-                      color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+                      color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       marginBottom: token('space.075', '6px'),
@@ -790,10 +790,10 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         <a
                           href={`vscode://file/${REPO_ROOT_ABS}/${f}`}
                           style={{
-                            color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                            color: token('color.link', 'var(--ds-link)'),
                             textDecoration: 'none',
                             fontFamily: 'var(--ds-font-family-code)',
-                            fontSize: 11,
+                            fontSize: 'var(--ds-font-size-100)',
                           }}
                         >
                           {f}
@@ -805,9 +805,9 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                   {/* Test plan snippet */}
                   <div
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
-                      color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+                      color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       marginBottom: 4,
@@ -815,7 +815,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                   >
                     Test plan
                   </div>
-                  <code style={{ ...SNIPPET_STYLE, fontSize: 11 }}>{testPlan}</code>
+                  <code style={{ ...SNIPPET_STYLE, fontSize: 'var(--ds-font-size-100)' }}>{testPlan}</code>
 
                   {/* Actions — no static text, all are clickable */}
                   <div
@@ -834,10 +834,10 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         borderRadius: 3,
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
                         background: color,
-                        color: 'var(--ds-text-inverse, #FFFFFF)',
+                        color: 'var(--ds-text-inverse)',
                       }}
                       onClick={() => navigator.clipboard.writeText(testPlan)}
                     >
@@ -851,7 +851,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                           borderRadius: 3,
                           border: 'none',
                           cursor: 'pointer',
-                          fontSize: 12,
+                          fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 600,
                           background: `${color}22`,
                           color,
@@ -873,7 +873,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         borderRadius: 3,
                         border: `1px solid ${color}`,
                         cursor: 'pointer',
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
                         background: 'transparent',
                         color,
@@ -890,9 +890,9 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         borderRadius: 3,
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         background: 'transparent',
-                        color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                        color: token('color.text.subtle', 'var(--ds-icon)'),
                       }}
                       onClick={() => setOpenHub(null)}
                     >
@@ -931,12 +931,12 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
           <StatusChip status={entry.status} />
           <span
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               padding: '2px 8px',
               borderRadius: 3,
               background: token('color.background.neutral', '#091E420F'),
-              color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+              color: token('color.text.subtle', 'var(--ds-icon)'),
             }}
           >
             {entry.origin === 'atlaskit' ? 'Atlaskit' : 'Internal'}
@@ -945,9 +945,9 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
         <div
           style={{
             marginTop: token('space.100', '8px'),
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--ds-font-family-code)',
-            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+            color: token('color.text.subtle', 'var(--ds-icon)'),
           }}
         >
           {entry.source}
@@ -955,8 +955,8 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
         <p
           style={{
             marginTop: token('space.150', '12px'),
-            fontSize: 13,
-            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+            fontSize: 'var(--ds-font-size-300)',
+            color: token('color.text.subtle', 'var(--ds-icon)'),
             fontStyle: 'italic',
           }}
         >
@@ -989,7 +989,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
           >
             {visible.map((path) => {
               const hub = getHubForFile(path);
-              const hubColor = HUB_COLORS[hub] ?? 'var(--ds-text-disabled, #8590A2)';
+              const hubColor = HUB_COLORS[hub] ?? 'var(--ds-text-disabled)';
               return (
                 <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span
@@ -1006,10 +1006,10 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
                   <a
                     href={`vscode://file/${path}`}
                     style={{
-                      color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                      color: token('color.link', 'var(--ds-link)'),
                       textDecoration: 'none',
                       fontFamily: 'var(--ds-font-family-code)',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                     }}
                   >
                     {path}
@@ -1053,9 +1053,9 @@ function StatsStrip() {
         <div key={item.label}>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
-              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               marginBottom: 4,
@@ -1068,8 +1068,8 @@ function StatsStrip() {
               fontSize: 32,
               fontWeight: 700,
               color: (item as { danger?: boolean }).danger
-                ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
-                : token('color.text', 'var(--ds-text, #172B4D)'),
+                ? token('color.text.danger', 'var(--ds-text-danger)')
+                : token('color.text', 'var(--ds-text)'),
               lineHeight: 1,
             }}
           >
@@ -1156,18 +1156,18 @@ function InventoryPane() {
         display: 'grid',
         gridTemplateColumns: '240px 300px 1fr',
         gap: 0,
-        border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
         borderRadius: 8,
         overflow: 'hidden',
         minHeight: 600,
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
       }}
     >
       {/* Column 1 — Module + Status + Hub nav (240px — k-notation avoids truncation) */}
       <div
         style={{
-          borderRight: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
-          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+          borderRight: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
+          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
           overflowY: 'auto',
         }}
       >
@@ -1185,7 +1185,7 @@ function InventoryPane() {
                     setSelectedId('');
                   }}
                   iconAfter={
-                    <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
                       {formatCount(moduleCounts[m])}
                     </span>
                   }
@@ -1219,7 +1219,7 @@ function InventoryPane() {
                 isSelected={hubFilter === 'All'}
                 onClick={() => { setHubFilter('All'); setSelectedId(''); }}
                 iconAfter={
-                  <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
                     {formatCount(ACTIVE_ENTRIES_STATIC.length)}
                   </span>
                 }
@@ -1245,7 +1245,7 @@ function InventoryPane() {
                           display: 'inline-block',
                         }}
                       />
-                      <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
                         {formatCount(hubCounts[hub] ?? 0)}
                       </span>
                     </span>
@@ -1258,7 +1258,7 @@ function InventoryPane() {
               <ButtonItem
                 isDisabled
                 iconAfter={
-                  <span style={{ fontSize: 10, color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), fontStyle: 'italic' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', color: token('color.text.disabled', 'var(--ds-text-disabled)'), fontStyle: 'italic' }}>
                     soon
                   </span>
                 }
@@ -1273,7 +1273,7 @@ function InventoryPane() {
       {/* Column 2 — Component list */}
       <div
         style={{
-          borderRight: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+          borderRight: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
           display: 'flex',
           flexDirection: 'column',
           overflowY: 'auto',
@@ -1282,7 +1282,7 @@ function InventoryPane() {
         <div
           style={{
             padding: token('space.100', '8px'),
-            borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
           }}
         >
           <Textfield
@@ -1297,11 +1297,11 @@ function InventoryPane() {
           <div
             style={{
               padding: `${token('space.075', '6px')} ${token('space.100', '8px')}`,
-              borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
               display: 'flex',
               gap: 4,
               flexWrap: 'wrap',
-              background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+              background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
             }}
           >
             {activeModule !== 'All' && (
@@ -1310,11 +1310,11 @@ function InventoryPane() {
                 style={{
                   padding: '2px 8px',
                   borderRadius: 12,
-                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                   background: token('color.background.neutral', '#091E420F'),
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   cursor: 'pointer',
-                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: token('color.text', 'var(--ds-text)'),
                 }}
                 onClick={() => { setActiveModule('All'); setSelectedId(''); }}
               >
@@ -1327,11 +1327,11 @@ function InventoryPane() {
                 style={{
                   padding: '2px 8px',
                   borderRadius: 12,
-                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                   background: token('color.background.neutral', '#091E420F'),
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   cursor: 'pointer',
-                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: token('color.text', 'var(--ds-text)'),
                 }}
                 onClick={() => { setStatusFilter('all'); setSelectedId(''); }}
               >
@@ -1344,11 +1344,11 @@ function InventoryPane() {
                 style={{
                   padding: '2px 8px',
                   borderRadius: 12,
-                  border: `1px solid ${HUB_COLORS[hubFilter] ?? token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
-                  background: `${HUB_COLORS[hubFilter] ?? 'var(--ds-link, #0C66E4)'}18`,
-                  fontSize: 11,
+                  border: `1px solid ${HUB_COLORS[hubFilter] ?? token('color.border', 'var(--ds-border-disabled)')}`,
+                  background: `${HUB_COLORS[hubFilter] ?? 'var(--ds-link)'}18`,
+                  fontSize: 'var(--ds-font-size-100)',
                   cursor: 'pointer',
-                  color: HUB_COLORS[hubFilter] ?? token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: HUB_COLORS[hubFilter] ?? token('color.text', 'var(--ds-text)'),
                   fontWeight: 600,
                 }}
                 onClick={() => { setHubFilter('All'); setSelectedId(''); }}
@@ -1363,8 +1363,8 @@ function InventoryPane() {
             <div
               style={{
                 padding: token('space.300', '24px'),
-                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
-                fontSize: 13,
+                color: token('color.text.subtle', 'var(--ds-icon)'),
+                fontSize: 'var(--ds-font-size-300)',
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: 8 }}>No components match your filters.</div>
@@ -1373,11 +1373,11 @@ function InventoryPane() {
                 style={{
                   padding: '4px 12px',
                   borderRadius: 3,
-                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
-                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
+                  background: token('elevation.surface', 'var(--ds-surface)'),
                   cursor: 'pointer',
-                  fontSize: 12,
-                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  fontSize: 'var(--ds-font-size-200)',
+                  color: token('color.text', 'var(--ds-text)'),
                 }}
                 onClick={() => {
                   setActiveModule('All');
@@ -1402,10 +1402,10 @@ function InventoryPane() {
                     textAlign: 'left',
                     padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
                     border: 'none',
-                    borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-background-neutral, #F1F2F4)')}`,
+                    borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-background-neutral)')}`,
                     background:
                       selectedId === entry.id
-                        ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+                        ? token('color.background.selected', 'var(--ds-background-selected)')
                         : 'transparent',
                     cursor: 'pointer',
                     display: 'flex',
@@ -1423,9 +1423,9 @@ function InventoryPane() {
                   >
                     <span
                       style={{
-                        fontSize: 13,
+                        fontSize: 'var(--ds-font-size-300)',
                         fontWeight: selectedId === entry.id ? 600 : 400,
-                        color: token('color.text', 'var(--ds-text, #172B4D)'),
+                        color: token('color.text', 'var(--ds-text)'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -1442,13 +1442,13 @@ function InventoryPane() {
                             width: 6,
                             height: 6,
                             borderRadius: '50%',
-                            background: HUB_COLORS[topHub] ?? 'var(--ds-text-disabled, #8590A2)',
+                            background: HUB_COLORS[topHub] ?? 'var(--ds-text-disabled)',
                             display: 'inline-block',
                           }}
                         />
                       )}
                       {entry.consumers.length > 0 && (
-                        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
                           {formatCount(entry.consumers.length)}×
                         </span>
                       )}
@@ -1477,8 +1477,8 @@ function InventoryPane() {
         ) : (
           <div
             style={{
-              color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
-              fontSize: 13,
+              color: token('color.text.subtle', 'var(--ds-icon)'),
+              fontSize: 'var(--ds-font-size-300)',
               paddingTop: token('space.200', '16px'),
             }}
           >
@@ -1488,11 +1488,11 @@ function InventoryPane() {
               style={{
                 padding: '4px 12px',
                 borderRadius: 3,
-                border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
-                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
+                background: token('elevation.surface', 'var(--ds-surface)'),
                 cursor: 'pointer',
-                fontSize: 12,
-                color: token('color.text', 'var(--ds-text, #172B4D)'),
+                fontSize: 'var(--ds-font-size-200)',
+                color: token('color.text', 'var(--ds-text)'),
               }}
               onClick={() => setSelectedId(ACTIVE_ENTRIES_STATIC[0]?.id ?? '')}
             >
@@ -1516,9 +1516,9 @@ function BannedRegistryPanel() {
           key={entry.id}
           style={{
             padding: token('space.200', '16px'),
-            border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, #FFECEB)')}`,
+            border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger)')}`,
             borderRadius: 6,
-            background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+            background: token('color.background.danger', 'var(--ds-background-danger)'),
           }}
         >
           <div
@@ -1529,17 +1529,17 @@ function BannedRegistryPanel() {
               marginBottom: token('space.100', '8px'),
             }}
           >
-            <strong style={{ fontSize: 14, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
+            <strong style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.danger', 'var(--ds-text-danger)') }}>
               {entry.name}
             </strong>
             <Lozenge appearance="removed">Banned</Lozenge>
             {entry.banned_anchor && (
-              <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon)') }}>
                 {entry.banned_anchor}
               </span>
             )}
           </div>
-          <p style={{ margin: 0, fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text)') }}>
             {entry.banned_reason}
           </p>
         </div>
@@ -1560,24 +1560,24 @@ function ApplyPanel({ rec, onClose }: { rec: AiRec; onClose: () => void }) {
       : `// Add to CANONICAL array in src/registry/components.registry.ts:\n{\n  id: '${rec.entry.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}',\n  name: '${rec.entry.name}',\n  status: 'canonical',\n  version: '1.0.0',\n}`;
 
   const bg = rec.severity === 'urgent'
-    ? token('color.background.danger', 'var(--ds-background-danger, #FFECEB)')
+    ? token('color.background.danger', 'var(--ds-background-danger)')
     : rec.severity === 'high'
-    ? token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)')
-    : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)');
+    ? token('color.background.warning', 'var(--ds-background-warning)')
+    : token('color.background.neutral.subtle', 'var(--ds-surface-sunken)');
 
   const border = rec.severity === 'urgent'
-    ? `1px solid ${token('color.border.danger', 'var(--ds-background-danger, #FFECEB)')}`
+    ? `1px solid ${token('color.border.danger', 'var(--ds-background-danger)')}`
     : rec.severity === 'high'
-    ? `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`
-    : `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`;
+    ? `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold)')}`
+    : `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`;
 
   return (
     <div style={{ ...PANEL_BASE, background: bg, border, marginBottom: token('space.200', '16px') }}>
-      <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 6 }}>
+      <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 6 }}>
         Apply: {rec.title}
       </div>
-      <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>{rec.detail}</p>
-      <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 4 }}>
+      <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 8 }}>{rec.detail}</p>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon)'), marginBottom: 4 }}>
         Action: {rec.suggestedAction}
       </div>
       <code style={SNIPPET_STYLE}>{snippet}</code>
@@ -1597,21 +1597,21 @@ function AiRecommendationsPane() {
   const [appliedRecs, setAppliedRecs] = useState<Set<string>>(new Set());
 
   const severityColor = {
-    urgent: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-    high: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
-    medium: token('color.text', 'var(--ds-text, #172B4D)'),
+    urgent: token('color.text.danger', 'var(--ds-text-danger)'),
+    high: token('color.text.warning', 'var(--ds-text-warning)'),
+    medium: token('color.text', 'var(--ds-text)'),
   };
 
   const severityBg = {
-    urgent: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
-    high: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
-    medium: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+    urgent: token('color.background.danger', 'var(--ds-background-danger)'),
+    high: token('color.background.warning', 'var(--ds-background-warning)'),
+    medium: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
   };
 
   const severityBorder = {
-    urgent: token('color.border.danger', 'var(--ds-background-danger, #FFECEB)'),
-    high: token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)'),
-    medium: token('color.border', 'var(--ds-border-disabled, #DCDFE4)'),
+    urgent: token('color.border.danger', 'var(--ds-background-danger)'),
+    high: token('color.border.warning', 'var(--ds-background-warning-bold)'),
+    medium: token('color.border', 'var(--ds-border-disabled)'),
   };
 
   if (AI_RECS.length === 0) {
@@ -1620,12 +1620,12 @@ function AiRecommendationsPane() {
         style={{
           padding: token('space.400', '32px'),
           textAlign: 'center',
-          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-icon)'),
         }}
       >
         <div style={{ fontSize: 32, marginBottom: token('space.200', '16px') }}>✅</div>
         <Heading size="medium">No recommendations</Heading>
-        <p style={{ marginTop: token('space.100', '8px'), fontSize: 14 }}>
+        <p style={{ marginTop: token('space.100', '8px'), fontSize: 'var(--ds-font-size-400)' }}>
           No banned components with live references, no high-consumer deprecated components.
         </p>
       </div>
@@ -1642,9 +1642,9 @@ function AiRecommendationsPane() {
           <div
             key={rec.id}
             style={{
-              border: `1px solid ${isApplied ? token('color.border.success', 'var(--ds-background-success-bold, #1F845A)') : severityBorder[rec.severity]}`,
+              border: `1px solid ${isApplied ? token('color.border.success', 'var(--ds-background-success-bold)') : severityBorder[rec.severity]}`,
               borderRadius: 6,
-              background: isApplied ? token('color.background.success', 'var(--ds-background-success, #DFFCF0)') : severityBg[rec.severity],
+              background: isApplied ? token('color.background.success', 'var(--ds-background-success)') : severityBg[rec.severity],
               opacity: isApplied ? 0.7 : 1,
             }}
           >
@@ -1669,10 +1669,10 @@ function AiRecommendationsPane() {
                 >
                   <span
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      color: isApplied ? token('color.text.success', 'var(--ds-text-success, #216E4E)') : severityColor[rec.severity],
+                      color: isApplied ? token('color.text.success', 'var(--ds-text-success)') : severityColor[rec.severity],
                       letterSpacing: '0.05em',
                     }}
                   >
@@ -1682,11 +1682,11 @@ function AiRecommendationsPane() {
                     {rec.type === 'ban-violation' ? 'Ban violation' : rec.type === 'deprecation-pending' ? 'Deprecation' : 'Promote'}
                   </Lozenge>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
                   {rec.title}
                 </div>
                 {isExpanded && (
-                  <p style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginTop: 8, marginBottom: 0 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon)'), marginTop: 8, marginBottom: 0 }}>
                     {rec.detail}
                   </p>
                 )}
@@ -1695,7 +1695,7 @@ function AiRecommendationsPane() {
                 {!isApplied && (
                   <button
                     type="button"
-                    style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'), color: 'var(--ds-surface, #FFFFFF)' }}
+                    style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, background: token('color.background.brand.bold', 'var(--ds-link)'), color: 'var(--ds-surface)' }}
                     onClick={() => setApplyRec(rec)}
                   >
                     Apply →
@@ -1703,7 +1703,7 @@ function AiRecommendationsPane() {
                 )}
                 <button
                   type="button"
-                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
+                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', background: token('elevation.surface', 'var(--ds-surface)'), color: token('color.text', 'var(--ds-text, var(--ds-text))') }}
                   onClick={() => setExpandedRec(isExpanded ? null : rec.id)}
                 >
                   {isExpanded ? 'Less' : 'Details'}
@@ -1711,7 +1711,7 @@ function AiRecommendationsPane() {
                 {!isApplied && (
                   <button
                     type="button"
-                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
+                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', background: token('elevation.surface', 'var(--ds-surface)'), color: token('color.text', 'var(--ds-text, var(--ds-text))') }}
                     onClick={() => setAppliedRecs((prev) => new Set([...prev, rec.id]))}
                   >
                     Mark done
@@ -1751,8 +1751,8 @@ export default function ComponentsAdminPage() {
         <Heading size="xlarge">Components</Heading>
         <p
           style={{
-            fontSize: 14,
-            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+            fontSize: 'var(--ds-font-size-400)',
+            color: token('color.text.subtle', 'var(--ds-icon)'),
             marginTop: token('space.100', '8px'),
             marginBottom: token('space.300', '24px'),
           }}

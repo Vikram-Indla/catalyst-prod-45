@@ -59,7 +59,7 @@ export function useSubTasks(parentKey: string | null) {
 }
 
 /* ── Avatar ── */
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-teal-bold, #206B74)', 'var(--ds-chart-blue-bold, #0C66E4)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-chart-blue-bold)'];
 function MiniAvatar({ name }: { name: string }) {
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   return (
@@ -68,7 +68,7 @@ function MiniAvatar({ name }: { name: string }) {
         width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
         backgroundColor: AVATAR_COLORS[hash % AVATAR_COLORS.length],
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 10, fontWeight: 700, color: 'var(--bg-app)',
+        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--bg-app)',
       }}
     >
       {name.charAt(0).toUpperCase()}
@@ -84,21 +84,21 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       style={{
         display: 'flex', flexDirection: 'column', gap: 8,
         padding: '12px 14px', width: '100%', textAlign: 'left',
-        border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
+        border: '1px solid var(--ds-border)', borderRadius: 8,
         cursor: 'pointer', backgroundColor: 'var(--bg-app)',
         transition: 'all 0.12s ease',
       }}
-      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #FAFAFA)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'; e.currentTarget.style.borderColor = 'var(--ds-border)'; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.borderColor = 'var(--ds-border)'; }}
     >
       {/* Row 1: Icon + Key + Summary */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
-        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
           {item.issue_key}
         </span>
         <span style={{
-          fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
           fontFamily: 'var(--cp-font-body)',
         }}>
@@ -113,17 +113,17 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
         {item.assignee_display_name && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <MiniAvatar name={item.assignee_display_name} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
               {item.assignee_display_name}
             </span>
           </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <PriorityIndicator priority={item.priority} fontSize={12} />
+          <PriorityIndicator priority={item.priority} fontSize={'var(--ds-font-size-200)'} />
         </div>
 
-        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
           {formatRel(item.jira_updated_at)}
         </span>
       </div>
@@ -143,8 +143,8 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', gap: 8 }}>
-        <Loader2 size={16} color="var(--ds-text-subtlest, #626F86)" style={{ animation: 'spin 1s linear infinite' }} />
-        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Loading sub-tasks…</span>
+        <Loader2 size={16} color="var(--ds-text-subtlest)" style={{ animation: 'spin 1s linear infinite' }} />
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Loading sub-tasks…</span>
       </div>
     );
   }
@@ -155,8 +155,8 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         padding: '48px 24px', textAlign: 'center', gap: 8,
       }}>
-        <ListTree size={28} color="var(--ds-icon-subtle, #A1A1AA)" strokeWidth={1.5} />
-        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
+        <ListTree size={28} color="var(--ds-icon-subtle)" strokeWidth={1.5} />
+        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
           No sub-tasks found for this item.
         </span>
       </div>
@@ -174,36 +174,36 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
       {/* Summary bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', backgroundColor: 'var(--ds-surface-sunken, #FAFAFA)', borderRadius: 8, border: '1px solid var(--ds-border, #DFE1E6)',
+        padding: '10px 14px', backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 8, border: '1px solid var(--ds-border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
             {total} sub-task{total !== 1 ? 's' : ''}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
-              { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' },
-              { count: progressTasks.length, label: 'In Progress', bg: 'var(--ds-link, #0C66E4)', color: 'var(--bg-app)' },
-              { count: doneTasks.length, label: 'Done', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)' },
+              { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary))' },
+              { count: progressTasks.length, label: 'In Progress', bg: 'var(--ds-link)', color: 'var(--bg-app)' },
+              { count: doneTasks.length, label: 'Done', bg: 'var(--cp-lozenge-green-bg)', color: 'var(--bg-app)' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
                   display: 'inline-block', padding: '1px 6px', borderRadius: 4,
-                  backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700,
+                  backgroundColor: s.bg, color: s.color, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                 }}>{s.count}</span>
-                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>{s.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>{s.label}</span>
               </span>
             ))}
           </div>
         </div>
 
         {/* Progress bar */}
-        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }}>
           {doneTasks.length > 0 && (
-            <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', transition: 'width 0.3s ease' }} />
+            <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', transition: 'width 0.3s ease' }} />
           )}
           {progressTasks.length > 0 && (
-            <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-link, #0065FF)', transition: 'width 0.3s ease' }} />
+            <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-link)', transition: 'width 0.3s ease' }} />
           )}
         </div>
       </div>

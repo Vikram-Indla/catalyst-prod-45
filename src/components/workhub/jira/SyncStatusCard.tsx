@@ -43,14 +43,14 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
   ).length;
 
   const cards = [
-    { icon: FolderGit2, value: activeCount, label: 'Projects Connected', iconBg: 'var(--ds-background-information, #E9F2FF)', iconColor: 'var(--cp-blue)' },
-    { icon: FileStack, value: totalItems, label: 'Total Items', iconBg: 'var(--ds-background-success, #DFFCF0)', iconColor: 'var(--quality-high, #059669)' },
-    { icon: RefreshCw, value: lastSyncTime, label: 'Last Sync', iconBg: 'var(--ds-background-discovery, #F3F0FF)', iconColor: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+    { icon: FolderGit2, value: activeCount, label: 'Projects Connected', iconBg: 'var(--ds-background-information)', iconColor: 'var(--cp-blue)' },
+    { icon: FileStack, value: totalItems, label: 'Total Items', iconBg: 'var(--ds-background-success)', iconColor: 'var(--quality-high)' },
+    { icon: RefreshCw, value: lastSyncTime, label: 'Last Sync', iconBg: 'var(--ds-background-discovery)', iconColor: 'var(--ds-background-discovery-bold)' },
     {
       icon: AlertTriangle,
       value: recentErrors === 0 ? 'All Clear' : `${recentErrors} Errors`,
       label: recentErrors === 0 ? 'No Issues' : 'Action Required',
-      iconBg: recentErrors === 0 ? 'var(--ds-background-success, #dcfce7)' : 'var(--ds-background-danger, #FFECEB)',
+      iconBg: recentErrors === 0 ? 'var(--ds-background-success)' : 'var(--ds-background-danger)',
       iconColor: recentErrors === 0 ? 'var(--sem-success)' : 'var(--sem-danger)',
     },
   ];

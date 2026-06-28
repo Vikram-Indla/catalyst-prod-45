@@ -79,10 +79,10 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
         }}
         placeholder="Add text"
         style={{
-          fontSize: 14, color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
-          border: '1px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
+          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontFamily: 'inherit',
+          border: '1px solid var(--ds-border-focused)', borderRadius: 3,
           padding: '4px 6px', width: '100%', outline: 'none',
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         }}
       />
     );
@@ -96,9 +96,9 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
         background: 'transparent', border: 'none', padding: '4px 6px',
         margin: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left',
         width: '100%', borderRadius: 3, transition: 'background 0.15s',
-        color: current ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-disabled, #6B6E76)',
+        color: current ? 'var(--ds-text)' : 'var(--ds-text-disabled)',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       aria-label={current ? `MDT Ref: ${current}. Click to edit.` : 'Add MDT Ref'}
     >

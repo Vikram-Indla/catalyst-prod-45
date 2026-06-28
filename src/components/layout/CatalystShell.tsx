@@ -21,7 +21,7 @@ import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 import { HuddleFab } from "./HuddleFab";
 import { HuddleIncoming } from "./HuddleIncoming";
-import { HuddleScreenView } from "./HuddleScreenView";
+import { HuddleWindow } from "./HuddleWindow";
 import { HuddleAutoFilters } from "./HuddleAutoFilters";
 
 /**
@@ -222,13 +222,13 @@ import { HubSurface } from "./HubSurface";
  * in HubSurface so both stay consistent when DARK MODE toggles.
  */
 // V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
-// Was 'var(--ds-background-selected, #E9F2FE)' (light Jira blue) — painted on <main> for every hub-surface
+// Was 'var(--ds-background-selected)' (light Jira blue) — painted on <main> for every hub-surface
 // route, producing a global blue tint that didn't match Jira's actual
-// background (which is white var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))). Catalyst owner decision: all hub
+// background (which is white var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))). Catalyst owner decision: all hub
 // pages are white-canvas. Kept as a named constant in case we ever bring
 // back a tinted page wash.
 const JIRA_CANVAS_BG =
-  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))";
+  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))";
 
 // Apr 28, 2026 (Vikram): SidebarEdgeReveal deprecated. The 8px-wide
 // edge-reveal strip + |> hover-handle tooltip was a redundant third
@@ -550,7 +550,7 @@ function CatalystShellContent() {
   const isIncidentHubRoute = location.pathname.startsWith("/incident-hub");
   const isTestHubRoute = location.pathname.startsWith("/testhub");
 
-  // Decision A (Apr 2026): Jira blue canvas (var(--ds-background-selected, #E9F2FE)) + white panel on all
+  // Decision A (Apr 2026): Jira blue canvas (var(--ds-background-selected)) + white panel on all
   // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
   const isHubSurfaceRoute =
     location.pathname.startsWith("/strategyhub") ||
@@ -600,14 +600,14 @@ function CatalystShellContent() {
   const shouldWrapHubSurface =
     isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   // 2026-06-18 (Vikram): uniform viewport — the WHOLE shell is one flat tone.
-  // Everything tracks --cp-bg-elevated (= var(--ds-surface, #FFFFFF) in light,
-  // var(--ds-surface, #22272B) in dark), so header, sidebar, canvas and content are identical in
-  // both modes — light: var(--ds-surface, #FFFFFF) (no regression), dark: var(--ds-surface, #22272B) (the grayish
+  // Everything tracks --cp-bg-elevated (= var(--ds-surface) in light,
+  // var(--ds-surface) in dark), so header, sidebar, canvas and content are identical in
+  // both modes — light: var(--ds-surface) (no regression), dark: var(--ds-surface) (the grayish
   // raised tone, spread everywhere). Replaces the old data-theme==='dark'
   // branch, which never matched (data-theme is the compound ADS string
   // "dark:dark light:light …") and produced a two-tone band.
   const mainBg =
-    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))";
+    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))";
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -869,7 +869,7 @@ function CatalystShellContent() {
               border: "none",
               cursor: "pointer",
               color:
-                "var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))))",
+                "var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse))))",
               zIndex: 50,
             }}
           >
@@ -879,7 +879,7 @@ function CatalystShellContent() {
       </div>
       <HuddleFab />
       <HuddleIncoming />
-      <HuddleScreenView />
+      <HuddleWindow />
       <HuddleAutoFilters />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
@@ -1054,7 +1054,7 @@ function LastLoginFlag() {
           icon={
             <InfoIcon
               label=""
-              color={token("color.icon.information", "var(--ds-link, #0C66E4)")}
+              color={token("color.icon.information", "var(--ds-link)")}
             />
           }
           title="Welcome back"
@@ -1079,14 +1079,14 @@ function CatalystFlagStack() {
   const iconFor = (appearance: CatalystFlagAppearance) => {
     switch (appearance) {
       case "success":
-        return <SuccessIcon label="" color={token("color.icon.success", "var(--ds-background-success-bold, #1F845A)")} />;
+        return <SuccessIcon label="" color={token("color.icon.success", "var(--ds-background-success-bold)")} />;
       case "warning":
-        return <WarningIcon label="" color={token("color.icon.warning", "var(--ds-text-warning, #974F0C)")} />;
+        return <WarningIcon label="" color={token("color.icon.warning", "var(--ds-text-warning)")} />;
       case "error":
-        return <ErrorIcon label="" color={token("color.icon.danger", "var(--ds-text-danger, #AE2A19)")} />;
+        return <ErrorIcon label="" color={token("color.icon.danger", "var(--ds-text-danger)")} />;
       case "info":
       default:
-        return <InfoIcon label="" color={token("color.icon.information", "var(--ds-link, #0C66E4)")} />;
+        return <InfoIcon label="" color={token("color.icon.information", "var(--ds-link)")} />;
     }
   };
 

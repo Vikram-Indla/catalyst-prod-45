@@ -18,18 +18,18 @@ interface Props {
 }
 
 const TYPE_BAR_COLORS: Record<string, string> = {
-  epic: 'var(--ds-background-discovery-bold, #6554C0)', story: 'var(--ds-background-success-bold, #1F845A)', task: 'var(--ds-link, #0C66E4)', bug: 'var(--ds-background-danger-bold, #C9372C)',
-  subtask: 'var(--ds-link, #0C66E4)', 'sub-task': 'var(--ds-link, #0C66E4)', incident: 'var(--ds-background-danger-bold, #C9372C)',
-  'production incident': 'var(--ds-background-danger-bold, #C9372C)', 'new feature': 'var(--ds-background-success-bold, #1F845A)',
-  feature: 'var(--ds-background-success-bold, #1F845A)', improvement: 'var(--ds-background-success-bold, #1F845A)', changes: 'var(--ds-background-warning-bold, #E2B203)',
-  'change request': 'var(--ds-background-warning-bold, #E2B203)', question: 'var(--ds-background-discovery-bold, #6554C0)', problem: 'var(--ds-background-danger-bold, #C9372C)',
-  defect: 'var(--ds-background-danger-bold, #C9372C)', issue: 'var(--ds-link, #0C66E4)', 'qa bug': 'var(--ds-background-danger-bold, #C9372C)',
-  backend: 'var(--ds-link, #0C66E4)', frontend: 'var(--ds-link, #0C66E4)', integration: 'var(--ds-link, #0C66E4)',
-  figma: 'var(--ds-link, #0C66E4)', 'business request': 'var(--ds-background-success-bold, #1F845A)', 'business gap': 'var(--ds-background-discovery-bold, #6554C0)',
+  epic: 'var(--ds-background-discovery-bold)', story: 'var(--ds-background-success-bold)', task: 'var(--ds-link)', bug: 'var(--ds-background-danger-bold)',
+  subtask: 'var(--ds-link)', 'sub-task': 'var(--ds-link)', incident: 'var(--ds-background-danger-bold)',
+  'production incident': 'var(--ds-background-danger-bold)', 'new feature': 'var(--ds-background-success-bold)',
+  feature: 'var(--ds-background-success-bold)', improvement: 'var(--ds-background-success-bold)', changes: 'var(--ds-background-warning-bold)',
+  'change request': 'var(--ds-background-warning-bold)', question: 'var(--ds-background-discovery-bold)', problem: 'var(--ds-background-danger-bold)',
+  defect: 'var(--ds-background-danger-bold)', issue: 'var(--ds-link)', 'qa bug': 'var(--ds-background-danger-bold)',
+  backend: 'var(--ds-link)', frontend: 'var(--ds-link)', integration: 'var(--ds-link)',
+  figma: 'var(--ds-link)', 'business request': 'var(--ds-background-success-bold)', 'business gap': 'var(--ds-background-discovery-bold)',
 };
 
 function getBarColor(type: string): string {
-  return TYPE_BAR_COLORS[type.toLowerCase()] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+  return TYPE_BAR_COLORS[type.toLowerCase()] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
 }
 
 export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: Props) {
@@ -81,7 +81,7 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
       <PopoverContent
         align="center"
         side="bottom"
-        className="w-[320px] p-0 bg-white dark:!bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-white/[0.08] shadow-lg"
+        className="w-[320px] p-0 bg-white dark:!bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-slate-200 dark:border-white/[0.08] shadow-lg"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

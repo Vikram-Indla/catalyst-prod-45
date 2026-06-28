@@ -54,7 +54,7 @@ export function DefectsPanel({ defects }: DefectsPanelProps) {
             className="flex items-start justify-between p-4 bg-muted/30 rounded-lg border border-border hover:border-primary/50 transition-colors"
           >
             <div className="flex items-start gap-3">
-              <BugIcon label="" size="small" primaryColor="var(--ds-text-warning, #f97316)" />
+              <BugIcon label="" size="small" primaryColor="var(--ds-text-warning)" />
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-medium text-foreground">{defect.key}</span>

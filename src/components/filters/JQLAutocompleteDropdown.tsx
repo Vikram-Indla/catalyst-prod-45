@@ -21,12 +21,12 @@ const TYPE_LABEL: Record<string, string> = {
 
 // Subtle accent color per suggestion type (left border indicator)
 const TYPE_ACCENT: Record<string, string> = {
-  fields:    'var(--ds-text-success, #006644)',
-  operators: 'var(--ds-text-discovery, #403294)',
-  values:    'var(--ds-text-danger, #AE2A19)',
-  functions: 'var(--ds-text-selected, #0C66E4)',
-  keywords:  'var(--ds-text-information, #0052CC)',
-  direction: 'var(--ds-text-information, #0052CC)',
+  fields:    'var(--ds-text-success)',
+  operators: 'var(--ds-text-discovery)',
+  values:    'var(--ds-text-danger)',
+  functions: 'var(--ds-text-selected)',
+  keywords:  'var(--ds-text-information)',
+  direction: 'var(--ds-text-information)',
 };
 
 export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0, onSelect, onDismiss }: Props) {
@@ -62,7 +62,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
 
   if (!result || !result.items.length || !anchorRect) return null;
 
-  const accent = TYPE_ACCENT[result.type] ?? 'var(--ds-text-subtle, #42526E)';
+  const accent = TYPE_ACCENT[result.type] ?? 'var(--ds-text-subtle)';
   const items  = result.items.slice(0, 12);
 
   const style: React.CSSProperties = {
@@ -72,7 +72,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
     minWidth: Math.max(anchorRect.width, 220),
     maxWidth: 380,
     zIndex:   9000,
-    background:   `var(--ds-surface-overlay, #FFFFFF)`,
+    background:   `var(--ds-surface-overlay)`,
     border:       `1px solid ${token('color.border')}`,
     borderRadius: 4,
     boxShadow:    `var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15))`,
@@ -86,12 +86,12 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
       {/* Header */}
       <div style={{
         padding: '4px 10px',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: token('font.weight.semibold'),
         color:      accent,
         borderBottom: `1px solid ${token('color.border')}`,
         letterSpacing: '0.05em',
-        background: `var(--ds-background-neutral-subtle, #F7F8F9)`,
+        background: `var(--ds-background-neutral-subtle)`,
       }}>
         {TYPE_LABEL[result.type] ?? result.type}
       </div>
@@ -114,12 +114,12 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
                 textAlign:   'left',
                 padding:     '7px 12px',
                 background:  isSel
-                  ? `var(--ds-background-neutral, #F1F2F4)`
+                  ? `var(--ds-background-neutral)`
                   : 'none',
                 border:        'none',
                 borderLeft:    isSel ? `3px solid ${accent}` : '3px solid transparent',
                 cursor:        'pointer',
-                fontSize:      13,
+                fontSize: 'var(--ds-font-size-300)',
                 color:         token('color.text'),
                 transition:    'background 0.1s',
               }}
@@ -135,7 +135,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
                 {item.label ?? item.value}
               </span>
               {item.description && (
-                <span style={{ marginLeft: 8, fontSize: 12, color: token('color.text.subtlest') }}>
+                <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                   {item.description}
                 </span>
               )}
@@ -148,9 +148,9 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
       <div style={{
         padding:      '4px 10px',
         borderTop:    `1px solid ${token('color.border')}`,
-        fontSize:     11,
+        fontSize: 'var(--ds-font-size-100)',
         color:        token('color.text.subtlest'),
-        background:   `var(--ds-background-neutral-subtle, #F7F8F9)`,
+        background:   `var(--ds-background-neutral-subtle)`,
         display:      'flex',
         gap:          12,
       }}>

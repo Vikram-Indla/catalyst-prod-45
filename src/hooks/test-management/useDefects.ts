@@ -4,6 +4,8 @@
 // ============================================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { resolveBridgedKey, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { DOMAIN_ADAPTER_CONFIGS } from '@/lib/workflow/canonical/adapters';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   TMDefect, 
@@ -331,6 +333,9 @@ export function useCreateDefect() {
           parent_key: input.parent_key || null,
           sprint: input.sprint || null,
           status: 'open',
+          // Canonical Defect workflow initial status (bridged Option A): enum
+          // stays 'open' (compat), workflow_status_key starts on the real track.
+          workflow_status_key: 'new',
           assignee_id: input.assigned_to || null,
           reporter_id: user.id,
           external_id: input.external_id || null,
@@ -490,18 +495,48 @@ export function useUpdateDefect() {
 
   return useMutation({
     mutationFn: async (input: UpdateDefectInput & { project_id: string }): Promise<TMDefect> => {
-      const { id, project_id, severity, status, assigned_to, ...rest } = input;
+      const { id, project_id, severity, status, assigned_to, workflowStatusKey, ...rest } = input;
 
       const updates: Record<string, any> = { ...rest };
-      
+
       if (severity !== undefined) {
         updates.severity = severityToDb(severity);
       }
-      if (status !== undefined) {
-        updates.status = statusToDb(status);
+      let prevEnum: string | null = null;
+      let prevKey: string | null = null;
+      let auditFrom: string | null = null;
+      let auditTo: string | null = null;
+      if (workflowStatusKey !== undefined) {
+        // CANONICAL path: caller picked a real canonical Defect status key (one
+        // of the 18). workflow_status_key IS the source of truth; the enum is
+        // only set to the nearest SAFE compat value (never widened). Keys with
+        // no compat mapping leave the existing enum untouched.
+        const { data: cur } = await supabase
+          .from('tm_defects').select('status, workflow_status_key').eq('id', id).maybeSingle();
+        prevEnum = (cur as any)?.status ?? null;
+        prevKey = (cur as any)?.workflow_status_key ?? null;
+        updates.workflow_status_key = workflowStatusKey;
+        const compat = (DOMAIN_ADAPTER_CONFIGS.defect.enumCompatMap ?? {})[workflowStatusKey];
+        if (compat) updates.status = compat; // safe enum only; absent → leave enum
+        if (workflowStatusKey === 'closed' || workflowStatusKey === 'verified' || workflowStatusKey === 'rejected') {
+          updates.resolved_at = new Date().toISOString();
+        }
+        auditFrom = prevKey ?? prevEnum;
+        auditTo = workflowStatusKey;
+      } else if (status !== undefined) {
+        // capture prior enum status for the bridged audit
+        const { data: cur } = await supabase.from('tm_defects').select('status').eq('id', id).maybeSingle();
+        prevEnum = (cur as any)?.status ?? null;
+        updates.status = statusToDb(status); // enum preserved (compat field)
+        // Bridged canonical key (Option A): workflow_status_key is the canonical
+        // status; the enum is never widened, only the existing value is written.
+        const wfKey = await resolveBridgedKey('defect', null, updates.status);
+        if (wfKey) updates.workflow_status_key = wfKey;
         if (status === 'FIXED' || status === 'CLOSED' || status === 'VERIFIED') {
           updates.resolved_at = new Date().toISOString();
         }
+        auditFrom = prevEnum;
+        auditTo = updates.status as string;
       }
       if (assigned_to !== undefined) {
         updates.assignee_id = assigned_to;
@@ -515,6 +550,14 @@ export function useUpdateDefect() {
         .single();
 
       if (error) throw error;
+
+      // Advisory canonical audit for the Defect transition (ph_wf_audit).
+      if (auditTo && auditFrom !== auditTo) {
+        await recordAdvisoryStatusChange({
+          entityKey: 'defect', entityId: id, projectKey: null,
+          fromStatusRaw: auditFrom, toStatusRaw: auditTo, sourceSurface: 'defect_list',
+        });
+      }
       return { ...mapDbRowToTMDefect(data), project_id };
     },
     onSuccess: (data) => {

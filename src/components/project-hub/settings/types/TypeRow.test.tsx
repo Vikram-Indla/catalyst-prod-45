@@ -15,7 +15,7 @@ vi.mock('@/components/icons/WorkItemTypeIcon', () => ({
 const base = {
   name: 'Story',
   icon: 'story',
-  color: 'var(--cp-teal-60, #0D9488)',
+  color: 'var(--cp-teal-60)',
   level: 'work',
   isEnabled: true,
   isFeatureType: false,

@@ -62,7 +62,7 @@ export function PresenceAvatar({ name, size = 36, presence = null, displayLabel 
             height: size,
             borderRadius: 'var(--cv2-radius-md)',
             background: fallbackBg,
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

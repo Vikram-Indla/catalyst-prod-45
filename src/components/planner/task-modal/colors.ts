@@ -5,64 +5,64 @@
 
 export const COLORS = {
   // Text
-  textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  textMuted: 'var(--ds-text-subtlest, #64748b)',
-  textLight: 'var(--ds-text-subtlest, #94a3b8)',
+  textPrimary: 'var(--ds-text)',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+  textMuted: 'var(--ds-text-subtlest)',
+  textLight: 'var(--ds-text-subtlest)',
   
   // Surfaces
-  surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
-  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
+  surfacePage: 'var(--ds-surface-sunken)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfaceHover: 'var(--ds-surface-sunken)',
   
   // Borders
-  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
-  borderFocus: 'var(--ds-text-brand, #3b82f6)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken))',
+  borderDefault: 'var(--ds-text-disabled)',
+  borderFocus: 'var(--ds-text-brand)',
   
   // Accent
-  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  accentLight: 'var(--ds-background-information, #E9F2FF)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  accentHover: 'var(--ds-background-brand-bold-hovered)',
+  accentLight: 'var(--ds-background-information)',
   
   // Warning
-  warningBg: 'var(--ds-background-warning, #FFF7D6)',
-  warningBorder: 'var(--ds-background-warning, #FFF7D6)',
-  warningText: 'var(--ds-text-warning, #974F0C)',
-  warningIcon: 'var(--ds-text-warning, #d97706)',
+  warningBg: 'var(--ds-background-warning)',
+  warningBorder: 'var(--ds-background-warning)',
+  warningText: 'var(--ds-text-warning)',
+  warningIcon: 'var(--ds-text-warning)',
   
   // File Types
-  filePdfBg: 'var(--ds-background-danger, #fef2f2)',
-  filePdfIcon: 'var(--ds-text-danger, #dc2626)',
-  fileDocBg: 'var(--ds-background-selected, #eff6ff)',
-  fileDocIcon: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  fileImgBg: 'var(--ds-background-success, #DFFCF0)',
-  fileImgIcon: 'var(--ds-text-success, #16a34a)'
+  filePdfBg: 'var(--ds-background-danger)',
+  filePdfIcon: 'var(--ds-text-danger)',
+  fileDocBg: 'var(--ds-background-selected)',
+  fileDocIcon: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  fileImgBg: 'var(--ds-background-success)',
+  fileImgIcon: 'var(--ds-text-success)'
 } as const;
 
 // Status Colors — DO NOT MODIFY
 export const STATUS_COLORS: Record<string, string> = {
-  'Backlog': 'var(--ds-text-subtlest, #94a3b8)',
-  'Planned': 'var(--ds-text-brand, #3b82f6)',
-  'In Progress': 'var(--ds-text-warning, #f59e0b)',
-  'In Review': 'var(--ds-background-discovery-bold, #8b5cf6)',
-  'Done': 'var(--ds-text-success, #16a34a)'
+  'Backlog': 'var(--ds-text-subtlest)',
+  'Planned': 'var(--ds-text-brand)',
+  'In Progress': 'var(--ds-text-warning)',
+  'In Review': 'var(--ds-background-discovery-bold)',
+  'Done': 'var(--ds-text-success)'
 };
 // Priority Colors — MEDIUM IS YELLOW #eab308
 export const PRIORITY_COLORS: Record<string, string> = {
-  'Critical': 'var(--ds-text-danger, #dc2626)',
-  'High': 'var(--ds-background-warning-bold, #f97316)',
-  'Medium': 'var(--ds-background-warning-bold, #E2B203)',  // YELLOW — NOT BLUE
-  'Low': 'var(--ds-text-subtlest, #94a3b8)'
+  'Critical': 'var(--ds-text-danger)',
+  'High': 'var(--ds-background-warning-bold)',
+  'Medium': 'var(--ds-background-warning-bold)',  // YELLOW — NOT BLUE
+  'Low': 'var(--ds-text-subtlest)'
 };
 
-// Workstream Colors — MIM IS GRAY var(--ds-text-subtlest, #64748b)
+// Workstream Colors — MIM IS GRAY var(--ds-text-subtlest)
 export const WORKSTREAM_COLORS: Record<string, string> = {
-  'Catalyst': 'var(--ds-background-discovery-bold, #6366f1)',
-  'Data & AI': 'var(--ds-background-discovery-bold, #8b5cf6)',
-  'Delivery': 'var(--ds-background-accent-magenta-bolder, #ec4899)',
-  'MIM': 'var(--ds-text-subtlest, #64748b)',  // GRAY — NOT PINK
-  'Senaei': 'var(--ds-background-accent-teal-bolder, #14b8a6)'
+  'Catalyst': 'var(--ds-background-discovery-bold)',
+  'Data & AI': 'var(--ds-background-discovery-bold)',
+  'Delivery': 'var(--ds-background-accent-magenta-bolder)',
+  'MIM': 'var(--ds-text-subtlest)',  // GRAY — NOT PINK
+  'Senaei': 'var(--ds-background-accent-teal-bolder)'
 };
 
 // Options Arrays
@@ -71,9 +71,9 @@ export { CATALYST_PRIORITIES as PRIORITIES } from '@/lib/catalyst-priority';
 export const WORKSTREAMS = ['Catalyst', 'Data & AI', 'Delivery', 'MIM', 'Senaei'] as const;
 
 export const DEFAULT_ASSIGNEES = [
-  { id: '1', name: 'Vikram Indla', initials: 'VI', color: 'var(--ds-background-discovery-bold, #8b5cf6)' },
-  { id: '2', name: 'Ahmed Khan', initials: 'AK', color: 'var(--ds-text-brand, #3b82f6)' },
-  { id: '3', name: 'Sarah Johnson', initials: 'SJ', color: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
-  { id: '4', name: 'Mohammed Ali', initials: 'MA', color: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
-  { id: '0', name: 'Unassigned', initials: '?', color: 'var(--ds-text-subtlest, #94a3b8)' }
+  { id: '1', name: 'Vikram Indla', initials: 'VI', color: 'var(--ds-background-discovery-bold)' },
+  { id: '2', name: 'Ahmed Khan', initials: 'AK', color: 'var(--ds-text-brand)' },
+  { id: '3', name: 'Sarah Johnson', initials: 'SJ', color: 'var(--ds-background-accent-magenta-bolder)' },
+  { id: '4', name: 'Mohammed Ali', initials: 'MA', color: 'var(--ds-background-accent-teal-bolder)' },
+  { id: '0', name: 'Unassigned', initials: '?', color: 'var(--ds-text-subtlest)' }
 ];

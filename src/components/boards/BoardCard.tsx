@@ -72,8 +72,8 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
   };
 
   const visibilityChip = () => {
-    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'var(--ds-background-warning, rgba(217,119,6,0.06))', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
-    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'var(--ds-background-information, rgba(37,99,235,0.06))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' };
+    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'var(--ds-background-warning, rgba(217,119,6,0.06))', color: 'var(--ds-text-warning, var(--cp-warning))' };
+    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'var(--ds-background-information, rgba(37,99,235,0.06))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' };
     return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
 
@@ -87,7 +87,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         onMouseLeave={() => setHover(false)}
         style={{
           background: 'var(--bg-app)',
-          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, var(--cp-ink-1, #2E2E2E))') : (hover ? 'var(--ds-shadow-overlay, rgba(15,23,42,0.18))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))')}`,
+          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold)' : 'var(--ds-border, var(--cp-ink-1))') : (hover ? 'var(--ds-shadow-overlay, rgba(15,23,42,0.18))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))')}`,
           borderRadius: 8, cursor: 'pointer', position: 'relative',
           transition: 'box-shadow 150ms, border-color 150ms',
           boxShadow: hover ? (isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,0.10))') : 'none',
@@ -102,7 +102,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               width: 34, height: 34, borderRadius: 8,
               background: board.color + '18',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 16, flexShrink: 0,
+              fontSize: 'var(--ds-font-size-500)', flexShrink: 0,
             }}>{board.icon}</div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{
@@ -110,13 +110,13 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 fontFamily: 'var(--cp-font-body)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{board.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
-                  padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 600,
+                  padding: '1px 6px', borderRadius: 3, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                   background: board.boardType === 'scrum'
                     ? 'rgba(0,135,90,0.08)' : 'rgba(0,82,204,0.08)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                   color: board.boardType === 'scrum'
-                    ? 'var(--ds-text-success, #006644)' : 'var(--ds-link, #0052CC)',
+                    ? 'var(--ds-text-success)' : 'var(--ds-link)',
                 }}>
                   {board.boardType === 'scrum' ? 'Scrum' : 'Kanban'}
                 </span>
@@ -132,13 +132,13 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
+              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" />
             </button>
             {menuOpen && (
               <div style={{
                 position: 'absolute', top: 28, right: 0,
                 width: 172, background: 'var(--cp-float)',
-                border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
                 borderRadius: 6, boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
                 zIndex: 50, padding: '4px 0',
               }}>
@@ -166,16 +166,16 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             transition: 'opacity 150ms',
           }}>
             {board.isStarred
-              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, var(--cp-warning, #D97706))" />
-              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, var(--cp-warning))" />
+              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
             }
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))">Personal</Chip>}
+            {board.isPersonal && <Chip bg={'var(--cp-primary-light)'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'}>By {board.swimlaneType}</Chip>
+              <Chip bg={'var(--cp-bg-page)'} color={'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (
@@ -183,10 +183,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 height: 18, padding: '0 8px', borderRadius: 8,
                 background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid rgba(0,82,204,0.30)' : '0.75px solid rgba(0,82,204,0.18)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
-                fontSize: 10.5, fontWeight: 600, color: 'var(--cp-primary-60, #0052CC)',
+                fontSize: 10.5, fontWeight: 600, color: 'var(--cp-primary-60)',
                 fontFamily: 'var(--cp-font-body)',
               }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cp-primary-60, #0052CC)' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cp-primary-60)' }} />
                 Jira Sync
               </span>
             )}
@@ -194,7 +194,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           {board.boardQuery && (
             <div style={{
-              fontSize: 11, color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+              fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace',
               marginBottom: 8, padding: '4px 6px', borderRadius: 3,
               background: isDark ? 'var(--ds-surface, rgba(255,255,255,0.04))' : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -205,7 +205,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            borderTop: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', paddingTop: 10,
+            borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', paddingTop: 10,
             fontSize: 11.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -214,18 +214,18 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <PeopleGroupIcon label="" size="small" primaryColor="var(--fg-3)" /> {board.columnCount} cols
             </span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-4)' }}>{timeAgo}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>{timeAgo}</span>
           </div>
         </div>
 
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid var(--ds-text, #172B4D)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
-            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-text, #172B4D)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+            background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
             borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
           }}>
@@ -234,7 +234,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
-            fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
+            fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontFamily: 'var(--cp-font-body)',
           }}>
             Open Board <ArrowRightIcon label="" size="small" />
           </button>
@@ -249,12 +249,12 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: 420, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
-            padding: 24, border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+            padding: 24, border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Delete Board
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
               Type the board name '<strong style={{ color: 'var(--fg-1)' }}>{board.name}</strong>' to confirm deletion.
               This action cannot be undone.
             </p>
@@ -264,24 +264,24 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               placeholder={board.name}
               style={{
                 width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
-                border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', borderRadius: 6,
-                fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
-                outline: 'none', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)', marginBottom: 16,
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', borderRadius: 6,
+                fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
+                outline: 'none', background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-app)', marginBottom: 16,
               }}
             />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
-                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface, #FFFFFF))' : 'var(--bg-app)',
+                padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
+                border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--bg-app)',
                 color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Cancel</button>
               <button onClick={handleDelete}
                 disabled={deleteConfirm !== board.name || deleteBoard.isPending}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
                   border: 'none',
                   background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                  color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
+                  color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--fg-4)',
                   cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)',
                 }}>
@@ -300,11 +300,11 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
     <button onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: 8, width: '100%',
       padding: '7px 12px', border: 'none', background: 'transparent',
-      cursor: 'pointer', fontSize: 12, fontWeight: 500,
+      cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: 'var(--cp-font-body)', textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.10))' : 'var(--ds-background-danger, #FEF2F2)') : (document.documentElement.classList.contains('dark') ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'))}
+      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.10))' : 'var(--ds-background-danger)') : (document.documentElement.classList.contains('dark') ? 'var(--ds-surface-overlay)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'))}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {children}
@@ -316,8 +316,8 @@ function Chip({ children, bg, color }: { children: React.ReactNode; bg: string; 
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-      borderRadius: 12, fontSize: 11, fontWeight: 500,
-      background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+      borderRadius: 12, fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+      background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral))' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
       fontFamily: 'var(--cp-font-body)',
     }}>{children}</span>
   );

@@ -48,7 +48,7 @@ function triggerLabel(key: StyleKey): React.ReactNode {
     return (
       <>
         <span style={{ fontWeight: 600 }}>T</span>
-        <sub style={{ fontSize: 9 }}>s</sub>
+        <sub style={{ fontSize: 'var(--ds-font-size-100)' }}>s</sub>
       </>
     );
   }
@@ -56,7 +56,7 @@ function triggerLabel(key: StyleKey): React.ReactNode {
   return (
     <>
       <span style={{ fontWeight: 600 }}>H</span>
-      <sub style={{ fontSize: 9 }}>{level}</sub>
+      <sub style={{ fontSize: 'var(--ds-font-size-100)' }}>{level}</sub>
     </>
   );
 }

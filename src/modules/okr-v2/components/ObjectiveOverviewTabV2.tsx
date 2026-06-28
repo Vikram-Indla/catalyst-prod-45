@@ -70,14 +70,14 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
     <div className="p-6 space-y-6 bg-background">
       {/* Name (required) */}
       <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">
-          Name <span className="text-[var(--ds-text-danger,#B85C5C)]">*</span>
+        <Label htmlFor="name" className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">
+          Name <span className="text-[var(--ds-text-danger)]">*</span>
         </Label>
         <Input
           id="name"
           value={formData.name}
           onChange={(e) => handleFieldChange('name', e.target.value)}
-          className={`font-medium bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))] ${!formData.name.trim() ? 'border-destructive' : ''}`}
+          className={`font-medium bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))] ${!formData.name.trim() ? 'border-destructive' : ''}`}
           required
         />
         {!formData.name.trim() && (
@@ -87,7 +87,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">
+        <Label htmlFor="description" className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">
           Description
         </Label>
         <Textarea
@@ -96,25 +96,25 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           onChange={(e) => handleFieldChange('description', e.target.value)}
           rows={3}
           placeholder="Add a description..."
-          className="bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] placeholder:text-[var(--ds-text-subtlest,#8B949E)] dark:placeholder:text-[var(--ds-text-subtlest,#6E7681)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]"
+          className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] placeholder:text-[var(--ds-text-subtlest)] dark:placeholder:text-[var(--ds-text-subtlest)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]"
         />
       </div>
 
       {/* Theme (required) */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">
-          Theme <span className="text-[var(--ds-text-danger,#B85C5C)]">*</span>
+        <Label className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">
+          Theme <span className="text-[var(--ds-text-danger)]">*</span>
         </Label>
         <Select
           value={formData.theme_id || ''}
           onValueChange={(v) => handleFieldChange('theme_id', v || '')}
         >
-          <SelectTrigger className={`bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))] ${!formData.theme_id ? 'border-destructive' : ''}`}>
+          <SelectTrigger className={`bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))] ${!formData.theme_id ? 'border-destructive' : ''}`}>
             <SelectValue placeholder="Select theme (required)" />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-[var(--ds-surface,#161B22)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
+          <SelectContent className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)]">
             {themes?.map((theme) => (
-              <SelectItem key={theme.id} value={theme.id} className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">
+              <SelectItem key={theme.id} value={theme.id} className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">
                 {theme.name}
               </SelectItem>
             ))}
@@ -128,40 +128,40 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
       <div className="grid grid-cols-2 gap-4">
         {/* Status */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">Status</Label>
+          <Label className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">Status</Label>
           <Select
             value={formData.status}
             onValueChange={(v) => handleFieldChange('status', v)}
           >
-            <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]">
+            <SelectTrigger className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-[var(--ds-surface,#161B22)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
-              <SelectItem value="pending" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Pending</SelectItem>
-              <SelectItem value="in_progress" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">In Progress</SelectItem>
-              <SelectItem value="on_track" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">On Track</SelectItem>
-              <SelectItem value="at_risk" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">At Risk</SelectItem>
-              <SelectItem value="off_track" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Off Track</SelectItem>
-              <SelectItem value="completed" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Completed</SelectItem>
+            <SelectContent className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)]">
+              <SelectItem value="pending" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Pending</SelectItem>
+              <SelectItem value="in_progress" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">In Progress</SelectItem>
+              <SelectItem value="on_track" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">On Track</SelectItem>
+              <SelectItem value="at_risk" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">At Risk</SelectItem>
+              <SelectItem value="off_track" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Off Track</SelectItem>
+              <SelectItem value="completed" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Completed</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Health */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">Health</Label>
+          <Label className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">Health</Label>
           <Select
             value={formData.health || 'at_risk'}
             onValueChange={(v) => handleFieldChange('health', v)}
           >
-            <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]">
+            <SelectTrigger className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-[var(--ds-surface,#161B22)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
-              <SelectItem value="good" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Good</SelectItem>
-              <SelectItem value="fair" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Fair</SelectItem>
-              <SelectItem value="poor" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Poor</SelectItem>
-              <SelectItem value="at_risk" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">At Risk</SelectItem>
+            <SelectContent className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)]">
+              <SelectItem value="good" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Good</SelectItem>
+              <SelectItem value="fair" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Fair</SelectItem>
+              <SelectItem value="poor" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Poor</SelectItem>
+              <SelectItem value="at_risk" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">At Risk</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -170,7 +170,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
       <div className="grid grid-cols-2 gap-4">
         {/* Start Date */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">Start Date</Label>
+          <Label className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">Start Date</Label>
           <CatalystDatePicker
             value={formData.start_date || null}
             onChange={(date) => handleFieldChange('start_date', date ? date.toISOString().split('T')[0] : '')}
@@ -181,7 +181,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
 
         {/* End Date */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">End Date</Label>
+          <Label className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">End Date</Label>
           <CatalystDatePicker
             value={formData.end_date || null}
             onChange={(date) => handleFieldChange('end_date', date ? date.toISOString().split('T')[0] : '')}
@@ -193,18 +193,18 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
 
       {/* Owner */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">Owner</Label>
+        <Label className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">Owner</Label>
         <Select
           value={formData.owner_id || '__unassigned__'}
           onValueChange={(v) => handleFieldChange('owner_id', v === '__unassigned__' ? '' : v)}
         >
-          <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]">
+          <SelectTrigger className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]">
             <SelectValue placeholder="Select owner" />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-[var(--ds-surface,#161B22)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)]">
-            <SelectItem value="__unassigned__" className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">Unassigned</SelectItem>
+          <SelectContent className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)]">
+            <SelectItem value="__unassigned__" className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">Unassigned</SelectItem>
             {users?.filter(user => user.id).map((user) => (
-              <SelectItem key={user.id} value={user.id} className="text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] focus:bg-[var(--ds-background-neutral,#F6F8FA)] dark:focus:bg-[var(--ds-background-neutral,#21262D)]">
+              <SelectItem key={user.id} value={user.id} className="text-[var(--ds-text)] dark:text-[var(--ds-text)] focus:bg-[var(--ds-background-neutral)] dark:focus:bg-[var(--ds-background-neutral)]">
                 {user.full_name || 'Unknown'}
               </SelectItem>
             ))}
@@ -214,14 +214,14 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
 
       {/* Notes */}
       <div className="space-y-2">
-        <Label htmlFor="notes" className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)]">Notes</Label>
+        <Label htmlFor="notes" className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text)]">Notes</Label>
         <Textarea
           id="notes"
           value={formData.notes}
           onChange={(e) => handleFieldChange('notes', e.target.value)}
           rows={3}
           placeholder="Add notes..."
-          className="bg-white dark:bg-[var(--ds-surface,#0D1117)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] placeholder:text-[var(--ds-text-subtlest,#8B949E)] dark:placeholder:text-[var(--ds-text-subtlest,#6E7681)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]"
+          className="bg-white dark:bg-[var(--ds-surface)] border-[var(--ds-border)] dark:border-[var(--ds-border)] text-[var(--ds-text)] dark:text-[var(--ds-text)] placeholder:text-[var(--ds-text-subtlest)] dark:placeholder:text-[var(--ds-text-subtlest)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))]"
         />
       </div>
     </div>

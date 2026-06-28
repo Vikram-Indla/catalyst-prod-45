@@ -31,10 +31,10 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
     return (
       <div
         className="flex-shrink-0 flex items-center justify-center rounded-full"
-        style={{ width: 22, height: 22, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}
+        style={{ width: 22, height: 22, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))' }}
         title="Unassigned"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="2" strokeLinecap="round">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" strokeWidth="2" strokeLinecap="round">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
@@ -45,7 +45,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
   return (
     <div
       className="flex-shrink-0 flex items-center justify-center rounded-full"
-      style={{ width: 22, height: 22, background: AVATAR_BG, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 9, fontWeight: 700 }}
+      style={{ width: 22, height: 22, background: AVATAR_BG, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}
       title={name}
     >
       {initials}
@@ -59,10 +59,10 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
   const surface = isDark ? SURFACE_DARK : SURFACE;
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
-  const headerBg = 'var(--cp-bg-page, #FAFBFC)';
-  const selectedBg = 'var(--cp-primary-light, #EFF6FF)';
+  const headerBg = 'var(--cp-bg-page)';
+  const selectedBg = 'var(--cp-primary-light)';
   const hoverBg = 'var(--cp-interact-selected, rgba(37,99,235,0.04))';
-  const addHoverBg = 'var(--cp-primary-light, #EFF6FF)';
+  const addHoverBg = 'var(--cp-primary-light)';
 
   return (
     <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${surface.border}`, background: surface.card }}>
@@ -72,12 +72,12 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
         style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${surface.border}`, background: headerBg }}
       >
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
             Business Requests
           </span>
           <span style={{
-            fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
-            background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : SURFACE.page, border: `1px solid ${surface.border}`,
+            fontFamily: FONT.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ink[4],
+            background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : SURFACE.page, border: `1px solid ${surface.border}`,
             borderRadius: 9999, padding: '0 6px', height: 20, display: 'inline-flex', alignItems: 'center',
           }}>
             {totalCount}
@@ -88,7 +88,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
 
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map((group, gi) => {
-          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
           const isCollapsed = collapsedGroups.has(group.key);
           return (
             <div key={group.key}>
@@ -100,7 +100,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
                 onKeyDown={e => e.key === 'Enter' && onToggleGroup(group.key)}
                 style={{
                   height: GROUP_HEADER_HEIGHT,
-                  background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : SURFACE.page,
+                  background: isDark ? 'var(--ds-surface-overlay)' : SURFACE.page,
                   borderBottom: `1px solid ${surface.border}`,
                   borderTop: gi > 0 ? `1px solid ${surface.border}` : 'none',
                 }}
@@ -111,13 +111,13 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
                 </div>
                 <div style={{ width: 10, height: 10, borderRadius: 4, flexShrink: 0, background: typeColor }} />
                 <span style={{
-                  fontSize: 12, fontWeight: 600, color: ink[2],
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: ink[2],
                   textTransform: 'uppercase', letterSpacing: '0.04em',
                 }}>
                   {group.label}
                 </span>
                 <span style={{
-                  fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+                  fontFamily: FONT.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ink[4],
                   background: surface.card, border: `1px solid ${surface.border}`,
                   borderRadius: 9999, padding: '0 6px', height: 20,
                   display: 'inline-flex', alignItems: 'center', marginLeft: 'auto',
@@ -149,7 +149,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
         <button
           onClick={onAddClick}
           className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-          style={{ color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
+          style={{ color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary))', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = addHoverBg)}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
@@ -194,7 +194,7 @@ function RequestRow({
         paddingRight: 12,
         backgroundColor: isSelected ? selectedBg : isHovered ? hoverBg : 'transparent',
         borderBottom: `1px solid ${surface.borderLight}`,
-        borderLeft: isSelected ? `3px solid ${'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))'}` : '3px solid transparent',
+        borderLeft: isSelected ? `3px solid ${'var(--cp-text-link, var(--cp-workstream-catalyst-primary))'}` : '3px solid transparent',
         transition: 'background-color 0.15s ease',
         overflow: 'hidden',
       }}
@@ -204,15 +204,15 @@ function RequestRow({
         style={{
           width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: 'none', background: 'none', padding: 0, cursor: 'pointer',
-          color: item.starred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : ink[4],
+          color: item.starred ? 'var(--ds-text-warning, var(--cp-amber))' : ink[4],
           opacity: item.starred ? 1 : undefined,
           transition: 'color 0.15s ease, opacity 0.15s ease',
         }}
         onClick={e => { e.stopPropagation(); onToggleStar(); }}
-        onMouseEnter={e => { e.currentTarget.style.color = 'var(--ds-text-warning, var(--cp-amber, #F59E0B))'; }}
+        onMouseEnter={e => { e.currentTarget.style.color = 'var(--ds-text-warning, var(--cp-amber))'; }}
         onMouseLeave={e => { if (!item.starred) e.currentTarget.style.color = ink[4]; }}
       >
-        <Star className="w-3.5 h-3.5" fill={item.starred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'none'} />
+        <Star className="w-3.5 h-3.5" fill={item.starred ? 'var(--ds-text-warning, var(--cp-amber))' : 'none'} />
       </button>
 
       {/* Canonical Business Request icon — all roadmap rows are BRs; request_type
@@ -225,14 +225,14 @@ function RequestRow({
         <div className="flex items-center gap-1.5">
           <span style={{
             fontFamily: FONT.mono,
-            fontSize: 11, fontWeight: 500, color: ink[4],
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4],
             fontVariantNumeric: 'tabular-nums',
             flexShrink: 0,
           }}>
             {item.initiativeKey}
           </span>
           <span className="truncate" style={{
-            fontSize: 13, fontWeight: 500, color: ink[1],
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: ink[1],
             lineHeight: 1.3,
           }}>
             {item.titleEn}

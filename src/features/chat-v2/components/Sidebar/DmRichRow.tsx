@@ -51,7 +51,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         transition: 'background var(--cv2-transition-fast)',
         position: 'relative',
         minWidth: 0,
-        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
+        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' } : null),
       }}
       onMouseEnter={e => {
         if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';
@@ -72,7 +72,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
               flex: 1,
               minWidth: 0,
               fontFamily: 'var(--cv2-font)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: hasUnread ? 700 : 700,
               color: 'var(--cv2-text-strong)',
               overflow: 'hidden',
@@ -88,7 +88,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
             {displayTitle}
           </span>
           {hasHuddle && (
-            <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success, #22A06B)', display: 'inline-flex', flex: '0 0 auto' }}>
+            <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success)', display: 'inline-flex', flex: '0 0 auto' }}>
               <HeadphonesIcon size={12} />
             </span>
           )}
@@ -97,7 +97,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
               style={{
                 flex: '0 0 auto',
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: hasUnread ? 'var(--cv2-text-strong)' : 'var(--cv2-text-muted)',
                 whiteSpace: 'nowrap',
               }}
@@ -110,7 +110,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: hasUnread ? 'var(--cv2-text)' : 'var(--cv2-text-muted)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -134,8 +134,8 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
             padding: '0 5px',
             borderRadius: 9,
             background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text, #FFFFFF)',
-            fontSize: 11,
+            color: 'var(--cv2-unread-text)',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

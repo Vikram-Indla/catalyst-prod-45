@@ -94,7 +94,7 @@ function FocusWidget({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2.5 min-w-0 flex-1">
-          <Icon className="w-4 h-4 shrink-0 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)] mt-0.5" />
+          <Icon className="w-4 h-4 shrink-0 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)] mt-0.5" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-foreground">{title}</div>
             {subtitle && (
@@ -105,7 +105,7 @@ function FocusWidget({
         <span className={cn(
           "text-base font-bold tabular-nums shrink-0",
           primaryCount > 0 
-            ? "text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-success, #DCFFF1)]" 
+            ? "text-[var(--ds-chart-teal-bold)] dark:text-[var(--ds-background-success)]" 
             : "text-muted-foreground"
         )}>
           {primaryCount}
@@ -226,14 +226,14 @@ function WorkItemsDataGrid({
           <div key={groupIndex}>
             {/* Group Header with gold accent bar */}
             <div 
-              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/[0.08] to-transparent dark:from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/[0.15] dark:to-transparent"
+              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/[0.08] to-transparent dark:from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/[0.15] dark:to-transparent"
               style={{ 
                 borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
                 borderBottom: '1px solid var(--divider)',
               }}
             >
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
-              <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />
+              <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]">
                 {group.label}
               </span>
             </div>
@@ -787,8 +787,8 @@ export const HomeContentV2 = memo(function HomeContentV2() {
               )}
             >
               {/* Header with blue accent per design system v2.0 */}
-              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-text-disabled, #8590A2)] border-b border-border pb-2">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-r" />
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--ds-text-subtle)] dark:text-[var(--ds-text-disabled)] border-b border-border pb-2">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] rounded-r" />
                 My Focus
               </div>
               

@@ -34,8 +34,8 @@ export const CATALYST_PRIORITY_OPTIONS = CATALYST_PRIORITIES.map((p) => ({
  */
 export const PRIORITY_COLORS: Record<CatalystPriority, string> = {
   Highest: token('color.icon.danger', '#E5484D'),
-  High:    token('color.icon.warning', 'var(--ds-background-warning-bold, #f59e0b)'),
-  Medium:  token('color.icon.information', 'var(--ds-background-information-bold, #3b82f6)'),
+  High:    token('color.icon.warning', 'var(--ds-background-warning-bold)'),
+  Medium:  token('color.icon.information', 'var(--ds-background-information-bold)'),
   Low:     token('color.icon.success', '#22C55E'),
   Lowest:  token('color.icon.subtle', '#8C8F96'),
 };

@@ -137,8 +137,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
     <div 
       className={cn(
         "px-4 sm:px-6 py-3",
-        "border-b border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]",
-        "bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
+        "border-b border-[var(--ds-border)] dark:border-[var(--ds-text)]",
+        "bg-white dark:bg-[var(--ds-surface-raised)]"
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
@@ -160,8 +160,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span className="text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">Severity:</span>
-              <span className="font-medium text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">{getSeverityLabel(selectedSeverity)}</span>
+              <span className="text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">Severity:</span>
+              <span className="font-medium text-[var(--ds-text)] dark:text-[var(--ds-surface-sunken)]">{getSeverityLabel(selectedSeverity)}</span>
               <ChevronDown className="h-3 w-3" />
               {selectedSeverity && stats.severityCounts[selectedSeverity] > 0 && (
                 <span className="ml-1">
@@ -182,8 +182,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
                 <div className="flex items-center justify-between w-full">
                   <span className={cn(
                     (sev === 'SEV1' || sev === 'SEV2') && 'font-medium',
-                    sev === 'SEV1' && 'text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]',
-                    sev === 'SEV2' && 'text-[var(--ds-text-warning,#f59e0b)] dark:text-[var(--ds-background-warning-bold, #E2B203)]'
+                    sev === 'SEV1' && 'text-[var(--ds-text-danger)] dark:text-[var(--ds-background-danger)]',
+                    sev === 'SEV2' && 'text-[var(--ds-text-warning)] dark:text-[var(--ds-background-warning-bold)]'
                   )}>
                     {sev}
                   </span>
@@ -200,8 +200,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span className="text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">Status:</span>
-              <span className="font-medium text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">{getStatusLabel(selectedStatus)}</span>
+              <span className="text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">Status:</span>
+              <span className="font-medium text-[var(--ds-text)] dark:text-[var(--ds-surface-sunken)]">{getStatusLabel(selectedStatus)}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -212,7 +212,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onStatusChange('breached')}>
               <div className="flex items-center gap-2 w-full">
-                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-danger,#ef4444)]" />
+                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-danger)]" />
                 <span>Breached</span>
                 <span className="ml-auto">
                   <Lozenge appearance="removed">
@@ -223,7 +223,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange('at_risk')}>
               <div className="flex items-center gap-2 w-full">
-                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-warning,#f59e0b)]" />
+                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-warning)]" />
                 <span>At Risk</span>
                 <span className="ml-auto">
                   <Lozenge appearance="moved">
@@ -239,8 +239,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span className="text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">Assignee:</span>
-              <span className="font-medium truncate max-w-[100px] text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">
+              <span className="text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">Assignee:</span>
+              <span className="font-medium truncate max-w-[100px] text-[var(--ds-text)] dark:text-[var(--ds-surface-sunken)]">
                 {getAssigneeLabel(selectedAssignee)}
               </span>
               <ChevronDown className="h-3 w-3" />
@@ -278,7 +278,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <div className="h-6 w-px bg-border" />
         
         <div className="flex items-center gap-2">
-          <Label className="text-sm text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">Group:</Label>
+          <Label className="text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">Group:</Label>
           <Select value={groupBy} onValueChange={(v) => onGroupByChange(v as GroupByOption)}>
             <SelectTrigger className="w-[120px] h-8 text-sm">
               <SelectValue />
@@ -310,7 +310,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         )}
         
         {/* Total count */}
-        <div className="ml-auto text-sm text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">
+        <div className="ml-auto text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">
           {filteredCount} incident{filteredCount !== 1 ? 's' : ''}
         </div>
       </div>

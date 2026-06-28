@@ -204,9 +204,9 @@ function CommentThread({
             <div style={{ paddingLeft: 44, paddingTop: 8, paddingBottom: 8 }}>
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #44546F)',
+                  color: 'var(--ds-text-subtle)',
                   marginBottom: 6,
                 }}
               >
@@ -269,15 +269,15 @@ function CommentThread({
       <div className="mt-4">
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading comments...</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">Loading comments...</p>
           </div>
         ) : sortedTopLevelComments.length === 0 ? (
           <div className="text-center py-10">
-            <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border, #DFE1E6)] dark:text-[var(--ds-border-bold,#454545)]" />
-            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
+            <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border)] dark:text-[var(--ds-border-bold)]" />
+            <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">{emptyMessage}</p>
           </div>
         ) : (
-          <div className="divide-y divide-[var(--ds-border, #DFE1E6)] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+          <div className="divide-y divide-[var(--ds-border)] dark:divide-[var(--ds-border,var(--cp-ink-1))]">
             {sortedTopLevelComments.map((comment) => (
               <div key={comment.id}>
                 <CommentNode

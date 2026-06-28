@@ -288,6 +288,7 @@ const VercelConnectionPage = lazy(() => import("../pages/admin/connections/Verce
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const WorkflowVersioningPage = lazy(() => import("../pages/admin/workflows/WorkflowVersioningPage"));
+const TestOpsPage = lazy(() => import("../pages/admin/test-ops/TestOpsPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 const FieldRegistryPage = lazy(() => import("../pages/admin/FieldRegistryPage"));
@@ -846,8 +847,8 @@ export default function FullAppRoutes() {
         <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />
         <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
-        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
-        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
 
         <Route path="/projects" element={<Navigate to="/project-hub/projects" replace />} />
         <Route path="/projects/:projectKey" element={<Navigate to="/project-hub/projects" replace />} />
@@ -945,6 +946,7 @@ export default function FullAppRoutes() {
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workflows/versions" element={<S><WorkflowVersioningPage /></S>} />
+          <Route path="test-ops" element={<S><TestOpsPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
           {/* ── Connections hub (/admin/connections/*) — 2026-06-21 ─────────────
               Replaces the old /admin/workhub/* section. Each integration owns

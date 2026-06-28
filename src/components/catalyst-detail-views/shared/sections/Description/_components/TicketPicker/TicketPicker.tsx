@@ -82,8 +82,8 @@ export function TicketPicker({ query, coords, onSelect, onDismiss }: Props) {
         top,
         left,
         zIndex: 10000,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         minWidth: 280,
@@ -111,12 +111,12 @@ export function TicketPicker({ query, coords, onSelect, onDismiss }: Props) {
           }}
         >
           <JiraIssueTypeIcon type={issue.issue_type} size={14} />
-          <span style={{ fontWeight: 500, color: 'var(--ds-link, #0052CC)', fontSize: 13, minWidth: 64 }}>
+          <span style={{ fontWeight: 500, color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-300)', minWidth: 64 }}>
             {issue.issue_key}
           </span>
           <span style={{
-            fontSize: 13,
-            color: 'var(--ds-text-subtle, #42526E)',
+            fontSize: 'var(--ds-font-size-300)',
+            color: 'var(--ds-text-subtle)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

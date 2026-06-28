@@ -39,18 +39,18 @@ export function EditDatesModal({
           <ModalTitle>{issue.startDate || issue.dueDate ? 'Edit dates' : 'Add dates'}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle)', borderRadius: 3 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={14} />
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
-            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
+            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Start date</label>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Start date</label>
               <ModalDateField value={startDate} onChange={setStartDate} placeholder="Select start date" ariaLabel="Start date" />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Due date</label>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Due date</label>
               <ModalDateField value={dueDate} onChange={setDueDate} placeholder="Select due date" ariaLabel="Due date" />
             </div>
           </div>

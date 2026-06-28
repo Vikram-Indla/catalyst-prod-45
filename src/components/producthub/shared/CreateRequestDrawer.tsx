@@ -18,11 +18,11 @@ import { DepartmentSelect } from './DepartmentSelect';
 
 /* ── Token constants ── */
 const T = {
-  ink: 'var(--ds-text, #172B4D)', inkSec: 'var(--ds-text, #172B4D)', inkMuted: 'var(--ds-text-subtlest, #626F86)',
-  surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', surfSec: 'var(--bg-1, #F8FAFC)',
-  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderStrong: 'var(--ds-text-disabled, #CBD5E1)',
-  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', primaryBg: 'var(--ds-background-selected, #EFF6FF)',
-  danger: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  ink: 'var(--ds-text)', inkSec: 'var(--ds-text)', inkMuted: 'var(--ds-text-subtlest)',
+  surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', surfSec: 'var(--bg-1)',
+  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderStrong: 'var(--ds-text-disabled)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', primaryHover: 'var(--ds-background-brand-bold-hovered)', primaryBg: 'var(--ds-background-selected)',
+  danger: 'var(--ds-text-danger, var(--cp-danger))',
 };
 
 export interface ConversionSource {
@@ -129,7 +129,7 @@ function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }
   return (
     <div className="flex items-center gap-2 pt-4 pb-3 border-t" style={{ borderColor: T.border, marginTop: 4 }}>
       <span style={{ color: T.inkSec, display: 'flex' }}>{icon}</span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: T.inkSec, fontFamily: 'var(--cp-font-body)', letterSpacing: '.02em' }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: T.inkSec, fontFamily: 'var(--cp-font-body)', letterSpacing: '.02em' }}>{label}</span>
     </div>
   );
 }
@@ -145,7 +145,7 @@ function FieldWrapper({ label, required, children }: { label: string; required?:
   );
 }
 
-const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[var(--ds-text-subtlest, #626F86)]";
+const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[var(--ds-text-subtlest)]";
 
 /* ── Main Component ── */
 export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated, initialStatus }: CreateRequestDrawerProps) {
@@ -292,10 +292,10 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         <div style={{ padding: '20px 24px 16px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Business Request</div>
+              <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Business Request</div>
               {nextKey && (
                 <div style={{
-                  display: 'inline-block', marginTop: 6, fontSize: 12, fontWeight: 600,
+                  display: 'inline-block', marginTop: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                   color: T.primary, background: T.primaryBg, padding: '2px 10px',
                   borderRadius: 4, fontFamily: 'var(--cp-font-mono)', lineHeight: '20px',
                 }}>{nextKey}</div>
@@ -303,7 +303,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
             </div>
             <button onClick={doClose} style={{
               border: 'none', background: 'transparent', cursor: 'pointer',
-              fontSize: 20, color: T.inkMuted, padding: 4, lineHeight: 1, marginTop: -2,
+              fontSize: 'var(--ds-font-size-700)', color: T.inkMuted, padding: 4, lineHeight: 1, marginTop: -2,
             }}>
               <X className="w-4 h-4" />
             </button>
@@ -315,7 +315,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
 
           {/* Conversion banners */}
           {conversionSource?.type === 'single' && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-success-light, #F0FDF4)', border: `1px solid ${'var(--cp-success-light, #BBF7D0)'}` }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-success-light)', border: `1px solid ${'var(--cp-success-light)'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to business request
               </div>
@@ -326,7 +326,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-primary-light, #EFF6FF)', border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}` }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-primary-light)', border: `1px solid ${'var(--cp-primary-light)'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 business request
               </div>
@@ -361,7 +361,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               onChange={e => updateField('description', e.target.value)}
               placeholder="Brief description of the business request scope and objectives..."
               rows={3}
-              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[var(--ds-text-subtlest, #626F86)]"
+              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[var(--ds-text-subtlest)]"
               style={{ borderColor: T.border }}
             />
           </FieldWrapper>
@@ -433,7 +433,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         }}>
           <button onClick={doClose} style={{
             padding: '9px 20px', border: `1px solid ${T.border}`, borderRadius: 8,
-            background: T.surface, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            background: T.surface, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
             color: T.inkSec,
           }}>Cancel</button>
 
@@ -442,7 +442,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               onClick={() => handleCreate(true)}
               disabled={createMutation.isPending}
               style={{
-                padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                padding: '9px 20px', borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', border: `1.5px solid ${T.primary}`,
                 background: T.surface, color: T.primary, opacity: createMutation.isPending ? 0.5 : 1,
               }}
@@ -454,7 +454,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               className="flex items-center gap-2"
               style={{
                 padding: '9px 24px', border: 'none', borderRadius: 8,
-                background: T.primary, color: 'var(--ds-surface, #fff)', fontSize: 13, fontWeight: 600,
+                background: T.primary, color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,.25))',
                 opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,
               }}

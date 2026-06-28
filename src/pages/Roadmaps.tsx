@@ -130,7 +130,7 @@ export default function Roadmaps() {
         className={cn(
           'absolute h-8 rounded-sm flex items-center px-2 text-xs font-medium text-white cursor-pointer hover:shadow-lg transition-shadow',
           getStatusColor(feature.status),
-          feature.blocked && 'border-2 border-[var(--ds-background-danger-bold, #C9372C)]'
+          feature.blocked && 'border-2 border-[var(--ds-background-danger-bold)]'
         )}
         style={{
           left: `${position.left}%`,
@@ -468,7 +468,7 @@ export default function Roadmaps() {
                         )}
                       </Button>
                       {feature.milestones && feature.milestones.length > 0 && (
-                        <AlertTriangle className="h-3 w-3 text-[var(--ds-background-warning-bold, #E2B203)] ml-1" />
+                        <AlertTriangle className="h-3 w-3 text-[var(--ds-background-warning-bold)] ml-1" />
                       )}
                     </div>
                     <div className="w-24 px-3 py-4 text-sm text-center border-r">

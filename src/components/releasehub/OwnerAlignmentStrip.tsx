@@ -3,21 +3,21 @@ import { useReleasePortfolio } from '@/hooks/useReleasePortfolio';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  success: 'var(--ds-icon-success, #22A06B)',
+  card: 'var(--ds-surface-raised)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  success: 'var(--ds-icon-success)',
   successBg: 'var(--ds-background-success, rgba(34,160,107,0.12))',
-  successBorder: 'var(--ds-border-success, #4BCE97)',
-  warning: 'var(--ds-icon-warning, #E2B203)',
+  successBorder: 'var(--ds-border-success)',
+  warning: 'var(--ds-icon-warning)',
   warningBg: 'var(--ds-background-warning, rgba(255,153,31,0.12))',
-  warningBorder: 'var(--ds-border-warning, #E2B203)',
-  danger: 'var(--ds-icon-danger, #AE2A19)',
+  warningBorder: 'var(--ds-border-warning)',
+  danger: 'var(--ds-icon-danger)',
   dangerBg: 'var(--ds-background-danger, rgba(174,42,25,0.10))',
   dangerBorder: 'var(--ds-border-danger, rgba(174,42,25,0.35))',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
+  bgNeutral: 'var(--ds-background-neutral)',
 };
 
 const SKIP_STATUS = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived', 'draft', 'production'];
@@ -32,24 +32,24 @@ function signoffTier(done: number, total: number): SignoffTier {
 }
 
 const TIER_COLOR: Record<SignoffTier, string> = {
-  complete: 'var(--ds-icon-success, #22A06B)',
-  partial:  'var(--ds-icon-warning, #E2B203)',
-  none:     'var(--ds-icon-danger, #AE2A19)',
-  unknown:  'var(--ds-icon-subtlest, #B3B9C4)',
+  complete: 'var(--ds-icon-success)',
+  partial:  'var(--ds-icon-warning)',
+  none:     'var(--ds-icon-danger)',
+  unknown:  'var(--ds-icon-subtlest)',
 };
 
 const TIER_BG: Record<SignoffTier, string> = {
   complete: 'var(--ds-background-success, rgba(34,160,107,0.12))',
   partial:  'var(--ds-background-warning, rgba(255,153,31,0.12))',
   none:     'var(--ds-background-danger, rgba(174,42,25,0.10))',
-  unknown:  'var(--ds-background-neutral, #F1F2F4)',
+  unknown:  'var(--ds-background-neutral)',
 };
 
 const TIER_BORDER: Record<SignoffTier, string> = {
-  complete: 'var(--ds-border-success, #4BCE97)',
-  partial:  'var(--ds-border-warning, #E2B203)',
+  complete: 'var(--ds-border-success)',
+  partial:  'var(--ds-border-warning)',
   none:     'var(--ds-border-danger, rgba(174,42,25,0.35))',
-  unknown:  'var(--ds-border, #DFE1E6)',
+  unknown:  'var(--ds-border)',
 };
 
 export function OwnerAlignmentStrip() {
@@ -68,9 +68,9 @@ export function OwnerAlignmentStrip() {
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-        <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text }}>Owner alignment</span>
+        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text }}>Owner alignment</span>
         {allAligned && (
-          <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.success }}>All signoffs cleared</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.success }}>All signoffs cleared</span>
         )}
       </div>
 
@@ -93,7 +93,7 @@ export function OwnerAlignmentStrip() {
               }}
             >
               {/* Release name */}
-              <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{r.name}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{r.name}</span>
 
               {/* Signoff progress bar */}
               {r.signoffTotal > 0 && (
@@ -103,7 +103,7 @@ export function OwnerAlignmentStrip() {
               )}
 
               {/* Fraction label */}
-              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: TIER_COLOR[tier] }}>{label}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: TIER_COLOR[tier] }}>{label}</span>
             </div>
           );
         })}

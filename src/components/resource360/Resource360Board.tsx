@@ -4,9 +4,9 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText } from './Resource360Shared';
 
 const T = {
-  bg: 'var(--ds-surface-sunken, #F5F0EB)', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', text1: 'var(--ds-surface, #0A0A0A)', text2: 'var(--ds-text, #1A1A2E)',
-  text3: 'var(--ds-text-subtle, #3D3D56)', text4: 'var(--ds-text-subtlest, #6B6B80)', border: 'var(--ds-border, #D9D2C9)',
-  todo: 'var(--ds-background-danger-bold, #E23636)', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-background-success-bold, #0E8A5F)',
+  bg: 'var(--ds-surface-sunken)', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', text1: 'var(--ds-surface)', text2: 'var(--ds-text)',
+  text3: 'var(--ds-text-subtle)', text4: 'var(--ds-text-subtlest)', border: 'var(--ds-border)',
+  todo: 'var(--ds-background-danger-bold)', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', done: 'var(--ds-background-success-bold)',
   shadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,.12))',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
@@ -44,7 +44,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
         <input
           type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search key, title, or parent…"
-          style={{ width: 220, fontSize: 11, padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.surface, color: T.text1, outline: 'none' }}
+          style={{ width: 220, fontSize: 'var(--ds-font-size-100)', padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.surface, color: T.text1, outline: 'none' }}
         />
       </div>
 
@@ -59,9 +59,9 @@ export function Resource360Board({ items, onItemClick }: Props) {
               borderBottom: `3px solid ${col.color}`,
             }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: col.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 800, color: T.text1, letterSpacing: '0.06em' }}>{col.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: T.text1, letterSpacing: '0.06em' }}>{col.label}</span>
               <span style={{
-                fontSize: 10, fontWeight: 800, color: 'var(--ds-surface, #fff)', marginLeft: 'auto',
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 800, color: 'var(--ds-surface)', marginLeft: 'auto',
                 background: col.color, borderRadius: 12, padding: '1px 7px',
               }}>{col.items.length}</span>
             </div>
@@ -69,7 +69,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
             {/* Cards */}
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
               {col.items.map(item => {
-                const hubColor = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+                const hubColor = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
                 const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
 
@@ -87,17 +87,17 @@ export function Resource360Board({ items, onItemClick }: Props) {
                   >
                     {/* Row 1: Key + Hub + Stale + Age */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text1 }}>
                         <HighlightText text={item.item_key} query={searchTerm} />
                       </span>
-                      <span style={{ fontSize: 8, fontWeight: 800, color: 'var(--ds-surface, #fff)', padding: '1px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
-                      {stale && <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span>}
-                      <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4, marginLeft: 'auto' }}>{item.age_days}d</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '1px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
+                      {stale && <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)' }}>{stale.icon}</span>}
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4, marginLeft: 'auto' }}>{item.age_days}d</span>
                     </div>
 
                     {/* Row 2: Title */}
                     <div style={{
-                      fontSize: 11, fontWeight: 600, color: T.text2, lineHeight: 1.3, marginBottom: 4,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text2, lineHeight: 1.3, marginBottom: 4,
                       overflow: 'hidden', textOverflow: 'ellipsis',
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any,
                     }}>
@@ -107,11 +107,11 @@ export function Resource360Board({ items, onItemClick }: Props) {
                     {/* Row 3: Priority + Assigner */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       {item.priority && (
-                        <span style={{ fontSize: 9, color: T.text3 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.text3 }}>
                           {item.priority === 'Critical' || item.priority === 'Highest' ? '⬆⬆' : item.priority === 'High' ? '⬆' : item.priority === 'Medium' ? '➡' : '⬇'} {item.priority}
                         </span>
                       )}
-                      <span style={{ fontSize: 9, color: T.text4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 80 }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.text4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 80 }}>
                         {item.assigner_name ?? ''}
                       </span>
                     </div>
@@ -120,7 +120,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
               })}
 
               {col.items.length === 0 && (
-                <div style={{ padding: 20, textAlign: 'center', fontSize: 11, color: T.text4 }}>No items</div>
+                <div style={{ padding: 20, textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: T.text4 }}>No items</div>
               )}
             </div>
           </div>

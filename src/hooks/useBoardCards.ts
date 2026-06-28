@@ -61,14 +61,14 @@ export function useBoardCards(boardId: string | undefined) {
 
         // Map priority
         const priorityColors: Record<string, string> = {
-          Critical: 'var(--ds-background-danger-bold, #C9372C)', Highest: 'var(--ds-background-danger-bold, #C9372C)', High: 'var(--ds-background-danger-bold, #FF7452)',
-          Medium: 'var(--cp-warning, #D97706)', Low: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', Lowest: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
+          Critical: 'var(--ds-background-danger-bold)', Highest: 'var(--ds-background-danger-bold)', High: 'var(--ds-background-danger-bold)',
+          Medium: 'var(--cp-warning)', Low: 'var(--cp-ink-4, var(--cp-border-neutral-light))', Lowest: 'var(--cp-ink-4, var(--cp-border-neutral-light))',
         };
         const pName = item.priority ?? '';
         const priorityObj = pName ? {
           id: pName.toLowerCase(),
           name: pName.toLowerCase() as any,
-          color: priorityColors[pName] ?? 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
+          color: priorityColors[pName] ?? 'var(--cp-ink-4, var(--cp-border-neutral-light))',
         } : null;
 
         // Parse sprint_release
@@ -99,7 +99,7 @@ export function useBoardCards(boardId: string | undefined) {
               labelsList = parsed.map((l: any) => ({
                 id: typeof l === 'string' ? l : l.id ?? l.name,
                 name: typeof l === 'string' ? l : l.name,
-                color: typeof l === 'object' ? l.color ?? 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))' : 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
+                color: typeof l === 'object' ? l.color ?? 'var(--cp-ink-4, var(--cp-border-neutral-light))' : 'var(--cp-ink-4, var(--cp-border-neutral-light))',
               }));
             }
           } catch {}
@@ -117,7 +117,7 @@ export function useBoardCards(boardId: string | undefined) {
           priority: priorityObj,
           assignee,
           release: releaseObj,
-          epic: item.parent_key ? { id: item.parent_key, key: item.parent_key, title: item.parent_key, color: 'var(--ds-background-discovery-bold, #6554C0)' } : null,
+          epic: item.parent_key ? { id: item.parent_key, key: item.parent_key, title: item.parent_key, color: 'var(--ds-background-discovery-bold)' } : null,
           labels: labelsList,
           isBlocked: false,
           dueDate: item.due_date ?? null,

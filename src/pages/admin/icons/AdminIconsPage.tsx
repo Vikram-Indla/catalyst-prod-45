@@ -155,8 +155,8 @@ const cardOuterStyle: React.CSSProperties = {
   flexDirection: 'column',
   padding: 10,
   borderRadius: 6,
-  backgroundColor: 'var(--ds-surface, #FFFFFF)',
-  border: '1px solid var(--ds-border, #DCDFE4)',
+  backgroundColor: 'var(--ds-surface)',
+  border: '1px solid var(--ds-border)',
   transition: 'all 150ms ease',
   minWidth: 0,
 };
@@ -167,7 +167,7 @@ const previewWellLightStyle: React.CSSProperties = {
   justifyContent: 'center',
   height: 64,
   borderRadius: 4,
-  backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
+  backgroundColor: 'var(--ds-surface-sunken)',
   marginBottom: 8,
 };
 
@@ -177,7 +177,7 @@ const previewWellDarkStyle: React.CSSProperties = {
   justifyContent: 'center',
   height: 64,
   borderRadius: 4,
-  backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
+  backgroundColor: 'var(--ds-surface-sunken)',
   marginBottom: 8,
 };
 
@@ -265,9 +265,9 @@ function IconCard({
         <Tooltip content={label} position="top">
           <div style={{
             flex: 1,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
-            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -281,7 +281,7 @@ function IconCard({
       </div>
 
       {supportsDarkVariant && (
-        <div style={{ marginBottom: 6, fontSize: 12 }}>
+        <div style={{ marginBottom: 6, fontSize: 'var(--ds-font-size-200)' }}>
           <RadioGroup
             name={`variant-${category}-${itemKey}`}
             isDisabled={busy}
@@ -402,7 +402,7 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
               </SectionMessage>
 
               <div>
-                <label htmlFor="custom-key" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Key</label>
+                <label htmlFor="custom-key" style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Key</label>
                 <Textfield
                   id="custom-key"
                   value={key}
@@ -414,7 +414,7 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
 
               {category !== 'project-avatar' && (
                 <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Variant</label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Variant</label>
                   <RadioGroup
                     name="custom-variant"
                     isDisabled={busy}
@@ -429,7 +429,7 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
               )}
 
               <div>
-                <label htmlFor="custom-file" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                <label htmlFor="custom-file" style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>
                   Asset (SVG / PNG / JPG / WEBP, max 1 MB)
                 </label>
                 <input
@@ -440,7 +440,7 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 />
                 {file && (
-                  <div style={{ marginTop: 6, fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>
+                  <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     {file.name} · {Math.round(file.size / 1024)} KB
                   </div>
                 )}
@@ -479,7 +479,7 @@ function CategoryGrid({ cards, filter }: CategoryGridProps) {
 
   if (filtered.length === 0) {
     return (
-      <div style={{ paddingBlock: 40, textAlign: 'center', color: 'var(--ds-text-subtlest, #8590A2)' }}>
+      <div style={{ paddingBlock: 40, textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
         No icons match "{filter}"
       </div>
     );
@@ -649,7 +649,7 @@ export default function AdminIconsPage() {
     <div style={pageContainerStyle}>
       <div style={{ marginBottom: 24 }}>
         <Heading size="xlarge">Icon library</Heading>
-        <div style={{ marginTop: 8, color: 'var(--ds-text-subtle, #626F86)', maxWidth: 720 }}>
+        <div style={{ marginTop: 8, color: 'var(--ds-text-subtle)', maxWidth: 720 }}>
           Replace any work-item type, priority indicator, or project avatar without redeploying.
           Uploads take effect across every Catalyst surface within seconds. Reset any card to
           return to the bundled canonical asset.
@@ -688,11 +688,11 @@ export default function AdminIconsPage() {
           style={{
             padding: '6px 14px',
             borderRadius: 4,
-            background: 'var(--ds-background-brand-bold, #1868DB)',
-            color: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-surface)',
             border: 'none',
             fontWeight: 500,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             cursor: 'pointer',
           }}
         >
@@ -777,7 +777,7 @@ export default function AdminIconsPage() {
                 </Button>
               </div>
               {cat.description && (
-                <div style={{ marginBottom: 16, fontSize: 13, color: 'var(--ds-text-subtle, #626F86)' }}>
+                <div style={{ marginBottom: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                   {cat.description}
                 </div>
               )}
@@ -802,11 +802,11 @@ export default function AdminIconsPage() {
             top: 16,
             right: 16,
             zIndex: 9999,
-            background: 'var(--ds-text-success, #216E4E)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-text-success)',
+            color: 'var(--ds-text-inverse)',
             padding: '8px 12px',
             borderRadius: 4,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--ds-font-family-code, monospace)',
           }}
         >
@@ -890,7 +890,7 @@ function NewCategoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
               </SectionMessage>
 
               <div>
-                <label htmlFor="cat-name" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                <label htmlFor="cat-name" style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>
                   Name (slug)
                 </label>
                 <Textfield
@@ -900,13 +900,13 @@ function NewCategoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                   placeholder="severity"
                   isDisabled={busy}
                 />
-                <div style={{ marginTop: 4, fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>
+                <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                   Lowercase letters, digits, hyphens, underscores. Used as the database identifier.
                 </div>
               </div>
 
               <div>
-                <label htmlFor="cat-label" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                <label htmlFor="cat-label" style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>
                   Label (display name)
                 </label>
                 <Textfield
@@ -919,7 +919,7 @@ function NewCategoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
               </div>
 
               <div>
-                <label htmlFor="cat-desc" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                <label htmlFor="cat-desc" style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>
                   Description (optional)
                 </label>
                 <Textfield

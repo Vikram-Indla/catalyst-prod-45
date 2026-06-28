@@ -49,7 +49,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       <div style={{ flex: 1 }}>
         <div
           style={{
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             color: COLORS.textSecondary,
             lineHeight: 1.5
           }}
@@ -64,7 +64,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
         </div>
         <div
           style={{
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             color: COLORS.textLight,
             marginTop: '4px'
           }}

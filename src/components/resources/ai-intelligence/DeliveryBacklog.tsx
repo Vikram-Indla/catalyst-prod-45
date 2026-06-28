@@ -15,12 +15,12 @@ export interface BacklogHub {
 }
 
 const HUB_ICON_STYLES: Record<string, { bg: string; color: string; letter: string }> = {
-  IncidentHub: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', letter: 'I' },
-  ProductHub: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--cp-teal-60, #0D9488)', letter: 'P' },
-  TestHub: { bg: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--cp-purple-60, #7C3AED)', letter: 'T' },
-  ProjectHub: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', letter: 'J' },
-  ReleaseHub: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', letter: 'R' },
-  Other: { bg: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--ds-text-subtlest, #626F86)', letter: 'O' },
+  IncidentHub: { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger, var(--cp-danger))', letter: 'I' },
+  ProductHub: { bg: 'var(--ds-background-success)', color: 'var(--cp-teal-60)', letter: 'P' },
+  TestHub: { bg: 'var(--ds-background-discovery)', color: 'var(--cp-purple-60)', letter: 'T' },
+  ProjectHub: { bg: 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', letter: 'J' },
+  ReleaseHub: { bg: 'var(--ds-background-warning)', color: 'var(--ds-text-warning, var(--cp-warning))', letter: 'R' },
+  Other: { bg: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtlest)', letter: 'O' },
 };
 
 function countColor(n: number): string {
@@ -73,7 +73,7 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
       {/* Per-hub backlog list */}
       <div style={{ border: '1px solid var(--rai-border)', borderRadius: 8, marginTop: 16, overflow: 'hidden' }}>
         {sorted.length === 0 && (
-          <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
+          <div style={{ padding: '14px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
             No open items in backlog
           </div>
         )}
@@ -108,11 +108,11 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--rai-ink-tertiary)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--rai-ink-tertiary)' }}>
             Total Not Done Across All Hubs
           </span>
           <span style={{
-            fontFamily: 'var(--rai-font-heading)', fontSize: 16, fontWeight: 700,
+            fontFamily: 'var(--rai-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700,
             color: totalOpen >= 1 ? 'var(--rai-danger)' : 'var(--rai-ink-muted)',
           }}>
             {totalOpen}

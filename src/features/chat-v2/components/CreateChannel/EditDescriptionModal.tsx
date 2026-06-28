@@ -99,7 +99,7 @@ export function EditDescriptionModal({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Edit description
           </div>
           <button type="button" onClick={onClose} aria-label="Close" style={closeBtnStyle()}>
@@ -124,12 +124,12 @@ export function EditDescriptionModal({
               border: '1px solid var(--cv2-accent)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               outline: 'none',
               boxSizing: 'border-box',
             }}
           />
-          <div style={{ marginTop: 8, fontSize: 13, color: 'var(--cv2-text-subtle)' }}>
+          <div style={{ marginTop: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-subtle)' }}>
             Let people know what this channel is for.
           </div>
         </div>
@@ -146,7 +146,7 @@ export function EditDescriptionModal({
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               cursor: 'pointer',
             }}
@@ -160,12 +160,12 @@ export function EditDescriptionModal({
             style={{
               height: 36,
               padding: '0 18px',
-              background: !canSave ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-              color: !canSave ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+              background: !canSave ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
+              color: !canSave ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
               border: 'none',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               cursor: !canSave ? 'not-allowed' : 'pointer',
             }}

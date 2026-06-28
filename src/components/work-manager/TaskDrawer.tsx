@@ -82,9 +82,9 @@ const priorityColors: Record<Priority, { dot: string; text: string }> = {
 
 // Team colors
 const teamColors: Record<string, string> = {
-  'olive': 'bg-[var(--ds-chart-teal-bold, #0d9488)]',
-  'bronze': 'bg-[var(--ds-text-subtlest, #626F86)]',
-  'gold': 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
+  'olive': 'bg-[var(--ds-chart-teal-bold)]',
+  'bronze': 'bg-[var(--ds-text-subtlest)]',
+  'gold': 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
 };
 
 // Task type icons
@@ -251,7 +251,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     className={cn(
                       'flex-1 px-4 py-2 text-[13px] font-medium rounded-full transition-all duration-200',
                       activeTab === tab
-                        ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white shadow-sm'
+                        ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white shadow-sm'
                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                     )}
                   >
@@ -342,7 +342,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     </SelectTrigger>
                     <SelectContent className="min-w-[260px]">
                       {teamMembers.map((u, idx) => {
-                        const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-subtlest, #626F86)', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-background-brand-bold-hovered, #1d4ed8)'];
+                        const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-icon-information)', 'var(--ds-text-subtlest)', 'var(--ds-chart-teal-bolder)', 'var(--ds-background-brand-bold-hovered)'];
                         const avatarColor = u.avatarColor || avatarColors[idx % avatarColors.length];
                         return (
                           <SelectItem key={u.id} value={u.id} className="py-2">
@@ -643,7 +643,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               <Button 
                 onClick={handleSave} 
                 disabled={isSaving}
-                className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white min-w-[120px] transition-all duration-200"
+                className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white min-w-[120px] transition-all duration-200"
               >
                 {isSaving ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />

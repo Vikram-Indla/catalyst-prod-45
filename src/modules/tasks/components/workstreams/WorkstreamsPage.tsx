@@ -333,7 +333,7 @@ export function WorkstreamsPage() {
               fontSize: '1.25rem',
               lineHeight: '1.75rem',
               fontWeight: 700,
-              color: 'var(--ds-text, #0f172a)',
+              color: 'var(--ds-text)',
               margin: 0,
             }}
           >
@@ -343,7 +343,7 @@ export function WorkstreamsPage() {
             style={{
               fontSize: '0.875rem',
               lineHeight: '1.25rem',
-              color: 'var(--ds-text-subtlest, #64748b)',
+              color: 'var(--ds-text-subtlest)',
               margin: 0,
             }}
           >
@@ -362,7 +362,7 @@ export function WorkstreamsPage() {
               backgroundColor: COLORS.surfaceWhite,
               border: `1px solid ${COLORS.borderLight}`,
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: COLORS.textSecondary,
               cursor: 'pointer',
@@ -380,11 +380,11 @@ export function WorkstreamsPage() {
                   minWidth: '20px',
                   height: '20px',
                   padding: '0 6px',
-                  backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
+                  backgroundColor: 'var(--ds-surface-sunken)',
                   borderRadius: '12px',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
-                  color: 'var(--ds-text-subtlest, #64748b)',
+                  color: 'var(--ds-text-subtlest)',
                 }}
               >
                 {archivedCount}
@@ -402,9 +402,9 @@ export function WorkstreamsPage() {
               backgroundColor: COLORS.accent,
               border: 'none',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               cursor: 'pointer',
               fontFamily: 'inherit',
               boxShadow: '0 1px 3px var(--ds-background-information, rgba(37, 99, 235, 0.2))',
@@ -482,7 +482,7 @@ export function WorkstreamsPage() {
                 flex: 1,
                 border: 'none',
                 backgroundColor: 'transparent',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 color: COLORS.textPrimary,
                 outline: 'none',
                 fontFamily: 'inherit',
@@ -493,7 +493,7 @@ export function WorkstreamsPage() {
                 padding: '4px 8px',
                 backgroundColor: COLORS.borderLight,
                 borderRadius: '4px',
-                fontSize: '11px',
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 500,
                 color: COLORS.textMuted,
               }}
@@ -516,12 +516,12 @@ export function WorkstreamsPage() {
                   alignItems: 'center',
                   gap: '6px',
                   padding: '8px 14px',
-                  backgroundColor: healthFilter ? 'var(--ds-background-selected, #eff6ff)' : COLORS.surfaceWhite,
-                  border: `1px solid ${healthFilter ? 'var(--ds-text-brand, #3b82f6)' : COLORS.borderLight}`,
+                  backgroundColor: healthFilter ? 'var(--ds-background-selected)' : COLORS.surfaceWhite,
+                  border: `1px solid ${healthFilter ? 'var(--ds-text-brand)' : COLORS.borderLight}`,
                   borderRadius: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
-                  color: healthFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
+                  color: healthFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : COLORS.textSecondary,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -532,7 +532,7 @@ export function WorkstreamsPage() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                   }} />
                 )}
                 <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
@@ -545,7 +545,7 @@ export function WorkstreamsPage() {
                     top: 'calc(100% + 4px)',
                     right: 0,
                     width: '180px',
-                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '12px',
                     boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
@@ -575,7 +575,7 @@ export function WorkstreamsPage() {
                           backgroundColor: healthFilter === option.value ? COLORS.surfaceHover : 'transparent',
                           border: 'none',
                           borderRadius: '6px',
-                          fontSize: '13px',
+                          fontSize: 'var(--ds-font-size-300)',
                           fontWeight: 500,
                           color: COLORS.textPrimary,
                           cursor: 'pointer',
@@ -611,12 +611,12 @@ export function WorkstreamsPage() {
                   alignItems: 'center',
                   gap: '6px',
                   padding: '8px 14px',
-                  backgroundColor: leadFilter ? 'var(--ds-background-selected, #eff6ff)' : COLORS.surfaceWhite,
-                  border: `1px solid ${leadFilter ? 'var(--ds-text-brand, #3b82f6)' : COLORS.borderLight}`,
+                  backgroundColor: leadFilter ? 'var(--ds-background-selected)' : COLORS.surfaceWhite,
+                  border: `1px solid ${leadFilter ? 'var(--ds-text-brand)' : COLORS.borderLight}`,
                   borderRadius: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
-                  color: leadFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
+                  color: leadFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : COLORS.textSecondary,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -627,7 +627,7 @@ export function WorkstreamsPage() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                   }} />
                 )}
                 <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
@@ -640,7 +640,7 @@ export function WorkstreamsPage() {
                     top: 'calc(100% + 4px)',
                     right: 0,
                     width: '180px',
-                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '12px',
                     boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
@@ -669,7 +669,7 @@ export function WorkstreamsPage() {
                           backgroundColor: leadFilter === option.value ? COLORS.surfaceHover : 'transparent',
                           border: 'none',
                           borderRadius: '6px',
-                          fontSize: '13px',
+                          fontSize: 'var(--ds-font-size-300)',
                           fontWeight: 500,
                           color: COLORS.textPrimary,
                           cursor: 'pointer',
@@ -838,7 +838,7 @@ export function WorkstreamsPage() {
               backgroundColor: COLORS.surfacePage,
             }}
           >
-            <span style={{ fontSize: '13px', color: COLORS.textMuted }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted }}>
               Showing {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, filteredWorkstreams.length)} of {filteredWorkstreams.length}
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -875,9 +875,9 @@ export function WorkstreamsPage() {
                     backgroundColor: page === currentPage ? COLORS.accent : COLORS.surfaceWhite,
                     border: `1px solid ${page === currentPage ? COLORS.accent : COLORS.borderLight}`,
                     borderRadius: '6px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: page === currentPage ? 600 : 500,
-                    color: page === currentPage ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textSecondary,
+                    color: page === currentPage ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : COLORS.textSecondary,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                   }}

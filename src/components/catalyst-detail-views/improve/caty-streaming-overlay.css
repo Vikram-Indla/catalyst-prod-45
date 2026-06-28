@@ -19,7 +19,7 @@
   display: inline-block;
   width: 2px;
   height: 1em;
-  background: var(--ds-text-accent-purple, #6554C0);
+  background: var(--ds-text-accent-purple);
   margin-left: 1px;
   vertical-align: text-bottom;
   animation: caty-caret-blink 1s steps(2) infinite;
@@ -63,7 +63,7 @@
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
   line-height: 24px;
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
   white-space: pre-wrap;
 }
 
@@ -90,7 +90,7 @@
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
   line-height: 24px;
-  color: var(--ds-text-disabled, #8993A4);
+  color: var(--ds-text-disabled);
   opacity: 0.65;
   white-space: pre-wrap;
 }
@@ -101,8 +101,8 @@
   gap: 12px;
   padding: 12px;
   border-radius: 6px;
-  background: var(--ds-background-danger, #FFECEB);
-  color: var(--ds-text-danger, #AE2A19);
+  background: var(--ds-background-danger);
+  color: var(--ds-text-danger);
   font-size: 13px;
 }
 
@@ -118,7 +118,7 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--ds-text-danger, #AE2A19);
+  color: var(--ds-text-danger);
   cursor: pointer;
 }
 
@@ -139,15 +139,15 @@
 }
 
 .caty-improve__btn--secondary {
-  border: 1px solid var(--ds-border, #DFE1E6);
-  background: var(--ds-surface, #FFFFFF);
-  color: var(--ds-text, #292A2E);
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  color: var(--ds-text);
 }
 
 .caty-improve__btn--primary {
   border: none;
-  background: var(--ds-background-brand-bold, #0C66E4);
-  color: var(--ds-text-inverse, #FFFFFF);
+  background: var(--ds-background-brand-bold);
+  color: var(--ds-text-inverse);
 }
 
 .caty-improve__strap-anchor {
@@ -175,8 +175,8 @@
   gap: 12px;
   padding: 10px 16px;
   border-radius: 16px;
-  background: var(--ds-surface-overlay, #FFFFFF);
-  color: var(--ds-text, #172B4D);
+  background: var(--ds-surface-overlay);
+  color: var(--ds-text);
   border: 1px solid var(--ds-border, rgba(9, 30, 66, 0.08));
   box-shadow:
     0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.15)),
@@ -201,7 +201,7 @@
 .caty-improve__strap-label {
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text);
 }
 
 .caty-improve__strap-esc {
@@ -209,11 +209,11 @@
   align-items: center;
   padding: 2px 8px;
   border-radius: 4px;
-  border: 1px solid var(--ds-border, #DFE1E6);
-  background: var(--ds-background-neutral, #F1F2F4);
+  border: 1px solid var(--ds-border);
+  background: var(--ds-background-neutral);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
   font-size: 11px;
-  color: var(--ds-text-subtle, #44546F);
+  color: var(--ds-text-subtle);
 }
 
 .caty-improve__strap-stop {
@@ -225,7 +225,7 @@
   padding: 0;
   border: none;
   border-radius: 4px;
-  background: var(--ds-background-danger-bold, #DE350B);
+  background: var(--ds-background-danger-bold);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -235,7 +235,7 @@
   width: 8px;
   height: 8px;
   border-radius: 1px;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--ds-text-inverse);
 }
 
 .caty-improve__strap-btn {
@@ -245,7 +245,7 @@
   padding: 4px 10px;
   border: none;
   background: transparent;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--ds-text-inverse);
   cursor: pointer;
 }
 
@@ -253,6 +253,6 @@
   font-weight: 600;
   padding: 4px 12px;
   border-radius: 4px;
-  border: 1px solid var(--ds-border-information, #85B8FF);
+  border: 1px solid var(--ds-border-information);
   background: var(--ds-background-information, rgba(132, 169, 255, 0.18));
 }

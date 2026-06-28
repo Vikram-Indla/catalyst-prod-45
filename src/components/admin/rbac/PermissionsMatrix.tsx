@@ -78,14 +78,14 @@ function cycleLevel(current: PermissionLevel | undefined): PermissionLevel {
 }
 
 const T = {
-  text:     'var(--ds-text, #172B4D)',
-  subtle:   'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  border:   'var(--ds-border, #DCDFE4)',
-  surface:  'var(--ds-surface, #FFFFFF)',
-  headerBg: 'var(--ds-background-neutral, #F1F2F4)',
-  selected: 'var(--ds-background-selected, #E9F2FE)',
-  allow:    'var(--ds-icon-success, #22A06B)',
+  text:     'var(--ds-text)',
+  subtle:   'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  border:   'var(--ds-border)',
+  surface:  'var(--ds-surface)',
+  headerBg: 'var(--ds-background-neutral)',
+  selected: 'var(--ds-background-selected)',
+  allow:    'var(--ds-icon-success)',
 };
 
 function LevelIcon({ level }: { level: PermissionLevel | undefined }) {
@@ -104,7 +104,7 @@ function EditableCell({ level, onClick }: { level: PermissionLevel | undefined; 
       onClick={onClick}
       title={`${level ?? 'Deny'} — click to toggle`}
       style={{
-        background: isAllow ? 'var(--ds-background-success, #DFFCF0)' : 'none',
+        background: isAllow ? 'var(--ds-background-success)' : 'none',
         border: 'none',
         cursor: 'pointer',
         padding: '4px 8px',
@@ -118,7 +118,7 @@ function EditableCell({ level, onClick }: { level: PermissionLevel | undefined; 
         if (!isAllow) (e.currentTarget as HTMLElement).style.background = T.selected;
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.background = isAllow ? 'var(--ds-background-success, #DFFCF0)' : 'none';
+        (e.currentTarget as HTMLElement).style.background = isAllow ? 'var(--ds-background-success)' : 'none';
       }}
     >
       <LevelIcon level={level} />

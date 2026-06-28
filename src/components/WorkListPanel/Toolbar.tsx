@@ -64,8 +64,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         alignItems: 'center',
         gap: '8px',
         padding: '8px 12px',
-        borderBottom: '1px solid var(--ds-border, #EBECF0)',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        borderBottom: '1px solid var(--ds-border)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
       }}
     >
       {/* Search input */}
@@ -77,11 +77,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           gap: '4px',
           padding: '4px 8px',
           borderRadius: '4px',
-          border: '1px solid var(--ds-border, #EBECF0)',
-          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+          border: '1px solid var(--ds-border)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
         }}
       >
-        <SearchIcon size="small" color="var(--ds-text-subtlest, #626F86)" />
+        <SearchIcon size="small" color="var(--ds-text-subtlest)" />
         <input
           type="text"
           placeholder="Search issues…"
@@ -92,9 +92,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             border: 'none',
             outline: 'none',
             background: 'transparent',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 400,
-            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
             fontFamily: 'var(--cp-font-body)',
           }}
         />
@@ -115,21 +115,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           borderRadius: '4px',
           border: 'none',
           background: activeFilterCount > 0
-            ? 'var(--ds-background-information-subtlest, #DEEBFF)'
+            ? 'var(--ds-background-information-subtlest)'
             : 'transparent',
           cursor: 'pointer',
           color: activeFilterCount > 0
-            ? 'var(--ds-text-information, #0055CC)'
-            : 'var(--ds-text-subtlest, #626F86)',
+            ? 'var(--ds-text-information)'
+            : 'var(--ds-text-subtlest)',
           transition: 'background 150ms',
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background =
-            'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+            'var(--ds-surface-sunken, var(--cp-bg-sunken))';
         }}
         onMouseLeave={e => {
           e.currentTarget.style.background = activeFilterCount > 0
-            ? 'var(--ds-background-information-subtlest, #DEEBFF)'
+            ? 'var(--ds-background-information-subtlest)'
             : 'transparent';
         }}
       >
@@ -146,9 +146,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               width: '16px',
               height: '16px',
               borderRadius: '50%',
-              background: 'var(--ds-background-information, #0055CC)',
+              background: 'var(--ds-background-information)',
               color: 'white',
-              fontSize: '10px',
+              fontSize: 'var(--ds-font-size-50)',
               fontWeight: 600,
             }}
           >
@@ -163,8 +163,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           display: 'flex',
           alignItems: 'center',
           borderRadius: '4px',
-          border: '1px solid var(--ds-border, #EBECF0)',
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          border: '1px solid var(--ds-border)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           overflow: 'hidden',
         }}
       >
@@ -176,9 +176,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             padding: '6px 8px',
             border: 'none',
             background: 'transparent',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 400,
-            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
             cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
             outline: 'none',
@@ -209,12 +209,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',
-          color: 'var(--ds-text-subtlest, #626F86)',
+          color: 'var(--ds-text-subtlest)',
           transition: 'background 150ms',
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background =
-            'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+            'var(--ds-surface-sunken, var(--cp-bg-sunken))';
         }}
         onMouseLeave={e => {
           e.currentTarget.style.background = 'transparent';

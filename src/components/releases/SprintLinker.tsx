@@ -45,7 +45,7 @@ const chipStyles = xcss({
   padding: 'space.050 space.150',
   backgroundColor: 'color.background.neutral',
   borderRadius: 'border.radius.100',
-  fontSize: '12px',
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 500,
 });
 
@@ -150,7 +150,7 @@ export function SprintLinker({ releaseId, projectKey, onSprintsChange }: SprintL
 
   if (!releaseId) {
     return (
-      <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
+      <Box xcss={{ color: 'color.text.subtlest', fontSize: 'var(--ds-font-size-200)' }}>
         Select a release first
       </Box>
     );
@@ -189,7 +189,7 @@ export function SprintLinker({ releaseId, projectKey, onSprintsChange }: SprintL
           ))}
         </Box>
       ) : (
-        <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
+        <Box xcss={{ color: 'color.text.subtlest', fontSize: 'var(--ds-font-size-200)' }}>
           No sprints linked
         </Box>
       )}
@@ -250,7 +250,7 @@ export function SprintLinker({ releaseId, projectKey, onSprintsChange }: SprintL
       )}
 
       {sprintOptions.length === 0 && linkedSprints.length > 0 && (
-        <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
+        <Box xcss={{ color: 'color.text.subtlest', fontSize: 'var(--ds-font-size-200)' }}>
           All available sprints are linked
         </Box>
       )}

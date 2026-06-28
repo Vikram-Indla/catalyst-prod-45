@@ -176,9 +176,9 @@ export function DisplayView({ adf, issueKey }: DisplayViewProps) {
           fallback={
             <div
               style={{
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
                 lineHeight: '24px',
                 whiteSpace: 'pre-wrap',
               }}

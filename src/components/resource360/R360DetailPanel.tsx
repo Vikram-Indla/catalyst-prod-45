@@ -9,69 +9,69 @@ import { resolveStatusCategoryStatic } from '@/hooks/useStatusMappingLookup';
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
   // ── Grey: To Do / Waiting ──
-  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
-  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
-  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Backlog' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
-  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Requirements' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Awaiting' },
-  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'On Hold' },
-  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' },
-  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Reported' },
-  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Ready Dev' },
-  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Ready Test' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Backlog' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Re-Open' },
+  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Re-Open' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Requirements' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Awaiting' },
+  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'On Hold' },
+  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do' },
+  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Reported' },
+  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Ready Dev' },
+  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'Ready Test' },
   // ── Blue: In Progress ──
-  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' },
-  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' },
-  'In Design':            { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Design' },
-  'Ready for Development':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Ready Dev' },
-  'In Entity Integration':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Integration' },
-  'Deferred for Int':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Deferred' },
-  'In Beta':              { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Beta' },
-  'In Production':        { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Prod' },
-  'In Investigation':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Investigating' },
-  'In Fix':               { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Fix' },
-  'In Execution':         { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Execution' },
-  'Fix in Progress':      { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Fixing' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' },
+  'In Design':            { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Design' },
+  'Ready for Development':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'Ready Dev' },
+  'In Entity Integration':{ dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'Integration' },
+  'Deferred for Int':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'Deferred' },
+  'In Beta':              { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Beta' },
+  'In Production':        { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Prod' },
+  'In Investigation':     { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'Investigating' },
+  'In Fix':               { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Fix' },
+  'In Execution':         { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Execution' },
+  'Fix in Progress':      { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'Fixing' },
   // ── Teal: Review / QA ──
-  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
-  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In QA' },
-  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Ready QA' },
-  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Retest' },
-  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
-  'Technical Validation': { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Validation' },
-  'End to End Testing':   { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'E2E Testing' },
-  'In Testing':           { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Testing' },
-  'QA Pass':              { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Pass' },
-  'QA Fail':              { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Fail' },
+  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'In Review' },
+  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'In QA' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Ready QA' },
+  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Retest' },
+  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'In Review' },
+  'Technical Validation': { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Validation' },
+  'End to End Testing':   { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'E2E Testing' },
+  'In Testing':           { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Testing' },
+  'QA Pass':              { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'QA Pass' },
+  'QA Fail':              { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'QA Fail' },
   // ── Purple: UAT ──
-  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'In UAT' },
-  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'UAT Ready' },
+  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'In UAT' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'UAT Ready' },
   // ── Green: Done ──
-  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
-  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
-  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
-  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Ready Prod' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Beta Ready' },
-  'Production Ready':     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Prod Ready' },
-  'Monitor':              { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Monitor' },
-  'Released':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Released' },
-  'Verified':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Verified' },
-  'Approved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Approved' },
-  'Complete':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Complete' },
-  'Completed':            { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Complete' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Done' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Done' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Done' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Ready Prod' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Beta Ready' },
+  'Production Ready':     { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Prod Ready' },
+  'Monitor':              { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Monitor' },
+  'Released':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Released' },
+  'Verified':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Verified' },
+  'Approved':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Approved' },
+  'Complete':             { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Complete' },
+  'Completed':            { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
-  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: 'Blocked' },
-  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: 'Rejected' },
-  'Impediment':           { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: 'Impediment' },
+  'Blocked':              { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Blocked' },
+  'Rejected':             { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Rejected' },
+  'Impediment':           { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: 'Impediment' },
 };
 
 // Category-level fallbacks (Jira always provides these)
-const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' };
-const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Progress' };
-const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'To Do' };
+const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-surface)', tx: 'var(--ds-text)', label: 'Done' };
+const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', tx: 'var(--ds-text)', label: 'In Progress' };
+const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', tx: 'var(--ds-text-warning)', label: 'To Do' };
 
 function resolveStatus(item: any) {
   // 1. Try exact status_name match first (most descriptive label)
@@ -87,15 +87,15 @@ function resolveStatus(item: any) {
   const cat5 = resolveStatusCategoryStatic(name, item.status_category);
   if (cat5 === 'Done') return CAT_DONE;
   if (cat5 === 'In Progress' || cat5 === 'In Review') return CAT_INPROGRESS;
-  if (cat5 === 'Blocked') return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #7F1D1D)', label: name || 'Blocked' };
+  if (cat5 === 'Blocked') return { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', tx: 'var(--ds-text-danger)', label: name || 'Blocked' };
 
   // 4. Final fallback: To Do (never "Unknown")
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', SEN: 'var(--ds-text-warning, var(--cp-warning))', FAC: 'var(--ds-text-success, var(--cp-success))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
 interface Props {
@@ -147,7 +147,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)', position: 'sticky', top: 0, zIndex: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
             <button onClick={onClose} style={{
               width: '28px', height: '28px', border: '1px solid var(--divider)', borderRadius: '6px',
               background: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -168,14 +168,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #7F1D1D)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' }}>
               {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
-              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
             )}
           </div>
-          <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #020617)', lineHeight: '1.4' }}>{item.title}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: '1.4' }}>{item.title}</div>
         </div>
 
         {/* Scrollable body */}
@@ -204,11 +204,11 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '7px', fontWeight: 700, color: 'white', flexShrink: 0,
                     }}>{initials(cell.value as string)}</div>
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #020617)' }}>{cell.value}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>{cell.value}</span>
                   </div>
                 ) : cell.isBar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: ageCol(cell.value as number), fontVariantNumeric: 'tabular-nums' }}>{cell.value}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: ageCol(cell.value as number), fontVariantNumeric: 'tabular-nums' }}>{cell.value}</span>
                     <div style={{ width: '60px', height: '4px', borderRadius: '4px', background: 'var(--bg-3)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', borderRadius: '4px',
@@ -220,8 +220,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                   </div>
                 ) : (
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #020617)', wordBreak: 'break-word' }}>{cell.value}</div>
-                    {cell.sub && <div style={{ fontSize: '11px', color: 'var(--fg-2)', marginTop: '2px' }}>{cell.sub}</div>}
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', wordBreak: 'break-word' }}>{cell.value}</div>
+                    {cell.sub && <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-2)', marginTop: '2px' }}>{cell.sub}</div>}
                   </div>
                 )}
               </div>
@@ -229,33 +229,33 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           </div>
 
           {/* Hierarchy */}
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {/* Parent */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--divider)', background: 'var(--bg-app)' }}>
                   {getJiraIcon(item.parent_type || 'epic')}
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
-                  <span style={{ fontSize: '12px', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
-                <div style={{ paddingLeft: '20px', color: 'var(--fg-3)', fontSize: '11px', margin: '2px 0' }}>↳</div>
+                <div style={{ paddingLeft: '20px', color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-100)', margin: '2px 0' }}>↳</div>
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
-                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'var(--ds-background-selected, #EFF6FF)',
+                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'var(--ds-background-selected)',
                 }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
                   <span style={{
-                    fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #020617)',
+                    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)',
                     overflow: 'hidden', display: '-webkit-box',
                     WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                   } as React.CSSProperties}>{item.title}</span>
                 </div>
               </div>
             ) : (
-              <div style={{ fontSize: '12px', color: 'var(--fg-4)' }}>—</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</div>
             )}
           </div>
 
@@ -263,10 +263,10 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           {siblings.length > 0 && (
             <div style={{ padding: '16px 20px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
-              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'var(--ds-border, #CBD5E1) transparent', maxHeight: '320px' }}>
+              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'var(--ds-border) transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
                   const sibS = resolveStatus(sib);
                   const sibLabel = sib.status_name || sib.status || 'To Do';
@@ -276,13 +276,13 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
                       cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
                       border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
-                      background: isCurrent ? 'var(--ds-background-selected, #EFF6FF)' : 'transparent',
+                      background: isCurrent ? 'var(--ds-background-selected)' : 'transparent',
                     }}
                       onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
-                      <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
                       {/* Status pill — INLINE, small */}
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '3px',
@@ -292,8 +292,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />
                         {sibLabel}
                       </span>
-                      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #020617)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.title}</span>
-                      <span style={{ fontSize: '11px', fontWeight: 600, color: ageCol(sib.age_days ?? 0), fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{sib.age_days ?? 0}d</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.title}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(sib.age_days ?? 0), fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{sib.age_days ?? 0}d</span>
                     </div>
                   );
                 })}

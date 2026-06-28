@@ -92,18 +92,18 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ 
-            display: 'flex', gap: 8, padding: 12, backgroundColor: 'var(--ds-background-warning-subtle, #FFFAE6)', 
-            border: '1px solid var(--ds-border-warning, #FFC400)', borderRadius: 3, alignItems: 'center' 
+            display: 'flex', gap: 8, padding: 12, backgroundColor: 'var(--ds-background-warning-subtle)', 
+            border: '1px solid var(--ds-border-warning)', borderRadius: 3, alignItems: 'center' 
           }}>
-            <AlertTriangle primaryColor="var(--ds-icon-warning, #FF991F)" />
-            <span style={{ fontSize: 14, color: 'var(--ds-text-warning, #974F0C)' }}>
+            <AlertTriangle primaryColor="var(--ds-icon-warning)" />
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-warning)' }}>
               Incidents are production issues that require immediate attention.
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="summary" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="summary" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Summary <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Textfield
               id="summary"
@@ -114,8 +114,8 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="story" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="story" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Story <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Select
               inputId="story"
@@ -124,15 +124,15 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
               onChange={(opt: any) => setStory(opt ? opt.value : '')}
               placeholder="Select related story (required)"
             />
-            <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 4 }}>
               Incidents must be linked to a Story
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label htmlFor="quarter" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                Quarter <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              <label htmlFor="quarter" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+                Quarter <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <Select
                 inputId="quarter"
@@ -143,8 +143,8 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label htmlFor="release" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                Release Version <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              <label htmlFor="release" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+                Release Version <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <Select
                 inputId="release"
@@ -157,8 +157,8 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="priority" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Priority <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="priority" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Priority <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Select
               inputId="priority"
@@ -170,7 +170,7 @@ export const LogIncidentDialog: React.FC<LogIncidentDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Description
             </label>
             <TextArea

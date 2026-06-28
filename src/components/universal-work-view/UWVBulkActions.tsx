@@ -62,11 +62,11 @@ export function UWVBulkActions({ selectedIds, allItems, project, onClear }: Prop
         alignItems: 'center',
         gap: 12,
         padding: '0 16px',
-        background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'),
-        borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+        background: token('color.background.selected', 'var(--ds-background-selected)'),
+        borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-blue)' }}>
         {selectedIds.size} selected
       </span>
 

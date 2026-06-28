@@ -2,29 +2,29 @@
 
 .cc-msg-search-wrap {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
-  background: var(--ds-surface, #ffffff);
+  border-bottom: 1px solid var(--ds-border);
+  background: var(--ds-surface);
 }
 
 .cc-msg-search-input {
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--ds-background-neutral-subtle, #f7f8f9);
-  border: 1px solid var(--ds-border, #dfe1e6);
+  background: var(--ds-background-neutral-subtle);
+  border: 1px solid var(--ds-border);
   border-radius: 4px;
   padding: 4px 8px;
   gap: 6px;
 }
 
 .cc-msg-search-input:focus-within {
-  outline: 2px solid var(--ds-link, #0052cc);
+  outline: 2px solid var(--ds-link);
   outline-offset: -1px;
 }
 
 .cc-msg-search-icon {
   flex-shrink: 0;
-  color: var(--ds-text-subtle, #626f86);
+  color: var(--ds-text-subtle);
 }
 
 .cc-msg-search-field {
@@ -35,11 +35,11 @@
   outline: none;
   font-size: 13px;
   font-family: inherit;
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
 }
 
 .cc-msg-search-field::placeholder {
-  color: var(--ds-text-subtlest, #738496);
+  color: var(--ds-text-subtlest);
 }
 
 .cc-msg-search-clear {
@@ -51,20 +51,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-subtle, #626f86);
+  color: var(--ds-text-subtle);
   border-radius: 3px;
   transition: background 0.15s, color 0.15s;
 }
 
 .cc-msg-search-clear:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
 }
 
 .cc-msg-search-count {
   flex-shrink: 0;
   font-size: 11px;
-  color: var(--ds-text-subtlest, #738496);
+  color: var(--ds-text-subtlest);
   padding: 0 6px;
 }
 
@@ -73,7 +73,7 @@
 .cc-msg-search-empty {
   padding: 40px 16px;
   text-align: center;
-  color: var(--ds-text-subtle, #626f86);
+  color: var(--ds-text-subtle);
 }
 
 .cc-msg-search-empty-text {
@@ -85,8 +85,8 @@
   flex-direction: column;
   max-height: 240px;
   overflow-y: auto;
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
-  background: var(--ds-surface, #ffffff);
+  border-bottom: 1px solid var(--ds-border);
+  background: var(--ds-surface);
 }
 
 .cc-msg-search-result {
@@ -107,7 +107,7 @@
 }
 
 .cc-msg-search-result--selected {
-  background: var(--ds-background-selected, #e9f2fe);
+  background: var(--ds-background-selected);
 }
 
 .cc-msg-search-result-avatar {
@@ -130,17 +130,17 @@
 .cc-msg-search-result-author {
   font-size: 13px;
   font-weight: 500;
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
 }
 
 .cc-msg-search-result-time {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #738496);
+  color: var(--ds-text-subtlest);
 }
 
 .cc-msg-search-result-snippet {
   font-size: 12px;
-  color: var(--ds-text-subtle, #626f86);
+  color: var(--ds-text-subtle);
   line-height: 1.4;
   word-break: break-word;
   white-space: normal;
@@ -166,8 +166,8 @@
   gap: 8px;
   flex-wrap: wrap;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
-  background: var(--ds-surface, #ffffff);
+  border-bottom: 1px solid var(--ds-border);
+  background: var(--ds-surface);
 }
 
 /* Conversation group headers */
@@ -179,20 +179,20 @@
   padding: 6px 12px 4px;
   position: sticky;
   top: 0;
-  background: var(--ds-surface, #ffffff);
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
+  background: var(--ds-surface);
+  border-bottom: 1px solid var(--ds-border);
 }
 
 .cc-msg-search-group-glyph {
   font-size: 12px;
   font-weight: 600;
-  color: var(--ds-text-subtlest, #738496);
+  color: var(--ds-text-subtlest);
 }
 
 .cc-msg-search-group-title {
   font-size: 12px;
   font-weight: 600;
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -201,7 +201,7 @@
 .cc-msg-search-group-count {
   margin-left: auto;
   font-size: 11px;
-  color: var(--ds-text-subtlest, #738496);
+  color: var(--ds-text-subtlest);
 }
 
 /* Clear filters CTA in empty state */
@@ -209,10 +209,10 @@
 .cc-msg-search-clear-filters {
   margin-top: 8px;
   padding: 4px 12px;
-  border: 1px solid var(--ds-border, #dfe1e6);
+  border: 1px solid var(--ds-border);
   border-radius: 4px;
-  background: var(--ds-surface, #ffffff);
-  color: var(--ds-link, #0052cc);
+  background: var(--ds-surface);
+  color: var(--ds-link);
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
@@ -226,14 +226,14 @@
 
 .cc-msg-search-recent {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
-  background: var(--ds-surface, #ffffff);
+  border-bottom: 1px solid var(--ds-border);
+  background: var(--ds-surface);
 }
 
 .cc-msg-search-recent-title {
   font-size: 12px;
   font-weight: 600;
-  color: var(--ds-text-subtlest, #738496);
+  color: var(--ds-text-subtlest);
   margin-bottom: 4px;
 }
 
@@ -247,7 +247,7 @@
   background: transparent;
   font-size: 13px;
   font-family: inherit;
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
   cursor: pointer;
 }
 

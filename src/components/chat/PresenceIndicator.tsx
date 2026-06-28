@@ -25,8 +25,8 @@ interface PresenceIndicatorProps {
 }
 
 const COLORS = {
-  online: 'var(--ds-background-success-bold, #1F845A)', // ADS green
-  offline: 'var(--ds-icon-subtle, #626F86)', // ADS muted
+  online: 'var(--ds-background-success-bold)', // ADS green
+  offline: 'var(--ds-icon-subtle)', // ADS muted
 };
 
 const SIZES = {
@@ -111,7 +111,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
       <div
         css={css`
           font-size: 11px;
-          color: var(--ds-text-subtlest, #6B778C);
+          color: var(--ds-text-subtlest);
           line-height: 1.2;
         `}
       >
@@ -165,11 +165,11 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
         align-items: center;
         gap: 8px;
         padding: 8px 12px;
-        background-color: var(--ds-surface-sunken, #F7F8F9);
+        background-color: var(--ds-surface-sunken);
         border-radius: 4px;
         font-size: 12px;
-        color: var(--ds-text-subtle, #42526E);
-        border-left: 3px solid var(--ds-border, #DFE1E6);
+        color: var(--ds-text-subtle);
+        border-left: 3px solid var(--ds-border);
       `}
     >
       {/* Animated dots */}
@@ -187,7 +187,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
               width: 3px;
               height: 3px;
               border-radius: 50%;
-              background-color: var(--ds-text-subtle, #42526E);
+              background-color: var(--ds-text-subtle);
               animation: typingBounce 1.4s ease-in-out infinite;
               animation-delay: ${i * 0.2}s;
 
@@ -286,7 +286,7 @@ export const PresenceList: React.FC<PresenceListProps> = ({
               css={css`
                 font-size: 12px;
                 font-weight: 500;
-                color: var(--ds-text, #172B4D);
+                color: var(--ds-text);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -299,7 +299,7 @@ export const PresenceList: React.FC<PresenceListProps> = ({
               <div
                 css={css`
                   font-size: 11px;
-                  color: var(--ds-text-subtlest, #6B778C);
+                  color: var(--ds-text-subtlest);
                   font-style: italic;
                 `}
               >
@@ -311,7 +311,7 @@ export const PresenceList: React.FC<PresenceListProps> = ({
               <div
                 css={css`
                   font-size: 11px;
-                  color: var(--ds-text-subtlest, #6B778C);
+                  color: var(--ds-text-subtlest);
                 `}
               >
                 {presence.last_seen_text}

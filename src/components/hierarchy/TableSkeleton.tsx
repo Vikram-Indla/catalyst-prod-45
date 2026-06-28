@@ -8,12 +8,12 @@ function useIsDark() {
 
 export function TableSkeleton({ rows = 10 }: { rows?: number }) {
   const dk = useIsDark();
-  const borderColor = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
-  const subtleBorder = dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
-  const shimmerStrong = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
-  const shimmerLight = dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
-  const headerBg = dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #FAFAFA)';
-  const containerBg = dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  const borderColor = dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))';
+  const subtleBorder = dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))';
+  const shimmerStrong = dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))';
+  const shimmerLight = dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))';
+  const headerBg = dk ? 'var(--ds-surface-overlay)' : 'var(--ds-surface-sunken)';
+  const containerBg = dk ? 'var(--ds-surface)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
 
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius: 8, overflow: 'hidden', background: containerBg }}>

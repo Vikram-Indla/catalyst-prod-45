@@ -173,7 +173,7 @@ export default function KanbanBoardView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         <div style={{
           width: 32, height: 32,
-          border: '2px solid var(--ds-link, #2563eb)', borderTopColor: 'transparent',
+          border: '2px solid var(--ds-link)', borderTopColor: 'transparent',
           borderRadius: '50%', animation: 'spin 1s linear infinite',
         }} />
       </div>
@@ -210,7 +210,7 @@ export default function KanbanBoardView() {
           </div>
           <Button
             onClick={() => navigate(`${basePath}/${boardId}/setup`)}
-            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white"
+            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white"
           >
             <Settings className="w-4 h-4 mr-2" />
             Board Setup

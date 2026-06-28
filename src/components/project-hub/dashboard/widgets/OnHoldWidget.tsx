@@ -159,7 +159,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
         border: 0,
         cursor: 'pointer',
         ...SMALL,
-        color: token('color.link', 'var(--ds-link, #0C66E4)'),
+        color: token('color.link', 'var(--ds-link)'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -190,7 +190,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               style={{
                 height: 36,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -241,9 +241,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         overflow: 'hidden',
       }}
     >
@@ -251,12 +251,12 @@ function KpiHeadline({
       <KpiCell
         label="Awaiting info"
         value={awaitingInfo}
-        accent={awaitingInfo > 0 ? 'var(--ds-text-accent-orange-bolder, #974F0C)' : undefined}
+        accent={awaitingInfo > 0 ? 'var(--ds-text-accent-orange-bolder)' : undefined}
       />
       <KpiCell
         label="Blocked"
         value={blocked}
-        accent={blocked > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined}
+        accent={blocked > 0 ? 'var(--ds-text-accent-red-bolder)' : undefined}
         last
       />
     </div>
@@ -282,7 +282,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
       <span
@@ -338,10 +338,10 @@ function OnHoldHeader({ activeColumns }: { activeColumns: string[] }) {
         gap: 12,
         padding: '8px',
         marginInline: -8,
-        borderBottom: `2px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderBottom: `2px solid ${token('color.border', 'var(--ds-border)')}`,
         ...SMALL,
         fontWeight: 600,
-        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+        color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
       }}
     >
       <span />
@@ -382,7 +382,7 @@ function OnHoldRow({
       onMouseEnter={(e) => {
         e.currentTarget.style.background = token(
           'color.background.neutral.subtle.hovered',
-          'var(--ds-background-neutral, #F1F2F4)',
+          'var(--ds-background-neutral)',
         );
       }}
       onMouseLeave={(e) => {
@@ -405,7 +405,7 @@ function OnHoldRow({
       <span style={{ display: 'inline-flex', justifyContent: 'center' }}>
         {has('type') && <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />}
       </span>
-      <span style={{ ...BODY, color: token('color.link', 'var(--ds-link, #0C66E4)'), whiteSpace: 'nowrap' }}>
+      <span style={{ ...BODY, color: token('color.link', 'var(--ds-link)'), whiteSpace: 'nowrap' }}>
         {has('key') ? item.issue_key : ''}
       </span>
       <a
@@ -417,7 +417,7 @@ function OnHoldRow({
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           ...BODY,
-          color: token('color.link', 'var(--ds-link, #0C66E4)'),
+          color: token('color.link', 'var(--ds-link)'),
           textDecoration: 'none',
         }}
       >

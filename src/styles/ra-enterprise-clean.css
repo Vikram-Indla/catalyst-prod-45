@@ -21,25 +21,25 @@
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean {
   /* Neutral Foundation */
-  --ra-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --ra-slate-50: var(--ds-surface-sunken, #f8fafc);
-  --ra-slate-100: var(--ds-surface-sunken, #f1f5f9);
-  --ra-slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --ra-slate-300: var(--ds-text-disabled, #cbd5e1);
-  --ra-slate-400: var(--ds-text-subtlest, #94a3b8);
-  --ra-slate-500: var(--ds-text-subtlest, #64748b);
-  --ra-slate-600: var(--ds-text-subtle, #475569);
-  --ra-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --ra-slate-800: var(--ds-text, #172B4D);
+  --ra-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)));
+  --ra-slate-50: var(--ds-surface-sunken);
+  --ra-slate-100: var(--ds-surface-sunken);
+  --ra-slate-200: var(--ds-border, var(--cp-bg-sunken));
+  --ra-slate-300: var(--ds-text-disabled);
+  --ra-slate-400: var(--ds-text-subtlest);
+  --ra-slate-500: var(--ds-text-subtlest);
+  --ra-slate-600: var(--ds-text-subtle);
+  --ra-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)));
+  --ra-slate-800: var(--ds-text);
 
   /* Project Bar Colors */
-  --ra-project-sectorial: var(--ds-text-brand, #3b82f6);
-  --ra-project-dataplatform: var(--ds-background-success-bold, #059669);
-  --ra-project-senaei: var(--ds-text-warning, #f59e0b);
-  --ra-project-tahommena: var(--ds-background-accent-magenta-bolder, #ec4899);
-  --ra-project-inspection: var(--ds-background-discovery-bold, #8b5cf6);
-  --ra-project-irplatform: var(--ds-icon-information, #1D7AFC);
-  --ra-project-default: var(--ds-text-brand, #3b82f6);
+  --ra-project-sectorial: var(--ds-text-brand);
+  --ra-project-dataplatform: var(--ds-background-success-bold);
+  --ra-project-senaei: var(--ds-text-warning);
+  --ra-project-tahommena: var(--ds-background-accent-magenta-bolder);
+  --ra-project-inspection: var(--ds-background-discovery-bold);
+  --ra-project-irplatform: var(--ds-icon-information);
+  --ra-project-default: var(--ds-text-brand);
 
   /* Cell Configuration */
   --ra-cell-bg: var(--ra-white);
@@ -284,10 +284,10 @@
   --ra-white: hsl(var(--card));
   --ra-slate-50: hsl(var(--muted));
   /* §L38 hex only. DARK MODE dark-mode palette (CLAUDE.md §18). */
-  --ra-slate-100: var(--cp-bg-surface, var(--cp-ink-1, #242528));  /* card surface */
-  --ra-slate-200: var(--ds-border, var(--cp-ink-1, #292929));  /* active / pressed */
-  --ra-slate-700: var(--ds-text-subtlest, #A1A1A1);  /* text secondary */
-  --ra-slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));  /* text primary */
+  --ra-slate-100: var(--cp-bg-surface, var(--cp-ink-1));  /* card surface */
+  --ra-slate-200: var(--ds-border, var(--cp-ink-1));  /* active / pressed */
+  --ra-slate-700: var(--ds-text-subtlest);  /* text secondary */
+  --ra-slate-800: var(--ds-text, var(--cp-bg-neutral));  /* text primary */
 }
 
 .dark .ra-enterprise-clean td {

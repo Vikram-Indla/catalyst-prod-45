@@ -287,9 +287,9 @@ function SummaryView() {
   };
 
   const statusData = [
-    { name: 'To Do', value: 8, color: 'var(--ds-background-information-bold, #0C66E4)' },
-    { name: 'In Progress', value: 5, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-    { name: 'Done', value: 4, color: 'var(--ds-background-success-bold, #1F845A)' },
+    { name: 'To Do', value: 8, color: 'var(--ds-background-information-bold)' },
+    { name: 'In Progress', value: 5, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+    { name: 'Done', value: 4, color: 'var(--ds-background-success-bold)' },
   ];
 
   const priorityData = [
@@ -454,8 +454,8 @@ function SummaryView() {
             <div className="h-48 py-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={priorityData}>
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
+                  <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+                  <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
                   <Bar dataKey="value" fill="hsl(var(--muted-foreground))" />
                 </BarChart>
               </ResponsiveContainer>

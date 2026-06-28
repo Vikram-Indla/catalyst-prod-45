@@ -101,8 +101,8 @@ export function MentionPicker({ textareaRef, value, onChange }: MentionPickerPro
         bottom: '100%',
         left: 8,
         marginBottom: 6,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         width: 260,
@@ -126,11 +126,11 @@ export function MentionPicker({ textareaRef, value, onChange }: MentionPickerPro
             border: 'none',
             cursor: 'pointer',
             textAlign: 'left',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           <Avatar name={p.name} seed={p.id} />
-          <span style={{ color: 'var(--ds-text, #172B4D)' }}>{p.name}</span>
+          <span style={{ color: 'var(--ds-text)' }}>{p.name}</span>
         </button>
       ))}
     </div>

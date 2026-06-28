@@ -28,7 +28,7 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
     },
     warning: {
       icon: <WarningIcon label="" size="small" primaryColor="currentColor" />,
-      bg: 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]',
+      bg: 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]',
     },
     positive: {
       icon: <CheckCircleIcon label="" size="small" primaryColor="currentColor" />,
@@ -47,7 +47,7 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
       </div>
       <button
         onClick={() => onActionClick?.(insight)}
-        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] transition-colors"
+        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:text-[var(--ds-background-brand-bold-hovered)] transition-colors"
       >
         {insight.action}
         <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
@@ -90,8 +90,8 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg" style={{ background: 'var(--ds-background-information, #E9F2FF)' }}>
-              <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
+            <div className="p-1.5 rounded-lg" style={{ background: 'var(--ds-background-information)' }}>
+              <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />
             </div>
             <h2 className="font-semibold text-sm text-slate-900">AI Insights</h2>
             {criticalCount > 0 && (
@@ -100,7 +100,7 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
               </span>
             )}
             {warningCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full" style={{ background: 'var(--ds-background-information, #E9F2FF)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full" style={{ background: 'var(--ds-background-information)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
                 {warningCount} warnings
               </span>
             )}

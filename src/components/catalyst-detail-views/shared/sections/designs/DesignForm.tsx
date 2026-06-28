@@ -71,17 +71,17 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '6px 8px',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--cp-font-body)',
-    color: 'var(--ds-text, #292A2E)',
+    color: 'var(--ds-text)',
     background: showUrlError
-      ? 'var(--ds-background-danger, #FFEDEB)'
-      : 'var(--cp-bg-elevated, #FFFFFF)',
+      ? 'var(--ds-background-danger)'
+      : 'var(--cp-bg-elevated)',
     border: showUrlError
-      ? `2px solid var(--ds-border-danger, #C9372C)`
+      ? `2px solid var(--ds-border-danger)`
       : `${urlFocused ? 2 : 1}px solid ${urlFocused
-          ? 'var(--ds-border-focused, #388BFF)'
-          : 'var(--ds-border, #DFE1E6)'}`,
+          ? 'var(--ds-border-focused)'
+          : 'var(--ds-border)'}`,
     borderRadius: 3,
     outline: 'none',
     boxSizing: 'border-box',
@@ -89,9 +89,9 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 700,
-    color: 'var(--ds-text, #292A2E)',
+    color: 'var(--ds-text)',
     textTransform: 'uppercase',
     letterSpacing: '0.3px',
     fontFamily: 'var(--cp-font-body)',
@@ -131,8 +131,8 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
       {showUrlError && (
         <span
           style={{
-            fontSize: 12,
-            color: 'var(--ds-text-danger, #C9372C)',
+            fontSize: 'var(--ds-font-size-200)',
+            color: 'var(--ds-text-danger)',
             fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -156,14 +156,14 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
           disabled={!canSubmit}
           style={{
             padding: '6px 14px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: canSubmit
-              ? 'var(--ds-text-inverse, #FFFFFF)'
-              : 'var(--ds-text-disabled, #8590A2)',
+              ? 'var(--ds-text-inverse)'
+              : 'var(--ds-text-disabled)',
             background: canSubmit
-              ? 'var(--ds-background-brand-bold, #0052CC)'
-              : 'var(--ds-background-disabled, #F1F2F4)',
+              ? 'var(--ds-background-brand-bold)'
+              : 'var(--ds-background-disabled)',
             border: 'none',
             borderRadius: 3,
             cursor: canSubmit ? 'pointer' : 'not-allowed',
@@ -172,11 +172,11 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
           }}
           onMouseEnter={(e) => {
             if (!canSubmit) return;
-            e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #0747A6)';
+            e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)';
           }}
           onMouseLeave={(e) => {
             if (!canSubmit) return;
-            e.currentTarget.style.background = 'var(--ds-background-brand-bold, #0052CC)';
+            e.currentTarget.style.background = 'var(--ds-background-brand-bold)';
           }}
         >
           {isSubmitting ? 'Linking…' : 'Link'}
@@ -189,16 +189,16 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
             background: 'transparent',
             border: 'none',
             padding: '6px 12px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer',
             borderRadius: 3,
             fontFamily: 'inherit',
           }}
           onMouseEnter={(e) => {
             if (isSubmitting) return;
-            e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)';
+            e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';

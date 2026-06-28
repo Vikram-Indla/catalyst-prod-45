@@ -20,15 +20,15 @@ import { catalystToast } from '@/lib/catalystToast';
 
 const TOKENS = `
 [data-sri] {
-  --sri-ink:var(--ds-text, #172B4D); --sri-ink-2:var(--ds-text, #172B4D); --sri-ink-3:var(--ds-text-subtle, #44546F);
-  --sri-ink-m:var(--ds-text-subtlest, #626F86);
-  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --sri-bg-2:var(--ds-surface-sunken, #FAFAFA); --sri-bg-3:var(--ds-surface-sunken, #F7F8F9);
-  --sri-bdr:var(--ds-border, #DFE1E6); --sri-bdr-s:var(--ds-border, #DFE1E6);
-  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --sri-ai-d:var(--ds-link-pressed, #0747A6); --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
-  --sri-ai-bg2:var(--ds-background-information, #E9F2FF); --sri-ai-bdr:var(--ds-background-information-bold, #0C66E4); --sri-ai-m:var(--ds-text-brand, #3B82F6);
-  --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:var(--ds-background-success, #DFFCF0);
+  --sri-ink:var(--ds-text); --sri-ink-2:var(--ds-text); --sri-ink-3:var(--ds-text-subtle);
+  --sri-ink-m:var(--ds-text-subtlest);
+  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))); --sri-bg-2:var(--ds-surface-sunken); --sri-bg-3:var(--ds-surface-sunken);
+  --sri-bdr:var(--ds-border); --sri-bdr-s:var(--ds-border);
+  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); --sri-ai-d:var(--ds-link-pressed); --sri-ai-bg:var(--ds-background-selected);
+  --sri-ai-bg2:var(--ds-background-information); --sri-ai-bdr:var(--ds-background-information-bold); --sri-ai-m:var(--ds-text-brand);
+  --sri-green:var(--ds-text-success, var(--cp-success)); --sri-green-t:#11853D; --sri-green-bg:var(--ds-background-success);
   --sri-teal-t:#0A8277;
-  --sri-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
+  --sri-red:var(--ds-text-danger, var(--cp-danger)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
   font-family: var(--cp-font-body); color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -40,23 +40,23 @@ const TOKENS = `
   --sri-ink-2: var(--ds-surface, rgba(255,255,255,0.82));
   --sri-ink-3: var(--ds-surface, rgba(255,255,255,0.75));
   --sri-ink-m: var(--ds-surface, rgba(255,255,255,0.70));
-  --sri-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
-  --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
-  --sri-bg-3: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --sri-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --sri-bdr-s: var(--ds-border-bold, #454545);
-  --sri-ai: var(--ds-text-brand, #3B82F6);
-  --sri-ai-d: var(--ds-text-brand, #60A5FA);
+  --sri-bg: var(--ds-surface-raised, var(--cp-ink-1));
+  --sri-bg-2: var(--ds-surface-overlay);
+  --sri-bg-3: var(--ds-border, var(--cp-ink-1));
+  --sri-bdr: var(--ds-border, var(--cp-ink-1));
+  --sri-bdr-s: var(--ds-border-bold);
+  --sri-ai: var(--ds-text-brand);
+  --sri-ai-d: var(--ds-text-brand);
   --sri-ai-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
   --sri-ai-bg2: var(--ds-background-information-bold, rgba(59,130,246,0.12));
   --sri-ai-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
-  --sri-ai-m: var(--ds-text-brand, #60A5FA);
-  --sri-green: var(--ds-background-success, #DFFCF0);
-  --sri-green-t: var(--ds-background-success, #DFFCF0);
+  --sri-ai-m: var(--ds-text-brand);
+  --sri-green: var(--ds-background-success);
+  --sri-green-t: var(--ds-background-success);
   --sri-green-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
-  --sri-teal-t: var(--ds-background-success, #DCFFF1);
-  --sri-red: var(--ds-border-danger, #FCA5A5);
-  --sri-red-t: var(--ds-border-danger, #FCA5A5);
+  --sri-teal-t: var(--ds-background-success);
+  --sri-red: var(--ds-border-danger);
+  --sri-red-t: var(--ds-border-danger);
   --sri-red-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
 }
 
@@ -69,7 +69,7 @@ const TOKENS = `
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    background: var(--ds-surface, #fff) !important;
+    background: var(--ds-surface) !important;
   }
   [data-sri] { background:white !important; }
   [data-sri], [data-sri] * {
@@ -86,7 +86,7 @@ const F = (g = 8): React.CSSProperties => ({ display: "flex", alignItems: "cente
 const D = (c: string, s = 8): React.CSSProperties => ({ width: s, height: s, borderRadius: "50%", background: c, flexShrink: 0 });
 const BT = (h = 8): React.CSSProperties => ({ height: h, background: "var(--sri-bg-3)", borderRadius: "var(--sri-pill)", overflow: "hidden" });
 const BF = (c: string, p: number): React.CSSProperties => ({ height: "100%", width: `${p}%`, background: c, borderRadius: "var(--sri-pill)", transition: "width .8s" });
-const SECT: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: "var(--sri-ai-d)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 };
+const SECT: React.CSSProperties = { fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: "var(--sri-ai-d)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 };
 
 /* FIX #14 — date formatting helper */
 const fmtDate = (iso: string | undefined | null): string => {
@@ -110,7 +110,7 @@ const Card = ({ title, badge, badgeBg, badgeColor, children, full, noLeftBorder 
 );
 
 const Empty = ({ msg }: { msg?: string }) => (
-  <div style={{ padding: 20, textAlign: "center", fontSize: 12, color: "var(--sri-ink-m)", fontStyle: "italic" }}>{msg || "No data available"}</div>
+  <div style={{ padding: 20, textAlign: "center", fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", fontStyle: "italic" }}>{msg || "No data available"}</div>
 );
 
 /* Static reference — grading scale is a fixed standard, not mock data */
@@ -219,27 +219,27 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
         <header style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "20px 28px", margin: "0 32px", ...F(14), justifyContent: "space-between" }}>
           <div style={F(14) as React.CSSProperties}>
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--sri-ai-d), var(--sri-ai))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #fff)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
             </div>
             <div>
               <div style={{ ...S(20), color: "var(--sri-ink)" }}>Executive Brief</div>
-              <div style={{ fontSize: 13, color: "var(--sri-ink-3)", marginTop: 1 }}>Strategy Room · Published <b style={{ color: "var(--sri-ink-2)", fontWeight: 600 }}>{publishedDateStr}</b> · {versionStr}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", marginTop: 1 }}>Strategy Room · Published <b style={{ color: "var(--sri-ink-2)", fontWeight: 600 }}>{publishedDateStr}</b> · {versionStr}</div>
             </div>
           </div>
           <div className="sri-actions" style={F(8) as React.CSSProperties}>
             {/* FIX #26 — Generate button ghost style */}
             {isAdminUser && (
               <button onClick={handleGenerate} disabled={generateMutation.isPending || metricsLoading}
-                style={{ height: 32, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid transparent", background: "none", color: "var(--sri-ink-3)" }}>
+                style={{ height: 32, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid transparent", background: "none", color: "var(--sri-ink-3)" }}>
                 <RefreshCw size={14} className={generateMutation.isPending ? 'animate-spin' : ''} />
                 Generate
               </button>
             )}
-            <button onClick={handleDownload} style={{ height: 32, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>
+            <button onClick={handleDownload} style={{ height: 32, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
               Download
             </button>
-            <button onClick={onClose} style={{ height: 32, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>✕ Close</button>
+            <button onClick={onClose} style={{ height: 32, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>✕ Close</button>
           </div>
         </header>
 
@@ -247,20 +247,20 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
         {isAdminUser && draftBrief && (
           <div style={{ margin: "12px 32px 0", padding: "12px 20px", background: "var(--sri-ai-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r3)", ...F(12) as React.CSSProperties, justifyContent: "space-between" }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--sri-ai-d)" }}>New draft available</div>
-              <div style={{ fontSize: 11, color: "var(--sri-ink-3)" }}>Generated {new Date(draftBrief.generated_at).toLocaleTimeString()} — review before publishing</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: "var(--sri-ai-d)" }}>New draft available</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: "var(--sri-ink-3)" }}>Generated {new Date(draftBrief.generated_at).toLocaleTimeString()} — review before publishing</div>
             </div>
             <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
               <button onClick={() => setPreviewingDraft(!previewingDraft)}
-                style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", fontSize: 11, fontWeight: 600, color: "var(--sri-ink-3)", cursor: "pointer" }}>
+                style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: "var(--sri-ink-3)", cursor: "pointer" }}>
                 {previewingDraft ? 'View Published' : 'Preview Draft'}
               </button>
               <button onClick={handleDiscard} disabled={discardMutation.isPending}
-                style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-red)", background: "var(--sri-red-bg)", fontSize: 11, fontWeight: 600, color: "var(--sri-red-t)", cursor: "pointer" }}>
+                style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-red)", background: "var(--sri-red-bg)", fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: "var(--sri-red-t)", cursor: "pointer" }}>
                 Discard
               </button>
               <button onClick={handlePublish} disabled={publishMutation.isPending}
-                style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-green)", background: "var(--sri-green-bg)", fontSize: 11, fontWeight: 700, color: "var(--sri-green-t)", cursor: "pointer" }}>
+                style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-green)", background: "var(--sri-green-bg)", fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: "var(--sri-green-t)", cursor: "pointer" }}>
                 {publishMutation.isPending ? 'Publishing...' : 'Publish to All'}
               </button>
             </div>
@@ -272,9 +272,9 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${(kpis as any[]).length}, 1fr)`, gap: 12, margin: "16px 32px 0" }}>
             {(kpis as any[]).map((k: any, i: number) => (
               <div key={i} style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "12px 18px", borderTop: `3px solid ${k.accentColor || 'var(--sri-ai)'}` }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: k.accentColor || "var(--sri-ai)", textTransform: "uppercase", letterSpacing: ".04em" }}>{k.label || k.l}</div>
-                <div style={{ ...S(28, 800), marginTop: 4, lineHeight: 1.1, color: k.color || k.c }}>{k.value || k.v}<span style={{ fontSize: 16, color: "var(--sri-ink-m)", fontWeight: 500 }}>{k.unit || k.u}</span></div>
-                <div style={{ fontSize: 12, color: "var(--sri-ink-3)", marginTop: 4 }}><span style={{ color: k.deltaColor || k.dc, fontWeight: 600 }}>{k.delta || k.d}</span></div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: k.accentColor || "var(--sri-ai)", textTransform: "uppercase", letterSpacing: ".04em" }}>{k.label || k.l}</div>
+                <div style={{ ...S(28, 800), marginTop: 4, lineHeight: 1.1, color: k.color || k.c }}>{k.value || k.v}<span style={{ fontSize: 'var(--ds-font-size-500)', color: "var(--sri-ink-m)", fontWeight: 500 }}>{k.unit || k.u}</span></div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 4 }}><span style={{ color: k.deltaColor || k.dc, fontWeight: 600 }}>{k.delta || k.d}</span></div>
               </div>
             ))}
           </div>
@@ -297,12 +297,12 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                   {(verdict as any).deltaText && <div style={{ ...F(12) as React.CSSProperties, marginTop: 8, flexWrap: "wrap" }}>
                     <span style={{ ...M(11), fontWeight: 600, color: "var(--sri-red-t)", background: "var(--sri-red-bg)", padding: "3px 10px", borderRadius: "var(--sri-pill)" }}>{(verdict as any).deltaText}</span>
                     {(verdict as any).trajectory?.length > 0 && (<>
-                      <span style={{ fontSize: 12, color: "var(--sri-ink-3)" }}>Trajectory:</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)" }}>Trajectory:</span>
                       <span style={{ ...M(12), color: "var(--sri-ink-2)", fontWeight: 600 }}>{(verdict as any).trajectory.map((t: any, i: number) => <React.Fragment key={i}>{i > 0 && " → "}{t.quarter} <b style={t.current ? { color: "var(--sri-red-t)", fontWeight: 800 } : {}}>{t.grade}</b></React.Fragment>)}</span>
                     </>)}
                   </div>}
                   {/* FIX #2-8 — narrative uses --sri-ink-2 */}
-                  <div style={{ fontSize: 14, color: "var(--sri-ink-2)", marginTop: 10, lineHeight: 1.7 }}>{(verdict as any).narrative}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--sri-ink-2)", marginTop: 10, lineHeight: 1.7 }}>{(verdict as any).narrative}</div>
                 </div>
               </div>
               {/* FIX #25 — Why items: 12px label text */}
@@ -312,7 +312,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                   {(verdict as any).whyItems.map((w: any, i: number) => (
                     <div key={i} style={{ ...F(10) as React.CSSProperties, padding: "10px 14px", borderRadius: "var(--sri-r3)", borderInlineStart: `3px solid ${w.severity === "high" ? "var(--sri-red)" : w.severity === "mid" ? "var(--sri-ai)" : "var(--sri-green)"}`, background: "var(--sri-ai-bg)" }}>
                       <span style={{ ...S(16, 800), color: "var(--sri-ai-d)", flexShrink: 0, minWidth: 36 }}>{w.value}</span>
-                      <span style={{ fontWeight: 500, color: "var(--sri-ink-2)", fontSize: 12 }}>{w.label}</span>
+                      <span style={{ fontWeight: 500, color: "var(--sri-ink-2)", fontSize: 'var(--ds-font-size-200)' }}>{w.label}</span>
                     </div>
                   ))}
                 </div>
@@ -326,7 +326,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                       <tr key={i} style={active ? { background: "var(--sri-ai-bg)" } : {}}>
                         <td style={{ ...S(12, 800), width: 26, textAlign: "center", color: g.c, padding: "4px 6px" }}>{g.g}</td>
                         <td style={{ ...M(10), fontWeight: 500, color: "var(--sri-ink-m)", width: 46, padding: "4px 6px" }}>{g.r}</td>
-                        <td style={{ color: active ? "var(--sri-ai-d)" : "var(--sri-ink-3)", fontWeight: active ? 700 : 500, padding: "4px 6px", fontSize: 11 }}>
+                        <td style={{ color: active ? "var(--sri-ai-d)" : "var(--sri-ink-3)", fontWeight: active ? 700 : 500, padding: "4px 6px", fontSize: 'var(--ds-font-size-100)' }}>
                           {g.d}{active && <span style={{ ...(D("var(--sri-ai)", 6) as React.CSSProperties), display: "inline-block", marginInlineStart: 6 }} />}
                         </td>
                       </tr>
@@ -344,11 +344,11 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                 <span style={D(c.color || c.c, 10) as React.CSSProperties} />
                 <div style={{ flex: 1 }}>
                   <div style={{ ...S(13), color: "var(--sri-ink)", textTransform: "uppercase", letterSpacing: ".02em" }}>{c.label || c.l}</div>
-                  <div style={{ ...S(24, 800), color: "var(--sri-ink)", marginTop: 2 }}>{c.value || c.v} <span style={{ fontSize: 13, fontWeight: 500, color: "var(--sri-ink-m)" }}>{c.unit || c.u}</span></div>
-                  <div style={{ fontSize: 13, color: "var(--sri-ink-3)", marginTop: 4 }}>{c.desc}</div>
+                  <div style={{ ...S(24, 800), color: "var(--sri-ink)", marginTop: 2 }}>{c.value || c.v} <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: "var(--sri-ink-m)" }}>{c.unit || c.u}</span></div>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", marginTop: 4 }}>{c.desc}</div>
                   <div style={{ marginTop: 8 }}><div style={BT() as React.CSSProperties}><div style={BF(c.color || c.c, c.pct || c.p || 0) as React.CSSProperties} /></div></div>
                 </div>
-                <span style={{ color: "var(--sri-ink-3)", fontSize: 16, fontWeight: 600, marginTop: 4 }}>→</span>
+                <span style={{ color: "var(--sri-ink-3)", fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: 4 }}>→</span>
               </div>
             ))}</div> : <Empty msg="Chain data not loaded" />}
           </Card>
@@ -357,9 +357,9 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
           <Card title="Contradictions Detected" badge={contradictions && (contradictions as any[]).length > 0 ? `${(contradictions as any[]).length} found` : undefined} noLeftBorder>
             {contradictions && (contradictions as any[]).length > 0 ? (contradictions as any[]).map((c: any, i: number) => (
               <div key={i} style={{ padding: "12px 16px", borderInlineStart: "3px solid var(--sri-ai)", background: "var(--sri-ai-bg)", borderRadius: "0 var(--sri-r2) var(--sri-r2) 0", marginBottom: i < (contradictions as any[]).length - 1 ? 8 : 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--sri-ink)" }}>{c.text || c.t}</div>
-                <div style={{ fontSize: 12, color: "var(--sri-ink-3)", marginTop: 4 }}>→ {c.explanation || c.e}</div>
-                <div style={{ fontSize: 11, color: "var(--sri-ai-d)", marginTop: 4, fontWeight: 600, ...F(4) as React.CSSProperties }}>⚡ {c.source || c.src}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: "var(--sri-ink)" }}>{c.text || c.t}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 4 }}>→ {c.explanation || c.e}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: "var(--sri-ai-d)", marginTop: 4, fontWeight: 600, ...F(4) as React.CSSProperties }}>⚡ {c.source || c.src}</div>
               </div>
             )) : <Empty msg="No contradictions detected" />}
           </Card>
@@ -373,25 +373,25 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                   <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--sri-bdr)" }}>
                     <div style={{ ...F(12) as React.CSSProperties, marginBottom: 6 }}>
                       <div style={{ ...S(14, 800), width: 36, height: 50, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)", border: `2px solid ${(d.isCritical || d.crit) ? "var(--sri-red)" : "var(--sri-ai)"}` }}>{d.id}</div>
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: (d.isCritical || d.crit) ? "var(--sri-red-t)" : "var(--sri-ai-d)" }}>{d.priority || d.pr}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: "uppercase", color: (d.isCritical || d.crit) ? "var(--sri-red-t)" : "var(--sri-ai-d)" }}>{d.priority || d.pr}</span>
                       <span style={{ ...M(11), color: "var(--sri-ink-m)" }}>{fmtDate(d.date || d.dt)}</span>
                     </div>
                     <div style={{ ...S(14), color: "var(--sri-ink)", lineHeight: 1.4 }}>{d.title}</div>
                   </div>
                   <div style={{ padding: "14px 18px" }}>
                     <div style={SECT}>Rationale</div>
-                    <div style={{ fontSize: 13, color: "var(--sri-ink-2)", marginBottom: 10, lineHeight: 1.6 }}>{d.rationale || d.rat}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-2)", marginBottom: 10, lineHeight: 1.6 }}>{d.rationale || d.rat}</div>
                     <div style={SECT}>Evidence</div>
                     {/* FIX #15 — evidence chips: no border */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{(d.evidence || d.ev || []).map((e: string, j: number) => <span key={j} style={{ fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)" }}>{e}</span>)}</div>
-                    <div style={{ fontSize: 12, color: "var(--sri-ink-3)", marginTop: 10 }}>Owner: <b style={{ color: "var(--sri-ink-2)" }}>{d.owner}</b> · Deadline: <b style={{ color: "var(--sri-ink-2)" }}>{fmtDate(d.deadline)}</b></div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{(d.evidence || d.ev || []).map((e: string, j: number) => <span key={j} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: "4px 10px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)" }}>{e}</span>)}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 10 }}>Owner: <b style={{ color: "var(--sri-ink-2)" }}>{d.owner}</b> · Deadline: <b style={{ color: "var(--sri-ink-2)" }}>{fmtDate(d.deadline)}</b></div>
                   </div>
                 </div>
               ))}
               {/* FIX #16 — export text: no underline */}
               <div style={{ ...F(8) as React.CSSProperties, justifyContent: "space-between", padding: "12px 20px", borderTop: "1px solid var(--sri-bdr)", background: "var(--sri-ai-bg)" }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: "var(--sri-ai-d)", textDecoration: "none" }}>Ready to act? → Export Decision Pack</span>
-                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface, #fff)" }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: "var(--sri-ai-d)", textDecoration: "none" }}>Ready to act? → Export Decision Pack</span>
+                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface)" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                   Export
                 </button>
@@ -407,12 +407,12 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                   <div style={{ ...SECT, marginBottom: 8 }}>Projected Score Recovery</div>
                   <div style={{ ...F(16) as React.CSSProperties }}>{(recovery as any).projectedScores.map((p: any, i: number) => (
                     <React.Fragment key={i}>
-                      <div style={{ textAlign: "center" }}><div style={{ ...S(16, 800), color: p.color || p.c }}>{p.grade || p.g}</div><div style={{ fontSize: 10, color: "var(--sri-ink-m)" }}>{p.time || p.t}</div></div>
+                      <div style={{ textAlign: "center" }}><div style={{ ...S(16, 800), color: p.color || p.c }}>{p.grade || p.g}</div><div style={{ fontSize: 'var(--ds-font-size-50)', color: "var(--sri-ink-m)" }}>{p.time || p.t}</div></div>
                       {i < (recovery as any).projectedScores.length - 1 && <div style={{ flex: 1, height: 4, background: i === 0 ? "var(--sri-ai)" : "var(--sri-bg-3)", borderRadius: "var(--sri-pill)" }} />}
                     </React.Fragment>
                   ))}</div>
                   {/* FIX #6 — recovery note color */}
-                  {(recovery as any).projectedNote && <div style={{ fontSize: 11, color: "var(--sri-ink-3)", marginTop: 8 }}>{(recovery as any).projectedNote}</div>}
+                  {(recovery as any).projectedNote && <div style={{ fontSize: 'var(--ds-font-size-100)', color: "var(--sri-ink-3)", marginTop: 8 }}>{(recovery as any).projectedNote}</div>}
                 </div>
               )}
               {(recovery as any).phases?.map((r: any, i: number) => (
@@ -422,11 +422,11 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                   <div style={{ position: "absolute", insetInlineStart: 0, top: 4, width: 20, height: 20, borderRadius: "50%", border: `2px solid ${r.color || r.c}`, background: "var(--sri-ai-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={D(r.color || r.c) as React.CSSProperties} /></div>
                   <div style={{ ...F(8) as React.CSSProperties, marginBottom: 6 }}>
                     <span style={{ ...S(14), color: "var(--sri-ink)" }}>{r.phase}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", padding: "3px 8px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: r.color || r.c }}>{r.tag}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", padding: "3px 8px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: r.color || r.c }}>{r.tag}</span>
                   </div>
                   <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 4, padding: 0, margin: 0 }}>
                     {/* FIX #28 — task text color */}
-                    {(r.tasks || []).map((t: string, j: number) => <li key={j} style={{ fontSize: 13, color: "var(--sri-ink-2)", paddingInlineStart: 4 }}>→ {t}</li>)}
+                    {(r.tasks || []).map((t: string, j: number) => <li key={j} style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-2)", paddingInlineStart: 4 }}>→ {t}</li>)}
                   </ul>
                 </div>
               ))}
@@ -441,20 +441,20 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                 <span style={{ ...S(16, 800), color: "var(--sri-ink)" }}>Trust Level: <span style={{ color: (dataTrust as any).level === "LOW" ? "var(--sri-red-t)" : (dataTrust as any).level === "HIGH" ? "var(--sri-green-t)" : "var(--sri-ai)" }}>{(dataTrust as any).level}</span></span>
               </div>
               {/* FIX #5, #27 — description: ink-3, lineHeight 1.6 */}
-              <div style={{ fontSize: 13, color: "var(--sri-ink-3)", lineHeight: 1.6, marginBottom: 16 }}>{(dataTrust as any).description}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", lineHeight: 1.6, marginBottom: 16 }}>{(dataTrust as any).description}</div>
               <div style={{ border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "14px 18px", marginBottom: 16, background: "var(--sri-ai-bg)" }}>
                 <div style={SECT}>AI Confidence in This Assessment</div>
                 <div style={{ ...F(8) as React.CSSProperties }}>
                   <span style={{ ...S(22, 800), color: "var(--sri-ai-d)" }}>{(dataTrust as any).confidence}%</span>
-                  <span style={{ fontSize: 12, color: "var(--sri-ink-m)" }}>confident</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)" }}>confident</span>
                 </div>
                 {/* FIX #20 — bold score range */}
-                {(dataTrust as any).scoreRange && <div style={{ fontSize: 12, color: "var(--sri-ink-3)", marginTop: 4, lineHeight: 1.5 }}>Score range: <b style={{ color: "var(--sri-ink-2)", fontWeight: 700 }}>{(dataTrust as any).scoreRange}</b></div>}
+                {(dataTrust as any).scoreRange && <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 4, lineHeight: 1.5 }}>Score range: <b style={{ color: "var(--sri-ink-2)", fontWeight: 700 }}>{(dataTrust as any).scoreRange}</b></div>}
               </div>
               {/* FIX #29 — label fontWeight 500 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-ai-d)" }}>{(dataTrust as any).sources}</div><div style={{ fontSize: 12, color: "var(--sri-ink-m)", marginTop: 2, fontWeight: 500 }}>Sources Used</div></div>
-                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-red-t)" }}>{(dataTrust as any).gaps}</div><div style={{ fontSize: 12, color: "var(--sri-ink-m)", marginTop: 2, fontWeight: 500 }}>Data Gaps</div></div>
+                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-ai-d)" }}>{(dataTrust as any).sources}</div><div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", marginTop: 2, fontWeight: 500 }}>Sources Used</div></div>
+                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-red-t)" }}>{(dataTrust as any).gaps}</div><div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", marginTop: 2, fontWeight: 500 }}>Data Gaps</div></div>
               </div>
             </>) : <Empty msg="Trust assessment not loaded" />}
           </Card>
@@ -462,7 +462,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
 
         {/* FOOTER — FIX #8: footer color upgraded, FIX #30: margin-top 16px */}
         <div style={{ margin: "16px 32px 0", padding: "14px 24px", borderTop: "1px solid var(--sri-bdr)", ...F(8) as React.CSSProperties, justifyContent: "space-between" }}>
-          <div style={{ ...F(8) as React.CSSProperties, fontSize: 12, color: "var(--sri-ink-3)" }}><span style={D("var(--sri-ai)", 6) as React.CSSProperties} />Powered by AI · Steercom-grade</div>
+          <div style={{ ...F(8) as React.CSSProperties, fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)" }}><span style={D("var(--sri-ai)", 6) as React.CSSProperties} />Powered by AI · Steercom-grade</div>
         </div>
       </div>
     </div>

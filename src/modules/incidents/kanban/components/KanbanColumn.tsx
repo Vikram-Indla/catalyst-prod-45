@@ -88,8 +88,8 @@ export const KanbanColumn = memo(function KanbanColumn({
           "flex flex-col min-w-[48px] max-w-[48px] flex-shrink-0",
           "rounded-xl cursor-pointer transition-colors hover:opacity-90",
           // Dark mode compliant backgrounds
-          "bg-[var(--ds-surface-sunken, #F8F8F7)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
-          "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]"
+          "bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-raised)]",
+          "border border-[var(--ds-border)] dark:border-[var(--ds-text)]"
         )}
         onClick={handleToggle}
         onDragOver={handleDragOver}
@@ -99,10 +99,10 @@ export const KanbanColumn = memo(function KanbanColumn({
         <div 
           className={cn(
             "flex flex-col items-center gap-1.5 px-1.5 py-2.5 rounded-t-xl",
-            "border-b border-[var(--ds-background-neutral, #F0F0F0)] dark:border-[var(--ds-text, #172B4D)]"
+            "border-b border-[var(--ds-background-neutral)] dark:border-[var(--ds-text)]"
           )}
         >
-          <ChevronRight className="h-3.5 w-3.5 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]" />
+          <ChevronRight className="h-3.5 w-3.5 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]" />
         </div>
         
         {/* Vertical Label + Stats */}
@@ -110,7 +110,7 @@ export const KanbanColumn = memo(function KanbanColumn({
           <span 
             className={cn(
               "text-[11px] font-medium",
-              "text-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-background-neutral-hovered, #D4D4D4)]"
+              "text-[var(--ds-text-subtle)] dark:text-[var(--ds-background-neutral-hovered)]"
             )}
             style={{ 
               writingMode: 'vertical-rl', 
@@ -122,13 +122,13 @@ export const KanbanColumn = memo(function KanbanColumn({
           <span 
             className={cn(
               "text-[11px] font-medium",
-              isOverWip ? "text-[var(--ds-text-warning,#d97706)]" : "text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]"
+              isOverWip ? "text-[var(--ds-text-warning)]" : "text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]"
             )}
           >
             {stats.total}
           </span>
           {stats.breached > 0 && (
-            <div className="h-2 w-2 rounded-full animate-pulse bg-[var(--ds-text-danger,#ef4444)]" />
+            <div className="h-2 w-2 rounded-full animate-pulse bg-[var(--ds-text-danger)]" />
           )}
         </div>
       </div>
@@ -141,8 +141,8 @@ export const KanbanColumn = memo(function KanbanColumn({
       className={cn(
         "flex flex-col w-[320px] flex-shrink-0 rounded-xl min-h-[500px]",
         // Dark mode compliant backgrounds
-        "bg-[var(--ds-surface-sunken, #F8F8F7)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
-        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]"
+        "bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-raised)]",
+        "border border-[var(--ds-border)] dark:border-[var(--ds-text)]"
       )}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
@@ -151,7 +151,7 @@ export const KanbanColumn = memo(function KanbanColumn({
       <div 
         className={cn(
           "px-4 py-3.5 rounded-t-xl",
-          "border-b border-[var(--ds-background-neutral, #F0F0F0)] dark:border-[var(--ds-text, #172B4D)]"
+          "border-b border-[var(--ds-background-neutral)] dark:border-[var(--ds-text)]"
         )}
       >
         <div className="flex items-center justify-between mb-1">
@@ -160,10 +160,10 @@ export const KanbanColumn = memo(function KanbanColumn({
             className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
           >
             <ChevronDown className={cn(
-              "h-3.5 w-3.5 transition-transform text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]",
+              "h-3.5 w-3.5 transition-transform text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]",
               isCollapsed && "-rotate-90"
             )} />
-            <span className="text-xs font-bold uppercase tracking-wide text-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">
+            <span className="text-xs font-bold uppercase tracking-wide text-[var(--ds-text-subtle)] dark:text-[var(--ds-surface-sunken)]">
               {config.label}
             </span>
           </button>
@@ -172,12 +172,12 @@ export const KanbanColumn = memo(function KanbanColumn({
           <div className="flex items-center gap-2">
             <span className={cn(
               "text-sm font-semibold tabular-nums",
-              isOverWip ? "text-[var(--ds-text-warning,#d97706)]" : "text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]"
+              isOverWip ? "text-[var(--ds-text-warning)]" : "text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]"
             )}>
               {stats.total}{wipLimit !== undefined && `/${wipLimit}`}
             </span>
             {isOverWip && (
-              <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning,#d97706)]" />
+              <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning)]" />
             )}
           </div>
         </div>
@@ -186,24 +186,24 @@ export const KanbanColumn = memo(function KanbanColumn({
         <div className="flex items-center gap-3 text-xs">
           {/* Committee column: Due Soon metric */}
           {status === 'to_committee' && dueSoonCount > 0 && (
-            <span className="flex items-center gap-1 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">
-              <Clock className="h-3 w-3 text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-accent-teal-bolder, #14b8a6)]" />
-              Due Soon: <span className="font-medium text-[var(--ds-surface,#0a0a0a)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">{dueSoonCount}</span>
+            <span className="flex items-center gap-1 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">
+              <Clock className="h-3 w-3 text-[var(--ds-chart-teal-bold)] dark:text-[var(--ds-background-accent-teal-bolder)]" />
+              Due Soon: <span className="font-medium text-[var(--ds-surface)] dark:text-[var(--ds-surface-sunken)]">{dueSoonCount}</span>
             </span>
           )}
           
           {/* At Risk count */}
           {status !== 'to_committee' && stats.atRisk > 0 && (
-            <span className="text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">
-              At Risk: <span className="font-medium text-[var(--ds-text-warning,#d97706)]">{stats.atRisk}</span>
+            <span className="text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]">
+              At Risk: <span className="font-medium text-[var(--ds-text-warning)]">{stats.atRisk}</span>
             </span>
           )}
           
           {/* Breached count - prominent with pulse */}
           {stats.breached > 0 && (
             <div className="flex items-center gap-1.5">
-              <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-[var(--ds-text-danger,#ef4444)]" />
-              <span className="text-xs font-semibold text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]">
+              <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-[var(--ds-text-danger)]" />
+              <span className="text-xs font-semibold text-[var(--ds-text-danger)] dark:text-[var(--ds-background-danger)]">
                 {stats.breached} breached
               </span>
             </div>

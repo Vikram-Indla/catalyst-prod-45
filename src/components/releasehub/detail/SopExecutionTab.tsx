@@ -11,13 +11,13 @@ import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -32,11 +32,11 @@ const STATUS_OPTS = [
 
 function statusColor(status: string): { fg: string; bg: string } {
   switch (status) {
-    case 'done': return { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' };
-    case 'in_progress': return { fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' };
+    case 'done': return { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' };
+    case 'in_progress': return { fg: 'var(--ds-text-information)', bg: 'var(--ds-background-information)' };
     case 'blocked':
-    case 'failed': return { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' };
-    case 'skipped': return { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' };
+    case 'failed': return { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' };
+    case 'skipped': return { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' };
     default: return { fg: T.subtle, bg: T.sunken };
   }
 }
@@ -50,8 +50,8 @@ function DetailRow({ label, value, mono }: { label: string; value: React.ReactNo
   if (value == null || value === '') return null;
   return (
     <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-      <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, minWidth: 120 }}>{label}</span>
-      <span style={{ fontFamily: mono ? T.mono : RH.fontBody, fontSize: 13, color: T.text }}>{value}</span>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest, minWidth: 120 }}>{label}</span>
+      <span style={{ fontFamily: mono ? T.mono : RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>{value}</span>
     </div>
   );
 }
@@ -68,15 +68,15 @@ function StepRow({ step, changeId }: { step: SopStep; changeId: string }) {
         <button onClick={() => setExpanded((v) => !v)} aria-label={expanded ? 'Collapse' : 'Expand'} style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, color: T.subtlest }}>
           {expanded ? <ChevronDown size={16} style={{ color: T.subtlest }} /> : <ChevronRight size={16} style={{ color: T.subtlest }} />}
         </button>
-        <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.subtlest, minWidth: 24 }}>{step.stepNo}</span>
+        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest, minWidth: 24 }}>{step.stepNo}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{step.title}</p>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{step.title}</p>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0' }}>
             {titleCase(step.stepType)}{step.externalOwnerName ? ` · ${step.externalOwnerName}` : ''}{step.isMandatory ? '' : ' · optional'}
           </p>
         </div>
         {step.evidenceUrl && (
-          <a href={step.evidenceUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 12, color: T.link, textDecoration: 'none' }}>
+          <a href={step.evidenceUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.link, textDecoration: 'none' }}>
             Evidence <ExternalLink size={12} style={{ color: T.link }} />
           </a>
         )}
@@ -91,11 +91,11 @@ function StepRow({ step, changeId }: { step: SopStep; changeId: string }) {
             isDisabled={update.isPending}
           />
         </div>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: sc.fg, background: sc.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', minWidth: 72, textAlign: 'center' }}>{titleCase(step.status)}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: sc.fg, background: sc.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', minWidth: 72, textAlign: 'center' }}>{titleCase(step.status)}</span>
       </div>
       {expanded && (
         <div style={{ padding: '8px 0 16px 48px' }}>
-          {step.description && <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text, margin: '0 0 12px', whiteSpace: 'pre-wrap' }}>{step.description}</p>}
+          {step.description && <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, margin: '0 0 12px', whiteSpace: 'pre-wrap' }}>{step.description}</p>}
           <DetailRow label="Environment" value={titleCase(step.environment)} />
           <DetailRow label="Branch" value={step.branch} mono />
           <DetailRow label="Frontend commit" value={step.frontendCommit} mono />
@@ -125,7 +125,7 @@ function ApplyTemplateBar({ changeId }: { changeId: string }) {
       <button
         onClick={() => { if (sel) apply.mutate({ templateId: sel.value, changeId }, { onSuccess: (n) => { catalystToast.success(`Applied ${n} step${n === 1 ? '' : 's'}`); setSel(null); }, onError: () => catalystToast.error('Failed to apply template') }); }}
         disabled={!sel || apply.isPending}
-        style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: sel ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500, opacity: sel ? 1 : 0.5 }}
+        style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: sel ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, opacity: sel ? 1 : 0.5 }}
       >
         Apply
       </button>
@@ -135,23 +135,23 @@ function ApplyTemplateBar({ changeId }: { changeId: string }) {
 
 export function SopExecutionTab({ changeId }: { changeId: string }) {
   const { data: steps = [], isLoading } = useSopSteps(changeId);
-  if (isLoading) return <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>;
+  if (isLoading) return <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>Loading…</div>;
   const done = steps.filter((s) => s.status === 'done').length;
   const incompleteMandatory = steps.filter((s) => s.isMandatory && s.status !== 'done' && s.status !== 'skipped').length;
   return (
     <div style={{ width: '100%', padding: '8px 0' }}>
       <ApplyTemplateBar changeId={changeId} />
       {steps.length === 0 ? (
-        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No SOP steps yet. Apply an SOP template above to populate the runbook.</div>
+        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No SOP steps yet. Apply an SOP template above to populate the runbook.</div>
       ) : (
         <>
           {incompleteMandatory > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 12 }}>
-              <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-discovery)', background: 'var(--ds-background-discovery)', border: '1px solid var(--ds-border-discovery)', borderRadius: 6, padding: '8px 12px', marginBottom: 12 }}>
+              <Sparkles size={14} style={{ color: 'var(--ds-text-discovery)' }} />
               Caty: {incompleteMandatory} mandatory step{incompleteMandatory === 1 ? '' : 's'} still incomplete — this change is not ready to implement.
             </div>
           )}
-          <p style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>{done} of {steps.length} steps done</p>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>{done} of {steps.length} steps done</p>
           {steps.map((s) => <StepRow key={s.id} step={s} changeId={changeId} />)}
         </>
       )}

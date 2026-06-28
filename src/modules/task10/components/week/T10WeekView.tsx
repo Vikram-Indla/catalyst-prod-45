@@ -125,14 +125,14 @@ export function T10WeekView() {
           {/* Priority Cards will be added in Prompt 7 */}
           <div style={{ 
             padding: '32px', 
-            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', 
             borderRadius: '12px', 
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             textAlign: 'center',
-            color: 'var(--ds-text-subtlest, #64748b)'
+            color: 'var(--ds-text-subtlest)'
           }}>
             <p style={{ margin: 0 }}>Priority cards will be implemented in Prompt 7</p>
-            <p style={{ margin: '8px 0 0', fontSize: '13px' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-300)' }}>
               {items?.length || 0} items loaded from database
             </p>
           </div>
@@ -151,11 +151,11 @@ export function T10WeekView() {
             </div>
             <div style={{ 
               padding: '24px', 
-              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', 
               borderRadius: '12px', 
-              border: '2px dashed var(--ds-border, #DFE1E6)',
+              border: '2px dashed var(--ds-border)',
               textAlign: 'center',
-              color: 'var(--ds-text-subtlest, #94a3b8)'
+              color: 'var(--ds-text-subtlest)'
             }}>
               Buffer zone items (rank 11+) will be shown here
             </div>

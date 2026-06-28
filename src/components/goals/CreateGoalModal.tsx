@@ -1,5 +1,5 @@
 /**
- * CreateGoalModal — Fix 3: field labels var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))), Fix 13: section dividers, slider labels, weight helper
+ * CreateGoalModal — Fix 3: field labels var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light))), Fix 13: section dividers, slider labels, weight helper
  */
 import { useState, useEffect, useCallback } from 'react';
 import { X, Plus } from '@/lib/atlaskit-icons';
@@ -30,12 +30,12 @@ const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
 const QUARTER_OPTIONS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
 const BSC_OPTIONS: BSCPerspective[] = ['Financial', 'Customer', 'Internal Process', 'Learning & Growth'];
 
-// Fix 3: All labels var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))), 10px, uppercase, 600
+// Fix 3: All labels var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light))), 10px, uppercase, 600
 const labelStyle: React.CSSProperties = {
-  fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
+  fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase',
   letterSpacing: '0.05em', color: 'var(--fg-4)', marginBottom: 4, display: 'block',
 };
-const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 13, border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)', transition: 'border-color 150ms, box-shadow 150ms' };
+const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)', transition: 'border-color 150ms, box-shadow 150ms' };
 
 export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
   const { data: themes = [] } = useThemes();
@@ -117,7 +117,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--cp-blue-wash)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Plus size={14} color="var(--cp-blue)" />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)' }}>Create New Goal</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>Create New Goal</span>
           </div>
           <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 6 }}>
             <X size={18} color="var(--fg-3)" />
@@ -248,8 +248,8 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               <Slider value={[confidence]} onValueChange={v => setConfidence(v[0])} min={0} max={100} step={5} className="mt-2" />
               {/* Fix 13: Slider endpoint labels */}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>Low</span>
-                <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>High</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>Low</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>High</span>
               </div>
             </div>
             <div>
@@ -260,7 +260,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
                 style={inputStyle}
               />
               {/* Fix 13: Weight helper text */}
-              <p style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 4, margin: '4px 0 0' }}>Relative importance (0.1 – 5.0)</p>
+              <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginTop: 4, margin: '4px 0 0' }}>Relative importance (0.1 – 5.0)</p>
             </div>
           </div>
         </div>
@@ -269,7 +269,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid var(--divider)' }}>
           <button
             onClick={onClose}
-            style={{ padding: '7px 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}
+            style={{ padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}
           >
             Cancel
           </button>
@@ -277,8 +277,8 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             onClick={handleSubmit}
             disabled={createGoal.isPending}
             style={{
-              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: createGoal.isPending ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)',
+              padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              background: createGoal.isPending ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createGoal.isPending ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: 5,
             }}

@@ -20,10 +20,10 @@ const TODAY = new Date('2026-06-14T10:00:00.000Z');
 const WEEK_START = new Date('2026-06-08T00:00:00.000Z');
 
 const CALENDAR_STATUSES = [
-  { id: 'todo', name: 'To do', color: 'var(--ds-text-subtlest, #626F86)' },
-  { id: 'in_progress', name: 'In progress', color: 'var(--ds-background-warning-bold, #d97706)' },
-  { id: 'in_review', name: 'In review', color: 'var(--ds-icon-information, #1D7AFC)' },
-  { id: 'done', name: 'Done', color: 'var(--ds-background-success-bold, #1F845A)' },
+  { id: 'todo', name: 'To do', color: 'var(--ds-text-subtlest)' },
+  { id: 'in_progress', name: 'In progress', color: 'var(--ds-background-warning-bold)' },
+  { id: 'in_review', name: 'In review', color: 'var(--ds-icon-information)' },
+  { id: 'done', name: 'Done', color: 'var(--ds-background-success-bold)' },
 ];
 
 const CALENDAR_USERS = [
@@ -32,7 +32,7 @@ const CALENDAR_USERS = [
   { id: 'p-ahmed', name: 'Ahmed Yousry', initials: 'AY' },
 ];
 
-const TEAM_MEMBERS = CALENDAR_USERS.map((u) => ({ ...u, avatarColor: 'var(--ds-link, #2563eb)' }));
+const TEAM_MEMBERS = CALENDAR_USERS.map((u) => ({ ...u, avatarColor: 'var(--ds-link)' }));
 
 function Wrap({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
   return <div style={{ maxWidth: wide ? 1200 : 900, padding: 16 }}>{children}</div>;
@@ -46,9 +46,9 @@ export const ActiveFilterChipsDefault: StoryObj = {
     <Wrap wide>
       <ActiveFilterChips
         filters={[
-          { id: 'f-1', label: 'Status', value: 'In progress', color: 'var(--ds-background-warning-bold, #d97706)' },
+          { id: 'f-1', label: 'Status', value: 'In progress', color: 'var(--ds-background-warning-bold)' },
           { id: 'f-2', label: 'Assignee', value: 'Vikram Indla' },
-          { id: 'f-3', label: 'Priority', value: 'High', color: 'var(--ds-background-danger-bold, #ef4444)' },
+          { id: 'f-3', label: 'Priority', value: 'High', color: 'var(--ds-background-danger-bold)' },
         ]}
         onRemove={fn()}
         onClearAll={fn()}
@@ -61,7 +61,7 @@ export const CalendarCellDefault: StoryObj = {
   name: 'CalendarCell / Default',
   render: () => (
     <Wrap>
-      <div style={{ width: 180, height: 140, border: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <div style={{ width: 180, height: 140, border: '1px solid var(--ds-border)' }}>
         <CalendarCell
           date={TODAY}
           tasks={MOCK_PLANNER_TASKS}
@@ -103,9 +103,9 @@ export const CalendarLegendDefault: StoryObj = {
     <Wrap>
       <CalendarLegend
         workstreams={[
-          { name: 'Platform', color: 'var(--ds-link, #2563eb)' },
-          { name: 'CATY AI', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-          { name: 'Mobile', color: 'var(--ds-icon-information, #1D7AFC)' },
+          { name: 'Platform', color: 'var(--ds-link)' },
+          { name: 'CATY AI', color: 'var(--ds-background-discovery-bold)' },
+          { name: 'Mobile', color: 'var(--ds-icon-information)' },
         ]}
       />
     </Wrap>
@@ -172,7 +172,7 @@ export const TaskHoverCardDefault: StoryObj = {
           style={{
             display: 'inline-block',
             padding: '8px 12px',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
           }}
         >
