@@ -402,6 +402,14 @@ export interface CreateDefectInput {
   title: string;
   description?: string;
   severity: DefectSeverity;
+  priority?: string;
+  component?: string;
+  environment?: string;
+  affects_version?: string;
+  steps_to_reproduce?: string;
+  expected_result?: string;
+  actual_result?: string;
+  due_date?: string;
   assigned_to?: string;
   case_id?: string;
   run_id?: string;
