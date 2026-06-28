@@ -23,7 +23,7 @@ const PAGE_SIZE = 50;
 const db = supabase as unknown as { from: (table: string) => any };
 
 const MESSAGE_FIELDS_BASE =
-  'id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel';
+  'id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel, event_type, event_meta';
 const MESSAGE_FIELDS_WITH_SCHEDULE = `${MESSAGE_FIELDS_BASE}, scheduled_for, delivered_at`;
 // Session-level flag — when the schedule_send migration hasn't been applied
 // yet, the columns 'scheduled_for' / 'delivered_at' don't exist. We probe on
@@ -45,6 +45,8 @@ interface MessageRow {
   reply_count: number;
   last_reply_at: string | null;
   is_also_in_channel: boolean;
+  event_type: string | null;
+  event_meta: Record<string, unknown> | null;
 }
 
 interface ReactionRow {
@@ -193,6 +195,8 @@ async function fetchPage(
         authorAvatarUrl: resolveAvatarUrl(author?.full_name ?? null) ?? author?.avatar_url ?? null,
         bodyText: m.body_text ?? '',
         bodyAdf: m.body_adf ?? null,
+        eventType: m.event_type ?? null,
+        eventMeta: m.event_meta ?? null,
         createdAt: m.created_at,
         editedAt: m.edited_at ?? null,
         deletedAt: m.deleted_at ?? null,
