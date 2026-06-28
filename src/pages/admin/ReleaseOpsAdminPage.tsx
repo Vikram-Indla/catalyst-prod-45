@@ -226,7 +226,7 @@ function SortableOptionRow({
       ref={setNodeRef}
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '6px 8px', borderRadius: 4,
+        padding: '4px 8px', borderRadius: 4,
         borderBottom: `1px solid ${T.border}`,
         background: isDragging || isHovered ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))' : undefined,
         opacity: isDragging ? 0.5 : (option.is_active ? 1 : 0.55),
@@ -254,7 +254,7 @@ function SortableOptionRow({
         )}
       </span>
 
-      <span style={{ width: 120, flexShrink: 0, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-200)', color: T.subtlest, background: T.sunken, padding: '2px 6px', borderRadius: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ width: 120, flexShrink: 0, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-200)', color: T.subtlest, background: T.sunken, padding: '0px 6px', borderRadius: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {option.value}
       </span>
 
@@ -334,7 +334,7 @@ function GroupSection({
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>{meta.label}</h2>
             <Tooltip content={meta.description ? `${meta.key} — ${meta.description}` : meta.key} position="right">
               <span tabIndex={0} aria-label="Field key" style={{ color: T.subtlest, cursor: 'default', fontSize: 'var(--ds-font-size-300)', lineHeight: '1', display: 'inline-flex', alignItems: 'center', userSelect: 'none' }}>ℹ</span>
@@ -345,7 +345,7 @@ function GroupSection({
       </div>
 
       {sorted.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 8px 6px', borderBottom: `1px solid ${T.border}`, marginBottom: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 8px 6px', borderBottom: `1px solid ${T.border}`, marginBottom: 0 }}>
           <span style={{ width: 20, flexShrink: 0 }} />
           <span style={{ flex: 1, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Name</span>
           <span style={{ width: 120, flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Value</span>
@@ -387,7 +387,7 @@ function GroupSection({
           <button
             role="menuitem"
             onClick={() => { onEdit(menuOption); setMenuState(null); }}
-            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text, border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
+            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text, border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
@@ -398,7 +398,7 @@ function GroupSection({
             role="menuitem"
             disabled={menuOption.is_system}
             onClick={() => { if (!menuOption.is_system) { onDelete(menuOption); setMenuState(null); } }}
-            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: menuOption.is_system ? T.subtlest : 'var(--ds-text-danger)', border: 'none', background: 'none', cursor: menuOption.is_system ? 'not-allowed' : 'pointer', textAlign: 'left', opacity: menuOption.is_system ? 0.5 : 1 }}
+            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: menuOption.is_system ? T.subtlest : 'var(--ds-text-danger)', border: 'none', background: 'none', cursor: menuOption.is_system ? 'not-allowed' : 'pointer', textAlign: 'left', opacity: menuOption.is_system ? 0.5 : 1 }}
             onMouseEnter={(e) => { if (!menuOption.is_system) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-hovered)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
@@ -543,7 +543,7 @@ function SettingsSection({
         {['low', 'medium', 'high', 'critical'].map((risk) => (
           <div key={risk} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text, width: 80, textTransform: 'capitalize' }}>{risk}</span>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
               {(riskMap[risk] || []).map((role) => (
                 <span key={role} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '22px' }}>{role.replace(/_/g, ' ')}</span>
               ))}

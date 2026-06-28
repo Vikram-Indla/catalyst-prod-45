@@ -465,7 +465,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
             color: tk.textMuted,
             background: 'var(--ds-background-neutral)',
-            padding: '1px 6px',
+            padding: '0px 6px',
             borderRadius: 3,
             lineHeight: '16px',
             fontFamily: 'var(--cp-font-body)',

@@ -16,9 +16,9 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
       padding: '12px 16px', borderRadius: 6, marginBottom: 16,
       background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning))',
       border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      display: 'flex', alignItems: 'flex-start', gap: 10,
+      display: 'flex', alignItems: 'flex-start', gap: 8,
     }}>
-      <AlertTriangle size={16} style={{ color: 'var(--ds-text-warning, var(--cp-warning))', flexShrink: 0, marginTop: 2 }} />
+      <AlertTriangle size={16} style={{ color: 'var(--ds-text-warning, var(--cp-warning))', flexShrink: 0, marginTop: 0 }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: isDark ? 'var(--ds-background-warning-bold)' : 'var(--ds-text-warning)', marginBottom: 4 }}>
           Similar article{duplicates.length > 1 ? 's' : ''} found
@@ -27,7 +27,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
           <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <span style={{
               fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
-              padding: '1px 5px', borderRadius: 4,
+              padding: '0px 5px', borderRadius: 4,
               background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.2))' : 'var(--ds-background-warning, var(--ds-background-warning))',
               color: 'var(--ds-text-warning, var(--cp-warning))',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
@@ -42,7 +42,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
         </div>
       </div>
       <button onClick={onDismiss} style={{
-        background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-warning, var(--cp-warning))', padding: 2,
+        background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-warning, var(--cp-warning))', padding: 0,
       }}><X size={14} /></button>
     </div>
   );
@@ -64,7 +64,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           value={value}
           onChange={e => onChange(e.target.value)}
           style={{
-            width: '100%', padding: '7px 10px', fontSize: 'var(--ds-font-size-200)', borderRadius: 4,
+            width: '100%', padding: '8px 10px', fontSize: 'var(--ds-font-size-200)', borderRadius: 4,
             border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))'}`,
             background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', fontFamily: 'var(--cp-font-body)',
@@ -174,7 +174,7 @@ export default function WikiTemplatesPage() {
       background: isDark ? 'var(--cp-bg-page)' : 'var(--ds-surface-sunken)',
       minHeight: '100%', padding: '24px 40px 48px',
     }}>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
         <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>Templates</span>
@@ -192,7 +192,7 @@ export default function WikiTemplatesPage() {
       {pendingTemplate && duplicates.length > 0 && (
         <div style={{ marginBottom: 16 }}>
           <button onClick={() => createArticleFromTemplate(pendingTemplate)} style={{
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '6px 16px', borderRadius: 4,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '4px 16px', borderRadius: 4,
             border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning))',
             color: 'var(--ds-text-warning, var(--cp-warning))',
@@ -203,7 +203,7 @@ export default function WikiTemplatesPage() {
 
       {/* ── Content Scheduling Section ── */}
       <div style={{
-        marginBottom: 20, padding: '14px 16px', borderRadius: 6,
+        marginBottom: 16, padding: '12px 16px', borderRadius: 6,
         background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.08))'}`,
       }}>
@@ -237,7 +237,7 @@ export default function WikiTemplatesPage() {
               <button onClick={() => { setPublishAt(''); setArchiveAt(''); }} style={{
                 fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '4px 10px', borderRadius: 4,
                 border: '1px solid var(--ds-background-danger-bold, rgba(220,38,38,0.2))', background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'var(--ds-background-danger)', color: 'var(--ds-text-danger, var(--cp-danger))',
-                cursor: 'pointer', alignSelf: 'flex-end', marginBottom: 18,
+                cursor: 'pointer', alignSelf: 'flex-end', marginBottom: 16,
               }}>Clear Dates</button>
             )}
           </div>
@@ -247,7 +247,7 @@ export default function WikiTemplatesPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
         {isLoading ? Array.from({ length: 5 }).map((_, i) => (
           <div key={i} style={{
-            padding: 20, borderRadius: 8,
+            padding: 16, borderRadius: 8,
             background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             border: `0.75px solid ${borderColor}`, height: 140,
           }} />
@@ -255,14 +255,14 @@ export default function WikiTemplatesPage() {
           const sections = (t.template_sections as any[]) || [];
           return (
             <div key={t.id} style={{
-              padding: 20, borderRadius: 8,
+              padding: 16, borderRadius: 8,
               background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               border: `0.75px solid ${borderColor}`,
               transition: 'border-color 120ms',
             }}
               onMouseEnter={e => e.currentTarget.style.borderColor = cardBorderHover}
               onMouseLeave={e => e.currentTarget.style.borderColor = borderColor}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 6,
                   background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
@@ -279,7 +279,7 @@ export default function WikiTemplatesPage() {
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
                 {sections.slice(0, 4).map((s: any, i: number) => (
                   <span key={i} style={{
-                    fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4,
+                    fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 4,
                     background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
                     color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                   }}>{s.title}</span>
@@ -290,7 +290,7 @@ export default function WikiTemplatesPage() {
                 onClick={() => handleUseTemplate(t)}
                 disabled={creatingSlug !== null}
                 style={{
-                  fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '6px 16px', borderRadius: 4,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '4px 16px', borderRadius: 4,
                   border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer', width: '100%',
                   opacity: creatingSlug ? 0.6 : 1,
                 }}

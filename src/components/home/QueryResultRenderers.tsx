@@ -68,8 +68,8 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
               key={item.issue_key || i}
               onClick={() => onItemClick(item.issue_key)}
               style={{
-                display: 'flex', flexDirection: 'column', gap: 3, width: '100%',
-                padding: '10px 12px', background: 'var(--cp-float)',
+                display: 'flex', flexDirection: 'column', gap: 4, width: '100%',
+                padding: '8px 12px', background: 'var(--cp-float)',
                 border: '1px solid var(--divider)', borderRadius: 6,
                 cursor: 'pointer', textAlign: 'left', transition: 'all 100ms',
               }}
@@ -81,7 +81,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   {item.issue_key}
                 </span>
                 <StatusLoz status={item.status} />
-                <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>
+                <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: PROJECT_COLORS[item.project_key] || 'var(--fg-3)' }} />
                   {item.project_key}
                 </span>
@@ -111,9 +111,9 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
             <tbody>
               {result.members.map((m: any, i: number) => (
                 <tr key={i} style={{ height: 34, borderBottom: '1px solid var(--divider)' }}>
-                  <td style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{m.name}</td>
-                  <td style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--ds-font-family-code)', textAlign: 'right', color: 'var(--fg-1)', fontWeight: 600 }}>{m.open}</td>
-                  <td style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--ds-font-family-code)', textAlign: 'right', color: m.blocked > 0 ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: 600 }}>{m.blocked}</td>
+                  <td style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{m.name}</td>
+                  <td style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--ds-font-family-code)', textAlign: 'right', color: 'var(--fg-1)', fontWeight: 600 }}>{m.open}</td>
+                  <td style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--ds-font-family-code)', textAlign: 'right', color: m.blocked > 0 ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: 600 }}>{m.blocked}</td>
                 </tr>
               ))}
             </tbody>
@@ -128,7 +128,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
             <div style={{ marginBottom: 12 }}>
               <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--sem-danger)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>OVERLOADED</span>
               {result.alerts.map((a: any, i: number) => (
-                <div key={i} style={{ padding: '8px 12px', border: '1px solid var(--sem-danger-light)', borderRadius: 6, background: 'var(--sem-danger-bg)', marginTop: 6 }}>
+                <div key={i} style={{ padding: '8px 12px', border: '1px solid var(--sem-danger-light)', borderRadius: 6, background: 'var(--sem-danger-bg)', marginTop: 4 }}>
                   <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>{a.name}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-danger)', marginLeft: 8 }}>{a.note}</span>
                 </div>
@@ -138,7 +138,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
           {result.healthy && result.healthy.length > 0 && (
             <div>
               <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--sem-success)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>AVAILABLE CAPACITY</span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
                 {result.healthy.map((h: any, i: number) => (
                   <span key={i} style={{ padding: '4px 10px', borderRadius: 4, background: 'var(--sem-success-bg)', border: '1px solid var(--sem-success-bg)', fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-success)' }}>
                     {h.name} ({h.open})
@@ -162,7 +162,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{r.project}</span>
                   <span style={{
                     marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase',
-                    padding: '2px 8px', borderRadius: 4,
+                    padding: '0px 8px', borderRadius: 4,
                     background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning-bg)',
                     color: r.health === 'on-track' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--sem-warning)',
                   }}>
@@ -170,7 +170,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   </span>
                 </div>
                 {/* Progress bar */}
-                <div style={{ height: 6, borderRadius: 4, background: 'var(--bg-3)', overflow: 'hidden', marginBottom: 6 }}>
+                <div style={{ height: 6, borderRadius: 4, background: 'var(--bg-3)', overflow: 'hidden', marginBottom: 4 }}>
                   <div style={{ height: '100%', width: `${pct}%`, borderRadius: 4, background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning)', transition: 'width 300ms' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 16, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-code)' }}>
@@ -193,7 +193,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
               key={s}
               onClick={() => onFollowUp(s)}
               style={{
-                padding: '7px 13px', borderRadius: 8,
+                padding: '8px 13px', borderRadius: 8,
                 border: '1.5px solid var(--divider)', background: 'var(--cp-float)',
                 cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)',
                 fontFamily: 'var(--ds-font-family-body)', transition: 'all 100ms',
@@ -211,7 +211,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
 }
 
 const thStyle: React.CSSProperties = {
-  padding: '6px 12px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
+  padding: '4px 12px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
   textTransform: 'uppercase', letterSpacing: '0.06em',
   color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)',
   borderBottom: '1px solid var(--divider)',

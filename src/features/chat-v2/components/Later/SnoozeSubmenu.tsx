@@ -87,7 +87,7 @@ export function SnoozeSubmenu({ anchorRect, onPick, onClose }: SnoozeSubmenuProp
             border: '1px solid var(--cv2-border-strong)',
             borderRadius: 'var(--cv2-radius-md)',
             boxShadow: 'var(--cv2-shadow-modal)',
-            padding: '6px 0',
+            padding: '4px 0',
             fontFamily: 'var(--cv2-font)',
             color: 'var(--cv2-text)',
             zIndex: 'var(--cv2-tooltip-z, 1200)' as any,
@@ -95,7 +95,7 @@ export function SnoozeSubmenu({ anchorRect, onPick, onClose }: SnoozeSubmenuProp
         >
           <div
             style={{
-              padding: '6px 16px',
+              padding: '4px 16px',
               fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-muted)',
               textTransform: 'none',

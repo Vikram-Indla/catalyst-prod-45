@@ -81,7 +81,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem 0.75rem 1.5rem;  /* py-3 px-4/6 - matches dashboard */
-  border-bottom: 1px solid var(--tl-border);
+  border-bottom: 0px solid var(--tl-border);
   background: var(--tl-surface-card);
   min-height: 56px;
 }
@@ -109,7 +109,7 @@
 .planner-task-list-content .tl-kpi-strip {
   display: flex;
   align-items: center;
-  gap: 1.5rem;             /* 24px (F8) */
+  gap: 0.5rem;             /* 24px (F8) */
 }
 
 .planner-task-list-content .tl-kpi-chip {
@@ -164,10 +164,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0rem;
   padding: 0.75rem 1.5rem;
   background: var(--tl-surface-header);
-  border-bottom: 1px solid var(--tl-border);
+  border-bottom: 0px solid var(--tl-border);
 }
 
 /* P1: Search box 220-280px */
@@ -179,7 +179,7 @@
 .planner-task-list-content .tl-search-input {
   width: 100%;
   height: 2.25rem;
-  padding-left: 2.25rem;
+  padding-left: 0.25rem;
   padding-right: 0.75rem;
   background: var(--tl-surface-card);
   border: 1px solid var(--tl-border);
@@ -189,7 +189,7 @@
 }
 
 .planner-task-list-content .tl-search-input:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--tl-border-focus);
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
@@ -201,7 +201,7 @@
 .planner-task-list-content .tl-search-icon {
   position: absolute;
   left: 0.75rem;
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
   color: var(--tl-text-muted);
   pointer-events: none;
@@ -279,7 +279,7 @@
   top: 0;
   z-index: 10;
   background: var(--tl-surface-header);
-  border-bottom: 1px solid var(--tl-border);
+  border-bottom: 0px solid var(--tl-border);
 }
 
 .planner-task-list-content .tl-header th {
@@ -302,7 +302,7 @@
    ============================================================================ */
 
 .planner-task-list-content .tl-row {
-  border-bottom: 1px solid var(--tl-border-light);
+  border-bottom: 0px solid var(--tl-border-light);
   transition: background-color 0.1s;
 }
 
@@ -738,7 +738,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
   color: var(--tl-text-muted);
 }
 
@@ -760,8 +760,8 @@
 
 .planner-task-list-content .tl-bulk-bar {
   position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
+  bottom: 0.5rem;
+  left: 48%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;

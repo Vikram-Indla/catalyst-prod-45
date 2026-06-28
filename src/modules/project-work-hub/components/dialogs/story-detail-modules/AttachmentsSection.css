@@ -104,7 +104,7 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  padding: 2px 0;
+  padding: 0px 0;
   background: transparent;
   border: none;
   border-radius: 3px;
@@ -126,7 +126,7 @@
 .att-more-menu {
   position: absolute;
   right: 0;
-  top: 28px;
+  top: 24px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
@@ -162,7 +162,7 @@
   color: var(--ds-text-subtle, #42526E);
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 6px;
+  padding: 0px 6px;
   border-radius: 3px;
   margin-left: 8px;
 }
@@ -202,7 +202,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  padding: 6px 0;
+  padding: 4px 0;
   background: transparent;
   border: none;
   border-radius: 3px;
@@ -258,7 +258,7 @@
   grid-template-columns: minmax(0, 1fr) 120px 50px;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 4px 8px;
   font-size: 13px;
   border-radius: 3px;
   background: var(--ds-surface-sunken, #F8FAFC);
@@ -286,7 +286,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 28px 16px;
+  padding: 24px 16px;
   text-align: center;
 }
 .att-empty-text { color: var(--ds-text-subtle, rgb(80, 82, 88)); font-size: 13px; }
@@ -347,7 +347,7 @@
 .att-card:focus-visible {
   border-color: var(--ds-border-bold, #B3BAC5);
   box-shadow: 0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .att-card:focus-visible {
@@ -392,7 +392,7 @@
   transition: opacity 0.1s ease;
   background: var(--ds-surface, rgba(255, 255, 255, 0.92));
   border-radius: 3px;
-  padding: 2px;
+  padding: 0px;
 }
 
 .att-card:hover .att-card__actions,

@@ -57,7 +57,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         fontSize: 11,
         marginLeft: 8,
       }}
@@ -98,7 +98,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
               fontFamily: 'inherit',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 2,
+              gap: 0,
             }}
           >
             <EditorUndoIcon label="" size="small" />
@@ -118,7 +118,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
               borderRadius: 3,
               color: 'var(--ds-text-subtlest)',
               cursor: 'pointer',
-              padding: '2px 4px',
+              padding: '0px 4px',
               fontSize: 12,
               fontFamily: 'inherit',
               display: 'inline-flex',

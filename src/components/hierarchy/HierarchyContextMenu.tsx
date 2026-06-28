@@ -76,7 +76,7 @@ export function HierarchyContextMenu({
 
   const itemStyle: React.CSSProperties = {
     width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-    padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)',
+    padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)',
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
@@ -104,7 +104,7 @@ export function HierarchyContextMenu({
         </button>
         {subMenu === 'status' && (
           <div data-ctx-menu style={{
-            ...menuStyle, position: 'absolute', top: -4, left: 218, width: 180,
+            ...menuStyle, position: 'absolute', top: -4, left: 48, width: 180,
           }}>
             {allStatuses.map(s => (
               <button key={s} style={{ ...itemStyle, fontWeight: s === currentStatus ? 600 : 400,
@@ -132,7 +132,7 @@ export function HierarchyContextMenu({
         </button>
         {subMenu === 'priority' && (
           <div data-ctx-menu style={{
-            ...menuStyle, position: 'absolute', top: -4, left: 218, width: 160,
+            ...menuStyle, position: 'absolute', top: -4, left: 48, width: 160,
           }}>
             {PRIORITIES.map(p => (
               <button key={p} style={{ ...itemStyle, fontWeight: p === currentPriority ? 600 : 400 }}
@@ -159,7 +159,7 @@ export function HierarchyContextMenu({
         </button>
         {subMenu === 'assignee' && (
           <div data-ctx-menu style={{
-            ...menuStyle, position: 'absolute', top: -4, left: 218, width: 200, maxHeight: 240, overflowY: 'auto',
+            ...menuStyle, position: 'absolute', top: -4, left: 48, width: 200, maxHeight: 240, overflowY: 'auto',
           }}>
             <button style={{ ...itemStyle, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
@@ -195,14 +195,14 @@ export function HierarchyContextMenu({
       {sep}
 
       {confirmDelete ? (
-        <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ padding: '4px 12px', display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0px 8px', borderRadius: 4,
             background: 'var(--sem-danger)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', cursor: 'pointer',
           }}>Yes</button>
           <button onClick={() => setConfirmDelete(false)} style={{
-            fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: 'var(--ds-font-size-100)', padding: '0px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
           }}>No</button>
         </div>
       ) : (
@@ -225,7 +225,7 @@ function MenuItem({ icon: Icon, label, onClick }: {
   return (
     <button onClick={onClick} style={{
       width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-      padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)',
+      padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)',
       background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
     }}
       onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
@@ -237,7 +237,7 @@ function MenuItem({ icon: Icon, label, onClick }: {
 
 function PriorityBarsInline({ level }: { level: number }) {
   return (
-    <div style={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
       {[1, 2, 3, 4].map(i => (
         <div key={i} style={{ width: 8, height: 3, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}

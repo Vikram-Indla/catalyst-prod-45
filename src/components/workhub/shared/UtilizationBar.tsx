@@ -30,7 +30,7 @@ export function UtilizationBar({
   const fillWidth = Math.min(percent, 100);
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
       <div
         style={{
           flex: 1,

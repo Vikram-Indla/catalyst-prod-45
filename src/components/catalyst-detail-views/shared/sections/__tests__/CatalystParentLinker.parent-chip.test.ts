@@ -3,7 +3,7 @@
  *
  * Jira DOM probe 2026-05-10:
  *   background: rgba(0,0,0,0)  color: rgb(80,82,88) = #505258
- *   padding: 2px 0px  no border  no border-radius tint
+ *   padding: 0px 0px  no border  no border-radius tint
  *
  * Jira UX probe 2026-05-10 — crossmark behaviour:
  *   Clicking the parent chip in Jira opens the parent picker (same

@@ -23,12 +23,12 @@ const DropdownItem: React.FC<{
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
+        gap: '8px',
         padding: '8px 10px',
         borderRadius: '8px',
         cursor: 'pointer',
         backgroundColor: isSelected ? COLORS.surfaceSelected : isHovered ? COLORS.surfaceHover : 'transparent',
-        marginBottom: '2px',
+        marginBottom: '0px',
       }}
     >
       <div
@@ -136,7 +136,7 @@ export const LeadPickerDropdown: React.FC<{
             alignItems: 'center',
             gap: '8px',
             width: '100%',
-            padding: '10px 12px',
+            padding: '8px 12px',
             backgroundColor: 'transparent',
             border: 'none',
             borderRadius: '8px',

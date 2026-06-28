@@ -101,7 +101,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   const dragHandleStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: 2,
+    gap: 0,
     padding: 4,
     cursor: 'grab',
     color: isHovered ? 'var(--ds-text-brand)' : 'var(--ds-text-subtlest)',
@@ -156,7 +156,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   const metaItemStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
     fontSize: 'var(--ds-font-size-200)',
     color: 'var(--ds-text-subtlest)',
     whiteSpace: 'nowrap',
@@ -164,7 +164,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
 
   // Label style - GRAY pills
   const labelStyle: React.CSSProperties = {
-    padding: '3px 8px',
+    padding: '4px 8px',
     fontSize: 'var(--ds-font-size-100)',
     fontWeight: 500,
     backgroundColor: 'var(--ds-surface-sunken)',
@@ -251,15 +251,15 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
         onClick={(e) => e.stopPropagation()}
         style={dragHandleStyle}
       >
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
           <span style={dotStyle} />
           <span style={dotStyle} />
         </div>
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
           <span style={dotStyle} />
           <span style={dotStyle} />
         </div>
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
           <span style={dotStyle} />
           <span style={dotStyle} />
         </div>
@@ -639,7 +639,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '0 24px',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
     borderBottom: `1px solid var(--ds-border)`,
-    gap: 20,
+    gap: 16,
   };
 
   const logoBadgeStyle: React.CSSProperties = {
@@ -653,7 +653,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const logoTextContainerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: 1,
+    gap: 0,
   };
 
   const logoTitleStyle: React.CSSProperties = {
@@ -703,7 +703,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    padding: '6px 14px',
+    padding: '4px 14px',
     background: 'var(--ds-surface-sunken)',
     border: `1px solid var(--ds-border)`,
     borderRadius: 8,
@@ -776,7 +776,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const aiSectionStyle: React.CSSProperties = {
-    marginBottom: 20,
+    marginBottom: 16,
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
     border: `1px dashed var(--ds-border)`,
     borderRadius: 16,
@@ -805,7 +805,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const aiToggleBtnStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     padding: '8px 16px',
     fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
@@ -819,7 +819,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const addWrapperStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 14,
+    gap: 12,
     padding: '16px 20px',
     marginBottom: 24,
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
@@ -840,7 +840,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const kbdStyle: React.CSSProperties = {
-    padding: '6px 12px',
+    padding: '4px 12px',
     fontFamily: 'inherit',
     fontSize: 'var(--ds-font-size-200)',
     fontWeight: 500,
@@ -873,7 +873,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const priorityListStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: 10,
+    gap: 8,
   };
 
   const bufferSectionStyle: React.CSSProperties = {
@@ -891,11 +891,11 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     display: 'flex',
     alignItems: 'center',
     gap: 12,
-    padding: '10px 12px',
+    padding: '8px 12px',
     background: 'var(--ds-surface-sunken)',
     border: `1px solid var(--ds-border)`,
     borderRadius: 8,
-    marginBottom: 6,
+    marginBottom: 4,
     cursor: 'pointer',
   };
 
@@ -915,7 +915,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const bufferSwapBtnStyle: React.CSSProperties = {
-    padding: '6px 12px',
+    padding: '4px 12px',
     fontSize: 'var(--ds-font-size-200)',
     fontWeight: 500,
     color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
@@ -927,7 +927,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const bufferPromoteBtnStyle: React.CSSProperties = {
-    padding: '6px 14px',
+    padding: '4px 14px',
     fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))',
@@ -1052,7 +1052,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                       marginBottom: i < suggestionsToRender.length - 1 ? 8 : 0,
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
                       <span style={{
                         width: 40,
                         height: 40,
@@ -1188,7 +1188,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
           <div style={bufferHeaderStyle}>
             <Layers size={16} strokeWidth={2} style={{ color: 'var(--ds-text-subtlest)' }} />
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Buffer Zone</span>
-            <span style={{ padding: '2px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', background: 'var(--ds-surface-sunken)', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
+            <span style={{ padding: '0px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', background: 'var(--ds-surface-sunken)', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
           </div>
           {bufferItems && bufferItems.length > 0 ? (
             bufferItems.map((item, i) => {

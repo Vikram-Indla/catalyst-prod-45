@@ -28,7 +28,7 @@ export default function LoadingSkeleton() {
       {[0, 1, 2].map(i => (
         <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'flex-start' }}>
           <ShimmerBlock width={40} height={40} borderRadius={20} isDark={isDark} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <ShimmerBlock width={180} height={12} isDark={isDark} />
             <ShimmerBlock width={120} height={10} isDark={isDark} />
           </div>

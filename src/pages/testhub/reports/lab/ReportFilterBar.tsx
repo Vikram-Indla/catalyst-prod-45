@@ -48,7 +48,7 @@ function SegmentedControl({
           type="button"
           onClick={() => onChange(opt.value)}
           style={{
-            padding: '5px 11px',
+            padding: '4px 11px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: value === opt.value ? 600 : 400,
             color: value === opt.value ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
@@ -78,7 +78,7 @@ function SelectFilter({
   onChange: (v: string) => void;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
       <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
         {label}
       </span>
@@ -127,7 +127,7 @@ export default function ReportFilterBar({ filters, cycles, folders, owners, onCh
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '10px 20px',
+        padding: '8px 20px',
         borderBottom: '1px solid var(--ds-border)',
         background: 'var(--ds-surface)',
         flexWrap: 'wrap',

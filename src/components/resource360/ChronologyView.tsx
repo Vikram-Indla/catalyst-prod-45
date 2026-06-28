@@ -82,11 +82,11 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
     <div style={{ fontFamily: 'var(--cp-font-body)', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
       {/* ═══ FILTER BAR ═══ */}
-      <div style={{ padding: '10px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
+      <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         {/* Top row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {/* Pending checkbox */}
-          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.text2, cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.text2, cursor: 'pointer' }}>
             <input type="checkbox" checked={showPendingOnly} onChange={e => setShowPendingOnly(e.target.checked)}
               style={{ accentColor: T.todo, width: 14, height: 14 }} />
             Pending Only ({pendingCount})
@@ -135,7 +135,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
 
         {/* Advanced filters row */}
         {filtersExpanded && (
-          <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             <AdvancedSelect label="Status" value={statusFilter} onChange={setStatusFilter} options={statuses} />
             <AdvancedSelect label="Priority" value={priorityFilter} onChange={setPriorityFilter} options={priorities} />
             <AdvancedSelect label="Assignee" value={assignerFilter} onChange={setAssignerFilter} options={assigners} />
@@ -143,14 +143,14 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
               <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text3 }}>From</span>
               <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
                 style={{
-                  fontSize: 'var(--ds-font-size-50)', padding: '3px 6px', borderRadius: 4,
+                  fontSize: 'var(--ds-font-size-50)', padding: '4px 6px', borderRadius: 4,
                   border: `1px solid ${T.borderStrong}`, background: T.surface,
                   color: T.text1, fontFamily: T.mono,
                 }} />
               <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text3 }}>To</span>
               <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
                 style={{
-                  fontSize: 'var(--ds-font-size-50)', padding: '3px 6px', borderRadius: 4,
+                  fontSize: 'var(--ds-font-size-50)', padding: '4px 6px', borderRadius: 4,
                   border: `1px solid ${T.borderStrong}`, background: T.surface,
                   color: T.text1, fontFamily: T.mono,
                 }} />
@@ -176,7 +176,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
             <div key={date} style={{ marginTop: 12 }}>
               {/* Date header */}
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0',
+                display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0',
               }}>
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 800, color: T.text1, letterSpacing: '0.02em' }}>
                   {dayLabel}
@@ -207,8 +207,8 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                 return (
                   <div key={item.id || idx} onClick={() => onItemClick(item)}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      padding: '7px 16px', minHeight: 42,
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '8px 16px', minHeight: 42,
                       background: highlightBg,
                       borderBottom: `1px solid ${T.border}`,
                       borderLeft: `4px solid ${statusColor}`,
@@ -219,12 +219,12 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                     onMouseLeave={e => { e.currentTarget.style.background = highlightBg; }}>
 
                     {/* Key + Hub badge */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 80, flexShrink: 0 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 80, flexShrink: 0 }}>
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text1 }}>
                         {key}
                       </span>
                       <span style={{
-                        fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '1px 5px',
+                        fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '0px 5px',
                         borderRadius: 4, background: hubColor, width: 'fit-content',
                         textTransform: 'uppercase' as const,
                       }}>
@@ -242,7 +242,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                       </div>
                       {parentKey && (
                         <div style={{
-                          fontSize: 'var(--ds-font-size-50)', color: T.text4, marginTop: 1,
+                          fontSize: 'var(--ds-font-size-50)', color: T.text4, marginTop: 0,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                         }}>
                           ↳ {parentKey}{parentTitle ? ` · ${parentTitle}` : ''}
@@ -257,7 +257,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
 
                     {/* Status pill — SOLID */}
                     <span style={{
-                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', padding: '2px 8px',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', padding: '0px 8px',
                       borderRadius: 4, background: statusColor, whiteSpace: 'nowrap' as const,
                       flexShrink: 0,
                     }}>
@@ -292,8 +292,8 @@ function FilterPill({ label, active, onClick, dotColor }: {
 }) {
   return (
     <button onClick={onClick} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 3,
-      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '3px 9px', borderRadius: 4,
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '4px 9px', borderRadius: 4,
       cursor: 'pointer', transition: 'all .12s',
       background: active ? 'var(--cp-blue)' : T.surface,
       color: active ? 'var(--ds-surface)' : T.text3,
@@ -313,7 +313,7 @@ function AdvancedSelect({ label, value, onChange, options }: {
       <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text3 }}>{label}</span>
       <select value={value} onChange={e => onChange(e.target.value)}
         style={{
-          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '3px 6px',
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '4px 6px',
           borderRadius: 4, border: `1px solid ${T.borderStrong}`,
           background: T.surface, color: T.text1, cursor: 'pointer',
         }}>

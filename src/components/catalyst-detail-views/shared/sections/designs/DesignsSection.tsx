@@ -92,8 +92,8 @@ export function DesignsSection({ workItemId }: DesignsSectionProps) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '6px 0',
+          gap: 4,
+          padding: '4px 0',
         }}
       >
         <button
@@ -165,7 +165,7 @@ export function DesignsSection({ workItemId }: DesignsSectionProps) {
       </div>
 
       {expanded && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingLeft: 24 }}>
           {designs.map((d) => (
             <DesignRow key={d.id} design={d} onUnlink={(id) => deleteDesign(id)} />
           ))}

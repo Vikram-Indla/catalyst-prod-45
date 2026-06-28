@@ -74,7 +74,7 @@
   --wh-shadow-focus: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.15));
 
   /* ── LAYOUT ── */
-  --wh-topnav-height: 56px;
+  --wh-topnav-height: 48px;
   --wh-sidebar-width: 240px;
   --wh-drawer-width: 480px;
   --wh-caty-width: 380px;
@@ -97,7 +97,7 @@
   --wh-z-modal: 600;
   --wh-z-caty: 700;
   --wh-z-toast: 900;
-  --wh-z-topnav: 1000;
+  --wh-z-topnav: 48;
 
   /* ── TYPE BADGE COLORS ── */
   --wh-type-epic-bg: var(--ds-background-information);

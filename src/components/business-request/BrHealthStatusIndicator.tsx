@@ -40,13 +40,13 @@ interface Props {
 function TooltipBody({ health }: Props) {
   const description = HEALTH_DESCRIPTIONS[health.health_status] ?? '';
   return (
-    <div style={{ maxWidth: 260, padding: '2px 0' }}>
+    <div style={{ maxWidth: 260, padding: '0px 0' }}>
       <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 'var(--ds-font-size-200)' }}>
         {health.health_status}
       </div>
       <div style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: '16px' }}>{description}</div>
       {health.br_target_date && (
-        <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', opacity: 0.8 }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', opacity: 0.8 }}>
           Target:{' '}
           {new Date(health.br_target_date).toLocaleDateString('en-GB', {
             day: 'numeric',

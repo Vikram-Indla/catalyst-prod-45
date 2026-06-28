@@ -416,7 +416,7 @@ export function ImproveIssueDropdown({
   const itemStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     width: '100%',
     padding: '8px 14px',
     background: 'transparent',
@@ -493,7 +493,7 @@ export function ImproveIssueDropdown({
               borderRadius: 6,
               boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
               zIndex: 2000,
-              padding: '6px 0',
+              padding: '4px 0',
             }}
           >
             <div

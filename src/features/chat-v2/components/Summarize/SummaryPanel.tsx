@@ -99,7 +99,7 @@ export function SummaryPanel({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 10,
+          gap: 8,
           padding: '0 16px',
           borderBottom: '1px solid var(--cv2-border)',
         }}
@@ -199,7 +199,7 @@ function LoadingState({
         {title}
       </div>
       <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>Sifting through messages…</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
         <Shimmer width="92%" />
         <Shimmer width="96%" />
         <Shimmer width="48%" />
@@ -465,11 +465,11 @@ function SectionCard({
         />
       )}
       {done && expanded && section.details.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
           <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--cv2-text-muted)' }}>
             More details
           </div>
-          <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
             {section.details.map((d, i) => {
               const ref = refLookup.get(d.refIndex);
               return (
@@ -506,7 +506,7 @@ function Caret() {
         display: 'inline-block',
         width: 7,
         height: 14,
-        marginLeft: 2,
+        marginLeft: 0,
         verticalAlign: 'text-bottom',
         background: 'var(--cv2-text-muted)',
         opacity: 0.65,

@@ -185,12 +185,12 @@ export function ReleaseTimeline() {
         {/* Meta */}
         <div style={{
           width: META_W, flexShrink: 0, paddingRight: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6,
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4,
         }}>
           {release.scopeItems > 0 && (
             <span style={{
               fontFamily: RH.fontBody,
-              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, borderRadius: 10, padding: '1px 7px',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, borderRadius: 10, padding: '0px 7px',
               background: dimmed ? T.neutral : style.badge.bg,
               color: dimmed ? T.subtle : style.badge.text,
               whiteSpace: 'nowrap',
@@ -212,9 +212,9 @@ export function ReleaseTimeline() {
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 16px', borderBottom: `1px solid ${T.border}`,
+        padding: '8px 16px', borderBottom: `1px solid ${T.border}`,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>
             Release Timeline
           </span>
@@ -223,7 +223,7 @@ export function ReleaseTimeline() {
               fontFamily: RH.fontBody,
               fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.danger,
               background: T.dangerBg, border: `1px solid ${T.dangerBorder}`,
-              borderRadius: 3, padding: '1px 6px',
+              borderRadius: 3, padding: '0px 6px',
             }}>
               {freezes.length} freeze window{freezes.length !== 1 ? 's' : ''}
             </span>
@@ -234,7 +234,7 @@ export function ReleaseTimeline() {
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: 0,
                 fontSize: 'var(--ds-font-size-100)', color: T.link, fontFamily: 'inherit', fontWeight: 500,
-                display: 'flex', alignItems: 'center', gap: 3,
+                display: 'flex', alignItems: 'center', gap: 4,
               }}
             >
               {effectiveShowPast ? '▼' : '▶'} {past.length} past
@@ -297,7 +297,7 @@ export function ReleaseTimeline() {
           <div
             onClick={() => setShowPast(v => !v)}
             style={{
-              display: 'flex', alignItems: 'center', height: 26, gap: 6,
+              display: 'flex', alignItems: 'center', height: 26, gap: 4,
               borderBottom: `1px solid ${T.border}`,
               background: T.sunken, cursor: 'pointer', padding: '0 16px',
             }}
@@ -322,10 +322,10 @@ export function ReleaseTimeline() {
           <span style={{
             position: 'absolute',
             left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
-            top: '50%', transform: 'translate(-50%, -50%)',
+            top: '48%', transform: 'translate(-50%, -50%)',
             background: T.link, color: 'var(--ds-surface)',
             fontFamily: RH.fontBody,
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '1px 6px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0px 6px',
             borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',
             zIndex: 6,
           }}>
@@ -336,7 +336,7 @@ export function ReleaseTimeline() {
         {/* No active release */}
         {!hasActive && visible.length > 0 && (
           <div style={{
-            display: 'flex', alignItems: 'center', height: 36, gap: 10,
+            display: 'flex', alignItems: 'center', height: 36, gap: 8,
             borderBottom: `1px solid ${T.borderSub}`,
             padding: '0 16px',
           }}>
@@ -353,18 +353,18 @@ export function ReleaseTimeline() {
 
       {/* Legend */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+        display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
         padding: '8px 16px', borderTop: `1px solid ${T.border}`,
         background: T.sunken,
       }}>
         {Object.entries(BAR).map(([key, { bar, label }]) => (
-          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 12, height: 8, borderRadius: 2, background: bar, flexShrink: 0 }} />
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{label}</span>
           </div>
         ))}
         {freezes.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 12, height: 8, borderRadius: 2, background: T.dangerBorder, flexShrink: 0 }} />
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.danger }}>Freeze</span>
           </div>

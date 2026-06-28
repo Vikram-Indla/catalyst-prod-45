@@ -258,7 +258,7 @@ export default function ReqAssistGenerate() {
       <div style={{ padding: '24px 28px' }}>
         {/* HEADER */}
         <div style={{ marginBottom: 24 }}>
-          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
             <ArrowLeft size={14} /> Back to Library
           </button>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--cp-text-primary, var(--ds-text))', margin: '0 0 6px' }}>Generate BRD from Text</h2>
@@ -268,7 +268,7 @@ export default function ReqAssistGenerate() {
         </div>
 
         {/* INPUT CARD */}
-        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'}`, borderRadius: 6, padding: 24, marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <FileText size={15} color="var(--cp-purple-60, var(--ds-background-discovery-bold))" />
             <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: 'var(--cp-text-primary, var(--ds-text))', fontFamily: 'var(--cp-font-body)' }}>Requirements Input</span>
@@ -279,15 +279,15 @@ export default function ReqAssistGenerate() {
             value={text}
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
-            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 'var(--ds-font-size-400)', lineHeight: 1.65, border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary, var(--ds-text))', transition: 'border-color 150ms, box-shadow 150ms' }}
+            style={{ width: '100%', minHeight: 200, padding: 12, fontSize: 'var(--ds-font-size-400)', lineHeight: 1.65, border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary, var(--ds-text))', transition: 'border-color 150ms, box-shadow 150ms' }}
             onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-purple-60, var(--ds-background-discovery-bold))'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--ds-background-discovery-bold, rgba(124,58,237,0.10))'; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))'; e.currentTarget.style.boxShadow = 'none'; }}
           />
-          <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>The AI will first qualify whether this text contains enough structured requirements.</p>
+          <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>The AI will first qualify whether this text contains enough structured requirements.</p>
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.12))', borderRadius: 6, display: 'flex', gap: 10 }}>
+            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.12))', borderRadius: 6, display: 'flex', gap: 8 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, var(--cp-danger))" /></div>
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger))', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
@@ -298,12 +298,12 @@ export default function ReqAssistGenerate() {
 
           {/* Qualify pass */}
           {qualifyResult && qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-success)', border: '0.75px solid var(--ds-background-success)', borderRadius: 6, display: 'flex', gap: 10 }}>
+            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-success)', border: '0.75px solid var(--ds-background-success)', borderRadius: 6, display: 'flex', gap: 8 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, var(--cp-success))" /></div>
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-success, var(--cp-success))', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success, var(--ds-chart-green-bold))', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
-                <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest))))', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest))))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
                 </p>
               </div>
@@ -312,14 +312,14 @@ export default function ReqAssistGenerate() {
 
           {/* Error */}
           {genError && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.12))', borderRadius: 6 }}>
+            <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.12))', borderRadius: 6 }}>
               <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger))', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
               <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
             </div>
           )}
 
           {/* Top action row — fresh state */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 14, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center' }}>
             <BtnAI onClick={handleQualifyAndGenerate} disabled={qualifying || generating || !text.trim()}>
               {qualifying || generating ? <Loader2 size={14} style={{ animation: 'ra-spin 1s linear infinite' }} /> : <Sparkles size={14} />}
               {qualifying ? 'Qualifying…' : generating ? 'Generating BRD…' : 'Qualify & Generate'}
@@ -355,7 +355,7 @@ export default function ReqAssistGenerate() {
             </div>
 
             {/* Sections */}
-            <div style={{ padding: 20 }}>
+            <div style={{ padding: 16 }}>
               {genResult.sections.map((section, i) => (
                 <div key={i} style={{
                   marginBottom: i < genResult.sections.length - 1 ? 20 : 0,
@@ -368,8 +368,8 @@ export default function ReqAssistGenerate() {
                     <ReactMarkdown components={{
                       p: ({ children }) => <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-secondary, var(--ds-text-subtle))', lineHeight: 1.6, marginBottom: 12, fontFamily: 'var(--cp-font-body)' }}>{children}</p>,
                       strong: ({ children }) => <strong style={{ fontWeight: 650, color: 'var(--cp-text-primary, var(--ds-text))' }}>{children}</strong>,
-                      ul: ({ children }) => <ul style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ul>,
-                      ol: ({ children }) => <ol style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ol>,
+                      ul: ({ children }) => <ul style={{ paddingLeft: 16, marginBottom: 12 }}>{children}</ul>,
+                      ol: ({ children }) => <ol style={{ paddingLeft: 16, marginBottom: 12 }}>{children}</ol>,
                       li: ({ children }) => <li style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-secondary, var(--ds-text-subtle))', lineHeight: 1.6, marginBottom: 4, listStyleType: 'disc', fontFamily: 'var(--cp-font-body)' }}>{children}</li>,
                       h3: ({ children }) => <h3 style={{ fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-heading)', fontWeight: 650, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h3>,
                       h4: ({ children }) => <h4 style={{ fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-heading)', fontWeight: 650, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h4>,
@@ -381,7 +381,7 @@ export default function ReqAssistGenerate() {
 
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '8px 14px', background: 'var(--ds-background-danger)', border: '0.75px solid var(--ds-background-danger)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AlertTriangle size={15} color="var(--ds-text-danger, var(--cp-danger))" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, var(--cp-danger))', fontFamily: 'var(--cp-font-body)' }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
@@ -389,7 +389,7 @@ export default function ReqAssistGenerate() {
               </div>
             )}
             {showSavedBanner && brdState === 'saved' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'var(--ds-background-success)', border: '0.75px solid var(--ds-background-success)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '8px 14px', background: 'var(--ds-background-success)', border: '0.75px solid var(--ds-background-success)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Check size={15} color="var(--ds-text-success)" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-success)', fontFamily: 'var(--cp-font-body)' }}>Saved to Library. Ready to generate Epics.</span>
               </div>
@@ -431,7 +431,7 @@ export default function ReqAssistGenerate() {
                     </BtnOutline>
                   )}
                   {wikiState === 'success' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                       <Check size={14} /> In WikiHub
                     </span>
                   )}
@@ -513,7 +513,7 @@ export default function ReqAssistGenerate() {
                 Save as New Copy
               </BtnPrimary>
               <button onClick={() => setOverwriteConfirmOpen(true)} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+                display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
                 border: '0.75px solid var(--cp-danger)', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Overwrite</button>
               <BtnGhost onClick={() => { setDupModalOpen(false); setDuplicateDoc(null); }}>Cancel</BtnGhost>
@@ -541,7 +541,7 @@ export default function ReqAssistGenerate() {
                   await handleOverwrite();
                 } catch (err: any) { setGenError(err.message); } finally { setGenerating(false); setOverwriteConfirmOpen(false); }
               }} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
+                display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
                 border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, var(--cp-danger))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Yes, Overwrite</button>
               <BtnGhost onClick={() => setOverwriteConfirmOpen(false)}>Go Back</BtnGhost>
@@ -583,7 +583,7 @@ export default function ReqAssistGenerate() {
 function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...props} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
+      display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
       fontFamily: 'var(--cp-font-body)',
@@ -596,7 +596,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
 function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...props} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
+      display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
       fontFamily: 'var(--cp-font-body)',
@@ -610,7 +610,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
   const { isDark } = useTheme();
   return (
     <button {...props} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+      display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
       border: `0.75px solid ${'var(--cp-border-strong, var(--ds-border))'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', color: 'var(--cp-text-secondary, var(--ds-text-subtle))', fontFamily: 'var(--cp-font-body)',
       transition: 'background 120ms',
@@ -623,7 +623,7 @@ function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonE
   const { isDark } = useTheme();
   return (
     <button {...props} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+      display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
       border: 'none', borderRadius: 6, cursor: 'pointer',
       background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest))))', fontFamily: 'var(--cp-font-body)',
       ...props.style,
@@ -634,7 +634,7 @@ function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonE
 function BtnDanger({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...props} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+      display: 'inline-flex', alignItems: 'center', gap: 4, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
       border: '0.75px solid var(--cp-danger, var(--ds-background-danger-bold))', borderRadius: 6, cursor: 'pointer',
       background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger))', fontFamily: 'var(--cp-font-body)',
       ...props.style,

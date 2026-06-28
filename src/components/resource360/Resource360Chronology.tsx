@@ -61,15 +61,15 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
       <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search key, title, parent…"
-            style={{ width: 200, fontSize: 'var(--ds-font-size-100)', padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.borderStrong}`, background: T.surface, color: T.text1, fontWeight: 500, outline: 'none' }} />
+            style={{ width: 200, fontSize: 'var(--ds-font-size-100)', padding: '4px 10px', borderRadius: 6, border: `1px solid ${T.borderStrong}`, background: T.surface, color: T.text1, fontWeight: 500, outline: 'none' }} />
           <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.text3, cursor: 'pointer' }}>
             <input type="checkbox" checked={showPendingOnly} onChange={e => setShowPendingOnly(e.target.checked)} style={{ accentColor: T.todo, width: 13, height: 13 }} />
             Pending ({pendingCount})
           </label>
-          <div style={{ display: 'flex', gap: 3 }}>
+          <div style={{ display: 'flex', gap: 4 }}>
             {hubs.slice(0, 5).map(h => (
               <button key={h} onClick={() => setHubFilter(hubFilter === h ? 'all' : h)} style={{
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                 background: hubFilter === h ? (WH_HUB_COLORS[h] ?? T.text1) : T.surface,
                 color: hubFilter === h ? 'var(--ds-surface)' : T.text3,
                 border: hubFilter === h ? 'none' : `1px solid ${T.border}`,
@@ -83,15 +83,15 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
           <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', color: T.text4, fontWeight: 600 }}>{filtered.length}/{items.length}</span>
         </div>
         {filtersExpanded && (
-          <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <Sel label="Status" value={statusFilter} onChange={setStatusFilter} options={statuses} />
             <Sel label="Priority" value={priorityFilter} onChange={setPriorityFilter} options={priorities} />
             <Sel label="Assignee" value={assignerFilter} onChange={setAssignerFilter} options={assigners} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.text4, textTransform: 'uppercase' }}>FROM</span>
-              <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ fontSize: 'var(--ds-font-size-50)', padding: '3px 6px', borderRadius: 4, border: `1px solid ${T.borderStrong}`, fontFamily: T.mono }} />
+              <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ fontSize: 'var(--ds-font-size-50)', padding: '4px 6px', borderRadius: 4, border: `1px solid ${T.borderStrong}`, fontFamily: T.mono }} />
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.text4, textTransform: 'uppercase' }}>TO</span>
-              <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ fontSize: 'var(--ds-font-size-50)', padding: '3px 6px', borderRadius: 4, border: `1px solid ${T.borderStrong}`, fontFamily: T.mono }} />
+              <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ fontSize: 'var(--ds-font-size-50)', padding: '4px 6px', borderRadius: 4, border: `1px solid ${T.borderStrong}`, fontFamily: T.mono }} />
             </div>
           </div>
         )}
@@ -109,7 +109,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
           const dTotal = dateItems.length;
           return (
             <div key={date} style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.text1 }}>{dayLabel}</span>
                 <div style={{ flex: 1, height: 1, background: T.border }} />
                 {/* Mini status bar */}
@@ -134,18 +134,18 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 return (
                   <React.Fragment key={item.work_item_id}>
                     <div onClick={() => onItemClick(item)} style={{
-                      display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', minHeight: 42,
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', minHeight: 42,
                       background: bg, borderBottom: `1px solid ${T.border}`, borderLeft: `4px solid ${sc}`,
                       cursor: 'pointer', transition: 'background .1s',
                     }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral)'; }} onMouseLeave={e => { e.currentTarget.style.background = bg; }}>
                       <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                       {/* Key + Hub */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 64 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, minWidth: 64 }}>
                         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text1 }}>
                           <HighlightText text={item.item_key} query={searchTerm} />
                         </span>
-                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '0px 5px', borderRadius: 4, background: hc }}>{hs}</span>
                       </div>
                       {/* Title + parent */}
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -161,12 +161,12 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                       {/* Assigner */}
                       <div style={{ fontSize: 'var(--ds-font-size-50)', color: T.progress, fontWeight: 500, minWidth: 80, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assigner_name ?? '—'}</div>
                       {/* Status pill — SOLID */}
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', background: sc, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', background: sc, padding: '0px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                         {item.status.length > 16 ? item.status.slice(0, 14) + '…' : item.status}
                       </span>
                       {/* Age + stale */}
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, minWidth: 40, textAlign: 'right', color: item.age_days > 14 ? T.todo : item.age_days > 7 ? 'var(--ds-text-warning)' : T.text4 }}>
-                        {item.age_days}d{stale && <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)', marginLeft: 2 }}>{stale.icon}</span>}
+                        {item.age_days}d{stale && <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)', marginLeft: 0 }}>{stale.icon}</span>}
                       </span>
                     </div>
                     {isExpanded && <InlineExpansionPanel item={item} onOpenDetail={() => onItemClick(item)} />}
@@ -185,8 +185,8 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
 function Sel({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return (
     <div>
-      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', display: 'block', marginBottom: 2 }}>{label}</span>
-      <select value={value} onChange={e => onChange(e.target.value)} style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '3px 6px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--bg-app)', color: 'var(--fg-1)', cursor: 'pointer' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', display: 'block', marginBottom: 0 }}>{label}</span>
+      <select value={value} onChange={e => onChange(e.target.value)} style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '4px 6px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--bg-app)', color: 'var(--fg-1)', cursor: 'pointer' }}>
         <option value="all">All</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>

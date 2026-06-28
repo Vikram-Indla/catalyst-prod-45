@@ -36,7 +36,7 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
 
   if (themes.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
         <Palette style={{ width: 48, height: 48, marginBottom: 16 }} />
         <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>No themes span {getMonthName(month)} {year}</p>
       </div>
@@ -129,11 +129,11 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
               onBlur={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
             >
               {/* Label */}
-              <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {theme.event_title}
                 </span>
-                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginTop: 2 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginTop: 0 }}>
                   {fmtStart} — {fmtEnd}
                 </span>
               </div>

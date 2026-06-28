@@ -209,7 +209,7 @@ export default function PlanEditor({ planId, onBack, features }: Props) {
             <div style={{ width: 1, height: 24, background: 'var(--ph-border)', margin: '0 8px' }} />
 
             {/* View toggles */}
-            <div className="ph-flex" style={{ background: 'var(--ph-gray-100)', borderRadius: 'var(--ph-radius-md)', padding: 2 }}>
+            <div className="ph-flex" style={{ background: 'var(--ph-gray-100)', borderRadius: 'var(--ph-radius-md)', padding: 0 }}>
               <button
                 onClick={() => setViewMode('split')}
                 className="ph-btn ph-btn-ghost ph-btn-sm"

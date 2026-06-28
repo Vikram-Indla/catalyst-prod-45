@@ -40,13 +40,13 @@ export default function IdeasThemePage() {
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       {/* Header */}
-      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
+      <div style={{ padding: '16px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Theme</h1>
             <p style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, margin: '4px 0 0' }}>Strategic themes grouping related ideas — sourced from backlog THEME field</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: dk.t3, fontSize: 'var(--ds-font-size-200)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: dk.t3, fontSize: 'var(--ds-font-size-200)' }}>
             <Info size={14} />
             <span>Themes are auto-discovered from the Ideas Theme field</span>
           </div>
@@ -54,7 +54,7 @@ export default function IdeasThemePage() {
       </div>
 
       {/* Stats */}
-      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, display: 'flex', padding: '14px 28px', gap: '32px' }}>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, display: 'flex', padding: '12px 28px', gap: '32px' }}>
         <div>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>TOTAL THEMES</div>
           <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.t1 }}>{themes.length}</span>
@@ -74,7 +74,7 @@ export default function IdeasThemePage() {
         {isLoading ? (
           <div style={{ padding: '40px', textAlign: 'center', color: dk.t3 }}>Loading themes...</div>
         ) : themes.length === 0 ? (
-          <div style={{ padding: '60px', textAlign: 'center' }}>
+          <div style={{ padding: '48px', textAlign: 'center' }}>
             <Lightbulb size={48} style={{ color: dk.t3, margin: '0 auto 16px' }} />
             <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: dk.t1 }}>No themes found</div>
             <div style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>Add themes to ideas in the backlog</div>

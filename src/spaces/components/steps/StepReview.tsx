@@ -22,7 +22,7 @@ interface RowProps {
 
 function Row({ label, children }: RowProps) {
   return (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '6px 0' }}>
+    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '4px 0' }}>
       <div style={{ width: 140, flexShrink: 0 }}>
         <span
           style={{
@@ -81,7 +81,7 @@ export function StepReview({ draft }: Props) {
             style={{
               fontFamily: 'var(--cp-font-mono)',
               fontSize: 'var(--ds-font-size-300)',
-              padding: '2px 6px',
+              padding: '0px 6px',
               borderRadius: 3,
               background: token('color.background.neutral'),
             }}

@@ -111,7 +111,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>WORK RHYTHM DNA</SectionTitle>
         {!hasActivity ? (
-          <div style={{ fontSize: 'var(--ds-font-size-300)', color: MUTED, padding: '20px 0', textAlign: 'center' as const }}>No activity data yet</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: MUTED, padding: '16px 0', textAlign: 'center' as const }}>No activity data yet</div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>
             {WORK_DAYS.map((d, idx) => {
@@ -137,7 +137,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
       {/* §2 Pickup Intelligence */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>PICKUP INTELLIGENCE</SectionTitle>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {[
             { label: 'Avg Pickup Time', value: pickupStats.avgPickupLabel, sub: 'time to first touch',
               onClick: () => showFilteredList('Pickup Time Detail', (i: any) => ['in_progress','in_review','done'].includes((i.status_category||'').toLowerCase())) },
@@ -157,7 +157,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'; }}
             >
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 4 }}>{tile.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
             </div>
@@ -201,9 +201,9 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
             <div key={i} style={{ width: `${s.pct}%`, height: 8, borderRadius: 4, backgroundColor: s.color, transition: 'width 300ms' }} />
           ))}
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 10 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8 }}>
           {hubSegments.map((s, i) => (
-            <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color, display: 'inline-block', flexShrink: 0 }} />
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-mono)', color: INK1 }}>{s.count}</span>

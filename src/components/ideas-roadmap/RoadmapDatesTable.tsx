@@ -87,7 +87,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   {idea.team ? (
                     <span style={{
                       fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
-                      color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
+                      color: 'var(--fg-2)', padding: '0px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: 'var(--ds-text-disabled)' }}>—</span>}
                 </td>
@@ -121,7 +121,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                     }}
                   >
                     <span style={{
-                      position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
+                      position: 'absolute', top: 4, width: 12, height: 12, borderRadius: 6,
                       background: 'var(--bg-app)', left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
                     }} />
                   </button>
@@ -130,7 +130,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   {isConverted(idea.status) ? (
                     <span style={{
                       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--cp-lozenge-green-bg)', color: 'var(--bg-app)',
-                      border: '1px solid var(--ds-background-success)', padding: '2px 6px', borderRadius: 4,
+                      border: '1px solid var(--ds-background-success)', padding: '0px 6px', borderRadius: 4,
                     }}>✓</span>
                   ) : idea.isCommitted ? (
                     <button

@@ -102,7 +102,7 @@ const KPI_CARD: React.CSSProperties = {
   padding: '16px 20px',
   display: 'flex',
   flexDirection: 'column',
-  gap: 6,
+  gap: 4,
 };
 
 // ── sub-components ────────────────────────────────────────────────────────────

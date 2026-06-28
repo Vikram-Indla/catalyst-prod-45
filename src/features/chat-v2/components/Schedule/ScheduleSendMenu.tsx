@@ -68,7 +68,7 @@ export function ScheduleSendMenu({ anchorRef, onPick, onClose }: ScheduleSendMen
         borderRadius: 'var(--cv2-radius-md)',
         boxShadow: 'var(--cv2-shadow-modal)',
         zIndex: 'var(--cv2-popover-z, 1100)' as any,
-        padding: '6px 0',
+        padding: '4px 0',
         fontFamily: 'var(--cv2-font)',
       }}
     >
@@ -89,7 +89,7 @@ function Header({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        padding: '6px 12px',
+        padding: '4px 12px',
         fontSize: 'var(--ds-font-size-200)',
         color: 'var(--cv2-text-muted)',
         textTransform: 'none',

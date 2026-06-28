@@ -39,7 +39,7 @@ export function EditDatesModal({
           <ModalTitle>{issue.startDate || issue.dueDate ? 'Edit dates' : 'Add dates'}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle)', borderRadius: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '4px 8px', background: 'var(--ds-background-neutral-subtle)', borderRadius: 3 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={14} />
             <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
             <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>

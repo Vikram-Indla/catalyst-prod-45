@@ -41,7 +41,7 @@ export default function IdeasRoadmapPage() {
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       {/* Header */}
-      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
+      <div style={{ padding: '16px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Roadmap</h1>
@@ -52,7 +52,7 @@ export default function IdeasRoadmapPage() {
               <strong style={{ fontFamily: 'var(--cp-font-mono)' }}>{pipelineCount}</strong> in pipeline ·{' '}
               <strong style={{ fontFamily: 'var(--cp-font-mono)', color: dk.greenText }}>{convertedCount}</strong> converted
             </span>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--ds-font-size-200)', color: dk.t2, cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-200)', color: dk.t2, cursor: 'pointer' }}>
               <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
               Committed only
             </label>
@@ -61,7 +61,7 @@ export default function IdeasRoadmapPage() {
       </div>
 
       {/* Team Filter */}
-      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '8px 28px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
             background: teamFilter === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'), color: teamFilter === t ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : dk.t2,
@@ -91,7 +91,7 @@ export default function IdeasRoadmapPage() {
                   <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', fontWeight: 700, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
                 </div>
                 {colIdeas.length === 0 && (
-                  <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: 'var(--ds-font-size-200)', border: `1px dashed ${dk.border}`, borderRadius: '8px' }}>No ideas</div>
+                  <div style={{ padding: '16px', textAlign: 'center', color: dk.t3, fontSize: 'var(--ds-font-size-200)', border: `1px dashed ${dk.border}`, borderRadius: '8px' }}>No ideas</div>
                 )}
                 {colIdeas.map(idea => (
                   <RoadmapCard key={idea.idea_key} idea={idea} onClick={() => setDrawerKey(idea.idea_key)} isDark={isDark} dk={dk} />
@@ -134,21 +134,21 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
         e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: dk.blueKey }}>{idea.idea_key}</span>
-        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: 'var(--cp-font-mono)' }}>{idea.priority || 'P2'}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, padding: '0px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: 'var(--cp-font-mono)' }}>{idea.priority || 'P2'}</span>
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '4px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, padding: '0px 6px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, padding: '0px 6px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: 'var(--cp-font-mono)' }}>IMPACT {idea.impact_total.toFixed(2)}</span>
-        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'var(--cp-success, var(--cp-lozenge-green-bg))', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
+        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'var(--cp-success, var(--cp-lozenge-green-bg))', padding: '0px 6px', borderRadius: '4px' }}>COMMITTED</span>}
       </div>
       {isConverted && idea.linked_initiative_key && (
-        <div style={{ marginTop: '6px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: dk.greenText, fontFamily: 'var(--cp-font-mono)' }}>
+        <div style={{ marginTop: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: dk.greenText, fontFamily: 'var(--cp-font-mono)' }}>
           → {idea.linked_initiative_key} (Converted)
         </div>
       )}

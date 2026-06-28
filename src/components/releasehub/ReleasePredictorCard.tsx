@@ -81,7 +81,7 @@ export function ReleasePredictorCard({
         <button
           onClick={() => run.mutate({ kind, id })}
           disabled={run.isPending}
-          style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '4px 8px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, cursor: run.isPending ? 'default' : 'pointer' }}
+          style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '4px 8px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, cursor: run.isPending ? 'default' : 'pointer' }}
         >
           {run.isPending ? <Spinner size="small" /> : <CatyPulseIcon size={14} />}
           {p ? 'Re-run' : 'Run predictor'}
@@ -136,7 +136,7 @@ export function ReleasePredictorCard({
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
                 {p.statusSpread.map((s) => (
-                  <span key={s.status} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  <span key={s.status} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                     <span style={{ width: 9, height: 9, borderRadius: 2, background: stageColor(s.weight) }} />{s.status} {s.count}
                   </span>
                 ))}
@@ -162,7 +162,7 @@ export function ReleasePredictorCard({
           {p.reasons.length > 0 && (
             <div style={{ padding: '12px 16px', borderTop: `0.5px solid ${T.border}` }}>
               <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, marginBottom: 8 }}>What's still pending</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {p.reasons.map((r, i) => (
                   <div key={i} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
                     {r.label}{r.keys?.length ? <span style={{ color: T.subtle }}> — {r.keys.slice(0, 4).join(', ')}</span> : null}
@@ -173,7 +173,7 @@ export function ReleasePredictorCard({
           )}
 
           {p.narrative && (
-            <div style={{ display: 'flex', gap: 9, padding: '12px 16px', borderTop: `0.5px solid ${T.border}`, background: T.sunken }}>
+            <div style={{ display: 'flex', gap: 8, padding: '12px 16px', borderTop: `0.5px solid ${T.border}`, background: T.sunken }}>
               <CatyPulseIcon size={16} />
               <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, lineHeight: 1.55 }}>{p.narrative}</div>
             </div>

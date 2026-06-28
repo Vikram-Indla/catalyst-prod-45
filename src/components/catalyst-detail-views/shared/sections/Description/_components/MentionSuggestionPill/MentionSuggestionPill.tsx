@@ -168,7 +168,7 @@ export function MentionSuggestionPill({ editor, workItemId }: Props) {
         ref={stripRef}
         style={{
           display: "flex",
-          gap: 6,
+          gap: 4,
           overflowX: "auto",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -227,8 +227,8 @@ function UserChip({
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 6,
-        padding: "1px 10px 1px 3px",
+        gap: 4,
+        padding: "0px 10px 1px 3px",
         height: 24,
         border: "1px solid var(--ds-border)",
         borderRadius: 4,

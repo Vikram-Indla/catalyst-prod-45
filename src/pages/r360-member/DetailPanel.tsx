@@ -29,17 +29,17 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
       <div className="r3-panel r3-panel--open">
         {/* Header */}
         <div className="r3-panel-header">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <span className="r3-card-key" style={{ fontSize: 'var(--ds-font-size-400)' }}>{item.item_key}</span>
             <button className="r3-panel-close" onClick={onClose}><X size={14} /></button>
           </div>
           <div className="r3-panel-pills">
             <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
-            <span style={{ fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>{item.priority}</span>
+            <span style={{ fontSize: 10.5, fontWeight: 600, padding: '0px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>{item.priority}</span>
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)', border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.25))' : 'var(--ds-background-discovery)'}` }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 8px', borderRadius: 4, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)', border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.25))' : 'var(--ds-background-discovery)'}` }}>
                 CONTRIBUTED TO <MiniAvatar name={item.assignee_name} size={16} />
               </span>
             )}
@@ -57,7 +57,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-label">{item.role_on_item === 'Contributor' ? 'Assigned To' : 'Assigner'}</div>
-              <div className="r3-meta-value" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div className="r3-meta-value" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {item.role_on_item === 'Contributor' && <MiniAvatar name={item.assignee_name} size={18} />}
                 {item.role_on_item === 'Contributor' ? (item.assignee_name || '\u2014') : (item.reporter_name || '\u2014')}
               </div>
@@ -98,7 +98,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
           {item.parent_key && (
             <div className="r3-hierarchy">
               <div className="r3-hierarchy-title">Hierarchy</div>
-              <div className="r3-hier-item" style={{ padding: '6px 8px' }}>
+              <div className="r3-hier-item" style={{ padding: '4px 8px' }}>
                 {getJiraIcon('Epic')}
                 <span className="r3-card-key r3-card-key--sm">{item.parent_key}</span>
                 <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>

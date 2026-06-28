@@ -53,7 +53,7 @@ export function JiraStatusLozenge({
         color: statusFg(APPEARANCE_MAP[category]),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
-        padding: '2px',
+        padding: '0px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',

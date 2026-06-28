@@ -101,7 +101,7 @@ function CustomSlider({
           position: 'absolute',
           left: 0,
           right: 0,
-          top: '50%',
+          top: '48%',
           transform: 'translateY(-50%)',
           height: 6,
           borderRadius: 3,
@@ -112,7 +112,7 @@ function CustomSlider({
         style={{
           position: 'absolute',
           left: 0,
-          top: '50%',
+          top: '48%',
           transform: 'translateY(-50%)',
           width: `${pct}%`,
           height: 6,
@@ -125,7 +125,7 @@ function CustomSlider({
         style={{
           position: 'absolute',
           left: `calc(${pct}% - 8px)`,
-          top: '50%',
+          top: '48%',
           transform: 'translateY(-50%)',
           width: 16,
           height: 16,

@@ -39,7 +39,7 @@ export default function ReportSkeleton() {
 
       {/* table rows */}
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 10 }}>
+        <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
           <SkeletonBlock w="30%" h={12} />
           <SkeletonBlock w="15%" h={12} />
           <SkeletonBlock w="15%" h={12} />

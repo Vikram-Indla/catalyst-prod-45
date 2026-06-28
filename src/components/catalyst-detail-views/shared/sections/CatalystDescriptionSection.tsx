@@ -195,7 +195,7 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
     <div
       style={{
         minHeight,
-        paddingLeft: 20,
+        paddingLeft: 16,
         display: "flex",
         alignItems: "center",
         gap: 8,
@@ -258,7 +258,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
        canonical ADF renderer). The legacy '.adf-description-content'
        selector is retained defensively in case any stale prerender DOM
        sneaks in; safe to drop in a future pass. */
-    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: var(--ds-text); line-height: 1.3; }
+    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 16px 0 8px; color: var(--ds-text); line-height: 1.3; }
     .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: var(--ds-text); line-height: 1.3; }
     .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text); line-height: 1.4; }
     .cv-desc-body h4, .adf-description-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text); }
@@ -277,9 +277,9 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); font-weight: 600; text-align: left; }
     .cv-desc-body th, .cv-desc-body td,
     .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); padding: 8px 12px; font-size: 14px; vertical-align: top; }
-    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle); }
+    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle); }
     .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
-    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
+    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, var(--cp-bg-sunken)); padding: 0px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
     .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
 
@@ -328,7 +328,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     }
     .cv-desc-body a, .adf-description-content a { color: var(--ds-link, var(--cp-primary-60)); text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
-    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); margin: 16px 0; }
+    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
 
     /* Bidi — Jira parity. Applying \`unicode-bidi: plaintext\` to every text
@@ -440,7 +440,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
 
     [data-media-vc-wrapper] {
       position: relative !important;
-      outline: none !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       border: none !important;
       background: transparent !important;
       width: 100% !important;
@@ -508,7 +508,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       content: attr(aria-label);
       position: absolute;
       top: calc(100% + 6px);
-      left: 50%;
+      left: 48%;
       transform: translateX(-50%);
       background: var(--ds-text, rgb(23, 43, 77));
       color: var(--ds-text-inverse);

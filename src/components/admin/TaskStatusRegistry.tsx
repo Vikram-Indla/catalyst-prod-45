@@ -176,7 +176,7 @@ export function TaskStatusRegistry() {
                   <td style={TD}>{s.is_default ? <Lozenge appearance="inprogress">Default</Lozenge> : null}</td>
                   <td style={TD}>{s.is_completed_status ? <Lozenge appearance="success">Completed</Lozenge> : null}</td>
                   <td style={TD}>
-                    <div style={{ display: 'flex', gap: 2 }}>
+                    <div style={{ display: 'flex', gap: 0 }}>
                       <Button appearance="subtle" spacing="compact" isDisabled={i === 0 || reorder.isPending} onClick={() => move(i, -1)} aria-label={`Move ${s.name} up`}>↑</Button>
                       <Button appearance="subtle" spacing="compact" isDisabled={i === statuses.length - 1 || reorder.isPending} onClick={() => move(i, 1)} aria-label={`Move ${s.name} down`}>↓</Button>
                     </div>

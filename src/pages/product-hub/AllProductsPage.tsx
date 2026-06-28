@@ -286,7 +286,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
         zIndex: 1000,
       }}
     >
-      <div style={{ padding: '10px 12px 6px' }}>
+      <div style={{ padding: '8px 12px 6px' }}>
         <Textfield
           value={search}
           onChange={(e) => handleSearchChange((e.target as HTMLInputElement).value)}
@@ -299,7 +299,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
           }
         />
       </div>
-      <div style={{ maxHeight: 280, overflowY: 'auto', paddingBottom: 6 }}>
+      <div style={{ maxHeight: 280, overflowY: 'auto', paddingBottom: 4 }}>
         {currentOwner && (
           <div
             role="button"
@@ -311,7 +311,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 10,
+              gap: 8,
               padding: '8px 12px',
               cursor: 'pointer',
               color: token('color.text'),
@@ -341,7 +341,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 10,
+              gap: 8,
               padding: '8px 12px',
               cursor: 'pointer',
               color: token('color.text'),
@@ -380,7 +380,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           cursor: 'pointer',
           outline: 'none',
         }}
@@ -654,7 +654,7 @@ export default function AllProductsPage() {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             padding: '8px 14px',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
@@ -702,7 +702,7 @@ export default function AllProductsPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '6px 10px',
+                padding: '4px 10px',
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: filterType ? 600 : 400,
                 borderRadius: 3,
@@ -748,7 +748,7 @@ export default function AllProductsPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '6px 10px',
+                padding: '4px 10px',
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: filterLead ? 600 : 400,
                 borderRadius: 3,
@@ -800,7 +800,7 @@ export default function AllProductsPage() {
             style={{
               background: 'transparent',
               border: 'none',
-              padding: '6px 8px',
+              padding: '4px 8px',
               fontSize: 'var(--ds-font-size-300)',
               color: token('color.link'),
               cursor: 'pointer',
@@ -832,7 +832,7 @@ export default function AllProductsPage() {
             </div>
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div style={{ padding: '60px 0', textAlign: 'center' }}>
+          <div style={{ padding: '48px 0', textAlign: 'center' }}>
             <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
               {searchQuery ? `No products match "${searchQuery}"` : 'No products yet. Create one to get started.'}
             </p>

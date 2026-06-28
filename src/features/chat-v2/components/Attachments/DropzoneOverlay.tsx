@@ -16,7 +16,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 18,
+        gap: 16,
         background: 'var(--ds-shadow-raised, rgba(0,0,0,0.6))',
         backdropFilter: 'blur(2px)',
         WebkitBackdropFilter: 'blur(2px)',
@@ -37,7 +37,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
             <kbd
               style={{
                 display: 'inline-block',
-                padding: '1px 6px',
+                padding: '0px 6px',
                 margin: '0 2px',
                 background: 'var(--ds-surface, rgba(255,255,255,0.12))',
                 border: '1px solid var(--ds-surface, rgba(255,255,255,0.2))',
@@ -65,7 +65,7 @@ function DropzoneArt() {
       <div
         style={{
           position: 'absolute',
-          left: 6,
+          left: 4,
           top: 24,
           width: 96,
           height: 76,
@@ -87,8 +87,8 @@ function DropzoneArt() {
       <div
         style={{
           position: 'absolute',
-          right: 6,
-          top: 18,
+          right: 4,
+          top: 16,
           width: 92,
           height: 72,
           background: '#4FC3F7', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
@@ -101,8 +101,8 @@ function DropzoneArt() {
       <div
         style={{
           position: 'absolute',
-          left: '50%',
-          top: 36,
+          left: '48%',
+          top: 32,
           transform: 'translateX(-50%) rotate(-2deg)',
           width: 110,
           height: 84,
@@ -126,7 +126,7 @@ function DropzoneArt() {
           <div
             style={{
               position: 'absolute',
-              top: 6,
+              top: 4,
               right: 8,
               width: 14,
               height: 14,

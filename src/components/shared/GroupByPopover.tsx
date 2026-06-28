@@ -253,7 +253,7 @@ export function GroupByPopover<K extends string>({
           {/* Search */}
           <div style={{ padding: '8px 8px 8px', borderBottom: `1px solid ${border}` }}>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+              <span style={{ position: 'absolute', left: 8, top: '48%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
                 <IcSearch size={13} color={muted} />
               </span>
               <input
@@ -279,7 +279,7 @@ export function GroupByPopover<K extends string>({
                 <button
                   onClick={() => { setSearch(''); inputRef.current?.focus(); }}
                   style={{
-                    position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)',
+                    position: 'absolute', right: 4, top: '48%', transform: 'translateY(-50%)',
                     background: 'none', border: 'none', cursor: 'pointer',
                     color: muted, padding: 4, display: 'flex',
                   }}

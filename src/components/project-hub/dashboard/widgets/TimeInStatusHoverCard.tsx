@@ -122,7 +122,7 @@ export function TimeInStatusHoverCard({
           borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         }}
       >
-        <span style={{ display: 'inline-flex', alignItems: 'center', paddingTop: 2, flexShrink: 0 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', paddingTop: 0, flexShrink: 0 }}>
           <JiraIssueTypeIcon type={issueType ?? 'Task'} size={16} />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -135,7 +135,7 @@ export function TimeInStatusHoverCard({
               wordBreak: 'break-word',
             }}
           >
-            <span style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', marginRight: 6 }}>
+            <span style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', marginRight: 4 }}>
               {issueKey}
             </span>
             {title && <span style={{ fontFamily: 'inherit' }}>: {title}</span>}
@@ -148,12 +148,12 @@ export function TimeInStatusHoverCard({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
-          marginBottom: 10,
+          gap: 8,
+          marginBottom: 8,
           flexWrap: 'wrap',
         }}
       >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={assigneeDisplayName ?? 'Unassigned'}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} title={assigneeDisplayName ?? 'Unassigned'}>
           <UserAvatar
             size="small"
             name={assigneeDisplayName ?? undefined}
@@ -163,7 +163,7 @@ export function TimeInStatusHoverCard({
         <span
           style={{
             display: 'inline-block',
-            padding: '2px 8px',
+            padding: '0px 8px',
             height: 18,
             lineHeight: '14px',
             borderRadius: 3,
@@ -195,7 +195,7 @@ export function TimeInStatusHoverCard({
       </div>
 
       {/* Row 1 — duration prominent */}
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
         <span
           style={{
             fontSize: 'var(--ds-font-size-100)',
@@ -243,7 +243,7 @@ export function TimeInStatusHoverCard({
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
               color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
-              marginBottom: 2,
+              marginBottom: 0,
             }}
           >
             Forecast
@@ -257,7 +257,7 @@ export function TimeInStatusHoverCard({
             style={{
               fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
-              marginTop: 2,
+              marginTop: 0,
               fontVariantNumeric: 'tabular-nums',
             }}
           >

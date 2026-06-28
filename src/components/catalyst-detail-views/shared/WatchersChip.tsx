@@ -154,8 +154,8 @@ export function WatchersChip({ issueKey }: Props) {
             ) : (
               watchers.map(w => (
                 <div key={w.user_id} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '6px 16px', fontSize: 'var(--ds-font-size-300)',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '4px 16px', fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
                 }}>
                   <CatalystAvatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={resolveAvatarUrl(w.full_name ?? w.email) ?? w.avatar_url} />

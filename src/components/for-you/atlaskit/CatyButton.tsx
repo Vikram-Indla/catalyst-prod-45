@@ -89,7 +89,7 @@ export function CatyButton({
         {visibleLabel && <span className="caty-btn__label">{visibleLabel}</span>}
         {!loading && trailing}
         {loading && (
-          <span className="caty-btn__dots" style={{ display: 'inline-flex', gap: 2 }} aria-hidden="true">
+          <span className="caty-btn__dots" style={{ display: 'inline-flex', gap: 0 }} aria-hidden="true">
             <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'currentColor' }} />
             <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'currentColor' }} />
             <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'currentColor' }} />

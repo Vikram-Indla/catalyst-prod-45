@@ -1,7 +1,7 @@
 /* ── Conversation sidebar shell ── */
 .c-chat-sidebar {
   min-width: 0;
-  border-right: 1px solid var(--c-chat-border);
+  border-right: 0px solid var(--c-chat-border);
   display: flex;
   flex-direction: column;
   background: var(--c-chat-surface);
@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 12px 0 16px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
   gap: 8px;
 }
 
@@ -75,11 +75,11 @@
   display: flex;
   align-items: center;
   padding: 8px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 .c-sb-search__icon {
   position: absolute;
-  inset-inline-start: 18px;
+  inset-inline-start: 16px;
   color: var(--c-chat-text-subtlest);
   pointer-events: none;
   display: flex;
@@ -93,7 +93,7 @@
   font-size: 13px;
   background: var(--c-chat-surface-sunken);
   color: var(--c-chat-text);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   -webkit-appearance: none;
   appearance: none;
 }

@@ -211,7 +211,7 @@ export default function WidgetGalleryModal({
                       fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 500,
                       color: token('color.text', 'var(--ds-text)'),
-                      marginBottom: 2,
+                      marginBottom: 0,
                     }}
                   >
                     {widget.title}
@@ -220,7 +220,7 @@ export default function WidgetGalleryModal({
                     style={{
                       fontSize: 'var(--ds-font-size-200)',
                       color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
-                      marginBottom: 2,
+                      marginBottom: 0,
                     }}
                   >
                     By Catalyst
@@ -246,7 +246,7 @@ export default function WidgetGalleryModal({
                       style={{
                         fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 500,
-                        padding: '2px 8px',
+                        padding: '0px 8px',
                         borderRadius: 3,
                         background: token('color.background.neutral', 'var(--ds-background-neutral)'),
                         color: token('color.text.subtle', 'var(--ds-icon)'),

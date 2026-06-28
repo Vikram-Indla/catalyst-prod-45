@@ -53,7 +53,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
       css={css`
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
       `}
     >
       {/* Online dot */}
@@ -169,7 +169,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
         border-radius: 4px;
         font-size: 12px;
         color: var(--ds-text-subtle);
-        border-left: 3px solid var(--ds-border);
+        border-left: 4px solid var(--ds-border);
       `}
     >
       {/* Animated dots */}
@@ -177,7 +177,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
         css={css`
           display: flex;
           align-items: center;
-          gap: 2px;
+          gap: 0px;
         `}
       >
         {[0, 1, 2].map((i) => (
@@ -260,7 +260,7 @@ export const PresenceList: React.FC<PresenceListProps> = ({
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 0;
+            padding: 4px 0;
           `}
         >
           {/* Avatar */}

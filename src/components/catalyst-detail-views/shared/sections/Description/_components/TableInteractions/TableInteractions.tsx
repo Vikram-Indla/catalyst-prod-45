@@ -558,7 +558,7 @@ function GripDots({
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, 2px)`,
         gridTemplateRows: `repeat(${rows}, 2px)`,
-        gap: 2,
+        gap: 0,
       }}
     >
       {dots.map((_, i) => (

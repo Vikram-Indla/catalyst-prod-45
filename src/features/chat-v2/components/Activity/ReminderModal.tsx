@@ -78,7 +78,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '20vh',
+        paddingTop: '16vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
       onMouseDown={e => { if (e.target === e.currentTarget) onCancel(); }}
@@ -113,7 +113,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
           <div
             style={{
               marginTop: 16,
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: 'var(--cv2-bg-row-hover)',
               borderLeft: '3px solid var(--cv2-accent)',
               borderRadius: 'var(--cv2-radius-sm)',
@@ -145,7 +145,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: 14, marginTop: 20 }}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
           <Field label="When">
             <PickerButton
               icon={<CalendarIcon size={15} />}
@@ -179,7 +179,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
           </Field>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 28 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
           <SecondaryBtn onClick={onCancel}>Cancel</SecondaryBtn>
           <PrimaryBtn onClick={handleSave}>Save</PrimaryBtn>
         </div>
@@ -197,7 +197,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
           fontSize: 'var(--ds-font-size-300)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
-          marginBottom: 6,
+          marginBottom: 4,
         }}
       >
         {label}
@@ -282,7 +282,7 @@ function CalendarPopover({
       aria-label="Pick a date"
       style={{
         position: 'absolute',
-        top: 78,
+        top: 48,
         left: 0,
         width: 280,
         background: 'var(--cv2-bg-modal)',
@@ -293,7 +293,7 @@ function CalendarPopover({
         zIndex: 'var(--cv2-popover-z, 1100)' as any,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <div style={{ display: 'inline-flex', gap: 4 }}>
           <NavBtn label="Previous year" onClick={() => {
             setViewYear(y => y - 1);
@@ -371,7 +371,7 @@ function CalendarPopover({
                 aria-pressed={isSel}
                 style={{
                   position: 'absolute',
-                  inset: 3,
+                  inset: 4,
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -470,7 +470,7 @@ function TimeDropdown({
       aria-label="Pick a time"
       style={{
         position: 'absolute',
-        top: 78,
+        top: 48,
         left: 0,
         right: 0,
         maxHeight: 260,
@@ -499,7 +499,7 @@ function TimeDropdown({
               display: 'block',
               width: '100%',
               textAlign: 'left',
-              padding: '6px 16px',
+              padding: '4px 16px',
               background: sel ? 'var(--cv2-accent)' : 'transparent',
               color: sel ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
               border: 'none',

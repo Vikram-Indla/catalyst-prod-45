@@ -21,7 +21,7 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
     <div className="r3-profile-card" role="banner">
       {/* Top row: avatar + name + KPIs */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           {/* Avatar with fallback */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             {member?.avatar_url ? (
@@ -46,7 +46,7 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
         </div>
 
         {/* KPI cards: Open + Stale */}
-        <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
           <div className="r3-kpi-card warn" role="status" aria-label={`Open items: ${kpis?.open_items ?? 0}`}>
             <div className="r3-kpi-value">{kpis?.open_items ?? 0}</div>
             <div className="r3-kpi-label">Open</div>
@@ -59,7 +59,7 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
       </div>
 
       {/* Bottom bar: Tabs + Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))' }}>
         <div style={{ display: 'flex', gap: 4 }} role="tablist" aria-label="View mode">
           {TABS.map(tab => (
             <button

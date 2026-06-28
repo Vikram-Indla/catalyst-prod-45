@@ -25,7 +25,7 @@
 .ttw-translate-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 4px 10px;
   /* Force LTR so the magenta CatyPulse signature icon stays leading and
      the label reads correctly even when the parent title is RTL. */
@@ -130,7 +130,7 @@
 .ttw-translated-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 4px 10px;
   background: var(--ds-background-success);
   border: 1px solid var(--ds-border-success);

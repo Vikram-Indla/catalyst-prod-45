@@ -52,7 +52,7 @@ export function ConnectionComingSoon({
           >
             {name}
           </h1>
-          <div style={{ marginTop: 6 }}>
+          <div style={{ marginTop: 4 }}>
             <Lozenge appearance="new">Coming soon</Lozenge>
           </div>
         </div>
@@ -77,7 +77,7 @@ export function ConnectionComingSoon({
             background: 'var(--ds-surface-sunken)',
             border: '1px solid var(--ds-border)',
             borderRadius: 8,
-            padding: '20px 24px',
+            padding: '16px 24px',
             marginBottom: 32,
           }}
         >

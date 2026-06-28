@@ -41,11 +41,11 @@ header.caty-header-fixed,
   align-items: center !important;
   justify-content: space-between !important;
   gap: 16px !important;
-  padding: 20px 24px !important;
+  padding: 16px 24px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   background-image: none !important;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   flex-shrink: 0 !important;
   min-height: 92px !important;
 }
@@ -93,7 +93,7 @@ header.caty-header-fixed,
 .caty-header-text {
   display: flex !important;
   flex-direction: column !important;
-  gap: 2px !important;
+  gap: 0px !important;
 }
 
 /* Title */
@@ -123,7 +123,7 @@ header.caty-header-fixed,
   font-size: 0.8125rem !important;
   font-weight: 400 !important;
   color: var(--ds-text-subtlest, #64748b) !important;
-  margin-top: 2px !important;
+  margin-top: 0px !important;
 }
 
 /* Status dot */
@@ -283,7 +283,7 @@ button.caty-header-btn:hover {
   align-items: center !important;
   padding: 12px 20px !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   flex-shrink: 0 !important;
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch !important;
@@ -381,7 +381,7 @@ button.caty-department-pill,
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   border-radius: 14px !important;
   border-bottom-right-radius: 4px !important;
-  border-bottom-left-radius: 14px !important;
+  border-bottom-left-radius: 12px !important;
 }
 
 /* AVATAR */
@@ -406,7 +406,7 @@ button.caty-department-pill,
 .caty-metrics-row {
   display: grid !important;
   grid-template-columns: repeat(4, 1fr) !important;
-  gap: 10px !important;
+  gap: 8px !important;
   margin-bottom: 12px !important;
 }
 
@@ -414,7 +414,7 @@ button.caty-department-pill,
   background: var(--ds-surface-sunken, #f8fafc) !important;
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   border-radius: 12px !important;
-  padding: 14px 12px !important;
+  padding: 12px 12px !important;
   text-align: center !important;
 }
 
@@ -477,9 +477,9 @@ button.caty-department-pill,
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 14px 16px !important;
+  padding: 12px 16px !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   border-left: 4px solid var(--ds-text-subtlest, #64748b) !important;
 }
 
@@ -510,7 +510,7 @@ button.caty-department-pill,
   font-weight: 600 !important;
   color: var(--ds-text-subtle, #475569) !important;
   background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
-  padding: 5px 12px !important;
+  padding: 4px 12px !important;
   border-radius: 6px !important;
 }
 
@@ -530,14 +530,14 @@ button.caty-department-pill,
 }
 
 .caty-data-card-body {
-  padding: 14px 18px !important;
+  padding: 12px 18px !important;
 }
 
 .caty-data-card-footer {
   display: flex !important;
-  gap: 10px !important;
+  gap: 8px !important;
   padding: 12px 16px !important;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-top: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
 }
 
@@ -546,7 +546,7 @@ button.caty-department-pill,
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
-  padding: 14px 16px !important;
+  padding: 12px 16px !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
   border-radius: 12px !important;
   margin-bottom: 8px !important;
@@ -603,13 +603,13 @@ button.caty-department-pill,
 .caty-data-meta {
   font-size: 0.875rem !important;
   color: var(--ds-text-subtle, #475569) !important;
-  margin-top: 3px !important;
+  margin-top: 4px !important;
 }
 
 .caty-data-assignments {
   font-size: 0.8125rem !important;
   color: var(--ds-text-brand, #3b82f6) !important;
-  margin-top: 3px !important;
+  margin-top: 4px !important;
   font-weight: 500 !important;
 }
 
@@ -617,14 +617,14 @@ button.caty-department-pill,
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-end !important;
-  gap: 6px !important;
+  gap: 4px !important;
 }
 
 /* TAGS */
 .caty-tag {
   font-size: 0.75rem !important;
   font-weight: 600 !important;
-  padding: 5px 10px !important;
+  padding: 4px 10px !important;
   border-radius: 6px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.04em !important;
@@ -680,9 +680,9 @@ button.caty-department-pill,
   display: flex !important;
   align-items: center !important;
   gap: 16px !important;
-  padding: 20px 24px !important;
+  padding: 16px 24px !important;
   background: linear-gradient(135deg, var(--ds-surface-sunken, #f8fafc) 0%, var(--ds-surface-sunken, #f1f5f9) 100%) !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 .caty-profile-avatar {
@@ -721,7 +721,7 @@ button.caty-department-pill,
 }
 
 .caty-profile-details {
-  padding: 20px 24px !important;
+  padding: 16px 24px !important;
 }
 
 .caty-profile-row {
@@ -729,7 +729,7 @@ button.caty-department-pill,
   justify-content: space-between !important;
   align-items: center !important;
   padding: 12px 0 !important;
-  border-bottom: 1px solid var(--ds-surface-sunken, #f1f5f9) !important;
+  border-bottom: 0px solid var(--ds-surface-sunken, #f1f5f9) !important;
 }
 
 .caty-profile-row:last-child {
@@ -767,8 +767,8 @@ button.caty-department-pill,
 .caty-team-row {
   display: flex !important;
   align-items: center !important;
-  gap: 14px !important;
-  padding: 14px 16px !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
   border-radius: 12px !important;
   margin-bottom: 8px !important;
@@ -833,10 +833,10 @@ button.caty-department-pill,
 /* SUGGESTIONS */
 .caty-suggestions {
   display: flex !important;
-  gap: 10px !important;
+  gap: 8px !important;
   padding: 16px 24px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-top: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   overflow-x: auto !important;
 }
 
@@ -865,9 +865,9 @@ button.caty-department-pill,
 
 /* INPUT — SINGLE CLEAN BOX (no inner border) */
 .caty-input-area {
-  padding: 18px 24px 22px !important;
+  padding: 16px 24px 22px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border-top: 0px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 .caty-input-wrapper {
@@ -899,7 +899,7 @@ button.caty-department-pill,
   background: transparent !important;
   font-size: 0.9375rem !important;
   color: var(--ds-text, #0f172a) !important;
-  outline: none !important;
+  outline: 2px solid var(--ds-border-focused) !important;
   padding: 8px 4px !important;
   line-height: 1.5 !important;
   box-shadow: none !important;
@@ -929,7 +929,7 @@ button.caty-department-pill,
   font-size: 0.75rem !important;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   text-align: center !important;
-  padding: 10px !important;
+  padding: 8px !important;
   cursor: pointer !important;
 }
 
@@ -938,7 +938,7 @@ button.caty-department-pill,
   background: var(--ds-surface-sunken, #f1f5f9) !important;
   border-radius: 14px !important;
   border-bottom-left-radius: 4px !important;
-  padding: 18px 22px !important;
+  padding: 16px 22px !important;
 }
 
 .caty-thinking-spinner {
@@ -1130,10 +1130,10 @@ button.caty-fab {
 .caty-viewport__stats {
   display: flex !important;
   justify-content: space-between !important;
-  padding: 18px 24px !important;
+  padding: 16px 24px !important;
   background: linear-gradient(135deg, var(--ds-surface-sunken, #f8fafc) 0%, var(--ds-surface-sunken, #f1f5f9) 100%) !important;
   border-radius: 14px !important;
-  margin-bottom: 28px !important;
+  margin-bottom: 24px !important;
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04)) !important;
 }
@@ -1170,14 +1170,14 @@ button.caty-fab {
   color: var(--ds-text-subtlest, #64748b) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.04em !important;
-  margin-top: 6px !important;
+  margin-top: 4px !important;
 }
 
 /* ----------------------------------------
    SECTIONS
    ---------------------------------------- */
 .caty-viewport__section {
-  margin-bottom: 28px !important;
+  margin-bottom: 24px !important;
 }
 
 .caty-viewport__section:last-child {
@@ -1187,8 +1187,8 @@ button.caty-fab {
 .caty-viewport__section-header {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
-  margin-bottom: 14px !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
 }
 
 .caty-viewport__section-indicator {
@@ -1234,22 +1234,22 @@ button.caty-fab {
 .caty-viewport__probe-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 10px !important;
+  gap: 8px !important;
 }
 
 .caty-viewport__probe-item {
   display: flex !important;
   align-items: center !important;
-  gap: 14px !important;
+  gap: 12px !important;
   padding: 16px 18px !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   border-left: 4px solid var(--ds-text-subtlest, #94a3b8) !important;
   /* CRITICAL: Sharp left edge, rounded right */
-  border-top-left-radius: 2px !important;
-  border-bottom-left-radius: 2px !important;
-  border-top-right-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   width: 100% !important;
@@ -1399,11 +1399,11 @@ button.caty-fab {
   background-size: 200% 100% !important;
   animation: caty-shimmer 1.5s infinite !important;
   border-radius: 14px !important;
-  margin-bottom: 28px !important;
+  margin-bottom: 24px !important;
 }
 
 .caty-viewport__skeleton-section {
-  margin-bottom: 28px !important;
+  margin-bottom: 24px !important;
 }
 
 .caty-viewport__skeleton-header {
@@ -1411,7 +1411,7 @@ button.caty-fab {
   width: 140px !important;
   background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   border-radius: 4px !important;
-  margin-bottom: 14px !important;
+  margin-bottom: 12px !important;
 }
 
 .caty-viewport__skeleton-card {
@@ -1420,7 +1420,7 @@ button.caty-fab {
   background-size: 200% 100% !important;
   animation: caty-shimmer 1.5s infinite !important;
   border-radius: 12px !important;
-  margin-bottom: 10px !important;
+  margin-bottom: 8px !important;
 }
 
 @keyframes caty-shimmer {
@@ -1444,7 +1444,7 @@ button.caty-fab {
 .dark .caty-header-fixed {
   background: var(--ds-surface, var(--cp-bg-surface, var(--cp-ink-1, #242528))) !important;
   background-color: var(--ds-surface, var(--cp-bg-surface, var(--cp-ink-1, #242528))) !important;
-  border-bottom: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-bottom: 0px solid var(--ds-border, #2c2c2c) !important;
 }
 
 .dark .caty-widget .caty-header-icon,
@@ -1544,7 +1544,7 @@ button.caty-fab {
 .dark .caty-panel .caty-context-bar,
 .dark .caty-context-bar {
   background: var(--ds-surface-sunken, #161616) !important;
-  border-bottom: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-bottom: 0px solid var(--ds-border, #2c2c2c) !important;
 }
 
 .dark .caty-widget .caty-department-pill,
@@ -1637,7 +1637,7 @@ button.caty-fab {
 
 .dark .caty-data-card-header {
   background: var(--ds-surface-sunken, #161616) !important;
-  border-bottom: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-bottom: 0px solid var(--ds-border, #2c2c2c) !important;
   border-left: 4px solid var(--ds-text-subtle, #9ca3af) !important;
 }
 
@@ -1682,7 +1682,7 @@ button.caty-fab {
 }
 
 .dark .caty-data-card-footer {
-  border-top: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-top: 0px solid var(--ds-border, #2c2c2c) !important;
   background: var(--ds-surface-sunken, #161616) !important;
 }
 
@@ -1746,7 +1746,7 @@ button.caty-fab {
 
 .dark .caty-profile-header {
   background: linear-gradient(135deg, var(--ds-surface-sunken, #161616) 0%, var(--ds-surface-sunken, #161616) 100%) !important;
-  border-bottom: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-bottom: 0px solid var(--ds-border, #2c2c2c) !important;
 }
 
 .dark .caty-profile-avatar {
@@ -1762,7 +1762,7 @@ button.caty-fab {
 }
 
 .dark .caty-profile-row {
-  border-bottom: 1px solid var(--ds-background-neutral, #2c2c2c) !important;
+  border-bottom: 0px solid var(--ds-background-neutral, #2c2c2c) !important;
 }
 
 .dark .caty-profile-label {
@@ -1818,7 +1818,7 @@ button.caty-fab {
 
 .dark .caty-suggestions {
   background: var(--ds-surface, var(--cp-bg-surface, var(--cp-ink-1, #242528))) !important;
-  border-top: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-top: 0px solid var(--ds-border, #2c2c2c) !important;
 }
 
 .dark .caty-suggestion {
@@ -1838,7 +1838,7 @@ button.caty-fab {
 
 .dark .caty-input-area {
   background: var(--ds-surface, var(--cp-bg-surface, var(--cp-ink-1, #242528))) !important;
-  border-top: 1px solid var(--ds-border, #2c2c2c) !important;
+  border-top: 0px solid var(--ds-border, #2c2c2c) !important;
 }
 
 .dark .caty-input-wrapper {

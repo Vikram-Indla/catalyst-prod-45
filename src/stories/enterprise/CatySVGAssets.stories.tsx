@@ -35,7 +35,7 @@ function AssetRow({ label, children }: { label: string; children: React.ReactNod
 
 function SizeChip({ size, bg, src, alt }: { size: number; bg: string; src: string; alt: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
       <div style={{ background: bg, borderRadius: 8, padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img src={src} alt={alt} width={size} height={size} />
       </div>
@@ -166,7 +166,7 @@ export const CatyFabIconStory: StoryObj = {
       </p>
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         {([16, 24, 32, 40, 48, 56, 64, 80, 96] as const).map(s => (
-          <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8, padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
               <CatyFabIcon size={s} />
             </div>

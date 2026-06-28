@@ -185,7 +185,7 @@ export function CatalystTable({
 
   if (resolvedGroups.length === 0) {
     return (
-      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 8, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
+      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 8, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
         <span style={{ fontSize: 'var(--ds-font-size-800)', marginBottom: 12 }}>📋</span>
         <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>No work items found</p>
         <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>Try adjusting your filters or search</p>
@@ -217,7 +217,7 @@ export function CatalystTable({
                   borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken))',
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle)',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 4,
                 }}
               >
                 {isCollapsed
@@ -518,7 +518,7 @@ export function CatalystTable({
                       verticalAlign: 'middle',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       {isCollapsed
                         ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />
                         : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />

@@ -445,7 +445,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             flexWrap: 'wrap',
             background: 'transparent',
             border: 'none',
@@ -485,7 +485,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             </span>
           </div>
           <div
-            style={{ display: 'flex', gap: 3, height: 7, marginBottom: 8 }}
+            style={{ display: 'flex', gap: 4, height: 7, marginBottom: 8 }}
             role="img"
             aria-label={`${statusCounts.todo} to do, ${statusCounts.inprogress} in progress, ${statusCounts.done} done`}
           >
@@ -502,7 +502,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
               ) : null,
             )}
           </div>
-          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {(['todo', 'inprogress', 'done'] as StatusBucket[]).map((b) => (
               <span
                 key={b}
@@ -511,7 +511,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
                   color: token('color.text.subtle', 'var(--ds-icon)'),
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 5,
+                  gap: 4,
                 }}
               >
                 <span
@@ -556,7 +556,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             lineHeight: '16px',
-            padding: '2px 8px',
+            padding: '0px 8px',
             borderRadius: 4,
             letterSpacing: '0.02em',
             background: INTENT_RIBBON[theme.intent],

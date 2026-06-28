@@ -51,7 +51,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
     >
       <div
         style={{
-          padding: '6px 10px',
+          padding: '4px 10px',
           background: '#1D1D1F', // ads-scanner:ignore-line — approved exception phase-6: Slack-style dark tooltip; --ds-surface-overlay resolves to #FFFFFF in light mode (wrong for always-dark overlay); text is ds-text-inverse
           color: 'var(--ds-text-inverse)',
           borderRadius: 6,
@@ -67,7 +67,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
       {shortcut && (
         <div
           style={{
-            padding: '2px 8px',
+            padding: '0px 8px',
             background: '#1D1D1F', // ads-scanner:ignore-line — approved exception phase-6: same dark pill as tooltip container; kbd chip matches parent intentionally
             color: 'var(--ds-text-inverse)',
             borderRadius: 4,

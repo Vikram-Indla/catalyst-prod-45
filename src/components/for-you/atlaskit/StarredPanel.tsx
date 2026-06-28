@@ -82,7 +82,7 @@ function StarredPanelSkeleton() {
             }}
           >
             <div style={{ width: 20, height: 20, borderRadius: 4, background: token('color.background.neutral', '#E4E5E7'), flexShrink: 0 }} />
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
               <StarredSkeletonLine width="60%" height={14} />
               <StarredSkeletonLine width="35%" height={10} />
             </div>

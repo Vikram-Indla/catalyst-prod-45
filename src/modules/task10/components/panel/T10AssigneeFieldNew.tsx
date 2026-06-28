@@ -170,9 +170,9 @@ export function T10AssigneeFieldNew({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
+              gap: '8px',
               width: '100%',
-              padding: '10px 12px',
+              padding: '8px 12px',
               marginTop: '4px',
               backgroundColor: 'var(--ds-background-danger)',
               border: '1px solid var(--ds-border-danger)',
@@ -190,7 +190,7 @@ export function T10AssigneeFieldNew({
         {isLoading && (
           <div
             style={{
-              padding: '20px',
+              padding: '16px',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest)',
               fontSize: 'var(--ds-font-size-400)',
@@ -203,7 +203,7 @@ export function T10AssigneeFieldNew({
         {!isLoading && users && users.length === 0 && (
           <div
             style={{
-              padding: '20px',
+              padding: '16px',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest)',
               fontSize: 'var(--ds-font-size-400)',
@@ -225,9 +225,9 @@ export function T10AssigneeFieldNew({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
+                  gap: '8px',
                   width: '100%',
-                  padding: '10px 12px',
+                  padding: '8px 12px',
                   marginTop: '4px',
                   backgroundColor: isSelected ? 'var(--ds-background-selected)' : 'transparent',
                   border: isSelected ? '1px solid var(--ds-border-selected)' : '1px solid transparent',
@@ -298,7 +298,7 @@ export function T10AssigneeFieldNew({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '10px 14px',
+          padding: '8px 14px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: isOpen ? '1px solid var(--ds-link)' : '1px solid var(--ds-border)',
           borderRadius: '8px',
@@ -306,7 +306,7 @@ export function T10AssigneeFieldNew({
           boxShadow: isOpen ? '0 0 0 3px var(--ds-background-selected)' : 'none',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
           {value && assigneeName ? (
             <>
               <div

@@ -87,7 +87,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
         aria-label="Add business request to roadmap"
         className="animate-scale-in"
         style={{
-          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
           width: 640, maxWidth: '90vw', maxHeight: '80vh',
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
           boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 301,
@@ -99,7 +99,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.borderLight}` }}>
           <div>
             <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: INK[1], margin: 0 }}>Add Business Request to Roadmap</h2>
-            <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: INK[3], margin: 0, marginTop: 2 }}>Select from existing backlog business requests</p>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: INK[3], margin: 0, marginTop: 0 }}>Select from existing backlog business requests</p>
           </div>
           <button
             onClick={onClose}
@@ -161,9 +161,9 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                     <SourceBadge source={item.source} size="xs" />
                     <span className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: INK[1] }}>{item.title}</span>
                   </div>
-                  <div className="flex items-center gap-2" style={{ marginTop: 2 }}>
+                  <div className="flex items-center gap-2" style={{ marginTop: 0 }}>
                     {item.status && (
-                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: INK[3], background: SURFACE.borderLight, borderRadius: 4, padding: '1px 6px' }}>{item.status}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: INK[3], background: SURFACE.borderLight, borderRadius: 4, padding: '0px 6px' }}>{item.status}</span>
                     )}
                     {item.owner && (
                       <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: INK[4] }}>{item.owner}</span>

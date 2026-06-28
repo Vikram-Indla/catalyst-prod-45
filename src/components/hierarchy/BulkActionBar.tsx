@@ -97,7 +97,7 @@ export function BulkActionBar({
 
       {/* Delete */}
       {confirmDelete ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-border-danger)' }}>Delete {selectedCount} items?</span>
           <button onClick={() => { onBulkDelete(); setConfirmDelete(false); }} style={{
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 10px', borderRadius: 4,

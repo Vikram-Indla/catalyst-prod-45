@@ -39,7 +39,7 @@ export function DetailPanelSkeleton() {
     <div style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, position: 'sticky', top: 24 }}>
       {[1, 2, 3, 4, 5].map((i) => (
         <div key={i} style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
-          <div style={{ width: 60, height: 10, borderRadius: 4, background: shimmerBg, marginBottom: 6 }} className="hi-shimmer" />
+          <div style={{ width: 60, height: 10, borderRadius: 4, background: shimmerBg, marginBottom: 4 }} className="hi-shimmer" />
           <div style={{ width: '60%', height: 12, borderRadius: 4, background: shimmerBg }} className="hi-shimmer" />
         </div>
       ))}
@@ -53,7 +53,7 @@ export function DetailPanelSkeleton() {
 
 function PriorityBars({ level }: { level: number }) {
   return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
         <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
@@ -97,14 +97,14 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px',
+          width: '100%', display: 'flex', alignItems: 'center', gap: 4, padding: '8px 20px',
           background: 'none', border: 'none', borderBottom: '1px solid var(--divider)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
         }}
       >
         {open ? <ChevronDown size={14} color="var(--fg-3)" /> : <ChevronRight size={14} color="var(--fg-3)" />}
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>{title}</span>
         {count !== undefined && (
-          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-3)', background: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-3)', background: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 9999, padding: '0px 6px' }}>{count}</span>
         )}
       </button>
       {open && children}
@@ -209,7 +209,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         }}
       >
         {/* A. Header with breadcrumb */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 6, position: 'sticky', top: 0, background: 'var(--bg-app)', zIndex: 10 }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 4, position: 'sticky', top: 0, background: 'var(--bg-app)', zIndex: 10 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
             {parentItem && (
               <>
@@ -227,7 +227,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)' }}>{item.key}</span>
           </div>
           {onClose && (
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
               <X size={16} color="var(--fg-3)" />
             </button>
           )}
@@ -359,7 +359,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
 
           {item.stats.totalDescendants > 0 && (
             <FieldRow label="Progress">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ flex: 1, height: 6, background: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 4, transition: 'width 300ms ease' }} />
                 </div>
@@ -380,7 +380,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   key={child.id}
                   onClick={() => onSelectItem?.(child)}
                   style={{
-                    height: 50, display: 'flex', alignItems: 'center', gap: 6,
+                    height: 50, display: 'flex', alignItems: 'center', gap: 4,
                     padding: '0 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'}`, cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
                   }}

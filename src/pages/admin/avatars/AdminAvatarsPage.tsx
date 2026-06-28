@@ -192,7 +192,7 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
       </div>
 
       {/* Identity column */}
-      <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0 }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -317,7 +317,7 @@ export default function AdminAvatarsPage() {
         </div>
         <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
           {(['xsmall', 'small', 'medium', 'large', 'xlarge'] as const).map(s => (
-            <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <UserAvatar name="Amadou Ndiaye" country="Saudi Arabia" size={s} />
               <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>{s}</span>
             </div>

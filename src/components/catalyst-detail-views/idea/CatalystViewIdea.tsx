@@ -104,7 +104,7 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
     <div>
       <div style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-        color: 'var(--ds-text-subtlest)', marginBottom: 6,
+        color: 'var(--ds-text-subtlest)', marginBottom: 4,
       }}>{label}</div>
       {children}
     </div>
@@ -348,7 +348,7 @@ export default function CatalystViewIdea({
                     <div style={{
                       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
                       letterSpacing: '0.06em', color: 'var(--ds-text-success)',
-                      marginBottom: 6,
+                      marginBottom: 4,
                     }}>
                       CONVERTED TO INITIATIVE
                     </div>
@@ -492,7 +492,7 @@ export default function CatalystViewIdea({
                         spacing="compact"
                       />
                     ) : (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-300)' }}>
                         {!assigneeName && <UnassignedAvatar size={20} />}
                         {assigneeName || 'Unassigned'}
                       </span>
@@ -550,7 +550,7 @@ export default function CatalystViewIdea({
                     marginBottom: 12,
                   }}>IMPACT SCORE</div>
 
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
                     <span style={{
                       fontSize: 'var(--ds-font-size-800)', fontWeight: 700,
                       fontFamily: 'var(--cp-font-mono, ui-monospace, SFMono-Regular)',
@@ -565,7 +565,7 @@ export default function CatalystViewIdea({
 
                   {dimensions.map((dim) => (
                     <div key={dim.letter} style={{
-                      display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14,
+                      display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12,
                     }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%',
@@ -599,7 +599,7 @@ export default function CatalystViewIdea({
                   <div style={{
                     background: 'var(--ds-background-success-subtle)',
                     border: '1px solid var(--ds-border-success)',
-                    borderRadius: 4, padding: 14,
+                    borderRadius: 4, padding: 12,
                   }}>
                     <div style={{
                       fontSize: 'var(--ds-font-size-300)', fontWeight: 600,

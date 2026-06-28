@@ -507,7 +507,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             Permanently bans this component. It will appear with a red BANNED badge so future engineers
             cannot re-introduce it.
             {entry.consumers.length > 0 && (
-              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)'), display: 'block', marginTop: 4, fontWeight: 600 }}>
                 ⚠ {entry.consumers.length} live reference{entry.consumers.length === 1 ? '' : 's'} must be removed first.
               </span>
             )}
@@ -541,7 +541,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
           <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 12 }}>
             Engineers will see a yellow DEPRECATED badge and a migration pointer.
             {entry.consumers.length > 0 && (
-              <span style={{ color: token('color.text.warning', 'var(--ds-text-warning)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.warning', 'var(--ds-text-warning)'), display: 'block', marginTop: 4, fontWeight: 600 }}>
                 ⚠ {entry.consumers.length} consumer{entry.consumers.length === 1 ? '' : 's'} will need migration.
               </span>
             )}
@@ -591,7 +591,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
           <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 12 }}>
             Restore from <strong>{entry.status}</strong> to canonical status.
             {entry.status === 'banned' && (
-              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)'), display: 'block', marginTop: 4, fontWeight: 600 }}>
                 ⚠ Restoring a banned component requires Vikram's explicit approval.
               </span>
             )}
@@ -726,7 +726,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                   <button
                     type="button"
                     style={{
-                      padding: '3px 10px',
+                      padding: '4px 10px',
                       borderRadius: 3,
                       border: 'none',
                       cursor: 'pointer',
@@ -771,12 +771,12 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                       listStyle: 'none',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 3,
+                      gap: 4,
                       marginBottom: token('space.150', '12px'),
                     }}
                   >
                     {files.map((f) => (
-                      <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span
                           style={{
                             width: 6,
@@ -933,7 +933,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
             style={{
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
-              padding: '2px 8px',
+              padding: '0px 8px',
               borderRadius: 3,
               background: token('color.background.neutral', '#091E420F'),
               color: token('color.text.subtle', 'var(--ds-icon)'),
@@ -991,7 +991,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
               const hub = getHubForFile(path);
               const hubColor = HUB_COLORS[hub] ?? 'var(--ds-text-disabled)';
               return (
-                <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span
                     title={hub}
                     style={{
@@ -1308,7 +1308,7 @@ function InventoryPane() {
               <button
                 type="button"
                 style={{
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   borderRadius: 12,
                   border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                   background: token('color.background.neutral', '#091E420F'),
@@ -1325,7 +1325,7 @@ function InventoryPane() {
               <button
                 type="button"
                 style={{
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   borderRadius: 12,
                   border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                   background: token('color.background.neutral', '#091E420F'),
@@ -1342,7 +1342,7 @@ function InventoryPane() {
               <button
                 type="button"
                 style={{
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   borderRadius: 12,
                   border: `1px solid ${HUB_COLORS[hubFilter] ?? token('color.border', 'var(--ds-border-disabled)')}`,
                   background: `${HUB_COLORS[hubFilter] ?? 'var(--ds-link)'}18`,
@@ -1410,7 +1410,7 @@ function InventoryPane() {
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 2,
+                    gap: 0,
                   }}
                 >
                   <div
@@ -1573,7 +1573,7 @@ function ApplyPanel({ rec, onClose }: { rec: AiRec; onClose: () => void }) {
 
   return (
     <div style={{ ...PANEL_BASE, background: bg, border, marginBottom: token('space.200', '16px') }}>
-      <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 6 }}>
+      <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 4 }}>
         Apply: {rec.title}
       </div>
       <p style={{ color: token('color.text', 'var(--ds-text)'), marginBottom: 8 }}>{rec.detail}</p>

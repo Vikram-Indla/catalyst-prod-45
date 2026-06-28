@@ -83,7 +83,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             </button>
             {moveOpen && (
               <div style={{
-                position: 'absolute', top: 22, right: 0, zIndex: 20,
+                position: 'absolute', top: 24, right: 0, zIndex: 20,
                 background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)',
                 border: `1px solid ${dk.border}`, borderRadius: 6,
                 boxShadow: isDark ? 'none' : '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.12))',
@@ -98,7 +98,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                       setMoveOpen(false);
                     }}
                     style={{
-                      display: 'block', width: '100%', padding: '6px 10px',
+                      display: 'block', width: '100%', padding: '4px 10px',
                       fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: dk.t2,
                       fontFamily: 'var(--cp-font-body)', background: 'transparent',
                       border: 'none', cursor: 'pointer', borderRadius: 4,
@@ -123,7 +123,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             }}
           >
             <span style={{
-              position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
+              position: 'absolute', top: 4, width: 12, height: 12, borderRadius: 6,
               background: 'var(--bg-app)', transition: 'left 150ms',
               left: idea.isCommitted ? 17 : 3,
             }} />
@@ -135,18 +135,18 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       <div style={{
         fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: dk.t1, fontFamily: 'var(--cp-font-body)',
         lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-        overflow: 'hidden', marginBottom: 6,
+        overflow: 'hidden', marginBottom: 4,
       }}>
         {idea.title}
       </div>
 
       {/* Row 3: Theme + Team badges */}
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
         {idea.theme && (
           <span style={{
             fontSize: 'var(--ds-font-size-50)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
             background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
-            color: dk.t2, padding: '2px 6px', borderRadius: 4,
+            color: dk.t2, padding: '0px 6px', borderRadius: 4,
             border: isDark ? `1px solid ${dk.border}` : 'none',
           }}>{idea.theme}</span>
         )}
@@ -154,14 +154,14 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           <span style={{
             fontSize: 'var(--ds-font-size-50)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
             background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
-            color: dk.t2, padding: '2px 6px', borderRadius: 4,
+            color: dk.t2, padding: '0px 6px', borderRadius: 4,
             border: isDark ? `1px solid ${dk.border}` : 'none',
           }}>{idea.team}</span>
         )}
       </div>
 
       {/* Row 4: Milestone chips */}
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
         {MILESTONE_CONFIGS.map(m => {
           const isSet = !!idea.milestones[m.key];
           const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {

@@ -84,7 +84,7 @@ export function TextColorPicker({ editor }: Props) {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(6, 1fr)',
-              gap: 6,
+              gap: 4,
               marginBottom: 8,
             }}
           >
@@ -121,7 +121,7 @@ export function TextColorPicker({ editor }: Props) {
             }}
             style={{
               width: '100%',
-              padding: '6px 8px',
+              padding: '4px 8px',
               border: '1px solid var(--ds-border)',
               borderRadius: 3,
               background: 'var(--ds-surface)',

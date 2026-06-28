@@ -115,7 +115,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     border: `1px solid ${dk.border}`,
     borderRadius: '12px',
-    padding: '20px',
+    padding: '16px',
     flex: 1,
     boxShadow: isDark ? 'none' : undefined,
   };
@@ -139,14 +139,14 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
           const Icon = m.icon;
           return (
             <div key={m.label} style={cardStyle}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: dk.t3 }}>{m.label}</span>
                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: m.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon size={16} style={{ color: m.iconColor }} />
                 </div>
               </div>
               <div style={{ fontFamily: MONO, fontSize: '32px', fontWeight: 800, color: m.color, letterSpacing: '-0.5px', lineHeight: 1 }}>{m.value}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: m.subColor, marginTop: '6px' }}>{m.sub}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: m.subColor, marginTop: '4px' }}>{m.sub}</div>
             </div>
           );
         })}
@@ -157,7 +157,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Conversion Funnel</div>
           {funnel.map(f => (
-            <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <span style={{ width: '100px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0 }}>{f.label}</span>
               <div style={{ flex: 1, height: '50px', background: barTrack, borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{
@@ -175,7 +175,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Ideas by Department</div>
           {depts.length > 0 ? depts.map(d => (
-            <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <span style={{ width: '140px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
               <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${(d.count / maxDept) * 100}%`, height: '100%', background: d.color, borderRadius: '4px' }} />
@@ -209,7 +209,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px' }}>Top Contributors</div>
           {contributors.length > 0 ? contributors.map(c => (
-            <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '40px' }}>
+            <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '40px' }}>
               <div style={{
                 width: '24px', height: '24px', borderRadius: '50%', background: c.color, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -218,7 +218,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t2, width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
               <span style={{
                 fontFamily: MONO, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: dk.t3,
-                background: 'var(--cp-bg-page)', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '1px 6px',
+                background: 'var(--cp-bg-page)', border: `1px solid ${dk.border}`, borderRadius: '4px', padding: '0px 6px',
               }}>{c.count}</span>
               <div style={{ flex: 1, height: '6px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${c.pct}%`, height: '100%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: '4px' }} />
@@ -238,7 +238,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
             <div style={{ border: `1px solid ${dk.border}`, borderRadius: '8px', overflow: 'hidden' }}>
               {traces.map((t, i) => (
                 <div key={t.idea} style={{
-                  display: 'flex', alignItems: 'center', gap: '10px', height: '44px', padding: '8px 12px',
+                  display: 'flex', alignItems: 'center', gap: '8px', height: '44px', padding: '8px 12px',
                   borderBottom: i < traces.length - 1 ? `1px solid ${dk.divider}` : 'none',
                 }}>
                   <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.blueKey }}>{t.idea}</span>
@@ -249,7 +249,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     background: 'var(--cp-success-light)',
                     color: 'var(--cp-success)',
-                    padding: '2px 8px', borderRadius: '20px',
+                    padding: '0px 8px', borderRadius: '20px',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                   }}>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success))' }} />
@@ -259,7 +259,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
               ))}
             </div>
           ) : (
-            <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>
+            <div style={{ padding: '16px', textAlign: 'center', color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>
               No converted ideas yet
             </div>
           )}

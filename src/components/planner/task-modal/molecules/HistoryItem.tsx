@@ -24,7 +24,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       style={{
         display: 'flex',
         alignItems: 'flex-start',
-        gap: '14px',
+        gap: '12px',
         padding: '16px 0',
         borderBottom: isLast ? 'none' : `1px solid ${COLORS.borderLight}`
       }}

@@ -30,7 +30,7 @@ export function ReactionStrip({ reactions, onToggle, onAddReaction }: ReactionSt
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 2,
+          gap: 0,
           height: 'var(--cv2-reaction-pill-h)',
           padding: '0 8px',
           background: 'transparent',

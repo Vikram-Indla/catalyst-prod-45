@@ -310,8 +310,8 @@ function PhIssuePanelBody({
       />
 
       {/* Row 2 — breadcrumb + copy + more + expand */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', minHeight: 36, flexShrink: 0, borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 36, flexShrink: 0, borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>
           {effectiveType && <JiraIssueTypeIcon type={effectiveType as any} size={14} />}
           <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             {projectName}
@@ -394,7 +394,7 @@ function PhIssuePanelBody({
 
             <CatalystQuickActions />
 
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 16 }}>
               {issue.issue_type !== 'Feature' && (
                 <FieldRow label="Sprint/Iteration">
                   <EditableSprintRelease
@@ -463,14 +463,14 @@ function PhIssuePanelBody({
             minWidth: 200, background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-            padding: '6px 0',
+            padding: '4px 0',
           }}
         >
           <MenuItem label="Print" onClick={() => { setMoreOpen(false); window.print(); }} />
           <MenuItem label="Clone" onClick={() => { setMoreOpen(false); if (issue?.issue_key) setShowCloneDialog(true); }} />
           <MenuItem label="Move to project…" onClick={() => { setMoreOpen(false); setShowMoveDialog(true); }} />
           <MenuItem label="Archive" onClick={() => { setMoreOpen(false); if (issue?.issue_key) setShowArchiveDialog(true); }} />
-          <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
+          <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
           <MenuItem label={`Delete ${(effectiveType || 'item').toLowerCase()}`} danger onClick={() => { setMoreOpen(false); setShowDeleteDialog(true); }} />
         </div>,
         document.body,
@@ -639,12 +639,12 @@ function ChromeRow({
   return (
     <div
       style={{
-        display: 'flex', alignItems: 'center', gap: 6,
+        display: 'flex', alignItems: 'center', gap: 4,
         padding: '8px 12px', minHeight: 44, flexShrink: 0,
         borderBottom: `1px solid ${BORDER}`,
       }}
     >
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0 }}>
         {type && (
           <span style={{ display: 'inline-flex', flexShrink: 0 }}>
             <JiraIssueTypeIcon type={type as any} size={16} />
@@ -704,7 +704,7 @@ function IconButton({
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   const [hovered, setHovered] = useState(false);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '6px 0' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '4px 0' }}>
       <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, lineHeight: '20px', color: SUBTLE, minWidth: 120, flexShrink: 0 }}>
         {label}
       </span>

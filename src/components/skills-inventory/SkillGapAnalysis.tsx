@@ -31,7 +31,7 @@ const skillGaps: SkillGap[] = [
   { skill: 'DevOps/CI/CD', current: 4, required: 4, gap: 0 },
   { skill: 'Security', current: 2, required: 5, gap: -60 },
   { skill: 'Node.js/Backend', current: 5, required: 5, gap: 0 },
-  { skill: 'Agile/Scrum', current: 6, required: 5, gap: 20 },
+  { skill: 'Agile/Scrum', current: 6, required: 5, gap: 16 },
 ];
 
 const skillCoverages: SkillCoverage[] = [

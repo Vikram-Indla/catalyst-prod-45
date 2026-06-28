@@ -72,7 +72,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
       onClick={handleCardClick}
       role="article"
       aria-label={`List: ${list.name}`}
-      style={{ cursor: 'pointer', padding: '20px 24px' }}
+      style={{ cursor: 'pointer', padding: '16px 24px' }}
     >
       {/* Header */}
       <div className="t10-list-card-header">
@@ -129,7 +129,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
       ) : (
         <div 
           style={{
-            padding: '20px',
+            padding: '16px',
             backgroundColor: 'var(--ds-surface-sunken)',
             borderRadius: '12px',
             textAlign: 'center',

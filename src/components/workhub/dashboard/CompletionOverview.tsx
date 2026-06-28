@@ -30,7 +30,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
       padding: 24,
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
           fontSize: 'var(--ds-font-size-600)',
@@ -73,7 +73,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
       <div style={{
         display: 'flex',
         gap: 8,
-        marginTop: 10,
+        marginTop: 8,
         fontFamily: 'var(--cp-font-body)',
         fontSize: 'var(--ds-font-size-300)',
         color: 'var(--fg-3)',
@@ -95,7 +95,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         display: 'flex',
         alignItems: 'center',
         gap: 24,
-        marginTop: 20,
+        marginTop: 16,
         paddingTop: 16,
         borderTop: '1px solid var(--bg-1)',
       }}>
@@ -105,7 +105,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           strokeWidth={5}
           color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
         />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <button
             onClick={() => navigate('/projecthub/themes')}
             style={{

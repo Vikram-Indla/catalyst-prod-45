@@ -1,7 +1,7 @@
 .ascp-root {
   position: relative;
   border-radius: 8px;
-  padding: 1.5px;
+  padding: 0.5px;
   overflow: hidden;
   isolation: isolate;
   background: transparent;
@@ -13,8 +13,8 @@
   position: absolute;
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 50%;
-  left: 50%;
+  top: 48%;
+  left: 48%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   background: conic-gradient(
@@ -32,7 +32,7 @@
 .ascp-root.ascp-streaming::after {
   content: "";
   position: absolute;
-  inset: 1.5px;
+  inset: 0.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;
@@ -64,7 +64,7 @@
   width: 100%;
   padding: 8px 12px;
   cursor: pointer;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
 }
 .ascp-header:focus-visible {
   outline: 2px solid var(--ds-border-focused);
@@ -115,13 +115,13 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 8px 12px;
   cursor: pointer;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
   color: var(--ds-text);
-  border-top: 1px solid var(--ds-border);
+  border-top: 0px solid var(--ds-border);
   background: var(--ds-surface);
   transition: background 100ms ease;
 }
@@ -184,7 +184,7 @@
 /* ── Empty + error states ─────────────────────────────────── */
 .ascp-empty,
 .ascp-error {
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   color: var(--ds-text-subtle);
 }
@@ -210,9 +210,9 @@
 .ascp-hint {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 8px 8px 12px;
-  border-top: 1px solid var(--ds-border);
+  border-top: 0px solid var(--ds-border);
 }
 .ascp-hint__input {
   flex: 1;
@@ -224,7 +224,7 @@
   font-size: 14px;
   color: var(--ds-text);
   background: var(--ds-surface);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 .ascp-hint__input:focus {
   border-color: var(--ds-border-focused);
@@ -260,7 +260,7 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  border-top: 1px solid var(--ds-border);
+  border-top: 0px solid var(--ds-border);
   font-size: 12px;
   color: var(--ds-text-subtle);
 }
@@ -274,7 +274,7 @@
 .ascp-footer__feedback {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 0px;
 }
 .ascp-feedback {
   all: unset;
@@ -298,7 +298,7 @@
 .ascp-create-all {
   all: unset;
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 4px 12px;
   border-radius: 3px;
   font-weight: 500;
   font-size: 13px;

@@ -36,8 +36,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--aw-border);
+  padding: 4px 12px;
+  border-bottom: 0px solid var(--aw-border);
   background: var(--aw-bg);
   flex-shrink: 0;
   gap: 8px;
@@ -50,7 +50,7 @@
 .awToolbarBtn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   height: 32px;
   padding: 0 10px;
   border-radius: 4px;
@@ -74,7 +74,7 @@
 .awToolbarSearch {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   height: 32px;
   padding: 0 10px;
   border: 1px solid var(--aw-border);
@@ -89,7 +89,7 @@
 .awToolbarSearchInput {
   border: none !important;
   border-color: transparent !important;
-  outline: none !important;
+  outline: 2px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   background: transparent !important;
   -webkit-appearance: none;
@@ -104,7 +104,7 @@
 .awToolbarSearch:focus-within .awToolbarSearchInput {
   border: none !important;
   border-color: transparent !important;
-  outline: none !important;
+  outline: 2px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   background: transparent !important;
 }
@@ -170,7 +170,7 @@
 }
 .awViewToggleBtn:hover { background: var(--aw-hover); }
 .awViewToggleBtn.active { background: var(--aw-selected); color: var(--aw-blue); }
-.awViewToggleBtn + .awViewToggleBtn { border-left: 1px solid var(--aw-border); }
+.awViewToggleBtn + .awViewToggleBtn { border-left: 0px solid var(--aw-border); }
 
 /* ── Shell: 2 columns (list + issue view) ── */
 .awShell {
@@ -207,7 +207,7 @@
   top: 0;
   z-index: 5;
   background: var(--aw-bg);
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
   flex-shrink: 0;
 }
 .awBody {
@@ -228,7 +228,7 @@
   top: 0;
   z-index: 5;
   background: var(--aw-bg);
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
   flex-shrink: 0;
 }
 .jlpSortRow {
@@ -274,9 +274,9 @@
 /* Sort dropdown menu */
 .jlpSortMenu {
   position: absolute;
-  top: 100%;
+  top: 48%;
   left: 12px;
-  margin-top: 2px;
+  margin-top: 0px;
   background: var(--ds-surface, #fff);
   border: 1px solid var(--aw-border);
   border-radius: 6px;
@@ -293,8 +293,8 @@
 .jlpSortOption {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 16px;
+  gap: 8px;
+  padding: 4px 16px;
   font: 400 14px/20px system-ui;
   color: var(--aw-text);
   cursor: pointer;
@@ -313,7 +313,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   background: var(--aw-bg);
 }
 .jlpBody::-webkit-scrollbar {
@@ -337,8 +337,8 @@
 .jlpCard {
   padding: 16px;
   cursor: pointer;
-  border-bottom: 1px solid var(--ds-border);
-  border-left: 3px solid transparent;
+  border-bottom: 0px solid var(--ds-border);
+  border-left: 4px solid transparent;
   transition: background 120ms;
 }
 .jlpCard:hover { background: var(--ds-background-neutral-hovered); }
@@ -367,7 +367,7 @@
 .jlpCardMeta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 .jlpCardKey {
   font: 500 13px/16px system-ui, -apple-system, sans-serif;
@@ -406,11 +406,11 @@
 
 /* Footer count */
 .jlpFooterCount {
-  padding: 10px 16px;
+  padding: 8px 16px;
   font: 400 13px/16px system-ui;
   color: var(--aw-text-subtle);
   text-align: center;
-  border-top: 1px solid var(--aw-border);
+  border-top: 0px solid var(--aw-border);
   flex-shrink: 0;
   background: var(--aw-bg);
 }
@@ -429,7 +429,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 .jlpSkCircle {
   width: 32px;
@@ -469,7 +469,7 @@
 
 /* Legacy aw* classes kept for center/right panel usage */
 .awLeftTop, .awLeftTitle, .awSearchWrap, .awSearch, .awFilters { display: none; }
-.awList { padding: 2px 4px; }
+.awList { padding: 0px 4px; }
 .awRow { display: none; }
 
 /* ── Status pill (Jira-strong) ── */
@@ -494,7 +494,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 0;
+  padding: 4px 0;
   min-height: 32px;
 }
 .awKeyDetailLabel {
@@ -516,11 +516,11 @@
   color: var(--ds-text, #172B4D);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 .awParentLink {
   background: var(--ds-background-selected, #E9F2FF);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
   font-weight: 500;
   font-size: 12px;
@@ -563,7 +563,7 @@
 }
 .awIssueContent > .awBody::-webkit-scrollbar-track {
   background: var(--ds-background-neutral, #F1F2F4);
-  border-left: 1px solid var(--ds-border, #DFE1E6);
+  border-left: 0px solid var(--ds-border, #DFE1E6);
 }
 .awIssueContent > .awBody::-webkit-scrollbar-thumb {
   background: var(--ds-text-subtlest, #626F86);
@@ -607,7 +607,7 @@
   z-index: 2;
   position: absolute;
   left: -14px;
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
   color: var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)));
   font-size: 11px;
@@ -630,7 +630,7 @@
   scrollbar-gutter: stable;
 }
 .awDetailsSidebar::-webkit-scrollbar { width: 12px; }
-.awDetailsSidebar::-webkit-scrollbar-track { background: var(--ds-background-neutral, #F1F2F4); border-left: 1px solid var(--ds-border, #DFE1E6); }
+.awDetailsSidebar::-webkit-scrollbar-track { background: var(--ds-background-neutral, #F1F2F4); border-left: 0px solid var(--ds-border, #DFE1E6); }
 .awDetailsSidebar::-webkit-scrollbar-thumb { background: var(--ds-text-subtlest, #626F86); border-radius: 999px; border: 2px solid var(--ds-background-neutral, #F1F2F4); }
 .awDetailsSidebar::-webkit-scrollbar-thumb:hover { background: var(--ds-text-subtlest, #626F86); }
 .awDetailsSidebar.collapsed { display: none; }
@@ -638,14 +638,14 @@
 /* ── Issue header (breadcrumb + title + actions) ── */
 .awIssueHeader {
   padding: 12px 16px 10px;
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
   flex-shrink: 0;
 }
 .awBreadcrumb {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-size: 14px;
   font-weight: 500;
   line-height: 16px;
@@ -667,7 +667,7 @@
 }
 .awActions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
 }
 .awPill {
@@ -680,7 +680,7 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   color: var(--aw-text);
 }
 .awPill:hover { background: var(--aw-hover); }
@@ -688,13 +688,13 @@
 
 /* ── Content sections (Description, Subtasks, Linked, Activity) ── */
 .awSection {
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
 }
 .awSectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0 10px 0;
+  padding: 8px 0 10px 0;
   cursor: pointer;
 }
 .awSectionHead:hover { background: var(--aw-hover); }
@@ -733,14 +733,14 @@
   text-align: left;
   font: 600 11px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
-  padding: 6px 8px;
-  border-bottom: 1px solid var(--aw-border);
+  padding: 4px 8px;
+  border-bottom: 0px solid var(--aw-border);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 .awSubtasksTable td {
-  padding: 6px 8px;
-  border-bottom: 1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  padding: 4px 8px;
+  border-bottom: 0px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
   vertical-align: middle;
 }
 .awSubtasksTable tr:hover td { background: var(--aw-hover); }
@@ -785,7 +785,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 4px;
+  padding: 4px 4px;
   border-radius: 4px;
 }
 .awLinkRow:hover { background: var(--aw-hover); }
@@ -798,7 +798,7 @@
   color: var(--aw-text-subtle);
   font-size: 12px;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 0px 6px;
   border-radius: 3px;
 }
 .awAddParentLink:hover { background: var(--aw-hover); color: var(--aw-blue); }
@@ -826,14 +826,14 @@
 
 /* Field row border (#24) */
 .awFieldRow.awFieldRowBorder {
-  border-bottom: 1px solid var(--ds-border, #DFE1E6);
+  border-bottom: 0px solid var(--ds-border, #DFE1E6);
   padding: 8px 0;
   min-height: 32px;
 }
 .awFieldRow.awFieldRowTall {
   min-height: 56px;
   align-items: flex-start;
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 /* Field label width (#25) */
@@ -850,7 +850,7 @@
 /* Label chips */
 .awLabelChip {
   display: inline-block;
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 3px;
   background: var(--ds-background-neutral-bold, #626F86);
   color: var(--aw-text);
@@ -876,7 +876,7 @@
 .awActivityTabBar {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
   margin-bottom: 16px;
 }
 .awActivityTabList {
@@ -887,7 +887,7 @@
 .awActivityTab2 {
   padding: 8px 14px;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 0px solid transparent;
   background: none;
   font: 500 13px/18px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
@@ -921,12 +921,12 @@
 .awCommentBox {
   border: 1px solid var(--aw-border);
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 8px 14px;
   margin-bottom: 16px;
   cursor: text;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   transition: border-color 150ms ease;
 }
 .awCommentBox:hover { border-color: var(--ds-text-disabled, #B3BAC5); }
@@ -958,9 +958,9 @@
 .awEditorToolbar {
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 0px;
   padding: 4px 6px;
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
   background: var(--ds-surface-sunken, #F7F8F9);
 }
 .awToolbarBtn {
@@ -988,8 +988,8 @@
 .awCommentTextarea2 {
   width: 100%;
   border: none;
-  outline: none;
-  padding: 10px 12px;
+  outline: 2px solid var(--ds-border-focused);
+  padding: 8px 12px;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   background: transparent;
@@ -1004,10 +1004,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 .awCommentSaveBtn {
-  padding: 6px 16px;
+  padding: 4px 16px;
   border: none;
   border-radius: 4px;
   background: var(--ds-link, #0C66E4);
@@ -1019,7 +1019,7 @@
 .awCommentSaveBtn:hover { background: var(--cp-primary-60, var(--ds-link, #0052CC)); }
 .awCommentSaveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 .awCommentCancelBtn {
-  padding: 6px 16px;
+  padding: 4px 16px;
   border: none;
   border-radius: 0;
   background: none;
@@ -1067,18 +1067,18 @@
 .awTimelineTime {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
-  margin-top: 1px;
+  margin-top: 0px;
 }
 
 /* Type badges (HISTORY / COMMENT / WORK LOG) */
 .awTypeBadge {
   display: inline-block;
-  padding: 1px 6px;
+  padding: 0px 6px;
   border-radius: 3px;
   font: 700 10px/14px system-ui, -apple-system, sans-serif;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .awTypeBadgeHistory {
   background: var(--ds-text, #172B4D);
@@ -1105,7 +1105,7 @@
 /* Status lozenges in history (bordered uppercase pills) */
 .awStatusLoz {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 0px 8px;
   border: 1px solid var(--aw-border);
   border-radius: 4px;
   font: 600 11px/16px system-ui, -apple-system, sans-serif;
@@ -1119,7 +1119,7 @@
 .awAssigneeChip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
 }
@@ -1158,8 +1158,8 @@
 .awLogWorkToggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 4px 12px;
   border: 1px solid var(--aw-border);
   border-radius: 6px;
   background: none;
@@ -1194,7 +1194,7 @@
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   background: transparent;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 .awLogWorkInput:focus { border-color: var(--aw-blue); }
 .awLogWorkUnit {
@@ -1225,14 +1225,14 @@
 
 /* ── Details sidebar sections ── */
 .awDetailsSection {
-  border-bottom: 1px solid var(--aw-border);
+  border-bottom: 0px solid var(--aw-border);
   padding: 0;
 }
 .awDetailsSectionHead {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: 4px;
+  padding: 8px 16px;
   font: 600 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   cursor: pointer;
@@ -1246,7 +1246,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 0;
+  padding: 4px 0;
   min-height: 28px;
 }
 /* .awFieldLabel defined above in #25 section */
@@ -1260,7 +1260,7 @@
   font-family: system-ui, -apple-system, sans-serif;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 .awFieldNone { color: var(--ds-text-subtlest, #6B6E76); font-size: 14px; font-weight: 400; }
 
@@ -1279,7 +1279,7 @@
 
 /* Timestamps at bottom of sidebar */
 .awTimestamps {
-  padding: 10px 16px;
+  padding: 8px 16px;
   font-size: 12px;
   font-weight: 400;
   line-height: 1.6;
@@ -1308,11 +1308,11 @@
 
 /* ── Footer count ── */
 .awFooter {
-  padding: 6px 12px;
+  padding: 4px 12px;
   font: 400 11px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
   text-align: center;
-  border-top: 1px solid var(--aw-border);
+  border-top: 0px solid var(--aw-border);
   flex-shrink: 0;
 }
 
@@ -1379,7 +1379,7 @@
 }
 
 /* ── Table header ── */
-.sp-thead { border-bottom: 1.667px solid var(--ds-text, rgba(11, 18, 14, 0.14)); }
+.sp-thead { border-bottom: 0.667px solid var(--ds-text, rgba(11, 18, 14, 0.14)); }
 .sp-th {
   padding: 0 8px; height: 32px; font-size: 12px; font-weight: 600;
   color: var(--ds-text-subtle, #44546F); text-align: left; vertical-align: middle; white-space: nowrap;
@@ -1400,7 +1400,7 @@
 
 .sp-td {
   vertical-align: middle; padding: 0;
-  border-top: 1px solid var(--ds-text, rgba(11, 18, 14, 0.14));
+  border-top: 0px solid var(--ds-text, rgba(11, 18, 14, 0.14));
 }
 .sp-row:first-child .sp-td { border-top: none; }
 
@@ -1454,8 +1454,8 @@
 
 /* ── Status cell (lozenge + ▼ chevron) ── */
 .sp-status-btn {
-  display: inline-flex; align-items: center; gap: 2px;
-  border: none; cursor: pointer; padding: 2px 4px; border-radius: 3px;
+  display: inline-flex; align-items: center; gap: 0px;
+  border: none; cursor: pointer; padding: 0px 4px; border-radius: 3px;
   font-size: 11px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0; white-space: nowrap; line-height: 1.4;
   transition: opacity 0.12s;
@@ -1474,7 +1474,7 @@
 }
 .sp-status-dropdown-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 6px 8px; cursor: pointer; border-radius: 3px;
+  padding: 4px 8px; cursor: pointer; border-radius: 3px;
   transition: background 0.1s;
 }
 .sp-status-dropdown-item:hover { background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)); }
@@ -1490,11 +1490,11 @@
 .sp-colpicker-title {
   font-size: 11px; font-weight: 700; color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase; letter-spacing: 0.05em;
-  padding: 8px 12px; border-bottom: 1px solid var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.1));
+  padding: 8px 12px; border-bottom: 0px solid var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.1));
 }
 .sp-colpicker-item {
   display: flex; align-items: center; gap: 8px;
-  padding: 6px 12px; cursor: pointer;
+  padding: 4px 12px; cursor: pointer;
   transition: background 0.12s; font-size: 13px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-colpicker-item:hover { background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)); }
@@ -1509,7 +1509,7 @@
 /* ── Inline create ── */
 .sp-create-input {
   flex: 1; height: 36px; padding: 0 12px;
-  border: none; outline: none; font-size: 14px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  border: none; outline: 2px solid var(--ds-border-focused); font-size: 14px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: inherit; background: transparent;
 }
 .sp-create-input::placeholder { color: var(--ds-text-subtlest, #626F86); }
@@ -1517,7 +1517,7 @@
 /* ── Row actions ── */
 .sp-row-action {
   background: none; border: none; cursor: pointer; color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
-  padding: 2px; border-radius: 3px; opacity: 0;
+  padding: 0px; border-radius: 3px; opacity: 0;
   transition: opacity 0.15s; display: flex; align-items: center;
 }
 .sp-row:hover .sp-row-action { opacity: 1; }
@@ -1529,8 +1529,8 @@
   min-width: 120px; padding: 4px;
 }
 .sp-row-menu-item {
-  display: flex; align-items: center; gap: 6px; width: 100%;
-  border: none; background: none; padding: 6px 8px;
+  display: flex; align-items: center; gap: 4px; width: 100%;
+  border: none; background: none; padding: 4px 8px;
   font: 400 13px/18px system-ui; color: var(--ds-text-danger, #EF4444);
   cursor: pointer; border-radius: 4px;
 }
@@ -1544,7 +1544,7 @@
 .sp-empty-heading { font-size: 14px; font-weight: 600; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 .sp-empty-sub { font-size: 13px; color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C)); }
 .sp-empty-cta {
-  margin-top: 8px; padding: 6px 16px;
+  margin-top: 8px; padding: 4px 16px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); border-radius: 3px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); font-size: 13px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   cursor: pointer; font-family: inherit; transition: background 0.12s;

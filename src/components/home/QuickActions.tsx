@@ -15,7 +15,7 @@ export function QuickActions({ presets, onSelect }: {
       }}>
         QUICK ACTIONS
       </span>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
         {presets.map(p => (
           <button
             key={p.query}

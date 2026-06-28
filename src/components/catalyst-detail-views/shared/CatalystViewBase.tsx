@@ -455,7 +455,7 @@ export function CatalystViewBase({
               item has no parent and the owning view has wired onParentChange,
               we swap the default "+ Add parent" text link for the canonical
               AddParentPicker (Jira-parity bordered pencil chip). */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0, flex: 1 }}>
 
             {projectKey ? (
               <TicketBreadcrumbs

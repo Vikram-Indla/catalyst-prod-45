@@ -72,7 +72,7 @@ function StatusLozenge({ status }: { status: string }) {
   const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' };
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
+      display: 'inline-block', padding: '0px 8px', borderRadius: '4px',
       backgroundColor: s.bg, color: s.text,
       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       lineHeight: '16px', whiteSpace: 'nowrap',
@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: '6px',
+        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: '4px',
       }}>
         {label}
       </div>
@@ -256,11 +256,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         {/* ─── HEADER ─── */}
         <div style={{
           padding: '16px 24px', borderBottom: `1px solid ${dk.border}`,
-          display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
+          display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0,
         }}>
           <span style={{
             fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700,
-            color: dk.blueKey, background: 'var(--cp-primary-light)', padding: '3px 10px', borderRadius: '4px',
+            color: dk.blueKey, background: 'var(--cp-primary-light)', padding: '4px 10px', borderRadius: '4px',
           }}>
             {rawIdea.idea_key}
           </span>
@@ -283,7 +283,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         {/* ─── BODY ─── */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {/* Title */}
-          <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
+          <div style={{ padding: '16px 24px', borderBottom: `1px solid ${dk.divider}` }}>
             <h2 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: dk.t1, margin: 0, lineHeight: 1.3 }}>
               {rawIdea.title}
             </h2>
@@ -298,11 +298,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t1 }}>Ready for promotion</div>
-                <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '0px' }}>Convert to an request to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
                 background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: '6px',
-                padding: '7px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
+                padding: '8px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
               }}>
                 → Convert
               </button>
@@ -310,7 +310,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           )}
 
           {/* ═══ DETAILS GRID — ALL 12 FIELDS ═══ */}
-          <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
+          <div style={{ padding: '16px 24px', borderBottom: `1px solid ${dk.divider}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
               {/* STATUS — editable */}
@@ -439,7 +439,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2 }}>
                     COMMITTED TO ROADMAP
                   </div>
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '2px' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '0px' }}>
                     Mark as committed to include in roadmap view
                   </div>
                 </div>
@@ -454,7 +454,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 >
                   <div style={{
                     width: '18px', height: '18px', borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-                    position: 'absolute', top: '3px',
+                    position: 'absolute', top: '4px',
                     left: localIsCommitted ? '23px' : '3px',
                     transition: 'left 200ms ease',
                     boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
@@ -465,7 +465,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           )}
 
           {/* Description */}
-          <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
+          <div style={{ padding: '16px 24px', borderBottom: `1px solid ${dk.divider}` }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '8px' }}>
               DESCRIPTION
             </div>
@@ -489,11 +489,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           </div>
 
           {/* IMPACT Score */}
-          <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
+          <div style={{ padding: '16px 24px', borderBottom: `1px solid ${dk.divider}` }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>
               IMPACT SCORE
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '16px' }}>
               <span style={{
                 fontSize: '32px', fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
                 color: impactScore > 0 ? dk.t1 : dk.t3,
@@ -523,7 +523,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               { letter: 'C', name: 'Complexity (inv.)', weight: '10%', score: (factors as any).C ?? 0 },
               { letter: 'T', name: 'Time to Value', weight: '10%', score: (factors as any).T ?? 0 },
             ].map(dim => (
-              <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+              <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
                   backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))', color: dk.t2,
@@ -557,7 +557,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           </div>
 
           {/* Comments */}
-          <div style={{ padding: '20px 24px' }}>
+          <div style={{ padding: '16px 24px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>
               COMMENTS
             </div>

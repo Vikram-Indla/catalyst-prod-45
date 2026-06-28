@@ -12,7 +12,7 @@
 .c-feed__hdr {
   flex: none;
   height: var(--c-chat-header-h);
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
   display: flex;
   align-items: center;
   padding: 0 24px;
@@ -145,7 +145,7 @@
   grid-template-columns: var(--c-chat-avatar) 1fr;
   gap: 8px;
   /* ads-scanner:ignore-next-line — 1px top/bottom on compact row is intentional micro-rhythm */
-  padding: 1px 0;
+  padding: 0px 0;
   border-radius: 4px;
   position: relative;
 }
@@ -160,7 +160,7 @@
   display: flex;
   justify-content: center;
   /* ads-scanner:ignore-next-line — 2px top nudge aligns avatar baseline with author name */
-  padding-top: 2px;
+  padding-top: 0px;
 }
 
 /* In compact rows, avatar slot holds hover timestamp */
@@ -195,7 +195,7 @@
   align-items: baseline;
   gap: 8px;
   /* ads-scanner:ignore-next-line — 2px gap between meta line and body text is intentional */
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 .c-msg__author {
@@ -386,8 +386,8 @@
 /* ── Jump-to-present ── */
 .c-feed__jump {
   position: absolute;
-  bottom: 80px;
-  left: 50%;
+  bottom: 48px;
+  left: 48%;
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
@@ -452,7 +452,7 @@
 .c-composer {
   flex: none;
   padding: 12px 24px 16px;
-  border-top: 1px solid var(--c-chat-border);
+  border-top: 0px solid var(--c-chat-border);
 }
 
 .c-composer__box {
@@ -481,7 +481,7 @@
   min-height: 40px;
   max-height: 160px;
   overflow-y: auto;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
 }
 
@@ -577,7 +577,7 @@
   min-height: 40px;
   max-height: 120px;
   overflow-y: auto;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
   box-sizing: border-box;
 }

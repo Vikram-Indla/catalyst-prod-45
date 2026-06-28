@@ -133,7 +133,7 @@ export function RoadmapSidePanel({
               {idea.title}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             {idea.isCommitted && (
               <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--sem-success)' }}>Committed</span>
             )}
@@ -146,7 +146,7 @@ export function RoadmapSidePanel({
               }}
             >
               <span style={{
-                position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
+                position: 'absolute', top: 4, width: 12, height: 12, borderRadius: 6,
                 background: 'var(--bg-app)', left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
               }} />
             </button>
@@ -154,12 +154,12 @@ export function RoadmapSidePanel({
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflow: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Quarter selector */}
           {idea.isCommitted && (
             <div>
               <div style={{ ...labelStyle, marginBottom: 8 }}>TARGET QUARTER</div>
-              <div style={{ display: 'flex', gap: 6 }}>
+              <div style={{ display: 'flex', gap: 4 }}>
                 {QUARTERS.map(q => {
                   const qs = QUARTER_STYLES[q];
                   const active = idea.quarter === q;
@@ -184,7 +184,7 @@ export function RoadmapSidePanel({
           {idea.isCommitted && (
             isConverted(idea.status) ? (
               <div style={{
-                padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg)',
+                padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg)',
                 color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, textAlign: 'center',
                 border: '1px solid var(--ds-background-success)',
               }}>
@@ -196,7 +196,7 @@ export function RoadmapSidePanel({
                 style={{
                   width: '100%', height: 50, borderRadius: 6, border: 'none',
                   background: 'var(--sem-success)', color: 'var(--bg-app)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                   fontSize: 'var(--ds-font-size-300)', fontWeight: 650, fontFamily: 'var(--cp-font-body)',
                   transition: 'all 150ms',
                 }}
@@ -209,7 +209,7 @@ export function RoadmapSidePanel({
 
           {/* Milestone Dates */}
           <div>
-            <div style={{ ...labelStyle, marginBottom: 10 }}>DELIVERY MILESTONES</div>
+            <div style={{ ...labelStyle, marginBottom: 8 }}>DELIVERY MILESTONES</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {MILESTONE_CONFIGS.map(m => {
                 const DOT_COLORS: Record<string, string> = {
@@ -217,7 +217,7 @@ export function RoadmapSidePanel({
                   uat: 'var(--ds-text-warning)', beta: 'var(--ds-chart-teal-bolder)', prod: 'var(--ds-text-success)',
                 };
                 return (
-                <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 8, height: 8, borderRadius: 4, background: DOT_COLORS[m.key] || m.color, flexShrink: 0 }} />
                   <span style={{ width: 100, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)' }}>
                     {m.fullLabel}
@@ -254,7 +254,7 @@ export function RoadmapSidePanel({
 
           {/* Details */}
           <div>
-            <div style={{ ...labelStyle, marginBottom: 10 }}>DETAILS</div>
+            <div style={{ ...labelStyle, marginBottom: 8 }}>DETAILS</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div style={fieldRowStyle}>
                 <span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-200)' }}>Theme</span>
@@ -278,7 +278,7 @@ export function RoadmapSidePanel({
             if (!descPlain) return null;
             return (
               <div>
-                <div style={{ ...labelStyle, marginBottom: 6 }}>DESCRIPTION</div>
+                <div style={{ ...labelStyle, marginBottom: 4 }}>DESCRIPTION</div>
                 <div style={{
                   fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: 1.5,
                   background: 'var(--bg-1)', borderRadius: 6, padding: 12,

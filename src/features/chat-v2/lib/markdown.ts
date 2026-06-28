@@ -43,7 +43,7 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
         inOl = false;
       }
       if (!inUl) {
-        out.push('<ul style="margin:4px 0;padding-left:20px;">');
+        out.push('<ul style="margin:4px 0;padding-left:16px;">');
         inUl = true;
       }
       out.push(`<li>${transformInline(ulMatch[1], self)}</li>`);
@@ -55,7 +55,7 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
         inUl = false;
       }
       if (!inOl) {
-        out.push('<ol style="margin:4px 0;padding-left:20px;">');
+        out.push('<ol style="margin:4px 0;padding-left:16px;">');
         inOl = true;
       }
       out.push(`<li>${transformInline(olMatch[1], self)}</li>`);
@@ -78,7 +78,7 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
 
 function transformInline(text: string, selfToken: string): string {
   let s = escape(text);
-  s = s.replace(/`([^`]+)`/g, '<code style="font-family:var(--ds-font-family-code,monospace);background:var(--cv2-bg-row-active);padding:1px 4px;border-radius:3px;font-size:13px;">$1</code>');
+  s = s.replace(/`([^`]+)`/g, '<code style="font-family:var(--ds-font-family-code,monospace);background:var(--cv2-bg-row-active);padding:0px 4px;border-radius:3px;font-size:13px;">$1</code>');
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/~~([^~]+)~~/g, '<s>$1</s>');
   s = s.replace(/(^|[\s(>])_([^_]+)_(?=[\s)<.,!?]|$)/g, '$1<em>$2</em>');

@@ -88,7 +88,7 @@ export function CreateChannelModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '10vh',
+        paddingTop: '8vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
     >
@@ -155,7 +155,7 @@ function Header({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        marginBottom: 18,
+        marginBottom: 16,
       }}
     >
       <div>
@@ -221,7 +221,7 @@ function NameStep({
     <div>
       <label
         htmlFor="cv2-channel-name"
-        style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 6 }}
+        style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 4 }}
       >
         Name
       </label>
@@ -267,14 +267,14 @@ function NameStep({
       {hintsOpen && (
       <div
         style={{
-          marginTop: 10,
-          padding: '10px 12px',
+          marginTop: 8,
+          padding: '8px 12px',
           background: 'var(--cv2-bg-input)',
           border: '1px solid var(--cv2-border)',
           borderRadius: 'var(--cv2-radius-sm)',
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
+          gap: 4,
         }}
       >
         {PREFIX_HINTS.map(p => (
@@ -355,9 +355,9 @@ function RadioRow({
       style={{
         display: 'flex',
         alignItems: 'flex-start',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '10px 0',
+        padding: '8px 0',
         background: 'transparent',
         border: 'none',
         textAlign: 'left',
@@ -378,7 +378,7 @@ function RadioRow({
           alignItems: 'center',
           justifyContent: 'center',
           flex: '0 0 auto',
-          marginTop: 2,
+          marginTop: 0,
         }}
       >
         {checked && (
@@ -397,7 +397,7 @@ function RadioRow({
           {title}
         </span>
         {subtitle && (
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', marginTop: 2 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', marginTop: 0 }}>
             {subtitle}
           </span>
         )}
@@ -424,7 +424,7 @@ function Footer({
   return (
     <div
       style={{
-        marginTop: 18,
+        marginTop: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',

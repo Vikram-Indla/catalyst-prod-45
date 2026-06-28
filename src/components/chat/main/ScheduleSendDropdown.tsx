@@ -78,7 +78,7 @@ export function ScheduleSendDropdown({
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              padding: '6px 8px',
+              padding: '4px 8px',
               border: 'none',
               borderRadius: '3px',
               background: 'var(--ds-background-neutral-subtle)',

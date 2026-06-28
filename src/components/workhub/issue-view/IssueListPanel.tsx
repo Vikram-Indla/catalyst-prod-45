@@ -191,7 +191,7 @@ export function IssueListPanel({
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="jlpCard jlpCardSkeleton">
                 <div className="jlpSkLine" style={{ width: '85%', height: 14 }} />
-                <div className="jlpSkLine" style={{ width: '60%', height: 14, marginTop: 6 }} />
+                <div className="jlpSkLine" style={{ width: '60%', height: 14, marginTop: 4 }} />
                 <div className="jlpSkRow">
                   <div className="jlpSkLine" style={{ width: 60, height: 12 }} />
                   <div className="jlpSkCircle" />

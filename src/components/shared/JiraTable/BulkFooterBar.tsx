@@ -97,7 +97,7 @@ export function BulkFooterBar({
           type="button"
           onClick={onDelete}
           style={{
-            padding: '6px 12px',
+            padding: '4px 12px',
             borderRadius: 3,
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
             background: token('color.background.neutral', 'var(--ds-surface)'),
@@ -116,7 +116,7 @@ export function BulkFooterBar({
           type="button"
           onClick={onMove}
           style={{
-            padding: '6px 12px',
+            padding: '4px 12px',
             borderRadius: 3,
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
             background: token('color.background.neutral', 'var(--ds-surface)'),
@@ -135,7 +135,7 @@ export function BulkFooterBar({
           type="button"
           onClick={onTransition}
           style={{
-            padding: '6px 12px',
+            padding: '4px 12px',
             borderRadius: 3,
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
             background: token('color.background.neutral', 'var(--ds-surface)'),

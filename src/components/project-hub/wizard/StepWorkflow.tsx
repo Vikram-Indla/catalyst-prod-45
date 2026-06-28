@@ -68,11 +68,11 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           type="radio"
           checked={data.useDefault}
           onChange={() => onChange({ ...data, useDefault: true, copyFromProject: null })}
-          style={{ accentColor: 'var(--cp-blue)', marginTop: 2 }}
+          style={{ accentColor: 'var(--cp-blue)', marginTop: 0 }}
         />
         <div className="flex-1">
           <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Use default workflow</div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 2 }}>Standard project workflow with common statuses</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 0 }}>Standard project workflow with common statuses</div>
         </div>
       </label>
 
@@ -87,7 +87,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           type="radio"
           checked={!data.useDefault}
           onChange={() => onChange({ ...data, useDefault: false })}
-          style={{ accentColor: 'var(--cp-blue)', marginTop: 2 }}
+          style={{ accentColor: 'var(--cp-blue)', marginTop: 0 }}
         />
         <div className="flex-1">
           <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Copy from existing project</div>
@@ -133,7 +133,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                   style={{
                     fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 500,
-                    padding: '3px 10px',
+                    padding: '4px 10px',
                     border: `1px solid ${s.color}`,
                     color: s.color,
                   }}
@@ -154,11 +154,11 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           type="checkbox"
           checked={data.featureLayer}
           onChange={e => onChange({ ...data, featureLayer: e.target.checked })}
-          style={{ accentColor: 'var(--cp-blue)', marginTop: 3 }}
+          style={{ accentColor: 'var(--cp-blue)', marginTop: 4 }}
         />
         <div>
           <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>Enable Feature Layer</div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 1 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 0 }}>
             Adds Feature as an intermediate level between Epic and Story/Bug/Task
           </div>
         </div>

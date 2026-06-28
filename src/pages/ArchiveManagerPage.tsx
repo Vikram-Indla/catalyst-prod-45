@@ -62,15 +62,15 @@ function ProjectFilterDropdown({ value, options, onChange }: {
         type="button"
         onClick={() => setOpen(o => !o)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '6px 8px', borderRadius: 3, fontSize: 'var(--ds-font-size-400)',
+          display: 'flex', alignItems: 'center', gap: 4,
+          padding: '4px 8px', borderRadius: 3, fontSize: 'var(--ds-font-size-400)',
           border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
           background: token('color.background.input', 'var(--ds-surface-sunken)'),
           color: token('color.text', 'var(--ds-text)'), cursor: 'pointer',
           minWidth: 160, justifyContent: 'space-between',
         }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {value && <ProjectIcon projectKey={value} name={value} size="xsmall" />}
           {value || 'All projects'}
         </span>
@@ -380,7 +380,7 @@ export default function ArchiveManagerPage() {
                     <Lozenge appearance="default">{item.status}</Lozenge>
                   </td>
                   <td style={tdStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                       <ProjectIcon projectKey={item.project_key} name={item.project_key} size="xsmall" />
                       <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                         {item.project_key}

@@ -26,7 +26,7 @@ export const FilesTab: React.FC<FilesTabProps> = ({
 
       {/* FILES LIST */}
       {files.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {files.map((file) => (
             <FileItem
               key={file.id}

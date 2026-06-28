@@ -28,7 +28,7 @@ export function TasksPageHeader({ routeWord, paddingX = 20 }: Props) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: 2,
+        gap: 0,
         minHeight: 56,
         flexShrink: 0,
       }}

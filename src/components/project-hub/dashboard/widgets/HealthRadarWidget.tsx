@@ -82,7 +82,7 @@ export default function HealthRadarWidget({
       onToggleCollapse={onToggleCollapse}
     >
       {isLoading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
@@ -108,7 +108,7 @@ export default function HealthRadarWidget({
             style={{
               display: 'flex',
               gap: 8,
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: overdueCount > 0
                 ? 'var(--ds-background-accent-red-subtler)'
                 : 'var(--ds-background-accent-orange-subtler)',
@@ -152,7 +152,7 @@ export default function HealthRadarWidget({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 10,
+                    gap: 8,
                     padding: '8px 10px',
                     borderRadius: token('border.radius', '4px'),
                     background: token('elevation.surface', 'var(--ds-surface)'),
@@ -163,7 +163,7 @@ export default function HealthRadarWidget({
                   <span
                     style={{
                       ...LABEL,
-                      padding: '2px 8px',
+                      padding: '0px 8px',
                       borderRadius: 3,
                       background: badge.bg,
                       color: badge.text,

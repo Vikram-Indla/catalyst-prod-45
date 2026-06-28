@@ -57,7 +57,7 @@ export const Status = Node.create({
       mergeAttributes(HTMLAttributes, {
         'data-status-id': node.attrs.localId,
         'data-status-color': color,
-        style: `background:${bg};color:${fg};padding:1px 6px;border-radius:3px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;`,
+        style: `background:${bg};color:${fg};padding:0px 6px;border-radius:3px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;`,
       }),
       (node.attrs.text as string) || '',
     ];

@@ -53,7 +53,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
                 key={item.id}
                 onClick={() => onSelectItem(item)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
                   cursor: 'pointer', transition: 'background 80ms ease',
                   borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.05))',
                 }}

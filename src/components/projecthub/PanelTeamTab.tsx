@@ -169,7 +169,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       {/* Search suggestions */}
       {searchSuggestions.length > 0 && (
         <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] bg-white dark:bg-transparent">
-          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] bg-[var(--ds-surface-sunken)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]" style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] bg-[var(--ds-surface-sunken)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]" style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Add from directory
           </div>
           {searchSuggestions.map(u => (
@@ -223,13 +223,13 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
-                <span className="rounded-full bg-[var(--ds-background-selected)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.15))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]" style={{ padding: '1px 7px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{g.members.length}</span>
+                <span className="rounded-full bg-[var(--ds-background-selected)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.15))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]" style={{ padding: '0px 7px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{g.members.length}</span>
                 <div className="flex-1 bg-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:bg-[var(--ds-border,var(--cp-ink-1))]" style={{ height: 1 }} />
               </div>
 
               <div className="space-y-0.5">
                 {g.members.map(m => (
-                  <div key={m.user_id} className="flex items-center gap-3 rounded-lg transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay)] group" style={{ padding: '10px 10px' }}>
+                  <div key={m.user_id} className="flex items-center gap-3 rounded-lg transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay)] group" style={{ padding: '8px 10px' }}>
                     {m.avatar_url ? (
                       <img src={m.avatar_url} alt={m.full_name} className="flex-shrink-0" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
                     ) : (

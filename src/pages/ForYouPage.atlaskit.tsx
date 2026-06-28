@@ -449,7 +449,7 @@ export default function ForYouPageAtlaskit() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               padding: '8px 12px',
               minHeight: 44,
               flexShrink: 0,
@@ -457,7 +457,7 @@ export default function ForYouPageAtlaskit() {
               background: 'var(--ds-surface)',
             }}
           >
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0 }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
                 <JiraIssueTypeIcon type={resolveTypeIconLabel(sidePanelItem.itemType)} size={16} />
               </span>

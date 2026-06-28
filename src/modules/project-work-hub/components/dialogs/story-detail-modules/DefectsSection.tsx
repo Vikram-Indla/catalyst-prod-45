@@ -251,7 +251,7 @@ export function DefectsSection({
               </div>
             )}
             {creating && (
-              <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
+              <div style={{ textAlign: 'right', padding: '4px 0 2px' }}>
                 <button
                   onClick={() => { setCreating(false); setDraftSummary(''); }}
                   style={{ background: 'none', border: 'none', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', cursor: 'pointer', fontFamily: 'inherit' }}

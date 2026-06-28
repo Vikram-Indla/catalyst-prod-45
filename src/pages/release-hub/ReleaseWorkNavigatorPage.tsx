@@ -452,7 +452,7 @@ export function ReleaseWorkNavigatorPage({
           />
           </>
         ) : (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
             <input
               value={state.jql}
               onChange={(e) => updateState({ jql: e.currentTarget.value })}
@@ -541,7 +541,7 @@ function TabToggle({ value, onChange }: { value: 'basic' | 'jql'; onChange: (v: 
 function SearchPill({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 10px',
+      display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
       border: `1px solid ${BORDER}`, borderRadius: 3, background: 'var(--ds-surface)',
       minWidth: 220,
     }}>
@@ -625,7 +625,7 @@ function MultiChip({
         type="button"
         onClick={() => setOpen((o) => !o)}
         style={{
-          all: 'unset', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+          all: 'unset', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 32, padding: '0 10px', borderRadius: 3,
           border: `1px solid ${active ? BLUE : BORDER}`,
           background: active ? BLUE_BG : 'var(--ds-surface)',
@@ -656,12 +656,12 @@ function MultiChip({
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-            padding: '6px 0',
+            padding: '4px 0',
           }}
         >
           <div style={{ padding: '8px 8px 6px' }}>
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', gap: 4,
               height: 30, padding: '0 8px',
               border: `1px solid ${searchFocused ? BLUE : BORDER}`,
               borderRadius: 3,
@@ -693,7 +693,7 @@ function MultiChip({
                   onClick={() => toggle(opt.id)}
                   style={{
                     all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
-                    width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
+                    width: '100%', boxSizing: 'border-box', padding: '4px 12px', cursor: 'pointer',
                     background: checked ? BLUE_BG : 'transparent',
                     color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                   }}
@@ -869,7 +869,7 @@ function FixVersionChip({
                 onClick={() => { onChange(value, o); setOpOpen(false); }}
                 style={{
                   all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
-                  width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
+                  width: '100%', boxSizing: 'border-box', padding: '4px 12px', cursor: 'pointer',
                   background: checked ? BLUE_BG : 'transparent',
                   color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                 }}
@@ -923,7 +923,7 @@ function FixVersionChip({
                 onClick={() => { onChange(opt, op); setValOpen(false); }}
                 style={{
                   all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
-                  width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
+                  width: '100%', boxSizing: 'border-box', padding: '4px 12px', cursor: 'pointer',
                   background: checked ? BLUE_BG : 'transparent',
                   color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                 }}

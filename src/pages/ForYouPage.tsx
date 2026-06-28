@@ -331,7 +331,7 @@ export default function ForYouPage() {
         </div>
 
         {/* Status Summary + Filter — single row, wraps below 768 */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)', gap: 16, flexWrap: 'wrap' }}>
           <StatusSummaryBar
             items={[
               ...filteredGroupedItems.YESTERDAY,

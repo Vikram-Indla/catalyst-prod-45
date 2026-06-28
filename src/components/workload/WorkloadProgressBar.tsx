@@ -103,7 +103,7 @@ export function WorkloadProgressBar({
           <div 
             className={`absolute top-0 rounded-full ${sizeClasses[size]}`}
             style={{ 
-              left: '100%',
+              left: '48%',
               width: `${overflowPercentage}%`,
               backgroundColor: CATALYST_V5.danger,
               opacity: 0.6
@@ -115,7 +115,7 @@ export function WorkloadProgressBar({
         <div 
           className="absolute top-0 w-0.5 h-full"
           style={{ 
-            left: '100%',
+            left: '48%',
             backgroundColor: CATALYST_V5.slate[400],
             transform: 'translateX(-50%)'
           }}

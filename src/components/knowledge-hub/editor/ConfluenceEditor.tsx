@@ -57,7 +57,7 @@ export function ConfluenceEditor({
           className="border rounded-lg bg-card"
           style={{
             minHeight: 300,
-            padding: '2rem',
+            padding: '0rem',
             color: 'hsl(var(--muted-foreground))',
             fontSize: 'var(--ds-font-size-400)',
             lineHeight: 1.6,
@@ -70,7 +70,7 @@ export function ConfluenceEditor({
     return (
       <div
         className="border rounded-lg bg-card"
-        style={{ padding: '1.5rem 2rem', minHeight: 300 }}
+        style={{ padding: '0.5rem 2rem', minHeight: 300 }}
       >
         <AtlaskitRenderer document={doc} appearance="full-page" />
       </div>

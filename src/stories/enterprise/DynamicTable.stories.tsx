@@ -26,7 +26,7 @@ const COLUMNS: Column<Row>[] = [
   {
     id: 'key', label: 'Work', width: 30, alwaysVisible: true,
     cell: ({ row }) => (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         <JiraIssueTypeIcon type={row.type} size={14} />
         <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', '#0052CC') }}>{row.key}</span>
       </span>

@@ -173,7 +173,7 @@ export default function AdminOverview() {
             <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: T.text, lineHeight: '24px' }}>
               Admin Overview
             </h1>
-            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
+            <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
               System configuration and administration hub
             </p>
           </div>
@@ -186,8 +186,8 @@ export default function AdminOverview() {
           <div style={{ maxWidth: '576px', position: 'relative' }}>
             <div style={{
               position: 'absolute',
-              left: '10px',
-              top: '50%',
+              left: '8px',
+              top: '48%',
               transform: 'translateY(-50%)',
               zIndex: 1,
               pointerEvents: 'none',
@@ -220,8 +220,8 @@ export default function AdminOverview() {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    padding: '5px 12px',
+                    gap: '4px',
+                    padding: '4px 12px',
                     borderRadius: '3px',
                     border: `1px solid ${T.border}`,
                     background: isHovered ? T.bgNeutralHover : T.surface,
@@ -289,7 +289,7 @@ export default function AdminOverview() {
                             <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: T.text, lineHeight: 1 }}>
                               {pocket.count}
                             </span>
-                            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>
+                            <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>
                               {pocket.countLabel}
                             </p>
                           </>
@@ -419,7 +419,7 @@ export default function AdminOverview() {
                         }}>
                           {formatActionLabel(change.action, change.entity_type)}
                         </p>
-                        <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>
+                        <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>
                           {change.entity_type} • {change.entity_id.slice(0, 8)}...
                         </p>
                       </div>

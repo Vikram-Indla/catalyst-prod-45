@@ -186,7 +186,7 @@ function LoadingState({ isDark }: { isDark: boolean }) {
   return (
     <Box xcss={panelXcss}>
       {[1, 2, 3].map(i => (
-        <div key={i} style={{ display: 'flex', gap: 10, padding: '12px 16px', alignItems: 'flex-start' }}>
+        <div key={i} style={{ display: 'flex', gap: 8, padding: '12px 16px', alignItems: 'flex-start' }}>
           <div style={{ width: 40, height: 40, borderRadius: '50%', background: shimmerBg, flexShrink: 0 }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ height: 14, borderRadius: 4, background: shimmerHighlight, width: '60%' }} />

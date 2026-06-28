@@ -213,7 +213,7 @@ export function AdminSidebar() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
                 width: '100%',
                 padding: '8px 16px',
                 border: 'none',
@@ -257,7 +257,7 @@ export function AdminSidebar() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        padding: '6px 16px',
+                        padding: '4px 16px',
                         marginLeft: '16px',
                         color: isItemActive ? T.textBrand : T.textSubtle,
                         textDecoration: 'none',

@@ -41,9 +41,9 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
       style={{
         display: 'flex',
         alignItems: 'flex-start',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '10px 16px',
+        padding: '8px 16px',
         background: isActive ? 'var(--cv2-bg-row-active)' : 'transparent',
         border: 'none',
         textAlign: 'left',
@@ -65,7 +65,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         names={dmMemberNames ?? [title]}
         isGroup={isGroup}
       />
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0 }}>
           <span
             style={{
@@ -182,7 +182,7 @@ function AvatarStack({
           bottom: 0,
           right: 0,
           borderRadius: 6,
-          padding: 2,
+          padding: 0,
           background: 'var(--cv2-bg-sidebar)',
         }}
       >

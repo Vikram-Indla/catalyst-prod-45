@@ -474,7 +474,7 @@ function ProjectCard({ project }: { project: ProjectSummary }) {
           style={{
             fontSize: 'var(--ds-font-size-200)',
             color: token('color.text', 'var(--ds-text)'),
-            padding: '2px 0',
+            padding: '0px 0',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

@@ -108,8 +108,8 @@ export function T10AddItemModal({
       <div
         style={{
           position: 'fixed',
-          top: '50%',
-          left: '50%',
+          top: '48%',
+          left: '48%',
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '480px',
@@ -159,7 +159,7 @@ export function T10AddItemModal({
 
         {/* Body */}
         <form onSubmit={handleSubmit}>
-          <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Title */}
             <div>
               <label
@@ -305,7 +305,7 @@ export function T10AddItemModal({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
@@ -338,7 +338,7 @@ export function T10AddItemModal({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
@@ -421,7 +421,7 @@ export function T10AddItemModal({
                 type="button"
                 onClick={handleClose}
                 style={{
-                  padding: '10px 20px',
+                  padding: '8px 20px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--ds-text)',
@@ -437,7 +437,7 @@ export function T10AddItemModal({
                 type="submit"
                 disabled={!title.trim() || createItem.isPending}
                 style={{
-                  padding: '10px 20px',
+                  padding: '8px 20px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',

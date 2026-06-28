@@ -241,11 +241,11 @@ export default function GadgetSettingsPanel({
       </div>
 
       {/* FIELDS */}
-      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto' }}>
+      <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto' }}>
         {/* ── DATE RANGE — first field ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)',
-                          display: 'flex', alignItems: 'center', gap: 6 }}>
+                          display: 'flex', alignItems: 'center', gap: 4 }}>
             Date range
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, background: token('color.background.selected', 'var(--ds-background-selected)'),
                            color: token('color.text.selected', 'var(--ds-link)'), padding: '0 4px', borderRadius: 2 }}>
@@ -300,7 +300,7 @@ export default function GadgetSettingsPanel({
                                padding: '8px 12px', width: '100%', border: 0, textAlign: 'left',
                                background: active ? 'var(--ds-background-selected)' : 'transparent', cursor: 'pointer',
                                borderLeft: active ? '3px solid var(--ds-link)' : '3px solid transparent' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                         <span style={{ fontSize: 'var(--ds-font-size-400)', color: active ? 'var(--ds-link)' : 'var(--ds-text)',
                                        fontWeight: active ? 500 : 400 }}>
                           {p === 'thisQuarter' ? 'This quarter' : 'This year'}
@@ -317,9 +317,9 @@ export default function GadgetSettingsPanel({
 
               {/* Quarters group */}
               <div style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                <div style={{ padding: '7px 12px 3px', fontSize: 'var(--ds-font-size-50)', fontWeight: 653,
+                <div style={{ padding: '8px 12px 3px', fontSize: 'var(--ds-font-size-50)', fontWeight: 653,
                               color: 'var(--ds-text-subtlest)', textTransform: 'none', letterSpacing: '.05em',
-                              display: 'flex', alignItems: 'center', gap: 6 }}>
+                              display: 'flex', alignItems: 'center', gap: 4 }}>
                   Quarters
                   <span style={{ background: 'var(--ds-background-selected)', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-50)',
                                  fontWeight: 600, padding: '0 6px', borderRadius: 10 }}>2026</span>
@@ -334,7 +334,7 @@ export default function GadgetSettingsPanel({
                       toggleField('date');
                     }}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                               padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
+                               padding: '8px 12px', width: '100%', border: 0, textAlign: 'left',
                                background: active ? 'var(--ds-background-selected)' : 'transparent', cursor: 'pointer',
                                borderLeft: active ? '3px solid var(--ds-link)' : '3px solid transparent' }}>
                       <span style={{ fontSize: 'var(--ds-font-size-400)', color: active ? 'var(--ds-link)' : 'var(--ds-text)',
@@ -354,7 +354,7 @@ export default function GadgetSettingsPanel({
                   toggleField('date');
                 }}
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                           padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
+                           padding: '8px 12px', width: '100%', border: 0, textAlign: 'left',
                            background: draft.datePreset === 'all' ? 'var(--ds-background-selected)' : 'transparent',
                            cursor: 'pointer',
                            borderLeft: draft.datePreset === 'all' ? '3px solid var(--ds-link)' : '3px solid transparent' }}>
@@ -367,7 +367,7 @@ export default function GadgetSettingsPanel({
             </div>
           )}
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 8px',
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px',
                           background: 'var(--ds-surface-sunken)', borderRadius: 3, cursor: 'pointer' }}>
             <input type="checkbox" checked={applyToAll}
               onChange={(e) => setApplyToAll(e.target.checked)}
@@ -466,7 +466,7 @@ export default function GadgetSettingsPanel({
           <div
             style={{
               borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
-              paddingTop: 14, marginTop: 14,
+              paddingTop: 12, marginTop: 12,
             }}
           >
             <div
@@ -481,7 +481,7 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6,
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4,
                 marginBottom: 16,
               }}
             >
@@ -502,7 +502,7 @@ export default function GadgetSettingsPanel({
                       }))
                     }
                     style={{
-                      padding: '6px 10px',
+                      padding: '4px 10px',
                       fontSize: 'var(--ds-font-size-200)',
                       borderRadius: 3,
                       cursor: 'pointer',
@@ -524,7 +524,7 @@ export default function GadgetSettingsPanel({
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'none',
                 letterSpacing: '.5px',
                 color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
-                marginBottom: 6,
+                marginBottom: 4,
               }}
             >
               Blocked statuses
@@ -537,7 +537,7 @@ export default function GadgetSettingsPanel({
             >
               Items matching these Jira statuses are counted in the Blocked bucket.
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
               {['On Hold', 'Awaiting Info', 'Blocked', 'Impediment'].map((s) => (
                 <Lozenge key={s} appearance="moved">{s}</Lozenge>
               ))}
@@ -601,7 +601,7 @@ export default function GadgetSettingsPanel({
             </span>
           </label>
           {draft.autoRefresh && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 24 }}>
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>Update every</span>
               <select
                 value={draft.autoRefreshMinutes ?? 15}
@@ -639,7 +639,7 @@ export default function GadgetSettingsPanel({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '10px 14px',
+          padding: '8px 14px',
           borderTop: '1px solid var(--ds-background-neutral)',
           background: 'var(--ds-surface-sunken)',
         }}
@@ -661,7 +661,7 @@ export default function GadgetSettingsPanel({
         >
           Clear all
         </button>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
           <button
             type="button"
             onClick={onClose}
@@ -835,7 +835,7 @@ function MultiSelectGeneric({
           }}
         >
           {options.length === 0 && (
-            <div style={{ padding: 10, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>No options</div>
+            <div style={{ padding: 8, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>No options</div>
           )}
           {options.map((opt) => {
             const sel = selected.has(opt.value);
@@ -849,7 +849,7 @@ function MultiSelectGeneric({
                   alignItems: 'center',
                   gap: 8,
                   width: '100%',
-                  padding: '6px 10px',
+                  padding: '4px 10px',
                   background: sel ? 'var(--ds-background-selected)' : 'transparent',
                   border: 0,
                   cursor: 'pointer',
@@ -1005,7 +1005,7 @@ function MultiSelectStatus({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '6px 10px 4px',
+                  padding: '4px 10px 4px',
                   fontSize: 'var(--ds-font-size-50)',
                   fontWeight: 653,
                   textTransform: 'none',
@@ -1014,7 +1014,7 @@ function MultiSelectStatus({
                   background: 'var(--ds-surface-sunken)',
                 }}
               >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: grp.dot }} />
                   {grp.label}
                 </span>
@@ -1048,7 +1048,7 @@ function MultiSelectStatus({
                       alignItems: 'center',
                       gap: 8,
                       width: '100%',
-                      padding: '6px 10px',
+                      padding: '4px 10px',
                       background: sel ? 'var(--ds-background-selected)' : 'transparent',
                       border: 0,
                       cursor: 'pointer',
@@ -1100,10 +1100,10 @@ function GadgetSpecific({
   const wrapper: React.CSSProperties = {
     background: 'var(--ds-surface-sunken)',
     borderRadius: 4,
-    padding: 10,
+    padding: 8,
     display: 'flex',
     flexDirection: 'column',
-    gap: 6,
+    gap: 4,
   };
   const lbl: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-50)',
@@ -1157,7 +1157,7 @@ function GadgetSpecific({
     return (
       <div style={wrapper}>
         <span style={lbl}>Severity</span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {opts.map((o) => {
             const on = sel.has(o);
             return (
@@ -1171,7 +1171,7 @@ function GadgetSpecific({
                   onChange('severity', Array.from(next));
                 }}
                 style={{
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   fontSize: 'var(--ds-font-size-100)',
                   borderRadius: 3,
                   border: '1px solid var(--ds-border)',
@@ -1195,7 +1195,7 @@ function GadgetSpecific({
     return (
       <div style={wrapper}>
         <span style={lbl}>Environment</span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {opts.map((o) => {
             const on = sel.has(o);
             return (
@@ -1209,7 +1209,7 @@ function GadgetSpecific({
                   onChange('environment', Array.from(next));
                 }}
                 style={{
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   fontSize: 'var(--ds-font-size-100)',
                   borderRadius: 3,
                   border: '1px solid var(--ds-border)',
@@ -1268,7 +1268,7 @@ function GadgetSpecific({
     };
 
     return (
-      <div style={{ ...wrapper, gap: 10 }}>
+      <div style={{ ...wrapper, gap: 8 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={lbl}>Max releases to show</span>
           <input
@@ -1391,7 +1391,7 @@ function ColumnsSection({
   const presetNames = Object.keys(presets);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 653, textTransform: 'none', color: 'var(--ds-text-subtlest)', letterSpacing: '0.04em' }}>
           Columns to display
@@ -1418,7 +1418,7 @@ function ColumnsSection({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '2px 6px',
+                padding: '0px 6px',
                 background: 'var(--ds-background-neutral)',
                 border: '1px solid var(--ds-border)',
                 borderRadius: 12,
@@ -1462,7 +1462,7 @@ function ColumnsSection({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                padding: '6px 8px',
+                padding: '4px 8px',
                 borderBottom: idx < active.length - 1 ? '1px solid var(--ds-border)' : 'none',
                 background: dragIdx === idx
                   ? 'var(--ds-background-selected)'
@@ -1479,7 +1479,7 @@ function ColumnsSection({
               <span style={{ flex: 1 }}>{def.label}</span>
               {active.length > 1 && (
                 <button type="button" onClick={() => remove(colId)}
-                  style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest)', display: 'inline-flex' }}
+                  style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest)', display: 'inline-flex' }}
                   aria-label={`Remove ${def.label} column`}>
                   <Trash2 size={12} />
                 </button>
@@ -1538,7 +1538,7 @@ function ColumnsSection({
                     onChange={(e) => setAddQuery(e.target.value)}
                     placeholder="Search columns…"
                     style={{
-                      margin: 6,
+                      margin: 4,
                       padding: '4px 8px',
                       height: 28,
                       fontSize: 'var(--ds-font-size-200)',
@@ -1561,7 +1561,7 @@ function ColumnsSection({
                       style={{
                         display: 'block',
                         width: '100%',
-                        padding: '6px 10px',
+                        padding: '4px 10px',
                         border: 0,
                         background: 'transparent',
                         textAlign: 'left',

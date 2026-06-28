@@ -33,7 +33,7 @@ export const CHART_TOOLTIP_STYLE: React.CSSProperties = {
   backgroundColor: 'var(--ds-text)',
   color: 'var(--ds-text-inverse)',
   borderRadius: '8px',
-  padding: '10px 14px',
+  padding: '8px 14px',
   fontSize: '12px',
   border: 'none',
   boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.15))',

@@ -56,7 +56,7 @@ export function injectMentionStyles(): void {
       text-decoration: none !important;
       border: none !important;
       box-shadow: none !important;
-      outline: none !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       white-space: nowrap !important;
     }
 
@@ -78,7 +78,7 @@ export function injectMentionStyles(): void {
       text-decoration: none !important;
       border: none !important;
       box-shadow: none !important;
-      outline: none !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       padding: 0 !important;
       margin: 0 !important;
       height: auto !important;

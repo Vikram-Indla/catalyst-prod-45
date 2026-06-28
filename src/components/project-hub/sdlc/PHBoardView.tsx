@@ -37,7 +37,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 onClick={() => setActiveBoardIdx(i)}
                 className={`transition-all ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
                 style={{
-                  padding: '5px 14px',
+                  padding: '4px 14px',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: isActive ? 600 : 500,
                   fontFamily: 'var(--cp-font-body)',
@@ -73,7 +73,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 maxWidth: 320,
                 flex: '1 1 280px',
                 borderRadius: 12,
-                padding: '10px 10px 12px',
+                padding: '8px 10px 12px',
                 border: isOnHold ? '1.5px dashed var(--sem-warning)' : '1px solid var(--divider)',
               }}
             >
@@ -161,7 +161,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
               <button
                 className="flex items-center gap-1.5 mt-2 w-full rounded-lg transition-colors"
                 style={{
-                  padding: '6px 10px',
+                  padding: '4px 10px',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--fg-4)',
@@ -227,7 +227,7 @@ function BoardCard({
         className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10 bg-[var(--bg-app)]"
         style={{
           boxShadow: '0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,.12))',
-          padding: '2px 4px',
+          padding: '0px 4px',
           opacity: hovered ? 1 : 0,
           transform: hovered ? 'translateY(0)' : 'translateY(-4px)',
           transition: 'opacity 150ms ease, transform 150ms ease',
@@ -257,7 +257,7 @@ function BoardCard({
         ))}
       </div>
 
-      <div style={{ padding: '10px 12px 10px 14px' }}>
+      <div style={{ padding: '8px 12px 10px 14px' }}>
         {/* Top: Type icon + Key + Source */}
         <div className="flex items-center gap-1.5 mb-1">
           <PHIssueTypeIcon type={issue.type} size={16} />
@@ -292,7 +292,7 @@ function BoardCard({
             fontWeight: 500,
             color: 'var(--fg-1)',
             lineHeight: 1.35,
-            marginBottom: 6,
+            marginBottom: 4,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical' as const,

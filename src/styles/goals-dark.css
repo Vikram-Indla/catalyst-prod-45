@@ -126,7 +126,7 @@
 }
 
 /* Search/input container */
-[data-theme="dark"] [data-goals-page] div[style*="background: var(--ds-surface, rgb(255, 255, 255))"][style*="padding: 5px 10px"] {
+[data-theme="dark"] [data-goals-page] div[style*="background: var(--ds-surface, rgb(255, 255, 255))"][style*="padding: 4px 10px"] {
   background: transparent !important;
   border-color: var(--ds-border, var(--cp-ink-1)) !important;
 }
@@ -148,7 +148,7 @@
 }
 
 /* View Switcher pill bar */
-[data-theme="dark"] [data-goals-page] div[style*="background: var(--ds-surface-sunken, rgb(241, 245, 249))"][style*="borderRadius: 8"][style*="padding: 3"] {
+[data-theme="dark"] [data-goals-page] div[style*="background: var(--ds-surface-sunken, rgb(241, 245, 249))"][style*="borderRadius: 8"][style*="padding: 4"] {
   background: var(--ds-border, var(--cp-ink-1)) !important;
 }
 [data-theme="dark"] [data-goals-page] div[style*="background: var(--ds-surface-sunken, rgb(241, 245, 249))"] button[style*="background: var(--ds-surface, rgb(255, 255, 255))"] {

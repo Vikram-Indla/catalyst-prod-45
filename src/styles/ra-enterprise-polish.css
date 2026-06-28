@@ -172,7 +172,7 @@
   font-size: var(--ra-text-project-size-polish) !important;
   font-weight: 500 !important;
   color: var(--ds-text-subtlest) !important;
-  margin-top: 3px !important;
+  margin-top: 4px !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -243,7 +243,7 @@
 .ra-polish [class*="utilization"] > span {
   font-size: 13px !important;
   font-weight: 700 !important;
-  padding: 5px 12px !important;
+  padding: 4px 12px !important;
   border-radius: 6px !important;
   box-shadow: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)) !important;
 }
@@ -257,7 +257,7 @@
   letter-spacing: 0.5px !important;
   color: var(--ds-text-subtle) !important;
   background: var(--ds-surface-sunken) !important;
-  border-bottom: 2px solid var(--ds-border, var(--cp-bg-sunken)) !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken)) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────

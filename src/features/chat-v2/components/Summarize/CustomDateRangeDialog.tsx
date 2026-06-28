@@ -137,7 +137,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '20px 24px 16px',
+            padding: '16px 24px 16px',
           }}
         >
           <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
@@ -263,7 +263,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
           >
             Clear selection
           </button>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             <button
               type="button"
               onClick={onClose}
@@ -370,7 +370,7 @@ function CalendarNavButton({ side, onClick }: { side: 'left' | 'right'; onClick:
       aria-label={side === 'left' ? 'Previous month' : 'Next month'}
       style={{
         position: 'absolute',
-        top: 6,
+        top: 4,
         [side]: 24,
         width: 28,
         height: 28,
@@ -423,7 +423,7 @@ function CalendarMonth({
           textAlign: 'center',
           fontSize: 'var(--ds-font-size-500)',
           fontWeight: 700,
-          padding: '6px 0 10px',
+          padding: '4px 0 10px',
           color: 'var(--cv2-text-strong)',
         }}
       >
@@ -434,7 +434,7 @@ function CalendarMonth({
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
           gap: 0,
-          paddingBottom: 6,
+          paddingBottom: 4,
           color: 'var(--cv2-text-muted)',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
@@ -572,7 +572,7 @@ function DayCell({
         aria-label={`${date.toDateString()}${isFuture ? ' (future, disabled)' : ''}`}
         style={{
           position: 'absolute',
-          inset: 3,
+          inset: 4,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',

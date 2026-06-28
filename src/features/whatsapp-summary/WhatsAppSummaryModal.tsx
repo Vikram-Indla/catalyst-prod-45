@@ -87,9 +87,9 @@ function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: 
     return (
       <div style={{ background: token('color.background.warning', 'var(--ds-background-warning)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
         <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: token('color.text.warning', 'var(--ds-text-warning)') }}>AI generation failed</div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginTop: 0 }}>
           Showing a count-based fallback. Edit below or retry.
-          {errorMessage && <span style={{ display: 'block', marginTop: 2, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)' }}>{errorMessage}</span>}
+          {errorMessage && <span style={{ display: 'block', marginTop: 0, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)' }}>{errorMessage}</span>}
         </div>
       </div>
     );

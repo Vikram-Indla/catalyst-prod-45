@@ -315,7 +315,7 @@
 .sp-panel .sp-summary-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
   width: 100%;
 }
@@ -363,15 +363,15 @@
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-panel .sp-desc-trigger:focus-visible {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
   opacity: 1;
 }
 .sp-panel .sp-desc-trigger-dot {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 0px;
+  right: 0px;
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -410,7 +410,7 @@
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-panel .sp-summary-edit-btn:focus-visible {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
   opacity: 1;
@@ -442,7 +442,7 @@
   padding: 0 8px;
   border: 2px solid var(--ds-border-focused, #4C9AFF);
   border-radius: 3px;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-size: 14px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
@@ -485,7 +485,7 @@
   opacity: 1 !important;
 }
 .sp-inline-summary-btn:focus-visible {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
 }
@@ -555,10 +555,10 @@
 .sp-status-btn-ak {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 0px;
   border: none;
   background: transparent;
-  padding: 2px 4px;
+  padding: 0px 4px;
   border-radius: 3px;
   cursor: pointer;
   font-family: inherit;
@@ -704,15 +704,15 @@
 .sp-pop-search {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--ds-border, rgba(9,30,66,0.1));
+  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.1));
 }
 .sp-pop-search-input {
   flex: 1;
   height: 24px;
   border: none;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: transparent;
@@ -727,7 +727,7 @@
 }
 
 .sp-pop-group + .sp-pop-group {
-  border-top: 1px solid var(--ds-border, rgba(9,30,66,0.08));
+  border-top: 0px solid var(--ds-border, rgba(9,30,66,0.08));
 }
 
 .sp-pop-group-label {
@@ -744,7 +744,7 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 6px 10px;
+  padding: 4px 10px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -794,13 +794,13 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border, rgba(9,30,66,0.1));
+  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.1));
 }
 .sp-colpicker-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 4px 12px;
   cursor: pointer;
   transition: background 0.12s;
   font-size: 13px;
@@ -887,7 +887,7 @@
   /* Aligned with the title text at 24px (after the chevron's -4 margin,
      the title now starts at chevron-right(-4+24) + title-padding(4) = 24). */
   margin-left: 24px;
-  margin-top: 2px;
+  margin-top: 0px;
   padding: 4px 8px;
   border-radius: 3px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
@@ -913,7 +913,7 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  margin-right: 2px;
+  margin-right: 0px;
   color: var(--ds-text-subtle, #44546f);
   border-radius: 3px;
   cursor: pointer;
@@ -929,7 +929,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 4px;
+  padding: 0px 4px;
   /* 2026-06-07: gray idle border (was `transparent`) so the row reads as
      a discrete input affordance even when not focused. focus-within
      rule below swaps to brand blue. */
@@ -958,7 +958,7 @@
   align-items: center;
   gap: 4px;
   padding: 0 4px 0 8px;
-  border-left: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  border-left: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
 }
 .sp-create-submit {
   display: inline-flex;
@@ -994,7 +994,7 @@
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  padding: 6px 4px;
+  padding: 4px 4px;
   z-index: 60;
   max-height: 340px;
   overflow-y: auto;
@@ -1002,8 +1002,8 @@
 .sp-create-section-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px 4px;
+  gap: 4px;
+  padding: 4px 10px 4px;
   font-size: 10px;
   font-weight: 700;
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
@@ -1015,7 +1015,7 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 6px 10px;
+  padding: 4px 10px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1122,20 +1122,20 @@
   justify-content: space-between;
   padding: 8px 10px;
   background: var(--ds-background-neutral, #F1F2F4);
-  border-bottom: 1px solid var(--ds-border, rgba(9,30,66,0.08));
+  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.08));
 }
 .sp-board-count {
   font-size: 11px;
   font-weight: 700;
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 9px;
 }
 .sp-board-col-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   padding: 8px;
 }
 .sp-board-empty {
@@ -1203,7 +1203,7 @@
   font-size: 13px;
   font-weight: 600;
   padding: 4px 8px 4px 0;
-  border-right: 1px solid var(--ds-surface, rgba(255,255,255,0.2));
+  border-right: 0px solid var(--ds-surface, rgba(255,255,255,0.2));
   margin-right: 4px;
 }
 .sp-bulkbar-btn {

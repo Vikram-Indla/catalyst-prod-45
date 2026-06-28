@@ -72,7 +72,7 @@ export const GroupHeader = memo(function GroupHeader({
           fontSize: 'var(--ds-font-size-200)',
           color: 'var(--ds-icon-subtle)',
           fontWeight: 500,
-          padding: '2px 6px',
+          padding: '0px 6px',
           backgroundColor: 'var(--ds-background-neutral)',
           borderRadius: '3px',
         }}

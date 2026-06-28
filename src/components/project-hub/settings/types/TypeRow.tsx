@@ -45,7 +45,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       {/* Level badge */}
       <span
         className="flex-shrink-0 rounded-full"
-        style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 10px', background: ls.bg, color: ls.text }}
+        style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0px 10px', background: ls.bg, color: ls.text }}
       >
         {normalizedLevel}
       </span>

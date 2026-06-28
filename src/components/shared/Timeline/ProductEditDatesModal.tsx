@@ -327,7 +327,7 @@ function DiffValue({ original, pending }: { original: string | null; pending: st
     );
   }
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)' }}>
       <span style={{ color: 'var(--ds-text-subtle)', textDecoration: 'line-through' }}>{orig}</span>
       <span style={{ color: 'var(--ds-text-subtle)' }}>→</span>
       <span style={{ color: 'var(--ds-text)' }}>{next}</span>

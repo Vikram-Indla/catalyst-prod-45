@@ -279,7 +279,7 @@ function SwitcherPanel({
 
         {/* Empty state when search returns nothing */}
         {q && filteredMain.length === 0 && filtered(starredItems).length === 0 && (
-          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
+          <div style={{ padding: '16px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtlest)' }}>
             No results for "{search}"
           </div>
@@ -287,7 +287,7 @@ function SwitcherPanel({
 
         {/* Empty state — no items at all */}
         {!q && allItems.length === 0 && starredItems.length === 0 && (
-          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
+          <div style={{ padding: '16px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtlest)' }}>
             {mode === 'tasks' ? 'No active workstreams' :
              mode === 'project' ? 'No projects yet' : 'No products yet'}
@@ -298,7 +298,7 @@ function SwitcherPanel({
       {/* Footer */}
       <div style={{
         borderTop: '1px solid var(--ds-border)',
-        padding: '6px 8px',
+        padding: '4px 8px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -346,11 +346,11 @@ function Section({
   onNavigate: (item: SwitcherItem) => void;
 }) {
   return (
-    <div style={{ padding: '6px 0 2px' }}>
+    <div style={{ padding: '4px 0 2px' }}>
       {label && (
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          padding: '2px 12px 4px',
+          display: 'flex', alignItems: 'center', gap: 4,
+          padding: '0px 12px 4px',
           fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
           color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.06em',
@@ -395,7 +395,7 @@ function ItemRow({ item, isCurrent, onNavigate }: {
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-        padding: '7px 12px',
+        padding: '8px 12px',
         border: 'none', cursor: 'pointer', textAlign: 'left',
         background: isCurrent
           ? 'var(--ds-background-selected)'
@@ -431,7 +431,7 @@ function ItemRow({ item, isCurrent, onNavigate }: {
         <div style={{
           fontSize: 'var(--ds-font-size-100)', fontFamily: 'monospace',
           color: 'var(--ds-text-subtlest)',
-          marginTop: 1,
+          marginTop: 0,
         }}>
           {item.key}
         </div>
@@ -703,7 +703,7 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
       aria-haspopup="dialog"
       aria-label={ariaLabel}
       style={{
-        display: 'flex', alignItems: 'center', gap: 5,
+        display: 'flex', alignItems: 'center', gap: 4,
         height: 32, padding: '0 8px 0 6px',
         background: triggerBg,
         border: open

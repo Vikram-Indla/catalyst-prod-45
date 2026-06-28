@@ -36,7 +36,7 @@ const ITEM_BASE: React.CSSProperties = {
   alignItems: 'center',
   gap: 8,
   width: '100%',
-  padding: '6px 12px',
+  padding: '4px 12px',
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
@@ -286,7 +286,7 @@ export function HeaderOverflowMenu({
             />
             <div
               style={{
-                padding: '6px 12px',
+                padding: '4px 12px',
                 fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest)',
               }}

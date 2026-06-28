@@ -343,7 +343,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
         >
           {label}
         </span>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
           {state === 'accepted' && (
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.success', 'var(--ds-text-success)'), fontWeight: 600 }}>
               ✓ Applied
@@ -387,7 +387,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
               color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              marginBottom: 6,
+              marginBottom: 4,
             }}
           >
             Original
@@ -413,7 +413,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
               color: token('color.text.success', 'var(--ds-text-success)'),
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              marginBottom: 6,
+              marginBottom: 4,
             }}
           >
             Improved

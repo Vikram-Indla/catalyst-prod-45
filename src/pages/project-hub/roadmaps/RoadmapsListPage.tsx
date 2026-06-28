@@ -143,7 +143,7 @@ function RoadmapKebabMenu({ row, currentUserId, projectKey, onDeleted }: Roadmap
       onClick={(e) => { e.stopPropagation(); setOpen(false); onClick(); }}
       onKeyDown={(e) => e.key === 'Enter' && (setOpen(false), onClick())}
       style={{
-        padding: '6px 12px',
+        padding: '4px 12px',
         fontSize: 'var(--ds-font-size-400)',
         cursor: 'pointer',
         color: danger ? 'var(--ds-text-danger)' : token('color.text'),
@@ -401,7 +401,7 @@ export default function RoadmapsListPage() {
       defaultVisible: true,
       accessor: r => r.title,
       cell: ({ row }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, overflow: 'hidden' }}>
           <Link
             to={`/project-hub/${projectKey}/roadmaps/${row.id}`}
             onClick={e => e.stopPropagation()}

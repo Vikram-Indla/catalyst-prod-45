@@ -140,7 +140,7 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                     <div
                       className="absolute top-1.5 bg-secondary-bronze text-white text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider z-10"
                       style={{ 
-                        left: '50%',
+                        left: '48%',
                         transform: 'translateX(-50%)'
                       }}
                     >

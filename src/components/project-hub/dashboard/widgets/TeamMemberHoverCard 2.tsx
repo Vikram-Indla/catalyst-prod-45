@@ -92,7 +92,7 @@ export default function TeamMemberHoverCard({
       }}
     >
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <UserAvatar size="medium" name={name} />
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           <span style={{ ...STRONG, color: token('color.text', 'var(--ds-text)') }}>{name}</span>
@@ -109,7 +109,7 @@ export default function TeamMemberHoverCard({
           textTransform: 'none',
           letterSpacing: '0.04em',
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          marginBottom: 6,
+          marginBottom: 4,
         }}
       >
         Recently accessed
@@ -146,7 +146,7 @@ export default function TeamMemberHoverCard({
                   gridTemplateColumns: '16px 60px 1fr auto',
                   alignItems: 'center',
                   gap: 8,
-                  padding: '6px 6px',
+                  padding: '4px 6px',
                   borderRadius: 4,
                   cursor: key ? 'pointer' : 'default',
                   ...BODY,

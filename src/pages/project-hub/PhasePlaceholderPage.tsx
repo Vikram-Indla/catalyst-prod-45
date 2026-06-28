@@ -19,7 +19,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
 
         <div
           className="flex flex-col items-center justify-center ph-card"
-          style={{ padding: '80px 40px' }}
+          style={{ padding: '48px 40px' }}
         >
           <Icon size={48} color="var(--ds-text-disabled)" strokeWidth={1.25} />
           <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>

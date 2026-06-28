@@ -85,7 +85,7 @@ export function MicRecordingBar({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            padding: '6px 10px 6px 10px',
+            padding: '4px 10px 6px 10px',
             borderRadius: 999,
             background: 'var(--ds-surface-overlay)',
             border: '1px solid var(--ds-border)',
@@ -134,7 +134,7 @@ export function MicRecordingBar({
               {label}
               {/* 3-dot trail — only while actively recording */}
               {isRecording && !isPaused && (
-                <span aria-hidden style={{ display: 'inline-flex', gap: 2, marginLeft: 3, verticalAlign: 'middle' }}>
+                <span aria-hidden style={{ display: 'inline-flex', gap: 0, marginLeft: 4, verticalAlign: 'middle' }}>
                   {[0, 1, 2].map((i) => (
                     <span
                       key={i}
@@ -170,7 +170,7 @@ export function MicRecordingBar({
           </span>
 
           {/* Controls */}
-          <span style={{ display: 'inline-flex', gap: 2, flexShrink: 0 }}>
+          <span style={{ display: 'inline-flex', gap: 0, flexShrink: 0 }}>
             <PillBtn
               label={isPaused ? 'Resume recording' : 'Pause recording'}
               onClick={onPauseResume}

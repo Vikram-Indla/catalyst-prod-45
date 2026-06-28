@@ -229,7 +229,7 @@ function PanelTabBtn({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 'var(--cv2-tabs-h, 40px)',
         padding: '0 10px',
         background: 'transparent',

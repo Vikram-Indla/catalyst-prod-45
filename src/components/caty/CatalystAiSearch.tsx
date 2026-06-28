@@ -60,7 +60,7 @@ function ensureCasStyles() {
     '.cas-field:focus-within{border-color:var(--ds-border-focused);box-shadow:0 0 0 1px var(--ds-border-focused);}' +
     // Descendant selector beats a global `input:focus` rule; kills the inner
     // ring so only the container highlights. Covers box-shadow AND outline.
-    '.cas-field input.cas-input:focus,.cas-field input.cas-input:focus-visible{outline:none!important;box-shadow:none!important;border-color:transparent!important;}';
+    '.cas-field input.cas-input:focus,.cas-field input.cas-input:focus-visible{outline: 2px solid var(--ds-border-focused)!important;box-shadow:none!important;border-color:transparent!important;}';
   document.head.appendChild(el);
 }
 
@@ -146,7 +146,7 @@ export function CatalystAiSearch({
           margin: 0,
           padding: 0,
           border: 0,
-          outline: 0,
+          outline: 2px solid var(--ds-border-focused),
           background: 'transparent',
           boxShadow: 'none',
           font: 'inherit',
@@ -167,7 +167,7 @@ export function CatalystAiSearch({
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           height: 26,
           padding: '0 8px 0 4px',
           flexShrink: 0,

@@ -307,7 +307,7 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
                 </Field>
 
                 <fieldset style={{ border: 'none', padding: 0, marginTop: 12 }}>
-                  <legend style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
+                  <legend style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                     Include
                   </legend>
                   <CheckboxField name="includeAttachments" defaultIsChecked={false}>

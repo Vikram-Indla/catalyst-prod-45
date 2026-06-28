@@ -23,7 +23,7 @@ export function StaleBadge({ ageDays, status, statusCategory }: { ageDays: numbe
   const stale = getStaleIndicator(ageDays, status, statusCategory);
   if (!stale) return null;
   return (
-    <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)', marginLeft: 2, cursor: 'help' }}>
+    <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)', marginLeft: 0, cursor: 'help' }}>
       {stale.icon}
     </span>
   );
@@ -33,7 +33,7 @@ export function StaleBadge({ ageDays, status, statusCategory }: { ageDays: numbe
 export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360Item; onOpenDetail: () => void }) {
   return (
     <div style={{
-      padding: '10px 16px 10px 28px', background: 'var(--ds-surface-sunken)',
+      padding: '8px 16px 10px 28px', background: 'var(--ds-surface-sunken)',
       borderBottom: '1px solid var(--divider)', borderLeft: '4px solid var(--cp-blue)',
       animation: 'expandIn 200ms ease-out',
     }}>
@@ -99,7 +99,7 @@ export function ExpandChevron({ expanded, onClick }: { expanded: boolean; onClic
         cursor: 'pointer', fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)',
         transition: 'transform .15s', display: 'inline-block',
         transform: expanded ? 'rotate(90deg)' : 'rotate(0)',
-        marginRight: 6, flexShrink: 0, width: 14, userSelect: 'none',
+        marginRight: 4, flexShrink: 0, width: 14, userSelect: 'none',
       }}
       title="Expand details"
     >

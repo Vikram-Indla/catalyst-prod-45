@@ -325,7 +325,7 @@ export default function IdeasRoadmapPage() {
 
       {toast && (
         <div style={{
-          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          position: 'fixed', bottom: 24, left: '48%', transform: 'translateX(-50%)',
           background: 'var(--ds-text)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', padding: '8px 20px',
           borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, zIndex: 100,
           boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.15))',

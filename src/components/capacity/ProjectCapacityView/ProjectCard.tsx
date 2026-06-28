@@ -82,7 +82,7 @@ export function ProjectCard({ utilization, onViewDetails, onResourceClick }: Pro
           {/* Required line marker */}
           <div 
             className="absolute top-0 bottom-0 w-px bg-foreground/30 z-10"
-            style={{ left: '100%' }}
+            style={{ left: '48%' }}
           />
           {/* Committed bar */}
           <div

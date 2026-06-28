@@ -532,7 +532,7 @@ describe('ReactionPicker', () => {
 
       const { container } = render(
         <div>
-          <button ref={triggerRef} style={{ position: 'fixed', top: '100px', left: '200px' }}>
+          <button ref={triggerRef} style={{ position: 'fixed', top: '48px', left: '48px' }}>
             Trigger
           </button>
           <ReactionPicker

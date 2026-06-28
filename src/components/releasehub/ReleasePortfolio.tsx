@@ -72,7 +72,7 @@ function ReleaseRow({ r, onOpen }: { r: ReleasePortfolioRow; onOpen: (id: string
           {r.targetEnv && <StatusLozenge appearance={ENV_APPEARANCE[r.targetEnv] ?? 'inprogress'} label={titleCase(r.targetEnv)} />}
           {r.health === 'at_risk' && !isTerminal && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.warning }}>at risk</span>}
         </div>
-        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
           {isDraft ? (
             <span>Draft · go-live not set{r.scopeItems === 0 ? ' · no scope' : ''}</span>
           ) : (

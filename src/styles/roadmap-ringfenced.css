@@ -180,7 +180,7 @@
 /* --- Page Header --- */
 .roadmap-page-header {
   padding: var(--cp-space-4) var(--cp-space-6);
-  border-bottom: 1px solid var(--cp-border-default);
+  border-bottom: 0px solid var(--cp-border-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -195,7 +195,7 @@
 .roadmap-page-subtitle {
   font-size: 13px;
   color: var(--cp-text-tertiary);
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 /* --- KPI Strip --- */
@@ -204,7 +204,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: var(--cp-space-4);
   padding: var(--cp-space-4) var(--cp-space-6);
-  border-bottom: 1px solid var(--cp-border-default);
+  border-bottom: 0px solid var(--cp-border-default);
 }
 .roadmap-kpi-card {
   background: var(--roadmap-kpi-bg);
@@ -218,7 +218,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--roadmap-kpi-label-color);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .roadmap-kpi-value {
   font-family: var(--roadmap-kpi-value-font);
@@ -235,10 +235,10 @@
   align-items: center;
   height: var(--roadmap-row-height);
   padding: 0 var(--cp-space-3);
-  border-bottom: 1px solid var(--cp-border-subtle);
+  border-bottom: 0px solid var(--cp-border-subtle);
   cursor: pointer;
   transition: background var(--cp-duration-fast) var(--cp-easing-standard);
-  gap: 6px;
+  gap: 4px;
 }
 .roadmap-row:hover { background: var(--cp-bg-secondary); }
 .roadmap-row:focus-visible { outline: 2px solid var(--cp-focus-ring); outline-offset: -2px; }
@@ -313,10 +313,10 @@
   height: 38px;
   padding: 0 var(--cp-space-3);
   background: var(--roadmap-group-bg);
-  border-bottom: 1px solid var(--roadmap-group-border);
+  border-bottom: 0px solid var(--roadmap-group-border);
   cursor: pointer;
   user-select: none;
-  gap: 6px;
+  gap: 4px;
 }
 .roadmap-group-header:hover { background: #EDF2F7; } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
 .roadmap-group-name {
@@ -350,7 +350,7 @@
 /* --- Timeline Bars --- */
 .roadmap-bar {
   position: absolute;
-  top: 5px;
+  top: 4px;
   height: var(--roadmap-bar-height);
   border-radius: var(--roadmap-bar-radius);
   display: flex;
@@ -413,7 +413,7 @@
 .roadmap-today-label {
   position: absolute;
   top: -20px;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
   font-size: 9px;
   font-weight: 700;
@@ -421,6 +421,6 @@
   letter-spacing: 0.08em;
   color: var(--cp-text-inverse);
   background: var(--roadmap-timeline-today-label-bg);
-  padding: 2px 6px;
+  padding: 0px 6px;
   border-radius: var(--cp-radius-sm);
 }

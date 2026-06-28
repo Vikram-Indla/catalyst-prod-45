@@ -87,13 +87,13 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.6))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.3))', zIndex: 60 }} />
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
         width: 440, maxWidth: '92vw', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-float)', borderRadius: 12,
         boxShadow: isDark ? '0 16px 48px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 16px 48px var(--ds-shadow-raised, rgba(0,0,0,0.12))', zIndex: 61,
         animation: 'fadeScaleIn 180ms ease-out',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', display: 'flex', alignItems: 'center' }}>
+        <div style={{ padding: '16px 24px 16px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', display: 'flex', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, margin: 0, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--fg-3)' }} />
@@ -101,7 +101,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         </div>
 
         {/* Form */}
-        <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
             <label style={labelStyle}>Title *</label>
             <input
@@ -162,7 +162,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',
             border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--fg-4)'), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-            display: 'flex', alignItems: 'center', gap: 6, opacity: submitting ? 0.7 : 1,
+            display: 'flex', alignItems: 'center', gap: 4, opacity: submitting ? 0.7 : 1,
           }}>
             <Send size={12} /> {submitting ? 'Submitting...' : 'Submit Request'}
           </button>

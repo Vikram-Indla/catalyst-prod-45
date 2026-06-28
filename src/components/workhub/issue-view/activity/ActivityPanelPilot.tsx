@@ -135,11 +135,11 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
         </div>
         <div className="ap-timeline-time">{fmtRel(entry.created_at)}</div>
         {showTypePill && (
-          <div style={{ marginTop: 6 }}>
+          <div style={{ marginTop: 4 }}>
             <span
               style={{
                 display: 'inline-block',
-                padding: '2px 8px',
+                padding: '0px 8px',
                 borderRadius: 3,
                 border: '1px solid var(--ds-border)',
                 background: 'var(--ds-background-neutral-subtle)',

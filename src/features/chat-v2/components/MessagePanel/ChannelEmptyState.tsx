@@ -17,7 +17,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
         padding: '32px 32px 16px',
         display: 'flex',
         flexDirection: 'column',
-        gap: 20,
+        gap: 16,
       }}
     >
       <div>
@@ -30,7 +30,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
             color: 'var(--cv2-text-strong)',
             display: 'flex',
             alignItems: 'baseline',
-            gap: 6,
+            gap: 4,
           }}
         >
           <span
@@ -47,7 +47,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
         </h1>
         <p
           style={{
-            margin: '6px 0 0',
+            margin: '4px 0 0',
             fontFamily: 'var(--cv2-font)',
             fontSize: 'var(--ds-font-size-500)',
             color: 'var(--cv2-text-subtle)',
@@ -56,7 +56,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
         >
           You created this channel today. This is the very beginning of the{' '}
           <strong style={{ color: 'var(--cv2-text-strong)' }}>
-            <span style={{ marginRight: 2 }}>{conversation.isPrivate ? '🔒' : '#'}</span>
+            <span style={{ marginRight: 0 }}>{conversation.isPrivate ? '🔒' : '#'}</span>
             {conversation.title}
           </strong>{' '}
           channel.
@@ -132,7 +132,7 @@ function PillButton({ onClick, children }: { onClick?: () => void; children: Rea
         display: 'inline-flex',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 14px',
+        padding: '4px 14px',
         background: 'transparent',
         color: 'var(--cv2-text)',
         border: '1px solid var(--cv2-border-strong)',
@@ -180,7 +180,7 @@ function ActionCard({
         position: 'relative',
         width: 200,
         height: 250,
-        padding: 18,
+        padding: 16,
         background,
         color: 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',

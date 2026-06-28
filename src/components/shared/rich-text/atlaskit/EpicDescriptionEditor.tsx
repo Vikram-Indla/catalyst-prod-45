@@ -201,7 +201,7 @@ if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID
       align-items: center;
       gap: 12px;
       width: 100%;
-      padding: 6px 12px;
+      padding: 4px 12px;
       border: none;
       background: none;
       cursor: pointer;
@@ -234,7 +234,7 @@ if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID
       font-weight: 500;
       color: var(--ds-text-subtle);
       background: var(--ds-background-neutral);
-      padding: 1px 6px;
+      padding: 0px 6px;
       border-radius: 3px;
       white-space: nowrap;
     }
@@ -945,11 +945,11 @@ function EpicDescriptionEditorImpl({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
               paddingTop: 4,
-              paddingLeft: 2,
+              paddingLeft: 0,
               userSelect: 'none',
             }}
           >
@@ -963,7 +963,7 @@ function EpicDescriptionEditorImpl({
               fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
               paddingTop: 4,
-              paddingLeft: 2,
+              paddingLeft: 0,
               userSelect: 'none',
               display: 'flex',
               alignItems: 'center',
@@ -977,7 +977,7 @@ function EpicDescriptionEditorImpl({
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   color: voiceRecording
                     ? token('color.text.danger', 'var(--ds-text-danger)')
                     : token('color.text.subtlest', 'var(--ds-icon-subtle)'),

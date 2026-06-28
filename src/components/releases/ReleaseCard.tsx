@@ -20,7 +20,7 @@ export function ReleaseCard({ release: r, onClick }: Props) {
       <div className={styles.cardHeader}>
         <div>
           <span className={styles.versionBadge}>{r.version}</span>
-          <div className={styles.cardTitle} style={{ marginTop: 6 }}>{r.name}</div>
+          <div className={styles.cardTitle} style={{ marginTop: 4 }}>{r.name}</div>
         </div>
         <ReleaseHealthChip score={r.health_score} level={r.health_level} />
       </div>

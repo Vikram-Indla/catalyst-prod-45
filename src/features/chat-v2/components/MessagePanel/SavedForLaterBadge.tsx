@@ -7,7 +7,7 @@ export function SavedForLaterBadge() {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         marginBottom: 4,
         color: 'var(--cv2-saved-fg)',
         fontFamily: 'var(--cv2-font)',

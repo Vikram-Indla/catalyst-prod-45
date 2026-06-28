@@ -147,7 +147,7 @@ export function JiraConnection() {
 
         {/* Status card - shown when connected or error */}
         {status !== 'not_configured' && (
-          <div className="wh-card" style={{ padding: 20 }}>
+          <div className="wh-card" style={{ padding: 16 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 {/* Jira logo placeholder */}
@@ -160,7 +160,7 @@ export function JiraConnection() {
                   JIRA
                 </div>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <ConnectionStatusBadge status={status} />
                     <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-tx4)' }}>
                       Last tested {formatTimeAgo(connection?.last_tested_at ?? null)}
@@ -186,7 +186,7 @@ export function JiraConnection() {
                 ].map(stat => (
                   <div key={stat.label} style={{
                     background: 'var(--wh-sf)', borderRadius: 'var(--wh-rad)',
-                    padding: '14px 12px', textAlign: 'center',
+                    padding: '12px 12px', textAlign: 'center',
                     border: '1px solid var(--wh-bdr)',
                   }}>
                     <div style={{
@@ -216,12 +216,12 @@ export function JiraConnection() {
                 }}>
                   ACCESSIBLE PROJECTS
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {projects.map(p => (
                     <span key={p.key} style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
                       background: 'var(--wh-sf)', border: '1px solid var(--wh-bdr)',
-                      borderRadius: 20, padding: '3px 10px 3px 8px',
+                      borderRadius: 20, padding: '4px 10px 3px 8px',
                       fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--wh-mo)', fontWeight: 500,
                       color: 'var(--wh-tx2)',
                     }}>
@@ -243,7 +243,7 @@ export function JiraConnection() {
                 borderTop: '1px solid var(--wh-bdr)', flexWrap: 'wrap',
               }}>
                 {checks.map(c => (
-                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-200)' }}>
+                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)' }}>
                     <span>{c.passed ? '✅' : '❌'}</span>
                     <span style={{ color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>{c.name}</span>
                     <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 'var(--ds-font-size-100)' }}>
@@ -261,13 +261,13 @@ export function JiraConnection() {
                 background: 'var(--wh-dng-bg)', borderRadius: 'var(--wh-rad)',
                 border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))',
               }}>
-                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
                   ❌ Connection failed
                 </div>
                 {checks
                   .filter((c: any) => !c.passed)
                   .map((c: any) => (
-                    <div key={c.name} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-tx2)', marginBottom: 2 }}>
+                    <div key={c.name} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-tx2)', marginBottom: 0 }}>
                       • {c.name}: {c.message}
                     </div>
                   ))
@@ -281,7 +281,7 @@ export function JiraConnection() {
                 display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap',
               }}>
                 {checks.map((c: any) => (
-                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-200)' }}>
+                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)' }}>
                     <span>{c.passed ? '✅' : '❌'}</span>
                     <span style={{ color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>{c.name}</span>
                     <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 'var(--ds-font-size-100)' }}>
@@ -322,7 +322,7 @@ export function JiraConnection() {
           <div className="wh-card" style={{ padding: 24 }}>
             <h3 style={{
               fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
-              color: 'var(--wh-tx)', marginBottom: 20,
+              color: 'var(--wh-tx)', marginBottom: 16,
             }}>
               {isEditing ? 'Edit Credentials' : 'Configure Connection'}
             </h3>
@@ -335,7 +335,7 @@ export function JiraConnection() {
                 </label>
                 <div style={{ position: 'relative' }}>
                   <span style={{
-                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                    position: 'absolute', left: 12, top: '48%', transform: 'translateY(-50%)',
                     display: 'flex', color: 'var(--wh-tx4)',
                   }}>
                     <GlobeIcon label="" size="small" />
@@ -343,7 +343,7 @@ export function JiraConnection() {
                   <input
                     id="wh-site-url"
                     className={`wh-input ${touched.url && errors.url ? 'error' : ''}`}
-                    style={{ paddingLeft: 36 }}
+                    style={{ paddingLeft: 32 }}
                     placeholder="https://myorg.atlassian.net"
                     value={siteUrl}
                     onChange={(e) => { setSiteUrl(e.target.value); setErrors(p => ({ ...p, url: undefined })); }}
@@ -361,7 +361,7 @@ export function JiraConnection() {
                 </label>
                 <div style={{ position: 'relative' }}>
                   <span style={{
-                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                    position: 'absolute', left: 12, top: '48%', transform: 'translateY(-50%)',
                     display: 'flex', color: 'var(--wh-tx4)',
                   }}>
                     <EmailIcon label="" size="small" />
@@ -369,7 +369,7 @@ export function JiraConnection() {
                   <input
                     id="wh-auth-email"
                     className={`wh-input ${touched.email && errors.email ? 'error' : ''}`}
-                    style={{ paddingLeft: 36 }}
+                    style={{ paddingLeft: 32 }}
                     type="email"
                     placeholder="admin@company.com"
                     value={authEmail}
@@ -388,7 +388,7 @@ export function JiraConnection() {
                 </label>
                 <div style={{ position: 'relative' }}>
                   <span style={{
-                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                    position: 'absolute', left: 12, top: '48%', transform: 'translateY(-50%)',
                     display: 'flex', color: 'var(--wh-tx4)',
                   }}>
                     <LockLockedIcon label="" size="small" />
@@ -396,7 +396,7 @@ export function JiraConnection() {
                   <input
                     id="wh-auth-token"
                     className={`wh-input ${touched.token && errors.token ? 'error' : ''}`}
-                    style={{ paddingLeft: 36, paddingRight: 40 }}
+                    style={{ paddingLeft: 32, paddingRight: 40 }}
                     type={showToken ? 'text' : 'password'}
                     placeholder={status === 'connected' ? '••••••••••••••••' : 'Paste your Jira API token'}
                     value={authToken}
@@ -408,7 +408,7 @@ export function JiraConnection() {
                     type="button"
                     onClick={() => setShowToken(!showToken)}
                     style={{
-                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                      position: 'absolute', right: 8, top: '48%', transform: 'translateY(-50%)',
                       border: 'none', background: 'none', cursor: 'pointer', padding: 4,
                       color: 'var(--wh-tx4)',
                     }}

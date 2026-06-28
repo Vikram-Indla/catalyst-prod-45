@@ -272,7 +272,7 @@ export function AddParentPicker({
           >
             <JiraIssueTypeIcon type={effectiveType} size={16} />
             <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', marginRight: 6 }}>{parentKey}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', marginRight: 4 }}>{parentKey}</span>
               {effectiveSummary}
             </span>
           </button>
@@ -320,7 +320,7 @@ export function AddParentPicker({
           title={`Change ${noun}`}
           style={{
             background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
-            padding: '2px 4px', display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '0px 4px', display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle)',
             fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
             transition: 'background 150ms, color 150ms',
@@ -342,7 +342,7 @@ export function AddParentPicker({
         aria-label={`Add ${noun}`}
         style={{
           background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
-          padding: '2px 4px', display: 'inline-flex', alignItems: 'center',
+          padding: '0px 4px', display: 'inline-flex', alignItems: 'center',
           fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle)',
           fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
           transition: 'background 150ms, color 150ms',
@@ -375,7 +375,7 @@ export function AddParentPicker({
         {!showAllPanel ? (
           <>
             {/* Recent items */}
-            <div style={{ padding: '10px 16px 6px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <div style={{ padding: '8px 16px 6px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               Recent {plural}
             </div>
             <div style={{ maxHeight: 300, overflowY: 'auto' }}>
@@ -384,8 +384,8 @@ export function AddParentPicker({
                   key={row.id}
                   onClick={() => handleSelect(row.issue_key)}
                   style={{
-                    width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                    textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                    width: '100%', padding: '8px 16px', border: 'none', background: 'transparent',
+                    textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                     fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', transition: 'background 100ms',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}
@@ -405,7 +405,7 @@ export function AddParentPicker({
                 <button
                   onClick={() => handleSelect(null)}
                   style={{
-                    width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                    width: '100%', padding: '8px 16px', border: 'none', background: 'transparent',
                     textAlign: 'left', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontWeight: 400,
                     transition: 'background 100ms',
                   }}
@@ -418,7 +418,7 @@ export function AddParentPicker({
               <button
                 onClick={() => setShowAllPanel(true)}
                 style={{
-                  width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
+                  width: '100%', padding: '8px 16px', border: 'none', background: 'transparent',
                   textAlign: 'left', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontWeight: 500,
                   transition: 'background 100ms',
                 }}
@@ -431,7 +431,7 @@ export function AddParentPicker({
           </>
         ) : (
           /* "View all" panel with search */
-          <div style={{ padding: '20px 24px' }}>
+          <div style={{ padding: '16px 24px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', marginBottom: 8 }}>Change {noun}</div>
             <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', marginBottom: 4 }}>
               Select a parent work item. Work items can only belong to one parent at a time.
@@ -441,7 +441,7 @@ export function AddParentPicker({
                 <strong>{issueKey}</strong> is currently assigned to <strong>{parentKey}</strong>.
               </div>
             )}
-            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', marginBottom: 6 }}>{Noun}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', marginBottom: 4 }}>{Noun}</div>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -460,8 +460,8 @@ export function AddParentPicker({
                   <button
                     onClick={() => { handleSelect(null); handleReset(); }}
                     style={{
-                      width: '100%', padding: '10px 14px', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
-                      textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                      width: '100%', padding: '8px 14px', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
+                      textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                       fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-background-danger-bold)', fontWeight: 500, transition: 'background 100ms',
                       borderBottom: '1px solid var(--ds-border)',
                     }}
@@ -482,8 +482,8 @@ export function AddParentPicker({
                       key={row.id}
                       onClick={() => { handleSelect(row.issue_key); handleReset(); }}
                       style={{
-                        width: '100%', padding: '10px 14px', border: 'none', background: 'transparent',
-                        textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                        width: '100%', padding: '8px 14px', border: 'none', background: 'transparent',
+                        textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                         fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', transition: 'background 100ms',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-information)')}

@@ -203,7 +203,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
             style={{
-              fontSize: 'var(--ds-font-size-200)', padding: '2px 8px', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', padding: '0px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
               color: page === 1 ? (isDark ? DK.t4 : 'var(--ds-text-disabled)') : (isDark ? DK.t2 : 'var(--fg-2)'),
@@ -215,7 +215,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
             style={{
-              fontSize: 'var(--ds-font-size-200)', padding: '2px 8px', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', padding: '0px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
               color: page === totalPages ? (isDark ? DK.t4 : 'var(--ds-text-disabled)') : (isDark ? DK.t2 : 'var(--fg-2)'),
@@ -228,9 +228,9 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
       {/* Bulk action bar */}
       {selected.size > 0 && (
         <div style={{
-          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          position: 'fixed', bottom: 24, left: '48%', transform: 'translateX(-50%)',
           background: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 12,
-          padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
+          padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: '0 8px 30px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 50,
         }}>
           <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500 }}>{selected.size} selected</span>

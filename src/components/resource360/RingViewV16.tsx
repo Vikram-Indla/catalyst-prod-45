@@ -248,7 +248,7 @@ const HubBadge: React.FC<{ hub: string }> = ({ hub }) => {
   const color = (HUB_COLORS as Record<string, string>)[hub] || T.accent;
   return (
     <span style={{
-      display: 'inline-block', padding: '1px 5px', borderRadius: 4,
+      display: 'inline-block', padding: '0px 5px', borderRadius: 4,
       fontSize: 8.5, fontWeight: 800, letterSpacing: '0.06em',
       background: color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', lineHeight: 1.5,
     }}>{hub}</span>
@@ -260,7 +260,7 @@ const PriorityPill: React.FC<{ priority: string }> = ({ priority }) => {
   const color = PRIORITY_COLORS[priority] || T.ink3;
   return (
     <span style={{
-      display: 'inline-block', padding: '1px 6px', borderRadius: 4,
+      display: 'inline-block', padding: '0px 6px', borderRadius: 4,
       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, border: `1px solid ${color}`,
       color, background: 'transparent', lineHeight: 1.5,
     }}>{priority}</span>
@@ -460,7 +460,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', fontFamily: T.inter }}>
       {/* §5 FILTER BAR — 38px */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
+        display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px',
         background: 'var(--bg-app)', borderBottom: `1px solid ${T.border}`, height: 38, flexShrink: 0,
       }}>
         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>ACTIVE</span>
@@ -495,7 +495,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
         <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontWeight: 600, fontFamily: T.inter }}>
           {filteredActive.length} items · Page {ringPage + 1}/{Math.max(1, Math.ceil(filteredActive.length / MAX_PER_PAGE))}
         </span>
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
           <button onClick={() => setRingPage(Math.max(0, ringPage - 1))} disabled={ringPage <= 0} style={{
             width: 24, height: 24, border: `1px solid ${T.border}`, borderRadius: 4,
             background: 'var(--bg-app)', cursor: ringPage <= 0 ? 'not-allowed' : 'pointer',
@@ -513,7 +513,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
       {/* §6 WEEK RIBBON — 36px (DEF-10: Calendar icon, not pin) */}
       <div style={{
-        height: 50, display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
+        height: 50, display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px',
         borderBottom: `1px solid ${T.border}`, flexShrink: 0,
         background: 'linear-gradient(90deg, var(--ds-background-information, rgba(37,99,235,0.06)), transparent 60%)',
       }}>
@@ -563,7 +563,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
               : 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface-sunken) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 100%), radial-gradient(circle, var(--ds-text-disabled) 1px, transparent 1px)',
             backgroundSize: 'cover, 24px 24px',
             boxSizing: 'border-box',
-            padding: 20,
+            padding: 16,
           }}>
             {/* SVG spokes — pixel-aligned to rendered cards */}
             <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, overflow: 'hidden', pointerEvents: 'none' }}>
@@ -601,7 +601,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   zIndex: 2, pointerEvents: 'none',
                   background: isSelected ? T.accent : 'var(--bg-app)',
                   border: `1px solid ${isSelected ? 'var(--ds-background-brand-bold-hovered)' : 'var(--divider)'}`,
-                  borderRadius: 12, padding: '2px 8px',
+                  borderRadius: 12, padding: '0px 8px',
                   fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
                   color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : 'var(--fg-2)',
                   opacity: hasSel && !isSelected ? 0.3 : 1,
@@ -614,7 +614,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
             {/* CENTER IDENTITY */}
             <div style={{
-              position: 'absolute', left: '50%', top: '48%',
+              position: 'absolute', left: '48%', top: '48%',
               transform: 'translate(-50%, -50%)',
               textAlign: 'center', pointerEvents: 'none', zIndex: 3,
             }}>
@@ -626,7 +626,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
               }}>
                 <span style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>{initials}</span>
               </div>
-              <div style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--fg-1)', marginTop: 6 }}>{resourceName}</div>
+              <div style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--fg-1)', marginTop: 4 }}>{resourceName}</div>
               <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontWeight: 500 }}>{resourceRole}</div>
             </div>
 
@@ -673,7 +673,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   <div style={{ padding: '8px 10px 10px 13px' }}>
                     {/* Row 1: Jira icon + type + priority */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 6px', borderRadius: 4, background: typeBadge.bg }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 6px', borderRadius: 4, background: typeBadge.bg }}>
                         {getJiraIconForType(item.type)}
                         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: typeBadge.color, textTransform: 'uppercase' }}>{item.type}</span>
                       </div>
@@ -685,7 +685,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)' }}>{item.key}</span>
                       {item.projectKey && (
                         <span style={{
-                          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 5px', borderRadius: 4,
+                          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 5px', borderRadius: 4,
                           background: projColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', letterSpacing: '0.02em',
                         }}>{item.projectKey}</span>
                       )}
@@ -696,7 +696,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     <div style={{
                       fontSize: 12.5, fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.35,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden', marginBottom: 6, minHeight: 28,
+                      overflow: 'hidden', marginBottom: 4, minHeight: 28,
                     }}>{item.title}</div>
 
                     {/* Status pill — inline colors */}
@@ -718,9 +718,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
               <div
                 onClick={toggleCompleted}
                 style={{
-                  position: 'absolute', right: 20, top: '48%', transform: 'translateY(-50%)',
+                  position: 'absolute', right: 16, top: '48%', transform: 'translateY(-50%)',
                   zIndex: 6, textAlign: 'center',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   cursor: 'pointer',
                 }}>
                 <div style={{
@@ -816,11 +816,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 </div>
 
                 {/* Badges row — CG-05 status pill + Jira type badge */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
                   <StatusPill status={selectedItem.status} />
                   <PriorityPill priority={selectedItem.priority} />
                   <span style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 4,
+                    display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 8px', borderRadius: 4,
                     background: getTypeBadgeStyle(selectedItem.type).bg, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                     color: getTypeBadgeStyle(selectedItem.type).color,
                   }}>
@@ -829,7 +829,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   </span>
                   {selectedItem.projectKey && (
                     <span style={{
-                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: 4,
                       background: getProjectColor(selectedItem), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                     }}>
                       {selectedItem.projectKey}
@@ -850,7 +850,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   if (!s) return null;
                   return (
                     <div style={{
-                      marginTop: 10, padding: '8px 12px', borderRadius: 8,
+                      marginTop: 8, padding: '8px 12px', borderRadius: 8,
                       background: 'var(--ds-background-danger)', border: '1px solid var(--ds-background-danger)',
                       fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--sem-danger)',
                     }}>
@@ -920,7 +920,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                               {cell.value}
                               {cell.isAge && (
                                 <div style={{
-                                  marginTop: 6, height: 4, borderRadius: 4, background: 'var(--divider)',
+                                  marginTop: 4, height: 4, borderRadius: 4, background: 'var(--divider)',
                                   overflow: 'hidden',
                                 }}>
                                   <div style={{
@@ -941,11 +941,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
                 {/* Hierarchy */}
                 {selectedItem.parentKey && (
-                  <div style={{ marginTop: 20 }}>
+                  <div style={{ marginTop: 16 }}>
                     <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
                     {/* Parent node */}
                     <div style={{
-                      padding: '10px 12px', borderRadius: 8, border: `1px solid ${T.border}`, marginBottom: 0,
+                      padding: '8px 12px', borderRadius: 8, border: `1px solid ${T.border}`, marginBottom: 0,
                       display: 'flex', alignItems: 'center', gap: 8,
                     }}>
                       {getJiraIconForType(selectedItem.type === 'Sub-task' ? 'Story' : 'Epic')}
@@ -955,12 +955,12 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                       </span>
                     </div>
                     {/* Connector */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: 20, color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: 16, color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>
                       <div style={{ width: 2, height: 12, background: 'var(--divider)' }} />
                     </div>
                     {/* Current node — blue border highlight */}
                     <div style={{
-                      padding: '10px 12px', borderRadius: 8,
+                      padding: '8px 12px', borderRadius: 8,
                       border: `1px solid ${T.accent}`, background: 'var(--ds-background-information, rgba(37,99,235,0.03))',
                       display: 'flex', alignItems: 'center', gap: 8,
                     }}>
@@ -979,14 +979,14 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   if (!pt.includes('story')) return null;
                   const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
                   if (sibs.length === 0) return (
-                    <div style={{ marginTop: 20 }}>
+                    <div style={{ marginTop: 16 }}>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em', marginBottom: 8 }}>SIBLINGS</div>
                       <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>No sibling items</div>
                     </div>
                   );
                   const sibDoneCount = sibs.filter(s => s.status === 'done').length;
                   return (
-                    <div style={{ marginTop: 20 }}>
+                    <div style={{ marginTop: 16 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
                         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em' }}>SIBLINGS</span>
                         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length} done</span>

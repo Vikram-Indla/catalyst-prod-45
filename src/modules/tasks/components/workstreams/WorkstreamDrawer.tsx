@@ -517,11 +517,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         {/* ============================================================ */}
         {/* HEADER SECTION */}
         {/* ============================================================ */}
-        <div style={{ padding: '20px 20px 16px 20px', borderBottom: '1px solid var(--ds-border)' }}>
+        <div style={{ padding: '16px 20px 16px 20px', borderBottom: '1px solid var(--ds-border)' }}>
           {/* TOP ROW: Health dot + Title + Actions */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
             {/* Left: Health dot + Title */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1, minWidth: 0 }}>
               {/* Health Indicator Dot */}
               <div
                 style={{
@@ -529,7 +529,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   height: '12px',
                   borderRadius: '50%',
                   backgroundColor: healthConfig.color,
-                  marginTop: '6px',
+                  marginTop: '4px',
                   flexShrink: 0
                 }}
               />
@@ -539,7 +539,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: 'var(--ds-text)', margin: 0, lineHeight: 1.3 }}>
                   {workstream.name}
                 </h1>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
                   <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
                     {workstream.key_prefix || workstream.code}
                   </span>
@@ -550,7 +550,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             </div>
 
             {/* Right: Action Buttons */}
-            <div style={{ display: 'flex', gap: '2px', marginLeft: '12px' }}>
+            <div style={{ display: 'flex', gap: '0px', marginLeft: '12px' }}>
               <button title="Edit workstream" style={iconButtonStyle}>
                 <Edit2 size={18} />
               </button>
@@ -572,7 +572,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </div>
 
           {/* SAVE INDICATOR */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-success)', minHeight: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-success)', minHeight: '16px' }}>
             {showSaved && (
               <>
                 <Check size={14} />
@@ -585,7 +585,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         {/* ============================================================ */}
         {/* SCROLLABLE BODY */}
         {/* ============================================================ */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '48px' }}>
           {/* WORK SUMMARY (sticky) */}
           <div
             style={{
@@ -646,10 +646,10 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             </div>
           </div>
 
-          <div style={{ padding: '20px' }}>
+          <div style={{ padding: '16px' }}>
             {/* DESCRIPTION SECTION */}
-            <div style={{ marginBottom: '28px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={sectionLabelStyle}>Description</span>
                 {!isEditingDescription && (
                   <button onClick={() => setIsEditingDescription(true)} style={editLinkStyle}>Edit</button>
@@ -694,8 +694,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             </div>
 
             {/* TEAM SECTION */}
-            <div style={{ marginBottom: '28px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span style={sectionLabelStyle}>Team</span>
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)', letterSpacing: '0.03em' }}>
                   {memberCount} {memberCount === 1 ? 'MEMBER' : 'MEMBERS'}
@@ -712,7 +712,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px',
+                        gap: '8px',
                         padding: '8px 12px',
                         backgroundColor: 'var(--ds-surface-sunken)',
                         border: '1px solid var(--ds-border)',
@@ -723,7 +723,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       }}
                     >
                       {lead ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div style={avatarStyle(lead.avatarColor)}>{lead.initials}</div>
                           <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontWeight: 500 }}>{lead.name}</span>
                         </div>
@@ -738,7 +738,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       <div style={dropdownStyle}>
                         <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border)' }}>
                           <div style={{ position: 'relative' }}>
-                            <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)' }} />
+                            <Search size={16} style={{ position: 'absolute', left: '8px', top: '48%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)' }} />
                             <input
                               type="text"
                               value={leadSearchQuery}
@@ -821,7 +821,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       justifyContent: 'center',
                       gap: '8px',
                       width: '100%',
-                      padding: '14px',
+                      padding: '12px',
                       backgroundColor: 'transparent',
                       border: '2px dashed var(--ds-border)',
                       borderRadius: '12px',
@@ -838,10 +838,10 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
                   {/* Member Dropdown */}
                   {showMemberPicker && (
-                    <div style={{ ...dropdownStyle, bottom: '100%', top: 'auto', marginBottom: '4px' }}>
+                    <div style={{ ...dropdownStyle, bottom: '48%', top: 'auto', marginBottom: '4px' }}>
                       <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border)' }}>
                         <div style={{ position: 'relative' }}>
-                          <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)' }} />
+                          <Search size={16} style={{ position: 'absolute', left: '8px', top: '48%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)' }} />
                           <input
                             type="text"
                             value={memberSearchQuery}
@@ -972,7 +972,7 @@ const primaryButtonStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '6px',
+  gap: '4px',
   padding: '8px 16px',
   backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))',
@@ -1028,7 +1028,7 @@ const statCardStyle: React.CSSProperties = {
 
 const dropdownStyle: React.CSSProperties = {
   position: 'absolute',
-  top: '100%',
+  top: '48%',
   left: 0,
   right: 0,
   marginTop: '4px',
@@ -1052,9 +1052,9 @@ const searchInputStyle: React.CSSProperties = {
 const dropdownItemStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: '10px',
+  gap: '8px',
   width: '100%',
-  padding: '10px 12px',
+  padding: '8px 12px',
   backgroundColor: 'transparent',
   border: 'none',
   cursor: 'pointer',
@@ -1067,8 +1067,8 @@ const navTabStyle = (isActive: boolean): React.CSSProperties => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '6px',
-  padding: '10px 16px',
+  gap: '4px',
+  padding: '8px 16px',
   backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
   color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : 'var(--ds-text-subtle)',
   border: isActive ? 'none' : '1px solid var(--ds-border)',

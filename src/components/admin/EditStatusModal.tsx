@@ -224,8 +224,8 @@ export function EditStatusModal({
                               style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: 6,
-                                padding: '6px 12px',
+                                gap: 4,
+                                padding: '4px 12px',
                                 borderRadius: 4,
                                 border: isSelected
                                   ? `2px solid ${catColor}`
@@ -344,7 +344,7 @@ export function EditStatusModal({
                       <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: 0 }}>
                         The following application surfaces currently use this status:
                       </p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                         {consumers.map((c) => (
                           <div
                             key={c.id}

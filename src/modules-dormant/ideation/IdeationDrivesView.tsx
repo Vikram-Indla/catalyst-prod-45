@@ -75,13 +75,13 @@ export default function IdeationDrivesView() {
   return (
     <div style={{ padding: '16px 28px 32px' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
             <span style={{
               background: 'var(--ds-surface-sunken)', border: '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: '12px',
-              padding: '1px 7px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+              padding: '0px 7px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               fontFamily: MONO, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
             }}>{drives.length}</span>
           </div>
@@ -94,7 +94,7 @@ export default function IdeationDrivesView() {
           style={{
             height: 50, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: '6px',
             padding: '0 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
           }}
         >
           <Plus size={14} /> New Drive
@@ -104,11 +104,11 @@ export default function IdeationDrivesView() {
       <CreateDriveModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {isLoading && (
-        <div style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-300)', padding: 20 }}>Loading drives...</div>
+        <div style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-300)', padding: 16 }}>Loading drives...</div>
       )}
 
       {error && (
-        <div style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-300)', padding: 20 }}>Failed to load drives.</div>
+        <div style={{ color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-300)', padding: 16 }}>Failed to load drives.</div>
       )}
 
       {/* Drive Cards */}
@@ -120,7 +120,7 @@ export default function IdeationDrivesView() {
         return (
           <div key={drive.id} style={{
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: '6px',
-            padding: '20px', marginBottom: '16px',
+            padding: '16px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -154,14 +154,14 @@ export default function IdeationDrivesView() {
             <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: '24px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', fontWeight: 500, marginBottom: '10px' }}>
+            <div style={{ display: 'flex', gap: '24px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', fontWeight: 500, marginBottom: '8px' }}>
               <span><strong>{submitted}</strong> {submitted === 1 ? 'idea' : 'ideas'} submitted</span>
               <span>Deadline: <strong>{drive.deadline ? new Date(drive.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline'}</strong></span>
               <span>Target: <strong>{drive.target_count}</strong> ideas</span>
             </div>
 
             {/* V12 Progress bar — always show structure */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <div style={{
                 flex: 1, height: 6, borderRadius: 4,
                 background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', overflow: 'hidden',
@@ -181,7 +181,7 @@ export default function IdeationDrivesView() {
             </div>
 
             {/* Linked ideas */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
               {drive.ideas.length === 0 && (
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)', fontStyle: 'italic' }}>No ideas linked yet</span>
@@ -189,7 +189,7 @@ export default function IdeationDrivesView() {
               {drive.ideas.map(idea => (
                 <span key={idea.idea_key} style={{
                   fontFamily: MONO, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-                  background: 'var(--ds-background-selected)', border: '1px solid var(--ds-background-information)', borderRadius: '4px', padding: '1px 6px',
+                  background: 'var(--ds-background-selected)', border: '1px solid var(--ds-background-information)', borderRadius: '4px', padding: '0px 6px',
                 }}>{idea.idea_key}</span>
               ))}
             </div>

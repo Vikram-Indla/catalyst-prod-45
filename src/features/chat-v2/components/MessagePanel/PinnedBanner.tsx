@@ -26,9 +26,9 @@ export function PinnedBanner({ pinnedMessages, pinnedByMap, onOpenMessage }: Pin
       style={{
         display: 'flex',
         alignItems: 'flex-start',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '10px 20px',
+        padding: '8px 20px',
         background: 'rgba(236, 178, 46, 0.08)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         borderBottom: '1px solid var(--cv2-border)',
         textAlign: 'left',
@@ -52,13 +52,13 @@ export function PinnedBanner({ pinnedMessages, pinnedByMap, onOpenMessage }: Pin
         aria-hidden="true"
         style={{
           color: 'var(--cv2-warning)',
-          marginTop: 2,
+          marginTop: 0,
           flex: '0 0 auto',
         }}
       >
         <PinFilledIcon size={14} />
       </span>
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
+      <span style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0, flex: 1 }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', fontWeight: 600 }}>
           {label}
           {pinnedMessages.length > 1 ? ` · +${pinnedMessages.length - 1} more` : ''}

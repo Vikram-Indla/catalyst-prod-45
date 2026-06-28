@@ -666,7 +666,7 @@ export function SubtasksPanelV2({
                   </button>
                 </div>
               </div>
-              <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
+              <div style={{ textAlign: 'right', padding: '4px 0 2px' }}>
                 <button
                   type="button"
                   onClick={() => { setCreating(false); setDraftSummary(''); }}

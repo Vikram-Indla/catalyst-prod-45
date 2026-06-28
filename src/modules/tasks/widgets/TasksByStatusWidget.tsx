@@ -101,7 +101,7 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
           </div>
 
           {/* Per-status bars */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {statusRows.map((row) => {
               const count = byStatus[row.slug] ?? 0;
               const pct = total > 0 ? Math.round((count / total) * 100) : 0;
@@ -145,7 +145,7 @@ function KpiCell({ label, value, last }: { label: string; value: number; last?: 
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 0,
         padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}

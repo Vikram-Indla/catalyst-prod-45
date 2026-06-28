@@ -94,7 +94,7 @@ export function UserOverridesModal({ isOpen, onClose, userId, roleId }: UserOver
             <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: T.text }}>
               Custom permissions — {profile?.full_name || 'User'}
             </h2>
-            <p style={{ margin: '2px 0 0', fontSize: 12, color: T.subtlest }}>
+            <p style={{ margin: '0px 0 0', fontSize: 12, color: T.subtlest }}>
               Overrides the default permissions of the assigned role.
             </p>
           </div>
@@ -108,15 +108,15 @@ export function UserOverridesModal({ isOpen, onClose, userId, roleId }: UserOver
               {/* User summary */}
               <div style={{ margin: '16px 24px', padding: '12px 16px', background: T.bg, borderRadius: 4, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px', fontSize: 13 }}>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, marginBottom: 2 }}>User</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, marginBottom: 0 }}>User</div>
                   <div style={{ color: T.text }}>{profile?.full_name || '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, marginBottom: 2 }}>Email</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, marginBottom: 0 }}>Email</div>
                   <div style={{ color: T.text }}>{profile?.email || '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, marginBottom: 2 }}>Role</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, marginBottom: 0 }}>Role</div>
                   <div style={{ color: T.text }}>{userProductRole?.role?.name || 'Not assigned'}</div>
                 </div>
               </div>
@@ -126,9 +126,9 @@ export function UserOverridesModal({ isOpen, onClose, userId, roleId }: UserOver
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                   <thead>
                     <tr>
-                      <th style={{ textAlign: 'left', padding: '6px 8px 6px 0', fontSize: 11, fontWeight: 600, color: T.subtle, borderBottom: `2px solid ${T.border}` }}>Permission</th>
-                      <th style={{ textAlign: 'left', padding: '6px 8px', fontSize: 11, fontWeight: 600, color: T.subtle, borderBottom: `2px solid ${T.border}`, width: 120 }}>Role default</th>
-                      <th style={{ textAlign: 'left', padding: '6px 0 6px 8px', fontSize: 11, fontWeight: 600, color: T.subtle, borderBottom: `2px solid ${T.border}`, width: 140 }}>Override</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px 6px 0', fontSize: 11, fontWeight: 600, color: T.subtle, borderBottom: `2px solid ${T.border}` }}>Permission</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px', fontSize: 11, fontWeight: 600, color: T.subtle, borderBottom: `2px solid ${T.border}`, width: 120 }}>Role default</th>
+                      <th style={{ textAlign: 'left', padding: '4px 0 6px 8px', fontSize: 11, fontWeight: 600, color: T.subtle, borderBottom: `2px solid ${T.border}`, width: 140 }}>Override</th>
                     </tr>
                   </thead>
                   <tbody>

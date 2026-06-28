@@ -184,7 +184,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
-            padding: '2px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
+            padding: '0px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
             whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)',
             fontVariantNumeric: 'tabular-nums',
           }}>
@@ -194,7 +194,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       })}
 
       {/* CENTER AVATAR */}
-      <div style={{ position: 'absolute', left: '50%', top: `${centerTopPct}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
+      <div style={{ position: 'absolute', left: '48%', top: `${centerTopPct}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
         <div style={{
           width: '96px', height: '96px', borderRadius: '50%', border: '3px solid var(--cp-blue)',
           overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px var(--ds-background-information, rgba(37,99,235,.12))', background: 'var(--bg-app)',
@@ -223,7 +223,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           <div key={item.id || item.item_key} onClick={() => onItemClick(item)} style={{
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
             background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
-            padding: '10px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
+            padding: '8px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
             boxShadow: '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))', fontFamily: 'var(--cp-font-body)',
             transition: 'border-color .15s, box-shadow .15s',
           }}
@@ -238,22 +238,22 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               </div>
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', background: projColor }}>{item.project_key}</span>
               )}
               <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
             <div style={{
-              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text))', lineHeight: '1.35', marginBottom: '5px',
+              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text))', lineHeight: '1.35', marginBottom: '4px',
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             } as React.CSSProperties}>
               {trunc(item.title, 48)}
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
-              padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
+              padding: '4px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
               background: s.bg, color: s.tx,
             }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
@@ -273,7 +273,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             onClick={() => setShowDone(prev => !prev)}
             title="Click to view completed items"
             style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
               cursor: 'pointer', transition: 'transform .15s',
               transform: showDone ? 'scale(1.08)' : 'scale(1)',
             }}
@@ -300,7 +300,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           {/* ═══ POPOVER DROPDOWN ═══ */}
           {showDone && (
             <div style={{
-              position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
+              position: 'absolute', right: '48px', top: '48%', transform: 'translateY(-50%)',
               width: '340px', maxHeight: '420px', background: 'var(--cp-float)',
               border: '1px solid var(--divider)', borderRadius: '12px',
               boxShadow: '0 8px 30px var(--ds-shadow-overlay, rgba(15,23,42,.12)), 0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,.06))',
@@ -308,7 +308,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             }}>
               {/* Header */}
               <div style={{
-                padding: '14px 16px', borderBottom: '1px solid var(--bg-3)',
+                padding: '12px 16px', borderBottom: '1px solid var(--bg-3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -323,7 +323,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                 </div>
                 <span style={{
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-success)',
-                  background: 'var(--ds-background-success)', padding: '2px 10px', borderRadius: '12px',
+                  background: 'var(--ds-background-success)', padding: '0px 10px', borderRadius: '12px',
                 }}>
                   {doneCount}
                 </span>
@@ -338,8 +338,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     key={item.id || item.item_key}
                     onClick={(e) => { e.stopPropagation(); onItemClick(item); setShowDone(false); }}
                     style={{
-                      display: 'flex', alignItems: 'flex-start', gap: '10px',
-                      padding: '10px 16px', cursor: 'pointer',
+                      display: 'flex', alignItems: 'flex-start', gap: '8px',
+                      padding: '8px 16px', cursor: 'pointer',
                       borderBottom: '1px solid var(--bg-1)', transition: 'background .1s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-success)')}
@@ -350,7 +350,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       width: '22px', height: '22px', borderRadius: '50%',
                       background: 'var(--ds-background-success)', border: '1.5px solid var(--cp-success, var(--ds-background-success-bold))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, marginTop: '1px',
+                      flexShrink: 0, marginTop: '0px',
                     }}>
                       <svg width="12" height="12" viewBox="0 0 12 12">
                         <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--cp-success))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -359,7 +359,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
 
                     {/* Content */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '0px' }}>
                         <span style={{
                           fontSize: '11.5px', fontWeight: 600, color: 'var(--sem-success)',
                           fontFamily: 'var(--cp-font-mono)',
@@ -367,7 +367,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                           {item.item_key}
                         </span>
                         <span style={{
-                          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 5px',
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 5px',
                           borderRadius: '4px', color: 'var(--ds-surface)', background: 'var(--ds-text-success, var(--cp-success))',
                         }}>
                           DONE
@@ -379,7 +379,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: '2px' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: '0px' }}>
                         Resolved · {formatResolvedDate(item.resolved_at || item.updated_at)}
                       </div>
                     </div>

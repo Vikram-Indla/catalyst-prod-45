@@ -102,7 +102,7 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            padding: '6px 8px',
+            padding: '4px 8px',
             border: 'none',
             borderRadius: 3,
             background:

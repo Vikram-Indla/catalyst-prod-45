@@ -149,7 +149,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                         const cfg = STATUS_CONFIG[s as keyof typeof STATUS_CONFIG];
                         return (
                           <span key={s} className="rounded-full" style={{
-                            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '1px 6px',
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0px 6px',
                             background: cfg?.bg ?? 'var(--cp-bd-zone)', color: cfg?.color ?? 'var(--fg-3)',
                           }}>
                             {cfg?.label ?? s}
@@ -208,7 +208,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               </div>
 
               {/* Live Preview Card */}
-              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 20, marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 16, marginBottom: 8 }}>
                 Live Preview
               </div>
               <div className="rounded-xl border p-3 bg-[var(--bg-1)]" style={{ borderColor: 'var(--divider)' }}>

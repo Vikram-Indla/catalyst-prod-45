@@ -22,7 +22,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({
   createdAt
 }) => {
   return (
-    <div style={{ display: 'flex', gap: '14px' }}>
+    <div style={{ display: 'flex', gap: '12px' }}>
       {/* AVATAR — 40px */}
       <Avatar initials={authorInitials} color={authorColor} size="lg" />
 
@@ -33,7 +33,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({
           style={{
             display: 'flex',
             alignItems: 'baseline',
-            gap: '10px',
+            gap: '8px',
             marginBottom: '8px'
           }}
         >
@@ -54,7 +54,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({
         {/* COMMENT BUBBLE */}
         <div
           style={{
-            padding: '14px 18px',
+            padding: '12px 18px',
             backgroundColor: COLORS.surfacePage,
             borderRadius: '12px',
             fontSize: 'var(--ds-font-size-400)',

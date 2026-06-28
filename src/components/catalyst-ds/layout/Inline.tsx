@@ -32,7 +32,7 @@ const inlineVariants = cva('flex flex-row', {
     },
   },
   defaultVariants: {
-    gap: '2',
+    gap: '0',
     align: 'center',
     justify: 'start',
     wrap: false,

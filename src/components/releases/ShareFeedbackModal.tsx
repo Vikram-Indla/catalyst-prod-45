@@ -41,7 +41,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 600,
   fontSize: 'var(--ds-font-size-200)',
   color: 'var(--ds-text)',
-  marginBottom: 6,
+  marginBottom: 4,
 };
 
 const errStyle: React.CSSProperties = {
@@ -54,7 +54,7 @@ const errStyle: React.CSSProperties = {
 };
 
 const asterisk = (
-  <span style={{ color: RED, marginLeft: 2 }}>*</span>
+  <span style={{ color: RED, marginLeft: 0 }}>*</span>
 );
 
 // ───────────────────────── Inline category dropdown ─────────────────────────
@@ -169,7 +169,7 @@ function CategoryDropdown({
             border: `1px solid ${GRAY_BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-            padding: '6px 0',
+            padding: '4px 0',
             maxHeight: 280,
             overflowY: 'auto',
           }}
@@ -308,7 +308,7 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 Required fields are marked with an asterisk
-                <span style={{ color: RED, marginLeft: 2 }}>*</span>
+                <span style={{ color: RED, marginLeft: 0 }}>*</span>
               </div>
 
               {/* Select feedback */}

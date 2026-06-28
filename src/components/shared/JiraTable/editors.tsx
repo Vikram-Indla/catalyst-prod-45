@@ -314,14 +314,14 @@ export function makeStatusEditCell<T>({
             style={{
               background: 'transparent',
               border: 'none',
-              padding: '2px 4px',
+              padding: '0px 4px',
               margin: '-2px -4px',
               borderRadius: 3,
               cursor: 'pointer',
               fontFamily: 'inherit',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 2,
+              gap: 0,
             }}
           >
             {lozenge ?? (
@@ -436,7 +436,7 @@ function StatusPopupCell<T>({
           style={{
             background: 'transparent',
             border: 'none',
-            padding: '2px 4px',
+            padding: '0px 4px',
             margin: '-2px -4px',
             borderRadius: 3,
             cursor: 'pointer',
@@ -702,7 +702,7 @@ export function makeSummaryInlineEditCell<T>({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 2,
+              gap: 0,
               flexShrink: 0,
             }}
           >
@@ -922,7 +922,7 @@ export function makeAssigneeEditCell<T>({
             style={{
               background: 'transparent',
               border: 'none',
-              padding: '2px 6px',
+              padding: '0px 6px',
               margin: '-2px -6px',
               borderRadius: 3,
               cursor: 'pointer',
@@ -1017,7 +1017,7 @@ export function makePriorityEditCell<T>({
             style={{
               background: 'transparent',
               border: 'none',
-              padding: '2px 4px',
+              padding: '0px 4px',
               margin: '-2px -4px',
               borderRadius: 3,
               cursor: 'pointer',
@@ -1063,7 +1063,7 @@ export interface ParentChoice {
 // digital-transformation.atlassian.net on 2026-04-18:
 //   background: rgb(34, 125, 155)  // #227D9B — Jira's "epic parent" teal
 //   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))
-//   padding:    2px 4px
+//   padding:    0px 4px
 //   border-radius: 3px
 //   font-size:  14px (we use 13 to match our compact row density)
 //   font-weight: 400
@@ -1081,9 +1081,9 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         maxWidth: 260,
-        padding: '2px 8px',
+        padding: '0px 8px',
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-400)',
@@ -1159,7 +1159,7 @@ export function makeParentEditCell<T>({
               width: '100%',
               background: 'transparent',
               border: 'none',
-              padding: '2px 4px',
+              padding: '0px 4px',
               margin: '-2px -4px',
               borderRadius: 3,
               cursor: 'pointer',
@@ -1241,9 +1241,9 @@ function WorkstreamChip({ choice }: { choice: WorkstreamChoice }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         maxWidth: 260,
-        padding: '2px 8px',
+        padding: '0px 8px',
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-400)',
@@ -1322,7 +1322,7 @@ export function makeWorkstreamEditCell<T>({
               width: '100%',
               background: 'transparent',
               border: 'none',
-              padding: '2px 4px',
+              padding: '0px 4px',
               margin: '-2px -4px',
               borderRadius: 3,
               cursor: 'pointer',
@@ -1466,7 +1466,7 @@ export function makeRowActionsCell<T>({
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 10,
+                      gap: 8,
                       width: '100%',
                       padding: '8px 10px',
                       border: 'none',
@@ -1551,7 +1551,7 @@ export function makeDateEditCell<T>({
             style={{
               background: 'transparent',
               border: 'none',
-              padding: '2px 4px',
+              padding: '0px 4px',
               margin: '-2px -4px',
               borderRadius: 3,
               cursor: 'pointer',
@@ -1582,7 +1582,7 @@ export function makeDateEditCell<T>({
                 style={{
                   marginTop: 8,
                   width: '100%',
-                  padding: '6px 10px',
+                  padding: '4px 10px',
                   border: 'none',
                   background: 'transparent',
                   color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
@@ -1628,7 +1628,7 @@ export function makeLabelsEditCell<T>({
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  padding: '1px 6px',
+                  padding: '0px 6px',
                   borderRadius: 3,
                   background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
                   color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
@@ -1670,7 +1670,7 @@ export function makeLabelsEditCell<T>({
             style={{
               background: 'transparent',
               border: 'none',
-              padding: '2px 4px',
+              padding: '0px 4px',
               margin: '-2px -4px',
               borderRadius: 3,
               cursor: 'pointer',
@@ -1728,7 +1728,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              padding: '2px 6px',
+              padding: '0px 6px',
               borderRadius: 3,
               background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
@@ -1758,7 +1758,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
           if (e.key === 'Escape') close();
         }}
       />
-      <div style={{ marginTop: 8, display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+      <div style={{ marginTop: 8, display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
         <button
           type="button"
           onClick={close}
@@ -1862,7 +1862,7 @@ if (typeof document !== 'undefined') {
     }
     /* Add a soft divider above the post-body sidebar group. */
     [data-cv-stacked-panel="true"] .cv-drawer-sidebar > *:not([data-cv-sidebar-status-header="true"]):first-of-type {
-      border-top: 1px solid var(--ds-border);
+      border-top: 0px solid var(--ds-border);
       padding-top: 16px;
       margin-top: 16px;
     }

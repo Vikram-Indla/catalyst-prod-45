@@ -120,7 +120,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
           <div style={{ flex: 1 }}>
             {resourceLoading ? (
               <>
-                <div className="rai-skeleton" style={{ height: 22, width: 160, borderRadius: 4, marginBottom: 6 }} />
+                <div className="rai-skeleton" style={{ height: 22, width: 160, borderRadius: 4, marginBottom: 4 }} />
                 <div className="rai-skeleton" style={{ height: 14, width: 120, borderRadius: 4 }} />
               </>
             ) : (
@@ -160,7 +160,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link-pressed)' }}>
                   Generating AI Intelligence…
                 </div>
-                <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-blue)', marginTop: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-blue)', marginTop: 0 }}>
                   First-time analysis — computing metrics and generating behavioral patterns.
                 </div>
               </div>

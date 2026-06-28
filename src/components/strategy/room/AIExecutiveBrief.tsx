@@ -86,7 +86,7 @@ const F = (g = 8): React.CSSProperties => ({ display: "flex", alignItems: "cente
 const D = (c: string, s = 8): React.CSSProperties => ({ width: s, height: s, borderRadius: "50%", background: c, flexShrink: 0 });
 const BT = (h = 8): React.CSSProperties => ({ height: h, background: "var(--sri-bg-3)", borderRadius: "var(--sri-pill)", overflow: "hidden" });
 const BF = (c: string, p: number): React.CSSProperties => ({ height: "100%", width: `${p}%`, background: c, borderRadius: "var(--sri-pill)", transition: "width .8s" });
-const SECT: React.CSSProperties = { fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: "var(--sri-ai-d)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 };
+const SECT: React.CSSProperties = { fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: "var(--sri-ai-d)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 };
 
 /* FIX #14 — date formatting helper */
 const fmtDate = (iso: string | undefined | null): string => {
@@ -103,14 +103,14 @@ const Card = ({ title, badge, badgeBg, badgeColor, children, full, noLeftBorder 
   <div style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-bdr)", borderRadius: "var(--sri-r4)", overflow: "hidden", ...(full ? { gridColumn: "1 / -1" } : {}) }}>
     <div style={{ padding: "16px 24px 12px", ...F(8), justifyContent: "space-between", borderBottom: "1px solid var(--sri-bdr)", ...(noLeftBorder ? {} : { borderInlineStart: "3px solid var(--sri-ai)" }) }}>
       <span style={{ ...S(14), color: "var(--sri-ai-d)", textTransform: "uppercase", letterSpacing: ".03em" }}>{title}</span>
-      {badge && <span style={{ ...M(11), fontWeight: 700, padding: "3px 10px", borderRadius: "var(--sri-pill)", background: badgeBg || "var(--sri-ai-bg)", color: badgeColor || "var(--sri-ai-d)" }}>{badge}</span>}
+      {badge && <span style={{ ...M(11), fontWeight: 700, padding: "4px 10px", borderRadius: "var(--sri-pill)", background: badgeBg || "var(--sri-ai-bg)", color: badgeColor || "var(--sri-ai-d)" }}>{badge}</span>}
     </div>
-    <div style={{ padding: "20px 24px" }}>{children}</div>
+    <div style={{ padding: "16px 24px" }}>{children}</div>
   </div>
 );
 
 const Empty = ({ msg }: { msg?: string }) => (
-  <div style={{ padding: 20, textAlign: "center", fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", fontStyle: "italic" }}>{msg || "No data available"}</div>
+  <div style={{ padding: 16, textAlign: "center", fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", fontStyle: "italic" }}>{msg || "No data available"}</div>
 );
 
 /* Static reference — grading scale is a fixed standard, not mock data */
@@ -216,14 +216,14 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
         <style>{TOKENS}</style>
 
         {/* HEADER — FIX #21: subtitle color upgraded */}
-        <header style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "20px 28px", margin: "0 32px", ...F(14), justifyContent: "space-between" }}>
+        <header style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "16px 28px", margin: "0 32px", ...F(14), justifyContent: "space-between" }}>
           <div style={F(14) as React.CSSProperties}>
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--sri-ai-d), var(--sri-ai))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
             </div>
             <div>
               <div style={{ ...S(20), color: "var(--sri-ink)" }}>Executive Brief</div>
-              <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", marginTop: 1 }}>Strategy Room · Published <b style={{ color: "var(--sri-ink-2)", fontWeight: 600 }}>{publishedDateStr}</b> · {versionStr}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", marginTop: 0 }}>Strategy Room · Published <b style={{ color: "var(--sri-ink-2)", fontWeight: 600 }}>{publishedDateStr}</b> · {versionStr}</div>
             </div>
           </div>
           <div className="sri-actions" style={F(8) as React.CSSProperties}>
@@ -250,7 +250,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: "var(--sri-ai-d)" }}>New draft available</div>
               <div style={{ fontSize: 'var(--ds-font-size-100)', color: "var(--sri-ink-3)" }}>Generated {new Date(draftBrief.generated_at).toLocaleTimeString()} — review before publishing</div>
             </div>
-            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+            <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
               <button onClick={() => setPreviewingDraft(!previewingDraft)}
                 style={{ padding: "4px 10px", borderRadius: "var(--sri-r2)", border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: "var(--sri-ink-3)", cursor: "pointer" }}>
                 {previewingDraft ? 'View Published' : 'Preview Draft'}
@@ -286,31 +286,31 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
           {/* VERDICT */}
           <Card title="Executive Verdict">
             {verdict ? (<>
-              <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                 <div style={{ width: 64, height: 64, borderRadius: "50%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "3px solid var(--sri-ai)", background: "var(--sri-ai-bg)" }}>
                   <span style={{ ...S(24, 800), color: "var(--sri-ai-d)", lineHeight: 1 }}>{(verdict as any).grade}</span>
-                  <span style={{ ...M(10), fontWeight: 600, color: "var(--sri-ai)", marginTop: 1 }}>{(verdict as any).score}</span>
+                  <span style={{ ...M(10), fontWeight: 600, color: "var(--sri-ai)", marginTop: 0 }}>{(verdict as any).score}</span>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ ...S(16), color: "var(--sri-ink)", lineHeight: 1.4 }}>{(verdict as any).headline}</div>
                   {/* FIX #17 — trajectory: larger, readable */}
                   {(verdict as any).deltaText && <div style={{ ...F(12) as React.CSSProperties, marginTop: 8, flexWrap: "wrap" }}>
-                    <span style={{ ...M(11), fontWeight: 600, color: "var(--sri-red-t)", background: "var(--sri-red-bg)", padding: "3px 10px", borderRadius: "var(--sri-pill)" }}>{(verdict as any).deltaText}</span>
+                    <span style={{ ...M(11), fontWeight: 600, color: "var(--sri-red-t)", background: "var(--sri-red-bg)", padding: "4px 10px", borderRadius: "var(--sri-pill)" }}>{(verdict as any).deltaText}</span>
                     {(verdict as any).trajectory?.length > 0 && (<>
                       <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)" }}>Trajectory:</span>
                       <span style={{ ...M(12), color: "var(--sri-ink-2)", fontWeight: 600 }}>{(verdict as any).trajectory.map((t: any, i: number) => <React.Fragment key={i}>{i > 0 && " → "}{t.quarter} <b style={t.current ? { color: "var(--sri-red-t)", fontWeight: 800 } : {}}>{t.grade}</b></React.Fragment>)}</span>
                     </>)}
                   </div>}
                   {/* FIX #2-8 — narrative uses --sri-ink-2 */}
-                  <div style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--sri-ink-2)", marginTop: 10, lineHeight: 1.7 }}>{(verdict as any).narrative}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--sri-ink-2)", marginTop: 8, lineHeight: 1.7 }}>{(verdict as any).narrative}</div>
                 </div>
               </div>
               {/* FIX #25 — Why items: 12px label text */}
               {(verdict as any).whyItems?.length > 0 && (<>
-                <div style={{ ...S(13), color: "var(--sri-ink-3)", marginTop: 20, marginBottom: 10 }}>Why {(verdict as any).grade}?</div>
+                <div style={{ ...S(13), color: "var(--sri-ink-3)", marginTop: 16, marginBottom: 8 }}>Why {(verdict as any).grade}?</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                   {(verdict as any).whyItems.map((w: any, i: number) => (
-                    <div key={i} style={{ ...F(10) as React.CSSProperties, padding: "10px 14px", borderRadius: "var(--sri-r3)", borderInlineStart: `3px solid ${w.severity === "high" ? "var(--sri-red)" : w.severity === "mid" ? "var(--sri-ai)" : "var(--sri-green)"}`, background: "var(--sri-ai-bg)" }}>
+                    <div key={i} style={{ ...F(10) as React.CSSProperties, padding: "8px 14px", borderRadius: "var(--sri-r3)", borderInlineStart: `3px solid ${w.severity === "high" ? "var(--sri-red)" : w.severity === "mid" ? "var(--sri-ai)" : "var(--sri-green)"}`, background: "var(--sri-ai-bg)" }}>
                       <span style={{ ...S(16, 800), color: "var(--sri-ai-d)", flexShrink: 0, minWidth: 36 }}>{w.value}</span>
                       <span style={{ fontWeight: 500, color: "var(--sri-ink-2)", fontSize: 'var(--ds-font-size-200)' }}>{w.label}</span>
                     </div>
@@ -318,7 +318,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                 </div>
               </>)}
               {/* FIX #9 — Grading scale as 2-column grid, ~26px rows */}
-              <div style={{ ...S(13), color: "var(--sri-ink-3)", marginTop: 24, marginBottom: 10 }}>Portfolio Grading Scale</div>
+              <div style={{ ...S(13), color: "var(--sri-ink-3)", marginTop: 24, marginBottom: 8 }}>Portfolio Grading Scale</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
                 {[GRADING_LEFT, GRADING_RIGHT].map((col, ci) => (
                   <table key={ci} style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 2px" }}>
@@ -327,7 +327,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                         <td style={{ ...S(12, 800), width: 26, textAlign: "center", color: g.c, padding: "4px 6px" }}>{g.g}</td>
                         <td style={{ ...M(10), fontWeight: 500, color: "var(--sri-ink-m)", width: 46, padding: "4px 6px" }}>{g.r}</td>
                         <td style={{ color: active ? "var(--sri-ai-d)" : "var(--sri-ink-3)", fontWeight: active ? 700 : 500, padding: "4px 6px", fontSize: 'var(--ds-font-size-100)' }}>
-                          {g.d}{active && <span style={{ ...(D("var(--sri-ai)", 6) as React.CSSProperties), display: "inline-block", marginInlineStart: 6 }} />}
+                          {g.d}{active && <span style={{ ...(D("var(--sri-ai)", 6) as React.CSSProperties), display: "inline-block", marginInlineStart: 4 }} />}
                         </td>
                       </tr>
                     ); })}</tbody>
@@ -344,7 +344,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                 <span style={D(c.color || c.c, 10) as React.CSSProperties} />
                 <div style={{ flex: 1 }}>
                   <div style={{ ...S(13), color: "var(--sri-ink)", textTransform: "uppercase", letterSpacing: ".02em" }}>{c.label || c.l}</div>
-                  <div style={{ ...S(24, 800), color: "var(--sri-ink)", marginTop: 2 }}>{c.value || c.v} <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: "var(--sri-ink-m)" }}>{c.unit || c.u}</span></div>
+                  <div style={{ ...S(24, 800), color: "var(--sri-ink)", marginTop: 0 }}>{c.value || c.v} <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: "var(--sri-ink-m)" }}>{c.unit || c.u}</span></div>
                   <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", marginTop: 4 }}>{c.desc}</div>
                   <div style={{ marginTop: 8 }}><div style={BT() as React.CSSProperties}><div style={BF(c.color || c.c, c.pct || c.p || 0) as React.CSSProperties} /></div></div>
                 </div>
@@ -370,21 +370,21 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               {(decisions as any[]).map((d: any, i: number) => (
                 <div key={i} style={{ border: "1px solid var(--sri-bdr)", borderRadius: "var(--sri-r4)", margin: "12px 20px", overflow: "hidden" }}>
                   {/* FIX #13 — 2-row header */}
-                  <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--sri-bdr)" }}>
-                    <div style={{ ...F(12) as React.CSSProperties, marginBottom: 6 }}>
+                  <div style={{ padding: "12px 18px", borderBottom: "1px solid var(--sri-bdr)" }}>
+                    <div style={{ ...F(12) as React.CSSProperties, marginBottom: 4 }}>
                       <div style={{ ...S(14, 800), width: 36, height: 50, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)", border: `2px solid ${(d.isCritical || d.crit) ? "var(--sri-red)" : "var(--sri-ai)"}` }}>{d.id}</div>
                       <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: "uppercase", color: (d.isCritical || d.crit) ? "var(--sri-red-t)" : "var(--sri-ai-d)" }}>{d.priority || d.pr}</span>
                       <span style={{ ...M(11), color: "var(--sri-ink-m)" }}>{fmtDate(d.date || d.dt)}</span>
                     </div>
                     <div style={{ ...S(14), color: "var(--sri-ink)", lineHeight: 1.4 }}>{d.title}</div>
                   </div>
-                  <div style={{ padding: "14px 18px" }}>
+                  <div style={{ padding: "12px 18px" }}>
                     <div style={SECT}>Rationale</div>
-                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-2)", marginBottom: 10, lineHeight: 1.6 }}>{d.rationale || d.rat}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-2)", marginBottom: 8, lineHeight: 1.6 }}>{d.rationale || d.rat}</div>
                     <div style={SECT}>Evidence</div>
                     {/* FIX #15 — evidence chips: no border */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{(d.evidence || d.ev || []).map((e: string, j: number) => <span key={j} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: "4px 10px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)" }}>{e}</span>)}</div>
-                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 10 }}>Owner: <b style={{ color: "var(--sri-ink-2)" }}>{d.owner}</b> · Deadline: <b style={{ color: "var(--sri-ink-2)" }}>{fmtDate(d.deadline)}</b></div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>{(d.evidence || d.ev || []).map((e: string, j: number) => <span key={j} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: "4px 10px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: "var(--sri-ai-d)" }}>{e}</span>)}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 8 }}>Owner: <b style={{ color: "var(--sri-ink-2)" }}>{d.owner}</b> · Deadline: <b style={{ color: "var(--sri-ink-2)" }}>{fmtDate(d.deadline)}</b></div>
                   </div>
                 </div>
               ))}
@@ -403,7 +403,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
           <Card title="Recovery Clock">
             {recovery ? (<>
               {(recovery as any).projectedScores?.length > 0 && (
-                <div style={{ border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "14px 18px", marginBottom: 20, background: "var(--sri-ai-bg)" }}>
+                <div style={{ border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "12px 18px", marginBottom: 16, background: "var(--sri-ai-bg)" }}>
                   <div style={{ ...SECT, marginBottom: 8 }}>Projected Score Recovery</div>
                   <div style={{ ...F(16) as React.CSSProperties }}>{(recovery as any).projectedScores.map((p: any, i: number) => (
                     <React.Fragment key={i}>
@@ -416,13 +416,13 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                 </div>
               )}
               {(recovery as any).phases?.map((r: any, i: number) => (
-                <div key={i} style={{ position: "relative", paddingInlineStart: 28, marginBottom: i < (recovery as any).phases.length - 1 ? 20 : 0 }}>
+                <div key={i} style={{ position: "relative", paddingInlineStart: 24, marginBottom: i < (recovery as any).phases.length - 1 ? 20 : 0 }}>
                   {/* FIX #19 — connector line: solid blue */}
-                  {i < (recovery as any).phases.length - 1 && <div style={{ position: "absolute", insetInlineStart: 9, top: 26, bottom: -8, width: 2, background: "var(--sri-ai)" }} />}
+                  {i < (recovery as any).phases.length - 1 && <div style={{ position: "absolute", insetInlineStart: 8, top: 24, bottom: -8, width: 2, background: "var(--sri-ai)" }} />}
                   <div style={{ position: "absolute", insetInlineStart: 0, top: 4, width: 20, height: 20, borderRadius: "50%", border: `2px solid ${r.color || r.c}`, background: "var(--sri-ai-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={D(r.color || r.c) as React.CSSProperties} /></div>
-                  <div style={{ ...F(8) as React.CSSProperties, marginBottom: 6 }}>
+                  <div style={{ ...F(8) as React.CSSProperties, marginBottom: 4 }}>
                     <span style={{ ...S(14), color: "var(--sri-ink)" }}>{r.phase}</span>
-                    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", padding: "3px 8px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: r.color || r.c }}>{r.tag}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", padding: "4px 8px", borderRadius: "var(--sri-pill)", background: "var(--sri-ai-bg)", color: r.color || r.c }}>{r.tag}</span>
                   </div>
                   <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 4, padding: 0, margin: 0 }}>
                     {/* FIX #28 — task text color */}
@@ -442,7 +442,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               </div>
               {/* FIX #5, #27 — description: ink-3, lineHeight 1.6 */}
               <div style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--sri-ink-3)", lineHeight: 1.6, marginBottom: 16 }}>{(dataTrust as any).description}</div>
-              <div style={{ border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "14px 18px", marginBottom: 16, background: "var(--sri-ai-bg)" }}>
+              <div style={{ border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "12px 18px", marginBottom: 16, background: "var(--sri-ai-bg)" }}>
                 <div style={SECT}>AI Confidence in This Assessment</div>
                 <div style={{ ...F(8) as React.CSSProperties }}>
                   <span style={{ ...S(22, 800), color: "var(--sri-ai-d)" }}>{(dataTrust as any).confidence}%</span>
@@ -452,16 +452,16 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
                 {(dataTrust as any).scoreRange && <div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)", marginTop: 4, lineHeight: 1.5 }}>Score range: <b style={{ color: "var(--sri-ink-2)", fontWeight: 700 }}>{(dataTrust as any).scoreRange}</b></div>}
               </div>
               {/* FIX #29 — label fontWeight 500 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-ai-d)" }}>{(dataTrust as any).sources}</div><div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", marginTop: 2, fontWeight: 500 }}>Sources Used</div></div>
-                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-red-t)" }}>{(dataTrust as any).gaps}</div><div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", marginTop: 2, fontWeight: 500 }}>Data Gaps</div></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-ai-d)" }}>{(dataTrust as any).sources}</div><div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", marginTop: 0, fontWeight: 500 }}>Sources Used</div></div>
+                <div style={{ textAlign: "center", padding: 16, border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", background: "var(--sri-ai-bg)" }}><div style={{ ...S(28, 800), color: "var(--sri-red-t)" }}>{(dataTrust as any).gaps}</div><div style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-m)", marginTop: 0, fontWeight: 500 }}>Data Gaps</div></div>
               </div>
             </>) : <Empty msg="Trust assessment not loaded" />}
           </Card>
         </div>
 
         {/* FOOTER — FIX #8: footer color upgraded, FIX #30: margin-top 16px */}
-        <div style={{ margin: "16px 32px 0", padding: "14px 24px", borderTop: "1px solid var(--sri-bdr)", ...F(8) as React.CSSProperties, justifyContent: "space-between" }}>
+        <div style={{ margin: "16px 32px 0", padding: "12px 24px", borderTop: "1px solid var(--sri-bdr)", ...F(8) as React.CSSProperties, justifyContent: "space-between" }}>
           <div style={{ ...F(8) as React.CSSProperties, fontSize: 'var(--ds-font-size-200)', color: "var(--sri-ink-3)" }}><span style={D("var(--sri-ai)", 6) as React.CSSProperties} />Powered by AI · Steercom-grade</div>
         </div>
       </div>

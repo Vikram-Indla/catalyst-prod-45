@@ -33,7 +33,7 @@ export function WorkCellPrefix({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         background: 'transparent',
         border: 'none',
         padding: 0,
@@ -133,7 +133,7 @@ export function WorkCell({ issueType, issueKey, summary, onClick }: WorkCellProp
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         minWidth: 0,
         width: '100%',
       }}

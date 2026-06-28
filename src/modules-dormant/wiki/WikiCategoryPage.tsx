@@ -34,32 +34,32 @@ export default function WikiCategoryPage() {
     <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
       <div style={{ padding: '16px 28px 48px' }}>
         {/* Breadcrumb */}
-        <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
+        <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') navigate('/wiki'); }} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
           <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-secondary)', fontWeight: 600 }}>{domainCode} {name}</span>
         </nav>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <DomainBadge code={domainCode} size="md" />
           <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, margin: 0, color: 'var(--cp-text-primary)', flex: 1 }}>{name}</h1>
           <button onClick={() => setUploadOpen(true)} style={{
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '6px 14px', borderRadius: 4, cursor: 'pointer',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '4px 14px', borderRadius: 4, cursor: 'pointer',
             border: '1px solid var(--cp-border-default)', background: 'transparent',
-            color: 'var(--cp-text-secondary)', display: 'flex', alignItems: 'center', gap: 5,
+            color: 'var(--cp-text-secondary)', display: 'flex', alignItems: 'center', gap: 4,
           }}><Upload size={13} /> Add Document</button>
         </div>
 
         {domain?.description && (
-          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-text-tertiary)', marginBottom: 20, lineHeight: 1.6 }}>{domain.description}</p>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-text-tertiary)', marginBottom: 16, lineHeight: 1.6 }}>{domain.description}</p>
         )}
 
         {/* Filter chips */}
-        <div role="tablist" aria-label="Category filters" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
+        <div role="tablist" aria-label="Category filters" style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 24 }}>
           {filterItems.map(cat => (
             <button key={cat.id} role="tab" aria-selected={activeFilter === cat.id} onClick={() => setActiveFilter(cat.id)} style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: activeFilter === cat.id ? 650 : 500, padding: '5px 12px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: activeFilter === cat.id ? 650 : 500, padding: '4px 12px',
               borderRadius: 4, cursor: 'pointer',
               border: activeFilter === cat.id ? '1.5px solid var(--cp-primary-60)' : '1px solid var(--cp-border-default)',
               background: activeFilter === cat.id ? 'var(--cp-primary-5)' : 'transparent',
@@ -71,18 +71,18 @@ export default function WikiCategoryPage() {
         {/* Articles section */}
         <div style={sectionHeaderStyle}>Articles</div>
         {pagesLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {Array.from({ length: 5 }).map((_, i) => <SkeletonArticleRow key={i} />)}
           </div>
         ) : (pages || []).length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {(pages || []).map((p: any) => (
               <div key={p.id}
                 onClick={() => navigate(`/wiki/${p.slug}`)}
                 tabIndex={0}
                 onKeyDown={e => { if (e.key === 'Enter') navigate(`/wiki/${p.slug}`); }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
                   borderRadius: 4, cursor: 'pointer', transition: 'background 80ms',
                   outline: 'none',
                 }}
@@ -94,7 +94,7 @@ export default function WikiCategoryPage() {
                 <FileText size={14} style={{ color: 'var(--cp-text-muted)', flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--cp-text-primary)', ...truncateStyle(2) }}>{p.title}</div>
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-muted)', marginTop: 1 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-muted)', marginTop: 0 }}>
                     Updated {new Date(p.updated_at).toLocaleDateString()}
                   </div>
                 </div>

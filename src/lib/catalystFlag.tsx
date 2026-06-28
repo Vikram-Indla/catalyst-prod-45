@@ -75,7 +75,7 @@ export function CatalystFlagHost() {
         zIndex: 100000,
         display: 'flex',
         flexDirection: 'column',
-        gap: 10,
+        gap: 8,
         pointerEvents: 'none',
       }}
     >

@@ -342,7 +342,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       {/* ── Filter chips row ─────────────────────────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '10px 16px',
+        padding: '8px 16px',
         borderBottom: `1px solid ${token('color.border', 'var(--ds-background-neutral)')}`,
         flexShrink: 0,
       }}>
@@ -386,7 +386,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         {itemRows.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '10px 16px 4px',
+            padding: '8px 16px 4px',
           }}>
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
               {isSearching ? 'Results' : 'Recent'}
@@ -412,7 +412,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
               <div style={{ width: 28, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
                 <WorkItemIcon type={iconType} size={18} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0, flex: 1 }}>
                 <div style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <strong style={{ fontWeight: 600 }}>{formatWorkItemKey(it.item_key)}</strong>
                   {': '}

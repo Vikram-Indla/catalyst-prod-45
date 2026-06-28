@@ -174,7 +174,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     return (
       <span style={{
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-        padding: '1px 4px', borderRadius: 4,
+        padding: '0px 4px', borderRadius: 4,
         background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bolder, #0f766e)',
         textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
@@ -183,7 +183,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   return (
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-      padding: '1px 4px', borderRadius: 4,
+      padding: '0px 4px', borderRadius: 4,
       background: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
@@ -203,7 +203,7 @@ function getAvatarColor(name: string): string {
 function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; onClick?: (e: React.MouseEvent) => void }) {
   if (!assignee) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
         <UnassignedAvatar size={24} />
         <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
@@ -213,7 +213,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const bgColor = getAvatarColor(assignee.displayName);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       {avatarUrl ? (
         <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
       ) : (
@@ -239,7 +239,7 @@ function priorityToLevel(name?: string): number {
 /* ── Priority bars ── */
 function PriorityBarsCell({ level }: { level: number }) {
   return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
       {[1, 2, 3, 4].map(i => (
         <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
@@ -256,7 +256,7 @@ function LabelsPills({ labels }: { labels: string[] }) {
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', overflow: 'hidden' }}>
       {show.map(l => (
         <span key={l} style={{
-          fontSize: 10, padding: '2px 8px', borderRadius: 9999,
+          fontSize: 10, padding: '0px 8px', borderRadius: 9999,
           background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', whiteSpace: 'nowrap',
         }}>{l}</span>
       ))}
@@ -602,7 +602,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                   fontSize: 9,
                   fontWeight: 700,
                   letterSpacing: '0.06em',
-                  padding: '1px 6px',
+                  padding: '0px 6px',
                   borderRadius: 4,
                   background: 'var(--ds-background-success, #DFFCF0)',
                   color: 'var(--quality-high, #059669)',
@@ -651,7 +651,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 11, padding: '0px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
             ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}
@@ -877,7 +877,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       )}
 
       <style>{`
-        .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
+        .hi-table-row { border-left: 4px solid transparent; transition: all 80ms ease; }
         .hi-table-row:hover { background: var(--ds-background-neutral-hovered) !important; border-left-color: var(--ds-border-focused); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
         .hi-table-row.checked { background: var(--ds-background-selected) !important; border-left-color: var(--ds-border-focused); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }

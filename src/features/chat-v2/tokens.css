@@ -44,7 +44,7 @@ body[data-cv2-theme] {
   /* Component-specific dimensions */
   --cv2-hover-toolbar-h: 32px;
   --cv2-reaction-pill-h: 22px;
-  --cv2-intra-gap: 2px;
+  --cv2-intra-gap: 0px;
   --cv2-group-gap: 16px;
   --cv2-page-pad-x: 20px;
   --cv2-modal-z: 1000;
@@ -250,7 +250,7 @@ body[data-cv2-theme="light"] {
 /* Mention pill — rendered inline by lib/markdown.ts. */
 .cv2-mention {
   display: inline;
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
   font-weight: 500;
   text-decoration: none;

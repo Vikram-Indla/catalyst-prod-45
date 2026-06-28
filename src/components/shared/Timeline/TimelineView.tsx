@@ -1186,7 +1186,7 @@ export default function TimelineView(props: TimelineViewProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
               flex: 1,
               minWidth: 0,
               flexWrap: "wrap",
@@ -1204,7 +1204,7 @@ export default function TimelineView(props: TimelineViewProps) {
                 style={{
                   position: "absolute",
                   left: 8,
-                  top: "50%",
+                  top: "48%",
                   transform: "translateY(-50%)",
                   lineHeight: 0,
                   pointerEvents: "none",
@@ -1419,7 +1419,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           display: "flex",
                           alignItems: "center",
                           gap: 8,
-                          padding: "6px 12px",
+                          padding: "4px 12px",
                           cursor: "pointer",
                           fontSize: 'var(--ds-font-size-400)',
                           color: "var(--ds-text)",
@@ -1645,7 +1645,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           display: "flex",
                           alignItems: "center",
                           gap: 8,
-                          padding: "6px 12px",
+                          padding: "4px 12px",
                           cursor: "pointer",
                           fontSize: 'var(--ds-font-size-400)',
                           color: "var(--ds-text)",
@@ -2022,8 +2022,8 @@ export default function TimelineView(props: TimelineViewProps) {
                 aria-label="Create work item"
                 style={{
                   position: "fixed",
-                  top: "50%",
-                  left: "50%",
+                  top: "48%",
+                  left: "48%",
                   transform: "translate(-50%, -50%)",
                   width: 480,
                   maxHeight: "85vh",
@@ -2043,7 +2043,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "20px 24px 16px",
+                    padding: "16px 24px 16px",
                     borderBottom: "1px solid var(--ds-border)",
                   }}
                 >
@@ -2097,7 +2097,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     padding: "16px 24px",
                     display: "flex",
                     flexDirection: "column",
-                    gap: 20,
+                    gap: 16,
                   }}
                 >
                   {/* Project */}
@@ -2107,7 +2107,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
                         color: "var(--ds-text-subtlest)",
-                        marginBottom: 6,
+                        marginBottom: 4,
                         fontFamily: "var(--ds-font-family-body)",
                       }}
                     >
@@ -2204,7 +2204,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
                         color: "var(--ds-text-subtlest)",
-                        marginBottom: 6,
+                        marginBottom: 4,
                         fontFamily: "var(--ds-font-family-body)",
                       }}
                     >
@@ -2403,7 +2403,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       display: "flex",
                       alignItems: "center",
                       padding: "0 8px",
-                      gap: 6,
+                      gap: 4,
                       borderBottom: depMode
                         ? "none"
                         : "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
@@ -2582,7 +2582,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       alignItems: "center",
                       paddingLeft: 8,
                       paddingRight: 4,
-                      gap: 6,
+                      gap: 4,
                       borderBottom:
                         "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
                     }}
@@ -2658,9 +2658,9 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: 6,
+                          gap: 4,
                           width: "100%",
-                          padding: "6px 4px",
+                          padding: "4px 4px",
                           border: "none",
                           background: "transparent",
                           cursor: "pointer",
@@ -3175,8 +3175,8 @@ export default function TimelineView(props: TimelineViewProps) {
                           border: `2px solid ${borderColor}`,
                           display: "flex",
                           alignItems: "center",
-                          paddingLeft: 6,
-                          paddingRight: 6,
+                          paddingLeft: 4,
+                          paddingRight: 4,
                           overflow: "hidden",
                           cursor: isThisDragging
                             ? dragEdge === "move"

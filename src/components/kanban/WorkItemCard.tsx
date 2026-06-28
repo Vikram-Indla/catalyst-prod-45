@@ -129,15 +129,15 @@ interface WorkItemCardProps {
 function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThemeTokens }) {
   if (!subtasks.length) return null;
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4, marginBottom: 2 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4, marginBottom: 0 }}>
       {subtasks.map(st => (
           <span
             key={st.id}
             role="img"
             aria-label={st.issueKey}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 3,
-              padding: '2px 6px',
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '0px 6px',
               borderRadius: 3,
               background: 'var(--ds-background-neutral)',
               color: tk.textMuted,
@@ -404,7 +404,7 @@ export function WorkItemCard({
         {/* Flag + three-dots (edit pen now lives inline at the end of the
             title text, see above). Hidden during edit mode. */}
         {!isEditing && (
-          <div className="flex items-center flex-shrink-0" style={{ gap: 2, marginLeft: 4, marginTop: 1 }}>
+          <div className="flex items-center flex-shrink-0" style={{ gap: 0, marginLeft: 4, marginTop: 0 }}>
             {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="var(--ds-background-danger-bold)" />}
             <button
               ref={btnRef}
@@ -639,7 +639,7 @@ export function WorkItemCard({
                          pinned flush against the parent so the user can
                          drag horizontally onto the sub-menu without ever
                          leaving a hover region. */
-                      left: '100%',
+                      left: '48%',
                       top: 0,
                       minWidth: 180,
                       background: tk.surfaceBg,

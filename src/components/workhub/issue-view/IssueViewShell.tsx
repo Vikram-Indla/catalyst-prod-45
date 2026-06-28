@@ -215,7 +215,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
               onClick={clearParentFilter}
               title="Clear parent filter"
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
                 height: 28, padding: '0 8px 0 10px',
                 background: 'var(--ds-background-information)', color: 'var(--ds-link-pressed)',
                 border: '1px solid var(--ds-background-information)', borderRadius: 3,

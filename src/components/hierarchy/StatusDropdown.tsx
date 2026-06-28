@@ -31,7 +31,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
       ref={ref}
       style={{
         position: 'absolute',
-        top: '100%',
+        top: '48%',
         left: 0,
         marginTop: 4,
         width: 200,

@@ -33,7 +33,7 @@ function pillStyle(active: boolean, whiteBg = false): React.CSSProperties {
   return {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     height: PILL_HEIGHT,
     padding: '0 10px',
     borderRadius: 3,
@@ -167,7 +167,7 @@ function SearchInput({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 32,
         padding: '0 8px',
         borderRadius: 3,
@@ -232,7 +232,7 @@ function CheckboxRow({
         gap: 8,
         width: '100%',
         boxSizing: 'border-box',
-        padding: '6px 12px 6px 16px',
+        padding: '4px 12px 6px 16px',
         cursor: 'pointer',
         background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
         userSelect: 'none',
@@ -376,7 +376,7 @@ export function StatusFilter({
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
-        <div style={{ padding: '6px 0' }}>
+        <div style={{ padding: '4px 0' }}>
           {STATUS_ORDER.map((opt) => (
             <CheckboxRow
               key={opt.value}
@@ -469,7 +469,7 @@ export function ProductFilter({
         <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
           <SearchInput value={query} onChange={setQuery} placeholder={placeholder} />
         </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
           {filtered.length === 0 ? (
             <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
               No matches
@@ -499,7 +499,7 @@ export function ProductFilter({
             style={{
               all: 'unset',
               cursor: 'pointer',
-              padding: '10px 12px',
+              padding: '8px 12px',
               borderTop: '1px solid var(--ds-border)',
               fontSize: 'var(--ds-font-size-300)',
               color: PILL_TEXT_ACTIVE,
@@ -563,7 +563,7 @@ export function GroupFilter({
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
-        <div style={{ padding: '6px 0', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column' }}>
           {GROUP_OPTIONS.map((opt) => (
             <RadioRow
               key={opt.value}
@@ -706,7 +706,7 @@ export function ProductSelect({
         <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
           <SearchInput value={query} onChange={setQuery} placeholder={searchPlaceholder} />
         </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
           {filtered.length === 0 ? (
             <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
               No matches

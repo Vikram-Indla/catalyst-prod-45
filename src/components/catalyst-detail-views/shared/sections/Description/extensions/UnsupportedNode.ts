@@ -82,7 +82,7 @@ export const UnsupportedInline = Node.create({
         'data-unsupported-inline': node.attrs.adf,
         contenteditable: 'false',
         style:
-          'background:var(--ds-background-neutral);color:var(--ds-text-subtle);padding:1px 4px;border-radius:3px;font-size:11px;font-style:italic;',
+          'background:var(--ds-background-neutral);color:var(--ds-text-subtle);padding:0px 4px;border-radius:3px;font-size:11px;font-style:italic;',
         title: `Jira ADF inline node "${nodeType}" — preserved on save`,
       }),
       `[${nodeType}]`,

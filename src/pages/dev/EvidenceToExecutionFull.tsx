@@ -258,7 +258,7 @@ export default function EvidenceToExecutionFull() {
                     type="checkbox"
                     checked={selectedEvidenceItems[item.key as keyof typeof selectedEvidenceItems]}
                     onChange={() => toggleEvidenceItem(item.key)}
-                    style={{ marginTop: '2px', cursor: 'pointer' }}
+                    style={{ marginTop: '0px', cursor: 'pointer' }}
                   />
                   <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)' }}>
                     <div style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{item.name}</div>
@@ -463,7 +463,7 @@ export default function EvidenceToExecutionFull() {
                       }}
                     >
                       <div style={{ fontSize: 'var(--ds-font-size-200)', marginBottom: '4px' }}>
-                        <span style={{ backgroundColor: c.color, color: 'var(--ds-surface)', padding: '2px 6px', borderRadius: '3px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500 }}>
+                        <span style={{ backgroundColor: c.color, color: 'var(--ds-surface)', padding: '0px 6px', borderRadius: '3px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500 }}>
                           {c.type}
                         </span>
                         <span style={{ marginLeft: '8px', color: 'var(--ds-icon-subtle)', fontSize: 'var(--ds-font-size-100)' }}>{c.author}</span>
@@ -491,7 +491,7 @@ export default function EvidenceToExecutionFull() {
                         style={{
                           backgroundColor: issue.severity === 'P0' ? 'var(--ds-text-danger)' : issue.severity === 'P1' ? 'var(--ds-text-warning)' : 'var(--ds-background-discovery-bold)',
                           color: 'var(--ds-text-inverse)',
-                          padding: '2px 8px',
+                          padding: '0px 8px',
                           borderRadius: '3px',
                           fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 600,
@@ -536,7 +536,7 @@ export default function EvidenceToExecutionFull() {
                       {source.included && <span>✓</span>}
                       <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{source.name}</span>
                       {source.lang && (
-                        <span style={{ fontSize: 'var(--ds-font-size-100)', backgroundColor: '#E3F2FD', color: 'var(--ds-link)', padding: '2px 6px', borderRadius: '3px', fontWeight: 500 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', backgroundColor: '#E3F2FD', color: 'var(--ds-link)', padding: '0px 6px', borderRadius: '3px', fontWeight: 500 }}>
                           {source.lang}
                         </span>
                       )}
@@ -735,7 +735,7 @@ export default function EvidenceToExecutionFull() {
                         style={{
                           backgroundColor: '#E3F2FD', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                           color: 'var(--ds-link)',
-                          padding: '2px 8px',
+                          padding: '0px 8px',
                           borderRadius: '3px',
                           fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 600,
@@ -744,7 +744,7 @@ export default function EvidenceToExecutionFull() {
                         {item.confidence}%
                       </span>
                     </div>
-                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)', marginLeft: '26px' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)', marginLeft: '24px' }}>
                       <strong>Source:</strong> {item.sources.join(' • ')}
                     </div>
                   </div>
@@ -788,7 +788,7 @@ export default function EvidenceToExecutionFull() {
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
               <h2>Ready to Create</h2>
-              <p style={{ color: 'var(--ds-icon-subtle)', marginBottom: '20px' }}>
+              <p style={{ color: 'var(--ds-icon-subtle)', marginBottom: '16px' }}>
                 12 draft work items would be created in <strong>{projects.find((p) => p.value === selectedProject)?.label}</strong>.
               </p>
               <div

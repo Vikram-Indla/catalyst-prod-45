@@ -89,7 +89,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
               background: 'var(--cp-float)',
               border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
-              padding: 20,
+              padding: 16,
               height: 120,
               animation: 'pulse 1.5s ease-in-out infinite',
             }}
@@ -124,7 +124,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
               border: '1px solid var(--divider)',
               borderLeft: dangerBorder ? '4px solid var(--ds-background-danger-bold)' : '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
-              padding: 20,
+              padding: 16,
               boxShadow: 'var(--wh-shadow-sm, 0 1px 3px rgba(0,0,0,0.06))',
               cursor: 'pointer',
               transition: 'all 150ms ease',
@@ -177,7 +177,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 'var(--ds-font-size-100)',
                 color: 'var(--fg-3)',
-                marginTop: 2,
+                marginTop: 0,
               }}>
                 {subtext}
               </div>

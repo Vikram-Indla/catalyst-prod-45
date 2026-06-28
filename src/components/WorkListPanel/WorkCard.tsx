@@ -111,7 +111,7 @@ export const WorkCard = memo(function WorkCard({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '2px 6px',
+            padding: '0px 6px',
             borderRadius: '3px',
             background: statusCategoryColor[item.statusCategory],
             color: statusCategoryTextColor[item.statusCategory],

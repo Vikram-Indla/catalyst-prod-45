@@ -178,7 +178,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
     <div
       ref={panelRef}
       style={{
-        position: 'absolute', top: '100%', right: 0, marginTop: 4,
+        position: 'absolute', top: '48%', right: 0, marginTop: 4,
         width: 400, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         border: '1px solid var(--ds-border)', borderRadius: 10,
         boxShadow: '0 12px 36px var(--ds-shadow-raised, rgba(9,30,66,0.15)), 0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
@@ -189,7 +189,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
     >
       {/* Header */}
       <div className="flex items-center justify-between" style={{
-        padding: '14px 20px', borderBottom: '1px solid var(--ds-border)',
+        padding: '12px 20px', borderBottom: '1px solid var(--ds-border)',
         background: 'var(--ds-surface-sunken)',
         borderTopLeftRadius: 10, borderTopRightRadius: 10,
       }}>
@@ -201,7 +201,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
           {activeCount > 0 && (
             <span style={{
               fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)',
-              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 10, padding: '2px 8px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', borderRadius: 10, padding: '0px 8px',
               lineHeight: '16px',
             }}>{activeCount}</span>
           )}
@@ -340,7 +340,7 @@ function MultiSelectFilterSection({
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder={placeholder}
                 style={{
-                  width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
+                  width: '100%', height: 32, paddingLeft: 24, paddingRight: 8,
                   border: '1px solid var(--ds-border)', borderRadius: 4,
                   fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', background: 'var(--ds-surface-sunken)',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
@@ -359,7 +359,7 @@ function MultiSelectFilterSection({
                   onClick={() => toggle(opt)}
                   className="flex items-center gap-3 w-full"
                   style={{
-                    padding: '7px 8px', background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
+                    padding: '8px 8px', background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13.5,
                     color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', textAlign: 'left', borderRadius: 4,
                     fontWeight: isSelected ? 600 : 400,
@@ -382,7 +382,7 @@ function MultiSelectFilterSection({
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '10px 4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>No results</div>
+              <div style={{ padding: '8px 4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>No results</div>
             )}
           </div>
         </div>

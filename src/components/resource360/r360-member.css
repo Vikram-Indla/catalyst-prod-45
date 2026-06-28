@@ -67,7 +67,7 @@
 #r360-root .r3-mode-badge {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 2px 8px !important;
+  padding: 0px 8px !important;
   border-radius: 4px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
@@ -227,7 +227,7 @@
 #r360-root .r3-day-cell-right {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
 }
 #r360-root .r3-day-cell-minibar {
   width: 40px !important;
@@ -265,7 +265,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
   border-radius: 12px !important;
-  padding: 20px 24px !important;
+  padding: 16px 24px !important;
 }
 
 #r360-root .r3-avatar {
@@ -338,13 +338,13 @@
 #r360-root .r3-tab {
   font-size: 13px !important;
   font-weight: 500 !important;
-  padding: 10px 16px !important;
+  padding: 8px 16px !important;
   border-radius: 0 !important;
   cursor: pointer !important;
   border: none !important;
   background: transparent !important;
   color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))) !important;
-  border-bottom: 2px solid transparent !important;
+  border-bottom: 0px solid transparent !important;
   transition: all 0.15s ease !important;
 }
 #r360-root .r3-tab:hover {
@@ -364,13 +364,13 @@
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
-  padding: 6px 14px !important;
+  padding: 4px 14px !important;
   border-radius: 6px !important;
   border: none !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   transition: background 0.15s !important;
 }
 #r360-root .r3-btn-intel:hover {
@@ -383,7 +383,7 @@
   color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
-  padding: 6px 14px !important;
+  padding: 4px 14px !important;
   border-radius: 6px !important;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
   cursor: pointer !important;
@@ -399,7 +399,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 10px 20px !important;
+  padding: 8px 20px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
   border-radius: 12px !important;
@@ -444,8 +444,8 @@
 #r360-root .r3-status-pill {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 5px !important;
-  padding: 3px 10px !important;
+  gap: 4px !important;
+  padding: 4px 10px !important;
   border-radius: 6px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
@@ -461,7 +461,7 @@
 /* ─── CHRONOLOGY ─── */
 #r360-root .r3-timeline-line {
   position: absolute !important;
-  left: 15px !important;
+  left: 16px !important;
   top: 0 !important;
   bottom: 0 !important;
   width: 2px !important;
@@ -525,7 +525,7 @@
 #r360-root .r3-project-tag {
   font-size: 10px !important;
   font-weight: 700 !important;
-  padding: 1px 6px !important;
+  padding: 0px 6px !important;
   border-radius: 4px !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   letter-spacing: 0.02em !important;
@@ -544,13 +544,13 @@
   border-radius: 12px !important;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
   overflow: visible !important;
-  padding-right: 60px !important; /* D-R1: clearance for completed badge */
+  padding-right: 48px !important; /* D-R1: clearance for completed badge */
 }
 
 #r360-root .r3-ring-center {
   position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
+  left: 48% !important;
+  top: 48% !important;
   transform: translate(-50%, -50%) !important;
   text-align: center !important;
   z-index: 10 !important;
@@ -629,7 +629,7 @@
   background: var(--ds-surface-sunken, #F8FAFC) !important;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
   border-radius: 12px !important;
-  padding: 2px 8px !important;
+  padding: 0px 8px !important;
   color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   font-family: var(--cp-font-mono);
   white-space: nowrap !important;
@@ -647,7 +647,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  padding-bottom: 10px !important;
+  padding-bottom: 8px !important;
   margin-bottom: 12px !important;
 }
 #r360-root .r3-board-col-dot {
@@ -711,7 +711,7 @@
 
 #r360-root .r3-panel-header {
   padding: 16px 20px !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   position: sticky !important;
   top: 0 !important;
@@ -744,9 +744,9 @@
   overflow: hidden !important;
 }
 #r360-root .r3-meta-cell {
-  padding: 10px 14px !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
-  border-right: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
+  padding: 8px 14px !important;
+  border-bottom: 0px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
+  border-right: 0px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;
 }
 #r360-root .r3-meta-cell:nth-child(even) {
   border-right: none !important;
@@ -789,7 +789,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 6px 10px !important;
+  padding: 4px 10px !important;
   border-radius: 6px !important;
   cursor: pointer !important;
   font-size: 12px !important;
@@ -842,12 +842,12 @@
 #r360-root .r3-completed-badge {
   position: absolute !important;
   right: 12px !important;
-  top: 50% !important;
+  top: 48% !important;
   transform: translateY(-50%) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   z-index: 8 !important;
   cursor: pointer !important;
   transition: transform var(--cp-duration-fast) ease !important;
@@ -889,7 +889,7 @@
 #r360-root .r3-completed-panel {
   position: absolute !important;
   right: 48px !important;
-  top: 50% !important;
+  top: 48% !important;
   transform: translateY(-50%) !important;
   width: 340px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
@@ -902,7 +902,7 @@
 /* Updated Xd ago label */
 #r360-root .r3-card-age-label {
   position: absolute !important;
-  left: 50% !important;
+  left: 48% !important;
   bottom: -18px !important;
   transform: translateX(-50%) !important;
   font-size: 11px !important;
@@ -948,7 +948,7 @@
   font-family: var(--cp-font-mono);
   font-size: 10px !important;
   font-weight: 600 !important;
-  padding: 1px 6px !important;
+  padding: 0px 6px !important;
   border-radius: 4px !important;
   background: var(--ds-surface-sunken, #F8FAFC) !important;
 }
@@ -957,7 +957,7 @@
 #r360-root .r3-days-bar {
   height: 4px !important;
   border-radius: 4px !important;
-  margin-top: 6px !important;
+  margin-top: 4px !important;
   overflow: hidden !important;
 }
 
@@ -1066,7 +1066,7 @@
 }
 
 #r360-root .pill-status {
-  display: flex !important; align-items: center !important; gap: 5px !important;
+  display: flex !important; align-items: center !important; gap: 4px !important;
   font-size: 13px !important; font-weight: 500 !important;
   color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
@@ -1089,7 +1089,7 @@
 }
 
 #r360-root .pill-type {
-  display: flex !important; align-items: center !important; gap: 5px !important;
+  display: flex !important; align-items: center !important; gap: 4px !important;
   font-size: 12px !important; font-weight: 600 !important;
   color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
@@ -1097,7 +1097,7 @@
 #r360-root .pill-project {
   font-size: 11px !important; font-weight: 700 !important; color: var(--ds-surface, #fff) !important;
   background: var(--cp-primary, var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))) !important;
-  padding: 2px 8px !important; border-radius: 4px !important;
+  padding: 0px 8px !important; border-radius: 4px !important;
   letter-spacing: 0.02em !important;
 }
 
@@ -1130,7 +1130,7 @@
 #r360-root .meta-label {
   font-size: 10px !important; font-weight: 600 !important;
   text-transform: none !important; letter-spacing: 0.06em !important;
-  color: var(--cp-ink-muted, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))) !important; margin-bottom: 5px !important;
+  color: var(--cp-ink-muted, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))) !important; margin-bottom: 4px !important;
 }
 
 #r360-root .meta-value {
@@ -1182,24 +1182,24 @@
 #r360-root .hier-row.hier-self {
   border: 1.5px solid var(--cp-primary, var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))) !important;
   background: var(--ds-background-information, rgba(37,99,235,0.04)) !important;
-  margin-top: 2px !important;
+  margin-top: 0px !important;
 }
 
 #r360-root .hier-indent {
-  margin-left: 20px !important; display: flex !important;
+  margin-left: 16px !important; display: flex !important;
   gap: 0 !important; align-items: flex-start !important;
 }
 #r360-root .hier-indent-line {
   width: 14px !important; min-height: 20px !important;
-  border-left: 1.5px solid var(--cp-border-strong, var(--ds-border, #DFE1E6)) !important;
-  margin-left: 10px !important; margin-top: 4px !important; flex-shrink: 0 !important;
+  border-left: 0.5px solid var(--cp-border-strong, var(--ds-border, #DFE1E6)) !important;
+  margin-left: 8px !important; margin-top: 4px !important; flex-shrink: 0 !important;
 }
 
 #r360-root .hier-icon {
   width: 18px !important; height: 18px !important; border-radius: 4px !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
   font-size: 9px !important; font-weight: 700 !important;
-  flex-shrink: 0 !important; margin-top: 1px !important;
+  flex-shrink: 0 !important; margin-top: 0px !important;
 }
 #r360-root .hier-icon.epic {
   background: var(--ds-background-discovery-bold, #6554C0) !important; color: var(--ds-surface, #fff) !important;
@@ -1573,10 +1573,10 @@
 }
 
 /* Light-mode border colors → ADS borders */
-.dark #r360-root [style*="border-bottom: 1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))"],
-.dark #r360-root [style*="border-top: 1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))"],
+.dark #r360-root [style*="border-bottom: 0px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))"],
+.dark #r360-root [style*="border-top: 0px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))"],
 .dark #r360-root [style*="border: 1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))"],
-.dark #r360-root [style*="border-bottom: 1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))"],
+.dark #r360-root [style*="border-bottom: 0px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))"],
 .dark #r360-root [style*="borderBottom: 1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))"],
 .dark #r360-root [style*="border-color: var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))"] {
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;

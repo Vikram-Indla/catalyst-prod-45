@@ -83,7 +83,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
       padding: 24,
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
           fontSize: 'var(--ds-font-size-600)',
@@ -121,7 +121,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           paddingBottom: 8,
           marginBottom: 8,
           position: 'relative',
-          marginLeft: 120,
+          marginLeft: 48,
         }}>
           {months.map((m, i) => (
             <div key={i} style={{
@@ -260,9 +260,9 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                     {isCancelled && (
                       <div style={{
                         position: 'absolute',
-                        top: '50%',
-                        left: '10%',
-                        right: '10%',
+                        top: '48%',
+                        left: '8%',
+                        right: '8%',
                         height: 2,
                         background: 'var(--bg-app)',
                         transform: 'translateY(-50%)',

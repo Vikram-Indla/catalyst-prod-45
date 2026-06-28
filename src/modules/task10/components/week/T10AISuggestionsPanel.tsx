@@ -67,7 +67,7 @@ export function T10AISuggestionsPanel({
                   alignItems: 'center', 
                   gap: 4, 
                   marginLeft: 8,
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   background: 'var(--ds-background-discovery)',
@@ -112,7 +112,7 @@ export function T10AISuggestionsPanel({
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
+            gap: 8,
             padding: '12px 16px',
             marginBottom: 12,
             fontSize: 'var(--ds-font-size-300)',
@@ -140,13 +140,13 @@ export function T10AISuggestionsPanel({
           )}
 
           {error && (
-            <div style={{ padding: '20px 16px', color: 'var(--ds-text-danger)', textAlign: 'center' }}>
+            <div style={{ padding: '16px 16px', color: 'var(--ds-text-danger)', textAlign: 'center' }}>
               Failed to load suggestions. Please try again later.
             </div>
           )}
 
           {!isLoading && !error && suggestions.length === 0 && (
-            <div style={{ padding: '20px 16px', color: 'var(--ds-text-subtlest)', textAlign: 'center' }}>
+            <div style={{ padding: '16px 16px', color: 'var(--ds-text-subtlest)', textAlign: 'center' }}>
               No high-priority tasks found in your backlog that aren't already in this week's list.
             </div>
           )}
@@ -172,8 +172,8 @@ export function T10AISuggestionsPanel({
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: 6, 
-                      marginTop: 6,
+                      gap: 4, 
+                      marginTop: 4,
                       fontSize: 'var(--ds-font-size-200)',
                       color: 'var(--ds-background-discovery-bold)'
                     }}>
@@ -187,7 +187,7 @@ export function T10AISuggestionsPanel({
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   padding: '8px 14px',
                   fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,

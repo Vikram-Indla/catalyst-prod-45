@@ -173,7 +173,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
           {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 48 }} />)}
         </div>
       ) : members.length === 0 ? (
-        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>No members yet</div>
+        <div style={{ padding: '16px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>No members yet</div>
       ) : (
         <div className="space-y-1">
           {members.map(m => (

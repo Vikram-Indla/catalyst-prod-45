@@ -65,7 +65,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
 
   return (
     <div style={{
-      position: 'fixed', bottom: 80, right: 24, width: 380, height: 520,
+      position: 'fixed', bottom: 48, right: 24, width: 380, height: 520,
       background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
       border: `0.75px solid ${border}`,
       boxShadow: isDark ? '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
@@ -73,8 +73,8 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
     }}>
       {/* Header */}
       <div style={{
-        padding: '14px 16px', borderBottom: `0.75px solid ${border}`,
-        display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
+        padding: '12px 16px', borderBottom: `0.75px solid ${border}`,
+        display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
       }}>
         <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <MessageCircle size={14} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }} />
@@ -118,7 +118,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
             </div>
             {/* Sources */}
             {m.sources && m.sources.length > 0 && (
-              <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {m.sources.map((s, i) => (
                   <div key={i} onClick={() => s.slug && navigate(`/wiki/${s.slug}`)}
                     style={{
@@ -143,7 +143,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
 
       {/* Input */}
       <div style={{
-        padding: '10px 12px', borderTop: `0.75px solid ${border}`,
+        padding: '8px 12px', borderTop: `0.75px solid ${border}`,
         display: 'flex', gap: 8, flexShrink: 0,
       }}>
         <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}

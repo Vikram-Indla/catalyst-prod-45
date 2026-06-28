@@ -30,7 +30,7 @@ export const Badge: React.FC<BadgeProps> = ({
         color: isActive ? COLORS.accent : COLORS.textMuted,
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
-        marginLeft: '6px'
+        marginLeft: '4px'
       }}
     >
       {count}

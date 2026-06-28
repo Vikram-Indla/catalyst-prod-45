@@ -255,8 +255,8 @@ export function ItemDetailPanel({
 
             {/* Parent */}
             {detail.parentKey && (
-              <div style={{ border: '1px solid var(--divider)', borderRadius: 8, padding: '10px 14px' }}>
-                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>PARENT</div>
+              <div style={{ border: '1px solid var(--divider)', borderRadius: 8, padding: '8px 14px' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 4 }}>PARENT</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{detail.parentKey}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK2 }}>{detail.parentName || '—'}</span>
@@ -266,7 +266,7 @@ export function ItemDetailPanel({
 
             {/* Days Sitting Progress */}
             <div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>TIME IN ASSIGNMENT</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 4 }}>TIME IN ASSIGNMENT</div>
               <div style={{ height: 6, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 4,

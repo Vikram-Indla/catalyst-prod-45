@@ -78,7 +78,7 @@ export function CreateSpaceModal({
         alignItems: 'flex-start',
         justifyContent: 'center',
         background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
-        paddingTop: 80,
+        paddingTop: 48,
         overflowY: 'auto',
       }}
       onClick={onClose}
@@ -103,7 +103,7 @@ export function CreateSpaceModal({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '20px 24px 12px',
+            padding: '16px 24px 12px',
             borderBottom: `1px solid ${token('color.border')}`,
           }}
         >

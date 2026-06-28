@@ -26,7 +26,7 @@ export function HealthStatusDescriptor({ health }: HealthStatusDescriptorProps) 
 
   return (
     <div style={{ marginBottom: health.violation_count > 0 ? '12px' : 0 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>
           {health.health_status}
         </span>
@@ -42,7 +42,7 @@ export function HealthStatusDescriptor({ health }: HealthStatusDescriptorProps) 
         {description}
       </p>
       {health.violation_count > 0 && (
-        <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
           {health.violation_count} violation{health.violation_count !== 1 ? 's' : ''} detected
           {health.critical_violation_count > 0 && (
             <span style={{ color: 'var(--ds-text-danger)', marginLeft: 4 }}>

@@ -115,7 +115,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                   onClick={() => { onChange(option.value); setOpen(false); }}
                   className="w-full flex items-center gap-2 text-left transition-colors"
                   style={{
-                    padding: '7px 12px',
+                    padding: '8px 12px',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: value === option.value ? 600 : 500,
                     color: value === option.value ? 'var(--cp-blue)' : 'var(--ds-text)',

@@ -13,7 +13,7 @@ export function PinnedIndicator({ byMe, byName }: PinnedIndicatorProps) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         marginBottom: 4,
         fontFamily: 'var(--cv2-font)',
         fontSize: 'var(--ds-font-size-200)',

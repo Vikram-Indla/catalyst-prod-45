@@ -118,7 +118,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
               fontSize: 'var(--ds-font-size-50)',
               fontWeight: 500,
               borderRadius: 4,
-              padding: '1px 5px',
+              padding: '0px 5px',
               lineHeight: '16px',
             }}
           >

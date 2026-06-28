@@ -72,7 +72,7 @@ function Tile({ bg, fg, icon, label, hint }: { bg: string; fg: string; icon: Rea
 
 function GhostRow({ bg, fg, icon, badge, badgeBg, badgeTxt, w1, w2 }: { bg: string; fg: string; icon: React.ReactNode; badge: string; badgeBg: string; badgeTxt: string; w1: number; w2: number }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 4px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px' }}>
       <span style={{ width: 28, height: 28, borderRadius: 6, background: bg, color: fg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</span>
       <div style={{ flex: 1 }}>
         <div style={{ width: w1, height: 9, borderRadius: 4, background: SUNKEN }} />
@@ -86,7 +86,7 @@ function GhostRow({ bg, fg, icon, badge, badgeBg, badgeTxt, w1, w2 }: { bg: stri
 
 export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }: StarredEmptyStateProps) {
   const ctaBase: React.CSSProperties = {
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
     padding: '8px 16px', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
     cursor: 'pointer', fontFamily: BODY_FONT,
   };
@@ -125,7 +125,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
           <GhostRow bg={RED_BG} fg={RED_FG} icon={<Bug size={15} />} badge="QA Bug" badgeBg={RED_BG} badgeTxt={RED_FG} w1={160} w2={60} />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16 }}>
           <button type="button" onClick={onBrowseWork} style={{ ...ctaBase, flex: 1, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none' }}>
             <Search size={15} />Browse work to star
           </button>

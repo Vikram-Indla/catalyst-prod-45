@@ -189,14 +189,14 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               Move to project
             </div>
             <div style={{ position: 'relative', marginBottom: 8 }}>
-              <Search size={12} color={tk.textDisabled} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
+              <Search size={12} color={tk.textDisabled} style={{ position: 'absolute', left: 8, top: '48%', transform: 'translateY(-50%)' }} />
               <input
                 ref={inputRef}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search projects"
                 style={{
-                  width: '100%', height: 32, paddingLeft: 28, paddingRight: 10,
+                  width: '100%', height: 32, paddingLeft: 24, paddingRight: 8,
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
                   fontSize: 'var(--ds-font-size-300)', color: textP, background: tk.inputBg,
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
@@ -245,7 +245,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               </div>
               {statusMismatch && (
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '4px 10px',
                   background: 'var(--ds-background-warning)', borderRadius: 4, marginBottom: 8,
                   fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)',
                 }}>

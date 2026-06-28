@@ -231,7 +231,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
-                      padding: '6px 8px',
+                      padding: '4px 8px',
                       cursor: atLimit ? 'default' : 'pointer',
                       background: checked ? 'var(--ds-background-selected)' : 'transparent',
                     }}

@@ -88,11 +88,11 @@ export function TestHubSection({ storyId }: { storyId: string }) {
             flex: 1, height: 33, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',
             color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
             borderBottom: `2px solid ${activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent'}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'color .12s, border-color .12s',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, transition: 'color .12s, border-color .12s',
             fontFamily: 'var(--cp-font-body)',
           }}>
             {tab.label}
-            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? 'var(--ds-background-information)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: activeTab === tab.key ? 'var(--ds-link-pressed)' : 'var(--ds-text-subtle)' }}>{tab.count}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 5px', borderRadius: 8, background: activeTab === tab.key ? 'var(--ds-background-information)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: activeTab === tab.key ? 'var(--ds-link-pressed)' : 'var(--ds-text-subtle)' }}>{tab.count}</span>
           </button>
         ))}
       </div>

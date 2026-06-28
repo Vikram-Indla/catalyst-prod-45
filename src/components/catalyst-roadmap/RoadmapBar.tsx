@@ -81,7 +81,7 @@ export function RoadmapBar({
         left: `${left}%`,
         width: `${scaledWidth}%`,
         height: LAYOUT.barHeight,
-        top: '50%',
+        top: '48%',
         transform: 'translateY(-50%)',
         backgroundColor: isPending ? undefined : statusColor,
         animationDelay: `${animationDelay}ms`,

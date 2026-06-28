@@ -135,7 +135,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Duplicate Detection — Component Consolidation
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text)', marginTop: 0 }}>
             {purpose}
           </div>
         </div>
@@ -150,7 +150,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-success)' }}>
             CANONICAL — USE THIS ONE
           </div>
-          <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-text-success)', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
+          <span style={{ padding: '0px 8px', borderRadius: 3, background: 'var(--ds-text-success)', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
             {canonical.consumers} consumers
           </span>
         </div>
@@ -158,14 +158,14 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
         <code style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon)', fontFamily: 'monospace' }}>{canonical.source}</code>
         <div style={{ marginTop: 4, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {canonical.ads && (
-            <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-background-selected)', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
+            <span style={{ padding: '0px 8px', borderRadius: 3, background: 'var(--ds-background-selected)', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
               ADS: {canonical.ads}
             </span>
           )}
           {canonical.adsCloseness && (() => {
             const ac = ADS_CLOSENESS_STYLES[canonical.adsCloseness];
             return (
-              <span style={{ padding: '2px 8px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
+              <span style={{ padding: '0px 8px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
                 {ac.icon} {ac.label}
               </span>
             );
@@ -193,27 +193,27 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
               const s = STATUS_STYLES[d.status];
               return (
                 <tr key={i}>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)', fontWeight: 600 }}>
+                  <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)', fontWeight: 600 }}>
                     {d.name}
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
+                  <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     <code style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'monospace' }}>{d.source}</code>
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
+                  <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     {d.consumers}
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
+                  <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     {d.adsCloseness ? (() => {
                       const ac = ADS_CLOSENESS_STYLES[d.adsCloseness!];
-                      return <span style={{ padding: '2px 6px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{ac.icon} {ac.label}</span>;
+                      return <span style={{ padding: '0px 6px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{ac.icon} {ac.label}</span>;
                     })() : <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest)' }}>—</span>}
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.text, fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>
+                  <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
+                    <span style={{ padding: '0px 8px', borderRadius: 3, background: s.bg, color: s.text, fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>
                       {s.label}
                     </span>
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+                  <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ds-border-subtle)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     {d.breakageRisk ?? '—'}
                   </td>
                 </tr>
@@ -229,7 +229,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
           <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-warning)', marginBottom: 4 }}>
             Sweep Plan — {needsReplace.length} components to replace
           </div>
-          <ol style={{ margin: 0, paddingLeft: 20, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon)' }}>
+          <ol style={{ margin: 0, paddingLeft: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon)' }}>
             {needsReplace.map((d, i) => (
               <li key={i} style={{ marginBottom: 4 }}>
                 Replace <code>{d.name}</code> ({d.consumers} consumers) → <code>{canonical.name}</code>
@@ -244,7 +244,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
       {adsRecommendation && (
         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)', background: 'var(--ds-background-information-subtle)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-link)', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
+            <span style={{ padding: '0px 8px', borderRadius: 3, background: 'var(--ds-link)', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
               ADS RECOMMENDATION
             </span>
             <a href={adsRecommendation.docsUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', textDecoration: 'underline' }}>
@@ -259,7 +259,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>Required tokens</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {adsRecommendation.tokens.map((t, i) => (
-                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-neutral)', fontFamily: 'monospace' }}>{t}</code>
+                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 3, background: 'var(--ds-background-neutral)', fontFamily: 'monospace' }}>{t}</code>
                 ))}
               </div>
             </div>
@@ -269,7 +269,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>Required props for ADS compliance</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {adsRecommendation.requiredProps.map((p, i) => (
-                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-success)', fontFamily: 'monospace' }}>{p}</code>
+                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 3, background: 'var(--ds-background-success)', fontFamily: 'monospace' }}>{p}</code>
                 ))}
               </div>
             </div>
@@ -277,9 +277,9 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
           {adsRecommendation.antiPatterns && adsRecommendation.antiPatterns.length > 0 && (
             <div>
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-danger)', marginBottom: 4 }}>Anti-patterns (ADS warns against)</div>
-              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
+              <ul style={{ margin: 0, paddingLeft: 16, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
                 {adsRecommendation.antiPatterns.map((ap, i) => (
-                  <li key={i} style={{ marginBottom: 2 }}>{ap}</li>
+                  <li key={i} style={{ marginBottom: 0 }}>{ap}</li>
                 ))}
               </ul>
             </div>

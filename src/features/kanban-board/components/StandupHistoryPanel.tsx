@@ -132,7 +132,7 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
   return (
-    <div style={{ border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 8, padding: 12, marginBottom: 10, background: token('elevation.surface', 'var(--ds-surface)') }}>
+    <div style={{ border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 8, padding: 12, marginBottom: 8, background: token('elevation.surface', 'var(--ds-surface)') }}>
       {/* Driver + timing */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <Avatar size="small" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
@@ -169,7 +169,7 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
       ) : (
         <>
           {genLoading && !summary && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 8 }}>
               <Spinner size="small" /> Generating summary…
             </div>
           )}
@@ -182,11 +182,11 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
           {tickets.map((t) => (
             <div key={t.key} style={{ marginBottom: 8 }}>
               <button type="button" onClick={() => onOpenTicket(t.key)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
                 {t.type ? <JiraIssueTypeIcon type={t.type} size={16} /> : null}
                 <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: token('color.link', 'var(--ds-link)') }}>{t.key}</span>
               </button>
-              <div style={{ paddingLeft: 22 }}>
+              <div style={{ paddingLeft: 24 }}>
                 {t.items.map((c, i) => (
                   <div key={i} style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon)'), lineHeight: '18px' }}>{changeDesc(c)}</div>
                 ))}

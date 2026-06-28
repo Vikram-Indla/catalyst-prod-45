@@ -417,7 +417,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
             display: 'inline-flex', alignItems: 'center', gap: 4,
             background: BRAND, color: 'var(--bg-app)',
             fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
-            padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
+            padding: '4px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
             transition: 'background 100ms',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)'; }}
@@ -425,7 +425,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
         >
           <ChevronLeft size={16} /> Resources
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED }}>Data: {dataAge}</span>
           <button
             onClick={onClose}
@@ -466,12 +466,12 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: INK4, flexWrap: 'wrap', marginTop: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: INK4, flexWrap: 'wrap', marginTop: 0 }}>
                 <span>{resourceRole || '—'}</span>
                 {deptName && <><span>·</span><span>{deptName}</span></>}
                 {resourceRid && <><span>·</span><span style={{
                   background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)', borderRadius: 4,
-                  padding: '2px 7px', fontFamily: 'var(--cp-font-mono)',
+                  padding: '0px 7px', fontFamily: 'var(--cp-font-mono)',
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
               </div>
@@ -483,7 +483,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                       fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                       background: 'var(--bg-3)', color: 'var(--fg-2)',
                       border: '0.75px solid var(--divider)',
-                      borderRadius: 4, padding: '2px 6px',
+                      borderRadius: 4, padding: '0px 6px',
                     }}>
                       {skill}
                     </span>

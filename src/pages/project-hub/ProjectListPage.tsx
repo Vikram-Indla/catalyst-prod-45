@@ -237,7 +237,7 @@ export default function ProjectListPage() {
         {isLoading ? (
           <SkeletonTable rows={8} />
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center" style={{ padding: '80px 40px', background: T.cardBg, border: `1px solid ${T.border}`, borderRadius: 8 }}>
+          <div className="flex flex-col items-center justify-center" style={{ padding: '48px 40px', background: T.cardBg, border: `1px solid ${T.border}`, borderRadius: 8 }}>
             <FolderKanban size={48} style={{ color: T.t4 }} strokeWidth={1.25} />
             <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: T.t1, marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>
               {hasFilters ? 'No projects match your filters' : 'No projects yet'}

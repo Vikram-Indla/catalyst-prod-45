@@ -100,13 +100,13 @@ export function CalendarPage() {
         </div>
 
         {/* View Switcher */}
-        <div style={{ display: 'flex', gap: 4, backgroundColor: 'var(--bg-1)', borderRadius: 'var(--wh-radius-md)', padding: 3 }}>
+        <div style={{ display: 'flex', gap: 4, backgroundColor: 'var(--bg-1)', borderRadius: 'var(--wh-radius-md)', padding: 4 }}>
           {VIEW_TABS.map((t) => (
             <button
               key={t.key}
               onClick={() => setViewMode(t.key)}
               style={{
-                padding: '5px 14px',
+                padding: '4px 14px',
                 fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 fontFamily: 'var(--wh-font-sans)',
@@ -135,7 +135,7 @@ export function CalendarPage() {
             <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--sem-danger)' }}>Failed to load calendar events</span>
             <button
               onClick={() => refetch()}
-              style={{ padding: '6px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, backgroundColor: 'var(--sem-danger)', color: 'var(--bg-app)', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
+              style={{ padding: '4px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, backgroundColor: 'var(--sem-danger)', color: 'var(--bg-app)', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
             >
               Retry
             </button>

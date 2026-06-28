@@ -45,10 +45,10 @@ export default function IdeasAnalyticsPage() {
   if (isLoading || !stats) {
     return (
       <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
-        <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
+        <div style={{ padding: '16px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
           <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Analytics</h1>
         </div>
-        <div style={{ padding: '60px', textAlign: 'center', color: dk.t3 }}>Loading analytics...</div>
+        <div style={{ padding: '48px', textAlign: 'center', color: dk.t3 }}>Loading analytics...</div>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function IdeasAnalyticsPage() {
 
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
-      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
+      <div style={{ padding: '16px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div>
           <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Analytics</h1>
           <p style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, margin: '4px 0 0' }}>Comprehensive insights across the ideation pipeline</p>
@@ -112,7 +112,7 @@ export default function IdeasAnalyticsPage() {
 
         {/* Row 1 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '16px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion Funnel</div>
             {funnelData.map(s => {
               const label = s.status === 'Converted to Request' ? 'Converted' : s.status;
@@ -134,7 +134,7 @@ export default function IdeasAnalyticsPage() {
             })}
           </div>
 
-          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '16px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Quarter Distribution</div>
             {stats.byQuarter.length === 0 ? (
               <div style={{ color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>No ideas assigned to quarters</div>
@@ -151,12 +151,12 @@ export default function IdeasAnalyticsPage() {
 
         {/* Row 2 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '16px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Theme</div>
             {convByTheme.length === 0 ? (
               <div style={{ color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>No conversion data</div>
             ) : convByTheme.map(t => (
-              <div key={t.theme} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <div key={t.theme} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                 <span style={{ width: '140px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
                 <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
                   <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.15))' : 'var(--ds-link, var(--ds-link))', borderRadius: '4px' }} />
@@ -167,7 +167,7 @@ export default function IdeasAnalyticsPage() {
             ))}
           </div>
 
-          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '16px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Quarter</div>
             {convByQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -186,7 +186,7 @@ export default function IdeasAnalyticsPage() {
 
 function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string; value: string; subtitle: string; color: string; isDark: boolean; dk: typeof DK }) {
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${isDark ? 'var(--ds-border-bold)' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${isDark ? 'var(--ds-border-bold)' : dk.border}`, borderRadius: '6px', padding: '16px' }}>
       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
       <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--cp-font-mono)', color, letterSpacing: '-0.5px' }}>{value}</span>
       <div style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>

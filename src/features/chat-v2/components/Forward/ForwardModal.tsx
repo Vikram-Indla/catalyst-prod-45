@@ -133,10 +133,10 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
           boxShadow: 'var(--cv2-shadow-modal)',
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
-          padding: 20,
+          padding: 16,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Forward this private message
           </div>
@@ -166,7 +166,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
         {showSuggest && (
           <div
             style={{
-              marginTop: 6,
+              marginTop: 4,
               maxHeight: 260,
               overflowY: 'auto',
               border: '1px solid var(--cv2-border-strong)',
@@ -178,14 +178,14 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               <SuggestRow key={c.id} recipient={c} onAdd={() => handleAdd(c)} />
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: 14, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>
+              <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>
                 No matches.
               </div>
             )}
           </div>
         )}
 
-        <div style={{ marginTop: 14 }}>
+        <div style={{ marginTop: 12 }}>
           <textarea
             value={comment}
             onChange={e => setComment(e.target.value)}
@@ -194,7 +194,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
             style={{
               width: '100%',
               minHeight: 72,
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: 'var(--cv2-bg-input)',
               color: 'var(--cv2-text)',
               border: '1px solid var(--cv2-border-strong)',
@@ -215,7 +215,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
             type="button"
             onClick={handleCopyLink}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
+              display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 36, padding: '0 14px',
               background: 'transparent', color: 'var(--cv2-text)',
               border: '1px solid var(--cv2-border-strong)',
@@ -301,8 +301,8 @@ function RecipientField({
   return (
     <label
       style={{
-        display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
-        minHeight: 40, padding: '6px 10px',
+        display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap',
+        minHeight: 40, padding: '4px 10px',
         background: 'var(--cv2-bg-input)',
         border: '1px solid var(--cv2-accent)',
         borderRadius: 'var(--cv2-radius-sm)',
@@ -320,7 +320,7 @@ function RecipientField({
           {recipients.length}
         </span>
       )}
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', flex: 1 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', flex: 1 }}>
         {recipients.map(r => (
           <Chip key={r.id} recipient={r} onRemove={() => onRemove(r.id)} />
         ))}
@@ -365,7 +365,7 @@ function Chip({ recipient, onRemove }: { recipient: ForwardRecipient; onRemove: 
         aria-label={`Remove ${recipient.name}`}
         style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 16, height: 16, marginLeft: 2,
+          width: 16, height: 16, marginLeft: 0,
           background: 'transparent', color: 'var(--cv2-text-subtle)',
           border: 'none', borderRadius: 8, cursor: 'pointer',
         }}
@@ -388,7 +388,7 @@ function SuggestRow({
       type="button"
       onClick={onAdd}
       style={{
-        display: 'flex', alignItems: 'center', gap: 10,
+        display: 'flex', alignItems: 'center', gap: 8,
         width: '100%', padding: '8px 12px',
         background: 'transparent', color: 'var(--cv2-text)',
         border: 'none', cursor: 'pointer',
@@ -410,10 +410,10 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
   return (
     <div
       style={{
-        marginTop: 14,
+        marginTop: 12,
         display: 'flex',
         gap: 8,
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderLeft: '3px solid var(--cv2-border-strong)',
         background: 'transparent',
       }}

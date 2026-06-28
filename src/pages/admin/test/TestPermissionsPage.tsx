@@ -123,11 +123,11 @@ export default function TestPermissionsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '2px solid var(--ds-border)' }}>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', minWidth: 200 }}>
+                <th style={{ padding: '8px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', minWidth: 200 }}>
                   Permission
                 </th>
                 {roles.map(r => (
-                  <th key={r.id} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', minWidth: 100 }}>
+                  <th key={r.id} style={{ padding: '8px 12px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', minWidth: 100 }}>
                     {r.name}
                   </th>
                 ))}
@@ -158,14 +158,14 @@ export default function TestPermissionsPage() {
                       const meta = PERMISSION_LABELS[permKey];
                       return (
                         <tr key={permKey} style={{ borderBottom: '1px solid var(--ds-border-subtle)' }}>
-                          <td style={{ padding: '10px 16px' }}>
+                          <td style={{ padding: '8px 16px' }}>
                             <div style={{ fontWeight: 500, color: 'var(--ds-text)', fontSize: 13 }}>{meta.label}</div>
-                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', marginTop: 2 }}>{meta.description}</div>
+                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', marginTop: 0 }}>{meta.description}</div>
                           </td>
                           {roles.map(r => {
                             const granted = isGranted(r.id, permKey);
                             return (
-                              <td key={r.id} style={{ padding: '10px 12px', textAlign: 'center' }}>
+                              <td key={r.id} style={{ padding: '8px 12px', textAlign: 'center' }}>
                                 <button
                                   onClick={() => toggleMutation.mutate({ roleId: r.id, permKey, currentGranted: granted })}
                                   disabled={toggleMutation.isPending}

@@ -705,7 +705,7 @@ function FeedCard({
           reply tree's trunk locate this element so it can extend the
           curved-tree line up from the avatar bottom through the body. */}
       <Tooltip content={row.authorName}>
-        <span data-fy-avatar style={{ flexShrink: 0, paddingBlockStart: 2 }}>
+        <span data-fy-avatar style={{ flexShrink: 0, paddingBlockStart: 0 }}>
           <Avatar size="medium" name={row.authorName} src={avatarSrc} />
         </span>
       </Tooltip>
@@ -757,8 +757,8 @@ function FeedCard({
       </Tooltip>
 
       {/* Text column takes the full remaining width.
-          paddingInlineEnd: 56 = dismiss (24) + summarize (24) + 4px gap each */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2, paddingInlineEnd: 56 }}>
+          paddingInlineEnd: 48 = dismiss (24) + summarize (24) + 4px gap each */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0, paddingInlineEnd: 48 }}>
         {/* Clickable headline: opens the detail modal. */}
         <button
           type="button"
@@ -784,7 +784,7 @@ function FeedCard({
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon)))'),
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             flexWrap: 'wrap',
             letterSpacing: 0,
           }}
@@ -996,9 +996,9 @@ function ReplyComposer({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             marginBlockEnd: 4,
-            marginInlineStart: 36,
+            marginInlineStart: 32,
           }}
         >
           <span
@@ -1021,7 +1021,7 @@ function ReplyComposer({
       >
         {/* Viewer avatar — 32px round. */}
         <Tooltip content={userDisplayName}>
-          <span style={{ flexShrink: 0, paddingBlockStart: 2 }}>
+          <span style={{ flexShrink: 0, paddingBlockStart: 0 }}>
             <Avatar size="medium" name={userDisplayName} src={userAvatarSrc} />
           </span>
         </Tooltip>
@@ -1095,7 +1095,7 @@ function ReplyComposer({
                     color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 1,
+                    gap: 0,
                   }}
                 >
                   <span className="catalyst-ai-dot">·</span>
@@ -1263,7 +1263,7 @@ function ReplyComposer({
                 }}
               >
                 {/* Left: BETA pill + info icon + disclaimer */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span
                     style={{
                       font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
@@ -1365,7 +1365,7 @@ function SuggestReplyTile({ phase, onSuggest, inline = false }: { phase: 'idle' 
         display: 'inline-flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        gap: 6,
+        gap: 4,
         alignSelf: 'flex-start',
       }}
     >
@@ -1378,7 +1378,7 @@ function SuggestReplyTile({ phase, onSuggest, inline = false }: { phase: 'idle' 
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text.warning-inverse', 'var(--ds-text-warning)'),
             background: token('color.background.warning', 'var(--ds-background-warning)'),
@@ -2014,7 +2014,7 @@ function ForYouReplyTree({
           <div
             style={{
               marginBlockStart: 8,
-              marginInlineStart: 34,
+              marginInlineStart: 32,
               font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
               color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             }}
@@ -2023,11 +2023,11 @@ function ForYouReplyTree({
           </div>
         )}
         {replyingToId === c.id && (
-          <div style={{ paddingLeft: 44, paddingTop: 8 }}>
+          <div style={{ paddingLeft: 40, paddingTop: 8 }}>
             <div style={{
               fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               color: 'var(--ds-text-subtle)',
-              marginBottom: 6,
+              marginBottom: 4,
             }}>Replying to {c.author.name}</div>
             <CommentEditor
               key={`fy-nested-reply-${c.id}-${composerKey}`}
@@ -2723,7 +2723,7 @@ function LeaveAReplyBox({
                   : token('color.border', 'rgba(11,18,14,0.14)')
               }`,
               borderRadius: 6,
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: 'var(--ds-surface)',
               display: 'flex',
               flexDirection: 'column',
@@ -2743,7 +2743,7 @@ function LeaveAReplyBox({
                   minWidth: 0,
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                   color: replyJustSent
                     ? 'var(--ds-text-success)'
@@ -2919,7 +2919,7 @@ function CatyGeneratingPanel({ onCancel }: { onCancel: () => void }) {
           0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
           40% { transform: translateY(-3px); opacity: 1; }
         }
-        .cgp-dots { display: inline-flex; align-items: center; gap: 3px; }
+        .cgp-dots { display: inline-flex; align-items: center; gap: 4px; }
         .cgp-dot {
           width: 4px;
           height: 4px;
@@ -2986,12 +2986,12 @@ function CatyGeneratingPanel({ onCancel }: { onCancel: () => void }) {
           style={{
             height: 1,
             background: 'var(--ds-border)',
-            margin: '10px 0',
+            margin: '8px 0',
           }}
         />
 
         {/* Bottom row: spacer + Caty label + Caty icon */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ flex: 1 }} />
           <span
             style={{
@@ -3329,9 +3329,9 @@ function HeadlineIssueTitle({
     <span style={{
       display: 'flex',
       alignItems: 'center',
-      gap: 6,
+      gap: 4,
       overflow: 'hidden',
-      marginBlockStart: 2,
+      marginBlockStart: 0,
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
       backgroundColor: token('elevation.surface', 'var(--ds-surface)'),

@@ -57,7 +57,7 @@ export const WEIGHTS: Record<CatyRuleKey, number> = {
   blocked: 2,
   highPriorityOpen: 1.5,
   bugsOpen: 1,
-  gapsOpen: 1,
+  gapsOpen: 0,
   dueThisWeek: 1,
   agedOpen: 0.5,
   overload: 0.5,

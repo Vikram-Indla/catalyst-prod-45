@@ -48,7 +48,7 @@ function ParentItem({ label, onClick }: { label: string; onClick: () => void }) 
 function BackItem({ onClick }: { onClick: () => void }) {
   return (
     <button role="menuitem" onClick={onClick}
-      style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon)'), fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer' }}>
+      style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon)'), fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer' }}>
       <ChevronLeftIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />Back
     </button>
   );

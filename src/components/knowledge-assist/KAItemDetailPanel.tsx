@@ -77,7 +77,7 @@ function PriorityBars({ label }: { label: string }) {
   const level = PRI_LEVEL[label?.toLowerCase()] ?? 2;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ display: 'flex', gap: 2 }}>
+      <div style={{ display: 'flex', gap: 0 }}>
         {[1, 2, 3, 4].map(i => (
           <div key={i} style={{
             width: 5, height: 16, borderRadius: 1,
@@ -109,7 +109,7 @@ function FieldRow({ icon, label, children, last }: { icon: React.ReactNode; labe
       borderBottom: last ? 'none' : `1px solid ${T.border}`, minHeight: 38,
     }}>
       <div style={{
-        padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7,
+        padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8,
         fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.inkMuted,
         textTransform: 'uppercase', letterSpacing: '0.06em',
         background: T.surfaceSecondary, borderRight: `1px solid ${T.border}`,
@@ -191,10 +191,10 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 20px', borderBottom: `1px solid ${T.border}`,
+        padding: '8px 20px', borderBottom: `1px solid ${T.border}`,
         background: T.surfaceSecondary, flexShrink: 0,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onClose} style={{
             background: 'none', border: 'none', cursor: 'pointer', color: T.inkTertiary,
             display: 'flex', padding: 4, borderRadius: 4,
@@ -207,14 +207,14 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
           }}>{issueKey}</span>
           <button
             onClick={() => navigator.clipboard?.writeText(issueKey)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkMuted, display: 'flex', padding: 2 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkMuted, display: 'flex', padding: 0 }}
           >
             <Copy size={13} />
           </button>
         </div>
         <span style={{
           fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.primary, background: T.primaryBg,
-          padding: '3px 8px', borderRadius: 4, fontFamily: 'var(--ds-font-family-code)',
+          padding: '4px 8px', borderRadius: 4, fontFamily: 'var(--ds-font-family-code)',
           textTransform: 'uppercase', letterSpacing: '0.06em',
         }}>JIRA SYNC</span>
       </div>
@@ -223,7 +223,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
       <div style={{ flex: 1, overflow: 'auto', padding: 0 }}>
         {loading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-            <div style={{ display: 'flex', gap: 5 }}>
+            <div style={{ display: 'flex', gap: 4 }}>
               {[0, 1, 2].map(i => (
                 <span key={i} style={{
                   width: 6, height: 6, borderRadius: '50%', background: T.primary,
@@ -235,8 +235,8 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
         ) : !item ? (
           <div style={{ padding: 40, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.ink, marginBottom: 6 }}>Item Not Found</div>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.inkMuted, marginBottom: 20 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.ink, marginBottom: 4 }}>Item Not Found</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.inkMuted, marginBottom: 16 }}>
               No item with key <span style={{ fontFamily: 'var(--ds-font-family-code)', fontWeight: 600, color: T.primary }}>{issueKey}</span> was found in the database.
             </div>
             <button
@@ -250,9 +250,9 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
         ) : (
           <div>
             {/* Title */}
-            <div style={{ padding: '20px 24px 0' }}>
+            <div style={{ padding: '16px 24px 0' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ marginTop: 3 }}>
+                <div style={{ marginTop: 4 }}>
                   <JiraIssueTypeIcon type={item.issue_type} size={22} />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -260,7 +260,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                     fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700,
                     color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35, margin: 0,
                   }}>{item.summary}</h2>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                     <StatusLozenge status={item.status} />
                     <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.inkTertiary }}>{item.project_name || item.project_key}</span>
                     <span style={{ color: T.borderStrong }}>·</span>
@@ -275,7 +275,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             {/* Parent banner */}
             {item.parent_key && (
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
                 margin: '16px 24px 0', background: T.surfaceTertiary, borderRadius: 8,
                 border: `1px solid ${T.border}`,
               }}>
@@ -304,7 +304,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                 <FieldRow icon={<Tag size={13} />} label="Labels">
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     {item.labels.map(l => (
-                      <span key={l} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '2px 8px', borderRadius: 4 }}>{l}</span>
+                      <span key={l} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '0px 8px', borderRadius: 4 }}>{l}</span>
                     ))}
                   </div>
                 </FieldRow>
@@ -338,13 +338,13 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
                 <h3 style={{
                   fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.ink,
                   paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12,
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 4,
                 }}>
                   <MessageSquare size={14} /> Recent Activity
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {changelog.map(c => (
-                    <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                       <Avatar name={c.author_display_name || 'Unknown'} size={24} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.ink }}>

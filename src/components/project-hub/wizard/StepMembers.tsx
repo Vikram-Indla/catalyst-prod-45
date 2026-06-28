@@ -190,7 +190,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       )}
 
       {members.length === 0 && (
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', textAlign: 'center', padding: '20px 0' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', textAlign: 'center', padding: '16px 0' }}>
           No additional members added. You can add them later from project settings.
         </div>
       )}

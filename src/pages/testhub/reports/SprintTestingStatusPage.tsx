@@ -76,7 +76,7 @@ export default function SprintTestingStatusPage() {
       <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '26rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Sprint</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ flex: 1 }}>
               <Select<SprintOption>
                 inputId="sts-sprint"
@@ -92,7 +92,7 @@ export default function SprintTestingStatusPage() {
         </div>
 
         {isLoading || !data ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ds-text-subtle)', padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading sprint testing status…
           </div>
         ) : (

@@ -73,7 +73,7 @@ export const InlineCard = Node.create({
         target: '_blank',
         rel: 'noopener noreferrer',
         style:
-          'color:var(--ds-link);text-decoration:none;background:var(--ds-background-neutral-subtle);padding:1px 6px;border-radius:3px;font-size:13px;',
+          'color:var(--ds-link);text-decoration:none;background:var(--ds-background-neutral-subtle);padding:0px 6px;border-radius:3px;font-size:13px;',
       }),
       url || 'Link',
     ];

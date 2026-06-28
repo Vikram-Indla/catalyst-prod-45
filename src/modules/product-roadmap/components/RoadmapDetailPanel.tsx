@@ -133,7 +133,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <span style={{
-                      padding: '2px 8px',
+                      padding: '0px 8px',
                       borderRadius: '4px',
                       fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
@@ -159,8 +159,8 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     <span style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      padding: '3px 10px',
+                      gap: '4px',
+                      padding: '4px 10px',
                       fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       borderRadius: '12px',
@@ -217,7 +217,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   style={{
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: activeTab === tab.key ? 600 : 400,
                     color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtle)',
@@ -236,7 +236,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             </div>
 
             {/* D) Tab Content */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
               {activeTab === 'details' && <DetailsTabContent item={item} formatDate={formatDate} barColor={barColor} />}
               {activeTab === 'score' && <RoadmapScoreTab item={item} />}
               {['budget', 'risks', 'milestones', 'links', 'audit'].includes(activeTab) && (
@@ -269,7 +269,7 @@ function DetailsTabContent({
       {/* Field Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px' }}>
         <Field label="STATUS" value={
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: barColor.border }} />
             {statusCfg?.label || item.process_step || '—'}
           </span>
@@ -297,7 +297,7 @@ function DetailsTabContent({
       </div>
 
       {/* Description */}
-      <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--ds-border)' }}>
+      <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--ds-border)' }}>
         <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: '8px' }}>Description</div>
         <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', lineHeight: 1.6 }}>
           {item.description || 'No description provided for this initiative.'}

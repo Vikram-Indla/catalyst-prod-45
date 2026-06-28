@@ -58,13 +58,13 @@ const ReleaseManagementPage: React.FC = () => {
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: '180px', padding: '6px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)' }}
+          style={{ width: '180px', padding: '4px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)' }}
         />
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as ReleaseStatus)}
-          style={{ padding: '6px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)', cursor: 'pointer' }}
+          style={{ padding: '4px 12px', border: '1px solid var(--ds-border)', borderRadius: '3px', fontSize: 'var(--ds-font-size-400)', cursor: 'pointer' }}
         >
           <option value="RELEASED">Released</option>
           <option value="UNRELEASED">Unreleased</option>
@@ -76,13 +76,13 @@ const ReleaseManagementPage: React.FC = () => {
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
           <button
             onClick={() => { }}
-            style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
+            style={{ padding: '4px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
           >
             Give feedback
           </button>
           <button
             onClick={() => setIsCreateDialogOpen(true)}
-            style={{ padding: '6px 16px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
+            style={{ padding: '4px 16px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
           >
             Create release
           </button>
@@ -109,7 +109,7 @@ const ReleaseManagementPage: React.FC = () => {
                 <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link))', textDecoration: 'underline' }}>{release.name}</a>
               </td>
               <td style={{ padding: '12px 16px' }}>
-                <span style={{ display: 'inline-block', padding: '2px 8px', background: 'var(--ds-surface)', border: '1px solid var(--ds-text-subtlest)', borderRadius: '3px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
+                <span style={{ display: 'inline-block', padding: '0px 8px', background: 'var(--ds-surface)', border: '1px solid var(--ds-text-subtlest)', borderRadius: '3px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
                   {release.status}
                 </span>
               </td>
@@ -167,7 +167,7 @@ const ReleaseManagementPage: React.FC = () => {
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setIsCreateDialogOpen(false)}
-                style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
+                style={{ padding: '4px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
               >
                 Cancel
               </button>
@@ -176,7 +176,7 @@ const ReleaseManagementPage: React.FC = () => {
                   const input = document.getElementById('release-name') as HTMLInputElement;
                   handleCreateRelease(input.value);
                 }}
-                style={{ padding: '6px 16px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
+                style={{ padding: '4px 16px', background: 'var(--ds-link)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
               >
                 Create
               </button>
@@ -197,13 +197,13 @@ const ReleaseManagementPage: React.FC = () => {
                   setIsConfirmDialogOpen(false);
                   setSelectedReleaseForAction(null);
                 }}
-                style={{ padding: '6px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
+                style={{ padding: '4px 16px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleReleaseConfirm}
-                style={{ padding: '6px 16px', background: 'var(--ds-text-danger)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
+                style={{ padding: '4px 16px', background: 'var(--ds-text-danger)', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
               >
                 Release
               </button>

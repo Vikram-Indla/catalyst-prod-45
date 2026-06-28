@@ -293,7 +293,7 @@ export function ProfilePicker({
         fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
       }}
     >
       {multi
@@ -444,7 +444,7 @@ function UnassignedRow({ isSelected, onClick }: { isSelected: boolean; onClick: 
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         padding: '8px 12px 8px 15px',
         border: 'none',
         cursor: 'pointer',
@@ -506,7 +506,7 @@ function PickerRow({
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         padding: '8px 12px 8px 15px',
         border: 'none',
         cursor: 'pointer',
@@ -546,7 +546,7 @@ function PickerRow({
             fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-information)',
             background: 'var(--ds-background-information)',
-            padding: '2px 6px',
+            padding: '0px 6px',
             borderRadius: 3,
             flexShrink: 0,
           }}

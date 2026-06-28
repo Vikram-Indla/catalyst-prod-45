@@ -72,7 +72,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  border-bottom: 1px solid var(--rai-border);
+  border-bottom: 0px solid var(--rai-border);
   flex-shrink: 0;
 }
 
@@ -111,7 +111,7 @@
   align-items: center;
   gap: 16px;
   padding: 24px 24px 24px;
-  border-bottom: 1px solid var(--rai-border);
+  border-bottom: 0px solid var(--rai-border);
   flex-shrink: 0;
 }
 
@@ -141,7 +141,7 @@
 .rai-role-subtitle {
   font-size: 13px;
   color: var(--rai-ink-tertiary);
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 .rai-rid-badge {
@@ -150,7 +150,7 @@
   font-weight: 500;
   color: var(--rai-primary);
   background: var(--rai-primary-bg);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
 }
 
@@ -172,7 +172,7 @@
   gap: 8px;
   margin-bottom: 16px;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--rai-border);
+  border-bottom: 0px solid var(--rai-border);
 }
 
 .rai-section-title {
@@ -190,7 +190,7 @@
   font-weight: 500;
   color: var(--rai-purple);
   background: var(--rai-purple-bg);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 9999px;
   display: inline-flex;
   align-items: center;
@@ -201,7 +201,7 @@
 .rai-metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
+  gap: 0px;
   border: 1px solid var(--rai-border);
   border-radius: 8px;
   overflow: hidden;
@@ -259,7 +259,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 0 12px;
-  border-bottom: 2px solid var(--rai-border);
+  border-bottom: 0px solid var(--rai-border);
   text-align: left;
 }
 
@@ -278,7 +278,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--rai-ink);
-  border-bottom: 1px solid var(--rai-border);
+  border-bottom: 0px solid var(--rai-border);
 }
 
 .rai-table td:nth-child(2),
@@ -291,7 +291,7 @@
 }
 
 .rai-table .rai-total-row {
-  border-top: 2px solid var(--rai-border);
+  border-top: 0px solid var(--rai-border);
   background: var(--rai-surface-secondary);
   font-weight: 700;
 }
@@ -344,7 +344,7 @@
   display: flex;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--rai-border);
+  border-bottom: 0px solid var(--rai-border);
   align-items: center;
   transition: background 150ms;
 }
@@ -436,7 +436,7 @@
   font-weight: 500;
   color: var(--rai-primary);
   background: var(--rai-primary-bg);
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
   display: inline-flex;
   margin-left: 4px;
@@ -473,7 +473,7 @@
 .rai-timeline::before {
   content: '';
   position: absolute;
-  left: 5px;
+  left: 4px;
   top: 0;
   bottom: 0;
   width: 1px;
@@ -488,7 +488,7 @@
 .rai-day-marker {
   position: absolute;
   left: -20px;
-  top: 2px;
+  top: 0px;
   width: 11px;
   height: 11px;
   border-radius: 50%;
@@ -529,7 +529,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 9999px;
   background: var(--rai-surface-tertiary);
   color: var(--rai-ink-tertiary);
@@ -539,7 +539,7 @@
   font-family: var(--rai-font-ar);
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 9999px;
   background: var(--rai-surface-tertiary);
   color: var(--rai-ink-tertiary);
@@ -573,7 +573,7 @@
   gap: 4px;
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 8px;
+  padding: 0px 8px;
   border-radius: 9999px;
 }
 
@@ -665,11 +665,11 @@
 .rai-context-subtitle {
   font-size: 11px;
   color: var(--rai-ink-muted);
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 .rai-context-stat {
-  border-left: 1px solid var(--rai-border);
+  border-left: 0px solid var(--rai-border);
   padding-left: 16px;
   margin-left: auto;
   flex-shrink: 0;
@@ -704,7 +704,7 @@
 
 .rai-rtl .rai-timeline::before {
   left: auto;
-  right: 5px;
+  right: 4px;
 }
 
 .rai-rtl .rai-day-marker {
@@ -726,7 +726,7 @@
 
 .rai-rtl .rai-context-stat {
   border-left: none;
-  border-right: 1px solid var(--rai-border);
+  border-right: 0px solid var(--rai-border);
   padding-left: 0;
   padding-right: 16px;
   margin-left: 0;
@@ -743,12 +743,12 @@
   background: var(--rai-surface-tertiary);
   border: 1px solid var(--rai-border);
   border-radius: 9999px;
-  padding: 2px;
+  padding: 0px;
   gap: 0;
 }
 
 .rai-lang-btn {
-  padding: 3px 12px;
+  padding: 4px 12px;
   border-radius: 9999px;
   border: none;
   font-size: 11px;
@@ -900,7 +900,7 @@
 .rai-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
+  gap: 0px;
   border: 1px solid var(--rai-border);
   border-radius: 8px;
   overflow: hidden;
@@ -925,7 +925,7 @@
   color: var(--rai-ink-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 /* Pattern text */

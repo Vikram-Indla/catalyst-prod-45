@@ -142,7 +142,7 @@ export function ChatRightPane({
       <style>{`
         .cv-right-pane {
           width: 360px;
-          border-left: 1px solid var(--ds-border);
+          border-left: 0px solid var(--ds-border);
           background: var(--ds-surface);
           display: flex;
           flex-direction: column;
@@ -151,7 +151,7 @@ export function ChatRightPane({
 
         .cv-right-pane-header {
           padding: 8px 16px;
-          border-bottom: 1px solid var(--ds-border);
+          border-bottom: 0px solid var(--ds-border);
           font-size: 14px;
           font-weight: 600;
           color: var(--ds-text);
@@ -160,7 +160,7 @@ export function ChatRightPane({
         .cv-right-pane [role="tablist"] {
           font-size: 12px;
           font-weight: 500;
-          border-bottom: 1px solid var(--ds-border);
+          border-bottom: 0px solid var(--ds-border);
           display: flex;
           flex-direction: row;
         }
@@ -169,7 +169,7 @@ export function ChatRightPane({
           flex: 1;
           padding: 8px;
           text-align: center;
-          border-bottom: 2px solid transparent;
+          border-bottom: 0px solid transparent;
           cursor: pointer;
           color: var(--ds-text-subtlest);
           background: transparent;
@@ -233,7 +233,7 @@ export function ChatRightPane({
 
         .cc-reply-badge {
           background: var(--ds-background-neutral);
-          padding: 2px 6px;
+          padding: 0px 6px;
           border-radius: 2px;
           color: var(--ds-text-subtlest);
         }

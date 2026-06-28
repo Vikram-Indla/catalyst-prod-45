@@ -63,7 +63,7 @@ export function KeyDetailsFieldRow({
     return () => ro.disconnect();
   }, []);
   return (
-    <div ref={rowRef} style={{ padding: '6px 0' }}>
+    <div ref={rowRef} style={{ padding: '4px 0' }}>
       {/* 2026-06-22 Vikram: widened label column (120→320) + gap
           (space.250→space.800) for maximum breathing room in wide views.
           Narrow containers (panel mode) shrink label to 120px via ResizeObserver. */}
@@ -186,14 +186,14 @@ export function CatalystKeyDetails({
     queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
 
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 16 }}>
       {/* Section header — matches canonical Subtasks + Linked + Attachments
           pattern: 24x24 chevron button (only click target) with rounded
           hover bg + Tooltip "Collapse"/"Expand". Title h2 outside button.
           Utility chevron (thin stroke, ADS v4). */}
       <div
         style={{
-          display: 'flex', alignItems: 'center', gap: 0, padding: '6px 0',
+          display: 'flex', alignItems: 'center', gap: 0, padding: '4px 0',
           marginBottom: collapsed ? 0 : 4, userSelect: 'none',
         }}
       >

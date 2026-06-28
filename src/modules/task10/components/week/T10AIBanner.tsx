@@ -129,8 +129,8 @@ export function T10AIBanner({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
-            padding: '6px 12px',
+            gap: '4px',
+            padding: '4px 12px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             color: 'var(--ds-background-discovery-bold)',

@@ -248,7 +248,7 @@
 .users-module input:focus-visible,
 .users-module select:focus-visible,
 .users-module .ct-dropdown-trigger:focus-visible {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
 
@@ -494,7 +494,7 @@
   display: flex;
   align-items: center;
   padding: var(--ct-space-4) var(--ct-space-5);
-  border-bottom: 1px solid var(--ct-border);
+  border-bottom: 0px solid var(--ct-border);
   gap: var(--ct-space-3);
 }
 
@@ -537,7 +537,7 @@
 }
 
 .ct-search-box input:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--ct-primary);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
@@ -549,7 +549,7 @@
 .ct-search-box .search-icon {
   position: absolute;
   left: var(--ct-space-3);
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
   width: 16px;
   height: 16px;
@@ -634,7 +634,7 @@
   display: flex;
   align-items: center;
   gap: var(--ct-space-2);
-  padding: 10px var(--ct-space-3);
+  padding: 8px var(--ct-space-3);
   font-size: var(--ct-text-base);
   font-weight: 500;
   color: var(--ct-text-secondary);
@@ -690,7 +690,7 @@
 .ct-bulk-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   height: 30px;
   padding: 0 var(--ct-space-3);
   font-family: var(--usr-font-sans);
@@ -745,13 +745,13 @@
 
 .ct-table th {
   text-align: left;
-  padding: 14px 18px;
+  padding: 12px 18px;
   font-size: var(--ct-text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--ct-text-muted);
-  border-bottom: 1px solid var(--ct-border);
+  border-bottom: 0px solid var(--ct-border);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -772,10 +772,10 @@
 
 /* Table Body (V8 Specs) */
 .ct-table td {
-  padding: 14px 18px;
+  padding: 12px 18px;
   font-size: var(--ct-text-base);
   color: var(--ct-text-secondary);
-  border-bottom: 1px solid var(--ct-border-light);
+  border-bottom: 0px solid var(--ct-border-light);
   vertical-align: middle;
 }
 
@@ -849,7 +849,7 @@
 .ct-user-email {
   font-size: var(--ct-text-xs);
   color: var(--ct-text-muted);
-  margin-top: 2px;
+  margin-top: 0px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -926,8 +926,8 @@
 .ct-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
+  gap: 4px;
+  padding: 4px 12px;
   border-radius: var(--ct-radius-md);
   font-size: var(--ct-text-xs);
   font-weight: 600;
@@ -1004,7 +1004,7 @@
   align-items: center;
   padding: var(--ct-space-4) var(--ct-space-6);
   background: var(--ct-bg-muted);
-  border-top: 1px solid var(--ct-border);
+  border-top: 0px solid var(--ct-border);
   font-size: var(--ct-text-base);
 }
 
@@ -1076,13 +1076,13 @@
 .ct-inline-input,
 .ct-inline-select {
   width: 100%;
-  padding: 6px 10px;
+  padding: 4px 10px;
   font-family: var(--usr-font-sans);
   font-size: var(--ct-text-base);
   color: var(--ct-text-body);
   border: 2px solid var(--ct-primary);
   border-radius: var(--ct-radius-md);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   background: white;
 }
 
@@ -1133,7 +1133,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--ct-space-5) var(--ct-space-6);
-  border-bottom: 1px solid var(--ct-border);
+  border-bottom: 0px solid var(--ct-border);
 }
 
 .ct-drawer-header h2 {
@@ -1187,7 +1187,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--ct-space-4) var(--ct-space-6);
-  border-top: 1px solid var(--ct-border);
+  border-top: 0px solid var(--ct-border);
   background: var(--ct-bg-muted);
   gap: var(--ct-space-3);
 }
@@ -1202,7 +1202,7 @@
    23. FORM STYLES (V8)
    ================================================================ */
 .ct-form-section {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .ct-form-section:last-child {
@@ -1215,16 +1215,16 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ct-primary);
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--ct-border-light);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 0px solid var(--ct-border-light);
 }
 
 .ct-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .ct-form-row:last-child {
@@ -1238,7 +1238,7 @@
 .ct-form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 /* Form Label (V8) */
@@ -1268,7 +1268,7 @@
 }
 
 .ct-input:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--ct-primary);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
@@ -1309,7 +1309,7 @@
 }
 
 .ct-select:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--ct-primary);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
@@ -1324,7 +1324,7 @@
   display: flex;
   align-items: center;
   gap: var(--ct-space-3);
-  padding: 14px 20px;
+  padding: 12px 20px;
   background: var(--ct-text-primary);
   color: white;
   border-radius: var(--ct-radius-xl);
@@ -1589,7 +1589,7 @@
 .ct-runrate-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 4px 10px;
   background: var(--ct-primary-light, var(--ds-background-information, rgba(37, 99, 235, 0.08)));
   border-radius: var(--ct-radius-md, 6px);
@@ -1687,7 +1687,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
 }
 
 .ct-runrate-headcount svg {
@@ -1706,17 +1706,17 @@
 .ct-runrate-footer {
   margin-top: var(--ct-space-3, 12px);
   padding-top: var(--ct-space-3, 12px);
-  border-top: 1px solid var(--ct-border, var(--cp-bg-sunken, var(--ds-border)));
+  border-top: 0px solid var(--ct-border, var(--cp-bg-sunken, var(--ds-border)));
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .ct-runrate-yearly {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 4px 10px;
   background: var(--ds-background-information, rgba(37, 99, 235, 0.06));
   border-radius: var(--ct-radius-md, 6px);
   font-variant-numeric: tabular-nums;
@@ -1743,7 +1743,7 @@
 .ct-runrate-missing {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font-size: var(--ct-text-xs, 11px);
   font-weight: 500;
   color: var(--ct-warning, var(--ds-background-warning-bold));
@@ -1879,14 +1879,14 @@
 .ct-licenses-footer {
   margin-top: auto;
   padding-top: var(--ct-space-3, 12px);
-  border-top: 1px solid var(--ct-border, var(--cp-bg-sunken, var(--ds-border)));
+  border-top: 0px solid var(--ct-border, var(--cp-bg-sunken, var(--ds-border)));
 }
 
 .ct-licenses-yearly {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 4px 10px;
   background: var(--ds-background-success, rgba(13, 148, 136, 0.06));
   border-radius: var(--ct-radius-md, 6px);
   font-variant-numeric: tabular-nums;

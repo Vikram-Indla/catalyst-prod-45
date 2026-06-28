@@ -542,7 +542,7 @@ export function JiraForYouLozenge({ status, statusCategory }: { status: string; 
         color: statusFg(ap),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
-        padding: '2px',
+        padding: '0px',
       }}>
         {status}
       </span>

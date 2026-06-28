@@ -82,7 +82,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
         <div
           style={{
             display: 'flex',
-            gap: 10,
+            gap: 8,
             padding: 12,
             border: '1px solid var(--cv2-border)',
             borderRadius: 'var(--cv2-radius-md)',
@@ -111,7 +111,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
             />
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
           <button
             type="button"
             onClick={onCancel}

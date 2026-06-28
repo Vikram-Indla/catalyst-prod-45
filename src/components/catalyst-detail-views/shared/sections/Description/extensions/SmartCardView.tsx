@@ -33,7 +33,7 @@ export function InlineCardView({ node }: NodeViewProps) {
             color: token('color.link', 'var(--ds-link)'),
             textDecoration: 'none',
             background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
-            padding: '1px 6px',
+            padding: '0px 6px',
             borderRadius: 3,
             fontSize: 'var(--ds-font-size-300)',
           }}

@@ -32,7 +32,7 @@ export function DateSeparator({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 0,
-        margin: '14px 0',
+        margin: '12px 0',
       }}
     >
       <span
@@ -41,7 +41,7 @@ export function DateSeparator({
           position: 'absolute',
           left: 24,
           right: 24,
-          top: '50%',
+          top: '48%',
           height: 1,
           background: 'var(--cv2-divider)',
         }}

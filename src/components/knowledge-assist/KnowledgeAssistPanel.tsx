@@ -145,7 +145,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 20px', borderBottom: '1px solid var(--divider)',
+          padding: '12px 20px', borderBottom: '1px solid var(--divider)',
           flexShrink: 0, background: 'var(--bg-app)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -174,17 +174,17 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"/>
               </svg>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: 'var(--ds-font-family-body)' }}>
                 Knowledge Assist
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', flexShrink: 0, animation: 'ka-pulse 2s infinite' }} />
                 {userCtx ? `${effectiveRole} · Live` : 'Connecting...'}
               </span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button onClick={handleRefresh} title="Refresh data" aria-label="Refresh" className="ka-icon-btn"
               style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--divider)', background: 'var(--bg-app)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
@@ -227,7 +227,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                   {msg.role === 'user' && (
                     <div style={{ display: 'flex', justifyContent: 'flex-end', animation: 'ka-msg-in 200ms ease' }}>
                       <div style={{
-                        maxWidth: '85%', padding: '10px 16px',
+                        maxWidth: '85%', padding: '8px 16px',
                         borderRadius: '8px 8px 3px 8px', background: 'var(--cp-blue)',
                         color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, lineHeight: 1.5,
                         fontFamily: 'var(--ds-font-family-body)',

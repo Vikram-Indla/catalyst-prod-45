@@ -61,7 +61,7 @@ export function CatyIconCTA({
           justifyContent: 'center',
           width: size + 4,
           height: size + 4,
-          padding: 2,
+          padding: 0,
           border: 'none',
           borderRadius: 6,
           background: 'transparent',

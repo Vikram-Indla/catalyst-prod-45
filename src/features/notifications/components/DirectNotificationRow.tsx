@@ -173,7 +173,7 @@ export default function DirectNotificationRow({
         textAlign: "left",
         transition: "background 100ms ease",
         outline: "none",
-        gap: 10,
+        gap: 8,
         alignItems: "flex-start",
         opacity: isRead ? 0.8 : 1,
         marginBottom: 0,
@@ -185,7 +185,7 @@ export default function DirectNotificationRow({
           - 'user': CatalystAvatar with initials/photo
           - 'system': muted circle with sync icon (Jira-assigned)
           - null/unknown: grey person-circle placeholder */}
-      <div style={{ flexShrink: 0, marginTop: 2 }}>
+      <div style={{ flexShrink: 0, marginTop: 0 }}>
         {notification.actor?.actorType === 'user' ? (
           <CatalystAvatar
             name={avatarDisplayName}
@@ -294,7 +294,7 @@ export default function DirectNotificationRow({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
               flexShrink: 0,
             }}
           >
@@ -496,7 +496,7 @@ export default function DirectNotificationRow({
                 display: "flex",
                 alignItems: "center",
                 gap: 4,
-                marginTop: 6,
+                marginTop: 4,
               }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -510,8 +510,8 @@ export default function DirectNotificationRow({
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 2,
-                      padding: "2px 5px",
+                      gap: 0,
+                      padding: "0px 5px",
                       borderRadius: 10,
                       border: `1px solid ${threadBorderColor}`,
                       background:
@@ -619,7 +619,7 @@ export default function DirectNotificationRow({
                   lineHeight: "16px",
                   display: "flex",
                   alignItems: "center",
-                  gap: 3,
+                  gap: 4,
                 }}
               >
                 View thread
@@ -649,8 +649,8 @@ export default function DirectNotificationRow({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 6,
-              marginTop: 6,
+              gap: 4,
+              marginTop: 4,
             }}
           >
             <CatalystAvatar

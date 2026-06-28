@@ -215,7 +215,7 @@ export function TableToolbar({ editor, containerRef }: Props) {
         left: pos?.left ?? -9999,
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 2,
+        gap: 0,
         padding: 4,
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
@@ -280,7 +280,7 @@ function IconBtn({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 2,
+        gap: 0,
         minWidth: 28,
         height: 28,
         padding: '0 4px',
@@ -369,7 +369,7 @@ function Dropdown({
         padding: 4,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 0,
         zIndex: 2147483647,
       }}
     >
@@ -407,7 +407,7 @@ function MenuItem({
         alignItems: 'center',
         gap: 8,
         width: '100%',
-        padding: '7px 10px',
+        padding: '8px 10px',
         border: 'none',
         borderRadius: 4,
         background: active
@@ -589,7 +589,7 @@ function AlignmentButton({
         onClose={() => setOpen(false)}
         minWidth={140}
       >
-        <div style={{ display: 'flex', gap: 2, padding: 2 }}>
+        <div style={{ display: 'flex', gap: 0, padding: 0 }}>
           <IconBtn
             label="Align left"
             onClick={() => setAlign('left')}

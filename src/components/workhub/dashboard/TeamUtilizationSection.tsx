@@ -38,7 +38,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
       padding: 24,
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
           fontFamily: 'var(--cp-font-body)',
           fontSize: 'var(--ds-font-size-600)',

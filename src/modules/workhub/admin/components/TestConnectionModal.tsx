@@ -119,11 +119,11 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
         </div>
 
         {/* Body */}
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '16px' }}>
           {isRunning && (
             <div style={{
               fontSize: 12, color: 'var(--wh-tx3)', marginBottom: 16,
-              display: 'flex', alignItems: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', gap: 4,
             }}>
               <Spinner size="small" />
               Connecting to Jira… this takes 3–5 seconds
@@ -132,7 +132,7 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
           {error && (
             <div style={{
               background: 'var(--wh-dng-bg)', border: '1px solid var(--wh-dng)',
-              borderRadius: 'var(--wh-rad)', padding: '10px 14px', marginBottom: 16,
+              borderRadius: 'var(--wh-rad)', padding: '8px 14px', marginBottom: 16,
               fontSize: 13, color: 'var(--wh-dng)',
             }}>
               {error}
@@ -181,7 +181,7 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
                     <div style={{
                       fontSize: 12,
                       color: check?.passed && isRevealed ? 'var(--wh-tx3)' : check && isRevealed ? 'var(--wh-dng)' : 'var(--wh-tx4)',
-                      marginTop: 2, fontFamily: 'var(--wh-fn)',
+                      marginTop: 0, fontFamily: 'var(--wh-fn)',
                     }}>
                       {check && isRevealed ? check.message : isCurrentlyRunning ? 'Checking...' : isSkipped ? 'Skipped' : 'Pending...'}
                     </div>
@@ -204,7 +204,7 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
 
         {/* Footer */}
         <div style={{
-          padding: '14px 20px', borderTop: '1px solid var(--wh-bdr)',
+          padding: '12px 20px', borderTop: '1px solid var(--wh-bdr)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <span style={{ fontSize: 12, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-mo)' }}>

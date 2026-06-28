@@ -207,7 +207,7 @@ function UserValue({ value, userMap }: { value: string | null; userMap?: Map<str
   if (!value) return <NoneLabel />;
   const p = userMap?.get(value);
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
       <Avatar src={p?.avatar_url ?? undefined} name={value} size="xsmall" />
       <span>{value}</span>
     </span>
@@ -238,7 +238,7 @@ export function HistoryPill({ label = 'HISTORY' }: { label?: string }) {
     <span
       style={{
         display: 'inline-block',
-        padding: '2px 8px',
+        padding: '0px 8px',
         borderRadius: 3,
         border: '1px solid var(--ds-border)',
         background: 'var(--ds-background-neutral)',
@@ -290,7 +290,7 @@ export function JiraActivityRow({
           <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
             {formatAbsolute(item.timestamp)}
           </div>
-          {showTypePill && <div style={{ marginTop: 6 }}><HistoryPill /></div>}
+          {showTypePill && <div style={{ marginTop: 4 }}><HistoryPill /></div>}
         </div>
       </div>
     );
@@ -322,10 +322,10 @@ export function JiraActivityRow({
           <strong style={{ color: 'var(--ds-link)', fontWeight: 600 }}>{item.actor.name}</strong>{' '}
           <span style={{ color: 'var(--ds-text-subtle)' }}>{action}</span>
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 0 }}>
           {formatAbsolute(item.timestamp)}
         </div>
-        {showTypePill && <div style={{ marginTop: 6 }}><HistoryPill /></div>}
+        {showTypePill && <div style={{ marginTop: 4 }}><HistoryPill /></div>}
 
         {/* Diff payload — inline for short values, two-column for long text */}
         {isLongText ? (
@@ -343,7 +343,7 @@ export function JiraActivityRow({
             <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               {fc.oldValue ?? <NoneLabel />}
             </div>
-            <div style={{ color: 'var(--ds-text-subtle)', paddingTop: 1 }}>→</div>
+            <div style={{ color: 'var(--ds-text-subtle)', paddingTop: 0 }}>→</div>
             <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               {fc.newValue ?? <NoneLabel />}
             </div>

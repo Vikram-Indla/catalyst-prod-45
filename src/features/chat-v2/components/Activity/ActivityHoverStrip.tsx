@@ -46,7 +46,7 @@ export function ActivityHoverStrip({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 2,
+        gap: 0,
         height: 24,
         background: 'transparent',
         border: 'none',

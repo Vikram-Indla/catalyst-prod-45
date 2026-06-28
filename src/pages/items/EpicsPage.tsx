@@ -446,19 +446,19 @@ export default function EpicsPage() {
           <title>Epic Cards</title>
           <style>
             @media print {
-              @page { margin: 1cm; size: A4; }
-              body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+              @page { margin: 0cm; size: A4; }
+              body { margin: 0; padding: 16px; font-family: Arial, sans-serif; }
               .card { 
                 page-break-inside: avoid; 
                 border: 2px solid var(--ds-text); 
-                padding: 20px; 
-                margin-bottom: 20px;
+                padding: 16px; 
+                margin-bottom: 16px;
                 border-radius: 8px;
               }
-              .card-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+              .card-header { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
               .card-key { color: var(--ds-text-subtlest); font-size: 14px; }
-              .card-body { margin-top: 15px; }
-              .card-footer { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--ds-border); }
+              .card-body { margin-top: 16px; }
+              .card-footer { margin-top: 16px; padding-top: 16px; border-top: 0px solid var(--ds-border); }
               .badge { 
                 display: inline-block; 
                 padding: 4px 8px; 
@@ -471,7 +471,7 @@ export default function EpicsPage() {
           </style>
         </head>
         <body>
-          <h1 style="text-align: center; margin-bottom: 30px;">Epic Cards</h1>
+          <h1 style="text-align: center; margin-bottom: 32px;">Epic Cards</h1>
           ${selectedEpics.map(epic => `
             <div class="card">
               <div class="card-header">

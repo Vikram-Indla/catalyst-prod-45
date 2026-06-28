@@ -358,7 +358,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
             overflow: 'hidden',
           }}
         >
-          <div style={{ padding: '10px 12px 4px' }}>
+          <div style={{ padding: '8px 12px 4px' }}>
             <Textfield
               value={search}
               onChange={(e) => handleSearchChange((e.target as HTMLInputElement).value)}
@@ -383,7 +383,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
           >
             Reassign lead
           </div>
-          <div style={{ maxHeight: 280, overflowY: 'auto', paddingBottom: 6 }}>
+          <div style={{ maxHeight: 280, overflowY: 'auto', paddingBottom: 4 }}>
             {filtered.map((p) => {
               const isCurrent = p.id === displayLead.id;
               return (
@@ -394,7 +394,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 10,
+                    gap: 8,
                     width: '100%',
                     padding: '8px 12px',
                     background: isCurrent
@@ -568,7 +568,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
         overflow: 'hidden',
       }}
     >
-      <div style={{ padding: '10px 12px 6px' }}>
+      <div style={{ padding: '8px 12px 6px' }}>
         <Textfield
           value={search}
           onChange={(e) => handleMemberSearchChange((e.target as HTMLInputElement).value)}
@@ -593,7 +593,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
       >
         Members · {memberCount}
       </div>
-      <div style={{ maxHeight: 320, overflowY: 'auto', paddingBottom: 6 }}>
+      <div style={{ maxHeight: 320, overflowY: 'auto', paddingBottom: 4 }}>
         {sortedFiltered.map((p) => {
           const isMember = isEffectiveMember(p.id);
           const isLead = p.id === project.lead_id;
@@ -610,7 +610,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
+                gap: 8,
                 padding: '8px 12px',
                 cursor: isLead ? 'default' : 'pointer',
                 color: token('color.text'),
@@ -690,7 +690,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
           pointerEvents: 'auto',
           outline: 'none',
           borderRadius: 6,
-          padding: '2px 4px',
+          padding: '0px 4px',
         }}
       >
         {memberIds.length > 0 ? (
@@ -704,7 +704,7 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtle'),
             }}
@@ -842,7 +842,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
 
   // Shared menu item button style
   const menuItemStyle: React.CSSProperties = {
-    display: 'block', width: '100%', padding: '7px 14px',
+    display: 'block', width: '100%', padding: '8px 14px',
     background: 'transparent', border: 'none', cursor: 'pointer',
     textAlign: 'left', fontSize: 'var(--ds-font-size-400)', color: token('color.text'),
     fontFamily: 'var(--cp-font-body)', borderRadius: 0,
@@ -952,7 +952,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: token('color.text.subtle'),
-                    marginBottom: 6,
+                    marginBottom: 4,
                   }}
                 >
                   Project name
@@ -969,7 +969,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
                     }
                   }}
                 />
-                <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest'), marginTop: 6, margin: 0 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest'), marginTop: 4, margin: 0 }}>
                   Key (<code style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace' }}>{project.project_key}</code>) and member assignments are unchanged.
                 </p>
               </div>
@@ -1226,11 +1226,11 @@ export function AllProjectsTable({
       case 'members': return <td key={colKey}><MemberManagePopover project={p} currentUserId={currentUserId} /></td>;
       case 'sync': return (
         <td key={colKey}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {/* Line 1: issue count + freshness — Tooltip wraps the whole line so the
                 dot's own dimensions are not collapsed by AK Tooltip's ref wrapper */}
             <Tooltip content={syncTooltipText} position="top">
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)', cursor: 'help' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)', cursor: 'help' }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: syncDotBg }} />
                 <span
                   style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}
@@ -1242,7 +1242,7 @@ export function AllProjectsTable({
             </Tooltip>
             {/* Line 2: 24h activity footprint — only when there's activity */}
             {hasActivityToday && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)', paddingLeft: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)', paddingLeft: 12 }}>
                 {updatedToday > 0 && (
                   <span title={`${updatedToday} issue${updatedToday === 1 ? '' : 's'} updated in the last 24h`}>
                     ↑ {updatedToday} updated

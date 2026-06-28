@@ -132,7 +132,7 @@ export default function TestPrioritiesPage() {
 
       {showAdd && (
         <div style={{
-          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 20, marginBottom: 20,
+          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 16, marginBottom: 16,
           background: 'var(--ds-surface-overlay)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text)' }}>New priority</h3>
@@ -190,9 +190,9 @@ export default function TestPrioritiesPage() {
               </tr>
             ) : priorities.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                <td style={{ padding: '10px 12px', width: 48 }}>
+                <td style={{ padding: '8px 12px', width: 48 }}>
                   {editingId === p.id ? (
-                    <div style={{ display: 'flex', gap: 3 }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
                       {COLORS.map(c => (
                         <button
                           key={c}
@@ -208,7 +208,7 @@ export default function TestPrioritiesPage() {
                     <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', background: p.color ?? 'var(--ds-text-subtlest)' }} />
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {editingId === p.id ? (
                     <Textfield
                       value={editName}
@@ -219,10 +219,10 @@ export default function TestPrioritiesPage() {
                     <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{p.name}</span>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {p.is_default ? (
                     <span style={{
-                      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+                      display: 'inline-block', padding: '0px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
                       background: 'var(--ds-background-accent-blue-subtler)', color: 'var(--ds-text-accent-blue)',
                     }}>Default</span>
                   ) : (
@@ -234,14 +234,14 @@ export default function TestPrioritiesPage() {
                     </button>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {editingId === p.id ? (
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
                       <Button appearance="primary" spacing="compact" onClick={() => saveEdit(p)}>Save</Button>
                       <Button appearance="subtle" spacing="compact" onClick={() => setEditingId(null)}>Cancel</Button>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
                       <Button appearance="subtle" spacing="compact" onClick={() => startEdit(p)}>Edit</Button>
                       <Button appearance="subtle" spacing="compact" onClick={() => handleDelete(p)}>Delete</Button>
                     </div>

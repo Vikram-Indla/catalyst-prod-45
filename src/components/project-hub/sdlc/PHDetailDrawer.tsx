@@ -89,7 +89,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 
             {/* Description */}
             <div className="mb-5">
-              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
                 Description
               </div>
               <div
@@ -109,7 +109,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             {/* Child Issues */}
             {childIssues.length > 0 && (
               <div className="mb-5">
-                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
                   Child Issues ({childIssues.length})
                 </div>
                 <div className="flex flex-col gap-1">
@@ -138,7 +138,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 
             {/* Activity */}
             <div>
-              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
                 Activity
               </div>
               <div className="rounded-lg p-4 flex items-center justify-center bg-[var(--bg-1)]" style={{ border: '1px solid var(--divider)', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>

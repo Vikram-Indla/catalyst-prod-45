@@ -42,7 +42,7 @@ export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeF
           <ChevronRight size={14} />
         </button>
       </div>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
         {FILTERS.map(f => (
           <button
             key={f.key}

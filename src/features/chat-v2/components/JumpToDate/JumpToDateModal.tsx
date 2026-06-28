@@ -47,7 +47,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
         position: 'fixed', inset: 0,
         background: 'var(--cv2-bg-overlay)',
         display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        paddingTop: '14vh',
+        paddingTop: '12vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
       onMouseDown={e => { if (e.target === e.currentTarget) onCancel(); }}
@@ -61,7 +61,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
           boxShadow: 'var(--cv2-shadow-modal)',
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
-          padding: 18,
+          padding: 16,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -83,7 +83,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
           </button>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, marginBottom: 8 }}>
           <div style={{ display: 'inline-flex', gap: 4 }}>
             <NavBtn label="Prev year" onClick={() => setView(v => ({ ...v, y: v.y - 1 }))}>
               <ChevronLeftDoubleIcon size={14} />
@@ -149,7 +149,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
                   onClick={() => onPick(cell.date!.toISOString())}
                   style={{
                     position: 'absolute',
-                    inset: 3,
+                    inset: 4,
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',

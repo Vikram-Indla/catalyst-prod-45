@@ -33,7 +33,7 @@ export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
         <div style={{ width: 100, height: 10, background: 'var(--divider)', borderRadius: 4 }} />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} style={{ height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 + (i % 3) * 20, paddingRight: 12, borderBottom: '1px solid var(--divider)' }}>
+        <div key={i} style={{ height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 12 + (i % 3) * 20, paddingRight: 12, borderBottom: '1px solid var(--divider)' }}>
           <div style={{ width: 20, height: 20, borderRadius: 4, background: shimmerBg }} className="hi-shimmer" />
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--divider)' }} className="hi-shimmer" />
           <div style={{ width: 48, height: 12, borderRadius: 4, background: 'var(--divider)' }} className="hi-shimmer" />
@@ -53,7 +53,7 @@ export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
 /* ── Priority bars (4 monochrome bars, 12×4px, gap 2px) ── */
 function PriorityBars({ level }: { level: number }) {
   return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
         <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
@@ -109,7 +109,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const fillColor = isComplete ? 'var(--sem-success)' : 'var(--cp-blue)';
   const textColor = isComplete ? 'var(--ds-background-success-bold)' : 'var(--cp-blue)';
   return (
-    <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
+    <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 0, justifyContent: 'center' }}>
       <div style={{ height: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 4, transition: 'width 300ms ease' }} />
       </div>
@@ -146,7 +146,7 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
       </button>
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4, background: 'var(--bg-app)',
+          position: 'absolute', top: '48%', right: 0, marginTop: 4, background: 'var(--bg-app)',
           border: '1px solid var(--divider)', borderRadius: 6, zIndex: 50, minWidth: 140, overflow: 'hidden',
         }}>
           <button

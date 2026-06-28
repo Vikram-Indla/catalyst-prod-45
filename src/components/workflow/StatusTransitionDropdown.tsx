@@ -104,7 +104,7 @@ export function StatusTransitionDropdown({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               height: triggerHeight,
               padding: triggerPadding,
               borderRadius: 3,

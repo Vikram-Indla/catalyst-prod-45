@@ -237,7 +237,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
                   <td
                     colSpan={roles.length + 1}
                     style={{
-                      padding: '10px 12px 4px',
+                      padding: '8px 12px 4px',
                       background: T.headerBg,
                       color: T.subtlest,
                       fontSize: 11,
@@ -257,7 +257,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
                   return (
                     <tr key={group}>
                       <td
-                        style={{ padding: '9px 12px 9px 20px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 400, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
+                        style={{ padding: '8px 12px 9px 20px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 400, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
                       >
                         {label}
                       </td>
@@ -268,7 +268,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
                         return (
                           <td
                             key={role.id}
-                            style={{ textAlign: 'center', padding: '9px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
+                            style={{ textAlign: 'center', padding: '8px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
                             aria-label={`${role.name}: ${group} — ${level ?? 'Deny'}`}
                           >
                             {editable ? (
@@ -288,7 +288,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
         </table>
       </div>
 
-      <div style={{ display: 'flex', gap: 20, marginTop: 12, fontSize: 12, color: T.subtlest, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 12, color: T.subtlest, flexWrap: 'wrap' }}>
         <span><span style={{ color: T.allow, fontWeight: 700 }}>✓</span> Allow</span>
         <span>— Deny</span>
         {editable && <span style={{ color: T.subtle, marginLeft: 4 }}>· Click any cell to toggle</span>}

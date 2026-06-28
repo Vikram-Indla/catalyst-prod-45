@@ -110,7 +110,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
         {loading ? (
           <div className="p-4"><SkeletonTable rows={8} /></div>
         ) : Object.keys(groups).length === 0 ? (
-          <div className="flex items-center justify-center" style={{ padding: 60, color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)' }}>
+          <div className="flex items-center justify-center" style={{ padding: 48, color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)' }}>
             No items in this release
           </div>
         ) : (
@@ -161,7 +161,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                 {!isCollapsed && (
                   <div>
                     {groupIssues.length === 0 ? (
-                      <div style={{ padding: '20px 16px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}>
+                      <div style={{ padding: '16px 16px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}>
                         No items in this release
                       </div>
                     ) : groupIssues.map(issue => {
@@ -237,7 +237,7 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
       onClick={onClick}
       className={`w-full text-left rounded-md mb-0.5 transition-colors ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
       style={{
-        padding: '6px 10px',
+        padding: '4px 10px',
         fontSize: 'var(--ds-font-size-200)',
         fontWeight: isActive ? 600 : 500,
         color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',

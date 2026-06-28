@@ -70,7 +70,7 @@ export default function BlockedTasksWidget({ collapsed, onToggleCollapse }: Widg
           </div>
 
           {/* Rows */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {blocked.slice(0, 10).map((t) => {
               const reason = (t.blockedReason ?? '').trim();
               return (
@@ -155,7 +155,7 @@ function KpiCell({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 0,
         padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}

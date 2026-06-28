@@ -174,7 +174,7 @@ export function StrategyPyramid() {
                     <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
                     <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: avgProgress >= 70 ? 'var(--ds-link-pressed)' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger, var(--cp-danger))' }}>{avgProgress}%</span>
                   </div>
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-tertiary)', marginBottom: 4, paddingLeft: 16 }}>
                     {themeGoals.length} Goals · {themeKrs.length} KRs
                   </div>
                   <div style={{ paddingLeft: 16 }}>
@@ -315,7 +315,7 @@ export function StrategyPyramid() {
               {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
                   fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: 'var(--exec-blue-50)', color: 'var(--exec-blue-700)',
-                  padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
+                  padding: '0px 8px', borderRadius: 9999, flexShrink: 0,
                 }}>
                   {layer.count}
                 </span>

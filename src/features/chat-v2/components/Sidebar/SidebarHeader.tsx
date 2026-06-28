@@ -25,7 +25,7 @@ export function SidebarHeader({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 8,
-        padding: '14px 16px 10px',
+        padding: '12px 16px 10px',
       }}
     >
       <button
@@ -53,7 +53,7 @@ export function SidebarHeader({
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</span>
         <ChevronDownIcon size={14} />
       </button>
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
         <UnreadsToggle value={unreadsOnly} onChange={onToggleUnreadsOnly} />
       </div>
     </div>
@@ -71,7 +71,7 @@ function UnreadsToggle({ value, onChange }: { value: boolean; onChange: (v: bool
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         background: 'transparent',
         border: 'none',
         color: 'var(--cv2-text-subtle)',
@@ -89,7 +89,7 @@ function UnreadsToggle({ value, onChange }: { value: boolean; onChange: (v: bool
           width: 28,
           height: 16,
           borderRadius: 8,
-          padding: 2,
+          padding: 0,
           background: value ? 'var(--cv2-accent)' : 'var(--cv2-border-strong)',
           transition: 'background var(--cv2-transition-fast)',
           display: 'inline-flex',

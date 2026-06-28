@@ -39,7 +39,7 @@ export const SkeletonRow: React.FC<{ lines?: number }> = ({ lines = 3 }) => (
 
 export const SkeletonCard: React.FC = () => (
   <div style={{
-    padding: 20, borderRadius: 6, border: '1px solid var(--cp-border-default)',
+    padding: 16, borderRadius: 6, border: '1px solid var(--cp-border-default)',
     background: 'var(--cp-bg-elevated)',
   }}>
     <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
@@ -54,7 +54,7 @@ export const SkeletonCard: React.FC = () => (
 );
 
 export const SkeletonArticleRow: React.FC = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px' }}>
     <SkeletonBlock width={14} height={14} radius={3} />
     <div style={{ flex: 1 }}>
       <SkeletonBlock width="70%" height={14} style={{ marginBottom: 4 }} />
@@ -80,7 +80,7 @@ export const StatusLozenge: React.FC<{ status: string }> = ({ status }) => {
       aria-label={ariaLabel}
       style={{
         display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
-        letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 4, lineHeight: '16px',
+        letterSpacing: '0.03em', padding: '0px 6px', borderRadius: 4, lineHeight: '16px',
         height: 20, boxSizing: 'border-box',
         background: bg, color, whiteSpace: 'nowrap',
       }}
@@ -96,7 +96,7 @@ export const JiraPill: React.FC<{ label: string; onClick?: () => void }> = ({ la
     style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: 11.5, fontWeight: 500,
       background: 'var(--cp-primary-5)', color: 'var(--cp-primary-60)',
-      padding: '2px 7px', borderRadius: 4, cursor: onClick ? 'pointer' : 'default',
+      padding: '0px 7px', borderRadius: 4, cursor: onClick ? 'pointer' : 'default',
       whiteSpace: 'nowrap', unicodeBidi: 'embed',
     }}
   >{label}</span>
@@ -105,7 +105,7 @@ export const JiraPill: React.FC<{ label: string; onClick?: () => void }> = ({ la
 // ── AiBadge ─────────────────────────────────────────────────
 export const AiBadge: React.FC<{ small?: boolean }> = ({ small }) => (
   <span style={{
-    display: 'inline-flex', alignItems: 'center', gap: 3,
+    display: 'inline-flex', alignItems: 'center', gap: 4,
     fontSize: small ? 9 : 10, fontWeight: 700, textTransform: 'uppercase',
     letterSpacing: '0.04em', padding: small ? '1px 5px' : '2px 7px',
     borderRadius: 4, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)',
@@ -138,7 +138,7 @@ export const ConfidenceBadge: React.FC<{ value: number }> = ({ value }) => {
       aria-label={`AI confidence: ${pct}%`}
       style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
-        padding: '2px 6px', borderRadius: 4, background: bg, color,
+        padding: '0px 6px', borderRadius: 4, background: bg, color,
         letterSpacing: '0.03em', unicodeBidi: 'embed',
       }}
     >{pct}%</span>
@@ -148,7 +148,7 @@ export const ConfidenceBadge: React.FC<{ value: number }> = ({ value }) => {
 // ── LiveDataBadge ───────────────────────────────────────────
 export const LiveDataBadge: React.FC = () => (
   <span style={{
-    display: 'inline-flex', alignItems: 'center', gap: 5,
+    display: 'inline-flex', alignItems: 'center', gap: 4,
     fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-teal-60)',
     textTransform: 'uppercase', letterSpacing: '0.04em',
   }}>

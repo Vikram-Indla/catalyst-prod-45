@@ -154,7 +154,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
                     aria-checked={isChecked}
                     onClick={() => toggleUser(profile.id)}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
                       borderBottom: `1px solid ${T.border}`, cursor: 'pointer',
                       background: isChecked ? T.selected : T.surface,
                       outline: changed ? `2px solid var(--ds-border-brand)` : 'none',
@@ -192,7 +192,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
           <p style={{ margin: 0, fontSize: 12, color: T.subtlest }}>
             {selected.size} user{selected.size !== 1 ? 's' : ''} assigned
             {pendingChanges > 0 && (
-              <span style={{ color: 'var(--ds-text-brand)', marginLeft: 6 }}>
+              <span style={{ color: 'var(--ds-text-brand)', marginLeft: 4 }}>
                 · {pendingChanges} unsaved change{pendingChanges !== 1 ? 's' : ''}
               </span>
             )}

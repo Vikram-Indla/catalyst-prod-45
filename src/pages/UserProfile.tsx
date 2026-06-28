@@ -470,7 +470,7 @@ export default function UserProfile() {
                 {!showEmailEdit ? (
                   <button
                     onClick={() => setShowEmailEdit(true)}
-                    style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.link', 'var(--ds-link)'), background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginTop: 2 }}
+                    style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.link', 'var(--ds-link)'), background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginTop: 0 }}
                   >
                     Change email
                   </button>

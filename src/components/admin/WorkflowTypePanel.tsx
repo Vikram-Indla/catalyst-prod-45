@@ -126,7 +126,7 @@ function StatusChip({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 28,
         padding: '0 8px',
         borderRadius: 3,
@@ -250,7 +250,7 @@ function TransitionPill({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 28,
         padding: '0 8px',
         borderRadius: 3,
@@ -319,7 +319,7 @@ function AddPill({ label, onClick }: { label: string; onClick: () => void }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         height: 32,
         padding: '0 8px',
         border: '1px dashed var(--ds-border)',
@@ -350,7 +350,7 @@ function AddStatusChip({ onClick }: { onClick: () => void }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         height: 32,
         padding: '0 8px',
         border: '1px dashed var(--ds-border)',
@@ -511,7 +511,7 @@ function TransitionGroupRow({
                 color: 'var(--ds-text-subtlest)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
+                gap: 8,
               }}
             >
               No transitions defined
@@ -539,7 +539,7 @@ function TransitionGroupRow({
           )}
 
           {showPicker ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
               {available.length === 0 ? (
                 <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
                   All available statuses already have transitions.
@@ -631,7 +631,7 @@ function ModeToggle({
             fontWeight: 500,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             color:
               mode === m
                 ? 'var(--ds-text-brand)'
@@ -706,7 +706,7 @@ function AddStatusPicker({
           border: '1px solid var(--ds-border)',
           borderRadius: 3,
           fontSize: 'var(--ds-font-size-300)',
-          marginBottom: 6,
+          marginBottom: 4,
           background: 'var(--ds-surface)',
           color: 'var(--ds-text)',
         }}
@@ -731,7 +731,7 @@ function AddStatusPicker({
               alignItems: 'center',
               gap: 8,
               width: '100%',
-              padding: '5px 8px',
+              padding: '4px 8px',
               fontSize: 'var(--ds-font-size-300)',
               borderRadius: 3,
               background: 'none',
@@ -771,7 +771,7 @@ function AddStatusPicker({
           display: 'block',
           width: '100%',
           marginTop: 4,
-          padding: '6px 8px',
+          padding: '4px 8px',
           fontSize: 'var(--ds-font-size-200)',
           color: 'var(--ds-text-subtle)',
           background: 'none',
@@ -850,7 +850,7 @@ function CopyWorkflowMenu({
     >
       <div
         style={{
-          padding: '6px 12px 4px',
+          padding: '4px 12px 4px',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: 'var(--ds-text-subtlest)',
@@ -874,7 +874,7 @@ function CopyWorkflowMenu({
             alignItems: 'center',
             gap: 8,
             width: '100%',
-            padding: '7px 12px',
+            padding: '8px 12px',
             fontSize: 'var(--ds-font-size-400)',
             color: 'var(--ds-text)',
             background: 'none',
@@ -1041,7 +1041,7 @@ export function WorkflowTypePanel({
             color: 'var(--ds-text-subtle)',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
           }}
         >
           <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>
@@ -1055,7 +1055,7 @@ export function WorkflowTypePanel({
             color: 'var(--ds-text-subtle)',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
           }}
         >
           <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>
@@ -1069,7 +1069,7 @@ export function WorkflowTypePanel({
             color: 'var(--ds-text-subtle)',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
           }}
         >
           Initial status:{' '}
@@ -1087,7 +1087,7 @@ export function WorkflowTypePanel({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               height: 32,
               padding: '0 8px',
               border: '1px solid var(--ds-border)',
@@ -1152,7 +1152,7 @@ export function WorkflowTypePanel({
               style={{
                 fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
-                marginBottom: 2,
+                marginBottom: 0,
                 color: 'var(--ds-text)',
               }}
             >
@@ -1162,7 +1162,7 @@ export function WorkflowTypePanel({
               style={{
                 fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest)',
-                marginBottom: 10,
+                marginBottom: 8,
               }}
             >
               Statuses used in this workflow, grouped by category. Drag to reorder within a category.
@@ -1186,7 +1186,7 @@ export function WorkflowTypePanel({
                 style={{
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: 10,
+                  gap: 8,
                   marginBottom: 8,
                 }}
               >
@@ -1194,7 +1194,7 @@ export function WorkflowTypePanel({
                   style={{
                     flexShrink: 0,
                     width: 96,
-                    paddingTop: 3,
+                    paddingTop: 4,
                   }}
                 >
                   <span
@@ -1215,7 +1215,7 @@ export function WorkflowTypePanel({
                   style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: 6,
+                    gap: 4,
                     alignItems: 'center',
                   }}
                 >
@@ -1253,7 +1253,7 @@ export function WorkflowTypePanel({
                     background: 'var(--ds-surface-overlay)',
                     border: '1px solid var(--ds-border)',
                     borderRadius: 4,
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--ds-text-subtlest)',
                     zIndex: 50,
@@ -1272,7 +1272,7 @@ export function WorkflowTypePanel({
               style={{
                 fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
-                marginBottom: 2,
+                marginBottom: 0,
                 color: 'var(--ds-text)',
               }}
             >
@@ -1282,7 +1282,7 @@ export function WorkflowTypePanel({
               style={{
                 fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest)',
-                marginBottom: 10,
+                marginBottom: 8,
               }}
             >
               Each rule defines which statuses a work item can move to. Global rules apply to every type and are shown first.

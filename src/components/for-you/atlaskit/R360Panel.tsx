@@ -120,7 +120,7 @@ function SidebarMemberRow({
           marginTop: 4,
           display: 'inline-flex',
           alignItems: 'center',
-          padding: '2px 8px',
+          padding: '0px 8px',
           borderRadius: 8,
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,

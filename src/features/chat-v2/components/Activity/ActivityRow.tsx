@@ -156,7 +156,7 @@ export function ActivityRow({
         userSelect: 'none',
       }}
     >
-      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
         <PresenceAvatar
           name={item.authorName}
           size={32}
@@ -166,7 +166,7 @@ export function ActivityRow({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               minWidth: 0,
               minHeight: 28,
             }}
@@ -199,7 +199,7 @@ export function ActivityRow({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              marginTop: 2,
+              marginTop: 0,
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-subtle)',
@@ -211,7 +211,7 @@ export function ActivityRow({
           </div>
           <p
             style={{
-              margin: '6px 0 0',
+              margin: '4px 0 0',
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--ds-font-size-400)',
               color: 'var(--cv2-text)',
@@ -337,7 +337,7 @@ function DenseRow({
         userSelect: 'none',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <PresenceAvatar
           name={item.authorName}
           size={28}
@@ -422,7 +422,7 @@ function SingleLineRow({
       tabIndex={0}
       style={{
         position: 'relative',
-        padding: '14px 18px',
+        padding: '12px 18px',
         borderRadius: 8,
         background: 'transparent',
         border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid var(--cv2-border)',
@@ -430,7 +430,7 @@ function SingleLineRow({
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
+        gap: 12,
         minWidth: 0,
         outline: 'none',
         WebkitTapHighlightColor: 'transparent',

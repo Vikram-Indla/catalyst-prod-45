@@ -141,19 +141,19 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
     fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
     color: 'var(--ds-text-subtle)',
-    marginBottom: 6,
+    marginBottom: 4,
     fontFamily: 'var(--ds-font-family-body)',
   };
 
   const sectionStyle: React.CSSProperties = {
-    marginBottom: 20,
+    marginBottom: 16,
   };
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
     border: '1px solid var(--ds-border)',
     borderRadius: 4,
-    padding: '6px 10px',
+    padding: '4px 10px',
     fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--ds-font-family-body)',
     color: 'var(--ds-text)',
@@ -240,7 +240,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
           />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
           <div>
             <label style={labelStyle}>Status</label>
             <select
@@ -324,7 +324,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
             <button
               onClick={() => setVersionModalOpen(true)}
               style={{
-                padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
+                padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
                 border: '1px solid var(--ds-border)',
                 background: 'var(--ds-surface)',
                 color: 'var(--ds-text-subtle)', cursor: 'pointer',

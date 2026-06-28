@@ -40,7 +40,7 @@ export function HuddleScreenView() {
   const showRemote = remoteSharing;
   const visible = remoteSharing || localSharing;
 
-  const [pos, setPos] = useState<Pos>(() => load(POS_KEY, { top: 120, left: 24 }));
+  const [pos, setPos] = useState<Pos>(() => load(POS_KEY, { top: 48, left: 24 }));
   const [size, setSize] = useState<Size>(() => load(SIZE_KEY, { w: 460, h: 300 }));
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -241,7 +241,7 @@ export function HuddleScreenView() {
       <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         {localSharing && (
           <button type="button" data-huddle-btn onClick={() => { void stopScreen(); }}
-            style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600,
+            style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '4px 10px', fontSize: 12, fontWeight: 600,
               background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-text-inverse, #FFFFFF)', marginRight: 4 }}>
             Stop
           </button>

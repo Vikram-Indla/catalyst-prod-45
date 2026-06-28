@@ -116,7 +116,7 @@ export function AddPeopleModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '14vh',
+        paddingTop: '12vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
     >
@@ -128,7 +128,7 @@ export function AddPeopleModal({
           border: '1px solid var(--cv2-border-strong)',
           borderRadius: 'var(--cv2-radius-lg)',
           boxShadow: 'var(--cv2-shadow-modal)',
-          padding: 22,
+          padding: 24,
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
         }}
@@ -159,8 +159,8 @@ export function AddPeopleModal({
             marginTop: 16,
             display: 'flex',
             flexWrap: 'wrap',
-            gap: 6,
-            padding: 10,
+            gap: 4,
+            padding: 8,
             background: 'var(--cv2-bg-input)',
             border: '1px solid var(--cv2-accent)',
             borderRadius: 'var(--cv2-radius-sm)',
@@ -186,7 +186,7 @@ export function AddPeopleModal({
               outline: 'none',
               fontFamily: 'inherit',
               fontSize: 'var(--ds-font-size-400)',
-              padding: '6px 4px',
+              padding: '4px 4px',
             }}
           />
         </div>
@@ -210,7 +210,7 @@ export function AddPeopleModal({
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
           <PrimaryBtn onClick={handleAdd} disabled={selected.length === 0 || submitting}>
             {submitting ? 'Adding…' : 'Add'}
           </PrimaryBtn>
@@ -227,7 +227,7 @@ function Chip({ person, onRemove }: { person: PeopleHit; onRemove: () => void })
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 6px 4px 4px',
         background: 'var(--cv2-bg-row-selected)',
         borderRadius: 6,
@@ -271,7 +271,7 @@ function PersonRow({ hit, onPick }: { hit: PeopleHit; onPick: () => void }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
         padding: '8px 12px',
         background: 'transparent',

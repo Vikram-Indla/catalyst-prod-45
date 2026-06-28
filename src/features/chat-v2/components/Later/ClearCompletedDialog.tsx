@@ -31,7 +31,7 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '22vh',
+        paddingTop: '24vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
       onMouseDown={e => { if (e.target === e.currentTarget) onCancel(); }}
@@ -45,18 +45,18 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
           boxShadow: 'var(--cv2-shadow-modal)',
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
-          padding: 22,
+          padding: 24,
         }}
       >
         <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
           Clear completed items?
         </div>
-        <div style={{ marginTop: 10, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text-subtle)' }}>
+        <div style={{ marginTop: 8, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text-subtle)' }}>
           {count > 0
             ? `This will permanently remove ${count} completed item${count === 1 ? '' : 's'} from Later.`
             : 'There are no completed items.'}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 22 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
           <button
             type="button"
             onClick={onCancel}

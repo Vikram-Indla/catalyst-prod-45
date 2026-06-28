@@ -225,9 +225,9 @@ export function SlashCommandPalette({
       aria-label="Slash command palette"
       style={{
         position: 'absolute',
-        bottom: '100%',
+        bottom: '48%',
         left: 8,
-        marginBottom: 6,
+        marginBottom: 4,
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 4,
@@ -249,7 +249,7 @@ export function SlashCommandPalette({
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 2,
+            gap: 0,
             width: '100%',
             padding: '8px 12px',
             background: idx === state.selectedIndex

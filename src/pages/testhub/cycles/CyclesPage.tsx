@@ -127,10 +127,10 @@ export default function CyclesPage() {
                 ref={triggerRef as React.Ref<HTMLButtonElement>}
                 {...props}
                 style={{
-                  padding: '5px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
+                  padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
                   border: '1px solid var(--ds-border)', background: 'var(--ds-surface)',
                   color: 'var(--ds-text)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 4,
                 }}
               >
                 Bulk <MoreHorizontal size={13} />
@@ -308,7 +308,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
 
   const fieldStyle: React.CSSProperties = {
     width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4,
-    padding: '6px 10px', fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--ds-font-family-body)',
+    padding: '4px 10px', fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--ds-font-family-body)',
     color: 'var(--ds-text)', background: 'var(--ds-surface)', boxSizing: 'border-box',
   };
   const labelStyle: React.CSSProperties = {
@@ -334,7 +334,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
 
           {/* ── Details ── */}
           <TabPanel>
-            <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
                 <label style={labelStyle}>Title *</label>
                 <Textfield
@@ -397,10 +397,10 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
               </div>
               <div>
                 <label style={labelStyle}>Tags</label>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
                   {tags.map(tag => (
                     <span key={tag} style={{
-                      padding: '2px 8px', borderRadius: 10, fontSize: 'var(--ds-font-size-200)',
+                      padding: '0px 8px', borderRadius: 10, fontSize: 'var(--ds-font-size-200)',
                       background: 'var(--ds-background-neutral)', color: 'var(--ds-text)',
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}>
@@ -425,7 +425,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
           <TabPanel>
             <div style={{ paddingTop: 16 }}>
               <div style={{ position: 'relative', marginBottom: 12 }}>
-                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)', display: 'flex' }}>
+                <span style={{ position: 'absolute', left: 8, top: '48%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest)', display: 'flex' }}>
                   <Search size={14} />
                 </span>
                 <input
@@ -435,7 +435,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                   style={{ ...fieldStyle, paddingLeft: 32 }}
                 />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--ds-border)', marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid var(--ds-border)', marginBottom: 4 }}>
                 <input type="checkbox"
                   checked={filteredCases.length > 0 && filteredCases.every(c => selectedCaseIds.has(c.id))}
                   onChange={() => {
@@ -462,7 +462,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                 <div style={{ maxHeight: 400, overflowY: 'auto' }}>
                   {filteredCases.map(c => (
                     <label key={c.id} style={{
-                      display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0',
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0',
                       borderBottom: '1px solid var(--ds-border)', cursor: 'pointer',
                     }}>
                       <input type="checkbox"
@@ -479,7 +479,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                         {c.key}
                       </span>
                       <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1 }}>{c.title}</span>
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 10, background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtlest)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 10, background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtlest)' }}>
                         v{c.current_version ?? 1}
                       </span>
                     </label>

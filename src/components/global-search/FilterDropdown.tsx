@@ -139,7 +139,7 @@ export function FilterDropdown({
           }}
         >
           {/* Search */}
-          <div style={{ padding: 10, borderBottom: '1px solid var(--ds-border)' }}>
+          <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
             <Textfield
               autoFocus
               value={query}
@@ -154,8 +154,8 @@ export function FilterDropdown({
           </div>
 
           {/* List */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
-            <div style={{ padding: '6px 16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+            <div style={{ padding: '4px 16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
               Suggested
             </div>
             {filtered.map((opt) => {
@@ -168,8 +168,8 @@ export function FilterDropdown({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 10,
-                    padding: '6px 16px',
+                    gap: 8,
+                    padding: '4px 16px',
                     cursor: 'pointer',
                     background: checked ? 'var(--ds-background-neutral)' : 'transparent',
                   }}
@@ -232,7 +232,7 @@ export function FilterDropdown({
         {selectedIds.length > 0 && (
           <span
             style={{
-              marginLeft: 2,
+              marginLeft: 0,
               padding: '0 6px',
               borderRadius: 8,
               background: 'var(--ds-background-brand-bold)',

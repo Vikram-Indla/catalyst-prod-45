@@ -234,7 +234,7 @@ function FilterPill({ label, isActive, count, onClick }: {
         font: ADS_FONT.bodyBold,
         cursor: 'pointer',
         transition: 'background-color 120ms ease, border-color 120ms ease, color 120ms ease',
-        display: 'inline-flex', alignItems: 'center', gap: 6,
+        display: 'inline-flex', alignItems: 'center', gap: 4,
       }}
     >
       {label}
@@ -242,7 +242,7 @@ function FilterPill({ label, isActive, count, onClick }: {
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         background: isActive ? 'var(--ds-link, rgba(12,102,228,0.14))' : ADS.neutralSubtle,
         color: isActive ? ADS.textSelected : ADS.textSubtle,
-        borderRadius: 8, padding: '1px 6px',
+        borderRadius: 8, padding: '0px 6px',
         minWidth: 18, textAlign: 'center',
       }}>
         {count}
@@ -266,8 +266,8 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
         <button
           onClick={onToggle}
           style={{
-            width: '100%', display: 'flex', alignItems: 'center', gap: 10,
-            padding: '10px 20px', border: 'none', cursor: 'pointer',
+            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 20px', border: 'none', cursor: 'pointer',
             background: ADS.surfaceSunken,
             borderBottom: `1px solid ${ADS.border}`,
             borderLeft: `3px solid ${accentColor}`,
@@ -287,7 +287,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
           <span style={{
             fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: ADS.textInverse,
             background: accentColor, borderRadius: 3,
-            padding: '1px 6px', minWidth: 22, textAlign: 'center',
+            padding: '0px 6px', minWidth: 22, textAlign: 'center',
           }}>
             {count}
           </span>
@@ -326,7 +326,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
       onMouseEnter={e => (e.currentTarget.style.background = ADS.neutralSubtle)}
       onMouseLeave={e => (e.currentTarget.style.background = '')}
     >
-      <td style={{ ...tdStyle, paddingLeft: 20 }}>
+      <td style={{ ...tdStyle, paddingLeft: 16 }}>
         <TypeIcon type={item.item_type} />
       </td>
       <td style={tdStyle}>
@@ -348,7 +348,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
       <td style={tdStyle}>
         <StatusLozenge status={item.status} />
       </td>
-      <td style={{ ...tdStyle, textAlign: 'right', paddingRight: 20, verticalAlign: 'middle' }}>
+      <td style={{ ...tdStyle, textAlign: 'right', paddingRight: 16, verticalAlign: 'middle' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           justifyContent: 'flex-end',
@@ -358,7 +358,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
           </span>
           {isOverdue && (
             <span style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 3, padding: '2px 6px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 3, padding: '0px 6px',
               background: ADS.dangerBg, color: ADS.textDanger,
             }}>
               Overdue
@@ -366,7 +366,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
           )}
           {isWatch && (
             <span style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 3, padding: '2px 6px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 3, padding: '0px 6px',
               background: ADS.warningBg, color: ADS.textWarning,
             }}>
               Watch
@@ -420,8 +420,8 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
       <button
         onClick={onCleanupClick}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          borderRadius: 20, padding: '3px 10px',
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          borderRadius: 20, padding: '4px 10px',
           fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
           background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color,
           cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -455,7 +455,7 @@ function AICleanupButton({ onClick }: { onClick: () => void }) {
         background: ADS.neutralBold, color: ADS.textInverse,
         font: ADS_FONT.bodyBold, border: 'none',
         cursor: 'pointer', display: 'inline-flex',
-        alignItems: 'center', gap: 6,
+        alignItems: 'center', gap: 4,
       }}
     >
       <Sparkles size={12} strokeWidth={1.75} color={ADS.iconBrand} />
@@ -676,7 +676,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
           surface + neutral border replace the bespoke slate ramp. */}
       {!loading && filtered.length > 0 && (
         <div style={{
-          display: 'flex', gap: 20, padding: '12px 20px',
+          display: 'flex', gap: 16, padding: '12px 20px',
           borderBottom: `1px solid ${ADS.border}`,
           background: ADS.surfaceSunken,
         }}>
@@ -694,7 +694,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
           scale, and tinted 1px border. */}
       {!loading && govData && govData.ragStatus === 'amber' && (
         <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 10,
+          display: 'flex', alignItems: 'flex-start', gap: 8,
           padding: '12px 20px',
           background: ADS.warningBg, borderBottom: `1px solid ${ADS.borderWarning}`,
           font: ADS_FONT.body, color: ADS.textWarning,
@@ -709,7 +709,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
       )}
       {!loading && govData && govData.ragStatus === 'red' && (
         <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 10,
+          display: 'flex', alignItems: 'flex-start', gap: 8,
           padding: '12px 20px',
           background: ADS.dangerBg, borderBottom: `1px solid ${ADS.borderDanger}`,
           font: ADS_FONT.body, color: ADS.textDanger,
@@ -758,12 +758,12 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
                 background: ADS.surfaceSunken,
                 borderBottom: `1px solid ${ADS.border}`,
               }}>
-                <th style={{ ...thStyle, paddingLeft: 20 }} />
+                <th style={{ ...thStyle, paddingLeft: 16 }} />
                 <th style={thStyle}>KEY</th>
                 <th style={thStyle}>SUMMARY</th>
                 <th style={thStyle}>STATUS</th>
                 <th
-                  style={{ ...thStyle, textAlign: 'right', paddingRight: 20, cursor: 'pointer', userSelect: 'none' }}
+                  style={{ ...thStyle, textAlign: 'right', paddingRight: 16, cursor: 'pointer', userSelect: 'none' }}
                   onClick={() => setSortAsc(!sortAsc)}
                 >
                   Days {sortAsc ? '↑' : '↓'}
@@ -805,7 +805,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
         {!loading && hasMore && (
           <div style={{
             display: 'flex', justifyContent: 'center',
-            padding: '20px 20px 24px',
+            padding: '16px 20px 24px',
           }}>
             <button
               type="button"
@@ -847,7 +847,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
             { color: ADS.iconWarning, label: 'Watch 50–80%' },
             { color: ADS.iconDanger,  label: 'Overdue >80%' },
           ].map(l => (
-            <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: l.color }} />
               <span style={{ font: ADS_FONT.bodySmall, color: ADS.textSubtle }}>{l.label}</span>
             </div>
@@ -901,7 +901,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
     success: ADS.textSuccess,
   }[intent];
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
       <span style={{
         fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: numericColor,
         fontVariantNumeric: 'tabular-nums',
@@ -921,7 +921,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
 }
 
 const thStyle: React.CSSProperties = {
-  padding: '10px 12px',
+  padding: '8px 12px',
   font: `600 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
@@ -930,6 +930,6 @@ const thStyle: React.CSSProperties = {
 };
 
 const tdStyle: React.CSSProperties = {
-  padding: '10px 12px',
+  padding: '8px 12px',
   verticalAlign: 'middle',
 };

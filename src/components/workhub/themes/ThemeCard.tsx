@@ -89,17 +89,17 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
         {hasItems || theme.epic_count > 0 || theme.story_count > 0 || theme.subtask_count > 0 ? (
           <>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)' }} />
               E {theme.epic_count}
             </span>
             <span style={{ color: 'var(--ds-text-disabled)' }}>·</span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
               S {theme.story_count}
             </span>
             <span style={{ color: 'var(--ds-text-disabled)' }}>·</span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ds-background-discovery-bold)' }} />
               ST {theme.subtask_count}
             </span>

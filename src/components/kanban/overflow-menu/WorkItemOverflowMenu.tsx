@@ -254,7 +254,7 @@ function MenuItem({ icon, label, onClick, tk, hasSubmenu, destructive }: {
       role="menuitem"
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        width: '100%', padding: '7px 12px', border: 'none',
+        width: '100%', padding: '8px 12px', border: 'none',
         background: 'transparent', cursor: 'pointer',
         fontSize: 'var(--ds-font-size-300)', color: destructive ? 'var(--ds-background-danger-bold)' : tk.textPrimary,
         fontFamily: 'var(--cp-font-body)', textAlign: 'left',

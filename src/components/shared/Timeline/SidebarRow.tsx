@@ -553,7 +553,7 @@ export function SidebarRow({
           alignItems: "center",
           paddingLeft: 8,
           paddingRight: 4,
-          gap: 6,
+          gap: 4,
           borderBottom: hideRowBorder
             ? "none"
             : "1px solid var(--ds-border)",
@@ -706,7 +706,7 @@ export function SidebarRow({
             gap: 8,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 0 }}>
           {/* type icon — sits inline with the key so it stays aligned with the
               title even when the epic progress bar adds a second line. */}
           {!issue.isGroup && (
@@ -723,7 +723,7 @@ export function SidebarRow({
                 overflow: "hidden",
                 display: "flex",
                 alignItems: "baseline",
-                gap: 6,
+                gap: 4,
               }}
             >
               <span
@@ -808,7 +808,7 @@ export function SidebarRow({
                       ? {
                           background:
                             "var(--cat-locate-accent)",
-                          padding: "1px 6px",
+                          padding: "0px 6px",
                           borderRadius: 3,
                         }
                       : null),
@@ -1141,7 +1141,7 @@ export function SidebarRow({
                   style={{
                     display: "flex",
                     flexWrap: "wrap",
-                    gap: 6,
+                    gap: 4,
                     padding: "4px 12px 8px",
                   }}
                 >
@@ -1277,7 +1277,7 @@ export function SidebarRow({
               </ModalHeader>
               <ModalBody>
                 <div
-                  style={{ display: "flex", flexDirection: "column", gap: 2 }}
+                  style={{ display: "flex", flexDirection: "column", gap: 0 }}
                 >
                   <div
                     onClick={() => handleMoveTo("")}
@@ -1413,7 +1413,7 @@ export function SidebarRow({
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: 2,
+                    gap: 0,
                     maxHeight: 260,
                     overflowY: "auto",
                   }}
@@ -1531,7 +1531,7 @@ export function SidebarRow({
                     marginBottom: 8,
                     display: "flex",
                     alignItems: "center",
-                    gap: 6,
+                    gap: 4,
                     padding: "4px 8px",
                     background: "var(--ds-background-neutral-subtle)",
                     borderRadius: 3,
@@ -1570,7 +1570,7 @@ export function SidebarRow({
                         fontWeight: 600,
                         color: "var(--ds-text-subtle)",
                         fontFamily: "var(--ds-font-family-body)",
-                        marginBottom: 6,
+                        marginBottom: 4,
                       }}
                     >
                       Existing dependencies
@@ -1590,7 +1590,7 @@ export function SidebarRow({
                             display: "flex",
                             alignItems: "center",
                             gap: 8,
-                            padding: "6px 0",
+                            padding: "4px 0",
                             borderBottom:
                               idx < existingLinks.length - 1
                                 ? "1px solid var(--ds-border)"
@@ -1628,7 +1628,7 @@ export function SidebarRow({
                               color: "var(--ds-text-danger)",
                               fontSize: 'var(--ds-font-size-200)',
                               fontFamily: "var(--ds-font-family-body)",
-                              padding: "2px 6px",
+                              padding: "0px 6px",
                               borderRadius: 3,
                             }}
                             title="Remove dependency"
@@ -1963,7 +1963,7 @@ export function SidebarRow({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 4,
                   height: 36,
                   padding: "0 12px",
                   border: "none",

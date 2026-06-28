@@ -141,14 +141,14 @@ export default function PlanLibrary({ onPlanSelect }: Props) {
         {/* Filters */}
         <div className="ph-flex ph-gap-4 ph-mb-4">
           <div style={{ position: 'relative', flex: 1, maxWidth: 320 }}>
-            <Search size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ph-gray-400)' }} />
+            <Search size={18} style={{ position: 'absolute', left: 12, top: '48%', transform: 'translateY(-50%)', color: 'var(--ph-gray-400)' }} />
             <input
               type="text"
               placeholder="Search plans..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="ph-form-input"
-              style={{ paddingLeft: 36 }}
+              style={{ paddingLeft: 32 }}
             />
           </div>
           <select

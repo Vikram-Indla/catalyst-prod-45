@@ -62,7 +62,7 @@ export function MenuDropdown({
         padding: 4,
         display: 'flex',
         flexDirection: 'column',
-        gap: 1,
+        gap: 0,
         zIndex: 2147483646,
       }}
     >
@@ -123,9 +123,9 @@ export function MenuItem({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '6px 10px',
+        padding: '4px 10px',
         border: 'none',
         borderRadius: 4,
         background: 'transparent',
@@ -298,7 +298,7 @@ export function MenuToggle({ on }: { on: boolean }) {
       <span
         style={{
           position: 'absolute',
-          top: 2,
+          top: 0,
           insetInlineStart: on ? 12 : 2,
           width: 10,
           height: 10,

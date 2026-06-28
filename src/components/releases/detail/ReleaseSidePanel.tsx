@@ -495,7 +495,7 @@ function ApproverRow({
           display: 'flex',
           alignItems: 'center',
           gap: 8,
-          padding: '6px 8px',
+          padding: '4px 8px',
           margin: '0 -8px',
           borderRadius: 3,
           background: hover || expanded ? HOVER_BG : 'transparent',
@@ -546,7 +546,7 @@ function StatusPill({ status }: { status: ApproverStatus }) {
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         color: TEXT,
-        padding: '2px 6px',
+        padding: '0px 6px',
         border: `1px solid ${STATUS_BORDER[status]}`,
         borderRadius: 3,
         letterSpacing: 0.3,
@@ -586,7 +586,7 @@ function ApproverExpandPanel({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: TEXT }}>Description</span>
         {editing ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
             <textarea
               ref={taRef}
               value={draft}
@@ -605,7 +605,7 @@ function ApproverExpandPanel({
                 color: TEXT,
               }}
             />
-            <div style={{ display: 'inline-flex', gap: 6 }}>
+            <div style={{ display: 'inline-flex', gap: 4 }}>
               <button
                 type="button"
                 aria-label="Save"
@@ -690,7 +690,7 @@ function ApproverExpandPanel({
           justifyContent: 'flex-start',
           width: 'calc(100% + 12px)',
           boxSizing: 'border-box',
-          padding: '6px 6px',
+          padding: '4px 6px',
           margin: '0 -6px',
           borderRadius: 3,
           fontSize: 'var(--ds-font-size-400)',
@@ -755,7 +755,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
         padding: 8,
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
+        gap: 4,
         maxHeight: 360,
       }}
     >
@@ -763,8 +763,8 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '6px 10px',
+          gap: 4,
+          padding: '4px 10px',
           border: `2px solid ${focused ? BLUE : BORDER}`,
           borderRadius: 3,
           background: 'var(--ds-surface)',
@@ -808,8 +808,8 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
                   cursor: isSelected ? 'default' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
-                  padding: '6px 10px',
+                  gap: 8,
+                  padding: '4px 10px',
                   borderRadius: 3,
                   opacity: isSelected ? 0.5 : 1,
                   background: isSelected ? BLUE_BG : 'transparent',
@@ -1068,7 +1068,7 @@ function DateField({
           style={{
             all: 'unset',
             cursor: 'pointer',
-            padding: '2px 6px',
+            padding: '0px 6px',
             margin: '-2px -6px',
             borderRadius: 3,
             fontSize: 'var(--ds-font-size-400)',
@@ -1168,7 +1168,7 @@ function ProjectField({
         style={{
           all: 'unset',
           cursor: 'pointer',
-          padding: '2px 6px',
+          padding: '0px 6px',
           margin: '-2px -6px',
           borderRadius: 3,
           fontSize: 'var(--ds-font-size-400)',
@@ -1244,7 +1244,7 @@ function ProjectField({
                     gap: 8,
                     width: '100%',
                     boxSizing: 'border-box',
-                    padding: '6px 12px',
+                    padding: '4px 12px',
                     background: isSelected ? BLUE_BG : 'transparent',
                     color: isSelected ? BLUE_TEXT : TEXT,
                     fontSize: 'var(--ds-font-size-300)',
@@ -1296,12 +1296,12 @@ function ContributorsField({
           {contributors.length > 3 && (
             <span
               style={{
-                marginLeft: 6,
+                marginLeft: 4,
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: TEXT,
                 background: 'var(--ds-background-neutral)',
-                padding: '1px 8px',
+                padding: '0px 8px',
                 borderRadius: 3,
                 minWidth: 18,
                 textAlign: 'center',
@@ -1362,7 +1362,7 @@ function DescriptionField({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: TEXT }}>Description</span>
       {editing ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
           <textarea
             ref={taRef}
             value={draft}
@@ -1381,7 +1381,7 @@ function DescriptionField({
               color: TEXT,
             }}
           />
-          <div style={{ display: 'inline-flex', gap: 6 }}>
+          <div style={{ display: 'inline-flex', gap: 4 }}>
             <button
               type="button"
               aria-label="Save"

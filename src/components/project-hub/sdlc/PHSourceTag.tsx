@@ -16,7 +16,7 @@ export function PHSourceTag({ source }: Props) {
       style={{
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
-        padding: '1px 5px',
+        padding: '0px 5px',
         borderRadius: 4,
         letterSpacing: '0.5px',
         background: isJira ? 'var(--cp-blue-wash)' : 'var(--sem-success-bg)',

@@ -13,7 +13,7 @@ export const TableHeader: React.FC<{
 }> = ({ children, width, center }) => (
   <th
     style={{
-      padding: '14px 20px',
+      padding: '12px 20px',
       textAlign: center ? 'center' : 'left',
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,

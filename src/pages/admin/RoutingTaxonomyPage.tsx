@@ -158,7 +158,7 @@ export default function RoutingTaxonomyPage() {
 
       <div style={{ marginTop: 32, padding: 16, background: token('color.background.neutral', 'var(--ds-surface-sunken)'), borderRadius: 4 }}>
         <Heading size="small">Scanner rules</Heading>
-        <ul style={{ margin: '8px 0', paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
+        <ul style={{ margin: '8px 0', paddingLeft: 16, fontSize: 13, lineHeight: 1.8 }}>
           <li><strong>RT-001</strong> — Route paths must use kebab-case (no camelCase segments)</li>
           <li><strong>RT-002</strong> — Tabs must be route segments, not query params</li>
           <li><strong>RT-003</strong> — Jira URLs must come from ph_jira_connection (no hardcoded URLs)</li>

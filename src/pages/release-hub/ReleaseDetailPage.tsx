@@ -250,7 +250,7 @@ export function ReleaseDetailPage({
 
   return (
     <div style={{ display: 'flex', alignItems: 'stretch', height: '100%', minHeight: 0, overflow: 'hidden', paddingRight: sidebarCollapsed ? 20 : 0 }}>
-      <div style={{ flex: 1, minWidth: 0, height: '100%', overflowY: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ flex: 1, minWidth: 0, height: '100%', overflowY: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Breadcrumb — canonical TicketBreadcrumbs. itemType + projectHref
           come from EntityConfig so sprint surface reads "Sprint / Iteration"
           and links back to /project-hub/:key/sprints. */}
@@ -285,7 +285,7 @@ export function ReleaseDetailPage({
                 color: TEXT,
                 fontFamily: 'inherit',
                 lineHeight: 1.2,
-                padding: '2px 6px',
+                padding: '0px 6px',
                 border: `2px solid ${LINK}`,
                 borderRadius: 3,
                 outline: 'none',
@@ -447,7 +447,7 @@ export function ReleaseDetailPage({
             cursor: 'pointer',
             position: 'absolute',
             top: 24,
-            left: '50%',
+            left: '48%',
             transform: 'translateX(-50%)',
             width: 24,
             height: 24,

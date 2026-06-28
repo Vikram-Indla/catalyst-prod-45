@@ -101,7 +101,7 @@ export function TicketPicker({ query, coords, onSelect, onDismiss }: Props) {
             alignItems: 'center',
             gap: 8,
             width: '100%',
-            padding: '6px 8px',
+            padding: '4px 8px',
             border: 'none',
             background: idx === activeIdx
               ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'

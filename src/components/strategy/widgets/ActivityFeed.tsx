@@ -53,7 +53,7 @@ export function ActivityFeed() {
           key={i}
           className="flex gap-3"
           style={{
-            padding: '10px 4px',
+            padding: '8px 4px',
             borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))' : 'none',
             transition: 'background 120ms',
             borderRadius: 6,
@@ -75,7 +75,7 @@ export function ActivityFeed() {
             <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-secondary)', lineHeight: 1.5 }}>
               {item.text}
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-text-tertiary)', marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-text-tertiary)', marginTop: 0 }}>
               {item.time}
             </div>
           </div>

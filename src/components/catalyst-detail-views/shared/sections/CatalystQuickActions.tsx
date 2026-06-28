@@ -165,7 +165,7 @@ export function CatalystQuickActions({
   };
 
   return (
-    <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+    <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
       {/* + icon chip — Jira-parity naked icon (no "Add" label). */}
       <div ref={menuRef} style={{ position: 'relative' }}>
         <button
@@ -186,7 +186,7 @@ export function CatalystQuickActions({
             role="menu"
             aria-label="Add options"
             style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4,
+            position: 'absolute', left: 0, top: 32, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4,
             boxShadow: 'var(--ds-text, rgba(30,31,33,0.15)) 0px 8px 12px, var(--ds-text, rgba(30,31,33,0.31)) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
             animation: 'cv-slide-down 0.15s ease-out',
@@ -199,7 +199,7 @@ export function CatalystQuickActions({
                   alignItems: 'center',
                   border: `${searchBorderWidth}px solid ${searchBorderColor}`,
                   borderRadius: 3,
-                  padding: '1px 0',
+                  padding: '0px 0',
                   boxSizing: 'border-box',
                   transition: 'border-color 0.15s, border-width 0.15s',
                 }}
@@ -213,7 +213,7 @@ export function CatalystQuickActions({
                   style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 'var(--ds-font-size-400)', color: textColor, width: '100%', height: 28, fontFamily: 'inherit' }}
                 />
                 {search && (
-                  <button onClick={() => setSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: textColor, display: 'flex', padding: 0, marginRight: 6, alignItems: 'center' }}>
+                  <button onClick={() => setSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: textColor, display: 'flex', padding: 0, marginRight: 4, alignItems: 'center' }}>
                     <CrossIcon size="small" primaryColor={textColor} />
                   </button>
                 )}

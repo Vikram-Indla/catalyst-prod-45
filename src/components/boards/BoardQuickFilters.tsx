@@ -12,7 +12,7 @@ export default function BoardQuickFilters() {
   const { activeQuickFilter, setActiveQuickFilter } = useBoardStore();
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 8 }}>
       {FILTERS.map(f => {
         const active = activeQuickFilter === f.id;
         return (
