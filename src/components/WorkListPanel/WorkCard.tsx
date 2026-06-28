@@ -27,20 +27,20 @@ const statusCategoryColor: Record<
   'todo' | 'inprogress' | 'done' | 'default',
   string
 > = {
-  todo: 'var(--ds-shadow-overlay, rgba(5,21,36,0.06))', // Light grey
-  inprogress: 'var(--ds-chart-blue-bold, #669DF1)', // Blue
-  done: 'var(--ds-background-success-bold, #6A9A23)', // Green
-  default: 'var(--ds-shadow-overlay, rgba(5,21,36,0.06))',
+  todo: 'var(--ds-background-neutral)',
+  inprogress: 'var(--ds-background-information-bold)',
+  done: 'var(--ds-background-success-bold)',
+  default: 'var(--ds-background-neutral)',
 };
 
 const statusCategoryTextColor: Record<
   'todo' | 'inprogress' | 'done' | 'default',
   string
 > = {
-  todo: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark grey
-  inprogress: 'var(--ds-surface, #FFFFFF)', // White
-  done: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark
-  default: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+  todo: 'var(--ds-text)',
+  inprogress: 'var(--ds-text-inverse)',
+  done: 'var(--ds-text-inverse)',
+  default: 'var(--ds-text)',
 };
 
 export const WorkCard = memo(function WorkCard({
@@ -65,21 +65,21 @@ export const WorkCard = memo(function WorkCard({
         border: 'none',
         cursor: 'pointer',
         background: isSelected
-          ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        borderBottom: '1px solid var(--ds-border, #EBECF0)',
+          ? 'var(--ds-background-selected)'
+          : 'var(--ds-surface)',
+        borderBottom: '1px solid var(--ds-border)',
         textAlign: 'left',
         transition: 'background 150ms',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.background = isSelected
-          ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface-hovered, var(--cp-bg-sunken, #F4F5F7))';
+          ? 'var(--ds-background-selected)'
+          : 'var(--ds-surface-hovered)';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = isSelected
-          ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+          ? 'var(--ds-background-selected)'
+          : 'var(--ds-surface)';
       }}
     >
       {/* First line: Type icon + Key + Status */}
@@ -97,7 +97,7 @@ export const WorkCard = memo(function WorkCard({
           style={{
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            color: 'var(--ds-link, #0055CC)',
+            color: 'var(--ds-link)',
             fontFamily: 'var(--cp-font-mono)',
             flexShrink: 0,
           }}
@@ -133,7 +133,7 @@ export const WorkCard = memo(function WorkCard({
         style={{
           fontSize: 'var(--ds-font-size-300)',
           fontWeight: 400,
-          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          color: 'var(--ds-text)',
           lineHeight: '16px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -149,7 +149,7 @@ export const WorkCard = memo(function WorkCard({
         <div
           style={{
             fontSize: 'var(--ds-font-size-100)',
-            color: 'var(--ds-text-subtlest, #626F86)',
+            color: 'var(--ds-text-subtlest)',
             lineHeight: '14px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -160,7 +160,7 @@ export const WorkCard = memo(function WorkCard({
           Parent:{' '}
           <span
             style={{
-              color: 'var(--ds-link, #0055CC)',
+              color: 'var(--ds-link)',
               fontWeight: 500,
               fontFamily: 'var(--cp-font-mono)',
             }}

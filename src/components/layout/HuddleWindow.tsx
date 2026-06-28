@@ -232,6 +232,8 @@ export function HuddleWindow() {
 
   if (!active || windowState === 'minimized') return null;
   const maximized = windowState === 'maximized';
+  // ads-scanner:ignore-next-line — video stage requires true-black bg, no ADS token
+  const VIDEO_BG = '#000';
 
   const frameStyle: React.CSSProperties = maximized
     ? { position: 'fixed', inset: 16, zIndex: 120 }
@@ -283,11 +285,9 @@ export function HuddleWindow() {
           <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 12, padding: 12 }}>
             {/* sharing → screen takes the full left; nobody sharing → participant tiles centered */}
             {screenVisible ? (
-              {/* ads-scanner:ignore-next-line — video stage requires true-black bg, no ADS token */}
-              <div style={{ flex: 1, minWidth: 0, position: 'relative', background: '#000', borderRadius: 12, overflow: 'hidden', display: 'flex' }}>
-                {/* ads-scanner:ignore-next-line — video element requires true-black bg */}
+              <div style={{ flex: 1, minWidth: 0, position: 'relative', background: VIDEO_BG, borderRadius: 12, overflow: 'hidden', display: 'flex' }}>
                 <video ref={videoRef} autoPlay playsInline muted
-                  style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }} />
+                  style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: VIDEO_BG, display: 'block', minHeight: 0 }} />
                 <canvas ref={canvasRef}
                   onPointerDown={onCanvasDown} onPointerMove={onCanvasMove} onPointerUp={onCanvasUp} onPointerCancel={onCanvasUp}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
