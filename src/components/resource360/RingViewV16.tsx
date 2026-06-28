@@ -670,33 +670,34 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     background: statusColors.dot,
                   }} />
 
-                  <div style={{ padding: '8px 10px 10px 13px' }}>
+                  <div style={{ padding: '8px 10px 10px 13px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                     {/* Row 1: Jira icon + type + priority */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 6px', borderRadius: 4, background: typeBadge.bg }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, minWidth: 0 }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 6px', borderRadius: 4, background: typeBadge.bg, flexShrink: 0 }}>
                         {getJiraIconForType(item.type)}
                         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: typeBadge.color, textTransform: 'uppercase' }}>{item.type}</span>
                       </div>
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-3)', textTransform: 'capitalize', flexShrink: 0 }}>{item.priority}</span>
                     </div>
 
                     {/* Row 2: key + project tag + age */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)' }}>{item.key}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4, minWidth: 0 }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', flexShrink: 0 }}>{item.key}</span>
                       {item.projectKey && (
                         <span style={{
                           fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 5px', borderRadius: 4,
                           background: projColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', letterSpacing: '0.02em',
+                          flexShrink: 0,
                         }}>{item.projectKey}</span>
                       )}
-                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>{age}d</span>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto', flexShrink: 0 }}>{age}d</span>
                     </div>
 
                     {/* Title: 2-line clamp */}
                     <div style={{
                       fontSize: 12.5, fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.35,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden', marginBottom: 4, minHeight: 28,
+                      overflow: 'hidden', marginBottom: 4, minHeight: 28, minWidth: 0,
                     }}>{item.title}</div>
 
                     {/* Status pill — inline colors */}
