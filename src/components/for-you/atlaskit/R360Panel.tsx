@@ -27,7 +27,6 @@ import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelDat
 import { useAuth } from '@/lib/auth';
 import { useTeamPulseManagedTeam } from '@/hooks/useTeamPulse';
 import R360MemberDetail from '@/pages/R360MemberDetail';
-import { CatyWorkloadRisk } from './CatyWorkloadRisk';
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -469,7 +468,6 @@ export default function R360Panel() {
       ) : null}
 
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface)') }}>
-        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded
