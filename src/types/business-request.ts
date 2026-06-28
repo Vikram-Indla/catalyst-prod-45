@@ -28,12 +28,35 @@ export const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: 'Innovation Platform', label: 'Innovation Platform' },
 ];
 
-/** Planned-release quarters — product backlog inline-edit multi-select. */
-export const PLANNED_QUARTER_OPTIONS: { value: string; label: string }[] = [
-  { value: 'Q1 2026', label: 'Q1 2026' }, { value: 'Q2 2026', label: 'Q2 2026' },
-  { value: 'Q3 2026', label: 'Q3 2026' }, { value: 'Q4 2026', label: 'Q4 2026' },
-  { value: 'Q1 2027', label: 'Q1 2027' }, { value: 'Q2 2027', label: 'Q2 2027' },
-];
+/**
+ * Planned-release quarters — product backlog inline-edit multi-select.
+ *
+ * Generated from the current quarter forward, spanning the next three years
+ * (12 quarters), floored at 2026. Computed once at module load so the option
+ * window rolls forward as time passes instead of going stale. Example today
+ * (Q2 2026): Q2 2026 → Q1 2029.
+ */
+export function buildPlannedQuarterOptions(
+  count = 12,
+  from: Date = new Date(),
+): { value: string; label: string }[] {
+  // Floor at 2026: before then, start at Q1 2026; otherwise the live quarter.
+  const inEra = from.getFullYear() >= 2026;
+  let year = inEra ? from.getFullYear() : 2026;
+  let q = inEra ? Math.floor(from.getMonth() / 3) + 1 : 1;
+
+  const out: { value: string; label: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const label = `Q${q} ${year}`;
+    out.push({ value: label, label });
+    q += 1;
+    if (q > 4) { q = 1; year += 1; }
+  }
+  return out;
+}
+
+export const PLANNED_QUARTER_OPTIONS: { value: string; label: string }[] =
+  buildPlannedQuarterOptions();
 
 /**
  * Strategic themes — Notion ⭐ Features (18 values, mostly Arabic).
