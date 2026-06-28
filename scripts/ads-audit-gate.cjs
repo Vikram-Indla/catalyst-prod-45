@@ -43,7 +43,7 @@ function parseCounts(out) {
   for (const cat of CATEGORIES) {
     // Final breakdown lines look like:  "  ❌ tokens: 28913 violations"
     //                                   "  ✅ fontImports: 0 violations"
-    const m = out.match(new RegExp(`${cat}:\\s*(\\d+)\\s*violations`));
+    const m = out.match(new RegExp(`${cat}:\\s*(\\d+)\\s*violations?`));
     if (!m) return null;
     counts[cat] = parseInt(m[1], 10);
   }
