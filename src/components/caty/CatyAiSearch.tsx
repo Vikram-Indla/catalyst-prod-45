@@ -78,7 +78,7 @@ export function CatyAiSearch({
         border: `1px solid var(--ds-border)`,
         borderRadius: 8,
         transition: "all 120ms ease",
-        fontFamily: "var(--cp-font-body)",
+        fontFamily: "var(--ds-font-family)",
         boxShadow: focused ? `0 0 0 2px var(--ds-border-focused)` : "none",
       }}
     >
