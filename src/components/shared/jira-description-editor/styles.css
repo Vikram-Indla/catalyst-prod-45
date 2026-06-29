@@ -235,12 +235,13 @@
   border-radius: 3px;
   font-size: 13px;
   color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   box-sizing: border-box;
 }
 
 .jde-link-input:focus {
   border-color: var(--ds-background-information-bold);
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .jde-btn-primary {
@@ -311,7 +312,7 @@
 }
 
 .jde-content .ProseMirror {
-  outline: 2px solid var(--ds-border-focused);
+  outline: none; /* jde-root:focus-within handles focus ring on the outer wrapper */
   font-size: 14px;
   line-height: 1.714;
   color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
