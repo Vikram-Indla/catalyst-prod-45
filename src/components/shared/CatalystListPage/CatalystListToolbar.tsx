@@ -42,6 +42,8 @@ interface CatalystListToolbarProps {
   onClearAll?: () => void;
   /** Extra action nodes rendered after Clear all (e.g., Export CSV button). */
   actions?: React.ReactNode;
+  /** No outer padding — for embedding inside another row (e.g., tab bar). */
+  compact?: boolean;
 }
 
 export function CatalystListToolbar({
@@ -52,6 +54,7 @@ export function CatalystListToolbar({
   hasActiveFilters = false,
   onClearAll,
   actions,
+  compact = false,
 }: CatalystListToolbarProps) {
   return (
     <div
@@ -60,7 +63,7 @@ export function CatalystListToolbar({
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: 8,
-        padding: '4px 24px',
+        padding: compact ? '0' : '4px 24px',
         flexShrink: 0,
       }}
     >

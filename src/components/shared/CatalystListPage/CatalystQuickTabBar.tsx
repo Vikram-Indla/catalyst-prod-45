@@ -23,6 +23,8 @@ interface CatalystQuickTabBarProps {
   onTabChange: (tabId: string) => void;
   /** Slot for right-side actions — e.g., a primary "Create" button. */
   actions?: React.ReactNode;
+  /** When true, actions slot takes all remaining flex space (for embedded toolbars). */
+  actionsStretch?: boolean;
 }
 
 export function CatalystQuickTabBar({
@@ -30,6 +32,7 @@ export function CatalystQuickTabBar({
   activeTab,
   onTabChange,
   actions,
+  actionsStretch = false,
 }: CatalystQuickTabBarProps) {
   return (
     <div
@@ -69,7 +72,7 @@ export function CatalystQuickTabBar({
         );
       })}
       {actions && (
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ marginLeft: 'auto', ...(actionsStretch ? { flex: 1 } : {}) }}>
           {actions}
         </div>
       )}

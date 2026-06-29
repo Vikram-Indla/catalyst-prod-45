@@ -87,11 +87,25 @@ export function CatalystListPageLayout({
           tabs={tabs}
           activeTab={activeTab ?? tabs[0]?.id ?? ''}
           onTabChange={onTabChange}
-          actions={tabBarActions}
+          actionsStretch={!!showToolbar}
+          actions={
+            showToolbar ? (
+              <CatalystListToolbar
+                compact
+                search={search}
+                searchPlaceholder={searchPlaceholder}
+                onSearchChange={onSearchChange}
+                filters={toolbarFilters}
+                hasActiveFilters={hasActiveFilters}
+                onClearAll={onClearAllFilters}
+                actions={<>{toolbarActions}{tabBarActions}</>}
+              />
+            ) : tabBarActions
+          }
         />
       ) : null}
 
-      {showToolbar && (
+      {showToolbar && !showTabBar && (
         <CatalystListToolbar
           search={search}
           searchPlaceholder={searchPlaceholder}
@@ -100,7 +114,7 @@ export function CatalystListPageLayout({
           hasActiveFilters={hasActiveFilters}
           onClearAll={onClearAllFilters}
           actions={
-            tabBarActions && !showTabBar
+            tabBarActions
               ? <>{toolbarActions}{tabBarActions}</>
               : toolbarActions
           }
