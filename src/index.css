@@ -3321,14 +3321,14 @@ select:focus-visible,
 }
 
 /* ── Kill inner focus rectangle on ALL inputs/textareas globally ──
-   The container (border: 2px solid var(--ds-background-information-bold, #0C66E4)) provides the focus indicator.
-   Browser default outline + box-shadow creates an ugly inner rectangle. */
+   The container (AK Select/DatePicker wrapper) provides the focus indicator.
+   Suppress outline on the nested <input> so it doesn't render as an inner blue box. */
 input:focus,
 input:focus-visible,
 input:focus-within,
 textarea:focus,
 textarea:focus-visible {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none !important;
   box-shadow: none !important;
 }
 
@@ -3590,12 +3590,15 @@ button,
 }
 
 /* === FOCUS VISIBLE ENHANCEMENT === */
-*:focus-visible {
-  outline: 2px solid hsl(var(--primary));
+/* Exclude input/textarea/select — they have their own rules at line ~3313.
+   Applying *:focus-visible to them hits the inner <input> inside AK/Radix
+   component wrappers and renders a blue rectangle inside the field. */
+*:not(input):not(textarea):not(select):focus-visible {
+  outline: 2px solid var(--ds-border-focused);
   outline-offset: 2px;
 }
 
-*:focus:not(:focus-visible) {
+*:not(input):not(textarea):not(select):focus:not(:focus-visible) {
   outline: none;
 }
 
