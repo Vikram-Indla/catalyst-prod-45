@@ -6,6 +6,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 
 interface Feature {
   id: string;
@@ -40,6 +41,7 @@ export function FeaturesKanbanView({ features, onFeatureSelect, onRefetch }: Fea
 
     const featureId = result.draggableId;
     const newStatus = result.destination.droppableId;
+    const fromStatus = features.find((f) => f.id === featureId)?.status ?? null;
 
     try {
       const { error } = await supabase
@@ -51,6 +53,11 @@ export function FeaturesKanbanView({ features, onFeatureSelect, onRefetch }: Fea
 
       catalystToast.success('Feature status updated');
       onRefetch();
+      recordAdvisoryStatusChange({
+        entityKey: 'feature', entityId: featureId,
+        fromStatusRaw: fromStatus, toStatusRaw: newStatus,
+        projectKey: null, sourceSurface: 'kanban_drag',
+      }).catch(() => {});
     } catch (error) {
       console.error('Error updating feature status:', error);
       catalystToast.error('Failed to update feature status');

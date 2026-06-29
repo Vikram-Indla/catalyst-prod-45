@@ -1,6 +1,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import type { ProductMilestoneWithProgress } from '@/types/product-milestone';
 
 export interface MilestoneCardProps {
@@ -22,7 +23,14 @@ const HEALTH_LABEL = {
   off_track: 'Off track',
 } as const;
 
-const STATUS_APPEARANCE: Record<string, string> = {
+const CATEGORY_APPEARANCE: Record<string, string> = {
+  todo: 'default',
+  in_progress: 'inprogress',
+  done: 'success',
+};
+
+// Fallback when no canonical version is published
+const STATUS_APPEARANCE_FALLBACK: Record<string, string> = {
   planned: 'default',
   in_progress: 'inprogress',
   at_risk: 'moved',
@@ -37,8 +45,24 @@ function fmt(d: string | null | undefined): string {
 }
 
 export function MilestoneCard({ milestone, onClick, onEdit, onDelete }: MilestoneCardProps) {
+  const canonical = useCanonicalIssueWorkflow('product_milestone');
+
+  const statusLabel: string = (() => {
+    if (canonical.isCanonical) return canonical.labelForStatus(milestone.status) || milestone.status || '—';
+    return milestone.status ?? '—';
+  })();
+
+  const statusAppearance: string = (() => {
+    if (canonical.isCanonical) {
+      const label = canonical.labelForStatus(milestone.status);
+      for (const group of canonical.statusGroups) {
+        if (group.statuses.includes(label)) return CATEGORY_APPEARANCE[group.category] ?? 'default';
+      }
+    }
+    return STATUS_APPEARANCE_FALLBACK[milestone.status ?? ''] ?? 'default';
+  })();
+
   const healthAppearance = HEALTH_APPEARANCE[milestone.healthStatus] ?? 'default';
-  const statusAppearance = STATUS_APPEARANCE[milestone.status] ?? 'default';
 
   return (
     <div
@@ -74,7 +98,7 @@ export function MilestoneCard({ milestone, onClick, onEdit, onDelete }: Mileston
 
       {/* Status + health */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <Lozenge appearance={statusAppearance as any}>{milestone.status ?? '—'}</Lozenge>
+        <Lozenge appearance={statusAppearance as any}>{statusLabel}</Lozenge>
         <Lozenge appearance={healthAppearance}>{HEALTH_LABEL[milestone.healthStatus] ?? milestone.healthStatus}</Lozenge>
       </div>
 
