@@ -274,7 +274,7 @@
   letter-spacing: -0.02em;
   padding: 0px 4px;
   border-radius: var(--idp-r-sm);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   cursor: text;
   flex: 1;
   line-height: 1.3;
@@ -584,7 +584,7 @@
   border-radius: var(--idp-r-md);
   font-size: 13px;
   font-family: var(--idp-font-body);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   margin-bottom: 4px;
   box-sizing: border-box;
 }
@@ -644,7 +644,7 @@
   background: transparent;
   cursor: pointer;
   padding: 0;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 
 /* Progress */
@@ -711,7 +711,7 @@
   font-size: 13px;
   font-family: var(--idp-font-body);
   line-height: 1.6;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   resize: vertical;
   box-sizing: border-box;
   color: var(--idp-ink-secondary);
@@ -787,7 +787,7 @@
   font-size: 13px;
   font-family: var(--idp-font-body);
   line-height: 1.6;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   resize: vertical;
   box-sizing: border-box;
   color: var(--idp-ink-secondary);
@@ -817,7 +817,7 @@
   border-radius: var(--idp-r-md);
   font-size: 13px;
   font-family: var(--idp-font-body);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   box-sizing: border-box;
   color: var(--idp-ink);
 }
@@ -1230,7 +1230,7 @@
   border-radius: var(--idp-r-md);
   font-size: 13px;
   font-family: var(--idp-font-body);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   box-sizing: border-box;
   color: var(--idp-ink);
 }
@@ -1242,7 +1242,7 @@
   border-radius: var(--idp-r-md);
   font-size: 13px;
   font-family: var(--idp-font-body);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   box-sizing: border-box;
   min-height: 64px;
   resize: vertical;
@@ -1257,7 +1257,7 @@
   height: 6px;
   background: var(--idp-surface-tertiary);
   border-radius: 4px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   cursor: pointer;
 }
 [data-module="initiative-detail-panel"] input[type="range"]::-webkit-slider-thumb {

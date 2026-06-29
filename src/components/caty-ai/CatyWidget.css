@@ -1479,7 +1479,7 @@
   font-family: var(--caty-font-sans);
   font-size: 0.9375rem;
   color: var(--caty-text-primary);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   padding: 12px 0;
   line-height: 1.5;
 }

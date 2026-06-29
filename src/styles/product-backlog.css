@@ -284,7 +284,7 @@
   background: var(--cp-input-bg);
   border: 1px solid var(--cp-input-border);
   border-radius: var(--cp-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all var(--cp-duration-fast) var(--cp-easing-standard);
 }
 .pb-search input::placeholder {
@@ -680,7 +680,7 @@
   font-size: 12px;
   border: 1px solid var(--cp-border-default);
   border-radius: var(--cp-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   color: var(--cp-text-primary);
 }
 
@@ -1074,7 +1074,7 @@
   background: var(--cp-bg-surface);
   border: 1px solid var(--cp-border-default);
   border-radius: var(--cp-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all var(--cp-duration-fast) var(--cp-easing-standard);
   color: var(--cp-text-primary);
 }

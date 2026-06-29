@@ -189,7 +189,7 @@
   background: var(--pk-surface);
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-r-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all 0.15s;
 }
 .pk-search-input::placeholder { color: var(--pk-ink-muted); }

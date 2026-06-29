@@ -224,7 +224,7 @@
   font-size: 14px;
   color: var(--ds-text);
   background: var(--ds-surface);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 .ascp-hint__input:focus {
   border-color: var(--ds-border-focused);

@@ -177,7 +177,7 @@
   background: var(--pc-surface);
   border: 1px solid var(--pc-border);
   border-radius: var(--pc-r-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .pc-search-input::placeholder { color: var(--pc-ink-muted); }

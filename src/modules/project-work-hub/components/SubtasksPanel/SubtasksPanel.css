@@ -271,7 +271,7 @@
   background: var(--ds-background-selected, #E9F2FF);
 }
 .sp-ak-table tr.sp-row--focused > td {
-  outline: 2px solid var(--ds-border-focused, #4C9AFF);
+  outline: 2px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 
@@ -440,9 +440,9 @@
   max-width: 400px;
   height: 32px;
   padding: 0 8px;
-  border: 2px solid var(--ds-border-focused, #4C9AFF);
+  border: 2px solid var(--ds-border-focused);
   border-radius: 3px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   font-size: 14px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
@@ -712,7 +712,7 @@
   flex: 1;
   height: 24px;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: transparent;

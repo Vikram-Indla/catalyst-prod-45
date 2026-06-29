@@ -446,7 +446,7 @@
   color: var(--ds-text);
   background: transparent !important;
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   box-shadow: none !important;
   border-radius: 0 !important;
   -webkit-appearance: none !important;
@@ -1346,7 +1346,7 @@
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all 0.15s ease;
 }
 
@@ -1649,7 +1649,7 @@
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all 0.15s ease;
 }
 

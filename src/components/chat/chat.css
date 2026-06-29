@@ -478,7 +478,7 @@
 .cc-composer-input {
   width: 100%;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   resize: none;
   padding: 12px 12px 8px;
   font-size: 14px;
@@ -704,7 +704,7 @@
 .cc-msg__editor-input {
   width: 100%;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: transparent;
   font-size: 14px;
   font-family: inherit;
@@ -1164,7 +1164,7 @@
   font-size: 13px;
   color: var(--ds-text, #172B4D);
   font-family: inherit;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: border-color 0.15s;
 }
 .cc-cl-search__inp-field:focus {

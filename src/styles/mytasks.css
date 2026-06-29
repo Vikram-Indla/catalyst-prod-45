@@ -255,7 +255,7 @@
   background: transparent;
   font-size: 14px;
   color: var(--ds-text);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   font-family: inherit;
 }
 

@@ -159,7 +159,7 @@
   margin: 0;
   padding: 0 0 0 6px; /* small inset so cursor/text don't sit flush against the icon gap */
   border: 0;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: transparent;
   box-shadow: none;
   font: inherit;

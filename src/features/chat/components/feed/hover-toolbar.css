@@ -86,7 +86,7 @@
   line-height: 20px;
   background: var(--c-chat-surface-sunken);
   color: var(--c-chat-text);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   margin-bottom: 8px;
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
 }
@@ -304,7 +304,7 @@
   line-height: 20px;
   background: var(--c-chat-surface-sunken);
   color: var(--c-chat-text);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
 }
 

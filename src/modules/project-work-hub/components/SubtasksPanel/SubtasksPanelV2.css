@@ -11,7 +11,7 @@
 
 /* ─── Row focus ring (keyboard navigation) ─── */
 .sp-panel--v2 .sp-row--v2 {
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 .sp-panel--v2 .sp-row--v2:focus-visible,
 .sp-panel--v2 .sp-row--focused {

@@ -400,7 +400,7 @@
   font-family: var(--cp-font-body);
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 [data-sdm-scope] .sdm-create-input:focus {
@@ -601,7 +601,7 @@
   font-family: var(--cp-font-body);
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 [data-sdm-scope] .sdm-popover-input:focus {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -757,7 +757,7 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B778C' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 [data-sdm-scope] .sdm-ai-select:focus {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -773,7 +773,7 @@
   font-family: var(--cp-font-body);
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 [data-sdm-scope] .sdm-ai-focus-input::placeholder { color: var(--ds-text-disabled); }
 [data-sdm-scope] .sdm-ai-focus-input:focus {
