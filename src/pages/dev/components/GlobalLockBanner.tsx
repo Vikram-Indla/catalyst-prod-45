@@ -6,7 +6,8 @@
  */
 
 import React from 'react';
-import { Box, Heading, Inline, Stack } from '@atlaskit/primitives';
+import { Box, Inline, Stack } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 
 interface GlobalLockBannerProps {
   owner: string;

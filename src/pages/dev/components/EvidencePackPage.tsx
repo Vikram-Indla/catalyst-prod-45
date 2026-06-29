@@ -16,7 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import Tabs, { TabList, TabPanel, Tab } from '@atlaskit/tabs';
 import Button, { IconButton } from '@atlaskit/button';
 import Badge from '@atlaskit/badge';
-import { Heading, Inline, Stack, Box } from '@atlaskit/primitives';
+import { Inline, Stack, Box } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 import { GenerateEpicsModal } from './GenerateEpicsModal';
 
 interface EvidencePackPageProps {

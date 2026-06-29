@@ -3596,7 +3596,7 @@ button,
 }
 
 *:focus:not(:focus-visible) {
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 
 /* NOTE: Tooltips already animate via Tailwind classes in TooltipContent.

@@ -164,7 +164,7 @@
   padding: 0 14px;
   position: relative;
   transition: color 0.1s, border-bottom-color 0.1s;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 
 .cc-mode-tab:hover:not(.cc-mode-tab--active) {
@@ -222,7 +222,10 @@
   text-align: left;
 }
 
-.cc-conv:hover,
+.cc-conv:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+}
+
 .cc-conv:focus-visible {
   background: var(--ds-background-neutral-subtle-hovered);
   outline: 2px solid var(--ds-border-focused);
@@ -522,7 +525,7 @@
 .cc-dir__search-input {
   flex: 1;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: transparent;
   font-size: 13px;
   color: var(--ds-text);

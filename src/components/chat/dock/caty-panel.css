@@ -414,7 +414,12 @@
   font-size: 13px;
   background: var(--ds-surface);
   color: var(--ds-text);
+  outline: none;
+}
+
+.cp-epic-prompt__input:focus-visible {
   outline: 2px solid var(--ds-border-focused);
+  outline-offset: 0;
 }
 
 .cp-epic-prompt__input:focus {
@@ -465,7 +470,7 @@
 .cp-input-box__textarea {
   width: 100%;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: transparent;
   resize: none;
   font-size: 13px;

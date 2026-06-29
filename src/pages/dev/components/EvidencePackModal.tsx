@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import { Checkbox } from '@atlaskit/checkbox';
 import Button from '@atlaskit/button';
-import { Heading } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 import Tabs, { TabList, TabPanel, Tab } from '@atlaskit/tabs';
 import Badge from '@atlaskit/badge';
 

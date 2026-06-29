@@ -82,7 +82,7 @@ export function MilestoneManager({ productCode }: MilestoneManagerProps) {
     <div style={{ padding: '24px 24px 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
-          <Heading level="h700">Milestones</Heading>
+          <Heading size="xlarge">Milestones</Heading>
           <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)' }}>
             {product.name} · product delivery milestones
           </p>
