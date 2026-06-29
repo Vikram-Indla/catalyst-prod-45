@@ -712,8 +712,8 @@ function renderMenuItem(
           style={{
             position: 'absolute',
             left: 0,
-            top: '4px',
-            bottom: '4px',
+            top: '6px',
+            bottom: '6px',
             width: '3px',
             background: item.accentColor,
             borderRadius: '0 3px 3px 0',
@@ -733,8 +733,8 @@ function renderMenuItem(
           style={{
             position: 'absolute',
             left: 0,
-            top: '4px',
-            bottom: '4px',
+            top: '6px',
+            bottom: '6px',
             width: '3px',
             background: 'var(--ds-text-selected)',
             borderRadius: '0 3px 3px 0',
@@ -748,8 +748,8 @@ function renderMenuItem(
           style={{
             position: 'absolute',
             left: 0,
-            top: '4px',
-            bottom: '4px',
+            top: '6px',
+            bottom: '6px',
             width: '3px',
             background: item.accentColor,
             borderRadius: '0 3px 3px 0',

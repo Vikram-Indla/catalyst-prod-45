@@ -47,8 +47,8 @@
      so any rotation angle still fully covers the visible area. */
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 48%;
-  left: 48%;
+  top: 50%;
+  left: 50%;
   /* `translate` centres the square; `rotate` is animated. Both must
      live in the same `transform` so the animation can drive the
      rotation without losing the centring. */
@@ -71,7 +71,7 @@
   position: absolute;
   /* Sits inside the 1.5px padding so it hides everything except the
      ring at the edge. */
-  inset: 0.5px;
+  inset: 1.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;

@@ -487,7 +487,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
                   <span style={{ 
                     position: 'absolute', 
                     left: '12px', 
-                    top: '48%', 
+                    top: '50%', 
                     transform: 'translateY(-50%)', 
                     color: 'var(--ct-text-muted)',
                     fontSize: '13px'

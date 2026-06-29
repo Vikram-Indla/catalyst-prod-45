@@ -1183,7 +1183,7 @@ function Dropdown({ children, style }: { children: React.ReactNode; style?: Reac
     <div
       style={{
         position: 'absolute',
-        top: '48%',
+        top: '100%',
         left: 0,
         right: 0,
         marginTop: '4px',

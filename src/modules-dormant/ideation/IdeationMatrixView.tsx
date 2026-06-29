@@ -31,9 +31,9 @@ function getBubbleColor(status: string): string {
 
 const QUADRANTS = [
   { top: 0, left: 0, label: 'QUICK WINS', bg: 'var(--ds-background-success)', labelColor: 'var(--ds-text-success, var(--cp-success))' },
-  { top: 0, left: '48%', label: 'BIG BETS', bg: 'var(--ds-background-selected)', labelColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
-  { top: '48%', left: 0, label: 'FILL-INS', bg: 'var(--ds-surface-sunken)', labelColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' },
-  { top: '48%', left: '48%', label: 'MONEY PIT', bg: 'var(--ds-background-danger)', labelColor: 'var(--ds-text-danger, var(--cp-danger))' },
+  { top: 0, left: '50%', label: 'BIG BETS', bg: 'var(--ds-background-selected)', labelColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { top: '50%', left: 0, label: 'FILL-INS', bg: 'var(--ds-surface-sunken)', labelColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' },
+  { top: '50%', left: '50%', label: 'MONEY PIT', bg: 'var(--ds-background-danger)', labelColor: 'var(--ds-text-danger, var(--cp-danger))' },
 ];
 
 export default function IdeationMatrixView({ onOpenDetail }: Props) {

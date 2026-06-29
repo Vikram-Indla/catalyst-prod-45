@@ -20,7 +20,7 @@ export default function ReportFormulaDrawer({ reportSlug }: Props) {
         <div
           style={{
             position: 'absolute',
-            top: '48%',
+            top: '100%',
             right: 0,
             marginTop: 4,
             width: 340,

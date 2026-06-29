@@ -151,7 +151,7 @@ export function FilterDropdown({
       {isOpen && (
         <div style={{
           position: 'absolute',
-          top: '48%',
+          top: '100%',
           left: 0,
           marginTop: '4px',
           minWidth: '220px',
@@ -293,7 +293,7 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
       {isOpen && (
         <div style={{
           position: 'absolute',
-          top: '48%',
+          top: '100%',
           left: 0,
           marginTop: '4px',
           minWidth: '200px',

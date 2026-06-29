@@ -13,8 +13,8 @@
   position: absolute;
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 48%;
-  left: 48%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   background: conic-gradient(
@@ -32,7 +32,7 @@
 .ascp-root.ascp-streaming::after {
   content: "";
   position: absolute;
-  inset: 0.5px;
+  inset: 1.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;

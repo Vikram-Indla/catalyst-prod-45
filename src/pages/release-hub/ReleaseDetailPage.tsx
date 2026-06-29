@@ -447,7 +447,7 @@ export function ReleaseDetailPage({
             cursor: 'pointer',
             position: 'absolute',
             top: 24,
-            left: '48%',
+            left: '50%',
             transform: 'translateX(-50%)',
             width: 24,
             height: 24,

@@ -350,7 +350,7 @@
 /* --- Timeline Bars --- */
 .roadmap-bar {
   position: absolute;
-  top: 4px;
+  top: 5px;
   height: var(--roadmap-bar-height);
   border-radius: var(--roadmap-bar-radius);
   display: flex;
@@ -413,7 +413,7 @@
 .roadmap-today-label {
   position: absolute;
   top: -20px;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   font-size: 9px;
   font-weight: 700;

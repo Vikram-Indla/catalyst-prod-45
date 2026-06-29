@@ -59,8 +59,8 @@ if (typeof document !== "undefined") {
     }
     .cv-duedate .cv-duedate-select__indicators {
       position: absolute !important;
-      right: 4px !important;
-      top: 48% !important;
+      right: 6px !important;
+      top: 50% !important;
       transform: translateY(-50%) !important;
       height: auto !important;
       display: flex !important;

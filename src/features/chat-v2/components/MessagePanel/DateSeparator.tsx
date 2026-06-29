@@ -41,7 +41,7 @@ export function DateSeparator({
           position: 'absolute',
           left: 24,
           right: 24,
-          top: '48%',
+          top: '50%',
           height: 1,
           background: 'var(--cv2-divider)',
         }}

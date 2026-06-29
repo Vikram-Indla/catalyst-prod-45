@@ -149,7 +149,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
                   onClick={() => onPick(cell.date!.toISOString())}
                   style={{
                     position: 'absolute',
-                    inset: 4,
+                    inset: 3,
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',

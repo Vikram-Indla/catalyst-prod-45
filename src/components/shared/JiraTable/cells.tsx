@@ -939,8 +939,8 @@ export function makeCommentsCell(
               aria-hidden="true"
               style={{
                 position: "absolute",
-                top: 0,
-                right: 0,
+                top: 1,
+                right: 1,
                 width: 6,
                 height: 6,
                 borderRadius: "50%",

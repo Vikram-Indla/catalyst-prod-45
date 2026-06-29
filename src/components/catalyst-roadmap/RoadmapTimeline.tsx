@@ -121,7 +121,7 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
               className="absolute bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap"
               style={{
                 top: '4px',
-                left: '48%',
+                left: '50%',
                 transform: 'translateX(-50%)',
               }}
             >
@@ -164,7 +164,7 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
                         className="absolute z-30 group"
                         style={{ 
                           left: `${dateToPosition(ms.date, timelineConfig)}%`,
-                          top: '48%',
+                          top: '50%',
                           transform: 'translate(-50%, -50%)',
                         }}
                       >

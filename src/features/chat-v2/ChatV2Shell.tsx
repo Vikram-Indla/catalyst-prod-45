@@ -918,8 +918,8 @@ function SidebarSplitter({
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: '48%',
-          left: '48%',
+          top: '50%',
+          left: '50%',
           transform: 'translate(-50%, -50%)',
           width: 3,
           height: 36,

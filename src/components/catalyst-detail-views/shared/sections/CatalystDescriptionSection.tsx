@@ -508,7 +508,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       content: attr(aria-label);
       position: absolute;
       top: calc(100% + 6px);
-      left: 48%;
+      left: 50%;
       transform: translateX(-50%);
       background: var(--ds-text, rgb(23, 43, 77));
       color: var(--ds-text-inverse);

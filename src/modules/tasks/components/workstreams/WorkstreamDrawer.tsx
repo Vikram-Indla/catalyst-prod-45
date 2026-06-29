@@ -1028,7 +1028,7 @@ const statCardStyle: React.CSSProperties = {
 
 const dropdownStyle: React.CSSProperties = {
   position: 'absolute',
-  top: '48%',
+  top: '100%',
   left: 0,
   right: 0,
   marginTop: '4px',

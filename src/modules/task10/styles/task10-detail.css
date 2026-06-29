@@ -1141,7 +1141,7 @@
 .t10-detail-reorder-toast {
   position: fixed;
   bottom: 24px;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -1321,7 +1321,7 @@
 /* Dropdown Panel */
 .t10-label-dropdown-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 10000;
   min-width: 280px;
@@ -1624,7 +1624,7 @@
 /* Dropdown Panel */
 .t10-assignee-dropdown-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 10000;
   min-width: 280px;
@@ -1824,7 +1824,7 @@
 /* Dropdown Panel */
 .t10-duedate-dropdown-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 10000;
   min-width: 300px;

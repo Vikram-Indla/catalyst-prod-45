@@ -147,8 +147,8 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
             aria-hidden="true"
             style={{
               position: 'absolute',
-              top: 8,
-              left: 12,
+              top: 10,
+              left: 14,
               color: 'var(--cv2-text-muted)',
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--cv2-fs-composer)',

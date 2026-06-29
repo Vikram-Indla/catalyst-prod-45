@@ -225,7 +225,7 @@ export function SlashCommandPalette({
       aria-label="Slash command palette"
       style={{
         position: 'absolute',
-        bottom: '48%',
+        bottom: '100%',
         left: 8,
         marginBottom: 4,
         background: 'var(--ds-surface-overlay)',

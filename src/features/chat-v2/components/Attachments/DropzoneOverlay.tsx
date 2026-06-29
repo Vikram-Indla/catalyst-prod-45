@@ -65,7 +65,7 @@ function DropzoneArt() {
       <div
         style={{
           position: 'absolute',
-          left: 4,
+          left: 6,
           top: 24,
           width: 96,
           height: 76,
@@ -87,8 +87,8 @@ function DropzoneArt() {
       <div
         style={{
           position: 'absolute',
-          right: 4,
-          top: 16,
+          right: 6,
+          top: 18,
           width: 92,
           height: 72,
           background: '#4FC3F7', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
@@ -101,8 +101,8 @@ function DropzoneArt() {
       <div
         style={{
           position: 'absolute',
-          left: '48%',
-          top: 32,
+          left: '50%',
+          top: 36,
           transform: 'translateX(-50%) rotate(-2deg)',
           width: 110,
           height: 84,
@@ -126,7 +126,7 @@ function DropzoneArt() {
           <div
             style={{
               position: 'absolute',
-              top: 4,
+              top: 6,
               right: 8,
               width: 14,
               height: 14,

@@ -1157,7 +1157,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                       className="absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[8px] font-bold shadow-sm cursor-pointer hover:scale-110 transition-transform"
                                       style={{ 
                                         left: `${pos}%`, 
-                                        top: '48%', 
+                                        top: '50%', 
                                         transform: 'translate(-50%, -50%)',
                                         backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'white',
                                         borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-milestone-pending))',

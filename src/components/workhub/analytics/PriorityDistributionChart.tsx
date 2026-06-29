@@ -51,7 +51,7 @@ export function PriorityDistributionChart({ data }: Props) {
 
         <div style={{
           position: 'absolute',
-          top: '40%', left: '48%',
+          top: '42%', left: '50%',
           transform: 'translate(-50%, -50%)',
           textAlign: 'center', pointerEvents: 'none',
         }}>
