@@ -91,7 +91,7 @@ export function MessagePanelHeader({
             background: 'transparent',
             border: 'none',
             borderRadius: 'var(--cv2-radius-sm)',
-            color: isStarred ? 'var(--cv2-accent, #FF9500)' : 'var(--cv2-text-subtle)',
+            color: isStarred ? 'var(--cv2-accent)' : 'var(--cv2-text-subtle)',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -117,7 +117,7 @@ export function MessagePanelHeader({
             border: 'none',
             color: 'var(--cv2-text-strong)',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-500)',
+            font: 'var(--ds-font-body-large)',
             fontWeight: 700,
             letterSpacing: '-0.01em',
             cursor: 'pointer',
@@ -238,7 +238,7 @@ function PanelTabBtn({
         borderBottom: active ? '2px solid var(--cv2-accent)' : '2px solid transparent',
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: active ? 700 : 500,
       }}
     >

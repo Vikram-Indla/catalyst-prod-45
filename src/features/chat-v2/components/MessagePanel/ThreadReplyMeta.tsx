@@ -71,7 +71,7 @@ export function ThreadReplyMeta({
       <span
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 600,
           color: 'var(--cv2-text-link)',
         }}
@@ -82,7 +82,7 @@ export function ThreadReplyMeta({
         <span
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text-muted)',
           }}
         >

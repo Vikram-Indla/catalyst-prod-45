@@ -91,6 +91,17 @@ export function MessageBubble({
     !!message.scheduledFor &&
     !message.deliveredAt &&
     user?.id === message.authorId;
+  // Own messages (notably pending scheduled ones) can arrive without a resolved
+  // authorName because the author profile join isn't populated yet. Since we
+  // know the author IS the logged-in user, fall back to their real auth name —
+  // this also fixes the "?" avatar, which PresenceAvatar derives from the name.
+  const authorDisplayName =
+    message.authorName ||
+    (user?.id === message.authorId
+      ? (((user?.user_metadata as Record<string, unknown> | undefined)?.full_name as
+          | string
+          | undefined) ?? user?.email ?? '')
+      : message.authorName);
   const forwardInfo = useMemo(() => {
     const adf = message.bodyAdf as Record<string, unknown> | null;
     if (!adf || typeof adf !== 'object') return null;
@@ -145,7 +156,7 @@ export function MessageBubble({
         display: 'grid',
         gridTemplateColumns: '44px 1fr',
         columnGap: 8,
-        padding: '0px var(--cv2-page-pad-x, 20px) 2px 16px',
+        padding: '0px var(--cv2-page-pad-x, 20px) var(--ds-space-050) 16px',
         marginTop: showHeader ? 'var(--cv2-group-gap, 16px)' : 'var(--cv2-intra-gap, 2px)',
         background: isPinned
           ? 'rgba(236, 178, 46, 0.08)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
@@ -168,14 +179,14 @@ export function MessageBubble({
         }}
       >
         {showHeader ? (
-          <PresenceAvatar name={message.authorName} size={36} />
+          <PresenceAvatar name={authorDisplayName} size={36} />
         ) : (
           <span
             aria-hidden="true"
             style={{
               display: 'inline-block',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-100)',
+              font: 'var(--ds-font-body-small)',
               lineHeight: '20px',
               color: 'var(--cv2-text-muted)',
               opacity: hovered ? 1 : 0,
@@ -201,7 +212,7 @@ export function MessageBubble({
                 color: 'var(--cv2-text-strong)',
               }}
             >
-              {message.authorName}
+              {authorDisplayName}
             </span>
             <span
               style={{
@@ -244,7 +255,7 @@ export function MessageBubble({
           />
         )}
         {message.editedAt && !editing && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', marginLeft: 4 }}>
+          <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)', marginLeft: 4 }}>
             (edited)
           </span>
         )}
@@ -332,7 +343,7 @@ export function MessageBubble({
             boxShadow: 'var(--cv2-shadow-modal)',
             padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
             zIndex: 'var(--cv2-modal-z, 1000)' as unknown as number,
           }}
         >
@@ -390,14 +401,14 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
       >
         <PresenceAvatar name={info.sourceAuthorName ?? 'Someone'} size={28} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ font: 'var(--ds-font-body-small)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             {info.sourceAuthorName ?? 'Someone'}
           </div>
           {info.sourceBodyText && (
             <div
               style={{
                 marginTop: 0,
-                fontSize: 'var(--ds-font-size-300)',
+                font: 'var(--ds-font-body-small)',
                 color: 'var(--cv2-text)',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
@@ -409,7 +420,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
           <div
             style={{
               marginTop: 4,
-              fontSize: 'var(--ds-font-size-200)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-muted)',
               display: 'flex',
               alignItems: 'center',
@@ -436,7 +447,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
                 color: 'var(--cv2-accent)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                fontSize: 'var(--ds-font-size-200)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 600,
               }}
             >

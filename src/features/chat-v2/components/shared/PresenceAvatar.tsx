@@ -25,7 +25,7 @@ function hashHue(seed: string): number {
 
 export function PresenceAvatar({ name, size = 36, presence = null, displayLabel }: PresenceAvatarProps) {
   const dotSize = Math.max(8, Math.round(size * 0.28));
-  const fallbackBg = `hsl(${hashHue(name)} 50% 45%)`;
+  const fallbackBg = `hsl(${hashHue(name)} 50% 45%)`; /* ads-scanner:ignore-line — deterministic per-user avatar hue, no ADS token equivalent (probed 2026-06-29) */
   // CLAUDE.md §19: never render a caller-supplied external avatar URL. Resolve
   // the photo only from the bundled-local resolver; fall back to initials.
   const photo = resolveAvatarUrl(name);
@@ -88,7 +88,7 @@ export function PresenceAvatar({ name, size = 36, presence = null, displayLabel 
               presence === 'online'
                 ? 'var(--cv2-presence-online)'
                 : presence === 'away'
-                ? '#E8A87C' // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+                ? 'var(--ds-background-warning-bold)'
                 : 'transparent',
             border:
               presence === 'offline'

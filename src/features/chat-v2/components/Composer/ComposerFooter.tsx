@@ -114,7 +114,7 @@ export function ComposerFooter({
           aria-hidden="true"
           style={{
             width: 1,
-            background: canSend ? 'var(--ds-surface, rgba(255,255,255,0.25))' : 'var(--cv2-border-strong)',
+            background: canSend ? 'var(--ds-surface)' : 'var(--cv2-border-strong)',
           }}
         />
         <button
@@ -256,7 +256,7 @@ function MicFooterBtn({
             border: '1px solid var(--cv2-border-strong)',
             borderRadius: 999,
             padding: '4px 6px',
-            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14))',
+            boxShadow: 'var(--ds-shadow-overlay)',
             whiteSpace: 'nowrap',
             pointerEvents: 'all',
             zIndex: 10,
@@ -277,7 +277,7 @@ function MicFooterBtn({
                   padding: '0px 8px',
                   border: 'none',
                   borderRadius: 999,
-                  fontSize: 'var(--ds-font-size-100)',
+                  font: 'var(--ds-font-body-small)',
                   fontWeight: sel ? 600 : 400,
                   background: sel ? 'var(--cv2-bg-row-active)' : 'transparent',
                   color: sel ? 'var(--cv2-text-strong)' : 'var(--cv2-text-subtle)',

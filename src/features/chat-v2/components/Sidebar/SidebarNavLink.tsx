@@ -31,7 +31,7 @@ export function SidebarNavLink({
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: active ? 700 : 500,
         color: active ? 'var(--cv2-text)' : 'var(--cv2-text-subtle)',
         transition: 'background var(--cv2-transition-fast)',
@@ -72,7 +72,7 @@ export function SidebarNavLink({
             alignItems: 'center',
             gap: 4,
             color: 'var(--cv2-text-subtle)',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             fontWeight: 500,
             flex: '0 0 auto',
           }}

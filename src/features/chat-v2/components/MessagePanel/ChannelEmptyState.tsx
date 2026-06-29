@@ -25,8 +25,8 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           style={{
             margin: 0,
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-800)',
-            fontWeight: 800,
+            font: 'var(--ds-font-heading-large)',
+            fontWeight: 700,
             color: 'var(--cv2-text-strong)',
             display: 'flex',
             alignItems: 'baseline',
@@ -36,7 +36,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           <span
             aria-hidden="true"
             style={{
-              fontSize: 'var(--ds-font-size-800)',
+              font: 'var(--ds-font-heading-large)',
               fontWeight: 400,
               color: 'var(--cv2-text-subtle)',
             }}
@@ -49,7 +49,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           style={{
             margin: '4px 0 0',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-500)',
+            font: 'var(--ds-font-body-large)',
             color: 'var(--cv2-text-subtle)',
             lineHeight: 1.5,
           }}
@@ -69,7 +69,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
                 onClick={onEditDescription}
                 style={{
                   background: 'transparent',
-                  color: 'var(--cv2-accent, #1264A3)',
+                  color: 'var(--cv2-accent)',
                   border: 'none',
                   padding: 0,
                   font: 'inherit',
@@ -139,7 +139,7 @@ function PillButton({ onClick, children }: { onClick?: () => void; children: Rea
         borderRadius: 6,
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 700,
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
@@ -182,12 +182,12 @@ function ActionCard({
         height: 250,
         padding: 16,
         background,
-        color: 'var(--ds-text-inverse, #FFFFFF)',
+        color: 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 10,
         textAlign: 'left',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-500)',
+        font: 'var(--ds-font-body-large)',
         fontWeight: 700,
         cursor: onClick ? 'pointer' : 'default',
         overflow: 'hidden',
@@ -218,9 +218,9 @@ function PeopleArt() {
       </g>
       <g transform="translate(48 8)">
         <circle cx="22" cy="22" r="20" fill="#E0AC8B" /> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        <ellipse cx="14" cy="22" rx="5" ry="5" fill="none" stroke="var(--ds-text, #172B4D)" strokeWidth="1.4" />
-        <ellipse cx="30" cy="22" rx="5" ry="5" fill="none" stroke="var(--ds-text, #172B4D)" strokeWidth="1.4" />
-        <path d="M19 22h6" stroke="var(--ds-text, #172B4D)" strokeWidth="1.4" />
+        <ellipse cx="14" cy="22" rx="5" ry="5" fill="none" stroke="var(--ds-text)" strokeWidth="1.4" />
+        <ellipse cx="30" cy="22" rx="5" ry="5" fill="none" stroke="var(--ds-text)" strokeWidth="1.4" />
+        <path d="M19 22h6" stroke="var(--ds-text)" strokeWidth="1.4" />
         <path d="M2 50C2 38 12 30 22 30c10 0 20 8 20 20v18H2z" fill="#2D5BAB" /> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       </g>
       <g transform="translate(10 30)">

@@ -77,7 +77,7 @@ export function ConversationTitle({ kind, isPrivate, title, weight = 700 }: Conv
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: weight,
         color: 'var(--cv2-text)',
       }}

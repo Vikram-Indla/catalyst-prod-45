@@ -94,7 +94,7 @@ export function MessageEditInPlace({ initialMarkdown, onCancel, onSave }: Messag
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
               fontWeight: 700,
               cursor: 'pointer',
             }}
@@ -113,7 +113,7 @@ export function MessageEditInPlace({ initialMarkdown, onCancel, onSave }: Messag
               border: '1px solid ' + (value.trim() ? 'var(--cv2-success)' : 'var(--cv2-border-strong)'),
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
               fontWeight: 700,
               cursor: value.trim() ? 'pointer' : 'not-allowed',
             }}

@@ -152,8 +152,8 @@ export function NewMessagePanel({
           style={{
             padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--ds-text-danger, #AE2A19)',
+            font: 'var(--ds-font-body-small)',
+            color: 'var(--ds-text-danger)',
             background: 'var(--cv2-bg-panel)',
           }}
         >
@@ -187,8 +187,8 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-500)',
-            fontWeight: 800,
+            font: 'var(--ds-font-body-large)',
+            fontWeight: 700,
             color: 'var(--cv2-text-strong)',
           }}
         >
@@ -197,7 +197,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text-muted)',
           }}
         >
@@ -256,7 +256,7 @@ function RecipientPicker({
       <span
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           fontWeight: 600,
           color: 'var(--cv2-text-subtle)',
           marginRight: 4,
@@ -290,7 +290,7 @@ function RecipientPicker({
           background: 'transparent',
           color: 'var(--cv2-text)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           padding: '4px 0',
         }}
       />
@@ -316,11 +316,11 @@ function RecipientChip({
         alignItems: 'center',
         gap: 4,
         padding: '4px 4px 4px 4px',
-        background: 'var(--cv2-bg-row-hover, rgba(255,255,255,0.08))',
-        border: '1px solid var(--cv2-border-strong, rgba(255,255,255,0.16))',
+        background: 'var(--cv2-bg-row-hover)',
+        border: '1px solid var(--cv2-border-strong)',
         borderRadius: 4,
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         color: 'var(--cv2-text)',
       }}
     >
@@ -337,12 +337,12 @@ function RecipientChip({
             width: 20,
             height: 20,
             borderRadius: 3,
-            background: 'var(--cv2-accent-soft, rgba(99,102,241,0.2))',
+            background: 'var(--cv2-accent-soft)',
             color: 'var(--cv2-text-strong)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 'var(--ds-font-size-100)',
+            font: 'var(--ds-font-body-small)',
             fontWeight: 700,
           }}
         >
@@ -415,7 +415,7 @@ function Dropdown({
             background: 'transparent',
             color: 'var(--cv2-text)',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
             textAlign: 'left',
             cursor: 'pointer',
           }}
@@ -439,12 +439,12 @@ function Dropdown({
                 width: 28,
                 height: 28,
                 borderRadius: 4,
-                background: 'var(--cv2-accent-soft, rgba(99,102,241,0.2))',
+                background: 'var(--cv2-accent-soft)',
                 color: 'var(--cv2-text-strong)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 'var(--ds-font-size-300)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 700,
                 flex: 'none',
               }}
@@ -481,7 +481,7 @@ const dropdownStyles: React.CSSProperties = {
 const emptyStyles: React.CSSProperties = {
   padding: '12px 16px',
   fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
+  font: 'var(--ds-font-body-small)',
   color: 'var(--cv2-text-muted)',
 };
 

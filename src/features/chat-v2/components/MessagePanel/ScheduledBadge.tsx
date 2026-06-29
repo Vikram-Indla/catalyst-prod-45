@@ -16,9 +16,9 @@ export function ScheduledBadge({ scheduledFor, onCancel }: ScheduledBadgeProps) 
         gap: 8,
         padding: '4px 10px 4px 8px',
         borderRadius: 4,
-        background: 'var(--cv2-saved-bg, rgba(236,178,46,0.12))',
+        background: 'var(--cv2-saved-bg)',
         color: 'var(--cv2-text)',
-        fontSize: 'var(--ds-font-size-200)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 600,
       }}
     >
@@ -36,7 +36,7 @@ export function ScheduledBadge({ scheduledFor, onCancel }: ScheduledBadgeProps) 
             background: 'transparent',
             color: 'var(--cv2-text-subtle)',
             border: 'none',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             fontWeight: 700,
             cursor: 'pointer',
           }}

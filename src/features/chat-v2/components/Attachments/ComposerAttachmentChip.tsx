@@ -69,7 +69,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'var(--ds-shadow-raised, rgba(0,0,0,0.35))',
+              background: 'var(--ds-blanket)',
             }}
           >
             <Spinner />
@@ -86,7 +86,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               padding: '0px 4px',
               background: 'var(--cv2-danger)',
               color: 'var(--ds-text-inverse)',
-              fontSize: 'var(--ds-font-size-50)',
+              font: 'var(--ds-font-body-small)',
               fontWeight: 700,
               textAlign: 'center',
             }}
@@ -107,7 +107,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
             width: 22,
             height: 22,
             borderRadius: '50%',
-            background: '#1A1D21', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+            background: 'var(--ds-background-neutral-bold)',
             color: 'var(--ds-text-inverse)',
             border: '2px solid var(--cv2-bg-panel)',
             display: 'inline-flex',
@@ -145,7 +145,7 @@ function FileCardThumb({ file }: { file: File }) {
       <FileGenericIcon size={28} />
       <div
         style={{
-          fontSize: 'var(--ds-font-size-50)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 700,
           color: 'var(--cv2-text)',
           textTransform: 'uppercase',
@@ -156,7 +156,7 @@ function FileCardThumb({ file }: { file: File }) {
       <div
         title={file.name}
         style={{
-          fontSize: 'var(--ds-font-size-50)',
+          font: 'var(--ds-font-body-small)',
           color: 'var(--cv2-text-muted)',
           maxWidth: '100%',
           overflow: 'hidden',
@@ -178,7 +178,7 @@ function Spinner() {
         width: 22,
         height: 22,
         borderRadius: '50%',
-        border: '2px solid var(--ds-surface, rgba(255,255,255,0.3))',
+        border: '2px solid var(--ds-border)',
         borderTopColor: 'var(--ds-surface)',
         animation: 'cv2-attach-spin 0.8s linear infinite',
       }}

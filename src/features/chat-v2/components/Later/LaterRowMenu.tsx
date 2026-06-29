@@ -87,11 +87,11 @@ function Item({ children, danger, onClick }: { children: React.ReactNode; danger
         padding: '8px 16px',
         textAlign: 'left',
         background: 'transparent',
-        color: danger ? '#E66E76' : 'var(--cv2-text)',
+        color: danger ? 'var(--ds-text-danger)' : 'var(--cv2-text)',
         border: 'none',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
       }}
     >
       {children}

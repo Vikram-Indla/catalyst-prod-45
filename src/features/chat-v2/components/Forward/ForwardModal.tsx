@@ -137,7 +137,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ font: 'var(--ds-font-heading-small)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             Forward this private message
           </div>
           <button
@@ -178,7 +178,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               <SuggestRow key={c.id} recipient={c} onAdd={() => handleAdd(c)} />
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>
+              <div style={{ padding: 12, font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>
                 No matches.
               </div>
             )}
@@ -200,7 +200,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               resize: 'vertical',
               outline: 'none',
               boxSizing: 'border-box',
@@ -220,7 +220,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               background: 'transparent', color: 'var(--cv2-text)',
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
-              fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'inherit', font: 'var(--ds-font-body)', fontWeight: 600, cursor: 'pointer',
             }}
           >
             <CopyLinkIcon size={14} />
@@ -230,7 +230,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
             style={{
               display: 'inline-flex', alignItems: 'stretch',
               background: canForward ? 'var(--cv2-success)' : 'transparent',
-              color: canForward ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
+              color: canForward ? 'var(--ds-text-inverse)' : 'var(--cv2-text-muted)',
               border: canForward
                 ? '1px solid var(--cv2-success)'
                 : '1px solid var(--cv2-border-strong)',
@@ -245,13 +245,13 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               style={{
                 padding: '0 16px', height: 36,
                 background: 'transparent', color: 'inherit', border: 'none',
-                fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
+                fontFamily: 'inherit', font: 'var(--ds-font-body)', fontWeight: 700,
                 cursor: canForward ? 'pointer' : 'not-allowed',
               }}
             >
               Forward
             </button>
-            <span aria-hidden="true" style={{ width: 1, background: canForward ? 'var(--ds-surface, rgba(255,255,255,0.25))' : 'var(--cv2-border-strong)' }} />
+            <span aria-hidden="true" style={{ width: 1, background: canForward ? 'var(--ds-surface)' : 'var(--cv2-border-strong)' }} />
             <button
               ref={scheduleAnchorRef}
               type="button"
@@ -312,8 +312,8 @@ function RecipientField({
         <span
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 22, height: 22, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
-            background: 'var(--cv2-accent)', color: 'var(--ds-surface, #FFFFFF)',
+            width: 22, height: 22, font: 'var(--ds-font-body-small)', fontWeight: 700,
+            background: 'var(--cv2-accent)', color: 'var(--ds-text-inverse)',
             borderRadius: 11,
           }}
         >
@@ -338,7 +338,7 @@ function RecipientField({
             border: 'none',
             outline: 'none',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 14,
+            font: 'var(--ds-font-body)',
           }}
         />
       </span>
@@ -355,7 +355,7 @@ function Chip({ recipient, onRemove }: { recipient: ForwardRecipient; onRemove: 
         background: 'var(--cv2-bg-row-active)',
         color: 'var(--cv2-text-strong)',
         borderRadius: 4,
-        fontSize: 13,
+        font: 'var(--ds-font-body-small)',
       }}
     >
       <span>{recipient.name}</span>
@@ -392,7 +392,7 @@ function SuggestRow({
         width: '100%', padding: '8px 12px',
         background: 'transparent', color: 'var(--cv2-text)',
         border: 'none', cursor: 'pointer',
-        fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)', textAlign: 'left',
+        fontFamily: 'inherit', font: 'var(--ds-font-body)', textAlign: 'left',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
@@ -420,12 +420,12 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
     >
       <PresenceAvatar name={message.authorName} size={28} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, color: 'var(--cv2-text-strong)', fontSize: 'var(--ds-font-size-300)' }}>
+        <div style={{ fontWeight: 700, color: 'var(--cv2-text-strong)', font: 'var(--ds-font-body-small)' }}>
           {message.authorName}
         </div>
         <div
           style={{
-            fontSize: 'var(--ds-font-size-300)',
+            font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text)',
             wordBreak: 'break-word',
             whiteSpace: 'pre-wrap',

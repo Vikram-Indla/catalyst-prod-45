@@ -970,7 +970,7 @@ export function ChatV2Shell() {
         justifyContent: 'center',
         height: '100%',
         color: 'var(--ds-text-subtlest)',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
       }}>
         <div style={{
           width: 20,

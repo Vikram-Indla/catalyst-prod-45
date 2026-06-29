@@ -7,6 +7,7 @@
  * "Incomplete" purple badge renders when a reminder has fired.
  */
 import React, { useMemo, useRef, useState } from 'react';
+import Lozenge from '@atlaskit/lozenge';
 import {
   CheckIcon,
   RemindClockIcon,
@@ -68,7 +69,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text-muted)',
             marginBottom: 4,
             display: 'flex',
@@ -77,18 +78,9 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
           }}
         >
           {showIncomplete && (
-            <span
-              style={{
-                display: 'inline-block',
-                padding: '0px 8px',
-                background: 'rgba(155, 89, 182, 0.25)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-                color: '#C9A4F0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-                borderRadius: 10,
-                fontSize: 'var(--ds-font-size-100)',
-                fontWeight: 700,
-              }}
-            >
-              Incomplete · {formatRowTimestamp(item.remindAt ?? item.createdAt)}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <Lozenge appearance="moved">Incomplete</Lozenge>
+              <span>· {formatRowTimestamp(item.remindAt ?? item.createdAt)}</span>
             </span>
           )}
           {!showIncomplete && conversationLabel}
@@ -102,7 +94,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: 'var(--ds-font-size-400)',
+                font: 'var(--ds-font-body)',
                 fontWeight: 700,
                 color: 'var(--cv2-text-strong)',
                 marginBottom: 0,
@@ -113,7 +105,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             {item.body ? (
               <div
                 style={{
-                  fontSize: 'var(--ds-font-size-400)',
+                  font: 'var(--ds-font-body)',
                   color: 'var(--cv2-text)',
                   lineHeight: 1.4,
                   wordBreak: 'break-word',
@@ -123,7 +115,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             ) : (
               <div
                 style={{
-                  fontSize: 'var(--ds-font-size-400)',
+                  font: 'var(--ds-font-body)',
                   color: 'var(--cv2-text-muted)',
                   lineHeight: 1.4,
                   wordBreak: 'break-word',
@@ -242,7 +234,7 @@ function Avatar({ name }: { name: string }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: 700,
         flexShrink: 0,
       }}

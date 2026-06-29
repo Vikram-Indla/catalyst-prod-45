@@ -160,7 +160,7 @@ function CategoryBar({
               ? '2px solid var(--cv2-accent)'
               : '2px solid transparent',
             color: 'var(--cv2-text)',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
             cursor: 'pointer',
             transition: 'background var(--cv2-transition-fast)',
           }}
@@ -198,7 +198,7 @@ function SearchField({ value, onChange }: { value: string; onChange: (v: string)
           background: 'transparent',
           color: 'var(--cv2-text)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           border: 'none',
           outline: 'none',
         }}
@@ -222,7 +222,7 @@ function EmojiGroup({
       <div
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-200)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           padding: '4px 4px 6px',
@@ -253,7 +253,7 @@ function EmojiGroup({
               background: 'transparent',
               border: 'none',
               borderRadius: 4,
-              fontSize: 'var(--ds-font-size-700)',
+              font: 'var(--ds-font-heading-medium)',
               lineHeight: 1,
               cursor: 'pointer',
               transition: 'background var(--cv2-transition-fast)',
