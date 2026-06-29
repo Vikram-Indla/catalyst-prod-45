@@ -24,8 +24,16 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
 import { CatalystStatusPill } from "@/components/catalyst-detail-views/shared/sections";
-import { ReasonCaptureModal } from "@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal";
 import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
+
+// Lazy-loaded to avoid circular-init issues (CatalystStatusPill already pulls
+// in ReasonCaptureModal; a top-level import here can arrive before the module
+// initialises when cells.tsx is the first entry point in the bundle).
+const ReasonCaptureModal = React.lazy(() =>
+  import("@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal").then((m) => ({
+    default: m.ReasonCaptureModal,
+  }))
+);
 import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -767,16 +775,18 @@ export function makeStatusEditCell<T>(opts: {
             document.body,
           )}
         {reasonTarget && (
-          <ReasonCaptureModal
-            entityType={issueType ?? ''}
-            fromStatus={status ?? ''}
-            toStatus={reasonTarget}
-            onSubmit={(reason) => {
-              opts.onChange(row, reasonTarget, reason);
-              setReasonTarget(null);
-            }}
-            onCancel={() => setReasonTarget(null)}
-          />
+          <React.Suspense fallback={null}>
+            <ReasonCaptureModal
+              entityType={issueType ?? ''}
+              fromStatus={status ?? ''}
+              toStatus={reasonTarget}
+              onSubmit={(reason) => {
+                opts.onChange(row, reasonTarget, reason);
+                setReasonTarget(null);
+              }}
+              onCancel={() => setReasonTarget(null)}
+            />
+          </React.Suspense>
         )}
       </>
     );
