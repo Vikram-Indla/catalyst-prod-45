@@ -7,6 +7,7 @@ import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { Checkbox } from '@atlaskit/checkbox';
 import EmptyState from '@atlaskit/empty-state';
 import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
@@ -381,7 +382,13 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
   // ADS field label: sentence-case, 12px/600, subtle token — no all-caps, no tracking.
   const lbl: React.CSSProperties = { display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 };
 
-  const selectStyles = { menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }) };
+  const selectStyles = {
+    menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }),
+    menu: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+    option: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+    singleValue: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+    input: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  };
   const deptOptions = [{ label: 'No department', value: '' }, ...departments.map(d => ({ label: d.name, value: d.id }))];
   const ttlOptions = availableTtls.map(t => ({ label: t.sub ? `${t.label} · ${t.sub}` : t.label, value: t.value }));
   const moduleValue = MODULE_SELECT_OPTIONS.filter(o => moduleAccess[o.value]);
@@ -918,7 +925,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                       onChange={opt => setRoleOpt(opt as { label: string; value: string } | null)}
                       menuPortalTarget={document.body}
                       isDisabled={saving}
-                      styles={{ menuPortal: (base) => ({ ...base, zIndex: 10000 }) }}
+                      styles={{ ...portalSelectStyles, menuPortal: (base) => ({ ...base, zIndex: 10000 }) }}
                     />
                   )}
                 </div>
@@ -1538,6 +1545,7 @@ function PeopleTab() {
             placeholder="Filter by role"
             aria-label="Filter by role"
             menuPortalTarget={document.body}
+            styles={selectStyles}
           />
         </div>
         <div style={{ width: 160 }}>
@@ -1548,6 +1556,7 @@ function PeopleTab() {
             placeholder="Filter by status"
             aria-label="Filter by status"
             menuPortalTarget={document.body}
+            styles={selectStyles}
           />
         </div>
         <div style={{ width: 170 }}>
@@ -1562,6 +1571,7 @@ function PeopleTab() {
             placeholder="Filter by source"
             aria-label="Filter by source"
             menuPortalTarget={document.body}
+            styles={selectStyles}
           />
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>

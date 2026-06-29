@@ -7,6 +7,12 @@ interface QuarterOption {
   label: string;
 }
 
+function getCurrentQuarterLabel(): string {
+  const now = new Date();
+  const q = Math.ceil((now.getMonth() + 1) / 3);
+  return `Q${q} ${now.getFullYear()}`;
+}
+
 function useFiscalQuarters() {
   return useQuery<QuarterOption[]>({
     queryKey: ['fiscal-quarters-active'],
@@ -30,11 +36,17 @@ interface QuarterSelectProps {
   placeholder?: string;
   isDisabled?: boolean;
   inputId?: string;
+  defaultCurrentQuarter?: boolean;
 }
 
-export function QuarterSelect({ value, onChange, placeholder = 'Select quarter', isDisabled, inputId }: QuarterSelectProps) {
+export function QuarterSelect({ value, onChange, placeholder = 'Select quarter', isDisabled, inputId, defaultCurrentQuarter }: QuarterSelectProps) {
   const { data: options = [], isLoading } = useFiscalQuarters();
-  const selected = options.find(o => o.value === value) ?? null;
+
+  const resolvedValue = (value == null && defaultCurrentQuarter)
+    ? getCurrentQuarterLabel()
+    : value;
+
+  const selected = options.find(o => o.value === resolvedValue) ?? null;
 
   return (
     <Select<QuarterOption>
@@ -46,6 +58,15 @@ export function QuarterSelect({ value, onChange, placeholder = 'Select quarter',
       isDisabled={isDisabled || isLoading}
       isLoading={isLoading}
       isClearable
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
+      styles={{
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        menu: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+        option: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+        singleValue: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+        input: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+      }}
     />
   );
 }

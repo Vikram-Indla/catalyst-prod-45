@@ -10,6 +10,7 @@ import React, { forwardRef, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import Tooltip from '@atlaskit/tooltip';
 import Lozenge from '@atlaskit/lozenge';
 import { Plus, Trash2, X, Check, ChevronDown } from '@/lib/atlaskit-icons';
@@ -490,7 +491,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
                 onChange={(o) => o && setDir(o.value)}
                 isDisabled={busy}
                 menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-                styles={{ menuPortal: (b: any) => ({ ...b, zIndex: 10000 }) }}
+                styles={{ ...portalSelectStyles, menuPortal: (base: any) => ({ ...base, zIndex: 10000 }) }}
                 spacing="compact"
               />
               <Select
@@ -507,7 +508,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
                   </span>
                 )) as any}
                 menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-                styles={{ menuPortal: (b: any) => ({ ...b, zIndex: 10000 }) }}
+                styles={{ ...portalSelectStyles, menuPortal: (base: any) => ({ ...base, zIndex: 10000 }) }}
                 spacing="compact"
               />
               <div style={{ display: 'flex', gap: 0 }}>

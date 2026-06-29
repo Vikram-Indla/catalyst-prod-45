@@ -16,6 +16,7 @@ import Checkbox from '@atlaskit/checkbox';
 import AvatarGroup from '@atlaskit/avatar-group';
 import DropdownMenu, { DropdownItem } from '@atlaskit/dropdown-menu';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import Lozenge from '@atlaskit/lozenge';
 import { X as XIcon } from '@/lib/atlaskit-icons';
 import { UWVExport } from './UWVExport';
@@ -432,6 +433,10 @@ export function UWVToolbar({
                     menuPosition="fixed"
                     styles={{
                       menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                      menu: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                      option: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                      singleValue: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                      input: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
                     }}
                   />
                 );

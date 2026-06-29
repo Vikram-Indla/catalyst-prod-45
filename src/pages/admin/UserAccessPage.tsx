@@ -579,7 +579,14 @@ export default function UserAccessPage() {
                                   roleId: opt.value === 'none' ? null : opt.value,
                                 });
                               }}
-                              styles={{ control: (base: object) => ({ ...base, minHeight: 32, height: 32, fontSize: 'var(--ds-font-size-400)' }) }}
+                              styles={{
+                              control: (base: object) => ({ ...base, minHeight: 32, height: 32, fontSize: 'var(--ds-font-size-400)' }),
+                              menuPortal: (base: object) => ({ ...base, zIndex: 9999 }),
+                              menu: (base: object) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                              option: (base: object) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                              singleValue: (base: object) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                              input: (base: object) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                            }}
                             />
                           );
                         })()

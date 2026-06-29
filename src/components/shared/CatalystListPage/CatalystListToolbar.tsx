@@ -99,7 +99,7 @@ export function CatalystListToolbar({
             isClearable
             menuPortalTarget={document.body}
             menuPosition="fixed"
-            styles={{ menuPortal: (base: object) => ({ ...base, zIndex: 9999 }) }}
+            styles={portalSelectStyles}
           />
         </div>
       ))}

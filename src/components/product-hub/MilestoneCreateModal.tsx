@@ -146,6 +146,7 @@ export function MilestoneCreateModal({
                   value={quarter || null}
                   onChange={(v) => setQuarter(v ?? '')}
                   placeholder="Select quarter"
+                  defaultCurrentQuarter={!isEdit}
                 />
               </div>
 

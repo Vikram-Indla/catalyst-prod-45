@@ -18,6 +18,7 @@ import SectionMessage from '@atlaskit/section-message';
 import Textfield from '@atlaskit/textfield';
 import Spinner from '@atlaskit/spinner';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import ProgressBar from '@atlaskit/progress-bar';
 import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -594,7 +595,7 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
               placeholder={`All enabled (${enabledProjects.length})`}
               spacing="compact"
               menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              styles={portalSelectStyles}
               formatOptionLabel={(opt: any) => (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <ProjectIcon projectKey={opt.value} name={opt.label} size="xsmall" />
@@ -614,7 +615,7 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
               onChange={(v: any) => setDateOption(v)}
               spacing="compact"
               menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              styles={portalSelectStyles}
             />
             <p style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, margin: '4px 0 0 0', fontFamily: FB }}>"Per-project" uses each project's saved filter. Any other value overrides this run only. Always floored to 2026.</p>
           </div>

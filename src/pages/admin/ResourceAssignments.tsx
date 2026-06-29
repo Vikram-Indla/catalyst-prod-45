@@ -23,6 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format, parseISO } from 'date-fns';
 import Toggle from '@atlaskit/toggle';
 import AdsSelect from '@atlaskit/select';
+import { portalSelectStylesCompact } from '@/lib/select-portal-styles';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { catalystToast } from '@/lib/catalystToast';
@@ -194,6 +195,7 @@ function SortableRow({
       <td style={{ padding: "12px 16px" }}>
         <AdsSelect
           menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
           value={{ label: statusConfig.label, value: status }}
           options={[
             { label: 'Yet to Start', value: 'yet_to_start' },
@@ -202,7 +204,14 @@ function SortableRow({
             { label: 'Completed', value: 'completed' },
           ]}
           onChange={(opt) => opt && onStatusChange(assignment, opt.value)}
-          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 'var(--ds-font-size-200)' }) }}
+          styles={{
+                              control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 'var(--ds-font-size-200)' }),
+                              menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                              menu: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              option: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              singleValue: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              input: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                            }}
         />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
@@ -284,6 +293,7 @@ function SortableRow({
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
           <AdsSelect
             menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
             value={assignment.vendor_id
               ? vendors.find(v => v.id === assignment.vendor_id)
                 ? { label: vendors.find(v => v.id === assignment.vendor_id)!.name, value: assignment.vendor_id }
@@ -294,7 +304,14 @@ function SortableRow({
               ...vendors.map(v => ({ label: v.name, value: v.id })),
             ]}
             onChange={(opt) => opt && onVendorChange(assignment, opt.value)}
-            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 'var(--ds-font-size-200)' }) }}
+            styles={{
+                              control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 'var(--ds-font-size-200)' }),
+                              menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                              menu: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              option: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              singleValue: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              input: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                            }}
           />
         ) : (
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>—</span>
@@ -312,10 +329,18 @@ function SortableRow({
           return (
             <AdsSelect
               menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
               value={typeOpts.find(o => o.value === curType) || null}
               options={typeOpts}
               onChange={(opt) => opt && onAssignmentTypeChange(assignment, opt.value)}
-              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 'var(--ds-font-size-200)' }) }}
+              styles={{
+                              control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 'var(--ds-font-size-200)' }),
+                              menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                              menu: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              option: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              singleValue: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              input: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                            }}
             />
           );
         })()}
@@ -338,10 +363,18 @@ function SortableRow({
             return (
               <AdsSelect
                 menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
                 value={payOpts.find(o => o.value === curPay) || null}
                 options={payOpts}
                 onChange={(opt) => opt && onPaymentStatusChange(assignment, opt.value)}
-                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 'var(--ds-font-size-200)' }) }}
+                styles={{
+                              control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 'var(--ds-font-size-200)' }),
+                              menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                              menu: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              option: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              singleValue: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                              input: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-200)' }),
+                            }}
               />
             );
           })()
@@ -982,6 +1015,7 @@ export default function ResourceAssignmentsPage() {
                 return (
                   <AdsSelect
                     menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
                     value={typeOpts.find(o => o.value === (formData.assignment_type || '__none__')) || null}
                     options={typeOpts}
                     onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_type: opt.value === '__none__' ? '' : opt.value }))}
@@ -1028,6 +1062,7 @@ export default function ResourceAssignmentsPage() {
                 return (
                   <AdsSelect
                     menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
                     value={projectOpts.find(o => o.value === (formData.project_id || '__none__')) || null}
                     options={projectOpts}
                     onChange={(opt) => opt && setFormData(f => ({ ...f, project_id: opt.value === '__none__' ? '' : opt.value }))}
@@ -1047,6 +1082,7 @@ export default function ResourceAssignmentsPage() {
                 return (
                   <AdsSelect
                     menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
                     value={statusOpts.find(o => o.value === formData.assignment_status) || null}
                     options={statusOpts}
                     onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_status: opt.value as AssignmentStatus }))}
@@ -1073,6 +1109,7 @@ export default function ResourceAssignmentsPage() {
                 return (
                   <AdsSelect
                     menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
                     value={vendorOpts.find(o => o.value === (formData.vendor_id || '__none__')) || null}
                     options={vendorOpts}
                     onChange={(opt) => opt && setFormData(f => ({ ...f, vendor_id: opt.value === '__none__' ? '' : opt.value }))}
@@ -1092,6 +1129,7 @@ export default function ResourceAssignmentsPage() {
                 return (
                   <AdsSelect
                     menuPortalTarget={document.body}
+                    styles={portalSelectStylesCompact}
                     value={typeOpts.find(o => o.value === (formData.assignment_type || '__none__')) || null}
                     options={typeOpts}
                     onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_type: opt.value === '__none__' ? '' : opt.value }))}

@@ -5,6 +5,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
@@ -171,6 +172,7 @@ function LinkWorkItemModal({ releaseId, onClose }: { releaseId: string; onClose:
             </span>
           )}
           menuPortalTarget={document.body}
+          styles={portalSelectStyles}
         />
       </ModalBody>
       <ModalFooter>
@@ -229,6 +231,8 @@ function LinkBrModal({ releaseId, alreadyLinked, onClose }: { releaseId: string;
             </span>
           )}
           menuPortalTarget={document.body}
+          menuPosition="fixed"
+          styles={portalSelectStyles}
           autoFocus
         />
       </ModalBody>

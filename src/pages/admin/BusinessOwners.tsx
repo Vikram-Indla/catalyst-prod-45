@@ -10,6 +10,7 @@ import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Toggle from '@atlaskit/toggle';
 import AdsSelect from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import AddIcon from '@atlaskit/icon/core/add';
 import SearchIcon from '@atlaskit/icon/core/search';
 import EditIcon from '@atlaskit/icon/core/edit';
@@ -324,7 +325,7 @@ export default function BusinessOwners() {
                   onChange={(opt) => opt && setSelectedDepartmentId(opt.value)}
                   placeholder="Select a department"
                   menuPortalTarget={document.body}
-                  styles={{ menuPortal: (base) => ({ ...base, zIndex: 400 }) }}
+                  styles={{ ...portalSelectStyles, menuPortal: (base) => ({ ...base, zIndex: 400 }) }}
                 />
                 <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                   Each department can only be mapped to one business owner.

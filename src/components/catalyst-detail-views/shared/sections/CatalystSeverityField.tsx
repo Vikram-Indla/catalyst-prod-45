@@ -71,6 +71,10 @@ export function CatalystSeverityField({ issue, onUpdate }: Props) {
       menuPosition="fixed"
       styles={{
         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        menu: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+        option: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+        singleValue: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+        input: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
       }}
     />
   );

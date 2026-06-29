@@ -1083,6 +1083,10 @@ export function EditableLabels({
             ...base,
             fontSize: 'var(--ds-font-size-200)',
           }),
+          singleValue: (base) => ({
+            ...base,
+            fontSize: 'var(--ds-font-size-200)',
+          }),
           placeholder: (base) => ({
             ...base,
             fontSize: 'var(--ds-font-size-200)',
@@ -1518,6 +1522,7 @@ export function EditableSprintReleases({
           input: (base) => ({
             ...base,
             caretColor: menuIsOpen ? "auto" : "transparent",
+            fontSize: 'var(--ds-font-size-400)',
           }),
           indicatorsContainer: (base) => ({
             ...base,
@@ -1530,7 +1535,10 @@ export function EditableSprintReleases({
             // minWidth: 300,
             right: 0,
             left: "auto",
+            fontSize: 'var(--ds-font-size-400)',
           }),
+          option: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+          singleValue: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
           menuPortal: (base) => ({
             ...base,
             zIndex: 9999,
