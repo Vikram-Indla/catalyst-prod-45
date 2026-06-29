@@ -45,7 +45,7 @@ import React, { memo, useCallback, useState, useRef, useEffect, useLayoutEffect,
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import Tooltip from '@atlaskit/tooltip';
 import { Star, StarOff } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -85,39 +85,6 @@ interface ForYouRowProps {
   variant?: 'default' | 'jira-assigned';
   /** Row-level action menu (hover-reveal ⋯ button). Same pattern as JiraTable makeRowActionsCell. */
   actions?: ForYouRowAction[];
-}
-
-// ─── Status → Atlaskit Lozenge mapping ───────────────────────────────────────
-// Mirrors CLAUDE.md §5 — 3-color guardrail. Atlaskit Lozenge's appearance
-// prop already enforces the correct hex via tokens, so we route status into
-// 'default' | 'inprogress' | 'success' and never set custom colors.
-type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
-
-function statusToAppearance(status: string, category?: string): LozengeAppearance {
-  // CLAUDE.md 2026-05-08 lesson: status colors must come from the status
-  // CATEGORY (To Do / In Progress / Done), not text inference. BAU's
-  // "In Design" sits in the To Do category and renders grey in Jira — a
-  // string match on "design" → 'inprogress' (blue) was the legacy bug.
-  // Honor `status_category` when present; only fall back to string inference
-  // for rows that arrive without a category (planner_task, native items).
-  const cat = (category || '').toLowerCase();
-  if (cat === 'done') return 'success';
-  if (cat === 'in progress' || cat === 'in_progress' || cat === 'indeterminate') return 'inprogress';
-  if (cat === 'to do' || cat === 'to_do' || cat === 'new') return 'default';
-
-  const s = (status || '').toLowerCase();
-  if (s.includes('done') || s.includes('approved') || s.includes('complet') || s === 'closed') return 'success';
-  if (
-    s.includes('progress') || s.includes('review') || s.includes('active') ||
-    s === 'in dev' || s.includes('integration') || s.includes('development') ||
-    s.includes('testing') || s.includes('staging') || s.includes('in qa') ||
-    s.includes('deployed')
-  ) return 'inprogress';
-  // "In Design" intentionally NOT in the inprogress list — BAU project keeps
-  // it in the To Do category. Per-project status taxonomy means we should
-  // never blanket-color a status by its label alone.
-  if (s.includes('re-open') || s.includes('reopen') || s.includes('blocked') || s.includes('on hold')) return 'moved';
-  return 'default';
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -283,10 +250,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               Jira-assigned variant moves the lozenge to the trailing slot
               (right-edge, marginLeft:auto) per /jira/for-you DOM. */}
           {!isJiraAssigned && item.status && (
-            // Canonical status pill (statusPalette.ts) — was @atlaskit/lozenge
-            // which rendered a pale ADS green diverging from #94C748. Unified
-            // 2026-06-17 so both For You variants share one canonical pill.
-            <JiraForYouLozenge status={item.status} statusCategory={item.statusCategory} />
+            <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
           )}
           {!isJiraAssigned && (
             <span
@@ -328,7 +292,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           (matches /jira/for-you Assigned tab DOM 2026-05-17).
           default variant: assignee Avatar + star (star omitted when no onToggleStar). */}
       {isJiraAssigned ? (
-        item.status && <JiraForYouLozenge status={item.status} statusCategory={item.statusCategory} />
+        item.status && <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
       ) : (
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexShrink: 0 }}>
           <Tooltip content={item.assignee.name}>
@@ -517,38 +481,11 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
 
 export default memo(ForYouRowImpl);
 
-// ─── Jira For You Lozenge ────────────────────────────────────────────────────
-// Canonical inline status pill for For You rows. Backgrounds come from the
-// shared canonical palette (statusPalette.ts) so the done-green matches the
-// #94C748 used by Recommended/detail/table surfaces. Inner text is Jira's
-// `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px two-span structure.
-export function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
-  const ap = statusToAppearance(status, statusCategory);
-  // Canonical palette — single source of truth (statusPalette.ts). The local
-  // pale done-green drifted from the canonical #94C748 that Recommended/detail/
-  // table surfaces use; unified 2026-06-17.
-  return (
-    <span style={{
-      flexShrink: 0,
-      display: 'inline-flex',
-      alignItems: 'center',
-      backgroundColor: statusBg(ap),
-      padding: '0px 4px',
-      borderRadius: 3,
-      height: 20,
-    }}>
-      <span style={{
-        font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(ap),
-        textTransform: 'uppercase',
-        letterSpacing: '0.165px',
-        padding: '0px',
-      }}>
-        {status}
-      </span>
-    </span>
-  );
-}
+// Deprecated alias — kept for back-compat with existing imports (StarredHubList,
+// CatyStarredDigest, AgeingPanel). Use `StatusLozenge` from
+// `@/components/shared/StatusLozenge` directly. Slated for removal once all
+// callers migrate (CAT-ADS-STATUSPILL-UNIFY-20260629-001).
+export { StatusLozenge as JiraForYouLozenge } from '@/components/shared/StatusLozenge';
 
 // ─── Star button ─────────────────────────────────────────────────────────────
 
