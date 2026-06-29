@@ -24,6 +24,7 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
 import { CatalystStatusPill } from "@/components/catalyst-detail-views/shared/sections";
+import { ReasonCaptureModal } from "@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal";
 import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
 import type { CellProps } from "./types";
 
@@ -508,7 +509,7 @@ export function makeStatusEditCell<T>(opts: {
    * renders "Demand approved" instead of raw slug `demand_approved`.
    */
   labelFor?: (s: string) => string;
-  onChange: (row: T, next: string) => void;
+  onChange: (row: T, next: string, reason?: { code: string | null; text: string | null }) => void;
   canEdit?: (row: T) => boolean;
   /** 2026-06-21 (Vikram canonical): once done, frozen. Default true. */
   lockWhenDone?: boolean;
@@ -522,16 +523,16 @@ export function makeStatusEditCell<T>(opts: {
   return function StatusEditCell({ row }: CellProps<T>) {
     const [open, setOpen] = React.useState(false);
     const [pos, setPos] = React.useState({ top: 0, left: 0 });
+    const [reasonTarget, setReasonTarget] = React.useState<string | null>(null);
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const popupRef = React.useRef<HTMLDivElement>(null);
     const status = opts.getStatus(row);
     const issueType = opts.getIssueType ? opts.getIssueType(row) : null;
     const canonical = useCanonicalIssueWorkflow(issueType);
-    // Canonical: options = allowed transitions. Reason-required transitions are
-    // EXCLUDED from inline edit (no reason capture here) — they must go through
-    // the detail status pill's reason modal, so they never pass silently.
+    // Canonical: show all available transitions including reason-required ones.
+    // Reason-required transitions open ReasonCaptureModal before calling onChange.
     const effectiveOptions = canonical.isCanonical
-      ? canonical.getAvailableStatuses(status).filter((s) => !canonical.requiresReason(status, s) || s === status)
+      ? canonical.getAvailableStatuses(status)
       : opts.options;
     const isUnmapped = canonical.isCanonical && !!status && !canonical.resolveStatusKey(status);
     const displayLabel = (s: string | null): string =>
@@ -704,8 +705,12 @@ export function makeStatusEditCell<T>(opts: {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      opts.onChange(row, s);
                       setOpen(false);
+                      if (canonical.isCanonical && canonical.requiresReason(status, s)) {
+                        setReasonTarget(s);
+                      } else {
+                        opts.onChange(row, s);
+                      }
                     }}
                     style={{
                       display: "flex",
@@ -761,6 +766,18 @@ export function makeStatusEditCell<T>(opts: {
             </div>,
             document.body,
           )}
+        {reasonTarget && (
+          <ReasonCaptureModal
+            entityType={issueType ?? ''}
+            fromStatus={status ?? ''}
+            toStatus={reasonTarget}
+            onSubmit={(reason) => {
+              opts.onChange(row, reasonTarget, reason);
+              setReasonTarget(null);
+            }}
+            onCancel={() => setReasonTarget(null)}
+          />
+        )}
       </>
     );
   };

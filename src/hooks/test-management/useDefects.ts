@@ -495,7 +495,7 @@ export function useUpdateDefect() {
 
   return useMutation({
     mutationFn: async (input: UpdateDefectInput & { project_id: string }): Promise<TMDefect> => {
-      const { id, project_id, severity, status, assigned_to, workflowStatusKey, ...rest } = input;
+      const { id, project_id, severity, status, assigned_to, workflowStatusKey, reasonText, ...rest } = input;
 
       const updates: Record<string, any> = { ...rest };
 
@@ -542,8 +542,8 @@ export function useUpdateDefect() {
         updates.assignee_id = assigned_to;
       }
 
-      // Deny before mutation if reason required (Prompt 4 compliance).
-      if (auditTo && auditFrom !== auditTo) {
+      // Deny before mutation if reason required and not already supplied.
+      if (auditTo && auditFrom !== auditTo && !reasonText) {
         const preflight = await checkReasonRequired('defect', null, auditFrom, auditTo);
         if (preflight.reasonRequired) {
           throw new Error('This transition requires a reason. Open the defect detail view to provide one.');
@@ -564,7 +564,8 @@ export function useUpdateDefect() {
         await recordAdvisoryStatusChange({
           entityKey: 'defect', entityId: id, projectKey: null,
           fromStatusRaw: auditFrom, toStatusRaw: auditTo, sourceSurface: 'defect_list',
-        });
+          reasonText: reasonText ?? null,
+        } as any);
       }
       return { ...mapDbRowToTMDefect(data), project_id };
     },

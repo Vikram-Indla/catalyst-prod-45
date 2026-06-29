@@ -2917,7 +2917,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         labelFor: dataSource?.statusLabel
           ? (s) => dataSource.statusLabel!(s)
           : undefined,
-        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
+        onChange: (row, next, reason) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next, reasonText: reason?.text ?? null, reasonCode: reason?.code ?? null } }),
       }),
       // 2026-05-10 Jira-parity per-column filter chevron.
       filterable: true,

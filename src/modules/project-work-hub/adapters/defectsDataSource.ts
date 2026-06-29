@@ -151,8 +151,9 @@ export function useDefectsSource(): BacklogDataSource | null {
       onUpdate: async (id, patch) => {
         const mapped: Record<string, any> = {};
         let canonicalKey: string | null = null;
+        const reasonText = typeof patch.reasonText === 'string' ? patch.reasonText : null;
         for (const [k, v] of Object.entries(patch)) {
-          if (k === 'updated_at' || k === 'jira_updated_at') continue;
+          if (k === 'updated_at' || k === 'jira_updated_at' || k === 'reasonText' || k === 'reasonCode') continue;
           if (k === 'status' && canonicalReady) {
             // Picked value is a canonical label → resolve to its status_key and
             // write via the bridged workflow_status_key path (enum stays compat).
@@ -163,7 +164,7 @@ export function useDefectsSource(): BacklogDataSource | null {
           if (target) mapped[target] = v;
         }
         if (canonicalKey) {
-          await updateMutation.mutateAsync({ id, project_id: effectiveProjectId, ...mapped, workflowStatusKey: canonicalKey } as any);
+          await updateMutation.mutateAsync({ id, project_id: effectiveProjectId, ...mapped, workflowStatusKey: canonicalKey, reasonText } as any);
         } else if (Object.keys(mapped).length > 0) {
           await updateMutation.mutateAsync({ id, project_id: effectiveProjectId, ...mapped } as any);
         }
