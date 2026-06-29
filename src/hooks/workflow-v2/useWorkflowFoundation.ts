@@ -109,6 +109,72 @@ export function useCreateDraftVersion() {
   });
 }
 
+export function useCloneVersionToDraft() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (sourceVersionId: string) => {
+      const { data: src, error: srcErr } = await supabase
+        .from('ph_wf_versions')
+        .select('template_id, entity_key, version_no')
+        .eq('id', sourceVersionId)
+        .single();
+      if (srcErr) throw srcErr;
+      const { data: existing } = await supabase
+        .from('ph_wf_versions')
+        .select('version_no')
+        .eq('template_id', src.template_id)
+        .order('version_no', { ascending: false })
+        .limit(1);
+      const nextNo = (existing?.[0]?.version_no ?? 0) + 1;
+      const { data: newVer, error: verErr } = await supabase
+        .from('ph_wf_versions')
+        .insert({ template_id: src.template_id, entity_key: src.entity_key, version_no: nextNo, lifecycle: 'draft' })
+        .select('id')
+        .single();
+      if (verErr) throw verErr;
+      // Copy statuses
+      const { data: statuses } = await supabase
+        .from('ph_wf_version_statuses')
+        .select('status_key, label, category, display_order, is_initial, metadata')
+        .eq('version_id', sourceVersionId);
+      if (statuses?.length) {
+        await supabase.from('ph_wf_version_statuses').insert(
+          statuses.map((s) => ({ ...s, version_id: newVer.id }))
+        );
+      }
+      // Copy transitions
+      const { data: transitions } = await supabase
+        .from('ph_wf_version_transitions')
+        .select('from_status_key, to_status_key, requires_reason, requires_comment')
+        .eq('version_id', sourceVersionId);
+      if (transitions?.length) {
+        await supabase.from('ph_wf_version_transitions').insert(
+          transitions.map((t) => ({ ...t, version_id: newVer.id }))
+        );
+      }
+      await writeAdminAudit('version_cloned', 'workflow_version', newVer.id, { cloned_from: sourceVersionId, new_version_no: nextNo });
+      return newVer;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'versions'] }),
+  });
+}
+
+export function useWfFieldRequirements(versionId: string | null) {
+  return useQuery({
+    queryKey: [...KEY, 'field-requirements', versionId],
+    enabled: !!versionId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_wf_field_requirements')
+        .select('id, scope, transition_id, field_key, requirement')
+        .eq('version_id', versionId as string)
+        .order('scope');
+      if (error) throw error;
+      return (data ?? []) as { id: string; scope: string; transition_id: string | null; field_key: string; requirement: string }[];
+    },
+  });
+}
+
 // ── Roles + guards per version (for Transitions admin view) ─────────────────
 export interface WfTransitionRole { transition_id: string; role_group: string; }
 export interface WfTransitionGuard { transition_id: string; guard_type: string; is_blocking: boolean; waiver_allowed: boolean; }

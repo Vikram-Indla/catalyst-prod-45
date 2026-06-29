@@ -16,8 +16,8 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import {
   useWfVersions, useWfSchemes, useWfSchemeEntries, useWfSchemeAssignments,
   useWfVersionStatuses, useWfVersionTransitions, useWfAuditFiltered,
-  useWfTemplates, useCreateDraftVersion, useMigrationPreview,
-  useEnforcementConfig, useReasonCodes,
+  useWfTemplates, useCreateDraftVersion, useCloneVersionToDraft, useMigrationPreview,
+  useEnforcementConfig, useReasonCodes, useWfFieldRequirements,
   useWfVersionRolesAndGuards, useWfHealthSummary,
   useToggleReasonCodeActive, useSetEnforcementMode,
   type AuditFilterParams,
@@ -238,6 +238,7 @@ function VersionsTab({ onSelectVersion }: { onSelectVersion: (id: string) => voi
   const { data: versions, isLoading } = useWfVersions();
   const { data: templates = [] } = useWfTemplates();
   const createDraft = useCreateDraftVersion();
+  const cloneToDraft = useCloneVersionToDraft();
   const [templateId, setTemplateId] = useState('');
   const selectedTemplate = templates.find((t: any) => t.id === templateId);
   if (isLoading) return <Loading />;
@@ -252,7 +253,18 @@ function VersionsTab({ onSelectVersion }: { onSelectVersion: (id: string) => voi
     { key: 'lifecycle', content: <Lozenge appearance={LIFECYCLE_APPEARANCE[v.lifecycle] ?? 'default'}>{v.lifecycle}</Lozenge> },
     { key: 'published', content: fmt(v.published_at) },
     { key: 'created', content: fmt(v.created_at) },
-    { key: 'open', content: <Button appearance="subtle" spacing="compact" onClick={() => onSelectVersion(v.id)}>View statuses</Button> },
+    { key: 'open', content: (
+      <div style={{ display: 'flex', gap: 4 }}>
+        <Button appearance="subtle" spacing="compact" onClick={() => onSelectVersion(v.id)}>View statuses</Button>
+        {v.lifecycle === 'published' && (
+          <Button appearance="subtle" spacing="compact"
+            isLoading={cloneToDraft.isPending}
+            onClick={() => cloneToDraft.mutate(v.id)}>
+            Clone to draft
+          </Button>
+        )}
+      </div>
+    ) },
   ] }));
   return (
     <Panel>
@@ -382,6 +394,34 @@ function TransitionsList({ versionId }: { versionId: string }) {
   return <DynamicTable head={head} rows={rows} isFixedSize rowsPerPage={25} defaultPage={1} />;
 }
 
+function FieldRequirementsSection({ versionId }: { versionId: string }) {
+  const { data: reqs, isLoading } = useWfFieldRequirements(versionId);
+  if (isLoading) return null;
+  if (!reqs || reqs.length === 0) return (
+    <div style={{ marginTop: 20, padding: '10px 12px', background: 'var(--ds-background-neutral-subtle)', borderRadius: 4, fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+      No field requirements configured for this version.
+    </div>
+  );
+  const head = { cells: [
+    { key: 'scope', content: 'Scope' },
+    { key: 'transition', content: 'Transition' },
+    { key: 'field', content: 'Field key' },
+    { key: 'req', content: 'Requirement' },
+  ] };
+  const rows = reqs.map((r) => ({ key: r.id, cells: [
+    { key: 'scope', content: <Lozenge appearance="default">{r.scope}</Lozenge> },
+    { key: 'transition', content: r.transition_id ? <code style={{ fontSize: 11 }}>{r.transition_id.slice(0, 8)}…</code> : '—' },
+    { key: 'field', content: <code style={{ fontSize: 11 }}>{r.field_key}</code> },
+    { key: 'req', content: <Lozenge appearance={r.requirement === 'required' ? 'removed' : 'default'}>{r.requirement}</Lozenge> },
+  ] }));
+  return (
+    <div style={{ marginTop: 24 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text)', marginBottom: 8 }}>Field Requirements</h4>
+      <DynamicTable head={head} rows={rows} isFixedSize rowsPerPage={15} defaultPage={1} />
+    </div>
+  );
+}
+
 function VersionScopedTab({ versionId, versions, onSelect, kind }: {
   versionId: string | null; versions: { id: string; label: string }[];
   onSelect: (id: string) => void; kind: 'statuses' | 'transitions';
@@ -398,7 +438,12 @@ function VersionScopedTab({ versionId, versions, onSelect, kind }: {
         </label>
       </div>
       {!versionId ? <Empty msg="Select a version to view its statuses and transitions." />
-        : kind === 'statuses' ? <StatusesList versionId={versionId} /> : <TransitionsList versionId={versionId} />}
+        : kind === 'statuses' ? <StatusesList versionId={versionId} /> : (
+          <>
+            <TransitionsList versionId={versionId} />
+            <FieldRequirementsSection versionId={versionId} />
+          </>
+        )}
     </Panel>
   );
 }

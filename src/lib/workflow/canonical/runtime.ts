@@ -403,6 +403,11 @@ export async function gateTransition(args: {
     const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
     const failingGuards = guardResults.filter((g) => g.isBlocking && g.passed === false);
 
+    // Field requirements: evaluate on_transition requirements.
+    const fieldReqs = await evaluateFieldRequirements({
+      versionId: version.versionId, transitionId: match?.id ?? null, issueRow: args.issueRow,
+    });
+
     let blocked = false;
     let missingGuard: string | null = null;
     let roleDecision: 'allow' | 'deny' | 'bypass' | 'waiver' | 'not_configured' = 'allow';
@@ -414,6 +419,7 @@ export async function gateTransition(args: {
       else { blocked = true; missingGuard = 'bypass_requires_reason'; roleDecision = 'deny'; }
     }
     else if (failingGuards.length > 0) { blocked = true; missingGuard = failingGuards[0].guardType; roleDecision = 'deny'; }
+    else if (!fieldReqs.passed) { blocked = true; missingGuard = `field_required:${fieldReqs.missingFields[0]}`; roleDecision = 'deny'; }
     // Transition exists in matrix but no roles configured — allow, but mark for audit clarity.
     if (!blocked && inMatrix && allowedRoles.length === 0) { roleDecision = 'not_configured'; }
 
@@ -426,6 +432,7 @@ export async function gateTransition(args: {
       fromKey, toKey,
       evaluation: {
         allowed: !wouldBlock, roleDecision, allowedRoles, guardResults, missingGuard,
+        fieldRequirements: fieldReqs,
         reasonRequired: !!match?.requires_reason, commentRequired: !!match?.requires_comment, bypassRequired: wouldBlock,
         tooltipBasis: {
           currentRole: actorRole, entityType: args.entityKey, fromStatus: fromKey, toStatus: toKey,
@@ -441,6 +448,38 @@ export async function gateTransition(args: {
   } catch (err) {
     console.warn('[canonical-workflow] gateTransition error — proceeding', err);
     return { mode: 'advisory', blocked: false, message: null, auditId: null, reasonRequired: false };
+  }
+}
+
+/**
+ * Evaluate ph_wf_field_requirements for a given transition.
+ * Returns missingFields (fields marked 'required' but absent in issueRow).
+ * Non-blocking on DB error — advisory.
+ */
+export async function evaluateFieldRequirements(args: {
+  versionId: string;
+  transitionId: string | null;
+  issueRow: any;
+}): Promise<{ passed: boolean; missingFields: string[] }> {
+  if (!args.transitionId) return { passed: true, missingFields: [] };
+  try {
+    const { data, error } = await supabase
+      .from('ph_wf_field_requirements')
+      .select('field_key, requirement')
+      .eq('version_id', args.versionId)
+      .eq('transition_id', args.transitionId)
+      .eq('scope', 'on_transition')
+      .eq('requirement', 'required');
+    if (error) return { passed: true, missingFields: [] };
+    const missing = (data ?? [])
+      .filter((r: any) => {
+        const val = args.issueRow?.[r.field_key];
+        return val === null || val === undefined || val === '';
+      })
+      .map((r: any) => r.field_key);
+    return { passed: missing.length === 0, missingFields: missing };
+  } catch {
+    return { passed: true, missingFields: [] };
   }
 }
 
