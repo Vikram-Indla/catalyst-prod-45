@@ -48,6 +48,7 @@ import { Star, StarOff, Plus } from '@/lib/atlaskit-icons';
 import { relativeFromIso } from '@/components/shared/RelativeTime';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import Select from '@atlaskit/select';
 
 /* 2026-06-17: 'tasks' added — same chrome, /tasks/filters links, no :key in
  *  URL. Saves use the 'TASKS' projectKey sentinel. Per CLAUDE.md "ADOPT
@@ -164,6 +165,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useState(0);
   const [columnVisibility, setColumnVisibility] = useState<Set<string>>(
     () => new Set(['name', 'owner', 'viewers', 'editors', 'starred', 'updated'])
   );
@@ -274,6 +277,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       return a.name.localeCompare(b.name) * dir;
     });
   }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
+
+  // Reset to page 0 whenever filters change
+  React.useEffect(() => { setPage(0); }, [visibleFilters.length]);
+
+  const pagedFilters = useMemo(
+    () => visibleFilters.slice(page * pageSize, (page + 1) * pageSize),
+    [visibleFilters, page, pageSize]
+  );
 
   // Row click + name link open the read-only detail page. The builder is
   // reached only via an explicit Edit action (kebab modal in the list, or the
@@ -634,7 +645,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       )}
       <JiraTable<SavedFilterFull>
         columns={columns}
-        data={visibleFilters}
+        data={pagedFilters}
         getRowId={f => f.id}
         onRowClick={f => navigate(detailHref(f))}
         sortKey={sortKey}
@@ -671,6 +682,45 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           </div>
         }
       />
+      {visibleFilters.length > 25 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, padding: '8px 0' }}>
+          {Math.ceil(visibleFilters.length / pageSize) > 1 && (
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              <Button
+                appearance="subtle"
+                isDisabled={page === 0}
+                onClick={() => setPage(p => p - 1)}
+              >
+                ‹ Prev
+              </Button>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', padding: '0 4px' }}>
+                {page + 1} / {Math.ceil(visibleFilters.length / pageSize)}
+              </span>
+              <Button
+                appearance="subtle"
+                isDisabled={(page + 1) * pageSize >= visibleFilters.length}
+                onClick={() => setPage(p => p + 1)}
+              >
+                Next ›
+              </Button>
+            </div>
+          )}
+          <div style={{ width: 80 }}>
+            <Select<{ label: string; value: number }>
+              options={[
+                { label: '25', value: 25 },
+                { label: '50', value: 50 },
+                { label: '100', value: 100 },
+              ]}
+              value={{ label: String(pageSize), value: pageSize }}
+              onChange={opt => { if (opt) { setPageSize(opt.value); setPage(0); } }}
+              menuPlacement="top"
+              isSearchable={false}
+              aria-label="Rows per page"
+            />
+          </div>
+        </div>
+      )}
     </CatalystListPageLayout>
   );
 }
