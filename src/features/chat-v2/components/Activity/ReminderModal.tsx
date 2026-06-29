@@ -96,7 +96,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ font: 'var(--ds-font-heading-large)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             Reminder
           </div>
           <button
@@ -117,7 +117,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
               background: 'var(--cv2-bg-row-hover)',
               borderLeft: '3px solid var(--cv2-accent)',
               borderRadius: 'var(--cv2-radius-sm)',
-              fontSize: 13,
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-subtle)',
               maxHeight: 80,
               overflow: 'hidden',
@@ -131,7 +131,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
           >
             <div
               style={{
-                fontSize: 'var(--ds-font-size-100)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: 0.4,
@@ -194,7 +194,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div style={{ flex: 1, position: 'relative' }}>
       <div
         style={{
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           marginBottom: 4,
@@ -238,7 +238,7 @@ function PickerButton({
         borderRadius: 'var(--cv2-radius-sm)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
       }}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -308,7 +308,7 @@ function CalendarPopover({
             <ChevronLeftIcon size={14} />
           </NavBtn>
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ font: 'var(--ds-font-body)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
           {MONTH_LABELS[viewMonth]} {viewYear}
         </div>
         <div style={{ display: 'inline-flex', gap: 4 }}>
@@ -330,7 +330,7 @@ function CalendarPopover({
             key={d}
             style={{
               textAlign: 'center',
-              fontSize: 'var(--ds-font-size-100)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-muted)',
               fontWeight: 600,
               padding: '4px 0',
@@ -375,11 +375,11 @@ function CalendarPopover({
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: isSel ? 'var(--ds-link, #0065FF)' : 'transparent',
+                  background: isSel ? 'var(--ds-link)' : 'transparent',
                   color: !allowed
                     ? 'var(--cv2-text-muted)'
                     : isSel
-                      ? 'var(--ds-surface, #FFFFFF)'
+                      ? 'var(--ds-text-inverse)'
                       : isToday
                         ? 'var(--cv2-accent)'
                         : 'var(--cv2-text)',
@@ -389,7 +389,7 @@ function CalendarPopover({
                       ? '2px solid var(--cv2-accent)'
                       : '2px solid transparent',
                   borderRadius: isSel ? 6 : isToday ? '50%' : 6,
-                  fontSize: 'var(--ds-font-size-300)',
+                  font: 'var(--ds-font-body-small)',
                   fontWeight: isSel || isToday ? 700 : 400,
                   cursor: allowed ? 'pointer' : 'not-allowed',
                   transition: 'background var(--cv2-transition-fast)',
@@ -501,11 +501,11 @@ function TimeDropdown({
               textAlign: 'left',
               padding: '4px 16px',
               background: sel ? 'var(--cv2-accent)' : 'transparent',
-              color: sel ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
+              color: sel ? 'var(--ds-text-inverse)' : 'var(--cv2-text)',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
             }}
           >
             {sel && '✓ '}{s.label}
@@ -525,11 +525,11 @@ function PrimaryBtn({ onClick, children }: { onClick: () => void; children: Reac
         height: 36,
         padding: '0 18px',
         background: 'var(--cv2-success)',
-        color: 'var(--ds-text-inverse, #FFFFFF)',
+        color: 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: 700,
         cursor: 'pointer',
       }}
@@ -552,7 +552,7 @@ function SecondaryBtn({ onClick, children }: { onClick: () => void; children: Re
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: 700,
         cursor: 'pointer',
       }}

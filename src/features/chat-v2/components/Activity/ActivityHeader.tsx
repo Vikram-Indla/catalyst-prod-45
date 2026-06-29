@@ -244,7 +244,7 @@ function Toolbar(props: ActivityHeaderProps) {
                     border: 'none',
                     color: 'var(--cv2-text-link)',
                     fontFamily: 'inherit',
-                    fontSize: 'var(--ds-font-size-300)',
+                    font: 'var(--ds-font-body-small)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     padding: '0 4px',
@@ -408,7 +408,7 @@ function ActionPillButton({
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 6,
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 500,
         cursor: 'pointer',
       }}
@@ -469,7 +469,7 @@ function FilterButton({
         borderRadius: 6,
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 600,
       }}
       onMouseEnter={e => {
@@ -481,7 +481,7 @@ function FilterButton({
     >
       <FilterIcon size={13} />
       {count > 0 && (
-        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700 }}>({count})</span>
+        <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 700 }}>({count})</span>
       )}
       <ChevronDownIcon size={10} />
     </button>
@@ -528,7 +528,7 @@ function ToolbarSearchInput({
           outline: 'none',
           color: 'var(--cv2-text)',
           fontFamily: 'inherit',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
         }}
       />
       <button
@@ -609,7 +609,7 @@ function SelectModeMenu({
             background: 'transparent',
             border: 'none',
             fontFamily: 'inherit',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
             color: 'var(--cv2-text)',
             cursor: 'pointer',
           }}
@@ -698,7 +698,7 @@ function FilterPopover({
           padding: '0 14px 8px',
         }}
       >
-        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>Filter by</span>
+        <span style={{ font: 'var(--ds-font-body)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>Filter by</span>
         <button
           type="button"
           aria-label="Close filter"
@@ -866,7 +866,7 @@ function FilterRowItem({
           alignItems: 'center',
           gap: 8,
           color: 'var(--cv2-text)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           minWidth: 0,
         }}
       >
@@ -994,7 +994,7 @@ function TabBtn({
         borderBottom: active ? '2px solid var(--cv2-accent)' : '2px solid transparent',
         marginBottom: -1,
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 600,
         cursor: 'pointer',
       }}
@@ -1020,7 +1020,7 @@ function TabBtn({
             borderRadius: 8,
             background: 'var(--cv2-unread)',
             color: 'var(--cv2-unread-text)',
-            fontSize: 11,
+            font: 'var(--ds-font-body-small)',
             fontWeight: 700,
           }}
         >
@@ -1071,7 +1071,7 @@ function ToggleChip({
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 6,
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-200)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 600,
         cursor: 'pointer',
       }}

@@ -68,7 +68,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text-muted)',
             marginBottom: 4,
             display: 'flex',
@@ -84,7 +84,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
                 background: 'rgba(155, 89, 182, 0.25)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 color: '#C9A4F0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 borderRadius: 10,
-                fontSize: 'var(--ds-font-size-100)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 700,
               }}
             >
@@ -102,7 +102,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: 'var(--ds-font-size-400)',
+                font: 'var(--ds-font-body)',
                 fontWeight: 700,
                 color: 'var(--cv2-text-strong)',
                 marginBottom: 0,
@@ -113,7 +113,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             {item.body ? (
               <div
                 style={{
-                  fontSize: 'var(--ds-font-size-400)',
+                  font: 'var(--ds-font-body)',
                   color: 'var(--cv2-text)',
                   lineHeight: 1.4,
                   wordBreak: 'break-word',
@@ -123,7 +123,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             ) : (
               <div
                 style={{
-                  fontSize: 'var(--ds-font-size-400)',
+                  font: 'var(--ds-font-body)',
                   color: 'var(--cv2-text-muted)',
                   lineHeight: 1.4,
                   wordBreak: 'break-word',
@@ -242,7 +242,7 @@ function Avatar({ name }: { name: string }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: 700,
         flexShrink: 0,
       }}

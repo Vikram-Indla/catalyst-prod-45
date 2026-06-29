@@ -145,7 +145,7 @@ export function MessageBubble({
         display: 'grid',
         gridTemplateColumns: '44px 1fr',
         columnGap: 8,
-        padding: '0px var(--cv2-page-pad-x, 20px) 2px 16px',
+        padding: '0px var(--cv2-page-pad-x, 20px) var(--ds-space-050) 16px',
         marginTop: showHeader ? 'var(--cv2-group-gap, 16px)' : 'var(--cv2-intra-gap, 2px)',
         background: isPinned
           ? 'rgba(236, 178, 46, 0.08)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
@@ -175,7 +175,7 @@ export function MessageBubble({
             style={{
               display: 'inline-block',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-100)',
+              font: 'var(--ds-font-body-small)',
               lineHeight: '20px',
               color: 'var(--cv2-text-muted)',
               opacity: hovered ? 1 : 0,
@@ -244,7 +244,7 @@ export function MessageBubble({
           />
         )}
         {message.editedAt && !editing && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', marginLeft: 4 }}>
+          <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)', marginLeft: 4 }}>
             (edited)
           </span>
         )}
@@ -332,7 +332,7 @@ export function MessageBubble({
             boxShadow: 'var(--cv2-shadow-modal)',
             padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
             zIndex: 'var(--cv2-modal-z, 1000)' as unknown as number,
           }}
         >
@@ -390,14 +390,14 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
       >
         <PresenceAvatar name={info.sourceAuthorName ?? 'Someone'} size={28} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ font: 'var(--ds-font-body-small)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             {info.sourceAuthorName ?? 'Someone'}
           </div>
           {info.sourceBodyText && (
             <div
               style={{
                 marginTop: 0,
-                fontSize: 'var(--ds-font-size-300)',
+                font: 'var(--ds-font-body-small)',
                 color: 'var(--cv2-text)',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
@@ -409,7 +409,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
           <div
             style={{
               marginTop: 4,
-              fontSize: 'var(--ds-font-size-200)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-muted)',
               display: 'flex',
               alignItems: 'center',
@@ -436,7 +436,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
                 color: 'var(--cv2-accent)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                fontSize: 'var(--ds-font-size-200)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 600,
               }}
             >

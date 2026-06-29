@@ -159,14 +159,14 @@ function Header({
       }}
     >
       <div>
-        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ font: 'var(--ds-font-heading-large)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
           Create a channel
         </div>
         {step === 2 && channelName && (
           <div
             style={{
               marginTop: 4,
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-subtle)',
             }}
           >
@@ -221,7 +221,7 @@ function NameStep({
     <div>
       <label
         htmlFor="cv2-channel-name"
-        style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 4 }}
+        style={{ display: 'block', font: 'var(--ds-font-body-small)', fontWeight: 700, marginBottom: 4 }}
       >
         Name
       </label>
@@ -232,11 +232,11 @@ function NameStep({
           gap: 8,
           padding: '8px 10px',
           background: 'var(--cv2-bg-input)',
-          border: '1px solid var(--cv2-accent, #1264A3)',
+          border: '1px solid var(--cv2-accent)',
           borderRadius: 'var(--cv2-radius-sm)',
         }}
       >
-        <span aria-hidden="true" style={{ color: 'var(--cv2-text-subtle)', fontSize: 'var(--ds-font-size-500)' }}>#</span>
+        <span aria-hidden="true" style={{ color: 'var(--cv2-text-subtle)', font: 'var(--ds-font-body-large)' }}>#</span>
         <input
           ref={inputRef}
           id="cv2-channel-name"
@@ -259,10 +259,10 @@ function NameStep({
             border: 'none',
             outline: 'none',
             fontFamily: 'inherit',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
           }}
         />
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{remaining}</span>
+        <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>{remaining}</span>
       </div>
       {hintsOpen && (
       <div
@@ -291,7 +291,7 @@ function NameStep({
               padding: '4px 0',
               textAlign: 'left',
               fontFamily: 'inherit',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               color: 'var(--cv2-text)',
               cursor: 'pointer',
             }}
@@ -317,7 +317,7 @@ function VisibilityStep({
 }) {
   return (
     <div>
-      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 8 }}>Visibility</div>
+      <div style={{ font: 'var(--ds-font-body-small)', fontWeight: 700, marginBottom: 8 }}>Visibility</div>
       <RadioRow
         checked={!isPrivate}
         onSelect={() => onChange(false)}
@@ -372,7 +372,7 @@ function RadioRow({
           width: 18,
           height: 18,
           borderRadius: '50%',
-          border: `2px solid ${checked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-border-strong)'}`,
+          border: `2px solid ${checked ? 'var(--cv2-accent)' : 'var(--cv2-border-strong)'}`,
           background: 'transparent',
           display: 'inline-flex',
           alignItems: 'center',
@@ -387,17 +387,17 @@ function RadioRow({
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: 'var(--cv2-accent, #1264A3)',
+              background: 'var(--cv2-accent)',
             }}
           />
         )}
       </span>
       <span style={{ display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cv2-text-strong)' }}>
+        <span style={{ font: 'var(--ds-font-body)', fontWeight: 600, color: 'var(--cv2-text-strong)' }}>
           {title}
         </span>
         {subtitle && (
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', marginTop: 0 }}>
+          <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)', marginTop: 0 }}>
             {subtitle}
           </span>
         )}
@@ -430,7 +430,7 @@ function Footer({
         justifyContent: 'space-between',
       }}
     >
-      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>Step {step} of 2</span>
+      <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>Step {step} of 2</span>
       <div style={{ display: 'inline-flex', gap: 8 }}>
         {step === 2 && (
           <button
@@ -443,7 +443,7 @@ function Footer({
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               fontWeight: 600,
               cursor: 'pointer',
             }}
@@ -481,12 +481,12 @@ function PrimaryButton({
       disabled={disabled}
       style={{
         padding: '8px 18px',
-        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: 700,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}

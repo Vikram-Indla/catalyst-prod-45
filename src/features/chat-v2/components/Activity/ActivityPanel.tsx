@@ -429,7 +429,7 @@ function EmptyState({ message }: { message: string }) {
         textAlign: 'center',
         color: 'var(--cv2-text-muted)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
       }}
     >
       {message}
@@ -472,7 +472,7 @@ function AllCaughtUpEmptyState() {
         style={{
           margin: 0,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-600)',
+          font: 'var(--ds-font-heading-small)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
         }}
@@ -484,7 +484,7 @@ function AllCaughtUpEmptyState() {
           margin: 0,
           maxWidth: 320,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           color: 'var(--cv2-text-muted)',
           lineHeight: 1.45,
         }}
@@ -552,7 +552,7 @@ function ReminderToast({ message }: { message: string }) {
         borderRadius: 'var(--cv2-radius-md)',
         boxShadow: 'var(--cv2-shadow-modal)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         zIndex: 'var(--cv2-popover-z, 1100)' as any,
       }}
     >

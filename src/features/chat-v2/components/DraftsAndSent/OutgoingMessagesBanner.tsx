@@ -19,7 +19,7 @@ export function OutgoingMessagesBanner({ onDismiss }: OutgoingMessagesBannerProp
     >
       <div
         style={{
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           fontWeight: 700,
           color: 'var(--cv2-text)',
           marginBottom: 4,
@@ -29,7 +29,7 @@ export function OutgoingMessagesBanner({ onDismiss }: OutgoingMessagesBannerProp
       </div>
       <div
         style={{
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           color: 'var(--cv2-text-subtle)',
           paddingRight: 24,
           lineHeight: 1.45,

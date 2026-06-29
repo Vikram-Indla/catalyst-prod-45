@@ -241,10 +241,10 @@ export function Composer({
             style={{
               margin: '4px 12px 0',
               padding: '8px 12px',
-              background: 'rgba(224, 30, 90, 0.12)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-              border: '1px solid rgba(224, 30, 90, 0.45)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+              background: 'var(--ds-background-danger)',
+              border: '1px solid var(--ds-border-danger)',
               color: 'var(--cv2-text-strong)',
-              fontSize: 'var(--ds-font-size-200)',
+              font: 'var(--ds-font-body-small)',
               borderRadius: 6,
               display: 'flex',
               flexDirection: 'column',

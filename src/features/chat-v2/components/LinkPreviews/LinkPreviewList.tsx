@@ -48,7 +48,7 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
             display: 'flex',
             alignItems: 'center',
             gap: 4,
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text-subtle)',
           }}
         >
@@ -60,7 +60,7 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
         {preview.title && (
           <div
             style={{
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               fontWeight: 700,
               color: 'var(--cv2-link, var(--cv2-accent))',
               marginTop: 0,
@@ -78,7 +78,7 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
         {preview.description && (
           <div
             style={{
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text)',
               marginTop: 0,
               overflow: 'hidden',

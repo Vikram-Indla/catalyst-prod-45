@@ -98,7 +98,7 @@ function StripBtn({
           border: 'none',
           borderRadius: 6,
           cursor: 'pointer',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           lineHeight: 1,
         }}
       >

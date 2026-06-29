@@ -149,7 +149,7 @@ function NavRow({
               borderRadius: 7,
               background: 'var(--cv2-unread)',
               color: 'var(--ds-text-inverse)',
-              fontSize: 'var(--ds-font-size-50)',
+              font: 'var(--ds-font-body-small)',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
@@ -170,20 +170,24 @@ function NavRow({
       onClick={onClick}
       aria-current={active ? 'page' : undefined}
       style={{
+        position: 'relative',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
         width: '100%',
+        minHeight: 40,
         padding: '4px 12px',
         background: active ? 'var(--cv2-bg-row-active, var(--cv2-bg-row-hover))' : 'transparent',
         border: 'none',
         textAlign: 'left',
         cursor: 'pointer',
-        fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-400)',
-        fontWeight: active ? 700 : 500,
-        color: active ? 'var(--cv2-text)' : 'var(--cv2-text-subtle)',
-        borderRadius: 'var(--cv2-radius-sm)',
+        fontFamily: 'var(--cp-font-body)',
+        font: 'var(--ds-font-body)',
+        fontWeight: active ? 600 : 500,
+        lineHeight: 1,
+        letterSpacing: '0',
+        color: active ? 'var(--cp-text-link, var(--cp-primary-60))' : 'var(--cp-text-secondary)',
+        borderRadius: '4px',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => {
@@ -193,11 +197,25 @@ function NavRow({
         if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
       }}
     >
+      {active && (
+        <span
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 4,
+            bottom: 4,
+            width: 3,
+            background: 'var(--ds-text-brand)',
+            borderRadius: '0 3px 3px 0',
+          }}
+        />
+      )}
       <span
         aria-hidden="true"
         style={{
-          width: 18,
-          height: 18,
+          width: 20,
+          height: 20,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -219,7 +237,7 @@ function NavRow({
             borderRadius: 8,
             background: 'var(--cv2-unread)',
             color: 'var(--ds-text-inverse)',
-            fontSize: 11,
+            font: 'var(--ds-font-body-small)',
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

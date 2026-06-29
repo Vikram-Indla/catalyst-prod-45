@@ -76,7 +76,7 @@ function UnreadsToggle({ value, onChange }: { value: boolean; onChange: (v: bool
         border: 'none',
         color: 'var(--cv2-text-subtle)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-200)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 500,
         padding: 0,
         cursor: 'pointer',

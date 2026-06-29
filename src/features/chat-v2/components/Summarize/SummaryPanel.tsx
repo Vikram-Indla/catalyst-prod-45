@@ -109,8 +109,8 @@ export function SummaryPanel({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            fontSize: 'var(--ds-font-size-500)',
-            fontWeight: 800,
+            font: 'var(--ds-font-body-large)',
+            fontWeight: 700,
             color: 'var(--cv2-text-strong)',
           }}
         >
@@ -190,15 +190,15 @@ function LoadingState({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div
         style={{
-          fontSize: 'var(--ds-font-size-600)',
-          fontWeight: 800,
+          font: 'var(--ds-font-heading-small)',
+          fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.35,
         }}
       >
         {title}
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>Sifting through messages…</div>
+      <div style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>Sifting through messages…</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
         <Shimmer width="92%" />
         <Shimmer width="96%" />
@@ -216,7 +216,7 @@ function Shimmer({ width }: { width: string }) {
         height: 12,
         borderRadius: 6,
         background:
-          'linear-gradient(90deg, var(--ds-surface, rgba(255,255,255,0.04)) 0%, var(--ds-surface, rgba(255,255,255,0.10)) 50%, var(--ds-surface, rgba(255,255,255,0.04)) 100%)',
+          'linear-gradient(90deg, var(--ds-skeleton) 0%, var(--ds-skeleton-subtle) 50%, var(--ds-skeleton) 100%)',
         backgroundSize: '200% 100%',
         animation: 'cv2-summary-shimmer 1.6s ease-in-out infinite',
       }}
@@ -308,8 +308,8 @@ function SummaryHeader({ mode, payload }: { mode: SummaryPanelMode; payload: Sum
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div
         style={{
-          fontSize: 'var(--ds-font-size-800)',
-          fontWeight: 800,
+          font: 'var(--ds-font-heading-large)',
+          fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.25,
         }}
@@ -322,7 +322,7 @@ function SummaryHeader({ mode, payload }: { mode: SummaryPanelMode; payload: Sum
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 12,
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           color: 'var(--cv2-text-muted)',
         }}
       >
@@ -369,8 +369,8 @@ function SectionTitleOnly({ title }: { title: string }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, opacity: 0.55 }}>
       <div
         style={{
-          fontSize: 'var(--ds-font-size-500)',
-          fontWeight: 800,
+          font: 'var(--ds-font-body-large)',
+          fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.35,
         }}
@@ -411,8 +411,8 @@ function SectionCard({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
         <div
           style={{
-            fontSize: 'var(--ds-font-size-500)',
-            fontWeight: 800,
+            font: 'var(--ds-font-body-large)',
+            fontWeight: 700,
             color: 'var(--cv2-text-strong)',
             lineHeight: 1.35,
           }}
@@ -454,19 +454,19 @@ function SectionCard({
           intact. Once done, swap to the rich HTML pass so @mention pills,
           bold/italic/code render properly. */}
       {animate && !done ? (
-        <div style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.55, color: 'var(--cv2-text)' }}>
+        <div style={{ font: 'var(--ds-font-body)', lineHeight: 1.55, color: 'var(--cv2-text)' }}>
           {visible}
           <Caret />
         </div>
       ) : (
         <div
-          style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.55, color: 'var(--cv2-text)' }}
+          style={{ font: 'var(--ds-font-body)', lineHeight: 1.55, color: 'var(--cv2-text)' }}
           dangerouslySetInnerHTML={{ __html: renderSummaryInline(section.body, participantNames, selfFullName) }}
         />
       )}
       {done && expanded && section.details.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--cv2-text-muted)' }}>
+          <div style={{ font: 'var(--ds-font-body-small)', fontWeight: 700, color: 'var(--cv2-text-muted)' }}>
             More details
           </div>
           <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -475,7 +475,7 @@ function SectionCard({
               return (
                 <li
                   key={`${section.id}-${i}`}
-                  style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.55, color: 'var(--cv2-text)' }}
+                  style={{ font: 'var(--ds-font-body-small)', lineHeight: 1.55, color: 'var(--cv2-text)' }}
                 >
                   <span
                     dangerouslySetInnerHTML={{
@@ -530,11 +530,11 @@ function ReferenceMarker({ index, onClick }: { index: number; onClick: () => voi
         minWidth: 18,
         height: 18,
         padding: '0 5px',
-        background: 'rgba(29, 155, 209, 0.18)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        color: 'var(--ds-link, #0C66E4)',
+        background: 'var(--ds-background-information)',
+        color: 'var(--ds-link)',
         border: 'none',
         borderRadius: 4,
-        fontSize: 'var(--ds-font-size-100)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 700,
         cursor: 'pointer',
         verticalAlign: 'middle',
