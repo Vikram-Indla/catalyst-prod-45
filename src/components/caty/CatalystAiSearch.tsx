@@ -146,7 +146,7 @@ export function CatalystAiSearch({
           margin: 0,
           padding: 0,
           border: 0,
-          outline: 2px solid var(--ds-border-focused),
+          outline: 0,
           background: 'transparent',
           boxShadow: 'none',
           font: 'inherit',

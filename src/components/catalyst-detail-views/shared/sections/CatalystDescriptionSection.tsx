@@ -440,7 +440,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
 
     [data-media-vc-wrapper] {
       position: relative !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       border: none !important;
       background: transparent !important;
       width: 100% !important;
