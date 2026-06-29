@@ -1785,7 +1785,7 @@ export function ParentFieldPicker({
               style={{
                 ...ATLASSIAN_DROPDOWN,
                 position: "absolute",
-                top: "48%",
+                top: "100%",
                 left: 0,
                 marginTop: 4,
                 width: Math.max(containerRef.current?.offsetWidth ?? 420, 420),

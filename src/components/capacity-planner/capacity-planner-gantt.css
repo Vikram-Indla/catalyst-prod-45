@@ -860,7 +860,7 @@
   content: 'TODAY' !important;
   position: absolute !important;
   top: -20px !important;
-  left: 48% !important;
+  left: 50% !important;
   transform: translateX(-50%) !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;

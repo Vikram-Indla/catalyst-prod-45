@@ -160,7 +160,7 @@
 .pc-search-icon {
   position: absolute;
   left: 8px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 14px;
   height: 14px;
@@ -188,7 +188,7 @@
 .pc-search-kbd {
   position: absolute;
   right: 8px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   font-family: var(--cp-font-mono);
   font-size: 10px;

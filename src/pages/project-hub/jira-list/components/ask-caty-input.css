@@ -55,8 +55,8 @@
      covers the visible area without exposing a corner. */
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 48%;
-  left: 48%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   /* 2026-06-18 — magenta-led AI border. Matches the CatyPulseIcon mark

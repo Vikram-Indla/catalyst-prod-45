@@ -386,8 +386,8 @@
 /* ── Jump-to-present ── */
 .c-feed__jump {
   position: absolute;
-  bottom: 48px;
-  left: 48%;
+  bottom: 80px;
+  left: 50%;
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;

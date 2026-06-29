@@ -201,7 +201,7 @@
 .planner-task-list-content .tl-search-icon {
   position: absolute;
   left: 0.75rem;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--tl-text-muted);
   pointer-events: none;
@@ -760,8 +760,8 @@
 
 .planner-task-list-content .tl-bulk-bar {
   position: fixed;
-  bottom: 0.5rem;
-  left: 48%;
+  bottom: 1.5rem;
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;

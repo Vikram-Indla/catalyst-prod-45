@@ -323,7 +323,7 @@ export function MessageBubble({
           style={{
             position: 'fixed',
             bottom: 24,
-            left: '48%',
+            left: '50%',
             transform: 'translateX(-50%)',
             background: 'var(--cv2-bg-modal)',
             color: 'var(--cv2-text)',

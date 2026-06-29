@@ -1204,7 +1204,7 @@ export default function TimelineView(props: TimelineViewProps) {
                 style={{
                   position: "absolute",
                   left: 8,
-                  top: "48%",
+                  top: "50%",
                   transform: "translateY(-50%)",
                   lineHeight: 0,
                   pointerEvents: "none",
@@ -2022,8 +2022,8 @@ export default function TimelineView(props: TimelineViewProps) {
                 aria-label="Create work item"
                 style={{
                   position: "fixed",
-                  top: "48%",
-                  left: "48%",
+                  top: "50%",
+                  left: "50%",
                   transform: "translate(-50%, -50%)",
                   width: 480,
                   maxHeight: "85vh",

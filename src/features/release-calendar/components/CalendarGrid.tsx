@@ -122,7 +122,7 @@ export function CalendarGrid({
               key={release.id}
               className="absolute"
               style={{
-                left: '48px',
+                left: '120px',
                 right: 0,
                 top: `${row * ROW_HEIGHT + 12}px`,
                 height: `${ROW_HEIGHT - 8}px`,

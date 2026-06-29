@@ -50,7 +50,7 @@ export function SidebarSearch({ onOpenSearchModal, value, onChange, placeholder 
             aria-hidden="true"
             style={{
               position: 'absolute',
-              left: 8,
+              left: 10,
               color: 'var(--cv2-text-muted)',
               pointerEvents: 'none',
               display: 'inline-flex',
@@ -79,7 +79,7 @@ export function SidebarSearch({ onOpenSearchModal, value, onChange, placeholder 
           aria-hidden="true"
           style={{
             position: 'absolute',
-            left: 8,
+            left: 10,
             color: 'var(--cv2-text-muted)',
             pointerEvents: 'none',
             display: 'inline-flex',

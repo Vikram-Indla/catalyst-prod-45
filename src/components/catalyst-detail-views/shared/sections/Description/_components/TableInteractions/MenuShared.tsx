@@ -298,7 +298,7 @@ export function MenuToggle({ on }: { on: boolean }) {
       <span
         style={{
           position: 'absolute',
-          top: 0,
+          top: 2,
           insetInlineStart: on ? 12 : 2,
           width: 10,
           height: 10,

@@ -549,7 +549,7 @@
 .ct-search-box .search-icon {
   position: absolute;
   left: var(--ct-space-3);
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 16px;
   height: 16px;

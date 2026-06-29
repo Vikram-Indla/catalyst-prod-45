@@ -206,8 +206,8 @@
 [data-sidebar-collapsed="true"] .c-sb-row[data-unread="true"]::after {
   content: attr(data-unread-count);
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;

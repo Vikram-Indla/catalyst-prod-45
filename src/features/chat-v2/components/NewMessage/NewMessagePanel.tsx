@@ -464,7 +464,7 @@ const dropdownStyles: React.CSSProperties = {
   position: 'absolute',
   left: 16,
   right: 16,
-  top: '48%',
+  top: '100%',
   marginTop: 4,
   zIndex: 10,
   background: 'var(--cv2-bg-modal)',

@@ -274,7 +274,7 @@
 /* Sort dropdown menu */
 .jlpSortMenu {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 12px;
   margin-top: 0px;
   background: var(--ds-surface, #fff);
@@ -607,7 +607,7 @@
   z-index: 2;
   position: absolute;
   left: -14px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)));
   font-size: 11px;

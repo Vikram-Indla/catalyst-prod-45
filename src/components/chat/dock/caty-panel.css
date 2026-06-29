@@ -629,7 +629,7 @@
 .cp-thinking__steps::before {
   content: '';
   position: absolute;
-  left: 8px;
+  left: 9px;
   top: 12px;
   bottom: 12px;
   width: 1px;
@@ -647,7 +647,7 @@
 .cp-step__icon {
   position: absolute;
   left: -24px;
-  top: 4px;
+  top: 6px;
   width: 18px;
   height: 18px;
   border-radius: 50%;

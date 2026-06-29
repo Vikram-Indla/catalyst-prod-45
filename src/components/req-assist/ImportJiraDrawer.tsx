@@ -188,7 +188,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               position: 'fixed',
               top: 48,
               left: 0,
-              right: 48,
+              right: 600,
               bottom: 0,
               background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
               zIndex: 49,

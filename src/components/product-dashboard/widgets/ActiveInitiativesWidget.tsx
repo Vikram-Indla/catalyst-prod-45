@@ -229,7 +229,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
             position: 'absolute',
             left: `${left}%`,
             width: `${Math.max(1.5, right - left)}%`,
-            top: 4, height: 10,
+            top: 3, height: 10,
             borderRadius: 2,
             background: barBg,
             border: `1px solid ${barBorder}`,

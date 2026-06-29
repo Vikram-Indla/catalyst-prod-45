@@ -133,7 +133,7 @@ export function ViewSettingsPanel({
       tabIndex={-1}
       style={{
         position: 'absolute',
-        top: '48%',
+        top: '100%',
         right: 0,
         marginTop: 4,
         width: 320,
