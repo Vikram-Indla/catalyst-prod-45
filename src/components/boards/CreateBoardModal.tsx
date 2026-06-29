@@ -144,7 +144,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
                 placeholder="e.g. My Kanban board"
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
-                  border: '2px solid var(--ds-border-focused)',
+                  border: '1px solid var(--ds-border-focused)',
                   borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--ds-text)',
                   background: 'var(--ds-surface)',

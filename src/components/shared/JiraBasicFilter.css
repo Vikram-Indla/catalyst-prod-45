@@ -37,7 +37,7 @@
 .jf-trigger-btn--active {
   border-color: var(--ds-border-selected);
   box-shadow: 0 0 0 1px var(--ds-border-selected);
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
 }
 .jf-trigger-btn--active {
   background-color: var(--ds-background-selected);

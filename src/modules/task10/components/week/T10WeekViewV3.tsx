@@ -83,7 +83,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     gap: 12,
     padding: '12px 16px',
     background: isCompleted ? 'var(--ds-surface-sunken)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
-    border: isDragging ? `2px solid var(--ds-border-focused)` : `1px solid var(--ds-border)`,
+    border: isDragging ? `1px solid var(--ds-border-focused)` : `1px solid var(--ds-border)`,
     borderRadius: 12,
     cursor: 'default',
     transition: 'all 0.15s ease',

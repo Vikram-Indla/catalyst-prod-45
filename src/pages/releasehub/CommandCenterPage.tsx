@@ -26,7 +26,7 @@ import {
 } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import { Avatar } from '@/components/ads/Avatar';
 import Heading from '@atlaskit/heading';

@@ -7,7 +7,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkItemTraceability } from '@/hooks/useReleaseHub';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {

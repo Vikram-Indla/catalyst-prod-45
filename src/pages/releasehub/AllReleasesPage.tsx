@@ -17,7 +17,7 @@ import { Plus } from '@/lib/atlaskit-icons';
 import { useReleasesList, useUpdateReleaseStatus, type ReleaseListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { Avatar } from '@/components/ads/Avatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';

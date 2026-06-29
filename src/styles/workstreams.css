@@ -145,7 +145,7 @@
 }
 
 .ws-btn:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 2px var(--ws-bg-primary), 0 0 0 4px var(--ws-primary);
 }
 
@@ -301,7 +301,7 @@
 }
 
 .ws-search-input input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ws-primary);
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
@@ -443,7 +443,7 @@
 }
 
 .ws-action-btn:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 2px var(--ws-bg-primary), 0 0 0 4px var(--ws-primary);
 }
 
@@ -988,7 +988,7 @@
 }
 
 .ws-form-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ws-primary);
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }

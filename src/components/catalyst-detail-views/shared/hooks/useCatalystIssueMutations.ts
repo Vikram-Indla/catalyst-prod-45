@@ -54,7 +54,7 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
         if (gate.blocked) {
           throw new Error(gate.message ?? 'Transition not allowed by workflow.');
         }
-        // Reason-required: deny if no reason provided (CatalystStatusPill passes
+        // Reason-required: deny if no reason provided (StatusLozengeDropdown passes
         // reasonCode/reasonText; other callers like JiraTable do not).
         if (gate.reasonRequired && !reasonCode && !reasonText) {
           throw new Error('This transition requires a reason. Use the status pill in the detail view to provide one.');

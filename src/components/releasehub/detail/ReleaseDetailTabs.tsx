@@ -35,7 +35,7 @@ import { JiraTable, makeKeyCell, makeStatusCell, makeAssigneeCell, makePriorityC
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import TextArea from '@atlaskit/textarea';
 import { Sparkles } from '@/lib/atlaskit-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { Avatar } from '@/components/ads/Avatar';
 import { X, Plus } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';

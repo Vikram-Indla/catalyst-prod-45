@@ -12,7 +12,7 @@ import { useState, useMemo, useRef, useEffect, memo, Fragment } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag, ArrowLeft, ArrowUp, ArrowDown, Check, Plus } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { AllWorkEmptyState } from './AllWorkEmptyState';
 import { SubTasksTab, useSubTasks } from './SubTasksTab';
 import type { AllWorkItem } from '@/types/allwork.types';

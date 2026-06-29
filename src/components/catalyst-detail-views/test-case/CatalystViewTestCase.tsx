@@ -28,7 +28,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import {
   CatalystTitleEditor,
-  CatalystStatusPill,
+  StatusLozengeDropdown,
   CatalystKeyDetails,
   KeyDetailsFieldRow,
   Description,
@@ -622,7 +622,7 @@ export default function CatalystViewTestCase({
         typeLabel="test case"
         projectKey={projectKey ?? ''}
         statusPill={
-          <CatalystStatusPill
+          <StatusLozengeDropdown
             status={pseudoIssue?.status}
             statusCategory={pseudoIssue?.status_category}
             onStatusChange={handleStatusChange}

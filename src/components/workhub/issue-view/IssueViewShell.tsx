@@ -15,7 +15,7 @@ import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBa
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { PriorityBars, PRIORITY_MAP, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { getJiraTypeLabel } from '@/lib/jira-issue-type-icons';

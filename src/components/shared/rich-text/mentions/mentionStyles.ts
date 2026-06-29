@@ -123,7 +123,7 @@ export function injectMentionStyles(): void {
        so it appears only when a user tabs to an interactive chip. */
     span[data-mention-id][role="button"]:focus-visible,
     span.atlaskit-mention[data-id][role="button"]:focus-visible {
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: 1px solid var(--ds-border-focused) !important;
       outline-offset: 1px !important;
     }
   `;

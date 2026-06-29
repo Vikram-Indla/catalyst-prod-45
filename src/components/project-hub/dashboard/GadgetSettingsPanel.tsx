@@ -257,8 +257,8 @@ export default function GadgetSettingsPanel({
             onClick={() => toggleField('date')}
             style={{
               display: 'flex', alignItems: 'center', minHeight: 36,
-              border: openField === 'date' ? '2px solid var(--ds-border-focused)' : '2px solid var(--ds-border)',
-              boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+              border: openField === 'date' ? '1px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
+              boxShadow: 'none',
               borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface)' : 'var(--ds-surface-sunken)',
               padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
             }}
@@ -773,7 +773,7 @@ function MultiSelectGeneric({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
+          border: open ? '1px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
           background: 'var(--ds-surface-sunken)',
           borderRadius: 3,
           textAlign: 'left',
@@ -923,7 +923,7 @@ function MultiSelectStatus({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
+          border: open ? '1px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
           background: 'var(--ds-surface-sunken)',
           borderRadius: 3,
           textAlign: 'left',

@@ -51,7 +51,7 @@ export function SegmentedTab({ value, children, count, className }: SegmentedTab
       onClick={() => context.onValueChange(value)}
       className={cn(
         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600",
         isActive
           // Active: grey background, foreground text (neutral, not gold)
           ? "bg-[var(--surface-1)] text-[var(--text-1)] shadow-sm"

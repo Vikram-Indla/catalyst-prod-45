@@ -22,7 +22,7 @@ import { token } from '@atlaskit/tokens';
 
 import { MockAppProvider } from './MockAppProvider';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import { UserAvatar } from '@/components/shared/UserAvatar';
 import { WatchersChip } from '@/components/catalyst-detail-views/shared/WatchersChip';
 import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
@@ -111,7 +111,7 @@ const JIRA_TABLE_COLUMNS: Column<MockRow>[] = [
     width: 14,
     accessor: r => r.status,
     cell: ({ row }) => (
-      <CatalystStatusPill status={row.status} statusCategory={row.statusCategory} />
+      <StatusLozengeDropdown status={row.status} statusCategory={row.statusCategory} />
     ),
   },
   {
@@ -138,11 +138,11 @@ export const previewFixtures: Record<string, PreviewFixture> = {
 
   'catalyst-status-pill': () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CatalystStatusPill status="To Do" statusCategory="new" />
-      <CatalystStatusPill status="In Progress" statusCategory="indeterminate" />
-      <CatalystStatusPill status="In Review" statusCategory="indeterminate" />
-      <CatalystStatusPill status="Done" statusCategory="done" />
-      <CatalystStatusPill status="Blocked" statusCategory="new" />
+      <StatusLozengeDropdown status="To Do" statusCategory="new" />
+      <StatusLozengeDropdown status="In Progress" statusCategory="indeterminate" />
+      <StatusLozengeDropdown status="In Review" statusCategory="indeterminate" />
+      <StatusLozengeDropdown status="Done" statusCategory="done" />
+      <StatusLozengeDropdown status="Blocked" statusCategory="new" />
     </div>
   ),
 
@@ -267,7 +267,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
         onStatusChange={() => {}}
         onClose={() => {}}
         onDelete={() => {}}
-        statusPill={<CatalystStatusPill status="In Progress" statusCategory="indeterminate" />}
+        statusPill={<StatusLozengeDropdown status="In Progress" statusCategory="indeterminate" />}
       />
     </MockAppProvider>
   ),
@@ -303,7 +303,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <JiraIssueTypeIcon type="Story" size={16} />
               <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: token('color.link', 'var(--ds-link)') }}>BAU-1234</span>
-              <CatalystStatusPill status="In Progress" statusCategory="indeterminate" />
+              <StatusLozengeDropdown status="In Progress" statusCategory="indeterminate" />
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <WatchersChip issueKey="BAU-1234" />
@@ -326,7 +326,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
                 onStatusChange={() => {}}
                 onClose={() => {}}
                 onDelete={() => {}}
-                statusPill={<CatalystStatusPill status="In Progress" statusCategory="indeterminate" />}
+                statusPill={<StatusLozengeDropdown status="In Progress" statusCategory="indeterminate" />}
               />
             </div>
           </div>

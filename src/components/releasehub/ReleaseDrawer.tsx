@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity, Sparkles, FileText, Loader2, AlertCircle, Copy, Pencil, Check, X } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { SourceBadge } from './SourceBadge';
 import { CatalystAIChip } from './CatalystAIChip';
 import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff, useLinkTestCycle, useUnlinkTestCycle, useUpdateReleaseTargetDate } from '@/hooks/useReleaseHub';

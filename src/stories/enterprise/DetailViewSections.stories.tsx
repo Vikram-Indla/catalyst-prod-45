@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from 'storybook/test';
-import { CatalystKeyDetails, CatalystTitleEditor, CatalystQuickActions, CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections';
+import { CatalystKeyDetails, CatalystTitleEditor, CatalystQuickActions, StatusLozengeDropdown } from '@/components/catalyst-detail-views/shared/sections';
 import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 import { ISSUES } from '../fixtures/production-data';
 
@@ -25,8 +25,8 @@ export const DescriptionSection: StoryObj = {
   render: () => <div style={{ maxWidth: 700 }}><Description issue={issue as any} /></div>,
 };
 export const StatusPillInProgress: StoryObj = {
-  render: () => <CatalystStatusPill status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />,
+  render: () => <StatusLozengeDropdown status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />,
 };
 export const StatusPillDone: StoryObj = {
-  render: () => <CatalystStatusPill status="Done" statusCategory="done" onStatusChange={fn()} issueType="Story" />,
+  render: () => <StatusLozengeDropdown status="Done" statusCategory="done" onStatusChange={fn()} issueType="Story" />,
 };

@@ -5,7 +5,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ChevronDown, ChevronRight, Link2, Send } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow } from 'date-fns';

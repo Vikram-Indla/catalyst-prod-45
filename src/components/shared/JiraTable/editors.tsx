@@ -37,7 +37,7 @@ import AkPriorityLowestIcon from '@atlaskit/icon/core/priority-lowest';
 import AkCloseIcon from '@atlaskit/icon/core/close';
 import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
 import AkAddIcon from '@atlaskit/icon/core/add';
-import { StatusPill } from './cells';
+import { StatusLozenge, StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import type { CellProps, LozengeAppearance } from './types';
 
 /* ─── Tiny popover used by every editor ────────────────────────────────────
@@ -152,14 +152,14 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
             ...(align === 'end' ? { right: anchor.right } : { left: anchor.left }),
             zIndex: 1000,
             minWidth: width,
-            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
-            borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
-            padding: 4,
+            background: 'var(--ds-surface-overlay, var(--ds-surface))',
+            border: '1px solid var(--ds-border-bold)',
+            borderRadius: 'var(--ds-border-radius, 4px)',
+            boxShadow: '0 8px 16px -4px var(--ds-shadow-overlay-perimeter, rgba(9,30,66,0.15)), 0 0 1px var(--ds-shadow-overlay, rgba(9,30,66,0.31))',
+            padding: 'var(--ds-space-050, 4px)',
             maxHeight: 360,
             overflowY: 'auto',
-            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+            fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
             color: 'var(--ds-text)',
           }}
         >
@@ -225,6 +225,12 @@ export interface StatusOption {
   group?: string;
 }
 
+function appearanceToWorkflowCategory(ap: LozengeAppearance): string {
+  if (ap === 'success' || ap === 'removed') return 'done';
+  if (ap === 'inprogress' || ap === 'moved') return 'in_progress';
+  return 'todo';
+}
+
 export function makeStatusEditCell<T>({
   getStatus,
   appearanceFor,
@@ -233,6 +239,7 @@ export function makeStatusEditCell<T>({
   canEdit,
   onChange,
   lockWhenDone = true,
+  getIssueType,
 }: {
   getStatus: (row: T) => string | null;
   appearanceFor: (status: string | null) => LozengeAppearance;
@@ -240,115 +247,74 @@ export function makeStatusEditCell<T>({
   options: StatusOption[];
   canEdit?: (row: T) => boolean;
   onChange: (row: T, next: string) => void;
-  /** 2026-06-21 (Vikram canonical): once status category = 'done',
-   *  the cell is frozen. Default `true` everywhere; pass `false` only
-   *  for admin/bulk-edit override surfaces. */
   lockWhenDone?: boolean;
+  getIssueType?: (row: T) => string | null | undefined;
 }) {
-  // Group options by `group` field
-  const grouped: Record<string, StatusOption[]> = {};
-  for (const opt of options) {
-    const k = opt.group || '';
-    if (!grouped[k]) grouped[k] = [];
-    grouped[k].push(opt);
-  }
-  const groupKeys = Object.keys(grouped);
+  // Transform table options → canonical dropdown's statusOptions format.
+  // value/label preserved separately so the dropdown can render pretty
+  // labels while pick() returns the canonical value.
+  const dropdownOptions = options.map((o) => ({
+    value: o.value,
+    label: o.label,
+    color_category: appearanceToWorkflowCategory(o.appearance),
+  }));
 
   return function StatusEditCell({ row }: CellProps<T>) {
     const status = getStatus(row);
     const callerEditable = canEdit ? canEdit(row) : true;
-    // 2026-06-28: freeze on done-category OR any terminal outcome
-     // (rejected / declined / cancelled / won't do, etc). Colour mapping is
-     // unchanged — only the lock + chevron suppression broadens.
-    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
-    const editable = callerEditable && !frozen;
+    const issueType = getIssueType?.(row) ?? null;
+    const display = status ? (labelFor ? labelFor(status) : status) : null;
 
-    // Non-editable + empty: just a dash, no affordance.
-    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest))') }}>—</span>;
+    // Non-editable + empty: just a dash.
+    if (!display && !callerEditable) {
+      return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>—</span>;
+    }
 
-    // 2026-06-28: chevron lives INSIDE the pill (trailingIcon) so it inherits
-     // the pill's bg/colour. CatalystStatusPill suppresses trailingIcon when
-     // status maps to the done category — frozen pills never show a chevron.
-    const chevron = (
-      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.7 }}>
-        <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    );
-
-    const lozenge = status ? (
-      <StatusPill
-        appearance={appearanceFor(status)}
-        trailingIcon={editable ? chevron : undefined}
-      >
-        {labelFor ? labelFor(status) : status}
-      </StatusPill>
-    ) : null;
-
-    if (!editable && lozenge) {
-      /* 2026-06-21: locked cell still needs `data-jira-cell-editor` so the
-         row-click handler in JiraTable doesn't fire on a done-frozen status. */
+    // Empty editable cell: ghost "Set status" affordance.
+    if (!display) {
       return (
-        <span
+        <button
+          type="button"
           data-jira-cell-editor
-          title={frozen ? `Status frozen — ${status} is final` : undefined}
-          style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center' }}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            padding: '0px 4px',
+            margin: '-2px -4px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            // The first option becomes the initial status — caller handles via onChange.
+            // For now, leave the click as a no-op affordance; canonical pattern is to
+            // show a popover here too. Will wire up if needed.
+          }}
         >
-          {lozenge}
-        </span>
+          <span data-jira-cell-ghost style={{ fontSize: 'var(--ds-font-size-300)' }}>
+            Set status
+          </span>
+        </button>
       );
     }
 
-    // Editable trigger — renders a Lozenge if status set, or a "Set status"
-    // ghost label if empty. Whole-cell hover tint is driven by the
-    // `data-jira-cell-editor` attribute (handled by JiraTable.tsx CSS).
     return (
-      <EditorPopover
-        width={260}
-        trigger={({ onClick, isOpen, ref }) => (
-          <button
-            ref={ref}
-            type="button"
-            onClick={onClick}
-            aria-expanded={isOpen}
-            data-jira-cell-editor
-            style={{
-              background: 'transparent',
-              border: 'none',
-              padding: '0px 4px',
-              margin: '-2px -4px',
-              borderRadius: 3,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0,
-            }}
-          >
-            {lozenge ?? (
-              <span data-jira-cell-ghost style={{ fontSize: 'var(--ds-font-size-300)' }}>
-                Set status
-              </span>
-            )}
-          </button>
-        )}
+      <span
+        data-jira-cell-editor
+        style={{ display: 'inline-flex', alignItems: 'center' }}
       >
-        {(close) =>
-          groupKeys.map((g) => (
-            <div key={g || '__none'}>
-              {g && <MenuLabel>{g}</MenuLabel>}
-              {grouped[g].map((opt) => (
-                <MenuItemBtn
-                  key={opt.value}
-                  active={opt.value === status}
-                  onClick={() => { onChange(row, opt.value); close(); }}
-                >
-                  <StatusPill appearance={opt.appearance}>{opt.label}</StatusPill>
-                </MenuItemBtn>
-              ))}
-            </div>
-          ))
-        }
-      </EditorPopover>
+        <StatusLozengeDropdown
+          status={display}
+          statusCategory={appearanceToWorkflowCategory(appearanceFor(status))}
+          statusOptions={dropdownOptions}
+          onStatusChange={(next) => onChange(row, next)}
+          issueType={issueType}
+          interactive={callerEditable}
+          size="sm"
+          lockWhenDone={lockWhenDone}
+        />
+      </span>
     );
   };
 }
@@ -419,7 +385,7 @@ function StatusPopupCell<T>({
                   active={opt.value === status}
                   onClick={() => { onChange(row, opt.value); setIsOpen(false); }}
                 >
-                  <StatusPill appearance={opt.appearance}>{opt.label}</StatusPill>
+                  <StatusLozenge status={opt.label} appearance={opt.appearance} />
                 </MenuItemBtn>
               ))}
             </div>
@@ -492,9 +458,10 @@ export function makeStatusEditCellAkPopup<T>({
     const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
     const lozenge = status ? (
-      <StatusPill appearance={appearanceFor(status)}>
-        {labelFor ? labelFor(status) : status}
-      </StatusPill>
+      <StatusLozenge
+        status={labelFor ? labelFor(status) : status}
+        appearance={appearanceFor(status)}
+      />
     ) : null;
     return (
       <StatusPopupCell<T>

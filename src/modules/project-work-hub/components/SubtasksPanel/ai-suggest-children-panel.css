@@ -67,7 +67,7 @@
   border-bottom: 0px solid var(--ds-border);
 }
 .ascp-header:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 .ascp-header__left {
@@ -132,7 +132,7 @@
   background: var(--ds-background-neutral-subtle-hovered);
 }
 .ascp-row:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 .ascp-row:disabled {

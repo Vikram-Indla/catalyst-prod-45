@@ -24,7 +24,6 @@ export {
   makeSummaryCell,
   makeStatusCell,
   makeStatusEditCell,
-  StatusPill,
   makeAssigneeCell,
   makeParentCell,
   makeCommentsCell,

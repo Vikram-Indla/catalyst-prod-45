@@ -15,7 +15,7 @@ import { useReleasePortfolio, type ReleasePortfolioRow } from '@/hooks/useReleas
 import { CONFIDENCE_LABEL, type ReleaseConfidence } from '@/lib/releasehub/releaseConfidence';
 import { RH } from '@/constants/releasehub.design';
 import { ProgressBar } from '@/components/ads/ProgressBar';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 const T = {

@@ -14,7 +14,12 @@ import Modal, {
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
 import type { Workflow, WorkflowState, StatusCategory } from '../../lib/workflows/types';
-import { JiraStatusLozengeForState } from './JiraStatusLozenge';
+import { StatusLozenge, type LozengeAppearance } from '@/components/shared/StatusLozenge';
+
+const WF_CAT_TO_APPEARANCE: Record<StatusCategory, LozengeAppearance> = {
+  default: 'default', inprogress: 'inprogress', success: 'success',
+  removed: 'removed', new: 'new', moved: 'moved',
+};
 
 interface Props {
   workflow: Workflow;
@@ -204,11 +209,11 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
             return (
               <tr key={`${t.from}-${t.to}-${i}`} style={{ borderTop: '1px solid var(--ds-border)' }}>
                 <td style={{ padding: '8px 12px' }}>
-                  <JiraStatusLozengeForState state={from} variant="subtle" />
+                  <StatusLozenge status={from.name} appearance={WF_CAT_TO_APPEARANCE[from.category]} />
                 </td>
                 <td style={{ padding: '8px 12px', color: 'var(--cp-text-secondary, var(--cp-text-secondary))' }}>{t.verb}</td>
                 <td style={{ padding: '8px 12px' }}>
-                  <JiraStatusLozengeForState state={to} />
+                  <StatusLozenge status={to.name} appearance={WF_CAT_TO_APPEARANCE[to.category]} />
                 </td>
               </tr>
             );

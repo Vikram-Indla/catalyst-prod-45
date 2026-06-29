@@ -20,36 +20,30 @@ function read(rel: string) {
 }
 
 describe('canonical status palette', () => {
-  // 2026-06-29 — reverted to ADS subtle tokens (Lozenge default appearance).
-  // Bold read too loud/scattered vs production; subtle bg + matching colored
-  // text is the canonical same-hue ADS pairing, WCAG-correct in light+dark.
-  it('pins each status to its ADS subtle background token', () => {
-    expect(STATUS_BG.success).toBe('var(--ds-background-success)');
-    expect(statusBg('success')).toBe('var(--ds-background-success)');
+  it('pins each status to its ADS bold background token', () => {
+    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold)');
+    expect(statusBg('success')).toBe('var(--ds-background-success-bold)');
     expect(STATUS_TEXT).toBe('var(--ds-text)');
   });
 
-  it('maps each category to its canonical ADS subtle bg', () => {
-    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success)');
-    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information)');
+  it('maps each category to its canonical ADS bold bg', () => {
+    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold)');
+    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information-bold)');
     expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral)');
   });
 
-  it('pairs each subtle bg with its matching colored text token (WCAG-correct)', () => {
-    expect(statusFg('success')).toBe('var(--ds-text-success)');
-    expect(statusFg('inprogress')).toBe('var(--ds-text-information)');
+  it('pairs each bold bg with WCAG-correct text token', () => {
+    expect(statusFg('success')).toBe('var(--ds-text-inverse)');
+    expect(statusFg('inprogress')).toBe('var(--ds-text-inverse)');
+    expect(statusFg('moved')).toBe('var(--ds-text)');
     expect(statusFg('default')).toBe('var(--ds-text)');
   });
 });
 
 describe('every work-item status renderer uses the canonical palette', () => {
   const RENDERERS = [
-    'components/catalyst-detail-views/shared/sections/CatalystStatusPill.tsx',
-    'components/for-you/atlaskit/ForYouRow.tsx',
-    'components/ui/StatusLozenge.tsx',
-    'components/shared/StatusPill.tsx',
-    'components/workflow/WorkItemStatusLozenge.tsx',
-    'components/workflow/JiraStatusLozenge.tsx',
+    'components/shared/StatusLozenge/StatusLozenge.tsx',
+    'components/shared/StatusLozenge/StatusLozengeDropdown.tsx',
   ];
 
   it.each(RENDERERS)('%s imports from statusPalette', (rel) => {

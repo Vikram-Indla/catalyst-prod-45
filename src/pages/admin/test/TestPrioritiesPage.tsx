@@ -155,7 +155,7 @@ export default function TestPrioritiesPage() {
                     onClick={() => setNewColor(c)}
                     style={{
                       width: 24, height: 24, borderRadius: '50%', background: c,
-                      border: newColor === c ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                      border: newColor === c ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                       cursor: 'pointer', padding: 0,
                     }}
                   />
@@ -198,7 +198,7 @@ export default function TestPrioritiesPage() {
                           key={c}
                           onClick={() => setEditColor(c)}
                           style={{
-                            width: 18, height: 18, borderRadius: '50%', background: c, border: editColor === c ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                            width: 18, height: 18, borderRadius: '50%', background: c, border: editColor === c ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                             cursor: 'pointer', padding: 0,
                           }}
                         />

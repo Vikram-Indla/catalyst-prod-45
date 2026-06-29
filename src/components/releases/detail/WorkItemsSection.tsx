@@ -25,7 +25,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CanonicalPriorityIcon from '@/components/shared/PriorityIcon';
 import { useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
@@ -679,7 +679,7 @@ function SearchField({ value, onChange }: { value: string; onChange: (v: string)
         borderRadius: 3,
         background: 'var(--ds-surface)',
         minWidth: 180,
-        boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+        boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         transition: 'border-color 80ms ease, box-shadow 80ms ease',
       }}
     >
@@ -1024,7 +1024,7 @@ function pillBtn(active: boolean): React.CSSProperties {
     borderRadius: 3,
     fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
-    boxShadow: active ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+    boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
   };
 }
 
@@ -1187,12 +1187,12 @@ function WorkItemRow({
           <span style={{ display: 'inline-flex' }}>{priorityIcon(item.priority)}</span>
         )}
         {display.status && (
-          <CatalystStatusPill
+          <StatusLozengeDropdown
             status={item.status || statusKey || 'Backlog'}
             statusCategory={item.status_category as any}
             issueType={item.issue_type as any}
             interactive={false}
-            compact
+            size="sm"
           />
         )}
         {display.assignee && (

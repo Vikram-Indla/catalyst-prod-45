@@ -25,7 +25,7 @@ import {
   BrAttachmentsSection,
   BrActivitySection,
 } from './sections';
-import { CatalystStatusPill } from '../shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import { CatalystSidebarDetails } from '../shared/sections/CatalystSidebarDetails';
 import { CatalystTitleEditor } from '../shared/sections/CatalystTitleEditor';
 import { CatalystKeyDetails, KeyDetailsFieldRow } from '../shared/sections/CatalystKeyDetails';
@@ -414,7 +414,7 @@ export default function CatalystViewBusinessRequestV3({
         onClose={onClose}
         onDelete={() => {}}
         statusPill={
-          <CatalystStatusPill
+          <StatusLozengeDropdown
             status={request?.process_step ?? null}
             onStatusChange={(st) => updateField('process_step', st)}
             issueType="Business Request"

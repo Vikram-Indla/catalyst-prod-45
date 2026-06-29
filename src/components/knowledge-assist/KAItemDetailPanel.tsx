@@ -9,7 +9,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 
 const T = {
   ink: 'var(--fg-1)', inkSecondary: 'var(--fg-1)', inkTertiary: 'var(--fg-2)',

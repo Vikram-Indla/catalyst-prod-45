@@ -9,7 +9,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -516,7 +516,7 @@ export function IssueContentView({
               return (
                 <div style={{ position: 'absolute', left: 0, top: 32, background: 'var(--ds-surface)', borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay, 0px 8px 12px rgba(9,30,66,.15))', width: 266, zIndex: 400, padding: 0 }}>
                   <div style={{ margin: '4px 8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface)', border: '2px solid var(--ds-border-focused)', borderRadius: 3, padding: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface)', border: '1px solid var(--ds-border-focused)', borderRadius: 3, padding: 0 }}>
                       <Search size={14} color="var(--ds-text-subtle)" style={{ marginLeft: 8, flexShrink: 0 }} />
                       <input type="text" placeholder="Find menu item" value={addMenuSearch} onChange={e => setAddMenuSearch(e.target.value)} autoFocus
                         style={{ background: 'transparent', border: 'none', outline: 'none', boxShadow: 'none', padding: '4px 4px 4px 8px', fontSize: 'var(--ds-font-size-400)', color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }} />
@@ -878,7 +878,7 @@ export function IssueContentView({
                     display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
                     padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                     minHeight: 32, transition: 'background 0.12s',
-                    border: showSprintReleaseDropdown ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                    border: showSprintReleaseDropdown ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                     background: showSprintReleaseDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' : 'transparent',
                   }}
                   onMouseEnter={e => { if (!showSprintReleaseDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))'; }}

@@ -3,7 +3,7 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { CatyInsightCard } from './CatyInsightCard';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { JiraForYouLozenge } from './ForYouRow';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -248,7 +248,7 @@ function ChangeChip({ row }: { row: ChangeRow }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
       {row.oldValue && <NeutralPill>{row.oldValue}</NeutralPill>}
       {row.oldValue && row.newValue && <ArrowRight />}
-      {row.newValue && <JiraForYouLozenge status={row.newValue} />}
+      {row.newValue && <StatusLozenge status={row.newValue} />}
     </div>
   );
 }

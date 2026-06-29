@@ -189,7 +189,7 @@
 }
 
 .planner-task-list-content .tl-search-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--tl-border-focus);
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }

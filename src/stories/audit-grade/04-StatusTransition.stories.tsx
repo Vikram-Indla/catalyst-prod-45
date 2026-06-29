@@ -13,7 +13,7 @@ function Frame({ children, width = 900 }: { children: React.ReactNode; width?: n
 }
 
 import { StatusTransitionDropdown } from '@/components/workflow/StatusTransitionDropdown';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 
 export default { title: 'Audit Grade/04 — Status Transition' };
 
@@ -33,11 +33,11 @@ export const Disabled: StoryObj = {
   render: () => <Frame width={300}><StatusTransitionDropdown issueType="Story" currentStateId="done" onTransition={fn()} isDisabled /></Frame>,
 };
 export const StatusPillInProgress: StoryObj = {
-  render: () => <Frame width={200}><CatalystStatusPill status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" /></Frame>,
+  render: () => <Frame width={200}><StatusLozengeDropdown status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" /></Frame>,
 };
 export const StatusPillDone: StoryObj = {
-  render: () => <Frame width={200}><CatalystStatusPill status="Done" statusCategory="done" onStatusChange={fn()} issueType="Story" /></Frame>,
+  render: () => <Frame width={200}><StatusLozengeDropdown status="Done" statusCategory="done" onStatusChange={fn()} issueType="Story" /></Frame>,
 };
 export const StatusPillToDo: StoryObj = {
-  render: () => <Frame width={200}><CatalystStatusPill status="To Do" statusCategory="new" onStatusChange={fn()} issueType="Task" /></Frame>,
+  render: () => <Frame width={200}><StatusLozengeDropdown status="To Do" statusCategory="new" onStatusChange={fn()} issueType="Task" /></Frame>,
 };
