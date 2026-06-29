@@ -27,8 +27,13 @@ import { StatusLozengeDropdown } from "@/components/shared/StatusLozenge";
 import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
 
 function appearanceToWorkflowCategory(ap: LozengeAppearance): string {
-  if (ap === 'success') return 'done';
-  if (ap === 'inprogress') return 'in_progress';
+  // Jira dropdown buckets only To Do / In Progress / Done.
+  // Map 6-tier ADS appearances onto those 3:
+  //   success / removed (cancelled/closed terminal) → done
+  //   inprogress / moved (on hold, blocked = active but paused) → in_progress
+  //   new / default → todo
+  if (ap === 'success' || ap === 'removed') return 'done';
+  if (ap === 'inprogress' || ap === 'moved') return 'in_progress';
   return 'todo';
 }
 import type { CellProps } from "./types";

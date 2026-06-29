@@ -226,8 +226,8 @@ export interface StatusOption {
 }
 
 function appearanceToWorkflowCategory(ap: LozengeAppearance): string {
-  if (ap === 'success') return 'done';
-  if (ap === 'inprogress') return 'in_progress';
+  if (ap === 'success' || ap === 'removed') return 'done';
+  if (ap === 'inprogress' || ap === 'moved') return 'in_progress';
   return 'todo';
 }
 

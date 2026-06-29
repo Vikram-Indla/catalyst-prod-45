@@ -280,19 +280,6 @@ export function StatusLozengeDropdown({
               void groupIdx;
               return (
                 <div key={group.category}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: 'var(--ds-space-400, 32px)',
-                    paddingRight: token('space.150', '12px'),
-                    paddingLeft: token('space.150', '12px'),
-                  }}>
-                    <StatusLozenge
-                      status={group.groupLabel}
-                      statusCategory={group.category}
-                      size="sm"
-                    />
-                  </div>
                   {visibleStatuses.map((st) => {
                     const optionLabel = (group as { labelByValue?: Record<string, string> }).labelByValue?.[st] ?? st;
                     const isSelected = display === st || display === optionLabel;
