@@ -99,7 +99,7 @@ import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 // mode because the modal owns the Create / Cancel footer. ──────────
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
-import { ProductReleasePicker } from '@/components/product/ProductReleasePicker';
+import { QuarterSelect } from '@/components/shared/QuarterSelect';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Option type (identical to CreateStoryModal)
@@ -176,7 +176,6 @@ const headerActionsStyles = xcss({ display: 'flex', alignItems: 'center', gap: '
 const requiredHelperStyles = xcss({ font: 'font.body.small', color: 'color.text.subtlest', marginBottom: 'space.300' });
 const fieldGroupStyles = xcss({ display: 'flex', flexDirection: 'column', gap: 'space.200' });
 const dividerStyles = xcss({ borderBottomWidth: 'border.width', borderBottomStyle: 'solid', borderColor: 'color.border', marginBlock: 'space.100' });
-const editorWrapperStyles = xcss({ borderRadius: 'border.radius', borderWidth: 'border.width', borderStyle: 'solid', borderColor: 'color.border.input', minHeight: '160px', overflow: 'hidden' });
 const footerLeftStyles = xcss({ flex: '1' });
 const footerRightStyles = xcss({ display: 'flex', alignItems: 'center', gap: 'space.100' });
 const errorBannerStyles = xcss({ padding: 'space.150', borderRadius: 'border.radius', backgroundColor: 'color.background.danger', color: 'color.text.danger', font: 'font.body.small' });
@@ -213,10 +212,8 @@ interface FormState {
   project_manager_user_id: string;
   po_user_id: string;
   stakeholders: string[];
-  planned_quarter: string;
-  release_id: string | null;
+  quarter: string | null;
   end_date: string;
-  targeted_feature: boolean;
   attachments: File[];
 }
 
@@ -225,7 +222,7 @@ const INITIAL: FormState = {
   title: '', descriptionAdf: null, description: '',
   process_step: '', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
-  planned_quarter: '', release_id: null, end_date: '', targeted_feature: false, attachments: [],
+  quarter: null, end_date: '', attachments: [],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -266,19 +263,6 @@ function useProductOptions() {
   });
 }
 
-function useReleases() {
-  return useQuery({
-    queryKey: ['br-modal-releases'],
-    queryFn: async () => {
-      const { data } = await supabase.from('releases').select('id, name').order('name');
-      return [
-        { value: '', label: 'None' },
-        ...(data ?? []).map(r => ({ value: r.name, label: r.name })),
-      ];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI translation hook — calls ai-improve-story edge function
@@ -492,13 +476,12 @@ function MoreActionsButton() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BRD drag-drop upload zone (no ADS equivalent — retained as-is)
+// BRD compact upload zone — button trigger + chip list (replaces tall drag-drop)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange: (f: File[]) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [dragOver, setDragOver] = useState(false);
-  const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+  const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
   const addFiles = useCallback((inc: File[]) => {
     const validFiles = inc.filter(f => {
@@ -510,46 +493,57 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
     });
     onFilesChange([...files, ...validFiles].slice(0, 10));
   }, [files, onFilesChange]);
-  const handleDrop = useCallback((e: React.DragEvent) => { e.preventDefault(); setDragOver(false); addFiles(Array.from(e.dataTransfer.files)); }, [addFiles]);
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => { addFiles(Array.from(e.target.files || [])); if (inputRef.current) inputRef.current.value = ''; };
   const remove = (i: number) => onFilesChange(files.filter((_, j) => j !== i));
   const fmt = (b: number) => b < 1024 ? `${b} B` : b < 1048576 ? `${(b / 1024).toFixed(1)} KB` : `${(b / 1048576).toFixed(1)} MB`;
 
   return (
     <div>
-      <div role="button" tabIndex={0}
+      <input ref={inputRef} type="file" multiple accept=".pdf,.doc,.docx,.xlsx,.xls" style={{ display: 'none' }} onChange={handleInput} />
+      <button
+        type="button"
         onClick={() => inputRef.current?.click()}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click(); }}
-        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragOver ? token('color.border.brand', 'var(--ds-link)') : token('color.border', 'var(--ds-border)')}`,
-          borderRadius: 4, padding: '24px 16px', textAlign: 'center', cursor: 'pointer',
-          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected)') : token('color.background.input', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'),
-          transition: 'border-color 120ms, background 120ms',
+          display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+          background: 'none', border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+          borderRadius: 4, padding: '5px 10px', fontSize: 'var(--ds-font-size-200)',
+          color: token('color.text', 'var(--ds-text)'),
         }}
       >
-        <input ref={inputRef} type="file" multiple accept=".pdf,.doc,.docx,.xlsx,.xls" style={{ display: 'none' }} onChange={handleInput} />
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
-          <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M13.5 9.5v3a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-3M8 1v8M5 4l3-3 3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
-        <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
-      </div>
+        Attach files
+        {files.length > 0 && (
+          <span style={{
+            background: token('color.background.brand.bold', 'var(--ds-background-brand-bold)'),
+            color: token('color.text.inverse', 'var(--ds-text-inverse)'),
+            borderRadius: 3, padding: '1px 6px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, lineHeight: 1.4,
+          }}>
+            {files.length}
+          </span>
+        )}
+      </button>
+      <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
+        PDF, DOCX, XLSX — max 25 MB
+      </span>
       {files.length > 0 && (
-        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'), borderRadius: 3, fontSize: 'var(--ds-font-size-200)' }}>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', 'var(--ds-link)')} strokeWidth="1.2" fill="none"/>
-                <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', 'var(--ds-link)')} strokeWidth="1.2" fill="none"/>
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '3px 8px',
+              background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
+              borderRadius: 3, fontSize: 'var(--ds-font-size-200)',
+            }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', 'var(--ds-text-brand)')} strokeWidth="1.2" fill="none"/>
+                <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', 'var(--ds-text-brand)')} strokeWidth="1.2" fill="none"/>
               </svg>
               <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', 'var(--ds-text)') }}>{f.name}</span>
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), whiteSpace: 'nowrap' }}>{fmt(f.size)}</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), whiteSpace: 'nowrap', fontSize: 'var(--ds-font-size-100)' }}>{fmt(f.size)}</span>
               <button type="button" onClick={() => remove(i)} aria-label={`Remove ${f.name}`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), padding: 4, display: 'flex', flexShrink: 0 }}>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), padding: 2, display: 'flex', flexShrink: 0 }}>
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                   <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               </button>
@@ -591,7 +585,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
   const navigate = useNavigate();
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
-  const { data: releaseOptions = [] } = useReleases();
   const { data: productOptions = [], isLoading: productsLoading } = useProductOptions();
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitAttempted, setSubmitAttempted] = useState(false);
@@ -655,11 +648,9 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
         project_manager_user_id: form.project_manager_user_id || null,
         po_user_id: form.po_user_id || null,
         stakeholders: form.stakeholders,
-        planned_quarter: form.planned_quarter ? [form.planned_quarter] : null,
-        release_id: form.release_id || null,
+        quarter: form.quarter || null,
         end_date: form.end_date || null,
         impl_target_end_date: form.end_date || null,
-        targeted_feature: form.targeted_feature,
         import_source: 'manual',
         product_id: form.product_id || productId || null,
       };
@@ -849,23 +840,22 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                   captures TiptapDoc → tiptapToAdf → form state. ── */}
               <Field name="description" label="Description">
                 {() => (
-                  <Box xcss={editorWrapperStyles}>
-                    <RichTextEditor
-                      initialAdf={null}
-                      hideActionButtons
-                      onSave={() => {}}
-                      onCancel={() => {}}
-                      onChange={(tiptapJson) => {
-                        try {
-                          const adf = tiptapToAdf(tiptapJson);
-                          set('descriptionAdf', adf);
-                          set('description', JSON.stringify(adf));
-                        } catch {
-                          /* noop */
-                        }
-                      }}
-                    />
-                  </Box>
+                  <RichTextEditor
+                    initialAdf={null}
+                    hideActionButtons
+                    minHeight={120}
+                    onSave={() => {}}
+                    onCancel={() => {}}
+                    onChange={(tiptapJson) => {
+                      try {
+                        const adf = tiptapToAdf(tiptapJson);
+                        set('descriptionAdf', adf);
+                        set('description', JSON.stringify(adf));
+                      } catch {
+                        /* noop */
+                      }
+                    }}
+                  />
                 )}
               </Field>
 
@@ -997,16 +987,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                 )}
               </Field>
 
-              {/* ── Release — ProductReleasePicker (inline create) ────────── */}
-              <Field name="release_id" label="Release">
+              {/* ── Quarter — admin-managed fiscal quarters (shared with milestones) ── */}
+              <Field name="quarter" label="Quarter">
                 {() => (
-                  <ProductReleasePicker
-                    inputId="br-create-release"
-                    productId={productId ?? null}
-                    value={form.release_id}
-                    onChange={(id) => set('release_id', id)}
-                    placeholder="Link to a release"
-                    appearance="default"
+                  <QuarterSelect
+                    inputId="br-create-quarter"
+                    value={form.quarter}
+                    onChange={(v) => set('quarter', v)}
+                    placeholder="Select quarter"
                   />
                 )}
               </Field>
@@ -1022,17 +1010,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                 )}
               </Field>
 
-              {/* ── Targeted feature — @atlaskit/checkbox Checkbox ────────── */}
-              <div style={{ padding: '4px 0' }}>
-                <Checkbox
-                  label="Targeted feature"
-                  isChecked={form.targeted_feature}
-                  onChange={(e: any) => set('targeted_feature', e.target.checked)}
-                  name="targeted_feature"
-                />
-              </div>
-
-              {/* ── BRD / Scope documents — custom drag-drop (no ADS equiv) ── */}
+              {/* ── BRD / Scope documents — compact inline attach ── */}
               <Field name="brd_upload" label="BRD / Scope documents">
                 {() => (
                   <BRDUploadZone

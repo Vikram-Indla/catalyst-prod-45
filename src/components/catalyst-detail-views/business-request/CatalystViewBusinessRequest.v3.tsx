@@ -256,16 +256,6 @@ export default function CatalystViewBusinessRequestV3({
             onChange={(releaseId) => void updateField('release_id', releaseId)}
           />
         </KeyDetailsFieldRow>
-        <KeyDetailsFieldRow label="Targeted">
-          <Checkbox
-            isChecked={!!request.targeted_feature}
-            onChange={(e) =>
-              void updateField('targeted_feature', (e.target as HTMLInputElement).checked)
-            }
-            label="Targeted feature"
-            name="br-key--targeted-feature"
-          />
-        </KeyDetailsFieldRow>
         {health && (
           <KeyDetailsFieldRow label="Delivery" alignBlock="start">
             <HealthStatusBadge health={health} />

@@ -5,7 +5,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import BoardManagerPage from '@/components/boards/BoardManagerPage';
 
 export default function ProjectBoardManagerPage() {
@@ -15,23 +15,13 @@ export default function ProjectBoardManagerPage() {
     queryKey: ['ph-project-for-boards', key],
     queryFn: async () => {
       if (!key) return null;
-      // First get ph_project name
       const { data: phProject, error: phErr } = await supabase
         .from('ph_projects')
         .select('id, key, name')
         .eq('key', key.toUpperCase())
         .maybeSingle();
       if (phErr || !phProject) { console.warn(phErr?.message ?? 'ph_project not found'); return null; }
-      // Try to resolve to projects table ID (boards FK references projects)
-      const { data: project } = await typedQuery('projects')
-        .select('id, name')
-        .ilike('name', phProject.name)
-        .maybeSingle();
-      
-      // Also check if boards exist directly under ph_projects.id
-      const resolvedId = project?.id || phProject.id;
-      console.log('[ProjectBoardManagerPage] phProject.id:', phProject.id, 'projects.id:', project?.id, 'using:', resolvedId);
-      return { id: resolvedId, key: phProject.key, name: phProject.name };
+      return { id: phProject.id, key: phProject.key, name: phProject.name };
     },
     enabled: !!key,
   });
@@ -46,20 +36,18 @@ export default function ProjectBoardManagerPage() {
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontSize: 'var(--ds-font-size-300)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest)' }}>
         Project not found
       </div>
     );
   }
 
   return (
-    <>
-      <BoardManagerPage
-        projectIdOverride={project.id}
-        basePath={`/project-hub/${key}/boards`}
-        projectName={project.name}
-        projectKey={project.key}
-      />
-    </>
+    <BoardManagerPage
+      projectIdOverride={project.id}
+      basePath={`/project-hub/${key}/boards`}
+      projectName={project.name}
+      projectKey={project.key}
+    />
   );
 }
