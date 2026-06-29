@@ -136,7 +136,7 @@ export function CatalystListPageLayout({
           />
         )}
 
-        {children}
+        <div style={{ paddingTop: 12 }}>{children}</div>
 
         {footer && (
           <div

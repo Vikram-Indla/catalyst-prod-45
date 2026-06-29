@@ -23,6 +23,9 @@ import Tooltip from '@atlaskit/tooltip';
 import LockIcon from '@atlaskit/icon/core/lock-locked';
 import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import { UserAvatar } from '@/components/shared/UserAvatar';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { parseJqlWorkTypes } from '@/lib/filters/parseJqlWorkTypes';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import {
@@ -324,38 +327,87 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       alwaysVisible: true,
       defaultVisible: true,
       accessor: f => f.name,
-      cell: ({ row: f }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, overflow: 'hidden' }}>
-          <Link
-            to={detailHref(f)}
-            onClick={e => e.stopPropagation()}
-            style={{
-              color: token('color.link'),
-              fontWeight: token('font.weight.medium'),
-              fontSize: 'var(--ds-font-size-400)',
-              textDecoration: 'none',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
-          >
-            {f.name}
-          </Link>
-          {f.jql_query && (
-            <span style={{
-              fontSize: 'var(--ds-font-size-200)',
-              color: token('color.text.subtlest'),
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
-              {f.jql_query}
-            </span>
-          )}
-        </div>
-      ),
+      cell: ({ row: f }) => {
+        const workTypes = parseJqlWorkTypes(f.jql_query);
+        const visibleTypes = workTypes.slice(0, 3);
+        const overflow = workTypes.length - visibleTypes.length;
+        const boardCount = f.used_by_board_ids?.length ?? 0;
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Link
+                to={detailHref(f)}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  color: token('color.link'),
+                  fontWeight: token('font.weight.medium'),
+                  fontSize: 'var(--ds-font-size-400)',
+                  textDecoration: 'none',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 1,
+                  minWidth: 0,
+                }}
+                onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+              >
+                {f.name}
+              </Link>
+              {boardCount > 0 && (
+                <Tooltip content={`Used by ${boardCount} Kanban board${boardCount > 1 ? 's' : ''}`}>
+                  {(tp) => (
+                    <span
+                      {...tp}
+                      style={{
+                        flexShrink: 0,
+                        fontSize: 'var(--ds-font-size-100)',
+                        color: 'var(--ds-text-subtle)',
+                        background: 'var(--ds-background-neutral-subtle)',
+                        borderRadius: 3,
+                        padding: '1px 5px',
+                        whiteSpace: 'nowrap',
+                        cursor: 'default',
+                      }}
+                    >
+                      ⬜ {boardCount}
+                    </span>
+                  )}
+                </Tooltip>
+              )}
+            </div>
+            {f.jql_query && (
+              <span style={{
+                fontSize: 'var(--ds-font-size-200)',
+                color: token('color.text.subtlest'),
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {f.jql_query}
+              </span>
+            )}
+            {visibleTypes.length > 0 && (
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                {visibleTypes.map(t => (
+                  <Tooltip key={t} content={t}>
+                    {(tp) => (
+                      <span {...tp} style={{ display: 'inline-flex' }}>
+                        <JiraIssueTypeIcon issueType={t} size={14} />
+                      </span>
+                    )}
+                  </Tooltip>
+                ))}
+                {overflow > 0 && (
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+                    +{overflow}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       id: 'owner',
@@ -368,8 +420,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         const name = ownerName(f);
         return name ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="xsmall" />
-            {/* aria-hidden avoids double screen-reader announcement (AkAvatar also labels with name) */}
+            <UserAvatar
+              userId={f.owner?.id}
+              name={name}
+              avatarUrl={f.owner?.avatar_url ?? undefined}
+              size="xsmall"
+            />
+            {/* aria-hidden avoids double screen-reader announcement (UserAvatar labels with name) */}
             <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text') }}>{name}</span>
           </div>
         ) : (
@@ -494,35 +551,26 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     },
   ];
 
+  function handleExportCsv() {
+    const rows = visibleFilters.map(f => [
+      `"${(f.name ?? '').replace(/"/g, '""')}"`,
+      `"${(f.description ?? '').replace(/"/g, '""')}"`,
+      `"${(f.jql_query ?? '').replace(/"/g, '""')}"`,
+      `"${(f.is_shared ? 'Shared' : 'Private')}"`,
+      `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
+    ].join(','));
+    const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'filters.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const exportCsvAction = (
-    <button
-      onClick={() => {
-        const rows = visibleFilters.map(f => [
-          `"${(f.name ?? '').replace(/"/g, '""')}"`,
-          `"${(f.description ?? '').replace(/"/g, '""')}"`,
-          `"${(f.jql ?? '').replace(/"/g, '""')}"`,
-          `"${(f.is_shared ? 'Shared' : 'Private')}"`,
-          `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
-        ].join(','));
-        const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'filters.csv'; a.click();
-        URL.revokeObjectURL(url);
-      }}
-      style={{
-        background: 'none',
-        border: 'none',
-        padding: '0 4px',
-        fontSize: 'var(--ds-font-size-400)',
-        color: token('color.text.subtle'),
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <Button appearance="subtle" onClick={handleExportCsv}>
       Export CSV
-    </button>
+    </Button>
   );
 
   const createCta = (
@@ -616,14 +664,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 : 'No filters yet'}
             </span>
             {!search && !ownerFilter && !projectFilter && !groupFilter && (
-              <>
-                <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
-                  Save a JQL query as a filter to find and reuse it later.
-                </span>
-                <Button appearance="primary" onClick={() => navigate(createHref)}>
-                  Create filter
-                </Button>
-              </>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
+                Save a JQL query as a filter to find and reuse it later.
+              </span>
             )}
           </div>
         }
