@@ -496,12 +496,20 @@ export function CatalystStatusPill({
                           outline: 'none',
                         }}
                       >
-                        {/* Bold @atlaskit/lozenge — component owns the canonical
-                            Jira status-category colors (To Do gray · In Progress
-                            blue · Done green, image-2 spec). No hand-rolled hex. */}
-                        <Lozenge appearance={groupAppearance as Appearance} isBold>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          height: 20,
+                          padding: '0 8px',
+                          borderRadius: 3,
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: '0.06em',
+                          background: statusBgSubtle(groupAppearance as Appearance),
+                          color: statusFgSubtle(groupAppearance as Appearance),
+                        }}>
                           {st}
-                        </Lozenge>
+                        </span>
                         {isSelected && (
                           <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.brand', 'var(--ds-link)'), fontWeight: 600 }}>✓</span>
                         )}
