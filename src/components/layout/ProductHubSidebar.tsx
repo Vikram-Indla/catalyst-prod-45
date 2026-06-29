@@ -69,7 +69,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
           { id: 'timeline',  title: 'Timeline',  path: `${base}/timeline`,  icon: NavTimelineIcon,  exact: false },
           { id: 'dependencies', title: 'Dependencies', path: `${base}/dependencies`, icon: Link2, exact: false },
-          { id: 'releases', title: 'Releases', path: `${base}/releases`, icon: List, exact: false },
+          { id: 'releases', title: 'Milestones', path: `${base}/releases`, icon: List, exact: false },
           /* 2026-06-15: Standups sidebar item retired. Reachable from the
              board's kebab menu → "Standup history". */
         ],

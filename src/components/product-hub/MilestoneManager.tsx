@@ -1,76 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { MilestoneCard } from './MilestoneCard';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Button from '@atlaskit/button/new';
+import Spinner from '@atlaskit/spinner';
+import EmptyState from '@atlaskit/empty-state';
+import Heading from '@atlaskit/heading';
+import { supabase } from '@/integrations/supabase/client';
 import { productMilestoneService } from '@/services/product-milestone.service';
+import { MilestoneCard } from './MilestoneCard';
 import type { ProductMilestoneWithProgress } from '@/types/product-milestone';
 
 export interface MilestoneManagerProps {
-  productId: string;
+  productCode: string;
 }
 
-export function MilestoneManager({ productId }: MilestoneManagerProps) {
-  const [milestones, setMilestones] = useState<ProductMilestoneWithProgress[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+function useProductId(productCode: string) {
+  return useQuery({
+    queryKey: ['product-by-code', productCode],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name')
+        .eq('code', productCode)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { id: string; name: string } | null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
 
-  useEffect(() => {
-    loadMilestones();
-  }, [productId]);
+function useMilestones(productId: string | undefined) {
+  return useQuery({
+    queryKey: ['product-milestones', productId],
+    queryFn: () => productMilestoneService.listMilestonesByProduct(productId!),
+    enabled: !!productId,
+  });
+}
 
-  async function loadMilestones() {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await productMilestoneService.listMilestonesByProduct(productId);
-      setMilestones(data);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load milestones';
-      setError(message);
-      console.error('Failed to load milestones:', err);
-    } finally {
-      setLoading(false);
-    }
+export function MilestoneManager({ productCode }: MilestoneManagerProps) {
+  const queryClient = useQueryClient();
+  const { data: product, isLoading: productLoading, error: productError } = useProductId(productCode);
+  const { data: milestones = [], isLoading: milestonesLoading, error: milestonesError } = useMilestones(product?.id);
+
+  const archiveMutation = useMutation({
+    mutationFn: (id: string) => productMilestoneService.archiveMilestone(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['product-milestones', product?.id] }),
+  });
+
+  const isLoading = productLoading || milestonesLoading;
+  const error = productError || milestonesError;
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+        <Spinner size="large" />
+      </div>
+    );
   }
 
-  async function handleDelete(id: string) {
-    try {
-      await productMilestoneService.archiveMilestone(id);
-      await loadMilestones();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete milestone';
-      setError(message);
-      console.error('Failed to delete milestone:', err);
-    }
-  }
-
-  if (loading) {
-    return <div className="text-center py-8">Loading milestones...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-8 text-red-600">Error: {error}</div>;
+  if (error || !product) {
+    const msg = error instanceof Error ? error.message : !product ? `Product "${productCode}" not found` : 'Unknown error';
+    return (
+      <div style={{ padding: '24px' }}>
+        <EmptyState
+          header="Failed to load milestones"
+          description={msg}
+          primaryAction={
+            <Button
+              appearance="primary"
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['product-by-code', productCode] })}
+            >
+              Retry
+            </Button>
+          }
+        />
+      </div>
+    );
   }
 
   return (
-    <div className="border rounded-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold">Product Delivery Milestones</h2>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
-          Create Milestone
-        </button>
+    <div style={{ padding: '24px 24px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div>
+          <Heading level="h700">Milestones</Heading>
+          <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)' }}>
+            {product.name} · product delivery milestones
+          </p>
+        </div>
+        <Button appearance="primary">
+          Create milestone
+        </Button>
       </div>
 
       {milestones.length === 0 ? (
-        <div className="text-center py-8 text-gray-600">
-          <p>No milestones yet. Create your first milestone to get started.</p>
-        </div>
+        <EmptyState
+          header="No milestones yet"
+          description="Create your first milestone to start tracking product delivery targets."
+          primaryAction={<Button appearance="primary">Create milestone</Button>}
+        />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {milestones.map((milestone) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, paddingBottom: 24 }}>
+          {milestones.map((milestone: ProductMilestoneWithProgress) => (
             <MilestoneCard
               key={milestone.id}
               milestone={milestone}
-              onEdit={(id) => console.log('Edit milestone:', id)}
-              onDelete={handleDelete}
+              onDelete={(id) => archiveMutation.mutate(id)}
             />
           ))}
         </div>
