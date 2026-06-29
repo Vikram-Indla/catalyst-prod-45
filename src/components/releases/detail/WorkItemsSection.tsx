@@ -603,7 +603,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
             minWidth: 220,
           }}
@@ -846,7 +846,7 @@ function CheckboxFilterPill({
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 10010,
             minWidth: 220, maxHeight: 360, overflow: 'hidden', display: 'flex', flexDirection: 'column',
             background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
           }}
         >
           {searchable && (
@@ -968,7 +968,7 @@ function PillFilter({
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 10010,
             minWidth: 180,
             background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >
@@ -1222,7 +1222,7 @@ function WorkItemRow({
             position: 'fixed', top: pos.top, right: pos.right, zIndex: 10010,
             minWidth: 220,
             background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >
