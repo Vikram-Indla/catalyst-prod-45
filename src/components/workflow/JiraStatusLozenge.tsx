@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import type { StatusCategory, WorkflowState } from '../../lib/workflows/types';
-import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { statusBgBold, statusFgBold } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 const APPEARANCE_MAP: Record<StatusCategory, 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved'> = {
   default:    'default',
@@ -42,7 +42,7 @@ export function JiraStatusLozenge({
     <span style={{
       display: 'inline-flex',
       alignItems: 'center',
-      backgroundColor: statusBg(APPEARANCE_MAP[category]),
+      backgroundColor: statusBgBold(APPEARANCE_MAP[category]),
       borderRadius: 3,
       padding: '0 6px',
       height: 20,
@@ -50,7 +50,7 @@ export function JiraStatusLozenge({
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(APPEARANCE_MAP[category]),
+        color: statusFgBold(APPEARANCE_MAP[category]),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '0px',

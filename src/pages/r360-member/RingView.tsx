@@ -117,6 +117,26 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
   const CX = W / 2;
   const CY = ringH * 0.44;
 
+  // ≤4 cards: place at the four corners so none overlap the center avatar.
+  // The 8-slot SLOT_POSITIONS crowds the center (slot 4 sits on the avatar) at
+  // low counts. Vertical separation (top 4% / 56% vs avatar at 44%) guarantees
+  // no overlap at any container width. 5+ cards keep the full ring.
+  const useCorners = visible.length <= 4;
+  const CORNERS_4 = [
+    { left: '3%',  top: '4%'  },
+    { left: '55%', top: '4%'  },
+    { left: '3%',  top: '56%' },
+    { left: '55%', top: '56%' },
+  ];
+  const slotPosFor = (i: number) => (useCorners ? CORNERS_4[i] : SLOT_POSITIONS[i]);
+  const cardCenterPxFor = (i: number) => {
+    const s = slotPosFor(i);
+    if (!s) return { x: 0, y: 0 };
+    const leftPx = (parseFloat(s.left) / 100) * W;
+    const topPx = (parseFloat(s.top) / 100) * ringH;
+    return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
+  };
+
   const isHighPriority = (p: string) => {
     const l = (p || '').toLowerCase();
     return l === 'high' || l === 'highest' || l === 'critical';
@@ -126,7 +146,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
   // Connector spokes — computed against dynamic ringH
   const spokes = useMemo(() => {
     return visible.map((_, i) => {
-      const cardCenter = getCardPixelPosDynH(i, W, ringH);
+      const cardCenter = cardCenterPxFor(i);
       return getSpokeEndpoints(CX, CY, cardCenter.x, cardCenter.y);
     });
   }, [visible.length, W, ringH, CX, CY]);
@@ -406,7 +426,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
       {/* ORBITAL CARDS — 8-slot, viewport-proportional positions */}
       {visible.map((item, i) => {
         if (i >= SLOT_POSITIONS.length) return null;
-        const slotPos = SLOT_POSITIONS[i];
+        const slotPos = slotPosFor(i);
         const isSelected = selected?.id === item.id;
         const isContributor = item.role_on_item === 'Contributor';
         const hasHighPriority = isHighPriority(item.priority);
@@ -433,8 +453,14 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap', flexShrink: 0 }}>{item.age_days}d</span>
               </div>
 
-              {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space */}
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
+              {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space.
+                  The flex item is a plain block wrapper; the -webkit-box clamp lives on the
+                  inner div. A -webkit-box that is itself a flex child gets blockified to
+                  flow-root, which silently disables -webkit-line-clamp (title spills to 3
+                  lines and overlaps the status row). Wrapping restores the clamp. */}
+              <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis' } as React.CSSProperties}>{item.title}</div>
+              </div>
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>

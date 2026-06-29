@@ -45,7 +45,7 @@ import React, { memo, useCallback, useState, useRef, useEffect, useLayoutEffect,
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { statusBgBold, statusFgBold } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import Tooltip from '@atlaskit/tooltip';
 import { Star, StarOff } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -532,14 +532,14 @@ export function JiraForYouLozenge({ status, statusCategory }: { status: string; 
       flexShrink: 0,
       display: 'inline-flex',
       alignItems: 'center',
-      backgroundColor: statusBg(ap),
+      backgroundColor: statusBgBold(ap),
       padding: '0px 4px',
       borderRadius: 3,
       height: 20,
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(ap),
+        color: statusFgBold(ap),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '0px',

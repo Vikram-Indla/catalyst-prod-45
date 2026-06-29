@@ -26,7 +26,10 @@ export type MentionPart =
   | { type: 'text'; value: string }
   | { type: 'mention'; raw: string; name: string; userId: string | null };
 
-const BOUNDARY_BEFORE = /\s|[(\[<,;:"']/;
+// A mention can follow whitespace, an opening bracket/quote, or sentence
+// punctuation. `.` `!` `?` were missing, so `support.@Name` (no space after
+// the period) leaked the mention as plain text — Jira chips it.
+const BOUNDARY_BEFORE = /\s|[(\[<,;:"'.!?]/;
 const BOUNDARY_AFTER = /[\s.,;:!?)\]>'"]/;
 // Follow-on words must be space/tab-separated (NEVER a newline — a mention
 // must not cross a line break) AND start uppercase, so genuine name parts

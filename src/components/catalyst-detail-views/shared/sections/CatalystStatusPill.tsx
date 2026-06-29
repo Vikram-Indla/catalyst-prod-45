@@ -16,6 +16,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
+import Lozenge from '@atlaskit/lozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import RetryIcon from '@atlaskit/icon/glyph/retry';
 import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
@@ -27,7 +28,7 @@ import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { toStatusCategory } from '@/components/ads';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { ReasonCaptureModal } from '../workflow/ReasonCaptureModal';
-import { statusBg, statusFg } from './statusPalette';
+import { statusBgSubtle, statusFgSubtle, statusBgBold, statusFgBold } from './statusPalette';
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * SECTION 1: STYLE INJECTION (module-level, runs once)
@@ -52,9 +53,7 @@ if (typeof document !== 'undefined') {
         cursor: pointer;
         font-family: inherit;
         font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        font-weight: 500;
         outline: 2px solid var(--ds-border-focused);
         transition: filter 0.15s ease;
         background: var(--csp-bg);
@@ -102,9 +101,12 @@ if (typeof document !== 'undefined') {
 
 type Appearance = 'success' | 'inprogress' | 'moved' | 'removed' | 'new' | 'default';
 
-// Canonical palette — single source of truth in statusPalette.ts.
-const getStatusBg = statusBg;
-const getStatusFg = statusFg;
+// Tier by context (Vikram-locked 2026-06-29):
+//   compact (table/list cells, 24px) → BOLD Jira-parity (#B3DF72 family)
+//   header (CatalystView* detail, 32px) → SUBTLE pale (header reads "too loud" bold)
+// Resolved per-instance below from the `compact` prop.
+const tierBg = (compact: boolean) => (compact ? statusBgBold : statusBgSubtle);
+const tierFg = (compact: boolean) => (compact ? statusFgBold : statusFgSubtle);
 
 /**
  * Maps a workflow group's category to an appearance string.
@@ -211,8 +213,8 @@ export function CatalystStatusPill({
   const display    = status || 'Backlog';
   const appearance = statusToLozenge(display, statusCategory) as Appearance;
 
-  const pillBg = getStatusBg(appearance);
-  const pillFg = getStatusFg(appearance);
+  const pillBg = tierBg(compact)(appearance);
+  const pillFg = tierFg(compact)(appearance);
 
   // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -440,8 +442,6 @@ export function CatalystStatusPill({
                   </div>
                   {visibleStatuses.map((st) => {
                     const groupAppearance = groupCategoryToAppearance(group.category);
-                    const bg = getStatusBg(groupAppearance);
-                    const fg = getStatusFg(groupAppearance);
                     const isSelected = display === st;
                     return (
                       <button
@@ -484,23 +484,12 @@ export function CatalystStatusPill({
                           outline: 'none',
                         }}
                       >
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            height: 20,
-                            padding: '0 8px',
-                            borderRadius: 3,
-                            fontSize: 'var(--ds-font-size-100)',
-                            fontWeight: 700,
-                            letterSpacing: '0.04em',
-                            textTransform: 'uppercase' as const,
-                            background: bg,
-                            color: fg,
-                          }}
-                        >
+                        {/* Bold @atlaskit/lozenge — component owns the canonical
+                            Jira status-category colors (To Do gray · In Progress
+                            blue · Done green, image-2 spec). No hand-rolled hex. */}
+                        <Lozenge appearance={groupAppearance as Appearance} isBold>
                           {st}
-                        </span>
+                        </Lozenge>
                         {isSelected && (
                           <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.brand', 'var(--ds-link)'), fontWeight: 600 }}>✓</span>
                         )}

@@ -138,7 +138,7 @@ function PopupShell({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 4,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+        boxShadow: 'var(--ds-shadow-overlay)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',

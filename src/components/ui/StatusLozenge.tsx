@@ -1,6 +1,6 @@
 import React from "react";
 import { toStatusCategory } from "@/components/ads";
-import { statusBg, statusFg, type StatusAppearance } from "@/components/catalyst-detail-views/shared/sections/statusPalette";
+import { statusBgBold, statusFgBold, type StatusAppearance } from "@/components/catalyst-detail-views/shared/sections/statusPalette";
 
 // Canonical palette (statusPalette.ts). Local pale done-green drifted from
 // canonical #94C748 — unified 2026-06-17.
@@ -77,7 +77,7 @@ export function StatusLozenge({
   const resolvedLabel = label ?? getDisplayName(status ?? '');
   const resolvedAppearance =
     appearance ?? CATEGORY_TO_APPEARANCE[toStatusCategory(status ?? '')] ?? 'default';
-  const bg = statusBg(resolvedAppearance);
+  const bg = statusBgBold(resolvedAppearance);
   return (
     <span style={{
       display: 'inline-flex',
@@ -91,7 +91,7 @@ export function StatusLozenge({
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         lineHeight: '20px',
-        color: statusFg(resolvedAppearance),
+        color: statusFgBold(resolvedAppearance),
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         overflow: 'hidden',

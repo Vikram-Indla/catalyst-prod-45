@@ -227,7 +227,7 @@ const ReleaseManagementPage: React.FC = () => {
           cursor: 'pointer',
           fontSize: 'var(--ds-font-size-700)',
           zIndex: 1000,
-          boxShadow: '0 8px 12px rgba(9, 30, 66, 0.15)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+          boxShadow: 'var(--ds-shadow-overlay)',
         }}
       >
         ?

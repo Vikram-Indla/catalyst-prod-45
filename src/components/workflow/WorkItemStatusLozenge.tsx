@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import type { WorkItem } from '../../types/workItem.types';
-import { statusBg, statusFg, categoryToAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { statusBgBold, statusFgBold, categoryToAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 export interface WorkItemStatusLozengeProps {
   item: WorkItem;
@@ -53,7 +53,7 @@ export function StatusLozengeByType({
     <span style={{
       display: 'inline-flex',
       alignItems: 'center',
-      backgroundColor: statusBg(appearance),
+      backgroundColor: statusBgBold(appearance),
       borderRadius: 3,
       padding: '0 6px',
       height: 20,
@@ -61,7 +61,7 @@ export function StatusLozengeByType({
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(appearance),
+        color: statusFgBold(appearance),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '0px',

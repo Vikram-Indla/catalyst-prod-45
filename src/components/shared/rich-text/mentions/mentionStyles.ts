@@ -56,7 +56,7 @@ export function injectMentionStyles(): void {
       text-decoration: none !important;
       border: none !important;
       box-shadow: none !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       white-space: nowrap !important;
     }
 
@@ -78,7 +78,7 @@ export function injectMentionStyles(): void {
       text-decoration: none !important;
       border: none !important;
       box-shadow: none !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       padding: 0 !important;
       margin: 0 !important;
       height: auto !important;
@@ -115,6 +115,16 @@ export function injectMentionStyles(): void {
     span.atlaskit-mention[data-id][data-mention-self="true"] {
       background: var(--ds-background-brand-bold) !important;
       color: var(--ds-text-inverse) !important;
+    }
+
+    /* ── Focus ring — ONLY on keyboard focus of interactive chips ─────
+       The focus outline must never be painted at rest (that produced a
+       permanent blue box around every mention). Scope it to :focus-visible
+       so it appears only when a user tabs to an interactive chip. */
+    span[data-mention-id][role="button"]:focus-visible,
+    span.atlaskit-mention[data-id][role="button"]:focus-visible {
+      outline: 2px solid var(--ds-border-focused) !important;
+      outline-offset: 1px !important;
     }
   `;
   document.head.appendChild(style);
