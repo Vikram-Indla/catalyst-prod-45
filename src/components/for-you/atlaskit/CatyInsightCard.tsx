@@ -34,7 +34,8 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <CatyHead size={20} />
           <span style={{
-            font: `600 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+            font: 'var(--ds-font-body)',
+            fontWeight: 600,
             color: token('color.text', 'var(--ds-text)'),
           }}>
             {title}
@@ -93,7 +94,8 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
         </div>
       ) : (
         <div style={{
-          font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+          font: 'var(--ds-font-body)',
+          fontWeight: 400,
           color: token('color.text.subtle', 'var(--ds-icon)'),
         }}>
           {children}

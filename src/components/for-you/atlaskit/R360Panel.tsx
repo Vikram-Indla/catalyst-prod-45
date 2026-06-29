@@ -61,8 +61,8 @@ function SidebarMemberRow({
     pillColor = token('color.text.information', 'var(--ds-link)');
     pillText = 'Remote';
   } else {
-    pillBg = token('color.background.neutral', 'var(--ds-background-neutral)');
-    pillColor = token('color.text.subtle', 'var(--ds-icon)');
+    pillBg = token('color.background.warning', 'var(--ds-background-warning)');
+    pillColor = token('color.text.warning', 'var(--ds-text-warning)');
     pillText = 'Away';
     if (backOn) {
       pillText = `Away · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
@@ -101,7 +101,7 @@ function SidebarMemberRow({
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 500 : 400,
+          font: 'var(--ds-font-body)', fontWeight: active ? 500 : 400,
           color: token('color.text', 'var(--ds-text)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
@@ -109,7 +109,7 @@ function SidebarMemberRow({
         </div>
         {sublabel && (
           <div style={{
-            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+            font: 'var(--ds-font-body-small)', color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {sublabel}
@@ -121,7 +121,7 @@ function SidebarMemberRow({
           alignItems: 'center',
           padding: '0px 8px',
           borderRadius: 8,
-          fontSize: 'var(--ds-font-size-100)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 400,
           background: pillBg,
           color: pillColor,
@@ -138,7 +138,7 @@ function SidebarMemberRow({
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+      font: 'var(--ds-font-body-small)', fontWeight: 600,
       color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
     }}>
       {children}
@@ -201,7 +201,7 @@ function SidebarRoster({
             width: '100%',
             marginTop: 8,
             padding: '4px 8px',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body)',
             border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused)') : token('color.border.input', 'var(--ds-text-disabled, var(--ds-border-bold))')}`,
             borderRadius: 3,
             background: token('color.background.input', 'var(--ds-surface-sunken)'),
@@ -233,7 +233,7 @@ function SidebarRoster({
         {search.trim() && filtered.length === 0 && (
           <div style={{
             padding: '12px',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             textAlign: 'center' as const,
           }}>
@@ -244,7 +244,7 @@ function SidebarRoster({
         {!search.trim() && filtered.length === 0 && (
           <div style={{
             padding: '12px',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             textAlign: 'center' as const,
           }}>
@@ -264,7 +264,7 @@ function SidebarRoster({
         justifyContent: 'center',
       }}>
         <span style={{
-          fontSize: 'var(--ds-font-size-200)',
+          font: 'var(--ds-font-body)',
           fontWeight: 500,
           color: token('color.text.subtle', 'var(--ds-icon)'),
           fontVariantNumeric: 'tabular-nums',
@@ -304,11 +304,11 @@ function MemberPill({
         cursor: 'pointer', transition: 'all 120ms ease', gap: 0,
       }}
     >
-      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'), whiteSpace: 'nowrap' }}>
+      <span style={{ font: 'var(--ds-font-body)', fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'), whiteSpace: 'nowrap' }}>
+        <span style={{ font: 'var(--ds-font-body-small)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'), whiteSpace: 'nowrap' }}>
           {sublabel}
         </span>
       )}
@@ -343,7 +343,7 @@ export function R360PanelView({ resourceId, isLoading }: R360PanelViewProps) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)',
+        color: token('color.text.subtle', 'var(--ds-text-subtlest)'), font: 'var(--ds-font-body)',
       }}>
         No resource profile found for your account.
       </div>
@@ -415,10 +415,10 @@ export default function R360Panel() {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)',
+        color: token('color.text.subtle', 'var(--ds-text-subtlest)'), font: 'var(--ds-font-body)',
       }}>
         No resource profile found for your account.{' '}
-        <span style={{ fontSize: 'var(--ds-font-size-200)', display: 'block', marginTop: 8 }}>
+        <span style={{ font: 'var(--ds-font-body)', display: 'block', marginTop: 8 }}>
           Ask your admin to link your profile to a resource entry.
         </span>
       </div>

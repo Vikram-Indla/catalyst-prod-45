@@ -10,7 +10,7 @@
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { token } from '@atlaskit/tokens';
-import Lozenge from '@atlaskit/lozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import Tooltip from '@atlaskit/tooltip';
 import Badge from '@atlaskit/badge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -32,13 +32,6 @@ const SUBTASK_TYPES = new Set(['sub-task', 'backend', 'frontend']);
 
 function isSubtaskType(type: string): boolean {
   return SUBTASK_TYPES.has((type || '').toLowerCase());
-}
-
-// ── Status → Lozenge appearance ─────────────────────────────────────
-function statusAppearance(cat: string): 'success' | 'inprogress' | 'moved' | 'default' {
-  if (cat === 'done') return 'success';
-  if (cat === 'in_progress' || cat === 'in_qa') return 'inprogress';
-  return 'default';
 }
 
 function mapCategory(item: R360WorkItem): string {
@@ -75,7 +68,7 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
     >
       {/* Title — primary content */}
       <div style={{
-        fontSize: 'var(--ds-font-size-400)', fontWeight: 400, lineHeight: '20px',
+        font: 'var(--ds-font-body)', fontWeight: 500,
         color: token('color.text', 'var(--ds-text)'),
         display: '-webkit-box', WebkitLineClamp: 2,
         WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -87,7 +80,7 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
       {/* Epic/parent breadcrumb */}
       {hasParent && (
         <div style={{
-          fontSize: 'var(--ds-font-size-100)', fontWeight: 400, lineHeight: '16px',
+          font: 'var(--ds-font-body-small)', fontWeight: 400,
           color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           marginBottom: 8,
@@ -100,20 +93,17 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <JiraIssueTypeIcon type={item.item_type} size={16} />
         <span style={{
-          fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-          fontFamily: token('font.family.code', 'monospace'),
+          font: 'var(--ds-font-body-small)', fontWeight: 400,
           color: token('color.link', 'var(--ds-link)'),
         }}>
           {item.item_key}
         </span>
         <span style={{ flex: 1 }} />
-        <Lozenge appearance={statusAppearance(item.status_category)}>
-          {item.status || 'To do'}
-        </Lozenge>
+        <StatusLozenge status={item.status ?? ''} statusCategory={item.status_category} />
         <Tooltip content={`Open ${item.age_days} days`}>
           {(tooltipProps) => (
             <span {...tooltipProps} style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 400,
+              font: 'var(--ds-font-body-small)', fontWeight: 400,
               color: item.age_days > 30
                 ? token('color.text.warning', 'var(--ds-text-warning)')
                 : token('color.text.subtlest', 'var(--ds-icon-subtle)'),
@@ -136,7 +126,7 @@ function ColumnHeader({ label, color, count }: { label: string; color: string; c
       borderBottom: `2px solid ${color}`,
     }}>
       <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>{label}</span>
+      <span style={{ font: 'var(--ds-font-body)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>{label}</span>
       <span style={{ marginLeft: 'auto' }}>
         <Badge>{count}</Badge>
       </span>
@@ -196,13 +186,13 @@ function ProjectSwimlane({
             20px fits the fixed 44px row; row dimensions unchanged. */}
         <ProjectIcon size="small" projectKey={projectKey} name={projectName} />
         <span style={{
-          fontSize: 'var(--ds-font-size-400)', fontWeight: 700, letterSpacing: '0.01em',
+          font: 'var(--ds-font-body)', fontWeight: 600, letterSpacing: '0.01em',
           color: token('color.text', 'var(--ds-text)'),
         }}>
           {projectKey}
         </span>
         <span style={{
-          fontSize: 'var(--ds-font-size-300)', fontWeight: 400,
+          font: 'var(--ds-font-body)', fontWeight: 400,
           color: token('color.text.subtle', 'var(--ds-icon)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
@@ -211,14 +201,14 @@ function ProjectSwimlane({
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-icon)'),
+            font: 'var(--ds-font-body-small)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-icon)'),
           }}>
             <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.neutral.bold', 'var(--ds-icon-subtle)') }} />
             {todoItems.length} To do
           </span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.information', 'var(--ds-link)'),
+            font: 'var(--ds-font-body-small)', fontWeight: 600, color: token('color.text.information', 'var(--ds-link)'),
           }}>
             <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.information.bold', 'var(--ds-link)') }} />
             {ipItems.length} In progress
@@ -243,7 +233,7 @@ function ProjectSwimlane({
               <ColumnHeader label="To do" color={token('color.icon.warning', 'var(--ds-text-warning)')} count={todoItems.length} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {todoVisible.length === 0 && (
-                  <div style={{ padding: 16, textAlign: 'center', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), border: `1px dashed ${token('color.border', 'var(--ds-border)')}`, borderRadius: 4 }}>
+                  <div style={{ padding: 16, textAlign: 'center', font: 'var(--ds-font-body-small)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), border: `1px dashed ${token('color.border', 'var(--ds-border)')}`, borderRadius: 4 }}>
                     Nothing here
                   </div>
                 )}
@@ -256,7 +246,7 @@ function ProjectSwimlane({
               <ColumnHeader label="In progress" color={token('color.icon.information', 'var(--ds-link)')} count={ipItems.length} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {ipVisible.length === 0 && (
-                  <div style={{ padding: 16, textAlign: 'center', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), border: `1px dashed ${token('color.border', 'var(--ds-border)')}`, borderRadius: 4 }}>
+                  <div style={{ padding: 16, textAlign: 'center', font: 'var(--ds-font-body-small)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), border: `1px dashed ${token('color.border', 'var(--ds-border)')}`, borderRadius: 4 }}>
                     Nothing here
                   </div>
                 )}
@@ -272,7 +262,7 @@ function ProjectSwimlane({
                 onClick={e => { e.stopPropagation(); setShowAll(!showAll); }}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+                  font: 'var(--ds-font-body)', fontWeight: 500,
                   color: token('color.link', 'var(--ds-link)'),
                   padding: '4px 8px',
                 }}
@@ -398,7 +388,7 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
             />
           </div>
           <span style={{
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 400,
+            font: 'var(--ds-font-body-small)', fontWeight: 400,
             color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
           }}>
             {catyVisibleItems.length} items across {projectGroups.length} projects

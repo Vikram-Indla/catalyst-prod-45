@@ -43,8 +43,8 @@ export function TicketKeyChip({ issueKey, issueType, summary, statusCategory }: 
         background: statusBackground(statusCategory),
         borderRadius: 3,
         color: 'var(--ds-link)',
-        font: 'inherit',
-        fontWeight: 500,
+        font: 'var(--ds-font-body-small)',
+        fontWeight: 400,
         cursor: 'pointer',
         verticalAlign: 'baseline',
       }}

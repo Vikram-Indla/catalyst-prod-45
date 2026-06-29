@@ -184,7 +184,9 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // 2026-05-17 LIVE Jira probe: title is 500/14/20 (NOT 400).
             // A prior comment claimed 400 was correct — live DOM disproves
             // that. The user-visible weight in Jira's For You is medium 500.
-            font: `${isJiraAssigned ? 500 : 400} 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+            // 2026-06-30: unified to 500 across BOTH variants — Ageing (default
+            // variant) was rendering 400, inconsistent with Assigned (500).
+            font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', 'var(--ds-text)'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -436,7 +438,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                 display: 'flex', alignItems: 'center', gap: 8,
                 width: '100%', padding: '8px 8px', border: 'none',
                 background: 'transparent', color: token('color.text', 'var(--ds-text)'),
-                fontSize: 'var(--ds-font-size-400)', textAlign: 'left', cursor: 'pointer',
+                font: 'var(--ds-font-body)', textAlign: 'left', cursor: 'pointer',
                 fontFamily: 'inherit', borderRadius: 3, outline: 'none',
               }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
@@ -459,7 +461,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                     display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', padding: '8px 8px', border: 'none',
                     background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger)'),
-                    fontSize: 'var(--ds-font-size-400)', textAlign: 'left', cursor: 'pointer',
+                    font: 'var(--ds-font-body)', textAlign: 'left', cursor: 'pointer',
                     fontFamily: 'inherit', borderRadius: 3, outline: 'none',
                   }}
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger))'))}

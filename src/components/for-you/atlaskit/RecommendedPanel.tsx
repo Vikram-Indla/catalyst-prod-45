@@ -514,7 +514,7 @@ function FeedSection({
             style={{
               // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
               // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600).
-              fontSize: 'var(--ds-font-size-500)',
+              font: 'var(--ds-font-body-large)',
               lineHeight: '20px',
               fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
               fontWeight: 653,
@@ -1577,7 +1577,7 @@ function EmojiPickerPopover({
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 8,
-        boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -1605,7 +1605,7 @@ function EmojiPickerPopover({
               display: 'flex',
               justifyContent: 'center',
               padding: '4px 0 8px',
-              fontSize: 'var(--ds-font-size-500)',
+              font: 'var(--ds-font-body-large)',
               cursor: 'pointer',
               borderBottom: `2px solid ${activeCategory === cat.key && !search
                 ? token('color.border.brand', 'var(--ds-link)')
@@ -1631,7 +1631,7 @@ function EmojiPickerPopover({
             border: `1px solid ${token('color.border.input', 'var(--ds-text-disabled)')}`,
             borderRadius: 4,
             padding: '4px 8px',
-            fontSize: 'var(--ds-font-size-300)',
+            font: 'var(--ds-font-body)',
             outline: 'none',
             fontFamily: 'inherit',
             color: token('color.text', 'var(--ds-text)'),
@@ -1647,7 +1647,7 @@ function EmojiPickerPopover({
         <div
           style={{
             padding: '4px 8px',
-            fontSize: 'var(--ds-font-size-100)',
+            font: 'var(--ds-font-body-small)',
             fontWeight: 700,
             color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
             letterSpacing: '0.5px',
@@ -1674,7 +1674,7 @@ function EmojiPickerPopover({
               gridColumn: '1 / -1',
               padding: '16px 8px',
               textAlign: 'center',
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body)',
               color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
             }}
           >
@@ -1693,7 +1693,7 @@ function EmojiPickerPopover({
               justifyContent: 'center',
               width: 32,
               height: 32,
-              fontSize: 'var(--ds-font-size-700)',
+              font: 'var(--ds-font-heading-medium)',
               borderRadius: 4,
               cursor: 'pointer',
               transition: 'background 100ms ease',
@@ -2025,7 +2025,7 @@ function ForYouReplyTree({
         {replyingToId === c.id && (
           <div style={{ paddingLeft: 40, paddingTop: 8 }}>
             <div style={{
-              fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+              font: 'var(--ds-font-body)', fontWeight: 500,
               color: 'var(--ds-text-subtle)',
               marginBottom: 4,
             }}>Replying to {c.author.name}</div>
@@ -3272,7 +3272,7 @@ function ReactionChip({
         borderRadius: 4,
         fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
         // DOM-probed Jira 2026-05-29: emoji chip font-size = 13.3px (≈13). 16 was Catalyst opinion.
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body)',
         lineHeight: 1,
         // DOM-probed Jira 2026-05-29: idle chips are opacity:1 — dimming to 0.6 when
         // count===0 made chips look disabled. Only truly-disabled chips get 0.4.
@@ -3286,7 +3286,7 @@ function ReactionChip({
           aria-hidden="true"
           style={{
             fontFamily: 'var(--ds-font-family)',
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body)',
             fontWeight: 400,
             color: isActive
               ? token('color.text.selected', 'var(--ds-link)')
