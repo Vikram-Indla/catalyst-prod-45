@@ -403,8 +403,7 @@ export interface UseTiptapEditorOptions {
   onImageUpload?: (file: File) => Promise<string>;
 }
 
-export const DEFAULT_PLACEHOLDER =
-  'Type /ai to Ask Caty or @ to mention and notify someone';
+export const DEFAULT_PLACEHOLDER = 'Add a description…';
 
 export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null {
   const editor = useEditor(

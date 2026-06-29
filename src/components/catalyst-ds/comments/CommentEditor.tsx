@@ -430,10 +430,8 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             // ("Type /ai to Ask Caty or @ to mention and notify someone").
             // The `placeholder` prop on CommentEditor controls the
             // COLLAPSED-state button label only.
-            // ~2 rows tall in its initial state so the comment composer
-            // doesn't dominate the page when empty. The Description
-            // editor uses the default (220) for a taller starting box.
-            minHeight={80}
+            // Compact: auto-grows from 40px as user types.
+            minHeight={40}
             onImproveClick={improveContext ? handleImproveClick : undefined}
             improveLabel="Improve"
             onEditorReady={setEditor}

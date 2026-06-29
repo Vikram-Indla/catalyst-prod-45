@@ -2,12 +2,11 @@
  * Toolbar — static toolbar that lives INSIDE the editor shell.
  *
  * Order (mirrors Jira's description toolbar):
- *   Improve | TextStyles | Bold + InlineFmt chevron | BulletList + Lists chevron
- *   | TextColor | Image | CodeSnippet | Emoji | InsertElement | Link
- *   | Undo | Redo | History
+ *   [Mic] [Improve] | [TextStyles] [Bold] [InlineFmt▾] [Lists▾] [Color]
+ *   | [Image] [Code] [Emoji] [Insert+] | [Link] | [Undo] [Redo] [History]
  *
- * No visible dividers between groups — Jira's toolbar is flat.
- * Background is transparent so the shell border owns the visual frame.
+ * Four separator groups aid scanning. Background is transparent so the
+ * shell border owns the visual frame.
  */
 import type { Editor } from '@tiptap/react';
 /* 2026-06-17: GenerateStoriesButton + GenerateEpicsButton removed from
@@ -31,6 +30,23 @@ import { UndoButton } from './buttons/UndoButton';
 import { RedoButton } from './buttons/RedoButton';
 import { HistoryButton } from './buttons/HistoryButton';
 import { MicButton } from './buttons/MicButton';
+
+function ToolbarSep() {
+  return (
+    <span
+      aria-hidden
+      style={{
+        display: 'inline-block',
+        width: 1,
+        height: 18,
+        background: 'var(--ds-border)',
+        margin: '0 4px',
+        flexShrink: 0,
+        alignSelf: 'center',
+      }}
+    />
+  );
+}
 
 export interface ToolbarProps {
   editor: Editor | null;
@@ -99,6 +115,7 @@ export function Toolbar({
         overflowX: 'auto',
       }}
     >
+      {/* Group 1: Voice + AI */}
       {micSupported && (
         <MicButton
           active={micActive}
@@ -107,17 +124,25 @@ export function Toolbar({
           onVoiceModeChange={onVoiceModeChange}
         />
       )}
+      <ToolbarSep />
+      {/* Group 2: Text formatting */}
       <TextStylesDropdown editor={editor} />
       <BoldButton editor={editor} />
       <InlineFormattingDropdown editor={editor} />
       <BulletListButton editor={editor} />
       <ListsDropdown editor={editor} />
       <TextColorPicker editor={editor} />
+      <ToolbarSep />
+      {/* Group 3: Insert */}
       <ImageUploadButton editor={editor} onUpload={onImageUpload} />
       <CodeSnippetButton editor={editor} />
       <EmojiButton onOpen={onOpenEmojiPanel} />
       <InsertElementButton onOpen={onOpenSlashMenu} />
+      <ToolbarSep />
+      {/* Group 4: Link */}
       <LinkButton editor={editor} />
+      <ToolbarSep />
+      {/* Group 5: History */}
       <UndoButton editor={editor} />
       <RedoButton editor={editor} />
       <HistoryButton available={historyAvailable} />
