@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SeverityBadge } from "./SeverityBadge";
-import { StatusLozenge as DefectStatusBadge } from "@/components/ui/StatusLozenge";
+import { StatusLozenge as DefectStatusBadge } from '@/components/shared/StatusLozenge';
 import { Defect } from "@/data/defectsData";
 import { cn } from "@/lib/utils";
 

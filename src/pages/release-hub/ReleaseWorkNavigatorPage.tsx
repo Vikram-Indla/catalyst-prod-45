@@ -33,7 +33,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { ProjectAvatar } from '@/components/icons';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -435,11 +435,11 @@ export function ReleaseWorkNavigatorPage({
             options={chipOptions.statuses.map((o) => ({ id: o, label: o }))}
             onChange={(v) => updateState({ statuses: v })}
             renderOption={(opt) => (
-              <CatalystStatusPill
+              <StatusLozengeDropdown
                 status={opt.id}
                 statusCategory={(chipOptions.statusCategoryByStatus.get(opt.id) as any) ?? null}
                 interactive={false}
-                compact
+                size="sm"
               />
             )}
           />

@@ -5,17 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { useDefaultProject } from '@/hooks/useProjects';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
-import { JiraStatusLozenge } from '@/components/workflow/JiraStatusLozenge';
-import type { StatusCategory } from '@/lib/workflows/types';
+import { StatusLozenge, type LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { CatalystWorkflowBuilder } from '@/pages/admin/workflows/CatalystWorkflowBuilder';
 
-// Map Tier-2 DB category → Tier-1 lozenge StatusCategory
-const DB_TO_LOZENGE: Record<string, StatusCategory> = {
+// Map Tier-2 DB category → canonical LozengeAppearance
+const DB_TO_LOZENGE: Record<string, LozengeAppearance> = {
   todo:        'default',
   in_progress: 'inprogress',
   done:        'success',
 };
-function dbCatToLozenge(cat: string): StatusCategory {
+function dbCatToLozenge(cat: string): LozengeAppearance {
   return DB_TO_LOZENGE[cat] ?? 'default';
 }
 
@@ -97,10 +96,9 @@ export function CatalystWorkflowModal({
                   <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
                     Current
                   </span>
-                  <JiraStatusLozenge
-                    category={dbCatToLozenge(currentStatus.category)}
-                    name={currentStatus.name}
-                    variant="bold"
+                  <StatusLozenge
+                    appearance={dbCatToLozenge(currentStatus.category)}
+                    status={currentStatus.name}
                   />
                 </div>
               )}
@@ -110,11 +108,10 @@ export function CatalystWorkflowModal({
                     Can move to
                   </span>
                   {moveToStatuses.map((s) => (
-                    <JiraStatusLozenge
+                    <StatusLozenge
                       key={s.id}
-                      category={dbCatToLozenge(s.category)}
-                      name={s.name}
-                      variant="subtle"
+                      appearance={dbCatToLozenge(s.category)}
+                      status={s.name}
                     />
                   ))}
                 </div>

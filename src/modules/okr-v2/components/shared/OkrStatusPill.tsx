@@ -2,7 +2,7 @@
  * OKR Status Pill — Now uses StatusLozenge guardrail
  * GUARDRAIL: Use StatusLozenge from @/components/ui/StatusLozenge for all status rendering.
  */
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 
 interface OkrStatusPillProps {
   status: string;

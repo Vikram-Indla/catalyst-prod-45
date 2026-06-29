@@ -8,7 +8,7 @@
  * - Centre avatar 56px → 72px (ring-view visual redesign)
  * - Ring canvas height viewport-proportional: clamp(480px, W×0.62, 700px)
  * - SVG spokes: token(color.border) dashed 1.5px (subtle, not text-disabled)
- * - Orbital card layout: 3 rows (icon+key+age compact · title · status)
+ * - Orbital card layout: 3 rows (icon+key+age size="sm" · title · status)
  *   removed noisy uppercase item_type text label and priority text
  * - fontFamily: system monospace stack (was --cp-font-mono)
  * - isDark usage removed — token() resolves dark/light natively via --ds-* vars
@@ -25,7 +25,7 @@ import {
   getCardPixelPosDynH, getSpokeEndpoints,
   getFromTagClass, getFromTagPrefix,
 } from './helpers';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import { MiniAvatar } from './SmallComponents';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import type { PresenceState } from '@/lib/presence';
@@ -225,7 +225,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
                       <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                      <CatalystStatusPill status="Done" statusCategory="done" interactive={false} compact />
+                      <StatusLozengeDropdown status="Done" statusCategory="done" interactive={false} size="sm" />
                     </div>
                     <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: T.text(), lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
                     <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtle(), marginTop: 0, fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
@@ -325,7 +325,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 4 }}>{item.title}</div>
                     {/* Status + from-tag */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-                      <CatalystStatusPill status={item.status} statusCategory={item.status_category} interactive={false} compact />
+                      <StatusLozengeDropdown status={item.status} statusCategory={item.status_category} interactive={false} size="sm" />
                       {item.carried_from_label && (
                         <span className={`r3-from-tag ${fromClass}`}>{getFromTagPrefix(item.age_days)}{item.carried_from_label}</span>
                       )}
@@ -354,7 +354,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
                         <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                        <CatalystStatusPill status="Done" statusCategory="done" interactive={false} compact />
+                        <StatusLozengeDropdown status="Done" statusCategory="done" interactive={false} size="sm" />
                       </div>
                       <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.text(), marginTop: 0 }}>{item.title}</div>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest(), marginTop: 0 }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
@@ -439,7 +439,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>
                 {item.status && (
-                  <CatalystStatusPill status={item.status} statusCategory={item.status_category} interactive={false} compact />
+                  <StatusLozengeDropdown status={item.status} statusCategory={item.status_category} interactive={false} size="sm" />
                 )}
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">

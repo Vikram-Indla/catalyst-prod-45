@@ -1628,7 +1628,7 @@ export default function TasksTaskListView() {
       const sample = buckets.get(k)![0];
       let labelNode: React.ReactNode = undefined;
       if (groupBy === 'status') {
-        labelNode = <StatusPill appearance={taskStatusAppearance(sample.status)}>{k}</StatusPill>;
+        labelNode = <StatusLozenge status={k} appearance={taskStatusAppearance(sample.status)} />;
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assigneeName;
         const avatarUrl = sample.assigneeName

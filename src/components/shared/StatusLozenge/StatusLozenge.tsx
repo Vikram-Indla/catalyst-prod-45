@@ -18,18 +18,33 @@
  *                  Matches Jira's issue-field-status.ui.status-view.status-button.
  */
 import React from 'react';
-import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { statusBg, statusFg, type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 
 export type StatusLozengeSize = 'sm' | 'md';
+export type LozengeAppearance = StatusAppearance;
 
 /**
  * Map status name + optional ph_issues.status_category to a canonical
  * appearance. Delegates to the canonical `statusToLozenge` table — single
  * source of truth for status → color. Do NOT duplicate the lookup table here.
  */
-export function statusToAppearance(status: string, category?: string) {
-  return statusToLozenge(status, category);
+export function statusToAppearance(status: string, category?: string): LozengeAppearance {
+  // Normalize snake_case (e.g. "ready_for_development") to spaces so the
+  // canonical lookup table matches. Status values arrive in either form
+  // depending on data source — DB enums are snake_case, ph_issues.status is
+  // Title Case. One renderer must accept both.
+  const normalized = (status ?? '').replace(/_/g, ' ');
+  return statusToLozenge(normalized, category);
+}
+
+/**
+ * Humanize a snake_case or already-display-ready status string into Title Case.
+ * Pass-through for strings that already contain no underscores.
+ */
+export function humanizeStatus(status: string): string {
+  if (!status) return '';
+  return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 const SIZE_SPECS: Record<StatusLozengeSize, {
@@ -59,11 +74,23 @@ export interface StatusLozengeProps {
   /** Optional element rendered inside the colored pill, after the status text.
    *  Used by StatusLozengeDropdown to put the chevron INSIDE the bg. */
   trailing?: React.ReactNode;
+  /** Direct appearance override — bypasses statusToLozenge lookup. Use for
+   *  non-status domains (environment, health, deploy outcome) that need the
+   *  same visual contract but their own color choice. */
+  appearance?: LozengeAppearance;
+  /** Display override — what gets rendered inside the pill. Use when the
+   *  status value is snake_case or otherwise not display-ready. */
+  label?: string;
+  /** Truncate display label with ellipsis beyond this width (px). */
+  maxWidth?: number;
 }
 
-export function StatusLozenge({ status, statusCategory, size = 'sm', trailing }: StatusLozengeProps) {
-  const ap = statusToAppearance(status, statusCategory ?? undefined);
+export function StatusLozenge({ status, statusCategory, size = 'sm', trailing, appearance, label, maxWidth }: StatusLozengeProps) {
+  const ap = appearance ?? statusToAppearance(status, statusCategory ?? undefined);
   const spec = SIZE_SPECS[size];
+  // Auto-humanize snake_case status when no explicit label is provided.
+  // Pass-through for Title Case strings (no underscores).
+  const display = label ?? (status.includes('_') ? humanizeStatus(status) : status);
 
   return (
     <span style={{
@@ -76,14 +103,18 @@ export function StatusLozenge({ status, statusCategory, size = 'sm', trailing }:
       borderRadius: 'var(--ds-border-radius, 3px)',
       height: spec.height,
       color: statusFg(ap),
+      maxWidth: maxWidth ?? undefined,
     }}>
       <span style={{
         font: `${spec.fontWeight} var(--ds-font-size-075, 11px)/var(--ds-space-200, 16px) var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
         color: statusFg(ap),
         textTransform: 'uppercase',
         letterSpacing: spec.letterSpacing,
+        overflow: maxWidth ? 'hidden' : undefined,
+        textOverflow: maxWidth ? 'ellipsis' : undefined,
+        whiteSpace: maxWidth ? 'nowrap' : undefined,
       }}>
-        {status}
+        {display}
       </span>
       {trailing}
     </span>

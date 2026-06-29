@@ -13,7 +13,7 @@ function Frame({ children, width = 900 }: { children: React.ReactNode; width?: n
 }
 
 import { CatalystSidebarDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 
 
 const mockIssue = {
@@ -38,7 +38,7 @@ export const StoryType: StoryObj = {
       <CatalystSidebarDetails
         issue={mockIssue as any} itemId="BAU-5972"
         onStatusChange={fn()} onClose={fn()} onDelete={fn()}
-        statusPill={<CatalystStatusPill status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />}
+        statusPill={<StatusLozengeDropdown status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />}
       />
     </Frame>
   ),
@@ -50,7 +50,7 @@ export const EpicType: StoryObj = {
       <CatalystSidebarDetails
         issue={{ ...mockIssue, issue_type: 'Epic', issue_key: 'BAU-5400', summary: 'Industrial Capabilities Module', parent_key: null } as any}
         itemId="BAU-5400" onStatusChange={fn()} onClose={fn()} onDelete={fn()}
-        statusPill={<CatalystStatusPill status="In Progress" statusCategory="indeterminate" onStatusChange={fn()} issueType="Epic" />}
+        statusPill={<StatusLozengeDropdown status="In Progress" statusCategory="indeterminate" onStatusChange={fn()} issueType="Epic" />}
       />
     </Frame>
   ),
@@ -62,7 +62,7 @@ export const DoneStatus: StoryObj = {
       <CatalystSidebarDetails
         issue={{ ...mockIssue, status: 'Done', status_category: 'done' } as any}
         itemId="BAU-5972" onStatusChange={fn()} onClose={fn()} onDelete={fn()}
-        statusPill={<CatalystStatusPill status="Done" statusCategory="done" onStatusChange={fn()} issueType="Story" />}
+        statusPill={<StatusLozengeDropdown status="Done" statusCategory="done" onStatusChange={fn()} issueType="Story" />}
       />
     </Frame>
   ),
@@ -85,7 +85,7 @@ export const WithImproveDropdown: StoryObj = {
       <CatalystSidebarDetails
         issue={mockIssue as any} itemId="BAU-5972"
         onStatusChange={fn()} onClose={fn()} onDelete={fn()}
-        statusPill={<CatalystStatusPill status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />}
+        statusPill={<StatusLozengeDropdown status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />}
         improveDropdown={<button style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: '1px solid var(--ds-border)', borderRadius: 3, background: 'var(--ds-surface)', cursor: 'pointer' }}>Improve</button>}
       />
     </Frame>

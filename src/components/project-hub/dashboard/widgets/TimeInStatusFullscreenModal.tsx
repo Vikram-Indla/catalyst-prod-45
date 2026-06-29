@@ -33,7 +33,7 @@ import {
 } from '@/components/ads';
 // 2026-06-09 — ADS wrapper for shrink-wrap behaviour.
 import { Lozenge as AkLozenge } from '@/components/ads';
-import { StatusPill as JiraStatusPill } from '@/components/shared/JiraTable/cells';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
@@ -351,9 +351,7 @@ export default function TimeInStatusFullscreenModal({
                         >
                           {/* 2026-06-10 — Jira-canonical StatusPill
                               (cornflower/lime/gray DOM-probed hexes). */}
-                          <JiraStatusPill appearance={lozengeAppearance(s.category, s.name)}>
-                            {s.name}
-                          </JiraStatusPill>
+                          <StatusLozenge status={s.name} appearance={lozengeAppearance(s.category, s.name)} />
                         </th>
                       ))}
                       <th

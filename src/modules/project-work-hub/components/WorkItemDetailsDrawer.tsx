@@ -23,7 +23,7 @@ import {
 import {
   CatalystActivitySection,
   CatalystKeyDetails,
-  CatalystStatusPill,
+  StatusLozengeDropdown,
 } from '@/components/catalyst-detail-views/shared/sections';
 import type { CatalystItemType } from '@/components/catalyst-detail-views/shared/types';
 
@@ -177,9 +177,9 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
           {/* Details tab */}
           <TabPanel>
             <div className="overflow-y-auto p-4 h-full">
-              {/* Status — canonical CatalystStatusPill */}
+              {/* Status — canonical StatusLozengeDropdown */}
               <div className="mb-4">
-                <CatalystStatusPill
+                <StatusLozengeDropdown
                   status={issue?.status ?? item.status}
                   statusCategory={issue?.status_category ?? item.statusCategory}
                   onStatusChange={canEdit ? (s) => mutations.updateStatus.mutate(s) : undefined}

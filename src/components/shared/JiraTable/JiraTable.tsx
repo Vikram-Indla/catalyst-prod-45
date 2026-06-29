@@ -567,13 +567,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
       }
-      /* Whole-cell hover tint: when an editor trigger inside a cell is hovered
-         OR opened, tint the entire <td> so the affordance reads as
-         "this whole cell is editable" — matches Jira list-view behaviour.
-         Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded
-         var(--ds-background-neutral). --ds-background-neutral-hovered is the next-step token
-         used for active editor cells. */
-      .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor]:hover):not(:has([data-jira-cell-summary])),
+      /* Whole-cell hover tint: opened editor only (no hover tint).
+         Per status-pill unification 2026-06-29: hover bg removed at user
+         request — pill bg is sufficient affordance. Tint persists only when
+         the dropdown is open so the trigger origin is clear. */
       .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor][aria-expanded="true"]):not(:has([data-jira-cell-summary])) {
         background-color: var(--ds-background-neutral-hovered) !important;
       }
@@ -654,12 +651,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: var(--ds-background-selected);
         text-decoration: underline;
       }
-      /* Inner trigger buttons no longer self-tint (the whole cell tints).
-         Keep a subtle ring for keyboard focus. */
-      [data-jira-cell-editor]:focus-visible {
-        outline: 2px solid var(--ds-border-focused);
-        outline-offset: -2px;
-        border-radius: 3px;
+      /* Blue focus outline removed per user 2026-06-29 — pill bg is enough
+         affordance. Keyboard nav still works via aria states. */
+      [data-jira-cell-editor]:focus-visible,
+      [data-jira-cell-editor]:focus,
+      [data-jira-cell-editor] *:focus,
+      [data-jira-cell-editor] *:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
       }
       /* Empty-cell ghost affordance (e.g. "Set status" / "Add parent" /
          "Unassigned" placeholder). Faded by default; reads as full text on

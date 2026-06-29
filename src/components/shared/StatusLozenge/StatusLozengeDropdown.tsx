@@ -40,18 +40,19 @@ function buildGroupsFromOptions(
     in_progress: { label: 'IN PROGRESS', idx: 1 },
     done:        { label: 'DONE',        idx: 2 },
   };
-  const map = new Map<string, string[]>();
+  const map = new Map<string, Array<{ value: string; label: string }>>();
   for (const o of opts) {
     const cat = o.color_category ?? 'todo';
     if (!map.has(cat)) map.set(cat, []);
-    map.get(cat)!.push(o.value);
+    map.get(cat)!.push({ value: o.value, label: o.label });
   }
   return [...map.entries()]
     .sort((a, b) => (ORDER[a[0]]?.idx ?? 9) - (ORDER[b[0]]?.idx ?? 9))
-    .map(([cat, statuses]) => ({
+    .map(([cat, items]) => ({
       category: cat,
       groupLabel: ORDER[cat]?.label ?? cat.replace(/_/g, ' ').toUpperCase(),
-      statuses,
+      statuses: items.map(i => i.value),
+      labelByValue: items.reduce((acc, i) => { acc[i.value] = i.label; return acc; }, {} as Record<string, string>),
     }));
 }
 
@@ -261,10 +262,7 @@ export function StatusLozengeDropdown({
             background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 'var(--ds-border-radius, 4px)',
-            boxShadow: token(
-              'elevation.shadow.overlay' as Parameters<typeof token>[0],
-              'var(--ds-shadow-overlay)',
-            ),
+            boxShadow: '0 8px 16px -4px var(--ds-shadow-overlay-perimeter, rgba(9,30,66,0.15)), 0 0 1px var(--ds-shadow-overlay, rgba(9,30,66,0.31))',
             padding: 0,
             zIndex: 9999,
             fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
@@ -296,7 +294,8 @@ export function StatusLozengeDropdown({
                     />
                   </div>
                   {visibleStatuses.map((st) => {
-                    const isSelected = display === st;
+                    const optionLabel = (group as { labelByValue?: Record<string, string> }).labelByValue?.[st] ?? st;
+                    const isSelected = display === st || display === optionLabel;
                     return (
                       <button
                         key={st}
@@ -344,7 +343,7 @@ export function StatusLozengeDropdown({
                           outline: 'none',
                         }}
                       >
-                        <StatusLozenge status={st} size="sm" />
+                        <StatusLozenge status={optionLabel} size="sm" />
                       </button>
                     );
                   })}

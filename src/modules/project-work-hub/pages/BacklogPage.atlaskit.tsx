@@ -103,10 +103,10 @@ import {
   makeRowMenuCell,
   FlagsHost,
   flag,
-  StatusPill,
   BulkFooterBar,
   ToolbarMenuButton,
 } from '@/components/shared/JiraTable';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type {
   Column,
   LozengeAppearance,
@@ -2153,7 +2153,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // 2026-05-08 DOM probe confirms: Jira renders ALL status group headers with a
         // visible pill (including grey/default — bg: rgb(221,222,225)). StatusPill uses
         // exact Jira-measured hex, not Atlaskit token resolution which diverges.
-        labelNode = <StatusPill appearance={appearance as LozengeAppearance}>{label}</StatusPill>;
+        labelNode = <StatusLozenge status={label} appearance={appearance as LozengeAppearance} />;
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assignee_name;
         const avatarUrl = sample.assignee_name ? (resolveAvatarUrl(sample.assignee_name) ?? avatarsByName?.get(sample.assignee_name)) : null;
@@ -2233,9 +2233,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             )}
             {!isOrphan && parentStatus && (
               <span style={{ flexShrink: 0, marginLeft: 4 }}>
-                <StatusPill appearance={parentStatusAppearance as LozengeAppearance}>
-                  {parentStatus}
-                </StatusPill>
+                <StatusLozenge status={parentStatus} appearance={parentStatusAppearance as LozengeAppearance} />
               </span>
             )}
             {isOrphan && <span style={{ color: 'var(--ds-text-subtlest)' }}>{k}</span>}

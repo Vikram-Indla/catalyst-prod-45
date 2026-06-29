@@ -23,8 +23,14 @@ import DropdownMenu, {
   DropdownItemGroup,
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
-import { CatalystStatusPill } from "@/components/catalyst-detail-views/shared/sections";
+import { StatusLozengeDropdown } from "@/components/shared/StatusLozenge";
 import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
+
+function appearanceToWorkflowCategory(ap: LozengeAppearance): string {
+  if (ap === 'success') return 'done';
+  if (ap === 'inprogress') return 'in_progress';
+  return 'todo';
+}
 import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -426,51 +432,9 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
   };
 }
 
-// ─── Status Lozenge ────────────────────────────────────────────────────────
-// LozengeAppearance kept for backwards compatibility; StatusPill now delegates
-// to canonical CatalystStatusPill.tsx (2026-06-14).
-export type LozengeAppearance =
-  | "default"
-  | "inprogress"
-  | "success"
-  | "removed"
-  | "moved"
-  | "new";
-
-/**
- * DEPRECATED — StatusPill now wraps CatalystStatusPill for backwards compatibility.
- * Callers should migrate to CatalystStatusPill directly. Maps appearance to statusCategory.
- */
-export function StatusPill({
-  appearance,
-  children,
-  trailingIcon,
-}: {
-  appearance: LozengeAppearance;
-  children: React.ReactNode;
-  trailingIcon?: React.ReactNode;
-}) {
-  // Map LozengeAppearance back to a statusCategory for CatalystStatusPill
-  const appearanceToCategory: Record<LozengeAppearance, string | undefined> = {
-    success: 'done',
-    inprogress: 'in_progress',
-    moved: 'moved',
-    removed: 'removed',
-    new: 'new',
-    default: 'todo',
-  };
-  const category = appearanceToCategory[appearance];
-
-  return (
-    <CatalystStatusPill
-      status={String(children)}
-      statusCategory={category}
-      interactive={false}
-      compact={true}
-      trailingIcon={trailingIcon}
-    />
-  );
-}
+// LozengeAppearance type re-exported for callers (tasksListColumns, stories).
+// The pill component itself lives at @/components/shared/StatusLozenge.
+export type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 
 export function makeStatusCell(
   getStatus: (row: any) => string | null,
@@ -487,281 +451,63 @@ export function makeStatusCell(
       );
     const displayLabel = labelFor ? labelFor(status) : status;
     return (
-      <CatalystStatusPill
+      <StatusLozengeDropdown
         status={displayLabel}
         interactive={false}
-        compact={true}
+        size="sm"
       />
     );
   };
 }
 
 // ─── Status Edit Cell ────────────────────────────────────────────────────────
+// Delegates entirely to the canonical StatusLozengeDropdown so every JiraTable
+// status cell renders the same pill, popover border, chevron, and selection
+// styling as the detail-modal status dropdown. No bespoke popup here.
 export function makeStatusEditCell<T>(opts: {
   getStatus: (row: T) => string | null;
   options: string[];
   appearanceFor: (s: string | null) => LozengeAppearance;
-  /**
-   * 2026-06-01 (catalyst-clone L11/L12 follow-up): map raw status value → pretty label.
-   * Defaults to identity (project hub keeps showing the value as-is).
-   * Product hub adapter passes `dataSource.statusLabel` so the dropdown
-   * renders "Demand approved" instead of raw slug `demand_approved`.
-   */
   labelFor?: (s: string) => string;
   onChange: (row: T, next: string) => void;
   canEdit?: (row: T) => boolean;
-  /** 2026-06-21 (Vikram canonical): once done, frozen. Default true. */
   lockWhenDone?: boolean;
-  /**
-   * Per-row issue type. When it resolves to a canonical-engine entity (Story),
-   * the editor sources options + labels from ph_wf_* (canonical transitions)
-   * instead of `options`. Non-canonical rows are unchanged.
-   */
   getIssueType?: (row: T) => string | null;
 }) {
   return function StatusEditCell({ row }: CellProps<T>) {
-    const [open, setOpen] = React.useState(false);
-    const [pos, setPos] = React.useState({ top: 0, left: 0 });
-    const triggerRef = React.useRef<HTMLButtonElement>(null);
-    const popupRef = React.useRef<HTMLDivElement>(null);
     const status = opts.getStatus(row);
     const issueType = opts.getIssueType ? opts.getIssueType(row) : null;
     const canonical = useCanonicalIssueWorkflow(issueType);
-    // Canonical: options = allowed transitions. Reason-required transitions are
-    // EXCLUDED from inline edit (no reason capture here) — they must go through
-    // the detail status pill's reason modal, so they never pass silently.
     const effectiveOptions = canonical.isCanonical
       ? canonical.getAvailableStatuses(status).filter((s) => !canonical.requiresReason(status, s) || s === status)
       : opts.options;
-    const isUnmapped = canonical.isCanonical && !!status && !canonical.resolveStatusKey(status);
     const displayLabel = (s: string | null): string =>
       canonical.isCanonical ? canonical.labelForStatus(s) : (opts.labelFor && s ? opts.labelFor(s) : (s ?? ""));
     const callerEditable = opts.canEdit ? opts.canEdit(row) : true;
-    const lockWhenDone = opts.lockWhenDone !== false;
-    // 2026-06-28: freeze on done category OR any terminal outcome
-     // (rejected / declined / cancelled / won't do, etc).
-    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
-    const editable = callerEditable && !frozen;
 
-    React.useEffect(() => {
-      if (!open) return;
-      const handler = (e: MouseEvent) => {
-        if (
-          triggerRef.current &&
-          !triggerRef.current.contains(e.target as Node) &&
-          popupRef.current &&
-          !popupRef.current.contains(e.target as Node)
-        )
-          setOpen(false);
-      };
-      document.addEventListener("mousedown", handler);
-      return () => document.removeEventListener("mousedown", handler);
-    }, [open]);
+    if (!status) {
+      return <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>—</span>;
+    }
 
-    // 2026-06-28: dropdown tracks trigger 1:1 on scroll. Walk DOM up from
-     // trigger, attach scroll listener to every scrollable ancestor (table
-     // viewport, virtualized rows, page) — window-only capture misses inner
-     // table scrolls. RAF-coalesced; imperative DOM mutation on popupRef.
-    React.useLayoutEffect(() => {
-      if (!open) return;
-      const getScrollParents = (node: HTMLElement | null): (HTMLElement | Window)[] => {
-        const out: (HTMLElement | Window)[] = [window];
-        let el: HTMLElement | null = node?.parentElement ?? null;
-        while (el) {
-          const cs = getComputedStyle(el);
-          if (/(auto|scroll|overlay)/.test(cs.overflowY + cs.overflowX)) out.push(el);
-          el = el.parentElement;
-        }
-        return out;
-      };
-      let raf = 0;
-      let lastTop = NaN;
-      let lastLeft = NaN;
-      const apply = () => {
-        raf = 0;
-        const t = triggerRef.current;
-        if (!t) return;
-        const r = t.getBoundingClientRect();
-        const top = r.bottom + 4;
-        const left = r.left;
-        if (top === lastTop && left === lastLeft) return;
-        lastTop = top; lastLeft = left;
-        const p = popupRef.current;
-        if (p) {
-          p.style.top = `${top}px`;
-          p.style.left = `${left}px`;
-        } else {
-          setPos({ top, left });
-        }
-      };
-      const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
-      apply();
-      const parents = getScrollParents(triggerRef.current);
-      parents.forEach(p => p.addEventListener('scroll', schedule, { passive: true }));
-      window.addEventListener('resize', schedule);
-      return () => {
-        if (raf) cancelAnimationFrame(raf);
-        parents.forEach(p => p.removeEventListener('scroll', schedule));
-        window.removeEventListener('resize', schedule);
-      };
-    }, [open]);
-
-    const handleOpen = (e: React.MouseEvent) => {
-      if (!editable) return;
-      e.stopPropagation();
-      const rect = triggerRef.current?.getBoundingClientRect();
-      if (rect) setPos({ top: rect.bottom + 4, left: rect.left });
-      setOpen((o) => !o);
-    };
+    // Build dropdown options in canonical {value, label, color_category} format.
+    const dropdownOptions = effectiveOptions.map((s) => ({
+      value: s,
+      label: displayLabel(s),
+      color_category: appearanceToWorkflowCategory(opts.appearanceFor(s)),
+    }));
 
     return (
-      <>
-        <button
-          ref={triggerRef}
-          type="button"
-          data-jira-cell-editor
-          onClick={handleOpen}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: "0px 4px",
-            margin: "-2px -4px",
-            borderRadius: 3,
-            cursor: editable ? "pointer" : "default",
-            fontFamily: "inherit",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 0,
-          }}
-        >
-          {status ? (
-            <CatalystStatusPill
-              status={displayLabel(status)}
-              interactive={false}
-              compact={true}
-              trailingIcon={editable ? (
-                <svg
-                  width="8"
-                  height="8"
-                  viewBox="0 0 8 8"
-                  fill="none"
-                  aria-hidden
-                  style={{ flexShrink: 0, opacity: 0.7 }}
-                >
-                  <path
-                    d="M1 2.5L4 5.5L7 2.5"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              ) : undefined}
-            />
-          ) : (
-            <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>—</span>
-          )}
-        </button>
-        {open &&
-          typeof document !== "undefined" &&
-          ReactDOM.createPortal(
-            <div
-              ref={popupRef}
-              style={{
-                position: "fixed",
-                top: pos.top,
-                left: pos.left,
-                zIndex: 9999,
-                background: token("elevation.surface.overlay", "var(--ds-surface)"),
-                borderRadius: 4,
-                boxShadow:
-                  "0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,.25)), 0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.08))",
-                minWidth: 180,
-                maxHeight: 280,
-                overflowY: "auto",
-                padding: "4px 0",
-              }}
-            >
-              {isUnmapped && (
-                <div
-                  style={{
-                    padding: "4px 12px 8px",
-                    fontSize: 'var(--ds-font-size-100)',
-                    color: token("color.text.warning", "var(--ds-text-warning)"),
-                    borderBottom: `1px solid ${token("color.border", "var(--ds-border)")}`,
-                    marginBottom: 4,
-                  }}
-                >
-                  Legacy status “{status}” is not yet mapped to the canonical Story
-                  workflow — pick a canonical status to move it onto the workflow.
-                </div>
-              )}
-              {effectiveOptions.map((s) => {
-                const isActive = s === status;
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      opts.onChange(row, s);
-                      setOpen(false);
-                    }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      width: "100%",
-                      padding: "4px 12px",
-                      border: "none",
-                      background: isActive
-                        ? token("color.background.selected", "var(--ds-background-selected)")
-                        : "transparent",
-                      cursor: "pointer",
-                      textAlign: "left",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        isActive
-                          ? token("color.background.selected", "var(--ds-background-selected)")
-                          : token(
-                              "color.background.neutral.subtle.hovered",
-                              "var(--ds-surface-sunken)",
-                            );
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        isActive
-                          ? token("color.background.selected", "var(--ds-background-selected)")
-                          : "transparent";
-                    }}
-                  >
-                    <CatalystStatusPill
-                      status={displayLabel(s)}
-                      interactive={false}
-                      compact={true}
-                    />
-                    {/* Checkmark on selected item */}
-                    {isActive && (
-                      <span
-                        style={{
-                          marginLeft: 4,
-                          color: token(
-                            "color.icon.brand",
-                            "var(--cp-primary-60)",
-                          ),
-                        }}
-                      >
-                        ✓
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>,
-            document.body,
-          )}
-      </>
+      <span data-jira-cell-editor style={{ display: "inline-flex", alignItems: "center" }}>
+        <StatusLozengeDropdown
+          status={displayLabel(status)}
+          statusCategory={appearanceToWorkflowCategory(opts.appearanceFor(status))}
+          statusOptions={dropdownOptions}
+          onStatusChange={(next) => opts.onChange(row, next)}
+          interactive={callerEditable}
+          size="sm"
+          lockWhenDone={opts.lockWhenDone !== false}
+        />
+      </span>
     );
   };
 }

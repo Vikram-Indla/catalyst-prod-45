@@ -145,7 +145,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
 
   const badge = (
     <>
-      <StatusLozenge status="todo">{String(total)}</StatusLozenge>
+      <StatusLozenge status="todo" label={String(total)} />
       <WidgetGearButton gadgetType="onhold" projectKey={projectKey} projectId={projectId} />
     </>
   );

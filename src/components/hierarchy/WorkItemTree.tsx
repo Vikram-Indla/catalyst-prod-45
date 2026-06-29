@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { useHierarchyConfig } from '@/contexts/HierarchyConfigContext';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 
 interface WorkItemTreeProps {
   items: WorkItem[];

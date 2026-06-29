@@ -8,7 +8,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, StatusLozengeDropdown,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { TestCoveragePanel } from '../story/TestCoveragePanel';
@@ -60,7 +60,7 @@ export default function CatalystViewIncident({
   const leftContent = useMemo(() => (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
+      {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare 2026-05-07 Fix N: Severity added to Key details.
@@ -118,7 +118,7 @@ export default function CatalystViewIncident({
       parentSource="incident"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
-      statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      statusPill={<StatusLozengeDropdown status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     >
       {/* Tier 3.4: PI Release field */}

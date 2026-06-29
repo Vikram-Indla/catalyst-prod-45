@@ -12,7 +12,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { StatusLozengeByType } from '@/components/workflow';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { AllWorkContextMenu } from './AllWorkContextMenu';
 import { formatDistanceToNow } from 'date-fns';
@@ -368,11 +368,9 @@ const TableRow = memo(function TableRow({
 
       {/* Status — Jira-parity 6-category colours via workflow engine. */}
       <div className="px-2">
-        <StatusLozengeByType
-          issueType={item.issue_type}
-          statusName={item.status}
+        <StatusLozenge
+          status={item.status || '—'}
           statusCategory={item.status_category}
-          variant="bold"
           maxWidth={160}
         />
       </div>

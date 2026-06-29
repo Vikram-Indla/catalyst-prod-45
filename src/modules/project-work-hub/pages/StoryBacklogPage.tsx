@@ -20,7 +20,7 @@ import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, X, Star } from '@/lib/atlaskit-icons';
 import { GroupByPopover as SharedGroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';

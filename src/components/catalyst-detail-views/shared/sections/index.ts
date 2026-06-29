@@ -14,6 +14,6 @@ export { CatalystSidebarDetails } from './CatalystSidebarDetails';
 export { CatalystPriorityField } from './CatalystPriorityField';
 export { CatalystParentLinker } from './CatalystParentLinker';
 export { CatalystKeyDetails, KeyDetailsFieldRow } from './CatalystKeyDetails';
-export { CatalystStatusPill } from './CatalystStatusPill';
+export { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 export { CatalystAttachmentsPanel } from './CatalystAttachmentsPanel';
 

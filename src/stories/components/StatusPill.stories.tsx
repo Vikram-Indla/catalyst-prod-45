@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 
 /**
  * CANONICAL status pill component.
@@ -9,16 +9,16 @@ import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/se
  * Colors: Jira-probed medium-pastel hex — NOT ADS tokens (intentional, per
  * design review 2026-05-05 — ADS bold tokens are too dark vs actual Jira DOM).
  *
- * @see CatalystStatusPill.tsx for full architecture notes.
+ * @see StatusLozengeDropdown.tsx for full architecture notes.
  * @deprecated_alternatives
- *   - Interactive header: use CatalystStatusPill (this component)
+ *   - Interactive header: use StatusLozengeDropdown (this component)
  *   - Table row display: use StatusPill from @/components/shared/JiraTable/cells
  *   - src/components/shared/StatusPill — DEPRECATED (hardcoded rgb, no callers)
  *   - src/modules/in-jira/components/StatusPill — DEPRECATED (Tailwind utilities)
  */
-const meta: Meta<typeof CatalystStatusPill> = {
+const meta: Meta<typeof StatusLozengeDropdown> = {
   title: 'Components/Status Pill',
-  component: CatalystStatusPill,
+  component: StatusLozengeDropdown,
   parameters: { layout: 'padded' },
   argTypes: {
     issueType: {
@@ -28,7 +28,7 @@ const meta: Meta<typeof CatalystStatusPill> = {
   },
 };
 export default meta;
-type Story = StoryObj<typeof CatalystStatusPill>;
+type Story = StoryObj<typeof StatusLozengeDropdown>;
 
 export const Default: Story = {
   args: { status: 'In Progress', statusCategory: 'in_progress' },
@@ -53,12 +53,12 @@ export const Cancelled: Story = {
 export const AllCategories: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-      <CatalystStatusPill status="Backlog" statusCategory="new" />
-      <CatalystStatusPill status="In Progress" statusCategory="in_progress" />
-      <CatalystStatusPill status="In Review" statusCategory="in_progress" />
-      <CatalystStatusPill status="Done" statusCategory="done" />
-      <CatalystStatusPill status="On Hold" statusCategory="moved" />
-      <CatalystStatusPill status="Cancelled" statusCategory="removed" />
+      <StatusLozengeDropdown status="Backlog" statusCategory="new" />
+      <StatusLozengeDropdown status="In Progress" statusCategory="in_progress" />
+      <StatusLozengeDropdown status="In Review" statusCategory="in_progress" />
+      <StatusLozengeDropdown status="Done" statusCategory="done" />
+      <StatusLozengeDropdown status="On Hold" statusCategory="moved" />
+      <StatusLozengeDropdown status="Cancelled" statusCategory="removed" />
     </div>
   ),
 };

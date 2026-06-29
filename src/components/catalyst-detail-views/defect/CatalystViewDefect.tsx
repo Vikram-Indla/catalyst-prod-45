@@ -14,7 +14,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
-  KeyDetailsFieldRow, CatalystStatusPill,
+  KeyDetailsFieldRow, StatusLozengeDropdown,
 } from '../shared/sections';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
@@ -65,7 +65,7 @@ export default function CatalystViewDefect({
   const leftContent = useMemo(() => (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      {/* jira-compare 2026-05-03 — Patch B (Defect) · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
+      {/* jira-compare 2026-05-03 — Patch B (Defect) · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
       <CatalystQuickActions />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
 
@@ -176,7 +176,7 @@ export default function CatalystViewDefect({
       onOpenItem={onOpenItem}
       /* jira-compare 2026-05-03 — Patch B (Defect) · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors CatalystViewStory's Patch D + E. */
-      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   // eslint-disable-next-line react-hooks/exhaustive-deps

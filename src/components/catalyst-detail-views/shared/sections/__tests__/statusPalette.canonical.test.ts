@@ -44,8 +44,8 @@ describe('canonical status palette', () => {
 
 describe('every work-item status renderer uses the canonical palette', () => {
   const RENDERERS = [
-    'components/catalyst-detail-views/shared/sections/CatalystStatusPill.tsx',
-    'components/for-you/atlaskit/ForYouRow.tsx',
+    'components/shared/StatusLozenge/StatusLozenge.tsx',
+    'components/shared/StatusLozenge/StatusLozengeDropdown.tsx',
     'components/ui/StatusLozenge.tsx',
     'components/shared/StatusPill.tsx',
     'components/workflow/WorkItemStatusLozenge.tsx',

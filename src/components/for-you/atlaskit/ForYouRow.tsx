@@ -481,11 +481,6 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
 
 export default memo(ForYouRowImpl);
 
-// Deprecated alias — kept for back-compat with existing imports (StarredHubList,
-// CatyStarredDigest, AgeingPanel). Use `StatusLozenge` from
-// `@/components/shared/StatusLozenge` directly. Slated for removal once all
-// callers migrate (CAT-ADS-STATUSPILL-UNIFY-20260629-001).
-export { StatusLozenge as JiraForYouLozenge } from '@/components/shared/StatusLozenge';
 
 // ─── Star button ─────────────────────────────────────────────────────────────
 

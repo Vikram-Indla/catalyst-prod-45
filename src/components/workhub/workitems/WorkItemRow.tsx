@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { format } from 'date-fns';
 

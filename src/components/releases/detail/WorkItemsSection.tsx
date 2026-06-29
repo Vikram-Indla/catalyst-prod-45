@@ -25,7 +25,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CanonicalPriorityIcon from '@/components/shared/PriorityIcon';
 import { useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
@@ -1187,12 +1187,12 @@ function WorkItemRow({
           <span style={{ display: 'inline-flex' }}>{priorityIcon(item.priority)}</span>
         )}
         {display.status && (
-          <CatalystStatusPill
+          <StatusLozengeDropdown
             status={item.status || statusKey || 'Backlog'}
             statusCategory={item.status_category as any}
             issueType={item.issue_type as any}
             interactive={false}
-            compact
+            size="sm"
           />
         )}
         {display.assignee && (

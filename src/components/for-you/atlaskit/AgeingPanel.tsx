@@ -17,7 +17,8 @@ import Lozenge from '@atlaskit/lozenge';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button/new';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
-import ForYouRow, { JiraForYouLozenge } from './ForYouRow';
+import ForYouRow from './ForYouRow';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { ForYouEmptyState } from './helpers';
 import { text } from '@/lib/typography';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -225,7 +226,7 @@ function ArchivedRow({ item }: {
         }}>
           {item.summary}
         </span>
-        <JiraForYouLozenge status={item.status} statusCategory={item.status_category} />
+        <StatusLozenge status={item.status} statusCategory={item.status_category} />
         <span style={{
           fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
           flexShrink: 0, minWidth: 40, textAlign: 'right',

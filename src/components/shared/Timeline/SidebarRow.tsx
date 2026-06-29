@@ -25,7 +25,7 @@ import EditorDoneIcon from "@atlaskit/icon/glyph/editor/done";
 import CrossIcon from "@atlaskit/icon/glyph/cross";
 import { useNavigate } from "react-router-dom";
 import { JiraIssueTypeIcon } from "@/lib/jira-issue-type-icons";
-import { StatusPill } from "@/components/shared/StatusPill";
+import { StatusLozenge } from "@/components/shared/StatusLozenge";
 import { resolveAvatarUrl } from "@/lib/avatars";
 import {
   type TimelineIssue,
@@ -846,7 +846,7 @@ export function SidebarRow({
         {/* status pill — child rows only */}
         {depth > 0 && issue.status && (
           <div style={{ flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-            <StatusPill value={issue.statusCategory} label={issue.status} />
+            <StatusLozenge status={issue.statusCategory ?? ''} label={issue.status} />
           </div>
         )}
 

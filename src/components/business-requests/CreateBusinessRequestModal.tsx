@@ -80,7 +80,7 @@ import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import {
   CATEGORY_OPTIONS,
   THEME_OPTIONS,
@@ -829,11 +829,11 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                 )}
               </Field>
 
-              {/* ── Status — canonical CatalystStatusPill (ADS tokens, group headers, workflow links) ── */}
+              {/* ── Status — canonical StatusLozengeDropdown (ADS tokens, group headers, workflow links) ── */}
               <Field name="status" label="Status">
                 {() => (
                   <div style={{ marginTop: 4 }}>
-                    <CatalystStatusPill
+                    <StatusLozengeDropdown
                       issueType="Business Request"
                       status={form.process_step || brInitialStatus || ''}
                       onStatusChange={(displayName) => {

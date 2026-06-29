@@ -21,7 +21,7 @@ import AkCalendar from '@atlaskit/calendar';
 import Tooltip from '@atlaskit/tooltip';
 import { Calendar, GanttChart } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusPill } from '@/components/shared/StatusPill';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { ROW_H, BAR_H, type TimelineIssue } from './types';
 import { formatDateCompact } from './utils';
@@ -405,7 +405,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
             {issue.summary}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: issue.assigneeDisplayName ? 8 : 0 }}>
-            {issue.status && <StatusPill value={issue.statusCategory} label={issue.status} />}
+            {issue.status && <StatusLozenge status={issue.statusCategory ?? ''} label={issue.status} />}
             {(issue.startDate || issue.dueDate) && (
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                 {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}

@@ -45,7 +45,7 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
-import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import Spinner from '@atlaskit/spinner';
 import { CatyHead, CatyButton } from './CatyButton';
@@ -3363,9 +3363,7 @@ function HeadlineIssueTitle({
           jira-compare 2026-05-29: ADS subtle Lozenge resolved to var(--ds-background-success)
           (too pale, wrong appearance) — replaced with StatusPill. */}
       {issueStatus && (
-        <StatusPill appearance={statusToLozenge(issueStatus, issueStatusCategory)}>
-          {issueStatus}
-        </StatusPill>
+        <StatusLozenge status={issueStatus} appearance={statusToLozenge(issueStatus, issueStatusCategory)} />
       )}
     </span>
   );

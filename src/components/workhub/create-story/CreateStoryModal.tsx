@@ -62,7 +62,7 @@ import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 
 import './create-story.css';
 
@@ -1069,7 +1069,7 @@ export function CreateStoryModal({
                 </Field>
               ) : null}
 
-              {/* ── Status — CatalystStatusPill (canonical, workflow-driven).
+              {/* ── Status — StatusLozengeDropdown (canonical, workflow-driven).
                    User can override the initial status before creating.
                    statusOptions=resolvedStatusOptions passes only this
                    work-type's statuses (not the 20-item global hardcoded list). */}
@@ -1080,7 +1080,7 @@ export function CreateStoryModal({
                       {!isTask && !isDefect && statusesLoading ? (
                         <Spinner size="small" />
                       ) : (
-                        <CatalystStatusPill
+                        <StatusLozengeDropdown
                           status={form.status || (isTask ? defaultTaskStatusName : isDefect ? 'open' : 'To Do')}
                           statusCategory={
                             isDefect

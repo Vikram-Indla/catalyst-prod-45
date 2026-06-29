@@ -332,10 +332,10 @@ interface CatalystSidebarDetailsProps {
    */
   improveDropdown?: React.ReactNode;
   /**
-   * jira-compare 2026-05-03 (Patch E) — slot for the CatalystStatusPill.
+   * jira-compare 2026-05-03 (Patch E) — slot for the StatusLozengeDropdown.
    * Rendered alongside improveDropdown at the rail header to mirror Jira's
    * top-right layout where Status + Improve sit on the same line above
-   * Details. Each CatalystView* passes its own <CatalystStatusPill> here
+   * Details. Each CatalystView* passes its own <StatusLozengeDropdown> here
    * and removes the inline leftContent render.
    */
   statusPill?: React.ReactNode;

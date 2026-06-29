@@ -24,7 +24,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill, CatalystKeyDetails,
+  CatalystActivitySection, CatalystSidebarDetails, StatusLozengeDropdown, CatalystKeyDetails,
 } from '../shared/sections';
 /* v1 Tiptap description — Story-only swap. All other CatalystView* still use
    the legacy CatalystDescriptionSection. Promotion to canonical pending PO
@@ -42,7 +42,6 @@ import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
-import { ReleaseSprintSection } from './ReleaseSprintSection';
 import { TestCoveragePanel } from './TestCoveragePanel';
 
 export default function CatalystViewStory({
@@ -128,7 +127,7 @@ export default function CatalystViewStory({
           mount it; Story didn't. Lane A re-probe of BAU-5609 confirmed
           Jira renders a 32px status button immediately under the title
           (testid issue-field-status.ui.status-view.status-button). */}
-      {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
+      {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare 2026-05-04 (D5 — Vikram approved): Key details section
@@ -209,19 +208,9 @@ export default function CatalystViewStory({
       /* jira-compare 2026-05-03 — Patch D + E · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors Jira's "In QA" / "Improve
          Story" pair on the right side of BAU-5609. */
-      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />}
+      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     >
-      {/* Tier 3.3: Story Release + Sprint fields */}
-      {issue?.issue_key && (
-        <ReleaseSprintSection
-          issueKey={issue.id}
-          projectId={projectId}
-          onReleaseChange={() => {
-            // TODO: Implement release change handler if needed
-          }}
-        />
-      )}
     </CatalystSidebarDetails>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);

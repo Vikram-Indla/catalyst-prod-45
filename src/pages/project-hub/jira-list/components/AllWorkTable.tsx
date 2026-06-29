@@ -7,7 +7,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { formatWorkItemKey } from '@/lib/formatWorkItemKey';
 import { Search } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { WorkItemStatusLozenge } from '@/components/workflow';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { WorkItem } from '@/types/workItem.types';
 
 /* ── Priority SVG icons (Jira-native) ── */
@@ -313,7 +313,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                     Falls back to legacy 3-category lozenge for items outside
                     the bound workflows (e.g. Task/Subtask/Improvement). */}
                 <td style={tdStyle}>
-                  <WorkItemStatusLozenge item={item} variant="bold" maxWidth={160} />
+                  <StatusLozenge status={item.statusName || item.status || '—'} statusCategory={item.statusCategory} maxWidth={160} />
                 </td>
 
                 {/* Priority icon */}
