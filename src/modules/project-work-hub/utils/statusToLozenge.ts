@@ -104,6 +104,14 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   // Note: 'ready for development' appears twice in original — keeping inprogress
   // variant (defined above in the Specials block) which takes precedence.
   'technical validation': 'default',
+
+  // ── Terminal / rejection bucket ──
+  // DEFAULT_STATUS_OPTIONS defines these as 'success' (Done category).
+  // statusToLozenge name-lookup was missing them → fell to 'default' (gray).
+  // These are covered by statusCategory when passed, but this handles non-canonical paths.
+  'rejected': 'success',
+  "won't do": 'removed',
+  'wont do': 'removed',
 };
 
 /**

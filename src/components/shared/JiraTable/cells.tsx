@@ -707,6 +707,23 @@ export function makeStatusEditCell<T>(opts: {
               )}
               {effectiveOptions.map((s) => {
                 const isActive = s === status;
+                // Derive statusCategory so CatalystStatusPill gets the right
+                // pill color even for custom workflow statuses not in statusToLozenge's
+                // name lookup table (e.g. "Demand Validation", "Won't Do", "Rejected").
+                // Without this, those statuses fall to 'default' → #DDDEE1 which is
+                // effectively invisible on the white dropdown surface (1.04:1 contrast).
+                const pillStatusCategory: string | undefined = (() => {
+                  if (canonical.isCanonical) {
+                    const grp = canonical.statusGroups.find(g => g.statuses.includes(s));
+                    return grp?.category; // 'todo' | 'in_progress' | 'done'
+                  }
+                  const appearance = opts.appearanceFor(s);
+                  const catMap: Record<string, string> = {
+                    success: 'done', inprogress: 'in_progress', moved: 'moved',
+                    removed: 'removed', new: 'new', default: 'todo',
+                  };
+                  return catMap[appearance];
+                })();
                 return (
                   <button
                     key={s}
@@ -751,6 +768,7 @@ export function makeStatusEditCell<T>(opts: {
                   >
                     <CatalystStatusPill
                       status={displayLabel(s)}
+                      statusCategory={pillStatusCategory}
                       interactive={false}
                       compact={true}
                     />
