@@ -11,6 +11,7 @@
  * - Collapsed: 56px wide, icon only
  */
 import React from 'react';
+import Badge from '@atlaskit/badge';
 import {
   BellIcon,
   BookmarkIcon,
@@ -137,27 +138,8 @@ function NavRow({
       >
         {icon}
         {badgeCount > 0 && (
-          <span
-            aria-label={`${badgeCount} unread`}
-            style={{
-              position: 'absolute',
-              top: 4,
-              right: 4,
-              minWidth: 14,
-              height: 14,
-              padding: '0 4px',
-              borderRadius: 7,
-              background: 'var(--cv2-unread)',
-              color: 'var(--ds-text-inverse)',
-              font: 'var(--ds-font-body-small)',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              lineHeight: 1,
-            }}
-          >
-            {badgeCount > 99 ? '99+' : badgeCount}
+          <span aria-label={`${badgeCount} unread`} style={{ position: 'absolute', top: 2, right: 2 }}>
+            <Badge appearance="important">{badgeCount}</Badge>
           </span>
         )}
       </button>
@@ -228,25 +210,8 @@ function NavRow({
         {label}
       </span>
       {badgeCount > 0 && (
-        <span
-          aria-label={`${badgeCount} unread`}
-          style={{
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--ds-text-inverse)',
-            font: 'var(--ds-font-body-small)',
-            fontWeight: 700,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            lineHeight: 1,
-            flex: '0 0 auto',
-          }}
-        >
-          {badgeCount > 99 ? '99+' : badgeCount}
+        <span aria-label={`${badgeCount} unread`} style={{ flex: '0 0 auto' }}>
+          <Badge appearance="important">{badgeCount}</Badge>
         </span>
       )}
     </button>

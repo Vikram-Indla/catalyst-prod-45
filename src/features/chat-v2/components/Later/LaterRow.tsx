@@ -7,6 +7,7 @@
  * "Incomplete" purple badge renders when a reminder has fired.
  */
 import React, { useMemo, useRef, useState } from 'react';
+import Lozenge from '@atlaskit/lozenge';
 import {
   CheckIcon,
   RemindClockIcon,
@@ -77,18 +78,9 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
           }}
         >
           {showIncomplete && (
-            <span
-              style={{
-                display: 'inline-block',
-                padding: '0px 8px',
-                background: 'rgba(155, 89, 182, 0.25)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-                color: '#C9A4F0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-                borderRadius: 10,
-                font: 'var(--ds-font-body-small)',
-                fontWeight: 700,
-              }}
-            >
-              Incomplete · {formatRowTimestamp(item.remindAt ?? item.createdAt)}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <Lozenge appearance="moved">Incomplete</Lozenge>
+              <span>· {formatRowTimestamp(item.remindAt ?? item.createdAt)}</span>
             </span>
           )}
           {!showIncomplete && conversationLabel}

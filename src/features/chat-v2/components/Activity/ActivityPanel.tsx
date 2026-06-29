@@ -28,7 +28,8 @@ import {
 import { ActivityRow } from './ActivityRow';
 import { ActivityMoreMenu } from './ActivityMoreMenu';
 import { ReminderModal } from './ReminderModal';
-import { dayKey, formatDateSeparator } from '../../lib/formatTimestamp';
+import { dayKey } from '../../lib/formatTimestamp';
+import { DateSeparator } from '../MessagePanel/DateSeparator';
 import { refreshActivityHover } from '../../lib/activityHoverTracker';
 
 interface ActivityPanelProps {
@@ -344,7 +345,7 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
         ) : (
           grouped.map((group, idx) => (
             <React.Fragment key={group.key}>
-              {idx > 0 && <DateSeparator iso={group.iso} />}
+              {idx > 0 && <DateSeparator iso={group.iso} interactive={false} />}
               <div
                 style={
                   viewMode === 'dense'
@@ -495,45 +496,6 @@ function AllCaughtUpEmptyState() {
   );
 }
 
-function DateSeparator({ iso }: { iso: string }) {
-  // ────(Sunday, June 7th)────  layout — horizontal rule running through the
-  // pill, with extra breathing room above/below so card groups feel separated.
-  return (
-    <div
-      role="presentation"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        margin: '32px 4px',
-      }}
-    >
-      <span
-        aria-hidden="true"
-        style={{ flex: 1, height: 1, background: 'var(--cv2-divider)' }}
-      />
-      <span
-        style={{
-          padding: '4px 12px',
-          fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--cv2-fs-date-sep)',
-          fontWeight: 600,
-          color: 'var(--cv2-text)',
-          background: 'var(--cv2-bg-panel)',
-          border: '1px solid var(--cv2-border)',
-          borderRadius: 16,
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {formatDateSeparator(iso)}
-      </span>
-      <span
-        aria-hidden="true"
-        style={{ flex: 1, height: 1, background: 'var(--cv2-divider)' }}
-      />
-    </div>
-  );
-}
 
 function ReminderToast({ message }: { message: string }) {
   return (

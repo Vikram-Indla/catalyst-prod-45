@@ -91,6 +91,17 @@ export function MessageBubble({
     !!message.scheduledFor &&
     !message.deliveredAt &&
     user?.id === message.authorId;
+  // Own messages (notably pending scheduled ones) can arrive without a resolved
+  // authorName because the author profile join isn't populated yet. Since we
+  // know the author IS the logged-in user, fall back to their real auth name —
+  // this also fixes the "?" avatar, which PresenceAvatar derives from the name.
+  const authorDisplayName =
+    message.authorName ||
+    (user?.id === message.authorId
+      ? (((user?.user_metadata as Record<string, unknown> | undefined)?.full_name as
+          | string
+          | undefined) ?? user?.email ?? '')
+      : message.authorName);
   const forwardInfo = useMemo(() => {
     const adf = message.bodyAdf as Record<string, unknown> | null;
     if (!adf || typeof adf !== 'object') return null;
@@ -168,7 +179,7 @@ export function MessageBubble({
         }}
       >
         {showHeader ? (
-          <PresenceAvatar name={message.authorName} size={36} />
+          <PresenceAvatar name={authorDisplayName} size={36} />
         ) : (
           <span
             aria-hidden="true"
@@ -201,7 +212,7 @@ export function MessageBubble({
                 color: 'var(--cv2-text-strong)',
               }}
             >
-              {message.authorName}
+              {authorDisplayName}
             </span>
             <span
               style={{

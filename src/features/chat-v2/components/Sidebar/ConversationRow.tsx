@@ -1,4 +1,5 @@
 import React from 'react';
+import Badge from '@atlaskit/badge';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -38,15 +39,15 @@ export function ConversationRow({
   let leadingVisual: React.ReactNode;
   if (kind === 'ticket' && ticketType) {
     leadingVisual = (
-      <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-        <JiraIssueTypeIcon type={ticketType} size={20} />
+      <span style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+        <JiraIssueTypeIcon type={ticketType} size={16} />
       </span>
     );
   } else if (kind === 'channel' && projectKey) {
-    leadingVisual = <ProjectIcon projectKey={projectKey} size="medium" name={title} />;
+    leadingVisual = <ProjectIcon projectKey={projectKey} size="small" name={title} />;
   } else {
     leadingVisual = (
-      <PresenceAvatar name={title} size={24} presence={presence} displayLabel={groupLabel} />
+      <PresenceAvatar name={title} size={20} presence={presence} displayLabel={groupLabel} />
     );
   }
 
@@ -102,24 +103,8 @@ export function ConversationRow({
         </span>
       )}
       {hasUnread && (
-        <span
-          aria-label={`${unreadCount} unread`}
-          style={{
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text)',
-            font: 'var(--ds-font-body-small)',
-            fontWeight: 700,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: '0 0 auto',
-          }}
-        >
-          {unreadCount > 99 ? '99+' : unreadCount}
+        <span aria-label={`${unreadCount} unread`} style={{ flex: '0 0 auto' }}>
+          <Badge appearance="important">{unreadCount}</Badge>
         </span>
       )}
       <span

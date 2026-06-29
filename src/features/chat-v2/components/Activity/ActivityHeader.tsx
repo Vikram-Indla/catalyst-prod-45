@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import Badge from '@atlaskit/badge';
 import {
   ChevronDownIcon,
   DmsIcon,
@@ -1008,23 +1009,8 @@ function TabBtn({
       {icon && <span style={{ display: 'inline-flex' }}>{icon}</span>}
       {labelVisible && <span>{label}</span>}
       {count > 0 && (
-        <span
-          aria-label={`${count} unread`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text)',
-            font: 'var(--ds-font-body-small)',
-            fontWeight: 700,
-          }}
-        >
-          {count > 99 ? '99+' : count}
+        <span aria-label={`${count} unread`}>
+          <Badge appearance="important">{count}</Badge>
         </span>
       )}
     </button>

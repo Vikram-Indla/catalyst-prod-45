@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react';
+import Badge from '@atlaskit/badge';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { DmsIcon, MentionIcon, ReplyArrowIcon, ThreadInIcon } from '../shared/Icon';
 import { formatActivityTime } from '../../lib/formatTimestamp';
@@ -545,23 +546,8 @@ function RightInfo({
         />
       </span>
       {item.isUnread && (
-        <span
-          aria-label="Unread"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text)',
-            font: 'var(--ds-font-body-small)',
-            fontWeight: 700,
-          }}
-        >
-          1
+        <span aria-label="Unread">
+          <Badge appearance="important">1</Badge>
         </span>
       )}
     </span>

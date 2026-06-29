@@ -1,4 +1,5 @@
 import React from 'react';
+import Badge from '@atlaskit/badge';
 import { HashIcon, LockIcon, HeadphonesIcon } from '../shared/Icon';
 import type { ChatConversation } from '@/types/chat';
 
@@ -73,23 +74,8 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         </span>
       )}
       {hasUnread && (
-        <span
-          aria-label={`${unreadCount} unread`}
-          style={{
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--ds-text-inverse)',
-            font: 'var(--ds-font-body-small)',
-            fontWeight: 700,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {unreadCount > 99 ? '99+' : unreadCount}
+        <span aria-label={`${unreadCount} unread`}>
+          <Badge appearance="important">{unreadCount}</Badge>
         </span>
       )}
     </button>
