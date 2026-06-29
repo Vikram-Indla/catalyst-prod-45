@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { recordAdvisoryStatusChange, checkReasonRequired } from '@/lib/workflow/canonical/runtime';
 import type {
   ProductMilestone,
   ProductMilestoneWithProgress,
@@ -123,10 +123,14 @@ export class ProductMilestoneService {
     if (error) throw error;
 
     // Advisory audit for status changes. Canonical key = the status value (A-lite).
-    if (input.status !== undefined && prevStatus !== input.status) {
+    if (input.status !== undefined && prevStatus !== input.status && input.status) {
+      const preflight = await checkReasonRequired('product_milestone', null, prevStatus, input.status);
+      if (preflight.reasonRequired) {
+        throw new Error('This milestone transition requires a reason. Open the milestone detail to provide one.');
+      }
       recordAdvisoryStatusChange({
         entityKey: 'product_milestone', entityId: id, projectKey: null,
-        fromStatusRaw: prevStatus, toStatusRaw: input.status ?? null,
+        fromStatusRaw: prevStatus, toStatusRaw: input.status,
         sourceSurface: 'milestone_manager',
       }).catch(() => {/* advisory — non-blocking */});
     }

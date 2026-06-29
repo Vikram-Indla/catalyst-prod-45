@@ -255,15 +255,51 @@ export function evaluateGuardsReal(
         const has = Number(cov) >= 1;
         return { ...base, passed: has, detail: has ? `${cov} linked test case(s)` : 'no linked test cases — coverage required' };
       }
-      case 'qa_signoff': case 'uat_signoff':
-        return { ...base, passed: null, detail: 'no sign-off evidence source — advisory' };
+      case 'qa_signoff':
+        return { ...base, passed: null, detail: 'no qa sign-off evidence source (no qa_signoff table) — advisory' };
+      case 'uat_signoff':
+        return { ...base, passed: null, detail: 'no uat sign-off evidence source — advisory' };
+      case 'child_completion': {
+        // Injected by gateTransition after querying child rows.
+        const pct = (issueRow as any)?._childCompletionPct;
+        if (pct == null) return { ...base, passed: null, detail: 'child completion data not available — advisory' };
+        const done = Number(pct) >= 100;
+        return { ...base, passed: done, detail: done ? 'all children done' : `children not complete (${Math.round(pct)}%)` };
+      }
+      case 'no_open_blocker_critical': {
+        // Injected by gateTransition after querying linked blocker issues.
+        const blockers = (issueRow as any)?._openBlockerCount;
+        if (blockers == null) return { ...base, passed: null, detail: 'no open-blocker evidence source — advisory' };
+        const ok = Number(blockers) === 0;
+        return { ...base, passed: ok, detail: ok ? 'no open critical blockers' : `${blockers} open critical blocker(s)` };
+      }
+      case 'approval':
+        return { ...base, passed: null, detail: 'no approval workflow evidence source — advisory' };
+      case 'brd_attached':
+        return { ...base, passed: null, detail: 'no BRD attachment evidence source — advisory' };
+      case 'release_readiness':
+        return { ...base, passed: null, detail: 'no release readiness evidence source — advisory' };
+      case 'deployment_window':
+        return { ...base, passed: null, detail: 'no deployment window evidence source — advisory' };
+      case 'deployment_evidence':
+        return { ...base, passed: null, detail: 'no deployment evidence source — advisory' };
+      case 'smoke_evidence':
+        return { ...base, passed: null, detail: 'no smoke test evidence source — advisory' };
+      case 'rca':
+        return { ...base, passed: null, detail: 'no RCA evidence source — advisory' };
+      case 'figma_attached':
+        return { ...base, passed: null, detail: 'no Figma attachment evidence source — advisory' };
+      case 'required_field':
+        return { ...base, passed: null, detail: 'required field check not configured — advisory' };
+      case 'comment_required':
+        return { ...base, passed: null, detail: 'comment evidence source not available — advisory' };
       default:
-        return { ...base, passed: null, detail: 'not evaluated' };
+        return { ...base, passed: null, detail: `guard type '${g.guardType}' has no evidence source — advisory` };
     }
   });
 }
 
-export interface GateResult { mode: EnforcementMode; blocked: boolean; message: string | null; auditId: string | null; }
+export interface GateResult { mode: EnforcementMode; blocked: boolean; message: string | null; auditId: string | null; reasonRequired: boolean; }
 
 export async function gateTransition(args: {
   entityKey: EntityKey; issueRow: any; toStatusRaw: string;
@@ -275,12 +311,12 @@ export async function gateTransition(args: {
     // effective reason: explicit code/text from the reason modal, or legacy string.
     const effReason = args.reasonText ?? args.reason ?? args.reasonCode ?? null;
     const version = await resolveCanonicalVersion(args.entityKey, projectKey);
-    if (!version) return { mode: 'advisory', blocked: false, message: null, auditId: null };
+    if (!version) return { mode: 'advisory', blocked: false, message: null, auditId: null, reasonRequired: false };
 
     const mode = await getEnforcementMode(projectKey, args.entityKey);
     const fromKey = resolveKeyInVersion(version, args.issueRow?.status);
     const toKey = resolveKeyInVersion(version, args.toStatusRaw);
-    if (!toKey) return { mode, blocked: false, message: null, auditId: null };
+    if (!toKey) return { mode, blocked: false, message: null, auditId: null, reasonRequired: false };
 
     const actor = await getActorContext(args.issueRow);
     const actorRole = actor.roles[0] ?? (actor.userId ? 'authenticated' : 'guest');
@@ -303,6 +339,35 @@ export async function gateTransition(args: {
           .eq('linked_item_type', args.entityKey)
           .eq('linked_item_id', args.issueRow.id);
         (args.issueRow as any)._coverageCount = count ?? 0;
+      } catch { /* leave undefined → advisory */ }
+    }
+    // Real child completion: count incomplete children for child_completion guard.
+    if (match?.guards.some((g) => g.guardType === 'child_completion') && args.issueRow?.id) {
+      try {
+        const issueKey: string | null = args.issueRow.issue_key ?? null;
+        let totalQ: any, doneQ: any;
+        if (args.entityKey === 'epic' && issueKey) {
+          totalQ = await supabase.from('ph_issues').select('id', { count: 'exact', head: true }).eq('epic_key', issueKey).is('deleted_at', null);
+          doneQ = await supabase.from('ph_issues').select('id', { count: 'exact', head: true }).eq('epic_key', issueKey).eq('status_category', 'done').is('deleted_at', null);
+        } else {
+          totalQ = await supabase.from('ph_issues').select('id', { count: 'exact', head: true }).eq('parent_id', args.issueRow.id).is('deleted_at', null);
+          doneQ = await supabase.from('ph_issues').select('id', { count: 'exact', head: true }).eq('parent_id', args.issueRow.id).eq('status_category', 'done').is('deleted_at', null);
+        }
+        const total = totalQ.count ?? 0;
+        const done = doneQ.count ?? 0;
+        (args.issueRow as any)._childCompletionPct = total === 0 ? 100 : Math.round((done / total) * 100);
+      } catch { /* leave undefined → advisory */ }
+    }
+    // Real open-blocker count: flag-linked or flagged critical items.
+    if (match?.guards.some((g) => g.guardType === 'no_open_blocker_critical') && args.issueRow?.id) {
+      try {
+        const { count } = await supabase
+          .from('ph_issues')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_flagged', true)
+          .eq('parent_id', args.issueRow.id)
+          .is('deleted_at', null);
+        (args.issueRow as any)._openBlockerCount = count ?? 0;
       } catch { /* leave undefined → advisory */ }
     }
     const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
@@ -335,11 +400,34 @@ export async function gateTransition(args: {
       sourceSurface: args.sourceSurface, reasonCode: args.reasonCode ?? null, reasonText: effReason, mode: enforce ? 'blocking' : 'advisory',
     });
 
-    return { mode, blocked: enforce && wouldBlock, message: enforce && wouldBlock ? tooltip : null, auditId };
+    const reasonRequired = !!match?.requires_reason;
+    return { mode, blocked: enforce && wouldBlock, message: enforce && wouldBlock ? tooltip : null, auditId, reasonRequired };
   } catch (err) {
     console.warn('[canonical-workflow] gateTransition error — proceeding', err);
-    return { mode: 'advisory', blocked: false, message: null, auditId: null };
+    return { mode: 'advisory', blocked: false, message: null, auditId: null, reasonRequired: false };
   }
+}
+
+/**
+ * Pre-flight check: does this transition require a reason code / text?
+ * Does NOT write an audit row. Use before list-surface status writes to
+ * deny early with a clear message rather than silently passing.
+ */
+export async function checkReasonRequired(
+  entityKey: EntityKey,
+  projectKey: string | null | undefined,
+  fromStatusRaw: string | null | undefined,
+  toStatusRaw: string,
+): Promise<{ reasonRequired: boolean }> {
+  try {
+    const version = await resolveCanonicalVersion(entityKey, projectKey);
+    if (!version) return { reasonRequired: false };
+    const fromKey = resolveKeyInVersion(version, fromStatusRaw ?? null);
+    const toKey = resolveKeyInVersion(version, toStatusRaw) ?? slugStatus(toStatusRaw);
+    if (!toKey) return { reasonRequired: false };
+    const ev = evaluateTransition(version, entityKey, fromKey, toKey, { currentRole: null });
+    return { reasonRequired: ev.reasonRequired };
+  } catch { return { reasonRequired: false }; }
 }
 
 export async function recordAdvisoryStatusChange(args: {

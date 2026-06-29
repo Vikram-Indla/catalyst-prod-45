@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { resolveBridgedKey, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { resolveBridgedKey, recordAdvisoryStatusChange, checkReasonRequired } from '@/lib/workflow/canonical/runtime';
 import type { Incident, IncidentFormData, IncidentFilters, IncidentComment, CommentType } from '@/types/incident';
 
 // Fetch all incidents with optional filters
@@ -203,6 +203,10 @@ export function useUpdateIncident() {
       if (error) throw error;
 
       if (nextStatus !== undefined && prevStatus !== nextStatus) {
+        const preflight = await checkReasonRequired('incident', null, prevStatus, nextStatus);
+        if (preflight.reasonRequired) {
+          throw new Error('This incident transition requires a reason. Provide one before changing the status.');
+        }
         await recordAdvisoryStatusChange({
           entityKey: 'incident', entityId: id, projectKey: null,
           fromStatusRaw: prevStatus, toStatusRaw: nextStatus, sourceSurface: 'incident_detail',

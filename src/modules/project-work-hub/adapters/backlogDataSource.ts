@@ -30,7 +30,7 @@ import {
 import type { BusinessRequest } from '@/types/business-request';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
-import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { recordAdvisoryStatusChange, checkReasonRequired } from '@/lib/workflow/canonical/runtime';
 
 // Canonical status category → ADS Lozenge appearance (component owns color).
 const CATEGORY_APPEARANCE: Record<string, LozengeAppearance> = {
@@ -410,6 +410,12 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
         }
         if (canonicalKey) {
           const prevStep = (row as any).process_step ?? null;
+          if (prevStep !== canonicalKey) {
+            const preflight = await checkReasonRequired('business_request', null, prevStep, canonicalKey);
+            if (preflight.reasonRequired) {
+              throw new Error('This transition requires a reason. Open the business request detail to provide one.');
+            }
+          }
           await updateMutation.mutateAsync({ id: row.id, data: { ...bizPatch, process_step: canonicalKey } });
           if (prevStep !== canonicalKey) {
             await recordAdvisoryStatusChange({
