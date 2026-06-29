@@ -149,15 +149,15 @@
   color: var(--c-chat-text-subtlest);
 }
 .c-sb-row__badge {
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
   background: var(--c-chat-badge);
   color: var(--ds-text-inverse);
   font-size: 11px;
   line-height: 16px;
   font-weight: 700;
-  padding: 0 8px;
+  padding: 0 4px;
   text-align: center;
 }
 

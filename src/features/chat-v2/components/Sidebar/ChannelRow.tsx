@@ -76,13 +76,13 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         <span
           aria-label={`${unreadCount} unread`}
           style={{
-            minWidth: 18,
-            height: 18,
-            padding: '0 5px',
-            borderRadius: 9,
+            minWidth: 16,
+            height: 16,
+            padding: '0 4px',
+            borderRadius: 8,
             background: 'var(--cv2-unread)',
             color: 'var(--ds-text-inverse)',
-            fontSize: 'var(--ds-font-size-100)',
+            fontSize: 11,
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

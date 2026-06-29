@@ -85,6 +85,7 @@ body[data-cv2-theme="dark"] {
   --cv2-accent: var(--ds-link);
   --cv2-accent-hover: var(--ds-link);
   --cv2-unread: var(--ds-background-danger-bold);
+  --cv2-unread-text: var(--ds-text-inverse);
   --cv2-presence-online: var(--ds-background-success-bold);
   --cv2-success: var(--ds-background-success-bold);
   --cv2-warning: var(--ds-background-warning-bold);
@@ -130,6 +131,7 @@ body[data-cv2-theme="light"] {
   --cv2-accent: var(--ds-link);
   --cv2-accent-hover: var(--ds-link-pressed);
   --cv2-unread: var(--ds-background-danger-bold);
+  --cv2-unread-text: var(--ds-text-inverse);
   --cv2-presence-online: var(--ds-background-success-bold);
   --cv2-success: var(--ds-background-success-bold);
   --cv2-warning: var(--ds-background-warning-bold);

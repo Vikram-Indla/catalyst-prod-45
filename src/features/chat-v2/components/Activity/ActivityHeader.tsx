@@ -1014,13 +1014,13 @@ function TabBtn({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minWidth: 18,
-            height: 18,
-            padding: '0 6px',
-            borderRadius: 9,
+            minWidth: 16,
+            height: 16,
+            padding: '0 4px',
+            borderRadius: 8,
             background: 'var(--cv2-unread)',
             color: 'var(--cv2-unread-text)',
-            fontSize: 'var(--ds-font-size-100)',
+            fontSize: 11,
             fontWeight: 700,
           }}
         >

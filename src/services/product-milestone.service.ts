@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { recordAdvisoryStatusChange, checkReasonRequired } from '@/lib/workflow/canonical/runtime';
 import type {
   ProductMilestone,
