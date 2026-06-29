@@ -65,7 +65,7 @@ if (typeof document !== 'undefined') {
       .${PILL_CLASS}[data-csp-compact="true"] {
         height: 24px;
         padding: 0 6px;
-        font-size: 11px;
+        font-size: var(--ds-font-size-200);
         gap: 4px;
         max-width: 160px;
         overflow: hidden;
