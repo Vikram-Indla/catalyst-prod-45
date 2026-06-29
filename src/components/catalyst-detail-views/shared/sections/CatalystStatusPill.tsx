@@ -108,12 +108,10 @@ if (typeof document !== 'undefined') {
 
 type Appearance = 'success' | 'inprogress' | 'moved' | 'removed' | 'new' | 'default';
 
-// Tier by context (Vikram-locked 2026-06-29):
-//   compact (table/list cells, 24px) → BOLD Jira-parity (#B3DF72 family)
-//   header (CatalystView* detail, 32px) → SUBTLE pale (header reads "too loud" bold)
-// Resolved per-instance below from the `compact` prop.
-const tierBg = (compact: boolean) => (compact ? statusBgBold : statusBgSubtle);
-const tierFg = (compact: boolean) => (compact ? statusFgBold : statusFgSubtle);
+// Bold palette everywhere — compact and header use the same tier.
+// Production confirms bold on both (probed ksa-catalyst.com 2026-06-29).
+const tierBg = (_compact: boolean) => statusBgBold;
+const tierFg = (_compact: boolean) => statusFgBold;
 
 /**
  * Maps a workflow group's category to an appearance string.
