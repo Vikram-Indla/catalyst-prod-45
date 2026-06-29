@@ -17,6 +17,7 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { Search } from '@/lib/atlaskit-icons';
 
 export interface ToolbarFilterOption {
