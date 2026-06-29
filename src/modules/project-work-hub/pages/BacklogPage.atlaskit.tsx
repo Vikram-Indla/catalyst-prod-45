@@ -354,7 +354,6 @@ import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 // Apr 27 2026 (LOVABLE-01 landed in-session): AvatarGroup for the chrome-band
 // member strip + resolveAvatarUrl for local-asset photo lookups (avatars
 // chokepoint per CLAUDE.md §19).
-import AvatarGroup from '@atlaskit/avatar-group';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { catalystToast } from '@/lib/catalystToast';
 
@@ -4112,38 +4111,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             from items + avatarsByName). maxCount=5 with appearance="stack"
             matches Jira's stacked-circle pattern. The "Add people" CTA is a
             future addition; for cycle 1 we ship read-only avatar stack. */}
-        {/* 2026-06-01 (catalyst-clone F9): filter toolbar avatar group to
-            assignees with a resolved avatar (i.e. active profile match).
-            Stops the +24 overflow chip from including ex-employees /
-            deleted accounts that have no profile but a stale name string
-            in legacy rows. */}
-        {(() => {
-          const activeAssignees = assigneeOptions.filter((a) => a.avatarUrl);
-          if (!activeAssignees.length) return null;
-          return (
-            <AvatarGroup
-              appearance="stack"
-              size="small"
-              maxCount={5}
-              label="Filter by assignee"
-              data={activeAssignees.map((a) => ({
-                key: a.id,
-                name: a.name,
-                src: a.avatarUrl ?? undefined,
-              }))}
-              onAvatarClick={(_event, _analytics, index) => {
-                const a = activeAssignees[index];
-                if (!a) return;
-                setFilterValue((prev) => ({
-                  ...prev,
-                  assignees: prev.assignees.includes(a.name)
-                    ? prev.assignees.filter((x) => x !== a.name)
-                    : [...prev.assignees, a.name],
-                }));
-              }}
-            />
-          );
-        })()}
+        {/* 2026-06-29: Replaced @atlaskit/avatar-group (overflow popup at 0,0
+            due to @atlaskit/popup L21 bug in sticky toolbar) with
+            MemberFilterAvatars — manual portal popup anchored via
+            getBoundingClientRect(), same pattern as GroupByControl. */}
+        <MemberFilterAvatars
+          assignees={assigneeOptions.filter((a) => a.avatarUrl)}
+          selected={filterValue.assignees}
+          onToggle={(name) => setFilterValue((prev) => ({
+            ...prev,
+            assignees: prev.assignees.includes(name)
+              ? prev.assignees.filter((x) => x !== name)
+              : [...prev.assignees, name],
+          }))}
+        />
 
         {/* Apr 27, 2026 — jira-compare audit P0 #2 / P1 #3:
             Two-flex-cluster toolbar. LEFT cluster (above this spacer)
@@ -5871,6 +5852,197 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 // count. This keeps full ADS token compliance and ADS-hosted Badge
 // rendering while guaranteeing the selected visual updates with every
 // click — the original parity goal.
+// 2026-06-29 — MemberFilterAvatars. Replaces <AvatarGroup> whose built-in
+// overflow popup uses @atlaskit/popup and renders at position 0,0 in this
+// sticky-toolbar context (same L21 bug that drove GroupByControl below).
+// Pattern: individual <Avatar> chips for first MAX_VISIBLE; a "+N" button
+// that opens a portal popup anchored via getBoundingClientRect().
+const MEMBER_FILTER_MAX_VISIBLE = 5;
+interface MemberFilterAvatarsProps {
+  assignees: Array<{ id: string; name: string; avatarUrl: string | null }>;
+  selected: string[];
+  onToggle: (name: string) => void;
+}
+function MemberFilterAvatars({ assignees, selected, onToggle }: MemberFilterAvatarsProps) {
+  const visible = assignees.slice(0, MEMBER_FILTER_MAX_VISIBLE);
+  const overflow = assignees.slice(MEMBER_FILTER_MAX_VISIBLE);
+  const [overflowOpen, setOverflowOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  const overflowBtnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!overflowOpen || !overflowBtnRef.current) return;
+    const r = overflowBtnRef.current.getBoundingClientRect();
+    setAnchor({ top: r.bottom + 4, left: r.left });
+  }, [overflowOpen]);
+
+  useEffect(() => {
+    if (!overflowOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (overflowBtnRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setOverflowOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOverflowOpen(false); };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [overflowOpen]);
+
+  if (!assignees.length) return null;
+  return (
+    /* ADS stack: isolation:isolate creates stacking context so white-ring
+       box-shadows don't bleed outside; gap:0 + marginInlineEnd:-8px per
+       avatar produces the canonical 8px overlap (ds-space-negative-100). */
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 0, isolation: 'isolate' }}>
+      {visible.map((a) => {
+        const isSelected = selected.includes(a.name);
+        return (
+          <Tooltip key={a.id} content={a.name} position="bottom">
+            <button
+              type="button"
+              aria-pressed={isSelected}
+              aria-label={`Filter by ${a.name}`}
+              onClick={() => onToggle(a.name)}
+              style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                borderRadius: '50%',
+                /* ADS stack overlap: -8px = var(--ds-space-negative-100) */
+                marginInlineEnd: 'var(--ds-space-negative-100, -8px)',
+                /* Selected ring matches ADS box-shadow selected pattern */
+                boxShadow: isSelected
+                  ? `0 0 0 2px ${token('color.border.selected', 'var(--ds-border-selected)')}`
+                  : undefined,
+                position: 'relative',
+              }}
+            >
+              <Avatar
+                size="small"
+                name={a.name}
+                src={a.avatarUrl ?? undefined}
+                appearance="circle"
+              />
+            </button>
+          </Tooltip>
+        );
+      })}
+      {overflow.length > 0 && (
+        <>
+          <button
+            ref={overflowBtnRef}
+            type="button"
+            aria-label={`${overflow.length} more people`}
+            aria-expanded={overflowOpen}
+            aria-haspopup="listbox"
+            onClick={() => setOverflowOpen((v) => !v)}
+            /* ADS more-indicator: border:none, font:ds-font-body-small (12px),
+               hover/active/focus via onMouse/onFocus handlers with ADS tokens.
+               marginInlineEnd:2px matches ds-space-025 gap after avatar stack. */
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 24, height: 24, borderRadius: 'var(--ds-radius-full, 50%)',
+              marginInlineStart: 'var(--ds-space-100, 8px)',
+              background: overflowOpen
+                ? token('color.background.selected', 'var(--ds-background-selected)')
+                : token('color.background.neutral', 'var(--ds-background-neutral)'),
+              color: overflowOpen
+                ? token('color.text.selected', 'var(--ds-text-selected)')
+                : token('color.text', 'var(--ds-text)'),
+              border: 'none',
+              font: 'var(--ds-font-body-small, normal 400 12px/16px ui-sans-serif)',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'transform .2s, opacity .2s',
+              outline: 'none',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = overflowOpen
+                ? token('color.background.selected.hovered', 'var(--ds-background-selected-hovered)')
+                : token('color.background.neutral.hovered', 'var(--ds-background-neutral-hovered)');
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = overflowOpen
+                ? token('color.background.selected', 'var(--ds-background-selected)')
+                : token('color.background.neutral', 'var(--ds-background-neutral)');
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.background = overflowOpen
+                ? token('color.background.selected.pressed', 'var(--ds-background-selected-pressed)')
+                : token('color.background.neutral.pressed', 'var(--ds-background-neutral-pressed)');
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`;
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
+          >
+            +{overflow.length}
+          </button>
+          {overflowOpen && anchor && ReactDOM.createPortal(
+            <div
+              ref={menuRef}
+              role="listbox"
+              aria-label="More assignees"
+              style={{
+                position: 'fixed',
+                top: anchor.top,
+                left: anchor.left,
+                minWidth: 200,
+                maxHeight: 280,
+                overflowY: 'auto',
+                background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+                border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                borderRadius: 4,
+                boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
+                padding: '4px 0',
+                zIndex: 9999,
+                fontFamily: 'var(--cp-font-body)',
+              }}
+            >
+              {overflow.map((a) => {
+                const isSelected = selected.includes(a.name);
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => { onToggle(a.name); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      width: '100%', textAlign: 'left',
+                      padding: '6px 12px', border: 'none', cursor: 'pointer',
+                      background: isSelected
+                        ? token('color.background.selected', 'var(--ds-background-selected)')
+                        : 'transparent',
+                      color: isSelected
+                        ? token('color.text.selected', 'var(--ds-link, var(--ds-link))')
+                        : token('color.text', 'var(--ds-text)'),
+                      fontSize: 'var(--ds-font-size-200)',
+                      fontWeight: isSelected ? 600 : 400,
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <Avatar size="xsmall" name={a.name} src={a.avatarUrl ?? undefined} appearance="circle" />
+                    <span>{a.name}</span>
+                  </button>
+                );
+              })}
+            </div>,
+            document.body,
+          )}
+        </>
+      )}
+    </span>
+  );
+}
+
 // Apr 27, 2026 — GroupByControl. Replaces the @atlaskit/dropdown-menu
 // version that rendered an empty portal on this surface (same documented
 // bug that drove the bespoke EditorPopover used by Status/Priority cell
