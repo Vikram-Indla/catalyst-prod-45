@@ -4,6 +4,24 @@
    All UI references these tokens. Zero hardcoded hex.
 ══════════════════════════════════════════════ */
 
+/* ── PHASE 8 TYPOGRAPHY TOKEN SCALE ──────────────────────────────────────
+   These tokens were introduced in Phase 8 ADS typography migration to replace
+   hardcoded px values. They are NOT official ADS tokens — they are a Catalyst
+   bridge layer. Values derived from original hardcoded values in git history.
+   8,596 usages across the codebase depend on these being defined here.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --ds-font-size-50:  10px;  /* micro — nav rail labels, kanban badges     */
+  --ds-font-size-100: 11px;  /* caption — timestamps, metadata, fine print  */
+  --ds-font-size-200: 12px;  /* small — secondary labels, table headers     */
+  --ds-font-size-300: 13px;  /* compact body — dense lists, sidebar items   */
+  --ds-font-size-400: 14px;  /* body — main table cells, standard UI text   */
+  --ds-font-size-500: 17px;  /* medium heading — panel headers              */
+  --ds-font-size-600: 18px;  /* section heading — section titles            */
+  --ds-font-size-700: 22px;  /* large heading — modal titles, page sections */
+  --ds-font-size-800: 28px;  /* xl heading — empty state, display text      */
+}
+
 /* ── LIGHT MODE (DEFAULT) ── */
 :root, [data-theme="light"] {
   /* Surfaces — ADS bridge (V9 migration 2026-06-13) */
