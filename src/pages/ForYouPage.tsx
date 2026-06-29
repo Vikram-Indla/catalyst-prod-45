@@ -8,7 +8,7 @@ import { MessageSquare, AlertCircle, FileText, Folder, LayoutGrid, Bug as BugIco
 import { GroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';

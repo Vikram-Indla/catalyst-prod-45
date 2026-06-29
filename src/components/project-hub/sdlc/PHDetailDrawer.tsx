@@ -8,7 +8,7 @@ import type { PHIssue, PHRelease } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
 import { PHIssueTypeIcon } from './PHIssueTypeIcon';
 import { PHSourceTag } from './PHSourceTag';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { PHPriorityIcon } from './PHPriorityIcon';
 import type { IssueStatus } from '@/types/project-hub.types';
 import { STATUS_CONFIG } from '@/types/project-hub.types';
@@ -129,7 +129,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
                       <span className="truncate flex-1" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)' }}>
                         {child.title}
                       </span>
-                      <StatusLozenge status={child.status} compact />
+                      <StatusLozenge status={child.status} size="sm" />
                     </div>
                   ))}
                 </div>
@@ -259,7 +259,7 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
           cursor: 'pointer',
         }}
       >
-        <StatusLozenge status={value} compact />
+        <StatusLozenge status={value} size="sm" />
         <ChevronDown size={12} color="var(--fg-4)" />
       </button>
       {open && (

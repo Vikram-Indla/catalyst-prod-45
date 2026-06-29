@@ -209,8 +209,8 @@ export function LookupMultiSelect({
         type="button"
         onClick={() => !disabled && setOpen(!open)}
         className={cn(
-          "flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
-          "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          "flex h-9 w-full items-center justify-between rounded-md border border-transparent bg-background px-3 py-2 text-sm ring-offset-background",
+          "focus:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-1",
           disabled && "cursor-not-allowed opacity-50",
           triggerClassName
         )}

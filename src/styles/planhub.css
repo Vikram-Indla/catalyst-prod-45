@@ -391,7 +391,7 @@
 }
 
 .planhub-module .ph-form-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ph-primary);
   box-shadow: 0 0 0 3px var(--ph-primary-light);
 }

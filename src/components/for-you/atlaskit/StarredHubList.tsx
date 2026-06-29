@@ -6,7 +6,7 @@
  *     Dashboards · Roadmaps · Projects · Products), never invented "Surfaces"/
  *     "Containers" jargon, and never compete with the For You tabs (no chips).
  *   - Work-item rows are ONE line: type icon · title · key · canonical status
- *     chip (JiraForYouLozenge — the exact chip the Assigned tab uses, from
+ *     chip (StatusLozenge — the exact chip the Assigned tab uses, from
  *     statusPalette.ts). No second line, no redundant type badge.
  *   - Boards/backlogs/etc use the canonical @atlaskit core glyphs; projects/
  *     products use the real ProjectIcon (its own colour + icon). No Lucide
@@ -25,7 +25,7 @@ import RoadmapIcon from '@atlaskit/icon/core/roadmap';
 import PageIcon from '@atlaskit/icon/core/page';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { JiraForYouLozenge } from './ForYouRow';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { StarredItemType } from '@/hooks/home/useStarredItems';
 import type { StarredHubRow } from '@/hooks/home/useStarredHub';
 
@@ -126,7 +126,7 @@ function HubRow({ row, onOpenRow, onUnstar }: { row: StarredHubRow; onOpenRow: (
       {isWork && (
         <>
           <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: MONO_FONT, color: TEXT_SUBTLE, flexShrink: 0 }}>{row.subtitle}</span>
-          {row.status && <JiraForYouLozenge status={row.status} statusCategory={row.statusCategory} />}
+          {row.status && <StatusLozenge status={row.status} statusCategory={row.statusCategory} />}
         </>
       )}
       <span style={{ flex: 1 }} />

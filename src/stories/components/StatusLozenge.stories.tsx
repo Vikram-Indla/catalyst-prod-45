@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { STATUSES } from '../fixtures/production-data';
 
 const meta: Meta<typeof StatusLozenge> = {

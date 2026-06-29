@@ -6,7 +6,7 @@
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 import { AlertTriangle, CheckCircle, XCircle, Clock } from '@/lib/atlaskit-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 
 export interface TablePillProps {
   children: ReactNode;

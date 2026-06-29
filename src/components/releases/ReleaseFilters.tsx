@@ -173,8 +173,8 @@ function SearchInput({
         borderRadius: 3,
         border: `1px solid ${focused ? PILL_BLUE : 'var(--ds-border)'}`,
         background: 'var(--ds-surface)',
-        boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
-        transition: 'border-color 80ms ease, box-shadow 80ms ease',
+        boxShadow: 'none',
+        transition: 'border-color 80ms ease',
       }}
     >
       <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest)' }}>
@@ -639,7 +639,7 @@ export function ProductSelect({
     cursor: disabled ? 'not-allowed' : 'pointer',
     outline: 'none',
     textAlign: 'left',
-    boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+    boxShadow: 'none',
     opacity: disabled ? 0.7 : 1,
   };
 

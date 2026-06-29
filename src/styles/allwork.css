@@ -104,7 +104,7 @@
 .awToolbarSearch:focus-within .awToolbarSearchInput {
   border: none !important;
   border-color: transparent !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   background: transparent !important;
 }

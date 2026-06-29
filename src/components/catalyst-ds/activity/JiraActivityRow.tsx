@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Avatar } from '@/components/ads';
-import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -187,7 +187,7 @@ const PRIORITY_GLYPH: Record<string, { glyph: string; color: string }> = {
 function StatusValue({ value, statusMap }: { value: string | null; statusMap?: Map<string, string | null> }) {
   if (!value) return <NoneLabel />;
   const cat = statusMap?.get(value) ?? null;
-  return <StatusPill appearance={statusToLozenge(value, cat ?? undefined)}>{value}</StatusPill>;
+  return <StatusLozenge status={value} appearance={statusToLozenge(value, cat ?? undefined)} />;
 }
 
 function PriorityValue({ value }: { value: string | null }) {

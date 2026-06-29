@@ -287,7 +287,7 @@ export function ProfilePicker({
         cursor: effectivelyDisabled ? 'default' : 'pointer',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-400)',
-        fontWeight: 500,
+        fontWeight: 400,
         color: 'var(--ds-text)',
         textAlign: 'left',
         fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',

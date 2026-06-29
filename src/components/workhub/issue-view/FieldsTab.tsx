@@ -4,7 +4,7 @@
  * Avatars with initials, priority icons, proper date formatting.
  */
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { format, formatDistanceToNow } from 'date-fns';
 

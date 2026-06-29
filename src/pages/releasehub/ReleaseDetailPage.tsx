@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRelease, useUpdateReleaseStatus } from '@/hooks/useReleaseHub';
 import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { ScopeTab, ChangesTab, SignoffsTab, NotifyList, ReadinessTab, ReleaseNotesTab, ProductionEventsTab, AuditTab } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';

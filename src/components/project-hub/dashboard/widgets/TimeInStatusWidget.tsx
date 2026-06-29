@@ -40,7 +40,7 @@ import { Lozenge as AkLozenge } from '@/components/ads';
 // per JiraTable cells.tsx). AkLozenge was rendering the wrong category
 // colors (bright ADS blue / dark forest green vs Jira's cornflower /
 // lime). See CLAUDE.md jira-compare lessons.
-import { StatusPill as JiraStatusPill } from '@/components/shared/JiraTable/cells';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
@@ -478,9 +478,7 @@ export default function TimeInStatusWidget({
                         (DOM-probed cornflower/lime/gray per cells.tsx 2026-05-16).
                         AkLozenge used the wrong appearance hexes — bright ADS
                         blue and dark forest green vs Jira's cornflower and lime. */}
-                    <JiraStatusPill appearance={lozengeAppearance(s.category, s.name)}>
-                      {s.name}
-                    </JiraStatusPill>
+                    <StatusLozenge status={s.name} appearance={lozengeAppearance(s.category, s.name)} />
                   </th>
                 ))}
                 <th

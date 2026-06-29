@@ -120,7 +120,7 @@ export function UserPicker({
             onClick={onClick as any}
             className={cn(
               'w-full justify-between font-normal h-9',
-              'focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-0',
+              'focus:ring-0 focus:ring-offset-0 focus-visible:ring-1 focus-visible:ring-ring/30 focus-visible:ring-offset-0',
               !value && 'text-muted-foreground',
             )}
           >

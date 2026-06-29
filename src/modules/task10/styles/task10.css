@@ -237,7 +237,7 @@
 }
 
 .t10-module .t10-input:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-blue) !important;
   box-shadow: 0 0 0 3px var(--t10-blue-50) !important;
 }
@@ -268,7 +268,7 @@
 }
 
 .t10-module .t10-textarea:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-blue) !important;
 }
 
@@ -3615,7 +3615,7 @@
 }
 
 .t10-module .t10-dropdown-search-input:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border-color: var(--t10-blue) !important;
 }
@@ -3797,7 +3797,7 @@
 }
 
 .t10-module .t10-date-input:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-blue) !important;
 }
 

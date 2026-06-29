@@ -167,7 +167,7 @@
 /* Focus state for keyboard navigation */
 .timelineRow:focus-within {
   background: var(--ds-background-information, rgba(37, 99, 235, 0.02));
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
 }
 
 .timelineRow:focus-within::before {
@@ -358,7 +358,7 @@
 
 /* Focus state for accessibility */
 .allocationBar:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 
     0 0 0 2px white,
     0 0 0 4px var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -598,7 +598,7 @@
 
 /* Focus state for keyboard navigation */
 .availableCell:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 
     0 0 0 2px white,
     0 0 0 4px var(--ds-chart-teal-bold);

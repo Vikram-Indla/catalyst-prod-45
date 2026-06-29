@@ -456,7 +456,7 @@
 .t10-detail-add-input:focus,
 .t10-detail-add-input:focus-visible {
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   border-color: transparent !important;
 }

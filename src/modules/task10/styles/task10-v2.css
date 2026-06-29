@@ -249,7 +249,7 @@
 }
 
 .t10-btn-new:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: var(--t10-shadow-focus);
 }
 
@@ -1762,7 +1762,7 @@
 }
 
 .t10-filter-select:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-accent) !important;
   box-shadow: var(--t10-shadow-focus) !important;
 }
@@ -2262,7 +2262,7 @@
 }
 
 .t10-module-v2 .t10-week-history-item:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   background: var(--t10-bg-subtle);
   box-shadow: 0 0 0 2px var(--t10-accent-subtle);
 }
@@ -2432,7 +2432,7 @@
 }
 
 .t10-module-v2 .t10-dropdown-search-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -3143,7 +3143,7 @@
 }
 
 .t10-module-v2 .t10-dropdown-search-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border-color: var(--ds-text-brand);
 }
@@ -3325,7 +3325,7 @@
 }
 
 .t10-module-v2 .t10-date-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ds-text-brand);
 }
 

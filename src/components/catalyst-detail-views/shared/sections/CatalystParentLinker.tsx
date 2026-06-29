@@ -516,7 +516,7 @@ function BusinessRequestParentPicker({
                   display: "flex",
                   alignItems: "center",
                   gap: 4,
-                  border: "2px solid var(--ds-border-focused)",
+                  border: "1px solid var(--ds-border-focused)",
                   borderRadius: 4,
                   padding: "4px 8px",
                 }}
@@ -847,7 +847,7 @@ function SingleParentPicker({
             display: "flex",
             alignItems: "center",
             gap: 4,
-            border: "2px solid var(--ds-border-focused)",
+            border: "1px solid var(--ds-border-focused)",
             borderRadius: 4,
             padding: "0px 6px",
             background: "var(--ds-background-input)",
@@ -1249,7 +1249,7 @@ function MultiLinkPicker({
                     display: "flex",
                     alignItems: "center",
                     gap: 4,
-                    border: "2px solid var(--ds-border-focused)",
+                    border: "1px solid var(--ds-border-focused)",
                     borderRadius: 4,
                     padding: "4px 8px",
                   }}

@@ -3,7 +3,7 @@
  * GUARDRAIL: Use StatusLozenge from @/components/ui/StatusLozenge for all status rendering.
  */
 import React from 'react';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { T10ListStatus } from '../../types';
 
 interface T10StatusBadgeProps {

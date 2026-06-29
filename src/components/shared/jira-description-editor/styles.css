@@ -241,7 +241,7 @@
 
 .jde-link-input:focus {
   border-color: var(--ds-background-information-bold);
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
 }
 
 .jde-btn-primary {

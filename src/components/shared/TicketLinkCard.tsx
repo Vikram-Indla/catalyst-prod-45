@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 
 // ─── Detection ───────────────────────────────────────────────────────
@@ -214,11 +214,10 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
       )}
       {data.status && (
         <span style={{ flexShrink: 0 }}>
-          <StatusPill
+          <StatusLozenge
+            status={data.status}
             appearance={statusToLozenge(data.status, data.statusCategory ?? undefined)}
-          >
-            {data.status}
-          </StatusPill>
+          />
         </span>
       )}
     </a>

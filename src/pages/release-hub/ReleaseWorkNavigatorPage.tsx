@@ -33,7 +33,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { ProjectAvatar } from '@/components/icons';
-import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -435,11 +435,11 @@ export function ReleaseWorkNavigatorPage({
             options={chipOptions.statuses.map((o) => ({ id: o, label: o }))}
             onChange={(v) => updateState({ statuses: v })}
             renderOption={(opt) => (
-              <CatalystStatusPill
+              <StatusLozengeDropdown
                 status={opt.id}
                 statusCategory={(chipOptions.statusCategoryByStatus.get(opt.id) as any) ?? null}
                 interactive={false}
-                compact
+                size="sm"
               />
             )}
           />
@@ -666,7 +666,7 @@ function MultiChip({
               border: `1px solid ${searchFocused ? BLUE : BORDER}`,
               borderRadius: 3,
               background: 'var(--ds-surface)',
-              boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+              boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               transition: 'border-color 80ms ease, box-shadow 80ms ease',
             }}>
               <span style={{ color: SUBTLE, display: 'inline-flex' }}><SearchIcon label="" size="small" /></span>
@@ -907,7 +907,7 @@ function FixVersionChip({
                 width: '100%', boxSizing: 'border-box', height: 30, padding: '0 8px',
                 border: `1px solid ${searchFocused ? BLUE : BORDER}`, borderRadius: 3,
                 fontSize: 'var(--ds-font-size-400)', outline: 'none', fontFamily: 'inherit',
-                boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+                boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                 transition: 'border-color 80ms ease, box-shadow 80ms ease',
               }}
             />

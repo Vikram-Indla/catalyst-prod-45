@@ -14,7 +14,7 @@ import Tooltip from '@atlaskit/tooltip';
 import Lozenge from '@atlaskit/lozenge';
 import { Plus, Trash2, X, Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { ROW_H, HEADER_H } from '../types';
 import type { TimelineIssue } from '../types';
@@ -460,7 +460,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
                 <span aria-hidden style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, background: 'var(--ds-background-warning-bold)' }} />
                 <span style={{ color: 'var(--ds-text)' }}>{r.kind}</span>
                 <DepItemRef issue={issue} fallbackKey={r.key} onOpen={onShowOnCanvas} />
-                <span>{issue?.status ? <StatusPill appearance={statusToLozenge(issue.status)}>{issue.status}</StatusPill> : '—'}</span>
+                <span>{issue?.status ? <StatusLozenge status={issue.status} appearance={statusToLozenge(issue.status)} /> : '—'}</span>
                 <span>
                   {issue?.assigneeDisplayName
                     ? <Avatar size="small" name={issue.assigneeDisplayName} src={issue.assigneeAvatarUrl ?? undefined} />

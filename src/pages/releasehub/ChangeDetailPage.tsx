@@ -14,7 +14,7 @@ import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Spinner from '@atlaskit/spinner';
 import { Check } from '@/lib/atlaskit-icons';
 import { useChange } from '@/hooks/useReleaseHub';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { SopExecutionTab } from '@/components/releasehub/detail/SopExecutionTab';
 import { RH } from '@/constants/releasehub.design';

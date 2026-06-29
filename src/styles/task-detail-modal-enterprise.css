@@ -218,7 +218,7 @@
 }
 
 .task-modal__title:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   background: var(--tm-surface-card);
   border-color: var(--tm-accent);
   box-shadow: 0 0 0 3px var(--tm-accent-light);
@@ -442,7 +442,7 @@
 }
 
 .task-modal__description:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--tm-accent);
   box-shadow: 0 0 0 3px var(--tm-accent-light);
 }

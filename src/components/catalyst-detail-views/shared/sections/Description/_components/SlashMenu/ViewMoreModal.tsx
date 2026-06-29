@@ -369,7 +369,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                 padding: '8px 12px',
                 fontSize: 'var(--ds-font-size-400)',
                 border: searchFocused
-                  ? '2px solid var(--ds-border-focused)'
+                  ? '1px solid var(--ds-border-focused)'
                   : '2px solid var(--ds-border)',
                 borderRadius: 4,
                 background: 'var(--ds-surface)',

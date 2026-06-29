@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { SeverityBadge } from "./SeverityBadge";
-import { StatusLozenge as DefectStatusBadge } from "@/components/ui/StatusLozenge";
+import { StatusLozenge as DefectStatusBadge } from '@/components/shared/StatusLozenge';
 import { Defect } from "@/data/defectsData";
 import { 
   DEFAULT_KANBAN_COLUMNS, 

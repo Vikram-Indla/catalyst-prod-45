@@ -62,7 +62,7 @@ import {
   type CanonicalWorkTypeOption,
   DEFAULT_CANONICAL_WORK_TYPE_OPTIONS,
 } from "@/components/filters/CanonicalFilter";
-import { StatusPill } from "@/components/shared/StatusPill";
+import { StatusLozenge } from "@/components/shared/StatusLozenge";
 import { CatalystDetailPanel } from "@/components/shared/CatalystDetailPanel";
 import { translate } from "@/lib/jql";
 import { resolveAvatarUrl } from "@/lib/avatars";
@@ -1541,7 +1541,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           isChecked={statusFilter.includes(opt.value)}
                           onChange={() => {}}
                         />
-                        <StatusPill value={opt.value} label={opt.label} />
+                        <StatusLozenge status={opt.value} label={opt.label} />
                       </div>
                     ))}
                     {statusFilter.length > 0 && (

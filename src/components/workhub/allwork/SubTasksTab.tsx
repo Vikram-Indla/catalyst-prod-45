@@ -7,7 +7,7 @@ import { Loader2, ListTree } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { formatDistanceToNow } from 'date-fns';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { normalizeWorkItem } from '@/types/allwork.types';

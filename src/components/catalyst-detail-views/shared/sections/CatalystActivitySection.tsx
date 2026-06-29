@@ -599,6 +599,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         quickReplies={QUICK_REPLIES}
         defaultTab={activityDefaultTab}
         defaultSortOrder="newest"
+        hiddenTabs={['worklog']}
         jiraUserMap={jiraUserMap}
         workItemId={resolvedWorkItemId ?? undefined}
         improveContext={improveContext}

@@ -231,7 +231,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                 borderRadius: 3,
                 background: 'var(--ds-surface)',
                 cursor: 'text',
-                boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+                boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               }}
             >
               <div

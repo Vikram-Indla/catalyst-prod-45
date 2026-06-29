@@ -30,7 +30,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import {
   CatalystTitleEditor,
   CatalystQuickActions,
-  CatalystStatusPill,
+  StatusLozengeDropdown,
   CatalystKeyDetails,
   Description,
   CatalystSidebarDetails,
@@ -267,7 +267,7 @@ export default function TaskCatalystView({
   const { data: comments } = useTaskComments(itemId);
   const { data: activity } = useTaskActivity(itemId);
 
-  // All statuses — for resolving name → status_id from CatalystStatusPill.
+  // All statuses — for resolving name → status_id from StatusLozengeDropdown.
   const { data: allStatuses = [] } = useQuery({
     queryKey: ['task-statuses-all'],
     queryFn: async () => {
@@ -633,7 +633,7 @@ export default function TaskCatalystView({
         parentSource={undefined}
         projectKey={pseudoIssue?.project_key ?? ''}
         statusPill={
-          <CatalystStatusPill
+          <StatusLozengeDropdown
             status={pseudoIssue?.status}
             statusCategory={pseudoIssue?.status_category}
             onStatusChange={handleStatusNameChange}

@@ -46,7 +46,7 @@ import {
   Description,
   CatalystActivitySection,
   CatalystKeyDetails,
-  CatalystStatusPill,
+  StatusLozengeDropdown,
 } from '@/components/catalyst-detail-views/shared/sections';
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
@@ -382,7 +382,7 @@ function PhIssuePanelBody({
             />
 
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-              <CatalystStatusPill
+              <StatusLozengeDropdown
                 status={issue.status}
                 statusCategory={issue.status_category}
                 onStatusChange={(st) => mutations.updateStatus.mutate(st)}

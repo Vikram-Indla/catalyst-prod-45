@@ -1,8 +1,9 @@
 /**
  * statusPalette — CANONICAL source of truth for work-item status pill colors.
  *
- * Subtle ADS tokens — Jira-parity (DOM-probed: medium-pastel bg, dark text always).
- * Bold tier was flagged wrong (BAU-5774): dark bg + white text looks like a CTA.
+ * Bold ADS tokens, Atlassian-design/components/lozenge parity.
+ * Each STATUS_BG tier uses a *-bold token so pills render vivid and legible
+ * in both light and dark mode without hand-rolled hex.
  *
  * Every renderer that paints a work-item status pill (header pill, table cell,
  * For You row, card, hover) MUST import STATUS_BG / statusBg from here. Do NOT
@@ -20,26 +21,28 @@ export type StatusAppearance =
   | 'new';
 
 /**
- * ADS subtle-tier background tokens — Jira-parity (DOM-probed: medium pastel bg,
- * dark text always). Bold tier was flagged wrong in BAU-5774: dark bg + white text
- * looks like a CTA button, not a status tag.
+ * ADS bold background tokens paired with WCAG-correct text tokens.
+ *
+ * moved uses dark text (not inverse) — #E2B203 amber with white text fails
+ * WCAG AA (contrast ~1.9:1). Dark text passes 4.7:1.
+ * new uses discovery-bold (purple) + inverse — no subtle-only constraint.
  */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-background-success)',
-  inprogress: 'var(--ds-background-information)',
-  moved:      'var(--ds-background-warning)',
-  new:        'var(--ds-background-discovery)',
-  removed:    'var(--ds-background-danger)',
+  success:    'var(--ds-background-success-bold)',
+  inprogress: 'var(--ds-background-information-bold)',
+  moved:      'var(--ds-background-warning-bold)',
+  new:        'var(--ds-background-discovery-bold)',
+  removed:    'var(--ds-background-danger-bold)',
   default:    'var(--ds-background-neutral)',
 };
 
-/** Dark text on all subtle backgrounds — Jira always uses dark text on status pills. */
+/** Matching text token per status. Inverse for dark bgs, dark text for amber. */
 export const STATUS_FG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-text)',
-  inprogress: 'var(--ds-text)',
+  success:    'var(--ds-text-inverse)',
+  inprogress: 'var(--ds-text-inverse)',
   moved:      'var(--ds-text)',
-  new:        'var(--ds-text)',
-  removed:    'var(--ds-text)',
+  new:        'var(--ds-text-inverse)',
+  removed:    'var(--ds-text-inverse)',
   default:    'var(--ds-text)',
 };
 
@@ -96,8 +99,8 @@ export function statusFgSubtle(appearance?: string): string {
  * JiraStatusLozenge, JiraTable status cell, ForYouRow, hierarchy StatusBadge).
  * ═══════════════════════════════════════════════════════════════════════════ */
 export const STATUS_BG_BOLD: Record<StatusAppearance, string> = {
-  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
-  success:    '#B3DF72',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29, confirmed #94C748 vs #B3DF72 on ksa-catalyst.com) */
+  success:    '#94C748',
   /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
   inprogress: '#8FB8F6',
   /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */

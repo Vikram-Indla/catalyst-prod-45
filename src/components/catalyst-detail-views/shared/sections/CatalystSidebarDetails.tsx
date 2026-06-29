@@ -58,14 +58,10 @@ const RAIL_BORDER_CSS = `
     background: var(--ds-background-neutral-subtle-hovered, rgba(5,21,36,0.06));
   }
   .cv-rail-value:focus-within {
-    box-shadow: inset 0 0 0 2px var(--ds-border-focused);
+    box-shadow: inset 0 0 0 1px var(--ds-border-focused);
   }
-  .cv-rail-value:focus-within > div[style] {
-    outline: 2px solid var(--ds-border-focused) !important;
-    border-color: transparent !important;
-  }
-  .cv-rail-value [class*="-select__control--is-focused"],
-  .cv-rail-value [class*="-select__control--menu-is-open"] {
+  .cv-rail-value [class*="-select__control"],
+  .cv-rail-value [data-ds--text-field--container] {
     border-color: transparent !important;
     box-shadow: none !important;
   }
@@ -87,7 +83,6 @@ const RAIL_BORDER_CSS = `
      every layer + symmetric zero padding so the avatar sits dead-centre. */
   .cv-rail-value [class*="-select__control"] {
     min-height: 32px !important;
-    height: 32px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     display: flex !important;
@@ -97,8 +92,8 @@ const RAIL_BORDER_CSS = `
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     display: flex !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
-    height: 100% !important;
   }
   .cv-rail-value [class*="-select__single-value"] {
     margin-top: 0 !important;
@@ -156,8 +151,8 @@ function FieldRow({
       minHeight: isRow ? 32 : undefined,
     }}>
       <div style={{
-        fontSize: isRow ? 14 : 12,
-        fontWeight: isRow ? 500 : 600,
+        fontSize: 'var(--ds-font-size-400)',
+        fontWeight: 500,
         lineHeight: '20px',
         color: 'var(--ds-text-subtle)',
         flexShrink: isRow ? 0 : undefined,
@@ -332,10 +327,10 @@ interface CatalystSidebarDetailsProps {
    */
   improveDropdown?: React.ReactNode;
   /**
-   * jira-compare 2026-05-03 (Patch E) — slot for the CatalystStatusPill.
+   * jira-compare 2026-05-03 (Patch E) — slot for the StatusLozengeDropdown.
    * Rendered alongside improveDropdown at the rail header to mirror Jira's
    * top-right layout where Status + Improve sit on the same line above
-   * Details. Each CatalystView* passes its own <CatalystStatusPill> here
+   * Details. Each CatalystView* passes its own <StatusLozengeDropdown> here
    * and removes the inline leftContent render.
    */
   statusPill?: React.ReactNode;

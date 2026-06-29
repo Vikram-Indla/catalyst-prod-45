@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { useHierarchyConfig } from '@/contexts/HierarchyConfigContext';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
@@ -541,7 +541,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
         .hi-tree-row[aria-selected="true"]:hover { background: var(--ds-background-selected) !important; }
         .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-tree-row:hover .hi-row-action { opacity: 1; }
-        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 2px var(--ds-border-focused); }
+        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 1px var(--ds-border-focused); }
       `}</style>
     </div>
   );

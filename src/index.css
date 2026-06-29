@@ -2853,7 +2853,7 @@ html:has(body[data-scroll-locked]) {
 
 /* Focus ring utility */
 .focus-ring:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
 }
 
@@ -3315,7 +3315,7 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 [data-slot="control"]:focus-within {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: hsl(var(--primary)) !important;
   box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1) !important;
 }
@@ -3594,7 +3594,7 @@ button,
    Applying *:focus-visible to them hits the inner <input> inside AK/Radix
    component wrappers and renders a blue rectangle inside the field. */
 *:not(input):not(textarea):not(select):focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: 2px;
 }
 
@@ -3818,7 +3818,7 @@ input[type="range"]::-moz-range-thumb {
    ════════════════════════════════════════════════════════════════ */
 .knowledge-assist-panel textarea {
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   background: transparent !important;
   -webkit-appearance: none !important;
@@ -3828,7 +3828,7 @@ input[type="range"]::-moz-range-thumb {
 .knowledge-assist-panel textarea:focus,
 .knowledge-assist-panel textarea:focus-visible {
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   border-color: transparent !important;
 }
@@ -4782,7 +4782,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] *:focus-visible {
   box-shadow: 0 0 0 2px
     var(--ds-background-information-bold, rgba(59, 130, 246, 0.7)) !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
 }
 
 .dark [aria-selected="true"],
@@ -4882,7 +4882,7 @@ input[type="range"]::-moz-range-thumb {
     var(--ds-background-neutral, #f1f2f4)
   ) !important;
   box-shadow: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   caret-color: var(
     --cp-bg-neutral,
     var(--ds-background-neutral, #f1f2f4)
@@ -7462,6 +7462,7 @@ table th[class*="css-"] {
 .atlaskit-renderer-wrapper h4 {
   unicode-bidi: plaintext;
 }
+
 
 /* ─── Catalyst Sidebar — Jira-parity right rail field styling ───────────────
    jira-compare 2026-05-05 (lane A): Jira shows right-rail select fields as

@@ -60,7 +60,7 @@
 }
 
 .sp-panel--v2 .sp-desc-trigger:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--cp-primary-60, var(--ds-link));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
   opacity: 1;
