@@ -156,8 +156,8 @@ function FieldRow({
       minHeight: isRow ? 32 : undefined,
     }}>
       <div style={{
-        fontSize: isRow ? 14 : 12,
-        fontWeight: isRow ? 500 : 600,
+        fontSize: 'var(--ds-font-size-400)',
+        fontWeight: 500,
         lineHeight: '20px',
         color: 'var(--ds-text-subtle)',
         flexShrink: isRow ? 0 : undefined,
