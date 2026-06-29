@@ -126,7 +126,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
     cursor: 'pointer',
     textDecoration: 'none',
     color: 'inherit',
-    lineHeight: '20px',
+    font: 'var(--ds-font-body-small)',
   };
 
   // Pending data — show the key in muted style so we don't flash an
@@ -142,7 +142,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
       >
         <span
           style={{
-            fontWeight: 600,
+            fontWeight: 500,
             color: token('color.link', 'var(--ds-link)'),
             whiteSpace: 'nowrap',
           }}
@@ -166,7 +166,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
       >
         <span
           style={{
-            fontWeight: 600,
+            fontWeight: 500,
             color: token('color.link', 'var(--ds-link)'),
             whiteSpace: 'nowrap',
           }}
@@ -190,7 +190,7 @@ export function TicketLinkCard({ issueKey, block = false }: TicketLinkCardProps)
       </span>
       <span
         style={{
-          fontWeight: 600,
+          fontWeight: 500,
           color: token('color.link', 'var(--ds-link)'),
           whiteSpace: 'nowrap',
           flexShrink: 0,

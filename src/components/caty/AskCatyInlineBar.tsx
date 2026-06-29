@@ -241,9 +241,9 @@ export function AskCatyInlineBar({
                   aria-hidden="true"
                   style={{
                     flexShrink: 0,
-                    fontSize: 'var(--ds-font-size-100)',
+                    font: 'var(--ds-font-body-small)',
                     color: "var(--ds-text-subtlest)",
-                    border: "0.5px solid var(--ds-border)",
+                    border: "1px solid var(--ds-border)",
                     borderRadius: 4,
                     padding: "0px 6px",
                   }}
@@ -276,7 +276,7 @@ export function AskCatyInlineBar({
                       (query.trim() || ghostState.ghost) && !askCatyLoading
                         ? "var(--ds-surface)"
                         : "var(--ds-text-disabled)",
-                    fontSize: 'var(--ds-font-size-300)',
+                    font: 'var(--ds-font-body)',
                     fontWeight: 500,
                     cursor:
                       (query.trim() || ghostState.ghost) && !askCatyLoading
@@ -289,7 +289,7 @@ export function AskCatyInlineBar({
                   aria-label="Submit"
                 >
                   <span>Go</span>
-                  <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>
+                  <span aria-hidden="true" style={{ font: 'var(--ds-font-body)', lineHeight: 1 }}>
                     ⏎
                   </span>
                 </button>
@@ -339,8 +339,7 @@ export function AskCatyInlineBar({
                       outline: 0,
                       background: "transparent",
                       boxShadow: "none",
-                      font: "inherit",
-                      fontSize: 'var(--ds-font-size-400)',
+                      font: 'var(--ds-font-body)',
                       color: "var(--ds-text)",
                       textAlign: containsArabic(catySecondaryQuery)
                         ? "right"
@@ -364,7 +363,7 @@ export function AskCatyInlineBar({
             background: "transparent",
             cursor: "pointer",
             color: "var(--ds-text-subtle)",
-            fontSize: 'var(--ds-font-size-500)',
+            font: 'var(--ds-font-body-large)',
             lineHeight: 1,
             display: "flex",
             alignItems: "center",
@@ -401,7 +400,7 @@ export function AskCatyInlineBar({
                 padding: "4px 10px",
                 background: "var(--ds-background-neutral)",
                 color: "var(--ds-text-subtle)",
-                fontSize: 'var(--ds-font-size-200)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 400,
                 fontFamily: "inherit",
                 cursor: "pointer",
@@ -425,7 +424,7 @@ export function AskCatyInlineBar({
             justifyContent: "space-between",
             gap: 12,
             padding: "0 4px",
-            fontSize: 'var(--ds-font-size-200)',
+            font: 'var(--ds-font-body-small)',
             color: "var(--ds-text-subtlest)",
           }}
         >

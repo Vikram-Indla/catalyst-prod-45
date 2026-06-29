@@ -75,7 +75,7 @@ function MetadataLine({
         marginTop: 0,
         paddingInlineStart: 40, // 32px avatar + 12px gap
         fontFamily: 'var(--cp-font-body, inherit)',
-        fontSize: 'var(--ds-font-size-200)',
+        font: 'var(--ds-font-body-small)',
         lineHeight: '16px',
         color,
       }}
@@ -134,7 +134,7 @@ function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
       style={{
         margin: 0,
         fontFamily: 'var(--cp-font-body, inherit)',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         lineHeight: '20px',
         color,
       }}
@@ -245,7 +245,7 @@ export default function MentionActivityCard({
           <h3
             style={{
               margin: 0,
-              fontSize: 'var(--ds-font-size-500)',
+              font: 'var(--ds-font-body-large)',
               fontWeight: 600,
               lineHeight: '20px',
               color: primaryText,
@@ -256,7 +256,7 @@ export default function MentionActivityCard({
           <p
             style={{
               margin: '4px 0 0',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               fontWeight: 400,
               lineHeight: '20px',
               color: subtleText,
@@ -287,7 +287,7 @@ export default function MentionActivityCard({
               alignItems: 'center',
               flexWrap: 'wrap',
               gap: 4,
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               lineHeight: '20px',
               color: primaryText,
             }}
@@ -308,7 +308,7 @@ export default function MentionActivityCard({
                 onClick={() => onEntityClick?.(target.key)}
                 style={{
                   fontFamily: 'inherit',
-                  fontSize: 'var(--ds-font-size-400)',
+                  font: 'var(--ds-font-body)',
                   fontWeight: 400,
                   lineHeight: '20px',
                   color: linkColor,

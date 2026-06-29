@@ -11,7 +11,7 @@
   border: 1px solid var(--border-bold, var(--ds-icon-subtle));
   box-shadow: var(--shadow-xs, 0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.12)));
   font-family: var(--font-body, inherit);
-  font-size: 14px;
+  font: var(--ds-font-body);
   font-weight: 600;
   line-height: 1;
   color: var(--text-primary, var(--ds-text));
