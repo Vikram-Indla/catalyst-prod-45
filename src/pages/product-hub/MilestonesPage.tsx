@@ -80,7 +80,7 @@ export function MilestonesPage() {
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusValue[]>([]);
-  const [groupBy, setGroupBy] = useState<GroupValue>('status');
+  const [groupBy, setGroupBy] = useState<GroupValue>('none');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
