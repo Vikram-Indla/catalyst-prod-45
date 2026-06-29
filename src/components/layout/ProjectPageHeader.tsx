@@ -161,38 +161,49 @@ export function ProjectPageHeader({
   return (
     <div
       style={{
-        padding: `8px ${paddingX}px 4px`,
+        padding: `4px ${paddingX}px 0px`,
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        gap: 2,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
         flexShrink: 0,
+        minHeight: 36,
       }}
     >
-      <div className="cat-breadcrumb-host" style={{ fontSize: 14 }}>
+      {/* Breadcrumb inline — de-emphasised, left side */}
+      <div
+        className="cat-breadcrumb-host"
+        style={{ fontSize: 12, flexShrink: 0, opacity: 0.8 }}
+      >
         <Breadcrumbs items={breadcrumbItems} LinkComponent={Link} />
       </div>
+
       {!hideTitle && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 8,
-          }}
-        >
+        <>
+          <span
+            aria-hidden
+            style={{
+              color: "var(--ds-border-bold)",
+              fontSize: 14,
+              lineHeight: 1,
+              flexShrink: 0,
+              userSelect: "none",
+            }}
+          >
+            /
+          </span>
+
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 8,
+              gap: 6,
               minWidth: 0,
+              flex: 1,
             }}
           >
             <Heading size="large">{title ?? routeWord}</Heading>
             {starType && (
-              // Star this surface instance. item_id = pathname (unique per surface);
-              // metadata carries label/route so the Starred hub can render + open it.
               <WorkItemStarButton
                 itemId={pathname}
                 itemType={starType}
@@ -206,6 +217,7 @@ export function ProjectPageHeader({
               />
             )}
           </div>
+
           {actions && (
             <div
               style={{
@@ -218,7 +230,7 @@ export function ProjectPageHeader({
               {actions}
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

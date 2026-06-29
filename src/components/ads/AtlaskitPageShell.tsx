@@ -281,7 +281,11 @@ export function AtlaskitPageShell({
             display: 'flex',
             flexDirection: 'column',
             flexShrink: 0,
-            paddingBottom: 12,
+            paddingBottom: 0,
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            background: 'inherit',
           }}
         >
           {chromeBand}

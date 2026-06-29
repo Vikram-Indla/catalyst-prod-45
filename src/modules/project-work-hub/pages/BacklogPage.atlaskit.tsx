@@ -3888,7 +3888,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // {x:48, y:16} which gave card.x=55 in Catalyst (50px in from
       // chrome) — twice Jira's. Reducing to {x:24, y:16} so the card
       // edge aligns with toolbar/table inset measured from Jira.
-      cardPadding={{ x: 24, y: 16 }}
+      cardPadding={{ x: 24, y: 4 }}
       cardBorder="1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))"
       // Apr 27 2026 (jira-compare regression D-001/002/003): chrome-band
       // slot. Renders Projects breadcrumb + project icon + H1 ABOVE the
@@ -4047,7 +4047,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // toolbar and (via marginBottom + the JiraTable wrapper below)
         // bleeds the same inset to the table head + body — see the
         // sibling wrapper directly after this div.
-        padding: panelItem ? `32px ${panelWidth + 24}px 32px 24px` : '32px 24px 32px',
+        padding: panelItem ? `6px ${panelWidth + 24}px 6px 24px` : '6px 24px 6px',
         overflow: 'hidden',
         marginBottom: 4,
         // 2026-06-25: `hideChrome` (release navigator) suppresses this row
@@ -4228,7 +4228,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             minHeight: 0,
             // paddingRight drives panel-open layout (must be last / not overridden by shorthand).
             // Other three sides: 24px to match toolbar inset.
-            paddingTop: 24,
+            paddingTop: 4,
             paddingLeft: 24,
             paddingBottom: 24,
           }}
