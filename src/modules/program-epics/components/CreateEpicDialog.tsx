@@ -22,7 +22,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { catalystToast } from '@/lib/catalystToast';
 import { isValidProgramKey } from '@/utils/epic-key-generator';
-import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 import { UserPicker } from '@/components/ui/user-picker';
 import { 
   Command,
@@ -185,7 +187,7 @@ export function CreateEpicDialog({
   
   // Form state
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [descriptionAdf, setDescriptionAdf] = useState<AdfDoc | null>(null);
   const [themeId, setThemeId] = useState<string | null>(null);
   const [linkedBusinessRequestId, setLinkedBusinessRequestId] = useState<string | null>(null);
   const [reporterId, setReporterId] = useState<string | null>(null);
@@ -322,7 +324,7 @@ export function CreateEpicDialog({
         .from('epics')
         .insert({
           name: name.trim(),
-          description: description.trim() || null,
+          description: descriptionAdf ? JSON.stringify(descriptionAdf) : null,
           primary_program_id: programId,
           status: 'proposed',
           health: 'green',
@@ -374,7 +376,7 @@ export function CreateEpicDialog({
 
   const handleClose = () => {
     setName('');
-    setDescription('');
+    setDescriptionAdf(null);
     setThemeId(null);
     setLinkedBusinessRequestId(null);
     setReporterId(null);
@@ -679,20 +681,15 @@ export function CreateEpicDialog({
 
             {/* Section 4: Description */}
             <FormSection title="Description">
-              <div 
-                className="rounded-lg overflow-hidden"
-                style={{ 
-                  backgroundColor: 'var(--dialog-input-bg)',
-                  border: '1px solid var(--dialog-input-border)'
-                }}
-              >
-                <RichTextEditor
-                  value={description}
-                  onChange={setDescription}
-                  placeholder="Enter epic description..."
-                  minHeight="120px"
-                />
-              </div>
+              <RichTextEditor
+                initialAdf={null}
+                hideActionButtons
+                onSave={() => {}}
+                onCancel={() => {}}
+                onChange={(tiptapDoc) => setDescriptionAdf(tiptapToAdf(tiptapDoc))}
+                placeholder="Enter epic description..."
+                minHeight={120}
+              />
             </FormSection>
 
             {/* Section 5: Attachments */}
