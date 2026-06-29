@@ -407,6 +407,7 @@ export interface BacklogItem {
    *  the Parent column while showing as a green checkbox elsewhere
    *  in the rail). null when no parent. */
   parent_issue_type: string | null;
+  parent_status_category: 'new' | 'indeterminate' | 'done' | null;
   source: 'jira' | 'catalyst';
   updated_at: string | null;
   created_at: string | null;
@@ -511,6 +512,15 @@ const DEFAULT_STATUS_OPTIONS: StatusOption[] = [
   { value: 'In Review', label: 'In Review', appearance: 'inprogress', group: 'In Progress' },
   { value: 'Ready to Implement', label: 'Ready to Implement', appearance: 'default', group: 'To Do' },
 ];
+function statusToCategory(status: string | null | undefined): 'new' | 'indeterminate' | 'done' | null {
+  if (!status) return null;
+  const opt = DEFAULT_STATUS_OPTIONS.find((o) => o.value.toLowerCase() === status.toLowerCase());
+  if (!opt) return 'new';
+  if (opt.appearance === 'inprogress') return 'indeterminate';
+  if (opt.appearance === 'success') return 'done';
+  return 'new';
+}
+
 // All distinct status values used in BAU — drives the status inline-edit dropdown.
 const DEFAULT_ALL_BACKLOG_STATUSES = [
   'To Do', 'In Requirements', 'In Design', 'Ready for Development',
@@ -1592,6 +1602,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           parent_key: null,
           parent_label: null,
           parent_issue_type: null,
+          parent_status_category: null,
           source: 'catalyst',
           updated_at: null,
           created_at: null,
@@ -1627,6 +1638,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         parent_key: parentInit?.initiative_key ?? null,
         parent_label: parentInit?.title ?? null,
         parent_issue_type: parentInit ? 'Request' : null,
+        parent_status_category: null,
         source: e.source ?? 'jira',
         updated_at: e.jira_updated_at ?? null,
         created_at: e.jira_created_at ?? null,
@@ -1678,6 +1690,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           parent_key: null,
           parent_label: null,
           parent_issue_type: null,
+          parent_status_category: null,
           source: 'jira',
           updated_at: ep.jira_updated_at ?? null,
           created_at: ep.jira_created_at ?? null,
@@ -1720,6 +1733,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       const parentIssueType = (ep as any)?.issue_type
         ?? (rawParentKey ? parentTypeMap.get(rawParentKey) : null)
         ?? null;
+      const parentStatusCategory = statusToCategory((ep as any)?.status ?? null);
       out.push({
         id: s.id,
         type: leafTypeFromIssueType((s as any).issue_type),
@@ -1735,6 +1749,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         parent_key: parentKey,
         parent_label: parentLabel,
         parent_issue_type: parentIssueType,
+        parent_status_category: parentStatusCategory,
         source: s.source ?? 'jira',
         updated_at: s.jira_updated_at ?? null,
         created_at: s.jira_created_at ?? null,
@@ -2860,6 +2875,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           // pixel-perfect at 1× zoom and aligns with the row-1 type
           // icon's size (also 16).
           icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
+          statusCategory: r.parent_status_category,
         } : null,
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation
