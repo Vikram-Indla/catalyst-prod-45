@@ -53,7 +53,7 @@ function NavItem({ def, selected, onSelect }: { def: ReportDef; selected: boolea
         padding: '8px 12px',
         background: selected ? 'var(--ds-background-selected)' : 'transparent',
         border: 'none',
-        borderLeft: selected ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+        borderLeft: selected ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
         borderRadius: '0 4px 4px 0',
         cursor: 'pointer',
         textAlign: 'left',

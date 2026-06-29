@@ -58,10 +58,10 @@
 .c-rail__badge {
   position: absolute;
   top: 0;
-  right: 4px;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
   background: var(--c-chat-badge);
   color: var(--ds-text-inverse);
   font-size: 11px;

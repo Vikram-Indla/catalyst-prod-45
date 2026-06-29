@@ -212,7 +212,7 @@ export function IncidentsSection({
             {creating && (
               <div style={{
                 display: 'flex', alignItems: 'center',
-                border: '2px solid var(--ds-border-focused)', borderRadius: 3, marginTop: 4,
+                border: '1px solid var(--ds-border-focused)', borderRadius: 3, marginTop: 4,
                 background: 'var(--ds-surface)', overflow: 'hidden',
               }}>
                 <input

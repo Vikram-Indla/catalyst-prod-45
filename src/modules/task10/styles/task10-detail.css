@@ -446,7 +446,7 @@
   color: var(--ds-text);
   background: transparent !important;
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   box-shadow: none !important;
   border-radius: 0 !important;
   -webkit-appearance: none !important;
@@ -456,7 +456,7 @@
 .t10-detail-add-input:focus,
 .t10-detail-add-input:focus-visible {
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   border-color: transparent !important;
 }
@@ -1141,7 +1141,7 @@
 .t10-detail-reorder-toast {
   position: fixed;
   bottom: 24px;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -1321,7 +1321,7 @@
 /* Dropdown Panel */
 .t10-label-dropdown-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 10000;
   min-width: 280px;
@@ -1346,7 +1346,7 @@
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all 0.15s ease;
 }
 
@@ -1624,7 +1624,7 @@
 /* Dropdown Panel */
 .t10-assignee-dropdown-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 10000;
   min-width: 280px;
@@ -1649,7 +1649,7 @@
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all 0.15s ease;
 }
 
@@ -1824,7 +1824,7 @@
 /* Dropdown Panel */
 .t10-duedate-dropdown-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 10000;
   min-width: 300px;

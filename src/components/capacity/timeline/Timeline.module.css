@@ -107,7 +107,7 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   width: 32px;
   height: 3px;
@@ -167,7 +167,7 @@
 /* Focus state for keyboard navigation */
 .timelineRow:focus-within {
   background: var(--ds-background-information, rgba(37, 99, 235, 0.02));
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
 }
 
 .timelineRow:focus-within::before {
@@ -358,7 +358,7 @@
 
 /* Focus state for accessibility */
 .allocationBar:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 
     0 0 0 2px white,
     0 0 0 4px var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -598,7 +598,7 @@
 
 /* Focus state for keyboard navigation */
 .availableCell:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 
     0 0 0 2px white,
     0 0 0 4px var(--ds-chart-teal-bold);
@@ -663,7 +663,7 @@
 .contractMarkerDot {
   position: absolute;
   top: 8px;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   width: 10px;
   height: 10px;
@@ -676,7 +676,7 @@
 .contractMarkerBadge {
   position: absolute;
   top: -4px;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   padding: 4px 8px;
   background: linear-gradient(
@@ -765,7 +765,7 @@
 
 .lockedZoneBadge {
   position: absolute;
-  top: 48%;
+  top: 50%;
   left: 8px;
   transform: translateY(-50%);
   background: rgba(107, 114, 128, 0.9); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
@@ -785,8 +785,8 @@
 
 .barTooltip {
   position: absolute;
-  top: 48%;
-  left: 48%;
+  top: 100%;
+  left: 50%;
   transform: translateX(-50%) translateY(8px);
   background: var(--ds-text); /* gray-800 */
   color: white;
@@ -812,7 +812,7 @@
   content: '';
   position: absolute;
   top: -6px;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
   border-bottom-color: var(--ds-text);

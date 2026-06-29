@@ -59,7 +59,7 @@
 /* ─── PANEL ─── */
 .jf-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   margin-top: 4px;
   width: 480px;
@@ -342,7 +342,7 @@
 .jf-search-input {
   background: transparent;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   padding: 0;
   font-size: 14px;
   line-height: 20px;

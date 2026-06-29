@@ -15,14 +15,15 @@
  *   'product'           → "Products" root, queries products table
  */
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import Breadcrumbs, { BreadcrumbsItem } from "@atlaskit/breadcrumbs";
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/ads";
 import Heading from "@atlaskit/heading";
 import { supabase } from "@/integrations/supabase/client";
 import { deriveRouteWord } from "./projectHeaderTitle";
 import { WorkItemStarButton } from "@/components/shared/WorkItemStarButton";
 import type { StarredItemType } from "@/hooks/home/useStarredItems";
+import ProjectIcon from "@/components/shared/ProjectIcon";
 
 interface Props {
   projectKey?: string;
@@ -135,39 +136,42 @@ export function ProjectPageHeader({
       ? `/product-hub/${projectKey}`
       : `/project-hub/${projectKey}`;
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { key: "home", text: "Home", href: "/for-you" },
+    { key: "root", text: rootLabel, href: rootHref },
+    ...(!isGlobalHub && !trail
+      ? [{
+          key: "entity",
+          text: projectName,
+          href: entityHref,
+          iconBefore: <ProjectIcon projectKey={projectKey} size="xsmall" name={projectName} />,
+          ariaLabel: projectName,
+        }]
+      : []),
+    ...(trail
+      ? trail.map((c, i) => ({
+          key: `trail-${i}`,
+          text: c.text,
+          href: c.href,
+          isCurrent: i === trail.length - 1 && !c.href,
+        }))
+      : [{ key: "current", text: routeWord, isCurrent: true }]),
+  ];
+
   return (
     <div
       style={{
-        padding: `0 ${paddingX}px`,
+        padding: `8px ${paddingX}px 4px`,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        gap: 0,
-        minHeight: 56,
+        gap: 2,
         flexShrink: 0,
       }}
     >
-      <Breadcrumbs>
-        {/* Home root — the always-on, one-click path home from any hub
-            surface (2026-06-18 nav mental-model: every breadcrumb roots at
-            Home, no new icon). */}
-        <BreadcrumbsItem text="Home" href="/for-you" />
-        <BreadcrumbsItem text={rootLabel} href={rootHref} />
-        {/* Entity crumb only for entity-scoped hubs (project/product). Global
-            hubs (incident/release) jump straight to the route word. */}
-        {!isGlobalHub && !trail && (
-          <BreadcrumbsItem text={projectName} href={entityHref} />
-        )}
-        {/* Detail pages pass an explicit trail (e.g. Change Records / CHG8841);
-            otherwise the auto-derived route word is the final crumb. */}
-        {trail ? (
-          trail.map((c) => (
-            <BreadcrumbsItem key={c.text} text={c.text} href={c.href} />
-          ))
-        ) : (
-          <BreadcrumbsItem text={routeWord} />
-        )}
-      </Breadcrumbs>
+      <div className="cat-breadcrumb-host" style={{ fontSize: 14 }}>
+        <Breadcrumbs items={breadcrumbItems} LinkComponent={Link} />
+      </div>
       {!hideTitle && (
         <div
           style={{

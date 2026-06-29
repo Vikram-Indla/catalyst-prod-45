@@ -502,7 +502,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 0,
-            border: '2px solid var(--ds-border-focused)', borderRadius: 3, margin: '4px 0 0',
+            border: '1px solid var(--ds-border-focused)', borderRadius: 3, margin: '4px 0 0',
             background: 'var(--ds-surface)', overflow: 'hidden',
           }}>
             <input

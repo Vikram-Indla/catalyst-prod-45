@@ -4,7 +4,9 @@ import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddle
 import { Avatar } from '@/components/ads';
 import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
 import { Composer } from '@/features/chat-v2/components/Composer/Composer';
+import { MessageList } from '@/features/chat-v2/components/MessagePanel/MessageList';
 
 /**
  * HuddleWindow — large draggable + resizable Slack-style huddle surface.
@@ -34,13 +36,21 @@ export function HuddleWindow() {
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
 
   const chatPanelOpen = useHuddleStore((s) => s.chatPanelOpen);
-  const { messages, sendMessage } = useMessages(active?.conversationId ?? null);
-  // huddle started this session — only show messages from now on, like Slack.
-  const sessionStartRef = useRef<string>(new Date().toISOString());
-  useEffect(() => { sessionStartRef.current = new Date().toISOString(); }, [active?.huddleId]);
-  const sessionMessages = messages.filter(
-    (m) => m.eventType !== 'huddle_summary' && m.createdAt >= sessionStartRef.current,
-  );
+  // In-huddle messages thread under the "Huddle is happening" event row. They show
+  // here AND in the main conversation (as the event row's replies). Sent as replies
+  // (parent_id) so they belong to the huddle, not the plain DM feed.
+  const huddleEventId = active?.huddleEventId ?? null;
+  const { sendMessage, toggleReaction } = useMessages(active?.conversationId ?? null);
+  const { messages: sessionMessages } = useThreadMessages(active?.conversationId ?? null, huddleEventId);
+
+  // Unread dot on the "Chat" button: a new thread message arrived while the panel
+  // was closed. Cleared on open; reset per huddle.
+  const [threadSeenCount, setThreadSeenCount] = useState(0);
+  useEffect(() => { setThreadSeenCount(0); }, [active?.huddleId]);
+  useEffect(() => {
+    if (chatPanelOpen) setThreadSeenCount(sessionMessages.length);
+  }, [chatPanelOpen, sessionMessages.length]);
+  const hasThreadUnread = !chatPanelOpen && sessionMessages.length > threadSeenCount;
 
   // stage state
   const markerPen = useHuddleStore((s) => s.markerPen);
@@ -58,9 +68,11 @@ export function HuddleWindow() {
     const list = participants.length > 0
       ? participants
       : [{ userId: 'self', name: active!.conversationName, avatarUrl: '' }];
+    // Square tiles (aspect-ratio, not fixed height) so a portrait photo never
+    // stretches into a tall sliver when the window is narrow.
     const tileSize: React.CSSProperties = variant === 'stage'
-      ? { flex: '1 1 0', minWidth: 0, maxWidth: 340, height: 240 }
-      : { flex: 1, minWidth: 0, height: 150 };
+      ? { flex: '1 1 0', minWidth: 0, maxWidth: 280, aspectRatio: '1 / 1', maxHeight: 280 }
+      : { flex: 1, minWidth: 0, maxWidth: 160, aspectRatio: '1 / 1', maxHeight: 160 };
     return (
       <div style={{
         display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap',
@@ -316,26 +328,29 @@ export function HuddleWindow() {
             <>
             <div style={{ flex: '0 0 auto', padding: '8px 16px', borderBottom: '1px solid var(--ds-border)',
               fontWeight: 700, fontSize: 14, color: 'var(--ds-text)' }}>Thread</div>
-            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {sessionMessages.length === 0 ? (
-                <div style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, lineHeight: 1.5 }}>
-                  <strong style={{ color: 'var(--ds-text)' }}>Every huddle has a thread.</strong>
-                  {' '}Send messages, files, and links to everyone in the huddle. They are saved in this conversation, so you can read them after the huddle ends.
-                </div>
-              ) : (
-                sessionMessages.map((m) => (
-                  <div key={m.id} style={{ fontSize: 13 }}>
-                    <span style={{ fontWeight: 700, color: 'var(--ds-text)' }}>{m.authorName ?? ''}</span>
-                    <span style={{ marginLeft: 8, color: 'var(--ds-text)', whiteSpace: 'pre-wrap' }}>{m.bodyText}</span>
-                  </div>
-                ))
-              )}
-            </div>
+            {sessionMessages.length === 0 ? (
+              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 16,
+                color: 'var(--ds-text-subtlest)', fontSize: 13, lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--ds-text)' }}>Every huddle has a thread.</strong>
+                {' '}Send messages, files, and links to everyone in the huddle. They are saved in this conversation, so you can read them after the huddle ends.
+              </div>
+            ) : (
+              <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                {/* Canonical chat rendering (avatars, names, timestamps, grouping) —
+                    same MessageList the main panel uses, so the huddle thread matches. */}
+                <MessageList
+                  messages={sessionMessages}
+                  onOpenThread={() => { /* threads can't nest inside a huddle thread */ }}
+                  onToggleReaction={(id, emoji) => { void toggleReaction(id, emoji); }}
+                  followLatest
+                />
+              </div>
+            )}
             <div style={{ flex: '0 0 auto', borderTop: '1px solid var(--ds-border)' }}>
               <Composer
                 placeholder="Message"
                 conversationId={active.conversationId}
-                onSend={(md) => { void sendMessage(md); }}
+                onSend={(md) => { void sendMessage(md, huddleEventId ? { parentId: huddleEventId } : undefined); }}
               />
             </div>
             </>
@@ -359,8 +374,14 @@ export function HuddleWindow() {
           {sharing ? 'Stop share' : 'Share screen'}
         </button>
         <button type="button" data-huddle-btn onClick={toggleChatPanel} aria-pressed={chatPanelOpen} title="Toggle chat"
-          style={ctrlBtn(chatPanelOpen ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)')}>
+          style={{ ...ctrlBtn(chatPanelOpen ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)'), position: 'relative' }}>
           Chat
+          {hasThreadUnread && (
+            <span aria-label="New messages" style={{
+              position: 'absolute', top: 6, right: 8, width: 8, height: 8, borderRadius: '50%',
+              background: 'var(--ds-background-danger-bold)', boxShadow: '0 0 0 2px var(--ds-surface-overlay)',
+            }} />
+          )}
         </button>
         <button type="button" data-huddle-btn onClick={leave} title="Leave huddle"
           style={{ ...ctrlBtn('var(--ds-background-danger-bold)'), color: '#FFFFFF' }}>

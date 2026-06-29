@@ -639,7 +639,7 @@ export function WorkItemCard({
                          pinned flush against the parent so the user can
                          drag horizontally onto the sub-menu without ever
                          leaving a hover region. */
-                      left: '48%',
+                      left: '100%',
                       top: 0,
                       minWidth: 180,
                       background: tk.surfaceBg,

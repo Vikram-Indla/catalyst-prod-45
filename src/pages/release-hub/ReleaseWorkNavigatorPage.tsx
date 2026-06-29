@@ -655,7 +655,7 @@ function MultiChip({
             minWidth: 260,
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >
@@ -666,7 +666,7 @@ function MultiChip({
               border: `1px solid ${searchFocused ? BLUE : BORDER}`,
               borderRadius: 3,
               background: 'var(--ds-surface)',
-              boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+              boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               transition: 'border-color 80ms ease, box-shadow 80ms ease',
             }}>
               <span style={{ color: SUBTLE, display: 'inline-flex' }}><SearchIcon label="" size="small" /></span>
@@ -856,7 +856,7 @@ function FixVersionChip({
             minWidth: 160,
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >
@@ -890,7 +890,7 @@ function FixVersionChip({
             minWidth: 280, maxHeight: 360, overflowY: 'auto',
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '8px 0',
             display: 'flex', flexDirection: 'column',
           }}
@@ -907,7 +907,7 @@ function FixVersionChip({
                 width: '100%', boxSizing: 'border-box', height: 30, padding: '0 8px',
                 border: `1px solid ${searchFocused ? BLUE : BORDER}`, borderRadius: 3,
                 fontSize: 'var(--ds-font-size-400)', outline: 'none', fontFamily: 'inherit',
-                boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
+                boxShadow: 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                 transition: 'border-color 80ms ease, box-shadow 80ms ease',
               }}
             />

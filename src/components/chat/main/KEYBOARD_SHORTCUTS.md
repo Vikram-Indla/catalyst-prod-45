@@ -214,7 +214,7 @@ Could announce button activation via `aria-live` region:
 - Test with simpler focus scenario first (single message)
 
 **Focus not visible:**
-- Add outline/ring to focused buttons: `outline: 2px solid var(--ds-border-focused)`
+- Add outline/ring to focused buttons: `outline: 1px solid var(--ds-border-focused)`
 - Test with high contrast mode enabled
 - Ensure sufficient contrast ratio
 

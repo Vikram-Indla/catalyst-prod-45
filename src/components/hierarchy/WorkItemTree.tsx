@@ -541,7 +541,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
         .hi-tree-row[aria-selected="true"]:hover { background: var(--ds-background-selected) !important; }
         .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-tree-row:hover .hi-row-action { opacity: 1; }
-        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 2px var(--ds-border-focused); }
+        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 1px var(--ds-border-focused); }
       `}</style>
     </div>
   );

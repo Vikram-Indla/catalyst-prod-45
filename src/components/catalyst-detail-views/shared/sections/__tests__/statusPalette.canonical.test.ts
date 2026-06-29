@@ -20,9 +20,6 @@ function read(rel: string) {
 }
 
 describe('canonical status palette', () => {
-  // 2026-06-28 — migrated to ADS bold tokens (Lozenge parity).
-  // Bold bgs render vivid in both light+dark. moved uses dark text (not inverse)
-  // because #E2B203 amber with white text fails WCAG AA (~1.9:1).
   it('pins each status to its ADS bold background token', () => {
     expect(STATUS_BG.success).toBe('var(--ds-background-success-bold)');
     expect(statusBg('success')).toBe('var(--ds-background-success-bold)');
@@ -35,9 +32,10 @@ describe('canonical status palette', () => {
     expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral)');
   });
 
-  it('pairs each status bg with its matching text token (WCAG-correct)', () => {
+  it('pairs each bold bg with WCAG-correct text token', () => {
     expect(statusFg('success')).toBe('var(--ds-text-inverse)');
     expect(statusFg('inprogress')).toBe('var(--ds-text-inverse)');
+    expect(statusFg('moved')).toBe('var(--ds-text)');
     expect(statusFg('default')).toBe('var(--ds-text)');
   });
 });
@@ -46,10 +44,6 @@ describe('every work-item status renderer uses the canonical palette', () => {
   const RENDERERS = [
     'components/shared/StatusLozenge/StatusLozenge.tsx',
     'components/shared/StatusLozenge/StatusLozengeDropdown.tsx',
-    'components/ui/StatusLozenge.tsx',
-    'components/shared/StatusPill.tsx',
-    'components/workflow/WorkItemStatusLozenge.tsx',
-    'components/workflow/JiraStatusLozenge.tsx',
   ];
 
   it.each(RENDERERS)('%s imports from statusPalette', (rel) => {

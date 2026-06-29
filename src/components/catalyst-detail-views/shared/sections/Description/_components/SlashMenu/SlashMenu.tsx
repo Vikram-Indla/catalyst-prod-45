@@ -197,7 +197,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
               padding: '4px 10px',
               fontSize: 'var(--ds-font-size-400)',
               border: searchFocused
-                ? '2px solid var(--ds-border-focused)'
+                ? '1px solid var(--ds-border-focused)'
                 : '2px solid var(--ds-border)',
               borderRadius: 3,
               background: 'var(--ds-surface)',

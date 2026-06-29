@@ -150,7 +150,7 @@ export default function TestCaseTypesPage() {
                     onClick={() => setNewIcon(ic)}
                     style={{
                       width: 28, height: 28, borderRadius: 4, fontSize: 16,
-                      border: newIcon === ic ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                      border: newIcon === ic ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                       cursor: 'pointer', background: newIcon === ic ? 'var(--ds-background-selected)' : 'none',
                     }}
                   >
@@ -196,7 +196,7 @@ export default function TestCaseTypesPage() {
                           onClick={() => setEditIcon(ic)}
                           style={{
                             width: 24, height: 24, borderRadius: 4, fontSize: 14,
-                            border: editIcon === ic ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
+                            border: editIcon === ic ? '1px solid var(--ds-border-focused)' : '1px solid transparent',
                             cursor: 'pointer', background: editIcon === ic ? 'var(--ds-background-selected)' : 'none',
                           }}
                         >

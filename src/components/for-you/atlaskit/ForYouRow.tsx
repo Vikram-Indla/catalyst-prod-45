@@ -481,7 +481,6 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
 
 export default memo(ForYouRowImpl);
 
-
 // ─── Star button ─────────────────────────────────────────────────────────────
 
 const GOLD = token('color.icon.accent.yellow', 'var(--ds-background-warning-bold)');

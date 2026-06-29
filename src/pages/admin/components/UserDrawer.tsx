@@ -487,7 +487,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
                   <span style={{ 
                     position: 'absolute', 
                     left: '12px', 
-                    top: '48%', 
+                    top: '50%', 
                     transform: 'translateY(-50%)', 
                     color: 'var(--ct-text-muted)',
                     fontSize: '13px'
@@ -705,7 +705,7 @@ const drawerCSS = `
 }
 .um-form-group input:focus,
 .um-form-group select:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
 }

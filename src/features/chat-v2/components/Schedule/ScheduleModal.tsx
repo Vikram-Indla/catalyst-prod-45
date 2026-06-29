@@ -235,7 +235,7 @@ function CalendarPopover({
       aria-label="Pick a date"
       style={{
         position: 'absolute',
-        top: 40,
+        top: 44,
         left: 0,
         width: 280,
         background: 'var(--cv2-bg-modal)',
@@ -438,7 +438,7 @@ function TimeDropdown({
       aria-label="Pick a time"
       style={{
         position: 'absolute',
-        top: 40,
+        top: 44,
         left: 0,
         right: 0,
         maxHeight: 260,

@@ -246,7 +246,7 @@ function ActionsMenu({ release, onRelease, onArchive, onMerge, onEdit, onDelete 
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${GRAY_BORDER}`,
             borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >

@@ -436,6 +436,8 @@ export interface UpdateDefectInput extends Partial<CreateDefectInput> {
    * truth and the enum `status` is only set to its nearest safe compat value.
    */
   workflowStatusKey?: string;
+  /** Reason text from ReasonCaptureModal — when provided, skips the reason-required throw. */
+  reasonText?: string | null;
 }
 
 export interface ReportSummary {

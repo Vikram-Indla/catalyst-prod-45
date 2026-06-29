@@ -970,8 +970,8 @@ function TasksInlineCreateRow({
                   aria-label="Clear due date"
                   style={{
                     position: 'absolute',
-                    right: 4,
-                    top: '48%',
+                    right: 6,
+                    top: '50%',
                     transform: 'translateY(-50%)',
                     width: 20,
                     height: 20,

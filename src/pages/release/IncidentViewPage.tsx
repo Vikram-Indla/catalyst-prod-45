@@ -24,14 +24,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { useIncident, useUpdateIncident } from '@/hooks/useIncidents';
 import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
@@ -193,25 +186,16 @@ export default function IncidentViewPage() {
       {/* Page Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex-shrink-0">
         {/* Breadcrumbs */}
-        <Breadcrumb className="mb-3">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/release" className="text-muted-foreground hover:text-foreground text-sm">Release</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/release/incidents" className="text-muted-foreground hover:text-foreground text-sm">Incidents</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage className="text-sm">{incident.incident_key}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <div className="mb-3">
+          <Breadcrumbs
+            LinkComponent={Link}
+            items={[
+              { key: 'release', text: 'Release', href: '/release' },
+              { key: 'incidents', text: 'Incidents', href: '/release/incidents' },
+              { key: 'current', text: incident.incident_key, isCurrent: true },
+            ] satisfies BreadcrumbItem[]}
+          />
+        </div>
 
         {/* Title Row */}
         <div className="flex items-start justify-between gap-4">

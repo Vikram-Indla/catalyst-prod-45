@@ -13,7 +13,8 @@ import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
 import Select from '@atlaskit/select';
 import Badge from '@atlaskit/badge';
-import { Heading, Stack } from '@atlaskit/primitives';
+import { Stack } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 
 interface GenerateEpicsModalProps {
   isOpen: boolean;

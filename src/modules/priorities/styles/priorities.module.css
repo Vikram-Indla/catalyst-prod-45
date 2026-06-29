@@ -292,7 +292,7 @@
 .pri-search-icon {
   position: absolute;
   left: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--pri-gray-400);
   pointer-events: none;
@@ -310,7 +310,7 @@
   color: var(--pri-gray-700);
   background: var(--pri-bg);
   transition: all var(--pri-transition);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 
 .pri-search-input::placeholder {
@@ -708,7 +708,7 @@
   border: 1px solid var(--pri-primary);
   border-radius: 4px;
   padding: 0px 6px;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
@@ -856,7 +856,7 @@
 .pri-status-tooltip {
   position: absolute;
   bottom: calc(100% + 6px);
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%) scale(0.95);
   background: var(--pri-gray-800);
   color: var(--ds-surface);
@@ -919,7 +919,7 @@
 .pri-quick-add-input {
   flex: 1;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   font-size: 13px;
   font-family: inherit;
   color: var(--pri-gray-700);
@@ -1182,7 +1182,7 @@
   font-size: 13px;
   font-family: inherit;
   color: var(--pri-gray-700);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all var(--pri-transition);
 }
 

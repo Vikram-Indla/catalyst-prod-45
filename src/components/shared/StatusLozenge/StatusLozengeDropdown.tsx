@@ -19,6 +19,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
+import Lozenge from '@atlaskit/lozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import RetryIcon from '@atlaskit/icon/glyph/retry';
 import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
@@ -311,7 +312,7 @@ export function StatusLozengeDropdown({
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between',
+                          justifyContent: 'flex-start',
                           width: '100%',
                           height: 'var(--ds-space-400, 32px)',
                           paddingTop: 0,

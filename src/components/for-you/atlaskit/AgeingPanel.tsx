@@ -564,7 +564,7 @@ export function AgeingPanelView({
           style={{
             position: 'fixed',
             bottom: 24,
-            left: '48%',
+            left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 9999,
             animation: 'bau-bulk-slide-up 200ms cubic-bezier(0.16, 1, 0.3, 1)',

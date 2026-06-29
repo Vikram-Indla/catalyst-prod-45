@@ -16,6 +16,36 @@ import type {
 } from './contracts';
 import { buildUnauthorizedTooltip } from './advisory';
 
+/**
+ * Guard evidence registry — single source of truth for which guards have
+ * real evaluators vs. advisory-only (no evidence source).
+ *
+ * blockingSafe: false means enabling is_blocking=true on this guard will
+ * never produce a real pass — it would freeze transitions indefinitely.
+ * The runtime never hard-blocks when passed=null (only passed=false blocks).
+ * This registry lets the admin UI warn before enabling blocking enforcement.
+ */
+export const GUARD_EVIDENCE_REGISTRY: Record<string, { evidence: 'real' | 'missing'; blockingSafe: boolean; note: string }> = {
+  assignee_required:           { evidence: 'real',    blockingSafe: true,  note: 'checked against issueRow.assignee_account_id' },
+  acceptance_criteria_present: { evidence: 'real',    blockingSafe: true,  note: 'checked against issueRow.description_text' },
+  reason_required:             { evidence: 'real',    blockingSafe: true,  note: 'reason text collected in reason modal / audit' },
+  test_coverage:               { evidence: 'real',    blockingSafe: true,  note: 'real count from tm_test_case_links (gateTransition)' },
+  child_completion:            { evidence: 'real',    blockingSafe: true,  note: 'child issue completion % from ph_issues' },
+  no_open_blocker_critical:    { evidence: 'real',    blockingSafe: true,  note: 'open flagged blocker count from ph_issues' },
+  qa_signoff:                  { evidence: 'missing', blockingSafe: false, note: 'no qa sign-off evidence table — advisory only (passed: null)' },
+  uat_signoff:                 { evidence: 'missing', blockingSafe: false, note: 'no UAT sign-off table — advisory only (passed: null)' },
+  approval:                    { evidence: 'missing', blockingSafe: false, note: 'no approval workflow table — advisory only (passed: null)' },
+  brd_attached:                { evidence: 'missing', blockingSafe: false, note: 'no BRD attachment source — advisory only (passed: null)' },
+  release_readiness:           { evidence: 'missing', blockingSafe: false, note: 'no release readiness source — advisory only (passed: null)' },
+  deployment_window:           { evidence: 'missing', blockingSafe: false, note: 'no deployment window source — advisory only (passed: null)' },
+  deployment_evidence:         { evidence: 'missing', blockingSafe: false, note: 'no deployment evidence source — advisory only (passed: null)' },
+  smoke_evidence:              { evidence: 'missing', blockingSafe: false, note: 'no smoke test source — advisory only (passed: null)' },
+  rca:                         { evidence: 'missing', blockingSafe: false, note: 'no RCA source — advisory only (passed: null)' },
+  figma_attached:              { evidence: 'missing', blockingSafe: false, note: 'no Figma attachment source — advisory only (passed: null)' },
+  required_field:              { evidence: 'missing', blockingSafe: false, note: 'field requirements table not yet evaluated in gate — advisory' },
+  comment_required:            { evidence: 'missing', blockingSafe: false, note: 'no comment evidence source — advisory only (passed: null)' },
+};
+
 export interface ResolvedVersion {
   versionId: string;
   entityKey: string;
@@ -373,9 +403,14 @@ export async function gateTransition(args: {
     const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
     const failingGuards = guardResults.filter((g) => g.isBlocking && g.passed === false);
 
+    // Field requirements: evaluate on_transition requirements.
+    const fieldReqs = await evaluateFieldRequirements({
+      versionId: version.versionId, transitionId: match?.id ?? null, issueRow: args.issueRow,
+    });
+
     let blocked = false;
     let missingGuard: string | null = null;
-    let roleDecision: 'allow' | 'deny' | 'bypass' | 'waiver' = 'allow';
+    let roleDecision: 'allow' | 'deny' | 'bypass' | 'waiver' | 'not_configured' = 'allow';
 
     if (!inMatrix) { blocked = true; missingGuard = 'transition_not_in_matrix'; roleDecision = 'deny'; }
     else if (!roleOk) { blocked = true; missingGuard = `role:${allowedRoles.join('|')}`; roleDecision = 'deny'; }
@@ -384,6 +419,9 @@ export async function gateTransition(args: {
       else { blocked = true; missingGuard = 'bypass_requires_reason'; roleDecision = 'deny'; }
     }
     else if (failingGuards.length > 0) { blocked = true; missingGuard = failingGuards[0].guardType; roleDecision = 'deny'; }
+    else if (!fieldReqs.passed) { blocked = true; missingGuard = `field_required:${fieldReqs.missingFields[0]}`; roleDecision = 'deny'; }
+    // Transition exists in matrix but no roles configured — allow, but mark for audit clarity.
+    if (!blocked && inMatrix && allowedRoles.length === 0) { roleDecision = 'not_configured'; }
 
     const wouldBlock = blocked;
     const enforce = mode === 'blocking';
@@ -394,8 +432,13 @@ export async function gateTransition(args: {
       fromKey, toKey,
       evaluation: {
         allowed: !wouldBlock, roleDecision, allowedRoles, guardResults, missingGuard,
+        fieldRequirements: fieldReqs,
         reasonRequired: !!match?.requires_reason, commentRequired: !!match?.requires_comment, bypassRequired: wouldBlock,
-        tooltipBasis: { currentRole: actorRole, entityType: args.entityKey, fromStatus: fromKey, toStatus: toKey, requiredRoles: allowedRoles, missingGuard },
+        tooltipBasis: {
+          currentRole: actorRole, entityType: args.entityKey, fromStatus: fromKey, toStatus: toKey,
+          requiredRoles: allowedRoles, missingGuard,
+          resolvedRoles: actor.roles,
+        },
       },
       sourceSurface: args.sourceSurface, reasonCode: args.reasonCode ?? null, reasonText: effReason, mode: enforce ? 'blocking' : 'advisory',
     });
@@ -405,6 +448,38 @@ export async function gateTransition(args: {
   } catch (err) {
     console.warn('[canonical-workflow] gateTransition error — proceeding', err);
     return { mode: 'advisory', blocked: false, message: null, auditId: null, reasonRequired: false };
+  }
+}
+
+/**
+ * Evaluate ph_wf_field_requirements for a given transition.
+ * Returns missingFields (fields marked 'required' but absent in issueRow).
+ * Non-blocking on DB error — advisory.
+ */
+export async function evaluateFieldRequirements(args: {
+  versionId: string;
+  transitionId: string | null;
+  issueRow: any;
+}): Promise<{ passed: boolean; missingFields: string[] }> {
+  if (!args.transitionId) return { passed: true, missingFields: [] };
+  try {
+    const { data, error } = await supabase
+      .from('ph_wf_field_requirements')
+      .select('field_key, requirement')
+      .eq('version_id', args.versionId)
+      .eq('transition_id', args.transitionId)
+      .eq('scope', 'on_transition')
+      .eq('requirement', 'required');
+    if (error) return { passed: true, missingFields: [] };
+    const missing = (data ?? [])
+      .filter((r: any) => {
+        const val = args.issueRow?.[r.field_key];
+        return val === null || val === undefined || val === '';
+      })
+      .map((r: any) => r.field_key);
+    return { passed: missing.length === 0, missingFields: missing };
+  } catch {
+    return { passed: true, missingFields: [] };
   }
 }
 

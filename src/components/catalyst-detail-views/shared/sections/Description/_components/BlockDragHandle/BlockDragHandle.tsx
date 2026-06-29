@@ -156,7 +156,7 @@ export function BlockDragHandle({ editor, containerRef }: Props) {
       style={{
         position: 'absolute',
         top: hover.top,
-        left: 4,
+        left: 6,
         width: HANDLE_WIDTH,
         height: HANDLE_HEIGHT,
         display: 'flex',

@@ -32,7 +32,7 @@ export function MicButton({
         .caty-mic-lang-picker {
           position: absolute;
           bottom: calc(100% + 6px);
-          left: 48%;
+          left: 50%;
           transform: translateX(-50%);
           display: flex;
           gap: 4px;

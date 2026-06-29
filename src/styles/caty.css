@@ -626,8 +626,8 @@
 
 .caty-kpi-trend {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
   font-size: 9px;
   font-weight: 600;
   padding: 0px 4px;
@@ -967,7 +967,12 @@
   background: transparent;
   font-size: var(--caty-font-size-lg);
   color: var(--caty-text-primary);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
+}
+
+.caty-input:focus-visible {
+  outline: 1px solid var(--ds-border-focused);
+  outline-offset: 0;
 }
 
 .caty-input::placeholder {
@@ -1182,8 +1187,8 @@
   outline-offset: 2px;
 }
 
-.caty-panel *:focus {
-  outline: 2px solid var(--ds-border-focused);
+.caty-panel *:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .sr-only {

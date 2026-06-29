@@ -140,7 +140,13 @@ const TerminalCrumb = forwardRef<HTMLSpanElement, TerminalProps>(function Termin
   ref,
 ) {
   return (
-    <span ref={ref} aria-current="page" aria-label={ariaLabel} className={className}>
+    <span
+      ref={ref}
+      aria-current="page"
+      aria-label={ariaLabel}
+      className={className}
+      style={{ fontWeight: 400, padding: '2px 0' }}
+    >
       {children}
     </span>
   );

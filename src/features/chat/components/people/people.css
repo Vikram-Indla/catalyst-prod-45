@@ -28,7 +28,7 @@
   background: var(--c-chat-surface-sunken);
   font-size: 13px;
   color: var(--c-chat-text);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 
 .c-people__search-input:focus {

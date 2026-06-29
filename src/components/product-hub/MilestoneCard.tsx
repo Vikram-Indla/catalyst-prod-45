@@ -1,4 +1,7 @@
 import React from 'react';
+import Lozenge from '@atlaskit/lozenge';
+import Button from '@atlaskit/button/new';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import type { ProductMilestoneWithProgress } from '@/types/product-milestone';
 
 export interface MilestoneCardProps {
@@ -8,88 +11,142 @@ export interface MilestoneCardProps {
   onDelete?: (milestoneId: string) => void;
 }
 
-export function MilestoneCard({
-  milestone,
-  onClick,
-  onEdit,
-  onDelete,
-}: MilestoneCardProps) {
-  const healthColor = {
-    on_track: 'bg-green-50 border-green-200',
-    at_risk: 'bg-yellow-50 border-yellow-200',
-    off_track: 'bg-red-50 border-red-200',
-  };
+const HEALTH_APPEARANCE = {
+  on_track: 'success',
+  at_risk: 'moved',
+  off_track: 'removed',
+} as const;
 
-  const healthTextColor = {
-    on_track: 'text-green-800',
-    at_risk: 'text-yellow-800',
-    off_track: 'text-red-800',
-  };
+const HEALTH_LABEL = {
+  on_track: 'On track',
+  at_risk: 'At risk',
+  off_track: 'Off track',
+} as const;
+
+const CATEGORY_APPEARANCE: Record<string, string> = {
+  todo: 'default',
+  in_progress: 'inprogress',
+  done: 'success',
+};
+
+// Fallback when no canonical version is published
+const STATUS_APPEARANCE_FALLBACK: Record<string, string> = {
+  planned: 'default',
+  in_progress: 'inprogress',
+  at_risk: 'moved',
+  completed: 'success',
+  delivered: 'success',
+  cancelled: 'removed',
+};
+
+function fmt(d: string | null | undefined): string {
+  if (!d) return 'TBD';
+  return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+export function MilestoneCard({ milestone, onClick, onEdit, onDelete }: MilestoneCardProps) {
+  const canonical = useCanonicalIssueWorkflow('product_milestone');
+
+  const statusLabel: string = (() => {
+    if (canonical.isCanonical) return canonical.labelForStatus(milestone.status) || milestone.status || '—';
+    return milestone.status ?? '—';
+  })();
+
+  const statusAppearance: string = (() => {
+    if (canonical.isCanonical) {
+      const label = canonical.labelForStatus(milestone.status);
+      for (const group of canonical.statusGroups) {
+        if (group.statuses.includes(label)) return CATEGORY_APPEARANCE[group.category] ?? 'default';
+      }
+    }
+    return STATUS_APPEARANCE_FALLBACK[milestone.status ?? ''] ?? 'default';
+  })();
+
+  const healthAppearance = HEALTH_APPEARANCE[milestone.healthStatus] ?? 'default';
 
   return (
     <div
-      className={`border rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow ${
-        healthColor[milestone.healthStatus]
-      }`}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
       onClick={() => onClick?.(milestone.id)}
+      onKeyDown={(e) => e.key === 'Enter' && onClick?.(milestone.id)}
+      style={{
+        border: '1px solid var(--ds-border)',
+        borderRadius: 6,
+        padding: '14px 16px',
+        background: 'var(--ds-surface-raised)',
+        cursor: onClick ? 'pointer' : 'default',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+      }}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h3 className="font-semibold text-sm">{milestone.title}</h3>
-          <p className="text-xs text-gray-500">{milestone.key}</p>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--ds-text)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {milestone.title}
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest)' }}>{milestone.key}</div>
         </div>
-        <span className="px-2 py-1 bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] rounded text-xs font-medium">
-          {milestone.quarter}
-        </span>
+        {milestone.quarter && (
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle)', background: 'var(--ds-background-neutral)', border: '1px solid var(--ds-border)', borderRadius: 3, padding: '2px 6px', flexShrink: 0 }}>
+            {milestone.quarter}
+          </span>
+        )}
       </div>
 
-      <div className="text-xs text-gray-600 mb-3">
-        {milestone.startDate ? new Date(milestone.startDate).toLocaleDateString() : 'TBD'} →{' '}
-        {new Date(milestone.targetDate).toLocaleDateString()}
+      {/* Status + health */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Lozenge appearance={statusAppearance as any}>{statusLabel}</Lozenge>
+        <Lozenge appearance={healthAppearance}>{HEALTH_LABEL[milestone.healthStatus] ?? milestone.healthStatus}</Lozenge>
       </div>
 
-      <div className="mb-3">
-        <div className="flex justify-between mb-1">
-          <span className="text-xs font-medium">Progress</span>
-          <span className="text-xs text-gray-600">{milestone.progressPercent}%</span>
+      {/* Dates */}
+      <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+        {fmt(milestone.startDate)} → {fmt(milestone.targetDate)}
+      </div>
+
+      {/* Progress bar */}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>Progress</span>
+          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle)' }}>{milestone.progressPercent}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-blue-500 h-2 rounded-full"
-            style={{ width: `${milestone.progressPercent}%` }}
-          />
+        <div style={{ height: 4, borderRadius: 2, background: 'var(--ds-background-neutral)', overflow: 'hidden' }}>
+          <div style={{ height: '100%', borderRadius: 2, background: 'var(--ds-background-brand-bold)', width: `${milestone.progressPercent}%`, transition: 'width .3s' }} />
         </div>
       </div>
 
-      <div className={`text-xs font-medium mb-2 ${healthTextColor[milestone.healthStatus]}`}>
-        {milestone.healthStatus.replace('_', ' ').toUpperCase()}
+      {/* Linked items */}
+      <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', display: 'flex', gap: 12 }}>
+        <span>{milestone.linkedBRCount} BR{milestone.linkedBRCount !== 1 ? 's' : ''}</span>
+        <span>{milestone.linkedFeatures.length} Feature{milestone.linkedFeatures.length !== 1 ? 's' : ''}</span>
       </div>
 
-      <div className="text-xs text-gray-600 mb-3 space-y-1">
-        <p>{milestone.linkedBRCount} Business Requests</p>
-        <p>{milestone.linkedFeatures.length} Features</p>
-      </div>
-
-      <div className="flex gap-2">
-        <button
-          className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50"
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit?.(milestone.id);
-          }}
-        >
-          Edit
-        </button>
-        <button
-          className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-red-600"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete?.(milestone.id);
-          }}
-        >
-          Delete
-        </button>
-      </div>
+      {/* Actions */}
+      {(onEdit || onDelete) && (
+        <div style={{ display: 'flex', gap: 6, borderTop: '1px solid var(--ds-border)', paddingTop: 10 }}>
+          {onEdit && (
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              onClick={(e) => { e.stopPropagation(); onEdit(milestone.id); }}
+            >
+              Edit
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              onClick={(e) => { e.stopPropagation(); onDelete(milestone.id); }}
+            >
+              Archive
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

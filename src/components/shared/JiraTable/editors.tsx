@@ -1023,6 +1023,9 @@ export interface ParentChoice {
   /** Parent's work-item type icon (Epic / Story / MDT Business Request / …).
    *  Rendered inline with the key so the chip matches Jira's list view. */
   icon?: React.ReactNode;
+  /** Parent's Jira status category — drives chip background per spec.
+   *  'new' → neutral, 'indeterminate' → warning, 'done' → success. */
+  statusCategory?: 'new' | 'indeterminate' | 'done' | null;
 }
 
 // Chip style used for the selected parent AND for options in the dropdown.
@@ -1034,14 +1037,13 @@ export interface ParentChoice {
 //   border-radius: 3px
 //   font-size:  14px (we use 13 to match our compact row density)
 //   font-weight: 400
-function ParentChip({ choice }: { choice: { key: string | null; label: string; icon?: React.ReactNode } }) {
+function ParentChip({ choice }: { choice: { key: string | null; label: string; icon?: React.ReactNode; statusCategory?: 'new' | 'indeterminate' | 'done' | null } }) {
   const display = choice.key ? `${choice.key} ${choice.label}` : choice.label;
-  // Apr 27, 2026 (L64): switched from Atlaskit Lozenge to a plain
-  // bordered chip matching the table baseline (14/20/400, normal-case).
-  // The Lozenge was rendering 11px/653/UPPERCASE — visually different
-  // from every other cell in the table. Per Jira-parity spec for
-  // Parent/Hierarchy fields: 14/20/400, key in `color.link`, label in
-  // `color.text`, single-line ellipsis. Catalyst now matches.
+  const bg = choice.statusCategory === 'indeterminate'
+    ? 'var(--ds-background-warning)'
+    : choice.statusCategory === 'done'
+      ? 'var(--ds-background-success)'
+      : 'var(--ds-background-neutral)';
   return (
     <span
       title={display}
@@ -1049,10 +1051,11 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         display: 'inline-flex',
         alignItems: 'center',
         gap: 4,
+        height: 24,
         maxWidth: 260,
-        padding: '0px 8px',
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+        padding: '0 8px',
         borderRadius: 3,
+        background: bg,
         fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
@@ -1075,7 +1078,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
           {choice.key}
         </strong>
       )}
-      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text.subtle', 'var(--ds-text-subtle)') }}>
         {choice.label}
       </span>
     </span>

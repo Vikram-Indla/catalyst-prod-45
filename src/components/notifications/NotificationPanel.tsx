@@ -354,7 +354,7 @@ export default function NotificationPanel({
       }}
       style={{
         position: "fixed",
-        top: 48,
+        top: 52,
         right: 16,
         width: PANEL_WIDTH,
         bottom: 16,
@@ -462,7 +462,7 @@ export default function NotificationPanel({
               <span
                 style={{
                   position: "absolute",
-                  top: 0,
+                  top: 2,
                   left: unreadOnly ? 18 : 2,
                   width: 16,
                   height: 16,
@@ -535,7 +535,7 @@ export default function NotificationPanel({
                   role="menu"
                   style={{
                     position: "absolute",
-                    top: "48%",
+                    top: "100%",
                     right: 0,
                     marginTop: 4,
                     background: T.menuBg,

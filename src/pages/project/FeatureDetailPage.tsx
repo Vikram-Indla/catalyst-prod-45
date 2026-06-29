@@ -56,6 +56,7 @@ import { FeatureActivityTab } from './feature-detail/FeatureActivityTab';
 import { FeatureAuditTab } from './feature-detail/FeatureAuditTab';
 import { FeatureRightRail } from './feature-detail/FeatureRightRail';
 import { AssignModal } from '@/components/features/AssignModal';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 
 import { Contributor } from '@/hooks/useFeatureAssignments';
 
@@ -210,8 +211,16 @@ export default function FeatureDetailPage() {
   });
 
   const handleStatusChange = (newStatus: FeatureStatus) => {
+    const fromStatus = feature?.status ?? null;
     updateFeature.mutate({ status: newStatus } as any, {
-      onSuccess: () => catalystToast.success('Status updated'),
+      onSuccess: () => {
+        catalystToast.success('Status updated');
+        recordAdvisoryStatusChange({
+          entityKey: 'feature', entityId: featureId ?? '',
+          fromStatusRaw: fromStatus, toStatusRaw: newStatus,
+          projectKey: null, sourceSurface: 'feature_detail',
+        }).catch(() => {});
+      },
     });
   };
 

@@ -3,7 +3,10 @@
 // Route: /risks
 
 import { useState, useMemo } from "react";
-import { Search, Filter, MoreVertical, Plus } from "lucide-react";
+import { Search } from "lucide-react";
+import AddIcon from '@atlaskit/icon/core/add';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import ShowMoreVerticalIcon from '@atlaskit/icon/core/show-more-vertical';
 import { useRisks } from "@/hooks/risks/useRisks";
 import { RisksSidebar } from "@/components/risks/RisksSidebar";
 import { Risk, RiskGridFilters } from "@/types/risks";
@@ -14,7 +17,7 @@ import { CreateEditRiskDialog } from "@/components/risks/CreateEditRiskDialog";
 import { DeleteRiskDialog } from "@/components/risks/DeleteRiskDialog";
 import { MassMoveDialog } from "@/components/risks/MassMoveDialog";
 import { ColumnsDialog } from "@/components/risks/ColumnsDialog";
-import { Button } from "@/components/ui/button";
+import Button from "@atlaskit/button/new";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -160,35 +163,31 @@ export default function RisksGridPage() {
               )}
             </div>
             
-            <Button 
-              size="sm"
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white flex-shrink-0"
+            <Button
+              appearance="primary"
+              iconBefore={AddIcon}
               onClick={() => {
                 setEditingRisk(null);
                 setIsCreateEditOpen(true);
               }}
             >
-              <Plus className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Add Risk</span>
+              Add Risk
             </Button>
           </div>
           
           <div className="flex items-center gap-[var(--s2)]">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              appearance="default"
+              iconBefore={FilterIcon}
               onClick={() => setIsFiltersDialogOpen(true)}
-              className="flex-shrink-0"
             >
-              <Filter className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Filters</span>
+              Filters
             </Button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-shrink-0">
-                  <MoreVertical className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Actions</span>
+                <Button appearance="default" iconBefore={ShowMoreVerticalIcon}>
+                  Actions
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -329,10 +328,10 @@ export default function RisksGridPage() {
           <div className="flex items-center gap-2">
             <span className="text-xs">Page 1 of {Math.ceil(filteredRisks.length / 10) || 1}</span>
             <div className="flex gap-1">
-              <Button variant="outline" size="sm" className="h-7 px-2 text-xs hidden sm:flex">First</Button>
-              <Button variant="outline" size="sm" className="h-7 px-2 text-xs">Prev</Button>
-              <Button variant="outline" size="sm" className="h-7 px-2 text-xs">Next</Button>
-              <Button variant="outline" size="sm" className="h-7 px-2 text-xs hidden sm:flex">Last</Button>
+              <Button appearance="default" spacing="compact">First</Button>
+              <Button appearance="default" spacing="compact">Prev</Button>
+              <Button appearance="default" spacing="compact">Next</Button>
+              <Button appearance="default" spacing="compact">Last</Button>
             </div>
           </div>
         </div>

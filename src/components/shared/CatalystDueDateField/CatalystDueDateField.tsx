@@ -59,8 +59,8 @@ if (typeof document !== "undefined") {
     }
     .cv-duedate .cv-duedate-select__indicators {
       position: absolute !important;
-      right: 4px !important;
-      top: 48% !important;
+      right: 6px !important;
+      top: 50% !important;
       transform: translateY(-50%) !important;
       height: auto !important;
       display: flex !important;
@@ -121,12 +121,12 @@ if (typeof document !== "undefined") {
     /* Keep focus styling restricted to the neat external visual border */
     .cv-duedate .cv-duedate-select__control--is-focused {
       border-radius: 3px !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: 1px solid var(--ds-border-focused) !important;
       outline-offset: -1px !important;
     }
     /* When the calendar popup is open, render a neutral gray outline regardless of focus state */
     .cv-duedate .cv-duedate-select__control--menu-is-open {
-      outline: 2px solid var(--ds-border) !important;
+      outline: 1px solid var(--ds-border) !important;
       outline-offset: -1px !important;
       border-radius: 3px !important;
     }

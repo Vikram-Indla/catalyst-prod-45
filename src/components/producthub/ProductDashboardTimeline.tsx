@@ -338,7 +338,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
               <span style={{
                 position: 'absolute',
                 left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
-                top: '48%', transform: 'translate(-50%, -50%)',
+                top: '50%', transform: 'translate(-50%, -50%)',
                 background: T.activeSolid, color: T.textInverse,
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0 8px',
                 borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',

@@ -89,7 +89,7 @@
 .awToolbarSearchInput {
   border: none !important;
   border-color: transparent !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   box-shadow: none !important;
   background: transparent !important;
   -webkit-appearance: none;
@@ -104,7 +104,7 @@
 .awToolbarSearch:focus-within .awToolbarSearchInput {
   border: none !important;
   border-color: transparent !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   background: transparent !important;
 }
@@ -274,7 +274,7 @@
 /* Sort dropdown menu */
 .jlpSortMenu {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 12px;
   margin-top: 0px;
   background: var(--ds-surface, #fff);
@@ -313,7 +313,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: var(--aw-bg);
 }
 .jlpBody::-webkit-scrollbar {
@@ -607,7 +607,7 @@
   z-index: 2;
   position: absolute;
   left: -14px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)));
   font-size: 11px;
@@ -988,7 +988,7 @@
 .awCommentTextarea2 {
   width: 100%;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   padding: 8px 12px;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
@@ -1194,7 +1194,7 @@
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   background: transparent;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 .awLogWorkInput:focus { border-color: var(--aw-blue); }
 .awLogWorkUnit {
@@ -1509,7 +1509,7 @@
 /* ── Inline create ── */
 .sp-create-input {
   flex: 1; height: 36px; padding: 0 12px;
-  border: none; outline: 2px solid var(--ds-border-focused); font-size: 14px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  border: none; outline: none; font-size: 14px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: inherit; background: transparent;
 }
 .sp-create-input::placeholder { color: var(--ds-text-subtlest, #626F86); }

@@ -9,6 +9,7 @@ import { formatRelativeTime } from '@/features/notifications/utils/date';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { parseMentions } from '@/lib/mentions/parseMentions';
 import { CatalystMention } from '@/components/shared/rich-text/mentions/CatalystMention';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useAuth } from '@/hooks/useAuth';
 import { Star } from '@/lib/atlaskit-icons';
 import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
@@ -40,24 +41,10 @@ function MentionSectionIcon() {
   );
 }
 
-// ─── Work item type icon (inline, 16px) ──────────────────────────────────────
-
-function EntityTypeIcon({ type }: { type: string }) {
-  const t = (type ?? '').toLowerCase();
-  // bookmark / page style — the spec shows a green bookmark
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-      {t === 'bug' || t === 'qa bug' ? (
-        <><rect width="16" height="16" rx="2" fill="var(--ds-background-danger-bold)"/><path d="M4 8.5l2 2 5-5" stroke="var(--ds-text-inverse)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>
-      ) : t === 'epic' ? (
-        <><rect width="16" height="16" rx="2" fill="var(--ds-background-discovery-bold)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="var(--ds-text-inverse)"/></>
-      ) : (
-        /* default: page/bookmark = green */
-        <><rect width="16" height="16" rx="2" fill="var(--ds-background-success-bold)"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="var(--ds-text-inverse)"/></>
-      )}
-    </svg>
-  );
-}
+// Work-item-type icon is rendered via the canonical <JiraIssueTypeIcon>
+// (src/lib/jira-issue-type-icons.tsx) — the locked icon registry. A
+// hand-rolled SVG mapper is banned (CLAUDE.md L2/G5); it diverged from Jira
+// and painted a wrong green bookmark for any unrecognised type.
 
 // @mention chips are rendered via the canonical <CatalystMention> primitive
 // (see shared/rich-text/mentions/CatalystMention.tsx) so notification cards
@@ -310,9 +297,12 @@ export default function MentionActivityCard({
               {verb === 'mentioned' ? 'mentioned you on' : 'commented on'}
             </span>
 
-            {/* Entity link: icon + title (truncated) + StatusPill */}
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, maxWidth: '100%', minWidth: 0 }}>
-              <EntityTypeIcon type={target.iconType} />
+            {/* Entity link: canonical issue-type icon + key/title + StatusPill.
+               Title wraps (Jira shows the full title) rather than truncating;
+               when the title is missing we show the key alone — no dangling
+               "KEY:" colon (zero-assumption rendering). */}
+            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 4, maxWidth: '100%', minWidth: 0 }}>
+              <JiraIssueTypeIcon type={target.iconType} size={16} />
               <button
                 type="button"
                 onClick={() => onEntityClick?.(target.key)}
@@ -327,16 +317,13 @@ export default function MentionActivityCard({
                   padding: 0,
                   cursor: 'pointer',
                   textDecoration: 'none',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  maxWidth: 320,
+                  textAlign: 'start',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
-                title={target.title}
+                title={target.title ? `${target.key}: ${target.title}` : target.key}
               >
-                {target.key}: {target.title}
+                {target.title ? `${target.key}: ${target.title}` : target.key}
               </button>
             </span>
 

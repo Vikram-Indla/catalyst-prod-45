@@ -154,7 +154,7 @@ function StatusNode({ data, selected }: NodeProps) {
         <div style={{
           position: 'absolute',
           top: -16,
-          left: '48%',
+          left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
@@ -172,7 +172,7 @@ function StatusNode({ data, selected }: NodeProps) {
         <div style={{
           position: 'absolute',
           bottom: -16,
-          left: '48%',
+          left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,

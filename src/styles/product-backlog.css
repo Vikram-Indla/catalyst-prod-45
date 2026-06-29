@@ -284,7 +284,7 @@
   background: var(--cp-input-bg);
   border: 1px solid var(--cp-input-border);
   border-radius: var(--cp-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all var(--cp-duration-fast) var(--cp-easing-standard);
 }
 .pb-search input::placeholder {
@@ -300,7 +300,7 @@
 .pb-search-icon {
   position: absolute;
   inset-inline-start: 8px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--cp-text-muted);
   pointer-events: none;
@@ -308,7 +308,7 @@
 .pb-search-kbd {
   position: absolute;
   inset-inline-end: 8px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   font-family: var(--cp-font-mono);
   font-size: 10px;
@@ -680,7 +680,7 @@
   font-size: 12px;
   border: 1px solid var(--cp-border-default);
   border-radius: var(--cp-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   color: var(--cp-text-primary);
 }
 
@@ -976,7 +976,7 @@
 }
 .pb-toggle-thumb {
   position: absolute;
-  top: 4px;
+  top: 3px;
   width: 16px;
   height: 16px;
   border-radius: var(--cp-radius-full);
@@ -1074,7 +1074,7 @@
   background: var(--cp-bg-surface);
   border: 1px solid var(--cp-border-default);
   border-radius: var(--cp-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all var(--cp-duration-fast) var(--cp-easing-standard);
   color: var(--cp-text-primary);
 }

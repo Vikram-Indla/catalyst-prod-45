@@ -3,10 +3,11 @@
  * Mirrors useMessages but filtered to parent_id. Sends new replies with
  * parent_id set so they belong to the thread.
  */
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { chatRealtime } from '@/lib/chat/ChatRealtimeManager';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { ChatMessage } from '@/types/chat';
 
@@ -65,6 +66,16 @@ export function useThreadMessages(conversationId: string | null, parentId: strin
     enabled: !!conversationId && !!parentId,
     queryFn: () => fetchThread(conversationId!, parentId!),
   });
+
+  // Realtime: refresh the thread when any message in the conversation changes so
+  // replies from the other participant (e.g. in-huddle messages) appear live.
+  useEffect(() => {
+    if (!conversationId || !parentId) return;
+    const unsubscribe = chatRealtime.subscribeMessages(conversationId, () => {
+      qc.invalidateQueries({ queryKey: ['chat', 'thread', conversationId, parentId] });
+    });
+    return unsubscribe;
+  }, [conversationId, parentId, qc]);
 
   const reply = useMutation({
     mutationFn: async (text: string) => {

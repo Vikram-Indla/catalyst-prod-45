@@ -55,7 +55,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
-        height: 36, padding: '0 10px', border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+        height: 36, padding: '0 10px', border: open ? '1px solid var(--ds-border-focused)' : '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
         borderRadius: 3, fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', background: 'var(--ds-surface)', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 4, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', minWidth: 160,
         transition: 'border-color 0.15s',

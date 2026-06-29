@@ -118,7 +118,7 @@
 }
 .wh-input:focus {
   border-color: var(--wh-pri);
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 3px var(--wh-pri-bg);
 }
 .wh-input.error {

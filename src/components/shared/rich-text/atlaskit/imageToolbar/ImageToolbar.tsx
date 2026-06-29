@@ -585,7 +585,7 @@ function ColorSwatches({
       style={{
         position: 'absolute',
         top: 0,
-        left: '48%',
+        left: '100%',
         marginLeft: 4,
         padding: 4,
         display: 'flex',
@@ -638,7 +638,7 @@ function SizeDots({
       style={{
         position: 'absolute',
         top: 0,
-        left: '48%',
+        left: '100%',
         marginLeft: 4,
         padding: 4,
         display: 'flex',

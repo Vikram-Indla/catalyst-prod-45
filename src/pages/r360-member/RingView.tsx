@@ -21,8 +21,8 @@ import { initials } from '@/utils/r360Utils';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import type { R360WorkItem } from '@/types/r360';
 import {
-  CARD_W, CARD_H, SLOT_POSITIONS, PAGE_SIZE,
-  getCardPixelPosDynH, getSpokeEndpoints,
+  CARD_W, CARD_H, PAGE_SIZE, RING_CANVAS_H,
+  getSlotPositions, getSpokeEndpoints,
   getFromTagClass, getFromTagPrefix,
 } from './helpers';
 import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
@@ -100,8 +100,9 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
     return () => document.removeEventListener('keydown', handler);
   }, [showDone]);
 
-  // Viewport-proportional canvas height — Decision C (preflight 2026-05-11)
-  const ringH = useMemo(() => Math.max(480, Math.min(700, Math.round(W * 0.62))), [W]);
+  // Canvas height is fixed via CSS (r3-ring-canvas height: 620px).
+  // Use RING_CANVAS_H everywhere so SVG connector calculations match card % positions.
+  const ringH = RING_CANVAS_H;
 
   const nonDone = items.filter(i => i.status_category !== 'done');
   // Reset page when items change
@@ -117,19 +118,46 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
   const CX = W / 2;
   const CY = ringH * 0.44;
 
+  // ≤4 cards: place at the four corners so none overlap the center avatar.
+  // The 8-slot SLOT_POSITIONS crowds the center (slot 4 sits on the avatar) at
+  // low counts. Vertical separation (top 4% / 56% vs avatar at 44%) guarantees
+  // no overlap at any container width. 5+ cards keep the full ring.
+  const useCorners = visible.length <= 4;
+  const CORNERS_4 = [
+    { left: '3%',  top: '4%'  },
+    { left: '55%', top: '4%'  },
+    { left: '3%',  top: '56%' },
+    { left: '55%', top: '56%' },
+  ];
+  const slotPosFor = (i: number) => (useCorners ? CORNERS_4[i] : SLOT_POSITIONS[i]);
+  const cardCenterPxFor = (i: number) => {
+    const s = slotPosFor(i);
+    if (!s) return { x: 0, y: 0 };
+    const leftPx = (parseFloat(s.left) / 100) * W;
+    const topPx = (parseFloat(s.top) / 100) * ringH;
+    return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
+  };
+
   const isHighPriority = (p: string) => {
     const l = (p || '').toLowerCase();
     return l === 'high' || l === 'highest' || l === 'critical';
   };
   const isMediumPriority = (p: string) => (p || '').toLowerCase() === 'medium';
 
-  // Connector spokes — computed against dynamic ringH
+  // Ellipse slot positions — recomputed when count or container width changes.
+  // Pass visible.length so N items spread evenly across 360° (not fixed 8-slot angles).
+  const slotPositions = useMemo(() => getSlotPositions(W, ringH, visible.length), [W, ringH, visible.length]);
+
+  // Connector spokes — each spoke runs from avatar edge to nearest card edge
   const spokes = useMemo(() => {
     return visible.map((_, i) => {
-      const cardCenter = getCardPixelPosDynH(i, W, ringH);
-      return getSpokeEndpoints(CX, CY, cardCenter.x, cardCenter.y);
+      const pos = slotPositions[i];
+      if (!pos) return null;
+      const cardCx = pos.left + CARD_W / 2;
+      const cardCy = pos.top + CARD_H / 2;
+      return getSpokeEndpoints(CX, CY, cardCx, cardCy);
     });
-  }, [visible.length, W, ringH, CX, CY]);
+  }, [visible.length, slotPositions, CX, CY]);
 
   // Stale count for summary card
   const staleItems = nonDone.filter(i => (i.age_days || 0) > 14);
@@ -387,7 +415,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
     <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: 8, overflow: 'visible', position: 'relative' }}>
       {/* SVG CONNECTORS — ADS border token, dashed, 1.5px (V13: was solid 2px text-disabled) */}
       <svg width={W} height={ringH} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
-        {spokes.map((s, i) => (
+        {spokes.map((s, i) => s && (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
             stroke={T.borderBold()} strokeWidth={1.5} strokeDasharray="5 4" opacity={1} />
         ))}
@@ -403,10 +431,10 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
         <PresenceRing name={name} src={avatarUrl} size="xlarge" state={presenceState ?? undefined} />
       </div>
 
-      {/* ORBITAL CARDS — 8-slot, viewport-proportional positions */}
+      {/* ORBITAL CARDS — 8-slot ellipse positions */}
       {visible.map((item, i) => {
-        if (i >= SLOT_POSITIONS.length) return null;
-        const slotPos = SLOT_POSITIONS[i];
+        if (i >= slotPositions.length) return null;
+        const slotPos = slotPositions[i];
         const isSelected = selected?.id === item.id;
         const isContributor = item.role_on_item === 'Contributor';
         const hasHighPriority = isHighPriority(item.priority);
@@ -416,7 +444,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
         const priorityClass = hasHighPriority ? 'priority-high' : hasMedPriority ? 'priority-medium' : 'priority-low';
         const ageColor = item.age_days > 30 ? T.textWarning() : item.age_days > 14 ? T.textDanger() : T.textSubtlest();
         return (
-          <div key={item.id} style={{ position: 'absolute', left: slotPos.left, top: slotPos.top }}>
+          <div key={item.id} style={{ position: 'absolute', left: `${slotPos.left}px`, top: `${slotPos.top}px` }}>
             <div
               className={`r3-ring-card ${priorityClass} ${isSelected ? 'selected' : ''} ${hasCarryover ? 'carryover' : ''}`}
               onClick={() => onSelect(item)}
@@ -425,16 +453,22 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = T.bgNeutralHovered(); }}
               onMouseLeave={e => { e.currentTarget.style.background = T.surface(); }}
             >
-              {/* Row 1 (compact header): icon + key + project + age ── 20px */}
+              {/* Row 1: icon · key (recedes) · project · age (quietest) */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0, height: 20, marginBottom: 4 }}>
                 {getJiraIcon(item.item_type)}
-                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO, letterSpacing: '-0.01em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.item_key}</span>
-                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle(), lineHeight: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>{item.project_key}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap', flexShrink: 0 }}>{item.age_days}d</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: T.textInfo(), fontFamily: MONO, letterSpacing: '-0.01em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.item_key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: T.textSubtle(), whiteSpace: 'nowrap', flexShrink: 0 }}>{item.project_key}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: T.textSubtlest(), fontFamily: MONO, whiteSpace: 'nowrap', flexShrink: 0 }}>{item.age_days}d</span>
               </div>
 
-              {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space */}
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
+              {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space.
+                  The flex item is a plain block wrapper; the -webkit-box clamp lives on the
+                  inner div. A -webkit-box that is itself a flex child gets blockified to
+                  flow-root, which silently disables -webkit-line-clamp (title spills to 3
+                  lines and overlaps the status row). Wrapping restores the clamp. */}
+              <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis' } as React.CSSProperties}>{item.title}</div>
+              </div>
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>

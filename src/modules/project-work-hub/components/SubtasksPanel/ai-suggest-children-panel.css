@@ -13,8 +13,8 @@
   position: absolute;
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 48%;
-  left: 48%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   background: conic-gradient(
@@ -32,7 +32,7 @@
 .ascp-root.ascp-streaming::after {
   content: "";
   position: absolute;
-  inset: 0.5px;
+  inset: 1.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;
@@ -67,7 +67,7 @@
   border-bottom: 0px solid var(--ds-border);
 }
 .ascp-header:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 .ascp-header__left {
@@ -132,7 +132,7 @@
   background: var(--ds-background-neutral-subtle-hovered);
 }
 .ascp-row:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 .ascp-row:disabled {
@@ -224,7 +224,7 @@
   font-size: 14px;
   color: var(--ds-text);
   background: var(--ds-surface);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 .ascp-hint__input:focus {
   border-color: var(--ds-border-focused);

@@ -67,7 +67,7 @@ function TasksLeftToolbarSlot({
   });
   const menuStyle: React.CSSProperties = {
     position: 'absolute',
-    top: 32,
+    top: 36,
     left: 0,
     minWidth: 200,
     background: token('elevation.surface.overlay', 'var(--ds-surface)'),

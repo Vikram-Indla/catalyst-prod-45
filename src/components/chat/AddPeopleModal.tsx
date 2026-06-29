@@ -196,7 +196,7 @@ export function AddPeopleModal({
             flexWrap: 'wrap',
             gap: 8,
             padding: '8px 12px',
-            border: '2px solid var(--ds-border-focused)',
+            border: '1px solid var(--ds-border-focused)',
             borderRadius: 3,
             minHeight: 40,
             marginBottom: 12,

@@ -101,15 +101,15 @@ function SidebarMemberRow({
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
+          fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 500 : 400,
+          color: token('color.text', 'var(--ds-text)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
         </div>
         {sublabel && (
           <div style={{
-            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
+            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {sublabel}
@@ -122,7 +122,7 @@ function SidebarMemberRow({
           padding: '0px 8px',
           borderRadius: 8,
           fontSize: 'var(--ds-font-size-100)',
-          fontWeight: 500,
+          fontWeight: 400,
           background: pillBg,
           color: pillColor,
           whiteSpace: 'nowrap',

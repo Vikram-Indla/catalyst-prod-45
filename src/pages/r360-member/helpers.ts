@@ -103,17 +103,43 @@ export const RING_CANVAS_H = 620;
 export const AVATAR_R = 36; // half of 72px avatar (V13: 56 → 72px)
 export const PAGE_SIZE = 8;
 
-// Slot positions as percentages/px for absolute placement (228x145 cards)
-export const SLOT_POSITIONS: { left: string; top: string }[] = [
-  { left: '4%',  top: '4%' },       // Slot 1: top-left
-  { left: '32%', top: '0%' },       // Slot 2: top-center
-  { left: '48%', top: '4%' },       // Slot 3: top-right
-  { left: '48%', top: '32%' },      // Slot 4: mid-right
-  { left: '48%', top: '48%' },      // Slot 5: bottom-right
-  { left: '32%', top: '48%' },      // Slot 6: bottom-center
-  { left: '4%',  top: '48%' },      // Slot 7: bottom-left
-  { left: '4%',  top: '32%' },      // Slot 8: mid-left
-];
+/**
+ * Compute pixel left/top for N orbital card slots, evenly distributed around
+ * the avatar ellipse regardless of how many items exist (1-8).
+ *
+ * With 4 items → 90° apart (top, right, bottom, left).
+ * With 8 items → 45° apart. With 3 → 120° apart. Always symmetric.
+ *
+ * start angle = -90° (top, 12 o'clock) so first card sits above the avatar.
+ *
+ * Ellipse radii:
+ *   rx = min(220, containerW/2 - CARD_W/2 - 20)  — no right overflow
+ *   ry = min(210, CY - CARD_H/2 - 12)             — no top/bottom overflow
+ */
+export function getSlotPositions(
+  containerW: number,
+  containerH: number,
+  count: number = PAGE_SIZE,
+): { left: number; top: number }[] {
+  const n = Math.max(1, Math.min(count, PAGE_SIZE));
+  const cx = containerW / 2;
+  const cy = containerH * 0.44;
+  const rx = Math.min(220, containerW / 2 - CARD_W / 2 - 20);
+  const ry = Math.min(210, cy - CARD_H / 2 - 12);
+  return Array.from({ length: n }, (_, i) => {
+    const deg = -90 + (i * 360) / n;
+    const rad = (deg * Math.PI) / 180;
+    return {
+      left: Math.round(cx + rx * Math.cos(rad) - CARD_W / 2),
+      top:  Math.round(cy + ry * Math.sin(rad) - CARD_H / 2),
+    };
+  });
+}
+
+// Legacy static array kept so existing callers (getCardPixelPosDynH) compile.
+// RingView.tsx uses getSlotPositions() directly for both card placement and
+// spoke endpoint calculation.
+export const SLOT_POSITIONS: { left: string; top: string }[] = [];
 
 // Compute connector endpoints dynamically from card positions
 // Returns card centre in pixel coords (uses static RING_CANVAS_H for top%)

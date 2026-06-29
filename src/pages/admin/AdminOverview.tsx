@@ -186,8 +186,8 @@ export default function AdminOverview() {
           <div style={{ maxWidth: '576px', position: 'relative' }}>
             <div style={{
               position: 'absolute',
-              left: '8px',
-              top: '48%',
+              left: '10px',
+              top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 1,
               pointerEvents: 'none',

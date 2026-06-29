@@ -182,7 +182,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
               min-height: 60px;
 
               &:focus {
-                outline: 2px solid var(--ds-border-focused);
+                outline: 1px solid var(--ds-border-focused);
                 border-color: var(--ds-link);
                 box-shadow: 0 0 0 2px var(--ds-background-information, rgba(222, 224, 255, 0.5));
               }

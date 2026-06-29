@@ -2853,7 +2853,7 @@ html:has(body[data-scroll-locked]) {
 
 /* Focus ring utility */
 .focus-ring:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
 }
 
@@ -3315,20 +3315,20 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 [data-slot="control"]:focus-within {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: hsl(var(--primary)) !important;
   box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1) !important;
 }
 
 /* ── Kill inner focus rectangle on ALL inputs/textareas globally ──
-   The container (border: 2px solid var(--ds-background-information-bold, #0C66E4)) provides the focus indicator.
-   Browser default outline + box-shadow creates an ugly inner rectangle. */
+   The container (AK Select/DatePicker wrapper) provides the focus indicator.
+   Suppress outline on the nested <input> so it doesn't render as an inner blue box. */
 input:focus,
 input:focus-visible,
 input:focus-within,
 textarea:focus,
 textarea:focus-visible {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none !important;
   box-shadow: none !important;
 }
 
@@ -3590,13 +3590,16 @@ button,
 }
 
 /* === FOCUS VISIBLE ENHANCEMENT === */
-*:focus-visible {
-  outline: 2px solid hsl(var(--primary));
+/* Exclude input/textarea/select — they have their own rules at line ~3313.
+   Applying *:focus-visible to them hits the inner <input> inside AK/Radix
+   component wrappers and renders a blue rectangle inside the field. */
+*:not(input):not(textarea):not(select):focus-visible {
+  outline: 1px solid var(--ds-border-focused);
   outline-offset: 2px;
 }
 
-*:focus:not(:focus-visible) {
-  outline: 2px solid var(--ds-border-focused);
+*:not(input):not(textarea):not(select):focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* NOTE: Tooltips already animate via Tailwind classes in TooltipContent.
@@ -3815,7 +3818,7 @@ input[type="range"]::-moz-range-thumb {
    ════════════════════════════════════════════════════════════════ */
 .knowledge-assist-panel textarea {
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   background: transparent !important;
   -webkit-appearance: none !important;
@@ -3825,7 +3828,7 @@ input[type="range"]::-moz-range-thumb {
 .knowledge-assist-panel textarea:focus,
 .knowledge-assist-panel textarea:focus-visible {
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   border-color: transparent !important;
 }
@@ -4779,7 +4782,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] *:focus-visible {
   box-shadow: 0 0 0 2px
     var(--ds-background-information-bold, rgba(59, 130, 246, 0.7)) !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
 }
 
 .dark [aria-selected="true"],
@@ -4879,7 +4882,7 @@ input[type="range"]::-moz-range-thumb {
     var(--ds-background-neutral, #f1f2f4)
   ) !important;
   box-shadow: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   caret-color: var(
     --cp-bg-neutral,
     var(--ds-background-neutral, #f1f2f4)
@@ -6081,39 +6084,42 @@ input[type="range"]::-moz-range-thumb {
 html.dark,
 html[data-color-mode="dark"],
 [data-theme="dark"] {
-  /* ── ADS dark elevation ramp — single source of truth.
-     page var(--ds-surface-sunken, #1D2125) → raised var(--ds-surface, #22272B) → overlay var(--ds-surface-overlay, #282E33) → sunken #161A1D.
+  /* ── ADS dark ramp — pinned to @atlaskit/tokens v13 atlassian-dark canonical
+     (2026-06-29 token-parity pass). Architecture kept (Catalyst owns dark scope):
+     page = surface-sunken, cards = surface, overlay = overlay. Each token holds
+     its OWN canonical value — no hex fallbacks, no self-referential var().
      Do NOT reintroduce a second !important --ds-surface* block after this. */
-  --ds-surface:          var(--ds-surface-sunken, #1D2125) !important;
-  --ds-surface-raised:   var(--ds-surface, #22272B) !important;
-  --ds-surface-overlay:  var(--ds-surface-overlay, #282E33) !important;
-  --ds-surface-sunken:   #161A1D !important;
-  --ds-surface-pressed:  var(--ds-background-neutral, #2C333A) !important;
-  --ds-surface-hovered:  var(--ds-surface, #22272B) !important;
+  --ds-surface:          #1F1F21 !important;
+  --ds-surface-raised:   #242528 !important;
+  --ds-surface-overlay:  #2B2C2F !important;
+  --ds-surface-sunken:   #18191A !important;
+  --ds-surface-pressed:  #2B2C2F !important;
+  --ds-surface-hovered:  #242528 !important;
 
-  /* Text — DarkNeutral ramp (legible inactive labels = buried-text fix) */
-  --ds-text:           #C7D1DB !important;
-  --ds-text-subtle:    #9FADBC !important;
-  --ds-text-subtlest:  #8C9BAB !important;
-  --ds-text-disabled:  #738496 !important;
-  --ds-text-inverse:   var(--ds-surface-sunken, #1D2125) !important;
-  --ds-text-brand:     #579DFF !important;
-  --ds-link:           #579DFF !important;
+  /* Text — ADS DarkNeutral ramp */
+  --ds-text:           #CECFD2 !important;
+  --ds-text-subtle:    #A9ABAF !important;
+  --ds-text-subtlest:  #96999E !important;
+  --ds-text-disabled:  #E5E9F640 !important;
+  --ds-text-inverse:   #1F1F21 !important;
+  --ds-text-brand:     #669DF1 !important;
+  --ds-link:           #669DF1 !important;
 
   /* Icons */
-  --ds-icon:          #9FADBC !important;
-  --ds-icon-subtle:   #8C9BAB !important;
-  --ds-icon-disabled: #738496 !important;
+  --ds-icon:          #CECFD2 !important;
+  --ds-icon-subtle:   #A9ABAF !important;
+  --ds-icon-disabled: #E5E9F640 !important;
 
-  /* Borders — alpha; they read on raised/sunken/overlay */
-  --ds-border:         rgba(166,189,219,0.16) !important;
-  --ds-border-subtle:  rgba(166,189,219,0.08) !important;
-  --ds-border-bold:    #738496 !important;
-  --ds-border-focused: var(--ds-border-focused, #388BFF) !important;
+  /* Borders — ADS canonical alpha hex. border-subtle has no ADS token; reduced-alpha keep. */
+  --ds-border:         #E3E4F21F !important;
+  --ds-border-subtle:  #E3E4F212 !important;
+  --ds-border-bold:    #7E8188 !important;
+  --ds-border-focused: #8FB8F6 !important;
 
-  /* Elevation shadows (deep; the alpha border does the separating) */
-  --ds-shadow-raised:  0 1px 1px rgba(3,4,5,0.50), 0 0 1px rgba(3,4,5,0.60) !important;
-  --ds-shadow-overlay: 0 8px 12px rgba(3,4,5,0.36), 0 0 1px rgba(3,4,5,0.50) !important;
+  /* Elevation shadows: single source of truth is catalyst-ads-parity.css
+     (--ds-shadow-raised/overlay/overflow, light + dark). Do NOT reintroduce a
+     second !important --ds-shadow-* block here — it shadowed the parity values
+     and dropped --ds-shadow-overflow. (CAT-ADS-ELEVATION-SWEEP-20260629-001) */
 
   /* Catalyst legacy --cp / --bg surface aliases → ADS ramp */
   --cp-bg:            var(--ds-surface-sunken, #1D2125) !important;
@@ -7457,6 +7463,7 @@ table th[class*="css-"] {
   unicode-bidi: plaintext;
 }
 
+
 /* ─── Catalyst Sidebar — Jira-parity right rail field styling ───────────────
    jira-compare 2026-05-05 (lane A): Jira shows right-rail select fields as
    plain text (no visible dropdown indicator or border in idle state).
@@ -7665,4 +7672,25 @@ table th[class*="css-"] {
 /* Replay Theatre — title-hover chip reveal */
 .replay-title-hover-zone:hover .replay-chip {
   opacity: 1 !important;
+}
+
+/* ── cat-breadcrumb-host — Jira-parity overrides on @atlaskit/breadcrumbs ──
+ * AK default separator: padding-inline 8px symmetric — correct, no override.
+ * All crumbs uniform 14px (no first-crumb size exception).
+ */
+
+/* nav is non-interactive — suppress browser focus ring and any selection affordance */
+.cat-breadcrumb-host nav {
+  outline: none;
+  user-select: none;
+}
+
+/* icon → text gap: 4px (first span only when 2+ spans = icon crumb) */
+.cat-breadcrumb-host a > span:first-child:not(:only-child) {
+  margin-inline-end: 4px;
+}
+
+/* hover underline on all clickable crumbs */
+.cat-breadcrumb-host a:hover {
+  text-decoration: underline;
 }

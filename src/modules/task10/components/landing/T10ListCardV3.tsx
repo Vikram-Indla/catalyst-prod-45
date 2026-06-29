@@ -190,7 +190,7 @@ export function T10ListCardV3({
               <div
                 style={{
                   position: 'absolute',
-                  top: '48%',
+                  top: '100%',
                   right: 0,
                   marginTop: '4px',
                   width: '140px',

@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = "catalyst-tiptap-editor-styles-v50";
+const STYLE_ID = "catalyst-tiptap-editor-styles-v51";
 
 export function injectEditorStyles(): void {
   if (typeof document === "undefined") return;
@@ -23,7 +23,7 @@ export function injectEditorStyles(): void {
   s.id = STYLE_ID;
   s.textContent = `
     .catalyst-tiptap-editor {
-      outline: 2px solid var(--ds-border-focused);
+      outline: none; /* outer wrapper handles focus indicator via :focus-within */
       font-size: 14px;
       line-height: 24px;
       color: var(--ds-text);
@@ -82,7 +82,7 @@ export function injectEditorStyles(): void {
       font-size: 13px;
       line-height: 20px;
       border: 0 !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
     }
@@ -97,7 +97,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       font-variant-numeric: tabular-nums;
       border: 0 !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       border-radius: 0 !important;
     }
     .catalyst-tiptap-editor .catalyst-code-block-ln {
@@ -105,7 +105,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       line-height: 20px !important;
       border: 0 !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       margin: 0 !important;
       padding: 0 !important;
     }
@@ -118,7 +118,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       line-height: 20px !important;
       border: 0 !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
     }
@@ -134,7 +134,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       line-height: 20px !important;
       border: 0 !important;
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
     }
@@ -143,7 +143,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor .catalyst-code-block-pre code:focus,
     .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-visible,
     .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-within {
-      outline: 2px solid var(--ds-border-focused) !important;
+      outline: none !important;
       border: 0 !important;
       box-shadow: none !important;
     }
@@ -435,7 +435,7 @@ export function injectEditorStyles(): void {
       content: '';
       position: absolute;
       left: -8px;
-      top: 48%;
+      top: 50%;
       width: 8px;
       height: 8px;
       margin-top: -4px;

@@ -199,6 +199,16 @@ function ChatV2Inner() {
 
   const handleSelect = (id: string) => {
     setActiveConversationId(id);
+    // Mark read on open so the unread red dot clears immediately. Best-effort:
+    // failure must never block opening the conversation.
+    if (user?.id) {
+      void db
+        .from('chat_conversation_members')
+        .update({ last_read_at: new Date().toISOString() })
+        .eq('conversation_id', id)
+        .eq('user_id', user.id)
+        .then(() => queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] }));
+    }
     setShowNewMessagePanel(false);
     shell.closeThread();
     setSelectedActivityId(null);
@@ -918,8 +928,8 @@ function SidebarSplitter({
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: '48%',
-          left: '48%',
+          top: '50%',
+          left: '50%',
           transform: 'translate(-50%, -50%)',
           width: 3,
           height: 36,

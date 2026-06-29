@@ -46,7 +46,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
         style={{
           position: 'absolute',
           left: '16px',
-          top: '48%',
+          top: '50%',
           transform: 'translateY(-50%)',
           color: 'var(--ds-text-subtlest)',
           pointerEvents: 'none',

@@ -695,9 +695,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
                     {/* Title: 2-line clamp */}
                     <div style={{
-                      fontSize: 12.5, fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.35,
+                      fontSize: 12.5, fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.4,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden', marginBottom: 4, minHeight: 28, minWidth: 0,
+                      overflow: 'hidden', marginBottom: 6, minHeight: 36, minWidth: 0,
                     }}>{item.title}</div>
 
                     {/* Status pill — inline colors */}

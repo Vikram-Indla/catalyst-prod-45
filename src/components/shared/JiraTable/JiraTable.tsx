@@ -2450,10 +2450,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               flexShrink: 0,
               marginTop: 'auto',
               ...(creating ? {
-                borderTop: '2px solid var(--ds-border-focused)',
-                borderLeft: '2px solid var(--ds-border-focused)',
-                borderRight: '2px solid var(--ds-border-focused)',
-                borderBottom: '2px solid var(--ds-border-focused)',
+                borderTop: '1px solid var(--ds-border-focused)',
+                borderLeft: '1px solid var(--ds-border-focused)',
+                borderRight: '1px solid var(--ds-border-focused)',
+                borderBottom: '1px solid var(--ds-border-focused)',
                 borderBottomLeftRadius: 8,
                 borderBottomRightRadius: 8,
               } : {

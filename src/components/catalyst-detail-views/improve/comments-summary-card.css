@@ -35,8 +35,8 @@
   position: absolute;
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 48%;
-  left: 48%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   background: conic-gradient(
@@ -60,7 +60,7 @@
 .csc-root.csc-streaming::after {
   content: "";
   position: absolute;
-  inset: 0.5px;
+  inset: 1.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;
@@ -236,8 +236,8 @@
 
 .csc-auto__switch__knob {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 2px;
+  left: 2px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -248,7 +248,7 @@
 
 .csc-auto__switch__icon {
   position: absolute;
-  top: 48%;
+  top: 50%;
   width: 10px;
   height: 10px;
   transform: translateY(-50%);
@@ -261,12 +261,12 @@
 
 /* Cross sits on the right when OFF (the knob is on the left). */
 .csc-auto__switch__icon--cross {
-  right: 4px;
+  right: 3px;
 }
 
 /* Check sits on the left when ON (the knob is on the right). */
 .csc-auto__switch__icon--check {
-  left: 4px;
+  left: 3px;
 }
 
 /* Only show the icon that's on the opposite side of the knob. */

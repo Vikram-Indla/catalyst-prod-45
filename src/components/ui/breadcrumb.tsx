@@ -17,9 +17,10 @@ const BreadcrumbList = React.forwardRef<HTMLOListElement, React.ComponentPropsWi
     <ol
       ref={ref}
       className={cn(
-        "flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5",
+        "flex flex-wrap items-center gap-1.5 break-words text-sm sm:gap-2.5",
         className,
       )}
+      style={{ color: 'var(--ds-text-subtle)' }}
       {...props}
     />
   ),
@@ -41,7 +42,7 @@ const BreadcrumbLink = React.forwardRef<
 >(({ asChild, className, ...props }, ref) => {
   const Comp = asChild ? Slot : "a";
 
-  return <Comp ref={ref} className={cn("text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:text-[var(--ds-background-brand-bold-hovered)] transition-colors", className)} {...props} />;
+  return <Comp ref={ref} className={cn("text-[var(--ds-link)] hover:text-[var(--ds-link-pressed)] transition-colors", className)} {...props} />;
 });
 BreadcrumbLink.displayName = "BreadcrumbLink";
 
@@ -49,10 +50,9 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, React.ComponentPropsWit
   ({ className, ...props }, ref) => (
     <span
       ref={ref}
-      role="link"
-      aria-disabled="true"
       aria-current="page"
-      className={cn("font-normal text-foreground", className)}
+      className={cn("font-normal", className)}
+      style={{ color: 'var(--ds-text)' }}
       {...props}
     />
   ),
@@ -73,9 +73,10 @@ const BreadcrumbSeparator = ({ children, className, ...props }: React.ComponentP
     role="presentation"
     aria-hidden="true"
     className={cn(
-      "select-none text-muted-foreground/70 [&>svg]:size-3.5",
+      "select-none [&>svg]:size-3.5",
       className,
     )}
+    style={{ color: 'var(--ds-text-subtlest)' }}
     {...props}
   >
     {children ?? <span aria-hidden="true">/</span>}

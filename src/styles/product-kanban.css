@@ -171,8 +171,8 @@
 }
 .pk-search-icon {
   position: absolute;
-  left: 8px;
-  top: 48%;
+  left: 10px;
+  top: 50%;
   transform: translateY(-50%);
   width: 14px;
   height: 14px;
@@ -189,7 +189,7 @@
   background: var(--pk-surface);
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-r-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: all 0.15s;
 }
 .pk-search-input::placeholder { color: var(--pk-ink-muted); }
@@ -200,7 +200,7 @@
 .pk-search-kbd {
   position: absolute;
   right: 8px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   font-family: var(--pk-font-mono);
   font-size: 10px;
@@ -494,7 +494,7 @@
 /* ---- DROPDOWN ---- */
 .pk-dropdown {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   z-index: 50;
   min-width: 160px;

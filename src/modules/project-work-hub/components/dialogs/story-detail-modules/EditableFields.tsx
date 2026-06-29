@@ -757,7 +757,7 @@ export function EditablePriority({
             display: "flex",
             alignItems: "center",
             gap: 4,
-            border: "2px solid var(--ds-border-focused)",
+            border: "1px solid var(--ds-border-focused)",
             borderRadius: 4,
             padding: "0px 6px",
             background: "var(--ds-background-input)",
@@ -1030,6 +1030,8 @@ export function EditableLabels({
       <CreatableSelect<LabelOption, true>
         inputId={`labels-${issueKey ?? issueId}`}
         isMulti
+        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+        menuPosition="fixed"
         appearance="subtle"
         spacing="compact"
         classNamePrefix="cv-labels-select"
@@ -1058,6 +1060,36 @@ export function EditableLabels({
           control: (base) => ({
             ...base,
             minHeight: 'auto',
+          }),
+          valueContainer: (base) => ({
+            ...base,
+            flexWrap: 'wrap',
+          }),
+          menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999,
+          }),
+          menu: (base) => ({
+            ...base,
+            fontSize: 'var(--ds-font-size-200)',
+          }),
+          option: (base) => ({
+            ...base,
+            fontSize: 'var(--ds-font-size-200)',
+            lineHeight: 'var(--ds-space-250, 20px)',
+            padding: 'var(--ds-space-050, 4px) var(--ds-space-150, 12px)',
+          }),
+          input: (base) => ({
+            ...base,
+            fontSize: 'var(--ds-font-size-200)',
+          }),
+          placeholder: (base) => ({
+            ...base,
+            fontSize: 'var(--ds-font-size-200)',
+          }),
+          noOptionsMessage: (base) => ({
+            ...base,
+            fontSize: 'var(--ds-font-size-200)',
           }),
           multiValue: (base, state) => ({
             ...base,
@@ -1367,10 +1399,6 @@ export function EditableSprintReleases({
         flex: 1,
         minWidth: 0,
         position: "relative",
-        border: menuIsOpen
-          ? "2px solid var(--ds-border-focused)"
-          : "2px solid transparent",
-        borderRadius: 4,
       }}
       onMouseDownCapture={(e) => {
         const labelEl = (e.target as HTMLElement).closest(
@@ -1390,6 +1418,7 @@ export function EditableSprintReleases({
         hideSelectedOptions
         menuPlacement="auto"
         menuShouldFlip
+        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
         appearance="subtle"
         spacing="compact"
         classNamePrefix="cv-sprintreleases-select"
@@ -1484,6 +1513,7 @@ export function EditableSprintReleases({
             ...base,
             alignItems: "center",
             padding: "0 4px",
+            flexWrap: "wrap",
           }),
           input: (base) => ({
             ...base,
@@ -1492,8 +1522,8 @@ export function EditableSprintReleases({
           indicatorsContainer: (base) => ({
             ...base,
             display: menuIsOpen ? "flex" : "none",
-            alignItems: "flex-start",
-            paddingTop: 4,
+            alignItems: "center",
+            alignSelf: "center",
           }),
           menu: (base) => ({
             ...base,
@@ -1785,7 +1815,7 @@ export function ParentFieldPicker({
               style={{
                 ...ATLASSIAN_DROPDOWN,
                 position: "absolute",
-                top: "48%",
+                top: "100%",
                 left: 0,
                 marginTop: 4,
                 width: Math.max(containerRef.current?.offsetWidth ?? 420, 420),
@@ -1812,7 +1842,7 @@ export function ParentFieldPicker({
                     width: "100%",
                     height: 40,
                     padding: "0 12px",
-                    border: "2px solid var(--ds-border-focused)",
+                    border: "1px solid var(--ds-border-focused)",
                     borderRadius: 3,
                     fontSize: 'var(--ds-font-size-400)',
                     fontFamily: "inherit",

@@ -397,8 +397,9 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
         if (!row) throw new Error(`Business request not found: ${id}`);
         const bizPatch: Record<string, any> = {};
         let canonicalKey: string | null = null;
+        const reasonText = typeof patch.reasonText === 'string' ? patch.reasonText : null;
         for (const [k, v] of Object.entries(patch)) {
-          if (k === 'updated_at' || k === 'jira_updated_at') continue;
+          if (k === 'updated_at' || k === 'jira_updated_at' || k === 'reasonText' || k === 'reasonCode') continue;
           if (k === 'status' && canonicalReady) {
             // A-lite: resolve picked label → canonical status_key, write directly
             // into process_step (the canonical store). No separate column needed.
@@ -410,7 +411,7 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
         }
         if (canonicalKey) {
           const prevStep = (row as any).process_step ?? null;
-          if (prevStep !== canonicalKey) {
+          if (prevStep !== canonicalKey && !reasonText) {
             const preflight = await checkReasonRequired('business_request', null, prevStep, canonicalKey);
             if (preflight.reasonRequired) {
               throw new Error('This transition requires a reason. Open the business request detail to provide one.');
@@ -421,7 +422,8 @@ export function useBusinessRequestsSource(product: ProductInfo | null): BacklogD
             await recordAdvisoryStatusChange({
               entityKey: 'business_request', entityId: row.id, projectKey: null,
               fromStatusRaw: prevStep, toStatusRaw: canonicalKey, sourceSurface: 'br_backlog',
-            });
+              reasonText,
+            } as any);
           }
         } else if (Object.keys(bizPatch).length > 0) {
           await updateMutation.mutateAsync({ id: row.id, data: bizPatch });

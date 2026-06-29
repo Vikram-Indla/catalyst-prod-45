@@ -8,6 +8,9 @@ export interface ActiveHuddle {
   conversationId: string;
   huddleId: string;
   conversationName: string;
+  /** chat_messages.id of the "Huddle is happening" event row. In-huddle messages
+   *  thread under it as replies. Null until the row is created. */
+  huddleEventId: string | null;
   micMuted: boolean;
   connectionState: RTCPeerConnectionState;
   /** Am I currently sharing my screen? */
@@ -65,6 +68,13 @@ let selfIdRef: string | null = null;
 let huddleIdRef: string | null = null;
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let huddleStartedAt: number | null = null;
+let huddleEventIdRef: string | null = null;
+
+/** chat_messages.id of the live huddle event row — read by HuddleWindow so it can
+ *  thread in-huddle messages as replies. Module ref (changes outside React). */
+export function getHuddleEventId(): string | null {
+  return huddleEventIdRef;
+}
 
 /** Bump my participant row so the huddle reads as live. A dropped client stops
  *  beating → its row goes stale → the UI stops showing a phantom "Rejoin". */
@@ -143,24 +153,56 @@ async function markLeft(huddleId: string | null, userId: string | null) {
   } catch { /* best-effort */ }
 }
 
-/** Post one "A huddle happened" event row into the conversation thread.
- *  Idempotent: the partial unique index on (event_meta->>'huddle_id') rejects a
- *  duplicate from the other peer — we swallow that error. */
-async function postHuddleSummary(
+/** Post the live "Huddle is happening" event row at call start and return its id.
+ *  In-huddle messages thread under this row as replies; on leave the same row is
+ *  flipped to "A huddle happened". Idempotent: the partial unique index on
+ *  (event_meta->>'huddle_id') rejects the second peer's insert — we then fetch the
+ *  row the first peer created so both share one event id. */
+async function postHuddleLive(
   conversationId: string | null, huddleId: string | null,
-  authorId: string | null, withName: string, startedAt: number | null,
-) {
-  if (!conversationId || !huddleId || !authorId) return;
-  const durationSeconds = startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0;
+  authorId: string | null, withName: string,
+): Promise<string | null> {
+  if (!conversationId || !huddleId || !authorId) return null;
   try {
-    const { error } = await db.from('chat_messages').insert({
+    const { data, error } = await db.from('chat_messages').insert({
       conversation_id: conversationId,
       author_id: authorId,
-      body_text: 'A huddle happened',
-      event_type: 'huddle_summary',
-      event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
-    });
-    void error; // duplicate summary from the other peer is expected & ignored
+      body_text: 'Huddle is happening',
+      event_type: 'huddle_live',
+      event_meta: { huddle_id: huddleId, with_name: withName },
+    }).select('id').single();
+    if (!error && data?.id) return data.id as string;
+    // Duplicate (other peer created it) or transient error: fetch the shared row.
+    const { data: existing } = await db.from('chat_messages')
+      .select('id')
+      .eq('conversation_id', conversationId)
+      .in('event_type', ['huddle_live', 'huddle_summary'])
+      .filter('event_meta->>huddle_id', 'eq', huddleId)
+      .maybeSingle();
+    return (existing?.id as string) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Flip the live huddle event row to a "A huddle happened" summary with duration.
+ *  Both peers run this on leave; updating by huddle_id is idempotent. */
+async function finalizeHuddleSummary(
+  conversationId: string | null, huddleId: string | null,
+  withName: string, startedAt: number | null,
+) {
+  if (!conversationId || !huddleId) return;
+  const durationSeconds = startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0;
+  try {
+    await db.from('chat_messages')
+      .update({
+        body_text: 'A huddle happened',
+        event_type: 'huddle_summary',
+        event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
+      })
+      .eq('conversation_id', conversationId)
+      .eq('event_type', 'huddle_live')
+      .filter('event_meta->>huddle_id', 'eq', huddleId);
   } catch {
     // best-effort — swallow transport-level errors same as markLeft/beat
   }
@@ -209,14 +251,22 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     selfIdRef = selfId;
     huddleIdRef = huddleId;
     huddleStartedAt = Date.now();
+    huddleEventIdRef = null;
     set({
-      active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new', screenSharing: false, remoteSharing: false },
+      active: { conversationId, huddleId, conversationName, huddleEventId: null, micMuted: false, connectionState: 'new', screenSharing: false, remoteSharing: false },
       screenWindow: 'normal',
       ticketsWindow: 'closed',
       ticketsAutoOpened: false,
       markerPen: false,
       windowState: 'open',
       chatPanelOpen: false,
+    });
+    // Log "Huddle is happening" the moment the call starts so both sides see it
+    // (independent of WebRTC negotiation, which can take a few seconds).
+    void postHuddleLive(conversationId, huddleId, selfId, conversationName).then((eid) => {
+      huddleEventIdRef = eid;
+      const a = get().active;
+      if (a && a.huddleId === huddleId) set({ active: { ...a, huddleEventId: eid } });
     });
     await connection.start();
     void setOnCall(selfId, huddleId);
@@ -237,10 +287,11 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     const a = get().active;
     void markLeft(huddleIdRef, selfIdRef);
     void setOnCall(selfIdRef, null);
-    void postHuddleSummary(a?.conversationId ?? null, huddleIdRef, selfIdRef, a?.conversationName ?? '', huddleStartedAt);
+    void finalizeHuddleSummary(a?.conversationId ?? null, huddleIdRef, a?.conversationName ?? '', huddleStartedAt);
     selfIdRef = null;
     huddleIdRef = null;
     huddleStartedAt = null;
+    huddleEventIdRef = null;
     set({ active: null, screenWindow: 'normal', windowState: 'open', chatPanelOpen: false, ticketsWindow: 'closed', ticketsAutoOpened: false, markerPen: false });
   },
 

@@ -11,15 +11,18 @@ import DynamicTable from '@atlaskit/dynamic-table';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
+import Badge from '@atlaskit/badge';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import {
   useWfVersions, useWfSchemes, useWfSchemeEntries, useWfSchemeAssignments,
   useWfVersionStatuses, useWfVersionTransitions, useWfAuditFiltered,
-  useWfTemplates, useCreateDraftVersion, useMigrationPreview,
-  useEnforcementConfig, useReasonCodes,
+  useWfTemplates, useCreateDraftVersion, useCloneVersionToDraft, useMigrationPreview,
+  useEnforcementConfig, useReasonCodes, useWfFieldRequirements,
   useWfVersionRolesAndGuards, useWfHealthSummary,
+  useToggleReasonCodeActive, useSetEnforcementMode,
   type AuditFilterParams,
 } from '@/hooks/workflow-v2/useWorkflowFoundation';
+import { GUARD_EVIDENCE_REGISTRY } from '@/lib/workflow/canonical/runtime';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const LIFECYCLE_APPEARANCE: Record<string, LozAppearance> = {
@@ -130,19 +133,10 @@ const ENTITY_LABELS: Record<string, string> = {
   task: 'Task', sprint: 'Sprint',
 };
 
-// Guard evidence status per guard type (static knowledge)
-const GUARD_EVIDENCE: Record<string, { sourceExists: boolean; note: string }> = {
-  reason_required: { sourceExists: true, note: 'reason text collected in reason modal + stored in ph_wf_audit.reason_text' },
-  test_coverage: { sourceExists: true, note: 'real count from tm_test_case_links.linked_item_id — evaluated in gateTransition' },
-  assignee_required: { sourceExists: true, note: 'checked against issueRow.assignee_account_id' },
-  acceptance_criteria_present: { sourceExists: true, note: 'checked against issueRow.description_text' },
-  qa_signoff: { sourceExists: false, note: 'advisory only — no sign-off evidence table exists; passes null (not evaluated)' },
-  uat_signoff: { sourceExists: false, note: 'advisory only — no UAT sign-off table exists; passes null (not evaluated)' },
-  deployment_evidence: { sourceExists: false, note: 'advisory only — no deployment evidence source wired; passes null' },
-  smoke_evidence: { sourceExists: false, note: 'advisory only — no smoke evidence source wired; passes null' },
-  approval: { sourceExists: false, note: 'advisory only — no approval workflow table wired; passes null' },
-  brd_attached: { sourceExists: false, note: 'advisory only — no BRD attachment source wired; passes null' },
-};
+// Guard evidence shim — delegates to canonical runtime registry
+const GUARD_EVIDENCE: Record<string, { sourceExists: boolean; note: string }> = Object.fromEntries(
+  Object.entries(GUARD_EVIDENCE_REGISTRY).map(([k, v]) => [k, { sourceExists: v.evidence === 'real', note: v.note }])
+);
 
 // ─── Health / Coverage tab ───────────────────────────────────────────────────
 function HealthTab() {
@@ -244,6 +238,7 @@ function VersionsTab({ onSelectVersion }: { onSelectVersion: (id: string) => voi
   const { data: versions, isLoading } = useWfVersions();
   const { data: templates = [] } = useWfTemplates();
   const createDraft = useCreateDraftVersion();
+  const cloneToDraft = useCloneVersionToDraft();
   const [templateId, setTemplateId] = useState('');
   const selectedTemplate = templates.find((t: any) => t.id === templateId);
   if (isLoading) return <Loading />;
@@ -258,7 +253,18 @@ function VersionsTab({ onSelectVersion }: { onSelectVersion: (id: string) => voi
     { key: 'lifecycle', content: <Lozenge appearance={LIFECYCLE_APPEARANCE[v.lifecycle] ?? 'default'}>{v.lifecycle}</Lozenge> },
     { key: 'published', content: fmt(v.published_at) },
     { key: 'created', content: fmt(v.created_at) },
-    { key: 'open', content: <Button appearance="subtle" spacing="compact" onClick={() => onSelectVersion(v.id)}>View statuses</Button> },
+    { key: 'open', content: (
+      <div style={{ display: 'flex', gap: 4 }}>
+        <Button appearance="subtle" spacing="compact" onClick={() => onSelectVersion(v.id)}>View statuses</Button>
+        {v.lifecycle === 'published' && (
+          <Button appearance="subtle" spacing="compact"
+            isLoading={cloneToDraft.isPending}
+            onClick={() => cloneToDraft.mutate(v.id)}>
+            Clone to draft
+          </Button>
+        )}
+      </div>
+    ) },
   ] }));
   return (
     <Panel>
@@ -358,11 +364,19 @@ function TransitionsList({ versionId }: { versionId: string }) {
     const guards = guardsByT[t.id] ?? [];
     const guardDisplay = guards.map((g) => {
       const ev = GUARD_EVIDENCE[g.guard_type];
+      const reg = GUARD_EVIDENCE_REGISTRY[g.guard_type];
+      const blockingUnsafe = g.is_blocking && (!reg || !reg.blockingSafe);
       return (
-        <span key={g.guard_type} title={ev?.note ?? ''} style={{ display: 'inline-block', marginRight: 4, marginBottom: 4 }}>
-          <Lozenge appearance={ev?.sourceExists ? (g.is_blocking ? 'removed' : 'moved') : 'default'}>
+        <span key={g.guard_type} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginRight: 4, marginBottom: 4 }}>
+          <Lozenge appearance={ev?.sourceExists ? (g.is_blocking ? 'removed' : 'moved') : 'default'}
+            title={ev?.note ?? ''}>
             {g.guard_type}{g.is_blocking ? ' ⛔' : ''}{!ev?.sourceExists ? ' (advisory)' : ''}
           </Lozenge>
+          {blockingUnsafe && (
+            <span title="is_blocking=true but no real evidence source — enabling blocking enforcement for this entity will never produce a pass">
+              <Badge appearance="removed">⚠ Blocking unsafe</Badge>
+            </span>
+          )}
         </span>
       );
     });
@@ -378,6 +392,34 @@ function TransitionsList({ versionId }: { versionId: string }) {
     ] };
   });
   return <DynamicTable head={head} rows={rows} isFixedSize rowsPerPage={25} defaultPage={1} />;
+}
+
+function FieldRequirementsSection({ versionId }: { versionId: string }) {
+  const { data: reqs, isLoading } = useWfFieldRequirements(versionId);
+  if (isLoading) return null;
+  if (!reqs || reqs.length === 0) return (
+    <div style={{ marginTop: 20, padding: '10px 12px', background: 'var(--ds-background-neutral-subtle)', borderRadius: 4, fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+      No field requirements configured for this version.
+    </div>
+  );
+  const head = { cells: [
+    { key: 'scope', content: 'Scope' },
+    { key: 'transition', content: 'Transition' },
+    { key: 'field', content: 'Field key' },
+    { key: 'req', content: 'Requirement' },
+  ] };
+  const rows = reqs.map((r) => ({ key: r.id, cells: [
+    { key: 'scope', content: <Lozenge appearance="default">{r.scope}</Lozenge> },
+    { key: 'transition', content: r.transition_id ? <code style={{ fontSize: 11 }}>{r.transition_id.slice(0, 8)}…</code> : '—' },
+    { key: 'field', content: <code style={{ fontSize: 11 }}>{r.field_key}</code> },
+    { key: 'req', content: <Lozenge appearance={r.requirement === 'required' ? 'removed' : 'default'}>{r.requirement}</Lozenge> },
+  ] }));
+  return (
+    <div style={{ marginTop: 24 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text)', marginBottom: 8 }}>Field Requirements</h4>
+      <DynamicTable head={head} rows={rows} isFixedSize rowsPerPage={15} defaultPage={1} />
+    </div>
+  );
 }
 
 function VersionScopedTab({ versionId, versions, onSelect, kind }: {
@@ -396,7 +438,12 @@ function VersionScopedTab({ versionId, versions, onSelect, kind }: {
         </label>
       </div>
       {!versionId ? <Empty msg="Select a version to view its statuses and transitions." />
-        : kind === 'statuses' ? <StatusesList versionId={versionId} /> : <TransitionsList versionId={versionId} />}
+        : kind === 'statuses' ? <StatusesList versionId={versionId} /> : (
+          <>
+            <TransitionsList versionId={versionId} />
+            <FieldRequirementsSection versionId={versionId} />
+          </>
+        )}
     </Panel>
   );
 }
@@ -451,11 +498,13 @@ function MigrationPreviewTab() {
 // ─── Reason codes tab ────────────────────────────────────────────────────────
 function ReasonCodesTab() {
   const { data, isLoading } = useReasonCodes();
+  const toggleActive = useToggleReasonCodeActive();
   if (isLoading) return <Loading />;
   const rows = data ?? [];
   const head = { cells: [
     { key: 'code', content: 'Code' }, { key: 'label', content: 'Label' }, { key: 'type', content: 'Transition type' },
     { key: 'ft', content: 'Free text' }, { key: 'scope', content: 'Scope' }, { key: 'active', content: 'Active' },
+    { key: 'action', content: '' },
   ] };
   const tableRows = rows.map((r) => ({ key: r.id, cells: [
     { key: 'code', content: <code style={{ fontSize: 12 }}>{r.code}</code> },
@@ -464,12 +513,24 @@ function ReasonCodesTab() {
     { key: 'ft', content: r.requires_free_text ? 'required' : '—' },
     { key: 'scope', content: r.version_id ? 'version' : 'global' },
     { key: 'active', content: r.is_active ? <Lozenge appearance="success">active</Lozenge> : <Lozenge appearance="default">inactive</Lozenge> },
+    { key: 'action', content: (
+      <Button appearance="subtle" spacing="compact"
+        isDisabled={toggleActive.isPending}
+        onClick={() => toggleActive.mutate({ id: r.id, currentIsActive: r.is_active })}>
+        {r.is_active ? 'Deactivate' : 'Activate'}
+      </Button>
+    ) },
   ] }));
   return (
     <Panel>
       <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: '0 0 12px' }}>
         Reason codes surfaced in the reason-capture modal for transitions requiring a reason. Global (version_id null) apply to all versions.
       </p>
+      {toggleActive.error && (
+        <div style={{ marginBottom: 8, padding: '6px 12px', background: 'var(--ds-background-danger)', borderRadius: 4, fontSize: 12, color: 'var(--ds-text-danger)' }}>
+          {String((toggleActive.error as Error)?.message ?? toggleActive.error)}
+        </div>
+      )}
       {rows.length === 0 ? <Empty msg="No reason codes seeded." /> : <DynamicTable head={head} rows={tableRows} isFixedSize rowsPerPage={20} defaultPage={1} />}
     </Panel>
   );
@@ -478,29 +539,46 @@ function ReasonCodesTab() {
 // ─── Enforcement tab ──────────────────────────────────────────────────────────
 function EnforcementTab() {
   const { data, isLoading } = useEnforcementConfig();
+  const toggleMode = useSetEnforcementMode();
   if (isLoading) return <Loading />;
   const rows = data ?? [];
   const head = { cells: [
     { key: 'project', content: 'Project' }, { key: 'entity', content: 'Entity' },
     { key: 'version', content: 'Version' }, { key: 'mode', content: 'Mode' },
     { key: 'reason', content: 'Reason' }, { key: 'enabled', content: 'Enabled' },
+    { key: 'action', content: '' },
   ] };
-  const tableRows = rows.map((r, i) => ({ key: `${r.project_key}-${r.entity_key}-${i}`, cells: [
-    { key: 'project', content: r.project_key ?? '—' },
-    { key: 'entity', content: r.entity_key },
-    { key: 'version', content: r.version_no != null ? `v${r.version_no}` : '—' },
-    { key: 'mode', content: r.mode === 'blocking' ? <Lozenge appearance="removed">blocking</Lozenge> : <Lozenge appearance="default">advisory</Lozenge> },
-    { key: 'reason', content: r.reason ?? '—' },
-    { key: 'enabled', content: fmt(r.enabled_at) },
-  ] }));
+  const tableRows = rows.map((r) => {
+    const isBlocking = r.mode === 'blocking';
+    return { key: r.id, cells: [
+      { key: 'project', content: r.project_key ?? '—' },
+      { key: 'entity', content: r.entity_key },
+      { key: 'version', content: r.version_no != null ? `v${r.version_no}` : '—' },
+      { key: 'mode', content: isBlocking ? <Lozenge appearance="removed">blocking</Lozenge> : <Lozenge appearance="default">advisory</Lozenge> },
+      { key: 'reason', content: r.reason ?? '—' },
+      { key: 'enabled', content: fmt(r.enabled_at) },
+      { key: 'action', content: (
+        <Button appearance={isBlocking ? 'subtle' : 'default'} spacing="compact"
+          isDisabled={toggleMode.isPending}
+          onClick={() => toggleMode.mutate({ configId: r.id, entityKey: r.entity_key, currentMode: r.mode, versionId: r.workflow_version_id })}>
+          {isBlocking ? 'Set advisory' : 'Set blocking'}
+        </Button>
+      ) },
+    ] };
+  });
   return (
     <Panel>
       <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: '0 0 12px' }}>
         Enforcement is scoped per (project, entity). Any pair NOT listed as <strong>blocking</strong> stays <strong>advisory</strong>.
-        Rollback: set mode to <code>advisory</code> or delete the row in <code>ph_wf_enforcement_config</code>.
+        Rollback: set mode to advisory. Enabling blocking requires all is_blocking guards to have real evidence sources.
       </p>
+      {toggleMode.error && (
+        <div style={{ marginBottom: 8, padding: '8px 12px', background: 'var(--ds-background-danger)', borderRadius: 4, fontSize: 12, color: 'var(--ds-text-danger)' }}>
+          <strong>Cannot toggle:</strong> {String((toggleMode.error as Error)?.message ?? toggleMode.error)}
+        </div>
+      )}
       {rows.length === 0
-        ? <Empty msg="No blocking enforcement configured — all entities advisory." />
+        ? <Empty msg="No enforcement config rows found — all entities advisory. Add rows to ph_wf_enforcement_config to manage per-project/entity mode." />
         : <DynamicTable head={head} rows={tableRows} isFixedSize rowsPerPage={15} defaultPage={1} />}
     </Panel>
   );
@@ -527,6 +605,7 @@ const MODE_OPTIONS = [{ value: 'advisory', label: 'Advisory' }, { value: 'blocki
 const DECISION_OPTIONS = [
   { value: 'allow', label: 'Allow' }, { value: 'deny', label: 'Deny' },
   { value: 'bypass', label: 'Bypass' }, { value: 'waiver', label: 'Waiver' },
+  { value: 'not_configured', label: 'Not configured' },
 ];
 const WOULD_BLOCK_OPTIONS = [{ value: 'true', label: 'Would block = yes' }, { value: 'false', label: 'Would block = no' }];
 

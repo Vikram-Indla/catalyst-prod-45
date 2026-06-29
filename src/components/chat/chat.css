@@ -478,7 +478,7 @@
 .cc-composer-input {
   width: 100%;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   resize: none;
   padding: 12px 12px 8px;
   font-size: 14px;
@@ -629,7 +629,7 @@
 
 .cc-msg__reactpicker {
   position: absolute;
-  top: 32px;
+  top: 30px;
   right: 0;
   background: var(--ds-surface-overlay, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
@@ -660,7 +660,7 @@
 
 .cc-msg__moremenu {
   position: absolute;
-  top: 32px;
+  top: 30px;
   right: 0;
   background: var(--ds-surface-overlay, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
@@ -704,7 +704,7 @@
 .cc-msg__editor-input {
   width: 100%;
   border: none;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: transparent;
   font-size: 14px;
   font-family: inherit;
@@ -914,7 +914,7 @@
 
 .cc-modal__input:focus,
 .cc-modal__textarea:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ds-border-focused, #0C66E4);
 }
 
@@ -1164,7 +1164,7 @@
   font-size: 13px;
   color: var(--ds-text, #172B4D);
   font-family: inherit;
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: border-color 0.15s;
 }
 .cc-cl-search__inp-field:focus {
@@ -1175,8 +1175,8 @@
 }
 .cc-cl-search__clear {
   position: absolute;
-  right: 16px;
-  top: 48%;
+  right: 20px;
+  top: 50%;
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
@@ -1223,7 +1223,7 @@
 .cc-unread-dot {
   position: absolute;
   left: 0;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 4px;
   height: 24px;
@@ -1512,7 +1512,7 @@
 .cc-sidebar-chevron {
   position: absolute;
   right: -14px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 14px;
   height: 48px;

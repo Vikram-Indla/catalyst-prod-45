@@ -538,7 +538,7 @@ const labelStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '4px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
-  border: '2px solid var(--ds-border-focused)',
+  border: '1px solid var(--ds-border-focused)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
 };

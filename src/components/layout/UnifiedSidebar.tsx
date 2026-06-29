@@ -318,8 +318,8 @@ export function UnifiedSidebar({
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: '8px',
-                      bottom: '8px',
+                      top: '7px',
+                      bottom: '7px',
                       width: '3px',
                       background: 'var(--cp-blue)',
                       borderRadius: '0 2px 2px 0',

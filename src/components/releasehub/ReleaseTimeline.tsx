@@ -322,7 +322,7 @@ export function ReleaseTimeline() {
           <span style={{
             position: 'absolute',
             left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
-            top: '48%', transform: 'translate(-50%, -50%)',
+            top: '50%', transform: 'translate(-50%, -50%)',
             background: T.link, color: 'var(--ds-surface)',
             fontFamily: RH.fontBody,
             fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0px 6px',

@@ -260,9 +260,9 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                     {isCancelled && (
                       <div style={{
                         position: 'absolute',
-                        top: '48%',
-                        left: '8%',
-                        right: '8%',
+                        top: '50%',
+                        left: '10%',
+                        right: '10%',
                         height: 2,
                         background: 'var(--bg-app)',
                         transform: 'translateY(-50%)',

@@ -248,7 +248,7 @@
 .users-module input:focus-visible,
 .users-module select:focus-visible,
 .users-module .ct-dropdown-trigger:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
 
@@ -537,7 +537,7 @@
 }
 
 .ct-search-box input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ct-primary);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
@@ -549,7 +549,7 @@
 .ct-search-box .search-icon {
   position: absolute;
   left: var(--ct-space-3);
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 16px;
   height: 16px;
@@ -1082,7 +1082,7 @@
   color: var(--ct-text-body);
   border: 2px solid var(--ct-primary);
   border-radius: var(--ct-radius-md);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   background: white;
 }
 
@@ -1268,7 +1268,7 @@
 }
 
 .ct-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ct-primary);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }
@@ -1309,7 +1309,7 @@
 }
 
 .ct-select:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ct-primary);
   box-shadow: 0 0 0 3px var(--ct-primary-light);
 }

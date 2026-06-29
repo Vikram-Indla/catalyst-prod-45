@@ -72,13 +72,13 @@ export function useReasonCodes() {
   });
 }
 
-export interface EnforcementRow { project_key: string | null; entity_key: string; mode: string; version_no: number | null; reason: string | null; enabled_at: string | null; }
+export interface EnforcementRow { id: string; project_key: string | null; entity_key: string; mode: string; version_no: number | null; reason: string | null; enabled_at: string | null; workflow_version_id: string | null; }
 export function useEnforcementConfig() {
   return useQuery({ queryKey: [...KEY, 'enforcement'], queryFn: async (): Promise<EnforcementRow[]> => {
     const { data, error } = await supabase.from('ph_wf_enforcement_config')
-      .select('mode, reason, enabled_at, entity_key, ph_projects(key), ph_wf_versions(version_no)').order('enabled_at', { ascending: false });
+      .select('id, mode, reason, enabled_at, entity_key, workflow_version_id, ph_projects(key), ph_wf_versions(version_no)').order('enabled_at', { ascending: false });
     if (error) throw error;
-    return (data ?? []).map((r: any) => ({ project_key: r.ph_projects?.key ?? null, entity_key: r.entity_key, mode: r.mode, version_no: r.ph_wf_versions?.version_no ?? null, reason: r.reason, enabled_at: r.enabled_at }));
+    return (data ?? []).map((r: any) => ({ id: r.id, project_key: r.ph_projects?.key ?? null, entity_key: r.entity_key, mode: r.mode, version_no: r.ph_wf_versions?.version_no ?? null, reason: r.reason, enabled_at: r.enabled_at, workflow_version_id: r.workflow_version_id ?? null }));
   } });
 }
 
@@ -106,6 +106,72 @@ export function useCreateDraftVersion() {
       if (error) throw error; return data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'versions'] }),
+  });
+}
+
+export function useCloneVersionToDraft() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (sourceVersionId: string) => {
+      const { data: src, error: srcErr } = await supabase
+        .from('ph_wf_versions')
+        .select('template_id, entity_key, version_no')
+        .eq('id', sourceVersionId)
+        .single();
+      if (srcErr) throw srcErr;
+      const { data: existing } = await supabase
+        .from('ph_wf_versions')
+        .select('version_no')
+        .eq('template_id', src.template_id)
+        .order('version_no', { ascending: false })
+        .limit(1);
+      const nextNo = (existing?.[0]?.version_no ?? 0) + 1;
+      const { data: newVer, error: verErr } = await supabase
+        .from('ph_wf_versions')
+        .insert({ template_id: src.template_id, entity_key: src.entity_key, version_no: nextNo, lifecycle: 'draft' })
+        .select('id')
+        .single();
+      if (verErr) throw verErr;
+      // Copy statuses
+      const { data: statuses } = await supabase
+        .from('ph_wf_version_statuses')
+        .select('status_key, label, category, display_order, is_initial, metadata')
+        .eq('version_id', sourceVersionId);
+      if (statuses?.length) {
+        await supabase.from('ph_wf_version_statuses').insert(
+          statuses.map((s) => ({ ...s, version_id: newVer.id }))
+        );
+      }
+      // Copy transitions
+      const { data: transitions } = await supabase
+        .from('ph_wf_version_transitions')
+        .select('from_status_key, to_status_key, requires_reason, requires_comment')
+        .eq('version_id', sourceVersionId);
+      if (transitions?.length) {
+        await supabase.from('ph_wf_version_transitions').insert(
+          transitions.map((t) => ({ ...t, version_id: newVer.id }))
+        );
+      }
+      await writeAdminAudit('version_cloned', 'workflow_version', newVer.id, { cloned_from: sourceVersionId, new_version_no: nextNo });
+      return newVer;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'versions'] }),
+  });
+}
+
+export function useWfFieldRequirements(versionId: string | null) {
+  return useQuery({
+    queryKey: [...KEY, 'field-requirements', versionId],
+    enabled: !!versionId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_wf_field_requirements')
+        .select('id, scope, transition_id, field_key, requirement')
+        .eq('version_id', versionId as string)
+        .order('scope');
+      if (error) throw error;
+      return (data ?? []) as { id: string; scope: string; transition_id: string | null; field_key: string; requirement: string }[];
+    },
   });
 }
 
@@ -206,5 +272,78 @@ export function useWfHealthSummary() {
         };
       });
     },
+  });
+}
+
+// ── Admin audit write helper ─────────────────────────────────────────────────
+async function writeAdminAudit(action: string, targetKind: string, targetId: string, diff: object) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from('ph_wf_admin_audit' as any).insert({
+      action, target_kind: targetKind, target_ids: [targetId],
+      actor: user?.id ?? null, diff_json: diff,
+    } as any);
+  } catch { /* non-blocking — admin audit write failure never blocks the main action */ }
+}
+
+// ── Toggle reason code active/inactive ──────────────────────────────────────
+export function useToggleReasonCodeActive() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, currentIsActive }: { id: string; currentIsActive: boolean }) => {
+      const newActive = !currentIsActive;
+      const { error } = await supabase.from('ph_wf_reason_codes').update({ is_active: newActive } as any).eq('id', id);
+      if (error) throw error;
+      await writeAdminAudit('reason_code_toggled', 'reason_code', id, { before: { is_active: currentIsActive }, after: { is_active: newActive } });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'reason-codes'] }),
+  });
+}
+
+// ── Toggle enforcement mode (advisory ↔ blocking) with safety pre-flight ────
+export interface EnforcementToggleInput {
+  configId: string;
+  entityKey: string;
+  currentMode: string;
+  versionId: string | null;
+}
+
+/** Returns list of unsafe blocking guards for the given version, or [] if safe. */
+export async function checkEnforcementBlockingSafe(versionId: string): Promise<string[]> {
+  const { GUARD_EVIDENCE_REGISTRY } = await import('@/lib/workflow/canonical/runtime');
+  const { data: transitions, error: tErr } = await supabase.from('ph_wf_version_transitions').select('id').eq('version_id', versionId);
+  if (tErr || !transitions?.length) return [];
+  const ids = transitions.map((t: any) => t.id);
+  const { data: guards, error: gErr } = await supabase.from('ph_wf_transition_guards').select('guard_type, is_blocking').in('transition_id', ids);
+  if (gErr) return [];
+  const unsafe: string[] = [];
+  for (const g of (guards ?? [])) {
+    if ((g as any).is_blocking) {
+      const reg = GUARD_EVIDENCE_REGISTRY[(g as any).guard_type];
+      if (!reg || !reg.blockingSafe) unsafe.push((g as any).guard_type);
+    }
+  }
+  return [...new Set(unsafe)];
+}
+
+export function useSetEnforcementMode() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: EnforcementToggleInput) => {
+      const newMode = input.currentMode === 'blocking' ? 'advisory' : 'blocking';
+      if (newMode === 'blocking' && input.versionId) {
+        const unsafe = await checkEnforcementBlockingSafe(input.versionId);
+        if (unsafe.length > 0) {
+          throw new Error(`Cannot enable blocking: guards without evidence source — ${unsafe.join(', ')}`);
+        }
+      }
+      const { error } = await supabase.from('ph_wf_enforcement_config').update({ mode: newMode } as any).eq('id', input.configId);
+      if (error) throw error;
+      await writeAdminAudit('enforcement_mode_toggled', 'enforcement_config', input.configId, {
+        before: { mode: input.currentMode }, after: { mode: newMode },
+      });
+      return newMode;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'enforcement'] }),
   });
 }

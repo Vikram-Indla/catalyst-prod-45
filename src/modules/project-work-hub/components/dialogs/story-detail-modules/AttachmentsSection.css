@@ -126,7 +126,7 @@
 .att-more-menu {
   position: absolute;
   right: 0;
-  top: 24px;
+  top: 28px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
@@ -347,12 +347,12 @@
 .att-card:focus-visible {
   border-color: var(--ds-border-bold, #B3BAC5);
   box-shadow: 0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
 }
 
 .att-card:focus-visible {
   border-color: var(--ds-border-focused, #1868DB);
-  box-shadow: 0 0 0 2px var(--ds-border-focused, #1868DB);
+  box-shadow: 0 0 0 1px var(--ds-border-focused, #1868DB);
 }
 
 .att-card__thumb {

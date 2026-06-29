@@ -145,7 +145,7 @@
 }
 
 .ws-btn:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 2px var(--ws-bg-primary), 0 0 0 4px var(--ws-primary);
 }
 
@@ -301,7 +301,7 @@
 }
 
 .ws-search-input input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ws-primary);
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
@@ -313,7 +313,7 @@
 .ws-search-icon {
   position: absolute;
   left: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--ws-text-muted);
 }
@@ -321,7 +321,7 @@
 .ws-search-shortcut {
   position: absolute;
   right: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   font-size: var(--ws-text-xs);
   color: var(--ws-text-muted);
@@ -443,7 +443,7 @@
 }
 
 .ws-action-btn:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   box-shadow: 0 0 0 2px var(--ws-bg-primary), 0 0 0 4px var(--ws-primary);
 }
 
@@ -988,7 +988,7 @@
 }
 
 .ws-form-input:focus {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 1px solid var(--ds-border-focused);
   border-color: var(--ws-primary);
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
@@ -1103,8 +1103,8 @@
 .ws-activity-item::before {
   content: '';
   position: absolute;
-  left: 12px;
-  top: 32px;
+  left: 11px;
+  top: 36px;
   bottom: 0;
   width: 2px;
   background: var(--ws-border-secondary);
@@ -1210,8 +1210,8 @@
 
 .ws-toast-container {
   position: fixed;
-  bottom: 0.5rem;
-  left: 48%;
+  bottom: 1.5rem;
+  left: 50%;
   transform: translateX(-50%);
   z-index: 500;
   display: flex;

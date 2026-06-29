@@ -23,7 +23,7 @@ import DropdownMenu, {
   DropdownItemGroup,
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
-import { StatusLozengeDropdown } from "@/components/shared/StatusLozenge";
+import { StatusLozengeDropdown, type LozengeAppearance } from "@/components/shared/StatusLozenge";
 import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
 
 function appearanceToWorkflowCategory(ap: LozengeAppearance): string {
@@ -36,6 +36,7 @@ function appearanceToWorkflowCategory(ap: LozengeAppearance): string {
   if (ap === 'inprogress' || ap === 'moved') return 'in_progress';
   return 'todo';
 }
+
 import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -474,7 +475,7 @@ export function makeStatusEditCell<T>(opts: {
   options: string[];
   appearanceFor: (s: string | null) => LozengeAppearance;
   labelFor?: (s: string) => string;
-  onChange: (row: T, next: string) => void;
+  onChange: (row: T, next: string, reason?: { code: string | null; text: string | null }) => void;
   canEdit?: (row: T) => boolean;
   lockWhenDone?: boolean;
   getIssueType?: (row: T) => string | null;
@@ -484,7 +485,7 @@ export function makeStatusEditCell<T>(opts: {
     const issueType = opts.getIssueType ? opts.getIssueType(row) : null;
     const canonical = useCanonicalIssueWorkflow(issueType);
     const effectiveOptions = canonical.isCanonical
-      ? canonical.getAvailableStatuses(status).filter((s) => !canonical.requiresReason(status, s) || s === status)
+      ? canonical.getAvailableStatuses(status)
       : opts.options;
     const displayLabel = (s: string | null): string =>
       canonical.isCanonical ? canonical.labelForStatus(s) : (opts.labelFor && s ? opts.labelFor(s) : (s ?? ""));
@@ -507,7 +508,7 @@ export function makeStatusEditCell<T>(opts: {
           status={displayLabel(status)}
           statusCategory={appearanceToWorkflowCategory(opts.appearanceFor(status))}
           statusOptions={dropdownOptions}
-          onStatusChange={(next) => opts.onChange(row, next)}
+          onStatusChange={(next, reason) => opts.onChange(row, next, reason ?? undefined)}
           interactive={callerEditable}
           size="sm"
           lockWhenDone={opts.lockWhenDone !== false}
@@ -690,8 +691,8 @@ export function makeCommentsCell(
               aria-hidden="true"
               style={{
                 position: "absolute",
-                top: 0,
-                right: 0,
+                top: 1,
+                right: 1,
                 width: 6,
                 height: 6,
                 borderRadius: "50%",

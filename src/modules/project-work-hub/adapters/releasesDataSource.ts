@@ -273,8 +273,9 @@ export function useReleasesSource(): BacklogDataSource | null {
       const mapped: Record<string, any> = {};
       let canonicalKey: string | null = null;
       let prevStatus: string | null = null;
+      const reasonText = typeof patch.reasonText === 'string' ? patch.reasonText : null;
       for (const [k, v] of Object.entries(patch)) {
-        if (k === 'updated_at' || k === 'jira_updated_at') continue;
+        if (k === 'updated_at' || k === 'jira_updated_at' || k === 'reasonText' || k === 'reasonCode') continue;
         if (k === 'status' && canonicalReady) {
           // Picked value is a canonical label → resolve to its status_key and write
           // via the bridged workflow_status_key path (free-text status mirrors it).
@@ -296,14 +297,17 @@ export function useReleasesSource(): BacklogDataSource | null {
         await updateMutation.mutateAsync({ id, patch: mapped });
       }
       if (canonicalKey && prevStatus !== canonicalKey) {
-        const preflight = await checkReasonRequired('release', null, prevStatus, canonicalKey);
-        if (preflight.reasonRequired) {
-          throw new Error('This release transition requires a reason. Open the release detail to provide one.');
+        if (!reasonText) {
+          const preflight = await checkReasonRequired('release', null, prevStatus, canonicalKey);
+          if (preflight.reasonRequired) {
+            throw new Error('This release transition requires a reason. Open the release detail to provide one.');
+          }
         }
         await recordAdvisoryStatusChange({
           entityKey: 'release', entityId: id, projectKey: null,
           fromStatusRaw: prevStatus, toStatusRaw: canonicalKey, sourceSurface: 'release_list',
-        });
+          reasonText,
+        } as any);
       }
     },
 

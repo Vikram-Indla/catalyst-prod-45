@@ -284,7 +284,7 @@ const S = {
     height: 16,
     borderRadius: '50%',
     background: token('color.text.inverse', 'var(--ds-text-inverse)'),
-    top: 0,
+    top: 2,
     left: on ? 22 : 2,
     transition: 'left 0.15s',
   }),

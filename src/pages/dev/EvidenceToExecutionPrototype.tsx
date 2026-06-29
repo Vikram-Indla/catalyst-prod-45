@@ -15,7 +15,8 @@
 import React, { useState } from 'react';
 import { Suspense } from 'react';
 import Button from '@atlaskit/button';
-import { Heading, Stack, Inline } from '@atlaskit/primitives';
+import { Stack, Inline } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 // Icon handled via emoji in the button
 import { EvidencePackModal } from './components/EvidencePackModal';
 import { EvidencePackPage } from './components/EvidencePackPage';

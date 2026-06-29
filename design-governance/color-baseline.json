@@ -1,5 +1,5 @@
 {
-  "hardcodedColors": 76,
+  "hardcodedColors": 74,
   "description": "Hard-coded hex color violations (Phase 5: 673 → 77 after scanner refinement for pragmatic fallback support)",
   "updated": "2026-06-28",
   "phase": 5,
@@ -31,7 +31,7 @@
   "last_updated_by": "Claude Code Phase 5",
   "last_updated_date": "2026-06-28",
   "next_review": "2026-09-28",
-  "capturedOn": "2026-06-28",
+  "capturedOn": "2026-06-29",
   "metadata": {
     "tool": "npm run lint:colors",
     "gate_tool": "npm run lint:colors:gate",

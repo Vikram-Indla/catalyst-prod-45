@@ -237,7 +237,7 @@
 }
 
 .t10-module .t10-input:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-blue) !important;
   box-shadow: 0 0 0 3px var(--t10-blue-50) !important;
 }
@@ -268,7 +268,7 @@
 }
 
 .t10-module .t10-textarea:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-blue) !important;
 }
 
@@ -396,7 +396,7 @@
 .t10-module .t10-search-bar input {
   flex: 1 !important;
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   font-family: var(--t10-font) !important;
   font-size: 14px !important;
   color: var(--t10-gray-900) !important;
@@ -421,7 +421,7 @@
 .t10-module .t10-search-input {
   flex: 1 !important;
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
@@ -442,7 +442,7 @@
   background: transparent !important;
   background-color: transparent !important;
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   box-shadow: none !important;
 }
 
@@ -869,7 +869,7 @@
 
 .t10-module .t10-dropdown-menu {
   position: absolute !important;
-  top: 48% !important;
+  top: 100% !important;
   right: 0 !important;
   margin-top: 4px !important;
   min-width: 180px !important;
@@ -1480,7 +1480,7 @@
 .t10-module .t10-quick-add-input {
   flex: 1 !important;
   border: none !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   font-family: var(--t10-font) !important;
   font-size: 14px !important;
   color: var(--t10-gray-900) !important;
@@ -2191,7 +2191,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
   border-radius: 6px !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   font-family: var(--t10-font) !important;
 }
 
@@ -2236,7 +2236,7 @@
   font-size: 14px !important;
   border: 1px solid var(--ds-border) !important;
   border-radius: 6px !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
   font-family: var(--t10-font) !important;
 }
 
@@ -2794,7 +2794,7 @@
 .t10-module .t10-week-dropdown {
   position: absolute !important;
   top: calc(100% + 4px) !important;
-  left: 48% !important;
+  left: 50% !important;
   transform: translateX(-50%) !important;
   min-width: 320px !important;
   background: var(--t10-white) !important;
@@ -3061,7 +3061,7 @@
 .t10-module .t10-reorder-toast {
   position: fixed !important;
   bottom: 24px !important;
-  left: 48% !important;
+  left: 50% !important;
   transform: translateX(-50%) !important;
   display: flex !important;
   align-items: center !important;
@@ -3193,7 +3193,7 @@
   background: transparent !important;
   font-size: 14px !important;
   color: var(--ds-text) !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none;
 }
 
 .t10-assignee-search input::placeholder {
@@ -3589,7 +3589,7 @@
 .t10-module .t10-dropdown-search-icon {
   position: absolute !important;
   left: 12px !important;
-  top: 48% !important;
+  top: 50% !important;
   transform: translateY(-50%) !important;
   width: 16px !important;
   height: 16px !important;
@@ -3615,7 +3615,7 @@
 }
 
 .t10-module .t10-dropdown-search-input:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border-color: var(--t10-blue) !important;
 }
@@ -3797,7 +3797,7 @@
 }
 
 .t10-module .t10-date-input:focus {
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: 1px solid var(--ds-border-focused) !important;
   border-color: var(--t10-blue) !important;
 }
 
@@ -4212,14 +4212,14 @@
 }
 
 .t10-module .t10-week-history-item:last-child::before {
-  bottom: 48% !important;
+  bottom: 50% !important;
 }
 
 .t10-module .t10-week-history-item::after {
   content: '' !important;
   position: absolute !important;
   left: -3px !important;
-  top: 48% !important;
+  top: 50% !important;
   transform: translateY(-50%) !important;
   width: 8px !important;
   height: 8px !important;

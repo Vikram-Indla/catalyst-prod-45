@@ -8,7 +8,8 @@
 import React from 'react';
 import Button, { IconButton } from '@atlaskit/button';
 import Tooltip from '@atlaskit/tooltip';
-import { Heading, Stack, Inline, Box } from '@atlaskit/primitives';
+import { Stack, Inline, Box } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 import Badge from '@atlaskit/badge';
 import Tabs, { TabList, TabPanel, Tab } from '@atlaskit/tabs';
 

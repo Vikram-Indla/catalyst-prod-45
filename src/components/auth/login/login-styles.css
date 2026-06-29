@@ -235,7 +235,7 @@
 .clmp-pwd-toggle:hover { background: var(--clmp-sunken); color: var(--clmp-text); }
 
 .clmp-otp-input { width: 100%; height: 48px; font-size: 22px; font-weight: 700; letter-spacing: 8px; text-align: center; font-family: var(--clmp-mono); color: var(--clmp-text); padding-inline: 16px; border: 2px solid var(--clmp-line); border-radius: 8px; background: var(--clmp-surface); }
-.clmp-otp-input:focus { outline: 2px solid var(--ds-border-focused); border-color: var(--clmp-brand); box-shadow: 0 0 0 3px var(--clmp-brand-subtle); }
+.clmp-otp-input:focus { outline: 1px solid var(--ds-border-focused); border-color: var(--clmp-brand); box-shadow: 0 0 0 3px var(--clmp-brand-subtle); }
 .clmp-otp-verify-form { display: flex; flex-direction: column; gap: 16px; }
 .clmp-otp-footer-row { display: flex; justify-content: space-between; }
 .clmp-otp-text-btn, .clmp-back-btn { background: none; border: none; padding: 8px 0; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--clmp-brand-text); cursor: pointer; }

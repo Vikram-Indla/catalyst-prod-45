@@ -23,14 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import {
   CheckCircle,
@@ -762,19 +755,15 @@ export default function ProjectSummaryPage() {
   return (
     <div className="min-h-screen bg-muted/30 p-6">
       {/* Breadcrumbs */}
-      <Breadcrumb className="mb-3">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/projects">Projects</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{projectName}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="mb-3">
+        <Breadcrumbs
+          LinkComponent={Link}
+          items={[
+            { key: 'projects', text: 'Projects', href: '/projects' },
+            { key: 'project', text: projectName, isCurrent: true },
+          ] satisfies BreadcrumbItem[]}
+        />
+      </div>
 
       {/* Project Header */}
       <div className="flex items-center gap-3 mb-4">

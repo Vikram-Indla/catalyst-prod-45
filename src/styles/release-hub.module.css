@@ -177,8 +177,8 @@
 }
 .searchIcon {
   position: absolute;
-  left: 8px;
-  top: 48%;
+  left: 10px;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--rh-text-muted);
   pointer-events: none;
@@ -192,7 +192,7 @@
   border-radius: var(--rh-radius-md);
   background: var(--rh-bg-card);
   color: var(--rh-text-primary);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
   transition: border-color var(--rh-duration) var(--rh-ease);
 }
 .searchInput:focus {
@@ -202,7 +202,7 @@
 .searchClear {
   position: absolute;
   right: 8px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--rh-text-muted);
   cursor: pointer;
@@ -634,7 +634,7 @@
 }
 .ganttBar {
   position: absolute;
-  top: 8px;
+  top: 10px;
   height: 24px;
   border-radius: var(--rh-radius-sm);
   display: flex;
@@ -685,7 +685,7 @@
   display: none;
   position: absolute;
   bottom: calc(100% + 8px);
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
   background: var(--rh-text-primary);
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
@@ -809,7 +809,7 @@
   border-radius: var(--rh-radius-md);
   color: var(--rh-text-primary);
   background: var(--rh-bg-card);
-  outline: 2px solid var(--ds-border-focused);
+  outline: none;
 }
 .formInput:focus {
   border-color: var(--rh-primary);

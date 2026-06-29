@@ -10,6 +10,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useChatRealtimeAll } from '@/hooks/chat/useChatRealtimeAll';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { ChatConversation, ChatConversationKind } from '@/types/chat';
 
@@ -279,6 +280,13 @@ export function useConversations(fetchEnabled = true): {
     enabled: !!userId && fetchEnabled,
     staleTime: 30 * 1000,
   });
+
+  // Account-wide realtime: subscribe to every (non-archived) conversation so a new
+  // message lights up its unread red dot on ANY surface that lists conversations
+  // (sidebar, dock, /chat) without that conversation being open. Lives here so the
+  // coverage follows the list itself rather than a single mount point.
+  const ids = (data ?? []).filter((c) => !c.isArchived).map((c) => c.id);
+  useChatRealtimeAll(ids);
 
   return { conversations: data ?? [], isLoading: !!userId && fetchEnabled && isLoading };
 }

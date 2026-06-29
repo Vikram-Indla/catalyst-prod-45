@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { recordAdvisoryStatusChange, checkReasonRequired } from '@/lib/workflow/canonical/runtime';
 import type {
   ProductMilestone,
@@ -136,6 +136,18 @@ export class ProductMilestoneService {
     }
 
     return this.mapToDomain(data);
+  }
+
+  /**
+   * Delete milestone (hard delete)
+   */
+  async deleteMilestone(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('product_milestones')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
   }
 
   /**
