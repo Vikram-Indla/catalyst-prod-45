@@ -51,11 +51,11 @@ if (typeof document !== 'undefined') {
         border: none;
         cursor: pointer;
         font-family: inherit;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        outline: 2px solid var(--ds-border-focused);
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: normal;
+        text-transform: none;
+        outline: none;
         transition: filter 0.15s ease;
         background: var(--csp-bg);
         color: var(--csp-fg);
@@ -65,6 +65,10 @@ if (typeof document !== 'undefined') {
         padding: 0 6px;
         font-size: 11px;
         gap: 4px;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .${PILL_CLASS}:hover,
       .${PILL_CLASS}[aria-expanded="true"] {
@@ -471,14 +475,20 @@ export function CatalystStatusPill({
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between',
+                          justifyContent: 'flex-start',
                           width: '100%',
                           height: 32,
                           padding: '0 8px',
+                          paddingLeft: 5,
+                          borderTop: 'none',
+                          borderRight: 'none',
+                          borderBottom: 'none',
+                          borderLeft: isSelected
+                            ? `3px solid ${token('color.border.information', 'var(--ds-border-information)')}`
+                            : '3px solid transparent',
                           background: isSelected
                             ? token('color.background.selected', 'var(--ds-background-selected)')
                             : 'transparent',
-                          border: 'none',
                           cursor: 'pointer',
                           fontFamily: 'inherit',
                           outline: 'none',
@@ -501,9 +511,6 @@ export function CatalystStatusPill({
                         >
                           {st}
                         </span>
-                        {isSelected && (
-                          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.brand', 'var(--ds-link)'), fontWeight: 600 }}>✓</span>
-                        )}
                       </button>
                     );
                   })}
