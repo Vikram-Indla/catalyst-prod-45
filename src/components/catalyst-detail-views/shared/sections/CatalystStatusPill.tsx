@@ -29,6 +29,7 @@ import { toStatusCategory } from '@/components/ads';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { ReasonCaptureModal } from '../workflow/ReasonCaptureModal';
 import { statusBgSubtle, statusFgSubtle, statusBgBold, statusFgBold } from './statusPalette';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * SECTION 1: STYLE INJECTION (module-level, runs once)
@@ -496,20 +497,7 @@ export function CatalystStatusPill({
                           outline: 'none',
                         }}
                       >
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          height: 20,
-                          padding: '0 8px',
-                          borderRadius: 3,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          letterSpacing: '0.06em',
-                          background: statusBgSubtle(groupAppearance as Appearance),
-                          color: statusFgSubtle(groupAppearance as Appearance),
-                        }}>
-                          {st}
-                        </span>
+                        <StatusLozenge appearance={groupAppearance as any} label={st} />
                         {isSelected && (
                           <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.brand', 'var(--ds-link)'), fontWeight: 600 }}>✓</span>
                         )}
