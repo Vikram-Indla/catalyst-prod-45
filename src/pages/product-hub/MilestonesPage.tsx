@@ -12,6 +12,7 @@ import type { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-rel
 import type { ProductMilestoneWithProgress } from '@/types/product-milestone';
 import { ReleasesTable } from '@/components/releases/ReleasesTable';
 import { MilestoneCreateModal } from '@/components/product-hub/MilestoneCreateModal';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import {
   StatusFilter,
   GroupFilter,
@@ -186,18 +187,28 @@ export function MilestonesPage() {
   if (isLoading) return <div style={{ padding: '24px' }}>Loading milestones…</div>;
   if (error)     return <div style={{ padding: '24px' }}>Error loading milestones</div>;
 
-  return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h1 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, margin: 0, color: 'var(--ds-text)' }}>
-          Milestones
-        </h1>
-        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
-          This product has {milestones.length} milestone{milestones.length !== 1 ? 's' : ''}
-        </span>
-      </div>
+  const headerActions = (
+    <>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+        This product has {milestones.length} milestone{milestones.length !== 1 ? 's' : ''}
+      </span>
+      <Button appearance="primary" onClick={() => { setEditingMilestone(null); setIsCreateModalOpen(true); }}>
+        Create milestone
+      </Button>
+    </>
+  );
 
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <ProjectPageHeader
+        hubType="product"
+        projectKey={productCode}
+        title="Milestones"
+        actions={headerActions}
+      />
+
+      <div style={{ padding: '0 20px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ width: '240px' }}>
           <TextField
             placeholder="Search milestones"
@@ -209,10 +220,6 @@ export function MilestonesPage() {
         <StatusFilter value={statusFilter} onChange={setStatusFilter} />
         <GroupFilter value={groupBy} onChange={setGroupBy} />
         {toolbarViewOptionsButton}
-        <div style={{ flex: 1 }} />
-        <Button appearance="primary" onClick={() => { setEditingMilestone(null); setIsCreateModalOpen(true); }}>
-          Create milestone
-        </Button>
       </div>
 
       {filtered.length > 0 ? (
@@ -266,6 +273,8 @@ export function MilestonesPage() {
             : 'No milestones match this filter.'}
         </div>
       )}
+
+      </div>
 
       <MilestoneCreateModal
         isOpen={isCreateModalOpen}

@@ -341,7 +341,7 @@ function ActivityPanel({
       <div className="flex items-center justify-between mb-4">
         <h2
           className="text-[var(--ds-text)] dark:text-[var(--ds-text)]"
-          style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
+          style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
         >
           Activity
         </h2>

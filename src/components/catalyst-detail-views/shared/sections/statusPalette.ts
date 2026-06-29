@@ -99,8 +99,8 @@ export function statusFgSubtle(appearance?: string): string {
  * JiraStatusLozenge, JiraTable status cell, ForYouRow, hierarchy StatusBadge).
  * ═══════════════════════════════════════════════════════════════════════════ */
 export const STATUS_BG_BOLD: Record<StatusAppearance, string> = {
-  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
-  success:    '#B3DF72',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29, confirmed #94C748 vs #B3DF72 on ksa-catalyst.com) */
+  success:    '#94C748',
   /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
   inprogress: '#8FB8F6',
   /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
