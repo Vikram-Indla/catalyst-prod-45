@@ -131,6 +131,19 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
   const [summarizeOpen, setSummarizeOpen] = useState(false);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
+  // Esc key closes detail panel (right-side sidebar close affordance)
+  useEffect(() => {
+    if (!selectedItem) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setSelectedItem(null);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [selectedItem]);
+
   // R360 Profile Drawer removed — intelligence icon now opens AIIntelligencePanel directly
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
@@ -707,8 +720,8 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             </>
           )}
 
-          {/* ── Detail Panel — hidden when embedded (uses canonical CatalystDetailRouter instead) ── */}
-          {selectedItem && !embedded && (
+          {/* ── Detail Panel — rendered as right-side sidebar (Option A: Jira-standard pattern) ── */}
+          {selectedItem && (
             <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} />
           )}
 

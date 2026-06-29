@@ -1,23 +1,86 @@
 /**
  * BoardPanel — top-level "Board" tab in the For You page.
  *
- * Renders R360MemberDetail locked to the board view (Kanban columns by
- * status_category) for the current user, reusing the same R360Panel
- * roster/picker pattern for team lead multi-member support.
+ * Renders personal kanban board (Kanban columns by status_category)
+ * for the current user, querying ph_issues directly.
+ * Works for all users regardless of R360 resource profile status.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { token } from '@atlaskit/tokens';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelData';
 import { useAuth } from '@/lib/auth';
-import R360MemberDetail from '@/pages/R360MemberDetail';
+import { supabase } from '@/integrations/supabase/client';
 import Spinner from '@atlaskit/spinner';
-export interface BoardPanelViewProps {
-  resourceId: string | null;
-  isLoading: boolean;
-}
+import type { R360WorkItem } from '@/types/r360';
+import { BoardView } from '@/pages/r360-member';
 
-export function BoardPanelView({ resourceId, isLoading }: BoardPanelViewProps) {
+export default function BoardPanel() {
+  const { user } = useAuth();
+  const [items, setItems] = useState<R360WorkItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
+
+  useEffect(() => {
+    const fetchUserBoard = async () => {
+      if (!user?.id) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('jira_account_id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile?.jira_account_id) {
+          setIsLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('ph_issues')
+          .select('*')
+          .eq('assignee_account_id', profile.jira_account_id)
+          .is('archived_at', null)
+          .order('jira_updated_at', { ascending: false })
+          .limit(200);
+
+        if (error) throw error;
+
+        // Transform ph_issues to R360WorkItem format
+        const transformed = (data || []).map((row: any) => ({
+          id: row.id,
+          item_key: row.issue_key,
+          item_type: row.issue_type,
+          title: row.summary,
+          status: row.status,
+          status_category: row.status_category,
+          project_key: row.project_key,
+          project_name: row.project_name,
+          age_days: row.age_days || 0,
+          parent_key: row.parent_issue_key,
+          parent_title: row.parent_summary,
+          assignee_name: row.assignee_display_name,
+          reporter_name: row.reporter_display_name,
+          created_at: row.created_at,
+          jira_updated_at: row.jira_updated_at,
+          fix_version: row.fix_version,
+          due_date: row.due_date,
+          priority: row.priority,
+        } as R360WorkItem));
+
+        setItems(transformed);
+      } catch (err) {
+        console.error('Failed to fetch board items:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserBoard();
+  }, [user?.id]);
+
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
@@ -26,30 +89,20 @@ export function BoardPanelView({ resourceId, isLoading }: BoardPanelViewProps) {
     );
   }
 
-  if (!resourceId) {
+  if (items.length === 0) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
         color: token('color.text.subtle', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)',
       }}>
-        No resource profile found for your account.
+        No work items assigned to you.
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: 600 }}>
-      <R360MemberDetail resourceId={resourceId} embedded forceView="board" />
+    <div style={{ minHeight: 600, padding: '0 16px' }}>
+      <BoardView items={items} onSelect={setSelectedItem} />
     </div>
   );
-}
-
-export default function BoardPanel() {
-  const { user } = useAuth();
-  const { isTeamLead } = useUserRole();
-  const { data: myResourceId, isLoading: idLoading } = useMyR360ResourceId();
-  const { data: teamResources = [], isLoading: teamLoading } = useTeamResourceIds(
-    isTeamLead ? (user?.id ?? null) : null,
-  );
-  return <BoardPanelView resourceId={myResourceId ?? null} isLoading={idLoading} />;
 }

@@ -146,10 +146,10 @@ export default function ForYouPage() {
     const HUB_ICONS: Record<string, React.ReactNode> = {
       Incident: <AlertTriangleIcon size={14} color="var(--ds-background-danger-bold)" strokeWidth={2} />,
       Product: <LayoutGrid size={14} color="var(--ds-background-discovery-bold)" strokeWidth={2} />,
-      Project: <Folder size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" strokeWidth={2} />,
+      Project: <Folder size={14} color="var(--ds-text-brand, var(--ds-text-brand))" strokeWidth={2} />,
       Task: <CheckSquare size={14} color="var(--ds-background-information-bold)" strokeWidth={2} />,
-      Plan: <BookOpen size={14} color="var(--cp-teal-60)" strokeWidth={2} />,
-      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--cp-warning))" strokeWidth={2} />,
+      Plan: <BookOpen size={14} color="var(--ds-text-success)" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--ds-text-warning))" strokeWidth={2} />,
     };
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
       Critical: <PriorityBars priority="critical" />,
@@ -321,7 +321,7 @@ export default function ForYouPage() {
   ];
 
   return (
-    <div className="fy-page" style={{ fontFamily: 'var(--cp-font-body)', minHeight: 0, flex: 1, background: 'var(--cp-bg)', color: 'var(--cp-t1)' }}>
+    <div className="fy-page" style={{ fontFamily: 'var(--ds-font-family)', minHeight: 0, flex: 1, background: 'var(--ds-surface)', color: 'var(--ds-text)' }}>
       <main style={{ width: '100%', maxWidth: '100%', padding: mainPadding, boxSizing: 'border-box' }}>
         <ForYouHeader />
 
@@ -331,7 +331,7 @@ export default function ForYouPage() {
         </div>
 
         {/* Status Summary + Filter — single row, wraps below 768 */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', marginBottom: 12, borderBottom: '1px solid var(--ds-border)', gap: 16, flexWrap: 'wrap' }}>
           <StatusSummaryBar
             items={[
               ...filteredGroupedItems.YESTERDAY,

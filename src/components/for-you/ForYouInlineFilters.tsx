@@ -7,11 +7,11 @@ import { X, ChevronDown, Search, Check } from '@/lib/atlaskit-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-  Product: 'var(--cp-purple-60)',
+  Project: 'var(--ds-text-brand, var(--ds-text-brand))',
+  Product: 'var(--ds-text-subtlest)',
   Task: 'var(--ds-background-warning-bold)',
-  Incident: 'var(--ds-text-danger, var(--cp-danger))',
-  Release: 'var(--ds-text-success, var(--cp-success))',
+  Incident: 'var(--ds-text-danger, var(--ds-text-danger))',
+  Release: 'var(--ds-text-success, var(--ds-text-success))',
   Test: 'var(--ds-link)',
   Strategy: 'var(--ds-link)',
   Plan: 'var(--ds-background-discovery-bold)',
@@ -76,9 +76,9 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           height: 34, padding: '0 14px', borderRadius: 8,
           fontSize: 'var(--ds-font-size-400)', fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
-          border: value ? '1px solid var(--cp-blue)' : '1px solid var(--cp-bd)',
-          background: value ? 'var(--cp-blue-wash)' : 'var(--cp-bg)',
-          color: value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
+          border: value ? '1px solid var(--ds-text-brand)' : '1px solid var(--ds-border)',
+          background: value ? 'var(--ds-background-information)' : 'var(--ds-surface)',
+          color: value ? 'var(--ds-text-brand)' : 'var(--ds-text)',
           cursor: 'pointer',
         }}
       >
@@ -89,8 +89,8 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 16, height: 16, borderRadius: '50%',
-              backgroundColor: 'var(--cp-blue-wash)', border: 'none',
-              cursor: 'pointer', color: 'var(--cp-blue-text)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
+              backgroundColor: 'var(--ds-background-information)', border: 'none',
+              cursor: 'pointer', color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
               marginLeft: 0,
             }}
           >
@@ -112,7 +112,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             minWidth: 'min(260px, calc(100vw - 24px))',
             maxWidth: 'calc(100vw - 24px)',
             maxHeight: 340, overflowY: 'auto',
-            background: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
+            background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)',
             borderRadius: 12,
             boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
             zIndex: 50, padding: 4,
@@ -123,10 +123,10 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '8px 12px',
-            borderBottom: '1px solid var(--cp-bd)',
+            borderBottom: '1px solid var(--ds-border)',
             marginBottom: 4,
           }}>
-            <Search size={14} style={{ color: 'var(--cp-t3)', flexShrink: 0 }} />
+            <Search size={14} style={{ color: 'var(--ds-text-subtle)', flexShrink: 0 }} />
             <input
               type="text"
               placeholder={`Filter ${label.toLowerCase()}…`}
@@ -135,7 +135,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               autoFocus
               style={{
                 flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-t1)', fontFamily: 'var(--cp-font-body)',
+                fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family)',
               }}
             />
           </div>
@@ -148,16 +148,16 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               width: '100%', textAlign: 'left', padding: '8px 12px',
               borderRadius: 8, fontSize: 'var(--ds-font-size-400)',
               fontWeight: !value ? 600 : 500,
-              color: !value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
-              background: !value ? 'var(--cp-blue-wash)' : 'transparent',
+              color: !value ? 'var(--ds-text-brand)' : 'var(--ds-text)',
+              background: !value ? 'var(--ds-background-information)' : 'transparent',
               border: 'none', cursor: 'pointer',
               transition: 'background 0.1s', lineHeight: '1.4',
             }}
-            onMouseEnter={e => { if (value) e.currentTarget.style.background = 'var(--cp-hover)'; }}
+            onMouseEnter={e => { if (value) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)'; }}
             onMouseLeave={e => { if (value) e.currentTarget.style.background = 'transparent'; }}
           >
             All {label}
-            {!value && <Check size={14} style={{ color: 'var(--cp-blue-text)' }} />}
+            {!value && <Check size={14} style={{ color: 'var(--ds-text-brand)' }} />}
           </button>
 
           {filtered.map(option => {
@@ -170,16 +170,16 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                   display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                   textAlign: 'left', padding: '8px 12px', borderRadius: 8,
                   fontSize: 'var(--ds-font-size-400)', fontWeight: isSelected ? 600 : 500,
-                  color: isSelected ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
-                  background: isSelected ? 'var(--cp-blue-wash)' : 'transparent',
+                  color: isSelected ? 'var(--ds-text-brand)' : 'var(--ds-text)',
+                  background: isSelected ? 'var(--ds-background-information)' : 'transparent',
                   border: 'none', cursor: 'pointer',
                   transition: 'background 0.1s', lineHeight: '1.4',
                 }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--cp-hover)'; }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'var(--cp-blue-wash)' : 'transparent'; }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)'; }}
+                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'var(--ds-background-information)' : 'transparent'; }}
               >
                 {variant === 'hub' && (
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: HUB_DOT_COLORS[option] || 'var(--cp-t3)', flexShrink: 0 }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: HUB_DOT_COLORS[option] || 'var(--ds-text-subtle)', flexShrink: 0 }} />
                 )}
 
                 {variant === 'reporter' && (() => {
@@ -195,13 +195,13 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
 
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{option}</span>
 
-                {isSelected && <Check size={14} style={{ color: 'var(--cp-blue-text)', flexShrink: 0 }} />}
+                {isSelected && <Check size={14} style={{ color: 'var(--ds-text-brand)', flexShrink: 0 }} />}
               </button>
             );
           })}
 
           {filtered.length === 0 && (
-            <div style={{ padding: '12px 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-t3)', textAlign: 'center' }}>No matches</div>
+            <div style={{ padding: '12px 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', textAlign: 'center' }}>No matches</div>
           )}
         </div>
       )}
@@ -218,7 +218,7 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
         <button
           onClick={() => onFiltersChange({ project: null, hub: null, reportedBy: null })}
           style={{
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-err-text)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-danger)',
             background: 'none', border: 'none', cursor: 'pointer',
             marginLeft: 4, transition: 'opacity 0.15s',
           }}

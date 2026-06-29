@@ -60,16 +60,16 @@ export function StatusSummaryBar({ items, filterSlot }: StatusSummaryBarProps) {
           }}>
             {counts[cat.key]}
           </span>
-          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-t3)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
             {cat.label}
           </span>
         </div>
       ))}
       {filterSlot}
-      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-t3)', marginLeft: 'auto' }}>
-        <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{total}</strong>{' '}
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)', marginLeft: 'auto' }}>
+        <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>{total}</strong>{' '}
         items across{' '}
-        <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{projectCount}</strong>{' '}
+        <strong style={{ color: 'var(--ds-text)', fontWeight: 600 }}>{projectCount}</strong>{' '}
         projects
       </span>
     </>

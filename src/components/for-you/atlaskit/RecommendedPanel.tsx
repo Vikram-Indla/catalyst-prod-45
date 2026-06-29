@@ -3285,7 +3285,7 @@ function ReactionChip({
         <span
           aria-hidden="true"
           style={{
-            fontFamily: 'var(--cp-font-body)',
+            fontFamily: 'var(--ds-font-family)',
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
             color: isActive

@@ -6,11 +6,11 @@
 import React from 'react';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-  Product: 'var(--cp-purple-60)',
+  Project: 'var(--ds-text-brand, var(--ds-text-brand))',
+  Product: 'var(--ds-text-subtlest)',
   Task: 'var(--ds-background-warning-bold)',
-  Incident: 'var(--ds-text-danger, var(--cp-danger))',
-  Release: 'var(--ds-text-success, var(--cp-success))',
+  Incident: 'var(--ds-text-danger, var(--ds-text-danger))',
+  Release: 'var(--ds-text-success, var(--ds-text-success))',
   Test: 'var(--ds-link)',
   Strategy: 'var(--ds-link)',
   Plan: 'var(--ds-background-discovery-bold)',
@@ -42,17 +42,17 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
             background: HUB_DOT_COLORS[hub] || 'var(--ds-text-subtlest)',
             flexShrink: 0, alignSelf: 'center',
           }} />
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>
+          <span style={{ fontFamily: 'var(--ds-font-family)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--ds-text)' }}>{count}</span>
           <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>{hub}</span>
         </div>
       ))}
       <span style={{ color: 'var(--fg-4)' }}>|</span>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-        <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
+        <span style={{ fontFamily: 'var(--ds-font-family)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text)' }}>{projectCount}</span>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>projects</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-        <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
+        <span style={{ fontFamily: 'var(--ds-font-family)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text)' }}>{reporterCount}</span>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>reporters</span>
       </div>
     </div>

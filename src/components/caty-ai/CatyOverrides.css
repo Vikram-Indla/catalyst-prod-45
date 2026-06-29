@@ -899,7 +899,7 @@ button.caty-department-pill,
   background: transparent !important;
   font-size: 0.9375rem !important;
   color: var(--ds-text, #0f172a) !important;
-  outline: 2px solid var(--ds-border-focused) !important;
+  outline: none !important;
   padding: 8px 4px !important;
   line-height: 1.5 !important;
   box-shadow: none !important;

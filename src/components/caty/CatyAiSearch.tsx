@@ -75,14 +75,11 @@ export function CatyAiSearch({
         padding: "0 8px 0 6px",
         boxSizing: "border-box",
         background: "var(--ds-surface)",
-        border: `1px solid ${
-          focused
-            ? "var(--ds-border-focused)"
-            : "var(--ds-border)"
-        }`,
+        border: `1px solid var(--ds-border)`,
         borderRadius: 8,
-        transition: "border-color 120ms ease",
-        fontFamily: "var(--cp-font-body)",
+        transition: "all 120ms ease",
+        fontFamily: "var(--ds-font-family)",
+        boxShadow: focused ? `0 0 0 2px var(--ds-border-focused)` : "none",
       }}
     >
       <Tooltip content="Ask Caty">
@@ -140,7 +137,7 @@ export function CatyAiSearch({
           margin: 0,
           padding: 0,
           border: 0,
-          outline: "2px solid var(--ds-border-focused)",
+          outline: "none",
           background: "transparent",
           boxShadow: "none",
           font: "inherit",
@@ -183,7 +180,7 @@ export function CatyAiSearch({
             flexShrink: 0,
             fontSize: 'var(--ds-font-size-100)',
             color: "var(--ds-text-subtlest)",
-            border: "0.5px solid var(--ds-border)",
+            border: "1px solid var(--ds-border)",
             borderRadius: 4,
             padding: "0px 6px",
           }}

@@ -431,8 +431,8 @@ export default function R360Panel() {
       data-testid="r360-panel"
       style={{
         display: 'flex',
-        flexDirection: useSidebar ? 'row' : 'column',
-        gap: 0,
+        flexDirection: 'row',
+        gap: 12,
         minHeight: 600,
         alignItems: 'flex-start',
       }}
@@ -453,6 +453,7 @@ export default function R360Panel() {
             padding: '12px 0 16px', flexWrap: 'wrap',
             borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             marginBottom: 8,
+            width: '100%',
           }}
         >
           {filteredTeam.map(r => (
@@ -467,7 +468,8 @@ export default function R360Panel() {
         </div>
       ) : null}
 
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface)') }}>
+      {/* Center: R360 Board + Detail */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded
