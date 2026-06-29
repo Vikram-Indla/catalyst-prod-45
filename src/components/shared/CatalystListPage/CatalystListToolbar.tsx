@@ -60,7 +60,7 @@ export function CatalystListToolbar({
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: 8,
-        padding: '12px 24px',
+        padding: '4px 24px',
         flexShrink: 0,
       }}
     >

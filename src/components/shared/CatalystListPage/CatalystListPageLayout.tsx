@@ -89,10 +89,6 @@ export function CatalystListPageLayout({
           onTabChange={onTabChange}
           actions={tabBarActions}
         />
-      ) : tabBarActions ? (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 24px 0' }}>
-          {tabBarActions}
-        </div>
       ) : null}
 
       {showToolbar && (
@@ -103,8 +99,18 @@ export function CatalystListPageLayout({
           filters={toolbarFilters}
           hasActiveFilters={hasActiveFilters}
           onClearAll={onClearAllFilters}
-          actions={toolbarActions}
+          actions={
+            tabBarActions && !showTabBar
+              ? <>{toolbarActions}{tabBarActions}</>
+              : toolbarActions
+          }
         />
+      )}
+
+      {!showToolbar && tabBarActions && !showTabBar && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 24px' }}>
+          {tabBarActions}
+        </div>
       )}
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 32px' }}>
