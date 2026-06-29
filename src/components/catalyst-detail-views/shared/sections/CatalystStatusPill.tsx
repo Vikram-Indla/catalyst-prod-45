@@ -52,9 +52,7 @@ if (typeof document !== 'undefined') {
         cursor: pointer;
         font-family: inherit;
         font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        font-weight: 500;
         outline: 2px solid var(--ds-border-focused);
         transition: filter 0.15s ease;
         background: var(--csp-bg);
@@ -492,9 +490,7 @@ export function CatalystStatusPill({
                             padding: '0 8px',
                             borderRadius: 3,
                             fontSize: 'var(--ds-font-size-100)',
-                            fontWeight: 700,
-                            letterSpacing: '0.04em',
-                            textTransform: 'uppercase' as const,
+                            fontWeight: 500,
                             background: bg,
                             color: fg,
                           }}
