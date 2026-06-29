@@ -32,7 +32,7 @@ import PriorityLowestIcon from '@atlaskit/icon/core/priority-lowest';
 import PriorityBlockerIcon from '@atlaskit/icon/core/priority-blocker';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Tooltip from '@atlaskit/tooltip';
-import Lozenge from '@atlaskit/lozenge';
+import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import Spinner from '@atlaskit/spinner';
 import FullscreenEnterIcon from '@atlaskit/icon/core/fullscreen-enter';
 import FullscreenExitIcon from '@atlaskit/icon/core/fullscreen-exit';
@@ -42,7 +42,7 @@ import {
   canonicalFilterValueToJql,
 } from '@/lib/jql/canonicalFilterJql';
 
-export type FilterTab = 'basic' | 'advanced' | 'jql';
+export type FilterTab = 'basic' | 'jql';
 
 export interface CanonicalSavedFilter {
   id: string;
@@ -200,6 +200,14 @@ export interface CanonicalFilterProps {
   /** Persistence scope — used for rail prefs AND parent query scoping. */
   scopeType?: string;
   scopeKey?: string;
+  /**
+   * Context that drives which fields appear in the Basic tab.
+   * 'business-request' — hides Parent; work type = BR/BRD/BizGap/ChangeReq
+   * 'project'          — shows Parent; work type = project-scoped types
+   * 'product'          — all fields; work type = all types
+   * 'testhub'          — hides Parent; work type = QA Bug/Defect
+   */
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub';
 }
 
 const BASIC_FIELDS = ['Parent', 'Assignee', 'Status', 'Labels', 'Work type', 'Priority', 'Severity'];
@@ -227,6 +235,7 @@ export function CanonicalFilter({
   severityOptions = CANONICAL_SEVERITY_OPTIONS,
   scopeType,
   scopeKey,
+  filterContext,
 }: CanonicalFilterProps) {
   const scopeReady = !!(scopeType && scopeKey);
   // Uncontrolled fallback so component still works without value/onChange.
@@ -245,6 +254,23 @@ export function CanonicalFilter({
   }, [scopeKey]);
   const activeFieldCount = countCanonicalActiveFields(effValue);
   const onClearAll = useCallback(() => setEff(emptyCanonicalFilterValue), [setEff]);
+
+  // Context-aware field set.
+  // Parent is hidden when context is BR or TestHub (they are top-level, no parent).
+  const showParent = filterContext !== 'business-request' && filterContext !== 'testhub';
+
+  // Work type options scoped to context.
+  const BR_WORK_TYPES = new Set(['Business Request', 'Business Gap', 'BRD Task', 'Change Request']);
+  const PROJECT_WORK_TYPES = new Set(['Feature', 'Story', 'Task', 'Sub-task', 'QA Bug', 'Change Request', 'Production Incident']);
+  const TESTHUB_WORK_TYPES = new Set(['QA Bug', 'Defect']);
+  const contextWorkTypeOptions = useMemo(() => {
+    if (!filterContext || filterContext === 'product') return workTypeOptions;
+    const allowed = filterContext === 'business-request' ? BR_WORK_TYPES
+      : filterContext === 'project' ? PROJECT_WORK_TYPES
+      : TESTHUB_WORK_TYPES;
+    const filtered = workTypeOptions.filter((w) => allowed.has(w.label));
+    return filtered.length > 0 ? filtered : workTypeOptions;
+  }, [filterContext, workTypeOptions]);
   const clearField = useCallback((field: keyof CanonicalFilterValue) => {
     setEff({ ...effValue, [field]: [] });
   }, [effValue, setEff]);
@@ -311,6 +337,30 @@ export function CanonicalFilter({
   // unhydrated default state on mount.
   const [prefsLoaded, setPrefsLoaded] = useState<boolean>(!scopeReady);
   const userIdRef = useRef<string | null>(null);
+
+  // Self-fetch org members when caller passes empty assigneeOptions.
+  // Uses the lightweight profiles query — no joins, just id+name+avatar.
+  const [fetchedAssignees, setFetchedAssignees] = useState<CanonicalAssigneeOption[]>([]);
+  useEffect(() => {
+    if (assigneeOptions.length > 0) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name', { ascending: true })
+        .limit(500);
+      if (cancelled || error || !data) return;
+      setFetchedAssignees(
+        (data as Array<{ id: string; full_name: string | null; avatar_url: string | null }>)
+          .filter((p) => p.full_name)
+          .map((p) => ({ id: p.id, label: p.full_name!, avatarUrl: p.avatar_url ?? undefined }))
+      );
+    })();
+    return () => { cancelled = true; };
+  }, [assigneeOptions.length]);
+  const effectiveAssigneeOptions = assigneeOptions.length > 0 ? assigneeOptions : fetchedAssignees;
 
   useEffect(() => {
     if (!scopeReady) return;
@@ -623,16 +673,16 @@ export function CanonicalFilter({
             position: 'fixed',
             top: pos.top,
             left: pos.left,
-            width: 720,
+            width: 520,
             maxHeight: 'min(560px, calc(100vh - 96px))',
             background: surfaceOverlay,
             border: `1px solid ${borderSubtle}`,
             borderRadius: 6,
-            boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.20))',
+            boxShadow: 'var(--ds-shadow-raised)',
             zIndex: 9999,
             display: 'flex',
             flexDirection: 'column',
-            fontFamily: 'inherit',
+            font: token('font.body'),
             overflow: 'hidden',
           }}
         >
@@ -657,7 +707,7 @@ export function CanonicalFilter({
                 background: surface,
               }}
             >
-              {(['basic', 'advanced', 'jql'] as FilterTab[]).map((t) => {
+              {(['basic', 'jql'] as FilterTab[]).map((t) => {
                 const active = tab === t;
                 const label = t === 'jql' ? 'JQL' : t.charAt(0).toUpperCase() + t.slice(1);
                 return (
@@ -688,9 +738,8 @@ export function CanonicalFilter({
                   borderRadius: 3,
                   background: savedOpen ? blueBg : 'transparent',
                   color: savedOpen ? blue : textPrimary,
-                  fontSize: 'var(--ds-font-size-300)',
+                  font: 'inherit',
                   fontWeight: 500,
-                  fontFamily: 'inherit',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
@@ -717,7 +766,7 @@ export function CanonicalFilter({
                     background: surfaceOverlay,
                     border: `1px solid ${borderSubtle}`,
                     borderRadius: 6,
-                    boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.20))',
+                    boxShadow: 'var(--ds-shadow-raised)',
                     display: 'flex',
                     flexDirection: 'column',
                     overflow: 'hidden',
@@ -764,21 +813,6 @@ export function CanonicalFilter({
               scopeKey={scopeKey}
             />
           )}
-          {tab === 'advanced' && (
-            <AdvancedTabBody
-              value={effValue}
-              onChange={setEff}
-              scopeKey={scopeKey}
-              statusOptions={statusOptions}
-              assigneeOptions={assigneeOptions}
-              labelOptions={labelOptions}
-              workTypeOptions={workTypeOptions}
-              priorityOptions={priorityOptions}
-              severityOptions={severityOptions}
-              projectSelections={projectSelections}
-              onProjectSelectionsChange={setProjectSelections}
-            />
-          )}
           {tab === 'basic' && (
           <div style={{ display: 'flex', flex: 1, minHeight: 320 }}>
             <div
@@ -799,7 +833,7 @@ export function CanonicalFilter({
                   overflowY: 'auto',
                 }}
               >
-                {pinnedFields.map((f) => (
+                {pinnedFields.filter((f) => showParent || f !== 'Parent').map((f) => (
                   <FieldItem
                     key={f}
                     label={f}
@@ -819,10 +853,10 @@ export function CanonicalFilter({
                     onDrop={() => dropOn(f)}
                   />
                 ))}
-                {unpinnedFields.length > 0 && (
+                {unpinnedFields.filter((f) => showParent || f !== 'Parent').length > 0 && (
                   <div style={{ height: 1, background: borderSubtle, margin: '4px 0' }} />
                 )}
-                {unpinnedFields.map((f) => (
+                {unpinnedFields.filter((f) => showParent || f !== 'Parent').map((f) => (
                   <FieldItem
                     key={f}
                     label={f}
@@ -858,9 +892,8 @@ export function CanonicalFilter({
                       borderRadius: 3,
                       background: surface,
                       color: removedFields.length === 0 ? token('color.text.disabled', 'var(--ds-text-disabled)') : textSubtle,
-                      fontSize: 'var(--ds-font-size-300)',
+                      font: 'inherit',
                       fontWeight: 500,
-                      fontFamily: 'inherit',
                       cursor: removedFields.length === 0 ? 'not-allowed' : 'pointer',
                     }}
                     onMouseEnter={(e) => { if (removedFields.length > 0) e.currentTarget.style.background = hoverNeutral; }}
@@ -883,10 +916,10 @@ export function CanonicalFilter({
                         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
                         border: `1px solid ${borderSubtle}`,
                         borderRadius: 6,
-                        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+                        boxShadow: 'var(--ds-shadow-raised)',
                         padding: '4px 0',
                         zIndex: 10001,
-                        fontFamily: 'inherit',
+                        font: token('font.body'),
                       }}
                     >
                       {removedFields.map((f) => (
@@ -908,9 +941,8 @@ export function CanonicalFilter({
                     background: 'transparent',
                     color: activeFieldCount > 0 ? blue : textDisabled,
                     cursor: activeFieldCount > 0 ? 'pointer' : 'not-allowed',
-                    fontSize: 'var(--ds-font-size-300)',
+                    font: 'inherit',
                     fontWeight: 500,
-                    fontFamily: 'inherit',
                     textDecoration: 'none',
                   }}
                 >
@@ -935,9 +967,9 @@ export function CanonicalFilter({
                     onToggle={(id) => toggleSelection(fieldKey, id)}
                     onClearField={() => clearField(fieldKey)}
                     statusOptions={statusOptions}
-                    assigneeOptions={assigneeOptions}
+                    assigneeOptions={effectiveAssigneeOptions}
                     labelOptions={labelOptions}
-                    workTypeOptions={workTypeOptions}
+                    workTypeOptions={contextWorkTypeOptions}
                     priorityOptions={priorityOptions}
                     severityOptions={severityOptions}
                     scopeType={scopeType}
@@ -949,28 +981,6 @@ export function CanonicalFilter({
           </div>
           )}
 
-          <div style={{ height: 1, background: borderSubtle }} />
-
-          {/* Footer — feedback + kbd hint */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '8px 12px',
-              fontSize: 'var(--ds-font-size-200)',
-              color: textSubtle,
-            }}
-          >
-            <FeedbackButton />
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <span>Press</span>
-              <Kbd>Shift</Kbd>
-              <span>+</span>
-              <Kbd>F</Kbd>
-              <span>to open and close</span>
-            </div>
-          </div>
         </div>,
         document.body,
       )}
@@ -1000,10 +1010,10 @@ export function CanonicalFilter({
                 background: token('elevation.surface.overlay', 'var(--ds-surface)'),
                 border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                 borderRadius: 6,
-                boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+                boxShadow: 'var(--ds-shadow-raised)',
                 padding: '4px 0',
                 zIndex: 10000,
-                fontFamily: 'inherit',
+                font: token('font.body'),
               }}
             >
               {items.map((it) => (
@@ -1109,11 +1119,10 @@ function TabButton({
         border: `1px solid ${active ? blueBorder : 'transparent'}`,
         background,
         color: active ? blue : textPrimary,
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'inherit',
         fontWeight: 500,
         borderRadius: 4,
         cursor: 'pointer',
-        fontFamily: 'inherit',
         filter: active && hover ? 'brightness(0.97)' : 'none',
       }}
     >
@@ -1404,8 +1413,7 @@ function SavedSearchInput({
           border: `1px solid ${focused ? blueBorder : borderInput}`,
           borderRadius: 3,
           outline: 'none',
-          fontSize: 'var(--ds-font-size-300)',
-          fontFamily: 'inherit',
+          font: 'inherit',
           color: token('color.text', 'var(--ds-text)'),
           background: token('elevation.surface', 'var(--ds-surface)'),
           boxShadow: focused ? `0 0 0 1px ${blueBorder}` : 'none',
@@ -2086,7 +2094,7 @@ function ProjectPickerPopover({
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${borderSubtle}`,
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-raised)',
         zIndex: 10000,
         display: 'flex',
         flexDirection: 'column',
@@ -2454,7 +2462,7 @@ function OperatorMenu({
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-raised)',
         padding: '4px 0',
         zIndex: 10000,
         fontFamily: 'inherit',
@@ -2511,7 +2519,7 @@ function AddFilterMenu({
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-raised)',
         padding: '4px 0',
         zIndex: 10001,
         fontFamily: 'inherit',
@@ -2627,7 +2635,7 @@ function ValuePickerPopover({
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-raised)',
         zIndex: 10000,
         display: 'flex',
         flexDirection: 'column',
@@ -3003,7 +3011,7 @@ function FieldEditor(props: FieldEditorProps) {
     options = props.statusOptions.map((s) => ({
       id: s.value,
       label: s.label,
-      displayNode: <Lozenge appearance={s.appearance as any}>{s.label}</Lozenge>,
+      displayNode: <StatusLozenge status={s.label} size="sm" />,
     }));
   } else if (fieldKey === 'assignee') {
     options = props.assigneeOptions.map((a) => ({

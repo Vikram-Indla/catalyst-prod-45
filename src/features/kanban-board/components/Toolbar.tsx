@@ -192,6 +192,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
         onChange={handleCanonicalChange}
         scopeType="project"
         scopeKey={projectKey}
+        filterContext="project"
         workTypeOptions={kanbanWorkTypeOptions}
         assigneeOptions={kanbanAssigneeOptions}
         myFilters={savedFilters.map((f) => ({ id: f.id, name: f.name }))}

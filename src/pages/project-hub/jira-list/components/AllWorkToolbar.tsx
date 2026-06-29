@@ -1227,6 +1227,7 @@ function CanonicalAllWorkFilterBridge({
       onChange={handleChange}
       scopeType="project"
       scopeKey={projectKey}
+      filterContext="project"
       statusOptions={statusOptions}
       assigneeOptions={assigneeOptions}
       labelOptions={labelOptions}
