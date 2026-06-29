@@ -220,15 +220,39 @@ export function MilestonesPage() {
           rows={grouped ? undefined : filtered}
           groups={grouped ?? undefined}
           calculateProgress={() => null}
-          onOpenDetail={() => {/* milestone detail not yet wired */}}
-          onRelease={() => {}}
-          onArchive={() => {}}
+          onOpenDetail={() => {}}
+          onRelease={async (r) => {
+            try {
+              await productMilestoneService.updateMilestone(r.id, { status: 'completed' });
+              queryClient.invalidateQueries({ queryKey: ['product-milestones', product?.id] });
+              catalystFlag.success('Milestone marked completed.');
+            } catch (e: any) {
+              catalystFlag.error(e?.message ?? 'Failed to complete milestone.');
+            }
+          }}
+          onArchive={async (r) => {
+            try {
+              await productMilestoneService.archiveMilestone(r.id);
+              queryClient.invalidateQueries({ queryKey: ['product-milestones', product?.id] });
+              catalystFlag.success('Milestone archived.');
+            } catch (e: any) {
+              catalystFlag.error(e?.message ?? 'Failed to archive milestone.');
+            }
+          }}
           onMerge={() => {}}
           onEdit={(r) => {
             const src = rawMilestones.find((m) => (m as any).id === r.id);
             if (src) { setEditingMilestone(src); setIsCreateModalOpen(true); }
           }}
-          onDelete={() => {}}
+          onDelete={async (r) => {
+            try {
+              await productMilestoneService.deleteMilestone(r.id);
+              queryClient.invalidateQueries({ queryKey: ['product-milestones', product?.id] });
+              catalystFlag.success('Milestone deleted.');
+            } catch (e: any) {
+              catalystFlag.error(e?.message ?? 'Failed to delete milestone.');
+            }
+          }}
           collapsedGroups={collapsedGroups}
           onToggleGroup={toggleGroup}
           density={density}

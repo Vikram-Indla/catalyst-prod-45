@@ -139,6 +139,18 @@ export class ProductMilestoneService {
   }
 
   /**
+   * Delete milestone (hard delete)
+   */
+  async deleteMilestone(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('product_milestones')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  }
+
+  /**
    * Archive milestone
    */
   async archiveMilestone(id: string): Promise<void> {
