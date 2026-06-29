@@ -10,11 +10,15 @@
  * show a compact "Not covered" state for Story items (uncovered IS a real, useful signal — not a default).
  * ADS tokens only; @atlaskit Lozenge owns its color.
  */
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
-import { Heading } from '@/components/ads';
+import Heading from '@atlaskit/heading';
+import Tooltip from '@atlaskit/tooltip';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
 import { supabase } from '@/integrations/supabase/client';
 
 type CoverageMode = 'story' | 'defect' | 'incident';
@@ -100,8 +104,9 @@ function useStoryTestCoverage(issueKey: string) {
 
 export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: TestCoveragePanelProps) {
   const { data, isLoading } = useStoryTestCoverage(issueKey);
+  const [expanded, setExpanded] = useState(true);
 
-  const heading = mode === 'incident' ? 'Regression coverage' : 'Test coverage';
+  const heading = mode === 'incident' ? 'Regression coverage' : 'Test cases';
   const noun = mode === 'incident' ? 'this incident' : mode === 'defect' ? 'this defect' : 'this story';
 
   if (isLoading) {
@@ -116,49 +121,121 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
   const hasFailing = data.cases.some((c) => c.runStatus === 'failed');
   const isMismatch = mode === 'story' && statusCategory === 'Done' && hasFailing;
   const isRegressionGap = mode === 'incident' && !data.covered;
+  const count = data.cases.length;
+  const bodyId = `test-cases-body-${issueKey}`;
+  const onToggle = () => setExpanded((e) => !e);
 
+  // Collapsible section header — mirrors LinkedWorkItemsHeader pattern:
+  // chevron toggle button + Atlaskit Heading + count badge. Same chevron
+  // icons, same vertical rhythm, same ADS Heading size="small" typography.
   return (
-    <div style={{ marginBottom: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <Heading size="small">{heading}</Heading>
-        {data.covered
-          ? <Lozenge appearance="success">Covered</Lozenge>
-          : <Lozenge appearance="default">Not covered</Lozenge>}
-        {data.defectCount > 0 && <Lozenge appearance="removed">{data.defectCount} defect{data.defectCount === 1 ? '' : 's'}</Lozenge>}
-      </div>
-
-      {isMismatch && (
-        <div style={{ background: 'var(--ds-background-danger)', border: '1px solid var(--ds-border-danger)', borderRadius: 'var(--ds-border-radius)', padding: 'var(--ds-space-100) var(--ds-space-150)', marginBottom: 'var(--ds-space-100)', color: 'var(--ds-text-danger)' }}>
-          Governance flag — this story is marked Done but has a failing test.
-        </div>
-      )}
-
-      {isRegressionGap && (
-        <div style={{ background: 'var(--ds-background-warning)', border: '1px solid var(--ds-border-warning)', borderRadius: 'var(--ds-border-radius)', padding: 'var(--ds-space-100) var(--ds-space-150)', marginBottom: 'var(--ds-space-100)', color: 'var(--ds-text-warning)' }}>
-          Coverage gap — no regression test is linked to this incident.
-        </div>
-      )}
-
-      {!data.covered ? (
-        <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
-          No test case is linked to {noun}.
-        </div>
-      ) : (
-        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, overflow: 'hidden' }}>
-          {data.cases.map((c, i) => (
-            <div
-              key={c.caseKey}
+    <div style={{ marginTop: 16 }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+          padding: '4px 0',
+          marginBottom: 4,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+          <Tooltip content={expanded ? 'Collapse' : 'Expand'} position="bottom">
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-expanded={expanded}
+              aria-controls={bodyId}
+              aria-label={expanded ? 'Collapse' : 'Expand'}
               style={{
-                display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-                borderTop: i === 0 ? 'none' : '1px solid var(--ds-border)',
-                background: 'var(--ds-surface)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 24,
+                height: 24,
+                marginLeft: -4,
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                color: 'var(--ds-text-subtle, #505258)',
+                borderRadius: 3,
               }}
             >
-              <span style={{ fontWeight: 600, color: 'var(--ds-text)', minWidth: 84 }}>{c.caseKey}</span>
-              <span style={{ flex: 1, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</span>
-              <Lozenge appearance={runAppearance(c.runStatus)}>{c.runStatus.replace('_', ' ')}</Lozenge>
+              {expanded
+                ? <ChevronDownIcon label="" color="var(--ds-text-subtle)" />
+                : <ChevronRightIcon label="" color="var(--ds-text-subtle)" />
+              }
+            </button>
+          </Tooltip>
+          <span
+            style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', padding: '0 4px' }}
+            onClick={onToggle}
+          >
+            <Heading size="small">{heading}</Heading>
+          </span>
+          {count > 0 && (
+            <span
+              aria-label={`${count} test case${count === 1 ? '' : 's'}`}
+              style={{
+                display: 'inline',
+                fontSize: 14,
+                fontWeight: 400,
+                color: 'var(--ds-text-subtlest, #626F86)',
+                marginLeft: 4,
+              }}
+            >
+              {count}
+            </span>
+          )}
+        </div>
+        {expanded && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {data.covered
+              ? <Lozenge appearance="success">Covered</Lozenge>
+              : <Lozenge appearance="default">Not covered</Lozenge>}
+            {data.defectCount > 0 && <Lozenge appearance="removed">{data.defectCount} defect{data.defectCount === 1 ? '' : 's'}</Lozenge>}
+          </div>
+        )}
+      </div>
+
+      {expanded && (
+        <div id={bodyId}>
+          {isMismatch && (
+            <div style={{ background: 'var(--ds-background-danger)', border: '1px solid var(--ds-border-danger)', borderRadius: 'var(--ds-border-radius)', padding: 'var(--ds-space-100) var(--ds-space-150)', marginBottom: 'var(--ds-space-100)', color: 'var(--ds-text-danger)' }}>
+              Governance flag — this story is marked Done but has a failing test.
             </div>
-          ))}
+          )}
+
+          {isRegressionGap && (
+            <div style={{ background: 'var(--ds-background-warning)', border: '1px solid var(--ds-border-warning)', borderRadius: 'var(--ds-border-radius)', padding: 'var(--ds-space-100) var(--ds-space-150)', marginBottom: 'var(--ds-space-100)', color: 'var(--ds-text-warning)' }}>
+              Coverage gap — no regression test is linked to this incident.
+            </div>
+          )}
+
+          {!data.covered ? (
+            <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)', marginLeft: 24 }}>
+              No test case is linked to {noun}.
+            </div>
+          ) : (
+            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, overflow: 'hidden' }}>
+              {data.cases.map((c, i) => (
+                <div
+                  key={c.caseKey}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
+                    borderTop: i === 0 ? 'none' : '1px solid var(--ds-border)',
+                    background: 'var(--ds-surface)',
+                  }}
+                >
+                  <span style={{ fontWeight: 600, color: 'var(--ds-text)', minWidth: 84 }}>{c.caseKey}</span>
+                  <span style={{ flex: 1, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</span>
+                  <Lozenge appearance={runAppearance(c.runStatus)}>{c.runStatus.replace('_', ' ')}</Lozenge>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
