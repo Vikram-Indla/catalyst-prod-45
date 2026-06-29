@@ -27,7 +27,7 @@ const baseTask: PlannerTask = {
   reporterName: 'Nada Alfassam',
   reporterInitials: 'NA',
   teamName: 'Platform',
-  teamColor: '#0052CC',
+  teamColor: '#0052CC', // ads-scanner:ignore-line — Storybook mock data
   dueDate: nextWeek,
   blocked: false,
   progress: 45,

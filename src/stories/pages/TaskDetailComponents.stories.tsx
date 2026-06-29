@@ -29,7 +29,7 @@ const mockTask = {
   reporterInitials: 'NA',
   teamId: 'w1',
   teamName: 'Platform Engineering',
-  teamColor: '#0052CC',
+  teamColor: '#0052CC', // ads-scanner:ignore-line — Storybook mock data
   dueDate: new Date(Date.now() + 7 * 86_400_000).toISOString(),
   startDate: new Date(Date.now() - 3 * 86_400_000).toISOString(),
   blocked: false,
