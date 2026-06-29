@@ -179,8 +179,8 @@ export function MessageList({
               onJumpMostRecent={handleJumpRecent}
               onJumpBeginning={handleJumpBeginning}
             />
-          ) : item.message!.eventType === 'huddle_summary' ? (
-            <HuddleEventRow key={item.key} message={item.message!} />
+          ) : item.message!.eventType === 'huddle_summary' || item.message!.eventType === 'huddle_live' ? (
+            <HuddleEventRow key={item.key} message={item.message!} onOpenThread={onOpenThread} />
           ) : (
             <MessageBubble
               key={item.key}

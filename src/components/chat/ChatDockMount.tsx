@@ -1,6 +1,7 @@
 import React, { useTransition, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChatRealtimeProvider } from '@/hooks/chat/ChatRealtimeProvider';
+import { ChatGlobalRealtime } from '@/components/chat/ChatGlobalRealtime';
 import { ChatDock } from '@/components/chat/dock/ChatDock';
 import {
   CHAT_OPEN_CONVERSATION_EVENT,
@@ -113,6 +114,7 @@ export default function ChatDockMount() {
 
   return (
     <ChatRealtimeProvider>
+      <ChatGlobalRealtime />
       <ChatDock
         openConversationIds={openIds}
         activeId={activeId}

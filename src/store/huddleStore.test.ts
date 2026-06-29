@@ -18,7 +18,9 @@ vi.mock('@/integrations/supabase/client', () => {
     const c: any = {};
     c.update = (vals: any) => { dbCalls.push({ op: 'update', vals }); return c; };
     c.insert = (vals: any) => { dbCalls.push({ op: 'insert', vals }); return c; };
-    c.eq = () => c; c.is = () => c; c.select = () => c; c.maybeSingle = async () => ({ data: null });
+    c.eq = () => c; c.is = () => c; c.in = () => c; c.filter = () => c; c.select = () => c;
+    c.single = async () => ({ data: { id: 'evt1' }, error: null });
+    c.maybeSingle = async () => ({ data: null });
     return c;
   };
   return { supabase: { from: () => chain() } };
@@ -68,15 +70,30 @@ describe('huddleStore', () => {
     expect(useHuddleStore.getState().chatPanelOpen).toBe(false);
   });
 
-  it('leave inserts a huddle_summary event message', async () => {
+  it('enter logs a huddle_live event message at call start', async () => {
+    dbCalls.length = 0;
+    await useHuddleStore.getState().enter({
+      conversationId: 'c1', huddleId: 'h1', conversationName: 'Zulqarnain', selfId: 'me',
+    });
+    await Promise.resolve(); // let the async insert flush
+    const live = dbCalls.find(
+      (c) => c.op === 'insert' && c.vals?.event_type === 'huddle_live',
+    );
+    expect(live).toBeTruthy();
+    expect(live.vals.event_meta.huddle_id).toBe('h1');
+    expect(live.vals.event_meta.with_name).toBe('Zulqarnain');
+    expect(live.vals.body_text).toBe('Huddle is happening');
+  });
+
+  it('leave flips the event row to a huddle_summary', async () => {
     await useHuddleStore.getState().enter({
       conversationId: 'c1', huddleId: 'h1', conversationName: 'Zulqarnain', selfId: 'me',
     });
     dbCalls.length = 0;
     useHuddleStore.getState().leave();
-    await Promise.resolve(); // let the async insert flush
+    await Promise.resolve(); // let the async update flush
     const summary = dbCalls.find(
-      (c) => c.op === 'insert' && c.vals?.event_type === 'huddle_summary',
+      (c) => c.op === 'update' && c.vals?.event_type === 'huddle_summary',
     );
     expect(summary).toBeTruthy();
     expect(summary.vals.event_meta.huddle_id).toBe('h1');
