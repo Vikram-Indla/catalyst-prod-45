@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw } from '@/lib/atlaskit-icons';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle, RefreshCw, Home } from '@/lib/atlaskit-icons';
+import Button from '@atlaskit/button/new';
 
 const RELOAD_KEY = 'catalyst-chunk-reload';
 
@@ -62,26 +62,63 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
-          <div className="max-w-md w-full text-center space-y-6">
-            <div className="w-16 h-16 rounded-full bg-destructive/10 mx-auto flex items-center justify-center">
-              <AlertTriangle className="h-8 w-8 text-destructive" />
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--ds-surface)',
+          padding: '16px',
+        }}>
+          <div style={{ maxWidth: 448, width: '100%', textAlign: 'center' }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              background: 'var(--ds-background-danger)',
+              margin: '0 auto 24px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <AlertTriangle style={{ width: 32, height: 32, color: 'var(--ds-icon-danger)' }} />
             </div>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
-              <p className="text-muted-foreground">
-                An unexpected error occurred. Please try refreshing the page.
-              </p>
-            </div>
+            <h1 style={{
+              fontSize: 'var(--ds-font-size-500)',
+              fontWeight: 700,
+              color: 'var(--ds-text)',
+              margin: '0 0 8px',
+            }}>
+              Something went wrong
+            </h1>
+            <p style={{ color: 'var(--ds-text-subtle)', margin: '0 0 24px', lineHeight: 1.5 }}>
+              An unexpected error occurred. Refreshing the page usually fixes this.
+              If it keeps happening, try going back to the home screen.
+            </p>
             {this.state.error && import.meta.env.DEV && (
-              <pre className="text-xs text-left bg-muted p-4 rounded-lg overflow-auto max-h-32">
+              <pre style={{
+                fontSize: 11,
+                textAlign: 'left',
+                background: 'var(--ds-surface-sunken)',
+                border: '1px solid var(--ds-border)',
+                borderRadius: 4,
+                padding: '12px 16px',
+                overflowX: 'auto',
+                maxHeight: 128,
+                color: 'var(--ds-text-subtle)',
+                margin: '0 0 24px',
+              }}>
                 {this.state.error.message}
               </pre>
             )}
-            <Button onClick={this.handleRetry} className="gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Refresh Page
-            </Button>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Button onClick={this.handleRetry} iconBefore={<RefreshCw style={{ width: 16, height: 16 }} />}>
+                Refresh Page
+              </Button>
+              <Button
+                appearance="subtle"
+                onClick={() => { window.location.href = '/'; }}
+                iconBefore={<Home style={{ width: 16, height: 16 }} />}
+              >
+                Go home
+              </Button>
+            </div>
           </div>
         </div>
       );
