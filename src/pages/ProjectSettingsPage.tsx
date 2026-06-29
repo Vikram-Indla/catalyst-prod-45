@@ -15,14 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,25 +85,16 @@ export default function ProjectSettingsPage() {
   return (
     <div className="min-h-screen bg-muted/30 p-6">
       {/* Breadcrumbs */}
-      <Breadcrumb className="mb-3">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/projects">Projects</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to={`/projects/${project.key}`}>{project.name}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Settings</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="mb-3">
+        <Breadcrumbs
+          LinkComponent={Link}
+          items={[
+            { key: 'projects', text: 'Projects', href: '/projects' },
+            { key: 'project', text: project.name, href: `/projects/${project.key}` },
+            { key: 'settings', text: 'Settings', isCurrent: true },
+          ] satisfies BreadcrumbItem[]}
+        />
+      </div>
 
       {/* Page Header */}
       <div className="mb-6">

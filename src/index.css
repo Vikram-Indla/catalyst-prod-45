@@ -7666,3 +7666,24 @@ table th[class*="css-"] {
 .replay-title-hover-zone:hover .replay-chip {
   opacity: 1 !important;
 }
+
+/* ── cat-breadcrumb-host — Jira-parity overrides on @atlaskit/breadcrumbs ──
+ * AK default separator: padding-inline 8px symmetric — correct, no override.
+ * All crumbs uniform 14px (no first-crumb size exception).
+ */
+
+/* nav is non-interactive — suppress browser focus ring and any selection affordance */
+.cat-breadcrumb-host nav {
+  outline: none;
+  user-select: none;
+}
+
+/* icon → text gap: 4px (first span only when 2+ spans = icon crumb) */
+.cat-breadcrumb-host a > span:first-child:not(:only-child) {
+  margin-inline-end: 4px;
+}
+
+/* hover underline on all clickable crumbs */
+.cat-breadcrumb-host a:hover {
+  text-decoration: underline;
+}
