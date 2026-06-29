@@ -433,8 +433,14 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap', flexShrink: 0 }}>{item.age_days}d</span>
               </div>
 
-              {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space */}
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
+              {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space.
+                  The flex item is a plain block wrapper; the -webkit-box clamp lives on the
+                  inner div. A -webkit-box that is itself a flex child gets blockified to
+                  flow-root, which silently disables -webkit-line-clamp (title spills to 3
+                  lines and overlaps the status row). Wrapping restores the clamp. */}
+              <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis' } as React.CSSProperties}>{item.title}</div>
+              </div>
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>
