@@ -103,7 +103,14 @@ export const RING_CANVAS_H = 620;
 export const AVATAR_R = 36; // half of 72px avatar (V13: 56 → 72px)
 export const PAGE_SIZE = 8;
 
-// Slot positions as percentages/px for absolute placement (228x145 cards)
+// Radial slot positions (%) for absolute placement of the 228×145 orbital
+// cards around the centre avatar. These are GEOMETRIC COORDINATES, not spacing
+// tokens — they must NOT be snapped to the 4/8px grid. The canonical
+// SpacingGridValidator already excludes left/top coordinates and % values
+// (design-governance/rules/spacing-grid-validator.js); the buggy one-shot
+// codemod-fix-spacing.cjs did not, and grid-snapped these on 2026-06-29
+// (commit d76b5d62c), collapsing the right column onto the avatar. Restored to
+// the production spread; the codemod has since been aligned to the validator.
 export const SLOT_POSITIONS: { left: string; top: string }[] = [
   { left: '4%',  top: '5%' },       // Slot 1: top-left
   { left: '36%', top: '2%' },       // Slot 2: top-center

@@ -1,9 +1,11 @@
 /**
  * statusPalette — CANONICAL source of truth for work-item status pill colors.
  *
- * Bold ADS tokens, Atlassian-design/components/lozenge parity.
- * Each STATUS_BG tier uses a *-bold token so pills render vivid and legible
- * in both light and dark mode without hand-rolled hex.
+ * Subtle ADS tokens, Atlassian-design/components/lozenge (default appearance)
+ * parity. Each STATUS_BG tier uses a subtle background token paired with its
+ * matching colored text token so pills render calm and legible in both light
+ * and dark mode without hand-rolled hex. (2026-06-29: reverted from the *-bold
+ * tier — Vikram confirmed bold read too loud/scattered vs production.)
  *
  * Every renderer that paints a work-item status pill (header pill, table cell,
  * For You row, card, hover) MUST import STATUS_BG / statusBg from here. Do NOT
@@ -21,28 +23,27 @@ export type StatusAppearance =
   | 'new';
 
 /**
- * ADS bold background tokens paired with WCAG-correct text tokens.
- *
- * moved uses dark text (not inverse) — #E2B203 amber with white text fails
- * WCAG AA (contrast ~1.9:1). Dark text passes 4.7:1.
- * new uses discovery-bold (purple) + inverse — no subtle-only constraint.
+ * ADS subtle background tokens paired with their matching colored text tokens.
+ * This is the canonical Atlaskit Lozenge "default" (subtle) pairing — each
+ * subtle bg is designed to pair with its same-hue *text* token in both light
+ * and dark mode, so contrast is WCAG-correct without hand-rolled values.
  */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-background-success-bold)',
-  inprogress: 'var(--ds-background-information-bold)',
-  moved:      'var(--ds-background-warning-bold)',
-  new:        'var(--ds-background-discovery-bold)',
-  removed:    'var(--ds-background-danger-bold)',
+  success:    'var(--ds-background-success)',
+  inprogress: 'var(--ds-background-information)',
+  moved:      'var(--ds-background-warning)',
+  new:        'var(--ds-background-discovery)',
+  removed:    'var(--ds-background-danger)',
   default:    'var(--ds-background-neutral)',
 };
 
-/** Matching text token per status. Inverse for dark bgs, dark text for amber. */
+/** Matching colored text token per subtle status bg (same-hue ADS pairing). */
 export const STATUS_FG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-text-inverse)',
-  inprogress: 'var(--ds-text-inverse)',
-  moved:      'var(--ds-text)',
-  new:        'var(--ds-text-inverse)',
-  removed:    'var(--ds-text-inverse)',
+  success:    'var(--ds-text-success)',
+  inprogress: 'var(--ds-text-information)',
+  moved:      'var(--ds-text-warning)',
+  new:        'var(--ds-text-discovery)',
+  removed:    'var(--ds-text-danger)',
   default:    'var(--ds-text)',
 };
 
@@ -135,9 +136,9 @@ export function categoryBgBold(category: string | null | undefined): string {
  * statusPalette.canonical.test.ts + the design-governance STATUS_COLOR_LOCK rule.
  */
 export const STATUS_CATEGORY_BG: Record<'todo' | 'in_progress' | 'done', string> = {
-  todo:        STATUS_BG.default,    // gray
-  in_progress: STATUS_BG.inprogress, // periwinkle blue
-  done:        STATUS_BG.success,    // lime green
+  todo:        STATUS_BG.default,    // neutral grey
+  in_progress: STATUS_BG.inprogress, // subtle blue
+  done:        STATUS_BG.success,    // subtle green
 };
 
 /** Resolve a status-pill background from a status_category (canonical). */
