@@ -43,8 +43,8 @@ export function OutgoingMessagesBanner({ onDismiss }: OutgoingMessagesBannerProp
         aria-label="Dismiss"
         style={{
           position: 'absolute',
-          top: 8,
-          right: 8,
+          top: 10,
+          right: 10,
           width: 24,
           height: 24,
           padding: 0,

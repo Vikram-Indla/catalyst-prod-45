@@ -435,7 +435,7 @@ export function injectEditorStyles(): void {
       content: '';
       position: absolute;
       left: -8px;
-      top: 48%;
+      top: 50%;
       width: 8px;
       height: 8px;
       margin-top: -4px;

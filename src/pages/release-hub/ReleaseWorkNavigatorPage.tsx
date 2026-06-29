@@ -655,7 +655,7 @@ function MultiChip({
             minWidth: 260,
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >
@@ -856,7 +856,7 @@ function FixVersionChip({
             minWidth: 160,
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '4px 0',
           }}
         >
@@ -890,7 +890,7 @@ function FixVersionChip({
             minWidth: 280, maxHeight: 360, overflowY: 'auto',
             background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+            boxShadow: 'var(--ds-shadow-overlay)',
             padding: '8px 0',
             display: 'flex', flexDirection: 'column',
           }}

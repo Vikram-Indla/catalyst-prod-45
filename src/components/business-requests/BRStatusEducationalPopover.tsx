@@ -98,7 +98,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
           display: isOpen ? 'block' : 'none',
           position: 'absolute',
           zIndex: 400,
-          top: '48%',
+          top: '100%',
           left: 0,
           marginTop: '4px',
           backgroundColor: 'var(--ds-surface)',

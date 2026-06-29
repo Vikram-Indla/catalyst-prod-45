@@ -473,7 +473,7 @@
 .rai-timeline::before {
   content: '';
   position: absolute;
-  left: 4px;
+  left: 5px;
   top: 0;
   bottom: 0;
   width: 1px;
@@ -488,7 +488,7 @@
 .rai-day-marker {
   position: absolute;
   left: -20px;
-  top: 0px;
+  top: 2px;
   width: 11px;
   height: 11px;
   border-radius: 50%;
@@ -704,7 +704,7 @@
 
 .rai-rtl .rai-timeline::before {
   left: auto;
-  right: 4px;
+  right: 5px;
 }
 
 .rai-rtl .rai-day-marker {

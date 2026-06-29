@@ -152,8 +152,8 @@
   content: '' !important;
   position: absolute !important;
   bottom: 4px !important;
-  left: 4px !important;
-  right: 4px !important;
+  left: 6px !important;
+  right: 6px !important;
   height: var(--ra-bar-height) !important;
   background: var(--ra-bar-track-bg) !important;
   border-radius: var(--ra-bar-radius) !important;
@@ -167,8 +167,8 @@
 .ra-enterprise-clean .allocation-bar {
   position: absolute !important;
   bottom: 4px !important;
-  left: 4px !important;
-  right: 4px !important;
+  left: 6px !important;
+  right: 6px !important;
   height: var(--ra-bar-height) !important;
   border-radius: var(--ra-bar-radius) !important;
   z-index: 1 !important;
@@ -331,7 +331,7 @@
 .ra-enterprise-clean [role="grid"] .absolute.rounded-md::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 0px !important;
+  bottom: 2px !important;
   left: 4px !important;
   right: 4px !important;
   height: var(--ra-bar-height) !important;

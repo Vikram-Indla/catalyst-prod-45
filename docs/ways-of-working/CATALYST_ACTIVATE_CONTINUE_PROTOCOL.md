@@ -192,9 +192,6 @@ Every session must create a log at `sessions/<NNN>_<purpose>.md`:
 
 ## Handover state
 [What the next session needs to know]
-
-## Aiden Validation Block
-[Copy full block here]
 ```
 
 ---

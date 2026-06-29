@@ -313,7 +313,7 @@
 .ws-search-icon {
   position: absolute;
   left: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--ws-text-muted);
 }
@@ -321,7 +321,7 @@
 .ws-search-shortcut {
   position: absolute;
   right: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   font-size: var(--ws-text-xs);
   color: var(--ws-text-muted);
@@ -1103,8 +1103,8 @@
 .ws-activity-item::before {
   content: '';
   position: absolute;
-  left: 12px;
-  top: 32px;
+  left: 11px;
+  top: 36px;
   bottom: 0;
   width: 2px;
   background: var(--ws-border-secondary);
@@ -1210,8 +1210,8 @@
 
 .ws-toast-container {
   position: fixed;
-  bottom: 0.5rem;
-  left: 48%;
+  bottom: 1.5rem;
+  left: 50%;
   transform: translateX(-50%);
   z-index: 500;
   display: flex;

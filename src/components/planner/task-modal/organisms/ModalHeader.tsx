@@ -303,8 +303,8 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
           <div
             style={{
               position: 'fixed',
-              top: '48%',
-              left: '48%',
+              top: '50%',
+              left: '50%',
               transform: 'translate(-50%, -50%)',
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderRadius: '16px',

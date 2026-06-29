@@ -20,24 +20,24 @@ function read(rel: string) {
 }
 
 describe('canonical status palette', () => {
-  // 2026-06-28 — migrated to ADS bold tokens (Lozenge parity).
-  // Bold bgs render vivid in both light+dark. moved uses dark text (not inverse)
-  // because #E2B203 amber with white text fails WCAG AA (~1.9:1).
-  it('pins each status to its ADS bold background token', () => {
-    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold)');
-    expect(statusBg('success')).toBe('var(--ds-background-success-bold)');
+  // 2026-06-29 — reverted to ADS subtle tokens (Lozenge default appearance).
+  // Bold read too loud/scattered vs production; subtle bg + matching colored
+  // text is the canonical same-hue ADS pairing, WCAG-correct in light+dark.
+  it('pins each status to its ADS subtle background token', () => {
+    expect(STATUS_BG.success).toBe('var(--ds-background-success)');
+    expect(statusBg('success')).toBe('var(--ds-background-success)');
     expect(STATUS_TEXT).toBe('var(--ds-text)');
   });
 
-  it('maps each category to its canonical ADS bold bg', () => {
-    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold)');
-    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information-bold)');
+  it('maps each category to its canonical ADS subtle bg', () => {
+    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success)');
+    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information)');
     expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral)');
   });
 
-  it('pairs each status bg with its matching text token (WCAG-correct)', () => {
-    expect(statusFg('success')).toBe('var(--ds-text-inverse)');
-    expect(statusFg('inprogress')).toBe('var(--ds-text-inverse)');
+  it('pairs each subtle bg with its matching colored text token (WCAG-correct)', () => {
+    expect(statusFg('success')).toBe('var(--ds-text-success)');
+    expect(statusFg('inprogress')).toBe('var(--ds-text-information)');
     expect(statusFg('default')).toBe('var(--ds-text)');
   });
 });

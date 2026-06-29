@@ -100,7 +100,7 @@ export default function ReplyComposer({
               style={{
                 position: 'absolute',
                 right: '4px',
-                top: '48%',
+                top: '50%',
                 transform: 'translateY(-50%)',
                 background: 'none',
                 border: 'none',

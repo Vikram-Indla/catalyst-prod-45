@@ -67,7 +67,7 @@
 /* ─── PANEL ─── */
 .jf-panel {
   position: absolute;
-  top: 48%;
+  top: 100%;
   left: 0;
   margin-top: 4px;
   width: 520px;

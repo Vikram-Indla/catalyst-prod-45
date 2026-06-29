@@ -170,7 +170,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               className="absolute"
               title={m.title}
               style={{
-                left: `${mPos}%`, top: '48%',
+                left: `${mPos}%`, top: '50%',
                 width: 7, height: 7, marginTop: -3.5, marginLeft: -3.5,
                 background: m.completed ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : barColor,
                 border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 1,

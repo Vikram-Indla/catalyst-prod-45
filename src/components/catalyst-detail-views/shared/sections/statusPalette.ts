@@ -51,6 +51,80 @@ export function statusBg(appearance: string): string {
   return STATUS_BG[appearance as StatusAppearance] ?? STATUS_BG.default;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SUBTLE tier — pale ADS background + matching colored text.
+ * Used by the detail-header CatalystStatusPill (Vikram locked 2026-06-29:
+ * "bold read too loud" on the header). Kept separate from the bold STATUS_BG
+ * above so the header stays subtle while list/table pills go Jira-bold.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+export const STATUS_BG_SUBTLE: Record<StatusAppearance, string> = {
+  success:    'var(--ds-background-success)',
+  inprogress: 'var(--ds-background-information)',
+  moved:      'var(--ds-background-warning)',
+  new:        'var(--ds-background-discovery)',
+  removed:    'var(--ds-background-danger)',
+  default:    'var(--ds-background-neutral)',
+};
+export const STATUS_FG_SUBTLE: Record<StatusAppearance, string> = {
+  success:    'var(--ds-text-success)',
+  inprogress: 'var(--ds-text-information)',
+  moved:      'var(--ds-text-warning)',
+  new:        'var(--ds-text-discovery)',
+  removed:    'var(--ds-text-danger)',
+  default:    'var(--ds-text)',
+};
+/** Resolve a SUBTLE (pale) status-pill bg — for the detail header pill. */
+export function statusBgSubtle(appearance: string): string {
+  return STATUS_BG_SUBTLE[appearance as StatusAppearance] ?? STATUS_BG_SUBTLE.default;
+}
+/** Resolve the matching SUBTLE text colour. */
+export function statusFgSubtle(appearance?: string): string {
+  return STATUS_FG_SUBTLE[appearance as StatusAppearance] ?? STATUS_FG_SUBTLE.default;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * BOLD tier — exact Jira-parity (DOM-probed from production Jira list 2026-06-29).
+ *
+ * Solid pastel fills + dark text, byte-for-byte what the Jira status lozenge
+ * renders. These have NO ADS --ds-* token equivalent: the ADS *-bold tokens
+ * resolve to a BRIGHTER lime (#94C748) / periwinkle and a transparent neutral,
+ * which diverge from Jira's softer #B3DF72 / solid #DDDEE1. Hence the documented
+ * Jira-parity hex bypass below. Text is pinned dark (#292A2E) in BOTH themes —
+ * the pill supplies its own light fill, so it never flips white.
+ *
+ * Used by list / table / For-You status lozenges (WorkItemStatusLozenge,
+ * JiraStatusLozenge, JiraTable status cell, ForYouRow, hierarchy StatusBadge).
+ * ═══════════════════════════════════════════════════════════════════════════ */
+export const STATUS_BG_BOLD: Record<StatusAppearance, string> = {
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+  success:    '#B3DF72',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+  inprogress: '#8FB8F6',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+  moved:      '#F9C84E',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+  new:        '#D8A0F7',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+  removed:    '#FD9891',
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+  default:    '#DDDEE1',
+};
+/** Jira bold lozenge text — pinned dark, same in light & dark (probed 2026-06-29). */
+/* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-06-29) */
+export const STATUS_FG_BOLD = '#292A2E';
+/** Resolve a Jira-parity BOLD status-pill bg from an appearance string. */
+export function statusBgBold(appearance: string): string {
+  return STATUS_BG_BOLD[appearance as StatusAppearance] ?? STATUS_BG_BOLD.default;
+}
+/** Jira-parity BOLD text colour (dark, both themes). */
+export function statusFgBold(_appearance?: string): string {
+  return STATUS_FG_BOLD;
+}
+/** Resolve a Jira-parity BOLD bg from a status_category. */
+export function categoryBgBold(category: string | null | undefined): string {
+  return statusBgBold(categoryToAppearance(category));
+}
+
 /**
  * THE THREE LOCKED CATEGORY COLORS — keyed by ph_issues.status_category.
  * gray (To Do) · blue (In Progress) · green (Done). Admin status-badge config
@@ -58,9 +132,9 @@ export function statusBg(appearance: string): string {
  * statusPalette.canonical.test.ts + the design-governance STATUS_COLOR_LOCK rule.
  */
 export const STATUS_CATEGORY_BG: Record<'todo' | 'in_progress' | 'done', string> = {
-  todo:        STATUS_BG.default,    // gray
-  in_progress: STATUS_BG.inprogress, // periwinkle blue
-  done:        STATUS_BG.success,    // lime green
+  todo:        STATUS_BG.default,    // neutral grey
+  in_progress: STATUS_BG.inprogress, // subtle blue
+  done:        STATUS_BG.success,    // subtle green
 };
 
 /** Resolve a status-pill background from a status_category (canonical). */

@@ -325,8 +325,8 @@
 
 .t10-search-ghost-icon {
   position: absolute;
-  left: 12px;
-  top: 48%;
+  left: 14px;
+  top: 50%;
   transform: translateY(-50%);
   color: var(--t10-text-tertiary);
   pointer-events: none;
@@ -335,7 +335,7 @@
 .t10-search-ghost-kbd {
   position: absolute;
   right: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   padding: 4px 8px;
   font-family: var(--t10-font);
@@ -2407,7 +2407,7 @@
 .t10-module-v2 .t10-dropdown-search-icon {
   position: absolute;
   left: 16px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 16px;
   height: 16px;
@@ -3117,7 +3117,7 @@
 .t10-module-v2 .t10-dropdown-search-icon {
   position: absolute;
   left: 12px;
-  top: 48%;
+  top: 50%;
   transform: translateY(-50%);
   width: 16px;
   height: 16px;

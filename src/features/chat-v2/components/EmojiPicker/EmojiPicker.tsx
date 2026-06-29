@@ -102,8 +102,8 @@ function computePosition(
 ): React.CSSProperties {
   if (anchor === 'center' || !rect) {
     return {
-      top: '48%',
-      left: '48%',
+      top: '50%',
+      left: '50%',
       transform: 'translate(-50%, -50%)',
     };
   }

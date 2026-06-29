@@ -198,7 +198,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
         <div
           style={{
             position: 'absolute',
-            top: '48%',
+            top: '100%',
             right: 0,
             marginTop: 4,
             background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))))',

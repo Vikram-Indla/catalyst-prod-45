@@ -104,7 +104,7 @@ export function DataScope() {
     >
       <span style={{
         width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app)', position: 'absolute',
-        top: 0, left: checked ? 18 : 2, transition: 'left .2s',
+        top: 2, left: checked ? 18 : 2, transition: 'left .2s',
         boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.2))',
       }} />
     </button>

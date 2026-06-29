@@ -1380,7 +1380,7 @@ function SavedSearchInput({
         style={{
           position: 'absolute',
           left: 8,
-          top: '48%',
+          top: '50%',
           transform: 'translateY(-50%)',
           display: 'flex',
           pointerEvents: 'none',
@@ -2875,7 +2875,7 @@ function JqlTabBody({
         <div
           style={{
             position: 'absolute',
-            top: 4,
+            top: 6,
             right: 8,
             display: 'inline-flex',
             alignItems: 'center',
@@ -3269,7 +3269,7 @@ function FilterSearchInput({
         style={{
           position: 'absolute',
           left: 8,
-          top: '48%',
+          top: '50%',
           transform: 'translateY(-50%)',
           display: 'flex',
           pointerEvents: 'none',

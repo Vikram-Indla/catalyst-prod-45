@@ -338,7 +338,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             role="menu"
             style={{
               position: 'absolute',
-              top: '48%',
+              top: '100%',
               right: 0,
               marginTop: 4,
               minWidth: 200,

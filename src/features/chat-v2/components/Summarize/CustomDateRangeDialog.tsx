@@ -370,7 +370,7 @@ function CalendarNavButton({ side, onClick }: { side: 'left' | 'right'; onClick:
       aria-label={side === 'left' ? 'Previous month' : 'Next month'}
       style={{
         position: 'absolute',
-        top: 4,
+        top: 6,
         [side]: 24,
         width: 28,
         height: 28,
@@ -572,7 +572,7 @@ function DayCell({
         aria-label={`${date.toDateString()}${isFuture ? ' (future, disabled)' : ''}`}
         style={{
           position: 'absolute',
-          inset: 4,
+          inset: 3,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',

@@ -83,6 +83,16 @@ const SPOTS = [
   { x: 67, y: 66 },
 ];
 
+// ≤4 active items: four corners with a clear center band so cards never
+// overlap the center avatar (the 8-slot SPOTS above crowd the center at low
+// counts). Kept separate so the 5–8 card geometry is untouched.
+const SPOTS_4 = [
+  { x: 4,  y: 5  },
+  { x: 64, y: 5  },
+  { x: 4,  y: 66 },
+  { x: 64, y: 66 },
+];
+
 function formatResolvedDate(dateStr?: string | null): string {
   if (!dateStr) return 'This week';
   const d = new Date(dateStr);
@@ -133,6 +143,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
   // Adaptive center Y based on card count
   const cardCount = activeItems.length;
   const centerTopPct = cardCount <= 4 ? 38 : cardCount <= 6 ? 40 : 49;
+  // ≤4 cards use the corner layout (clear center); 5+ use the 8-slot ring.
+  const spots = cardCount <= 4 ? SPOTS_4 : SPOTS;
 
   if (activeItems.length === 0 && doneCount === 0) {
     return (
@@ -140,7 +152,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         position: 'relative', width: '100%', height: '720px', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--bg-1) 55%, var(--bg-3) 100%)',
-        borderRadius: 12, border: '1px solid var(--divider)',
+        borderRadius: 12, border: '1px solid var(--ds-border)',
       }}>
         <div style={{ textAlign: 'center', color: 'var(--fg-3)' }}>
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
@@ -164,8 +176,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       {/* SVG SPOKES */}
       <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
         {activeItems.map((_, i) => {
-          const cx = SPOTS[i].x + 10;
-          const cy = SPOTS[i].y + 9;
+          const cx = spots[i].x + 10;
+          const cy = spots[i].y + 9;
           return (
             <line key={`spoke-${i}`} x1="50%" y1={`${centerTopPct}%`} x2={`${cx}%`} y2={`${cy}%`}
               stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
@@ -175,8 +187,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
 
       {/* SPOKE MIDPOINT LABELS */}
       {activeItems.map((item, i) => {
-        const cx = SPOTS[i].x + 10;
-        const cy = SPOTS[i].y + 9;
+        const cx = spots[i].x + 10;
+        const cy = spots[i].y + 9;
         const mx = (50 + cx) / 2;
         const my = (centerTopPct + cy) / 2;
         return (
@@ -184,7 +196,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
-            padding: '0px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
+            padding: '0px 8px', borderRadius: '12px', border: '1px solid var(--ds-border)',
             whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)',
             fontVariantNumeric: 'tabular-nums',
           }}>
@@ -216,25 +228,25 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
 
       {/* ORBITAL CARDS */}
       {activeItems.map((item, i) => {
-        const pos = SPOTS[i];
+        const pos = spots[i];
         const s = resolveStatus(item);
         const projColor = pColor(item.project_key, item.project_color);
         return (
           <div key={item.id || item.item_key} onClick={() => onItemClick(item)} style={{
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
-            background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
+            background: 'var(--bg-app)', border: '1px solid var(--ds-border)', borderRadius: '8px',
             padding: '8px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
             boxShadow: '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))', fontFamily: 'var(--cp-font-body)',
             transition: 'border-color .15s, box-shadow .15s',
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px var(--ds-shadow-overlay, rgba(15,23,42,.08))'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ds-border)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))'; }}
           >
             <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <JiraIcon type={item.item_type} />
-                <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-2)' }}>{item.item_type}</span>
+                <span style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-text-subtle)' }}>{item.item_type}</span>
               </div>
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
@@ -302,7 +314,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             <div style={{
               position: 'absolute', right: '48px', top: '48%', transform: 'translateY(-50%)',
               width: '340px', maxHeight: '420px', background: 'var(--cp-float)',
-              border: '1px solid var(--divider)', borderRadius: '12px',
+              border: '1px solid var(--ds-border)', borderRadius: '12px',
               boxShadow: '0 8px 30px var(--ds-shadow-overlay, rgba(15,23,42,.12)), 0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,.06))',
               overflow: 'hidden', zIndex: 11,
             }}>

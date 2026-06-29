@@ -693,7 +693,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     <div style={{
                       position: 'absolute',
                       top: 12,
-                      left: '48%',
+                      left: '50%',
                       transform: 'translateX(-50%)',
                       display: 'inline-flex',
                       alignItems: 'center',

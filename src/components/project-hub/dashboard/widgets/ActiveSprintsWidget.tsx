@@ -139,7 +139,7 @@ function GanttBar({
           position: 'absolute',
           left: `${left}%`,
           width: `${width}%`,
-          top: 4,
+          top: 3,
           height: 14,
           borderRadius: 3,
           background: BAR_BG[status] ?? BAR_BG.Active,
@@ -177,7 +177,7 @@ function ReleaseBar({
       {/* Release bar: spans from left edge to target date */}
       <div style={{
         position: 'absolute', left: 0, width: `${Math.max(4, right)}%`,
-        top: 4, height: 8, borderRadius: 2,
+        top: 6, height: 8, borderRadius: 2,
         background: isAtRisk
           ? 'var(--ds-background-accent-red-subtlest)'
           : 'var(--ds-background-accent-blue-subtlest)',

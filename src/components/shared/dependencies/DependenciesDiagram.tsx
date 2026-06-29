@@ -288,7 +288,7 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                     aria-label="Related work items"
                     style={{
                       position: 'absolute',
-                      left: '48%',
+                      left: '100%',
                       top: 0,
                       minWidth: 280,
                       maxWidth: 380,

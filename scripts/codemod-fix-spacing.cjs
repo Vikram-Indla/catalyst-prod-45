@@ -26,13 +26,19 @@ function walk(dir) {
       let content = fs.readFileSync(fullPath, 'utf8');
       const orig = content;
       
-      // Match: padding: 10px or padding: '10px' where 10 is off-grid
-      content = content.replace(/([a-z-]+)\s*:\s*['"]?(\d+)(px)?['"]?/gi, (match, prop, val) => {
-        if (/padding|margin|gap|top|bottom|left|right|inset/.test(prop) && val > 0) {
+      // Match ONLY px spacing on padding/margin/gap/gutter — mirrors the
+      // canonical SpacingGridValidator (design-governance/rules/spacing-grid-
+      // validator.js). The `px` unit is mandatory and positioning coordinates
+      // (top/bottom/left/right/inset) are intentionally excluded: those are
+      // geometry, not spacing, and snapping them corrupts layouts such as the
+      // R360 ring view (regression d76b5d62c, fixed 2026-06-29). Requiring the
+      // `px` unit also guarantees unitless and % values are never touched.
+      content = content.replace(/\b(padding|margin|gap|gutter)([a-zA-Z-]*)\s*:\s*['"]?(\d+)px['"]?/gi, (match, prop, suffix, val) => {
+        if (val > 0) {
           const gridVal = nearestGridValue(val);
           if (gridVal != val) {
             changes++;
-            return match.replace(val, gridVal);
+            return match.replace(`${val}px`, `${gridVal}px`);
           }
         }
         return match;

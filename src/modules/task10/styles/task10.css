@@ -869,7 +869,7 @@
 
 .t10-module .t10-dropdown-menu {
   position: absolute !important;
-  top: 48% !important;
+  top: 100% !important;
   right: 0 !important;
   margin-top: 4px !important;
   min-width: 180px !important;
@@ -2794,7 +2794,7 @@
 .t10-module .t10-week-dropdown {
   position: absolute !important;
   top: calc(100% + 4px) !important;
-  left: 48% !important;
+  left: 50% !important;
   transform: translateX(-50%) !important;
   min-width: 320px !important;
   background: var(--t10-white) !important;
@@ -3061,7 +3061,7 @@
 .t10-module .t10-reorder-toast {
   position: fixed !important;
   bottom: 24px !important;
-  left: 48% !important;
+  left: 50% !important;
   transform: translateX(-50%) !important;
   display: flex !important;
   align-items: center !important;
@@ -3589,7 +3589,7 @@
 .t10-module .t10-dropdown-search-icon {
   position: absolute !important;
   left: 12px !important;
-  top: 48% !important;
+  top: 50% !important;
   transform: translateY(-50%) !important;
   width: 16px !important;
   height: 16px !important;
@@ -4212,14 +4212,14 @@
 }
 
 .t10-module .t10-week-history-item:last-child::before {
-  bottom: 48% !important;
+  bottom: 50% !important;
 }
 
 .t10-module .t10-week-history-item::after {
   content: '' !important;
   position: absolute !important;
   left: -3px !important;
-  top: 48% !important;
+  top: 50% !important;
   transform: translateY(-50%) !important;
   width: 8px !important;
   height: 8px !important;
