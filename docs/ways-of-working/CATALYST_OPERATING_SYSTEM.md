@@ -138,14 +138,6 @@ No hex, no rgb/rgba/hsl, no Tailwind color utilities, no custom color constants.
 
 ---
 
-## AIDEN VALIDATION BLOCK
-
-Every major Claude response must end with an Aiden Validation Block.
-
-See format: [`CATALYST_AIDEN_VALIDATION_BLOCK.md`](CATALYST_AIDEN_VALIDATION_BLOCK.md)
-
----
-
 ## SCREENSHOT SIGNOFF
 
 Screenshots are mandatory for UI/UX acceptance.

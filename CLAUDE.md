@@ -337,14 +337,6 @@ See: [`docs/ways-of-working/CATALYST_KARPATHY_LOOP.md`](docs/ways-of-working/CAT
 
 ---
 
-## AIDEN VALIDATION BLOCK
-
-Every major Claude response must end with an Aiden Validation Block.
-
-See: [`docs/ways-of-working/CATALYST_AIDEN_VALIDATION_BLOCK.md`](docs/ways-of-working/CATALYST_AIDEN_VALIDATION_BLOCK.md)
-
----
-
 ## CONTEXT HEALTH AND HANDOVER
 
 At context risk, stop and write/update handover. Do not continue across conversation changes without reading the handover and Plan Lock.
@@ -425,7 +417,6 @@ Run [`docs/ways-of-working/CATALYST_SELF_TEST.md`](docs/ways-of-working/CATALYST
 | [`CATALYST_CONTEXT_HANDOVER_TEMPLATE.md`](docs/ways-of-working/CATALYST_CONTEXT_HANDOVER_TEMPLATE.md) | Handover template |
 | [`CATALYST_SELF_TEST.md`](docs/ways-of-working/CATALYST_SELF_TEST.md) | Self-test checklist — run before every task |
 | [`CATALYST_KARPATHY_LOOP.md`](docs/ways-of-working/CATALYST_KARPATHY_LOOP.md) | Karpathy Loop protocol — hypothesis, experiment, measure, log |
-| [`CATALYST_AIDEN_VALIDATION_BLOCK.md`](docs/ways-of-working/CATALYST_AIDEN_VALIDATION_BLOCK.md) | Aiden Validation Block — required at end of every major response |
 | [`CATALYST_ACTIVATE_CONTINUE_PROTOCOL.md`](docs/ways-of-working/CATALYST_ACTIVATE_CONTINUE_PROTOCOL.md) | activate feature / continue feature full protocol |
 | [`CATALYST_CANONICAL_RULEBOOK.md`](docs/ways-of-working/CATALYST_CANONICAL_RULEBOOK.md) | Catalyst-specific canonical rules — JiraTable, access management, modal patterns |
 | [`archive/CLAUDE_OLD_BACKUP_20260626_0242.md`](docs/ways-of-working/archive/CLAUDE_OLD_BACKUP_20260626_0242.md) | Full previous CLAUDE.md (2416 lines) |
