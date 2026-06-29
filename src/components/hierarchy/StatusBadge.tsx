@@ -1,14 +1,27 @@
 /**
- * StatusBadge — V12 Pale Lozenge 3-colour guardrail (ABSOLUTE)
- * GREY  (var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) bg, var(--ds-text) text) = not started / waiting
- * BLUE  (#DEEBFF bg, var(--ds-link-pressed) text) = in progress / active
- * GREEN (var(--ds-background-success) bg, var(--ds-text-success) text) = done / resolved
+ * StatusBadge — V13: 3-colour guardrail sourced from the canonical statusPalette.
+ * GREY  → appearance 'default'    (var(--ds-background-neutral) / var(--ds-text))
+ * BLUE  → appearance 'inprogress' (var(--ds-background-information) / var(--ds-text-information))
+ * GREEN → appearance 'success'    (var(--ds-background-success) / var(--ds-text-success))
+ *
+ * 2026-06-29 (CAT-ADS-STATUS-SWEEP-20260629-001): replaced the local light/dark
+ * colour maps (which drifted — --ds-link-pressed text, raw-rgb dark fallbacks —
+ * from the canonical pill) with statusPalette.ts. ADS tokens self-adapt to dark
+ * mode, so the per-theme map + useTheme() are no longer needed. Colours now match
+ * CatalystStatusPill exactly. Typography unchanged (out of this slice's scope).
  */
 
 import React from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { statusBgBold, statusFgBold } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 type StatusCategory = 'grey' | 'blue' | 'green';
+
+/** Map the badge's 3-colour bucket to a canonical statusPalette appearance. */
+const CATEGORY_TO_APPEARANCE: Record<StatusCategory, string> = {
+  grey:  'default',
+  blue:  'inprogress',
+  green: 'success',
+};
 
 const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'Backlog': 'grey',
@@ -62,18 +75,6 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'Merged': 'green',
 };
 
-const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)' },
-  blue:  { background: 'var(--ds-background-information)', color: 'var(--ds-link-pressed)' },
-  green: { background: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
-};
-
-const STATUS_STYLES_DARK: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: 'var(--ds-border, var(--cp-ink-1))', color: 'var(--ds-text-subtlest)' },
-  blue:  { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', color: 'var(--ds-background-information-bold, var(--ds-link))' },
-  green: { background: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))', color: 'var(--ds-background-success)' },
-};
-
 const STATUS_DISPLAY_NAMES: Record<string, string> = {
   'Ready for Production': 'READY FOR PROD',
   'Ready For Production': 'READY FOR PROD',
@@ -85,9 +86,11 @@ export function getStatusCategory(status: string): StatusCategory {
   return STATUS_CATEGORY_MAP[status] || STATUS_CATEGORY_MAP[status.toUpperCase()] || 'grey';
 }
 
-export function getStatusStyle(status: string, dark?: boolean) {
-  const styles = dark ? STATUS_STYLES_DARK : STATUS_STYLES_LIGHT;
-  return styles[getStatusCategory(status)];
+/** Canonical status colours (statusPalette). `_dark` retained for call-site
+ *  signature compat — ADS tokens self-adapt to theme, so it is ignored. */
+export function getStatusStyle(status: string, _dark?: boolean) {
+  const appearance = CATEGORY_TO_APPEARANCE[getStatusCategory(status)];
+  return { background: statusBgBold(appearance), color: statusFgBold(appearance) };
 }
 
 export function getStatusDisplayName(status: string): string {
@@ -108,8 +111,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps) {
-  const { isDark } = useTheme();
-  const style = getStatusStyle(status, isDark);
+  const style = getStatusStyle(status);
   const displayName = getStatusDisplayName(status);
 
   return (

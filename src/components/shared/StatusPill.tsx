@@ -1,5 +1,5 @@
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
-import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { statusBgBold, statusFgBold } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 /**
  * @deprecated Use `CatalystStatusPill` (interactive header pill) or the `StatusPill`
@@ -19,8 +19,8 @@ export function StatusPill({ value, label }: StatusPillProps) {
   }
   const displayLabel = label || (value || '').replace(/_/g, ' ');
   const appearance = statusToLozenge(value);
-  // Canonical palette (statusPalette.ts) — local pale map drifted from #94C748.
-  const bg = statusBg(appearance);
+  // Jira-parity BOLD tier (statusPalette.ts) — list/table pill.
+  const bg = statusBgBold(appearance);
   return (
     <span style={{
       display: 'inline-flex',
@@ -34,7 +34,7 @@ export function StatusPill({ value, label }: StatusPillProps) {
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 653,
         lineHeight: '20px',
-        color: statusFg(appearance),
+        color: statusFgBold(appearance),
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         overflow: 'hidden',
