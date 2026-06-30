@@ -236,7 +236,10 @@ export function ProjectPageHeader({
               flex: 1,
             }}
           >
-            <Heading size="large">{title ?? routeWord}</Heading>
+            {/* ads-scanner:ignore-next-line — depth-aware heading: 22px level-1 / 18px level-2; no ADS token maps to these exact values */}
+            <h2 style={{ fontSize: trail ? 18 : 22, fontWeight: 600, lineHeight: 1.2, color: 'var(--ds-text)', margin: 0 }}>
+              {title ?? routeWord}
+            </h2>
             {starType && (
               <WorkItemStarButton
                 itemId={pathname}
