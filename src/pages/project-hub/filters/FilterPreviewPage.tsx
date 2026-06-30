@@ -4,10 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
-import Heading from '@atlaskit/heading';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Textfield from '@atlaskit/textfield';
-import AvatarGroup from '@atlaskit/avatar-group';
 import AkFlag, { FlagGroup } from '@atlaskit/flag';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
@@ -875,8 +873,6 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const openDetail = (key: string) =>
     useGlobalSearchStore.getState().openDetail({ id: key });
 
-  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: resolveAvatarUrl(m.src ?? null) ?? undefined }));
-
   // ── Save handlers ──────────────────────────────────────────────────────────
 
   // Jira "Save" behavior: update JQL in-place, no dialog.
@@ -1121,33 +1117,23 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
       flush
       chromeBand={
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <Breadcrumbs>
-            {isProduct && projectKey ? (
-              <BreadcrumbsItem
-                href={`/product-hub/${projectKey}`}
-                text={productInfo?.name ?? projectKey}
-                onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate(`/product-hub/${projectKey}`); }}
-              />
-            ) : isIncident ? (
-              <BreadcrumbsItem href="/incident-hub" text="Incident Hub" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/incident-hub'); }} />
-            ) : isTasks ? (
-              <BreadcrumbsItem href="/tasks" text="Tasks" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/tasks'); }} />
-            ) : isRelease ? (
-              <BreadcrumbsItem href="/release-hub" text="Release Hub" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/release-hub'); }} />
-            ) : projectKey ? (
-              <BreadcrumbsItem
-                href={`/project-hub/${projectKey}`}
-                text={projectKey}
-                onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate(`/project-hub/${projectKey}`); }}
-              />
-            ) : null}
-            <BreadcrumbsItem
-              href={isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`}
-              text="Filters"
-              onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate(isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`); }}
-            />
-          </Breadcrumbs>
-          <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, lineHeight: '28px' }}>
+          <ProjectPageHeader
+            projectKey={projectKey ?? ''}
+            hubType={isProduct ? 'product' : isIncident ? 'incident' : isRelease ? 'release' : 'project'}
+            trail={[
+              {
+                text: 'Filters',
+                href: isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`,
+              },
+              { text: filterName || (savedFilterId ? 'Edit filter' : 'Create filter') },
+            ]}
+            hideTitle
+          />
+          <div
+            role="heading"
+            aria-level={1}
+            style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, lineHeight: '28px', paddingLeft: 'var(--ds-space-250)' }}
+          >
             <Textfield
               appearance="subtle"
               placeholder="Filter name…"
@@ -1178,7 +1164,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
           display: askCatyOpen ? 'none' : 'flex',
           flexDirection: 'column',
           flexShrink: 0,
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+          borderBottom: `1px solid ${token('color.border')}`,
         }}
       >
         {/* ── Single row: Ask Caty · Basic/JQL toggle · search/JQL editor · CanonicalFilter · spacer · count · kebab · Save as · Save filter ── */}
