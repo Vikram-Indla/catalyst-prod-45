@@ -50,15 +50,11 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
   const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
 
-  // Unique space labels for Space dropdown
-  const spaceOptions = useMemo(() => {
-    const seen = new Set<string>();
-    boards.forEach(b => {
-      const label = b.projectId ?? '';
-      if (label) seen.add(label);
-    });
-    return Array.from(seen);
-  }, [boards]);
+  // Projects that have at least one board on this page — used for Project filter
+  const projectsWithBoards = useMemo(() => {
+    const ids = new Set(boards.map(b => b.projectId).filter(Boolean));
+    return allProjects.filter(p => ids.has(p.id));
+  }, [boards, allProjects]);
 
   // Unique admin (lead) names for User dropdown
   const userOptions = useMemo(() => {
@@ -205,17 +201,17 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
     },
   ], [locationLabel, handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
 
-  const spaceFilterOptions = useMemo(() =>
-    spaceOptions.map(s => ({ label: s, value: s })), [spaceOptions]);
+  const projectFilterOptions = useMemo(() =>
+    projectsWithBoards.map(p => ({ label: p.name, value: p.id })), [projectsWithBoards]);
   const userFilterOptions = useMemo(() =>
     userOptions.map(u => ({ label: u, value: u })), [userOptions]);
 
   const toolbarFilters = useMemo<ToolbarFilter[]>(() => [
     {
-      id: 'space',
-      placeholder: 'Space',
-      options: spaceFilterOptions,
-      value: spaceFilter ? { label: spaceFilter, value: spaceFilter } : null,
+      id: 'project',
+      placeholder: 'Project',
+      options: projectFilterOptions,
+      value: spaceFilter ? (projectFilterOptions.find(o => o.value === spaceFilter) ?? null) : null,
       onChange: v => setSpaceFilter(v ? v.value : null),
     },
     {
