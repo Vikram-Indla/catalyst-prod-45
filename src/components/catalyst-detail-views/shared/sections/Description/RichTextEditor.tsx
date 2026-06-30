@@ -51,6 +51,8 @@ import type {
   ImageAlignment,
 } from './extensions/CatalystImage';
 import { type AdfDoc, type TiptapDoc } from './utils/adfToTiptap';
+import { LinkInputModal } from '@/components/shared/LinkInputModal';
+import type { RequestInputFn } from './data/modalElements';
 import { tiptapToAdf } from './utils/tiptapToAdf';
 import type { SlashCommand } from './data/slashCommands';
 import {
@@ -159,6 +161,11 @@ export function RichTextEditor({
   const [slashAnchor, setSlashAnchor] = useState<HTMLElement | null>(null);
   const [viewMoreOpen, setViewMoreOpen] = useState(false);
   const [pendingUploads, setPendingUploads] = useState(0);
+  const [inputModal, setInputModal] = useState<{ label: string; defaultValue: string; callback: (v: string | null) => void } | null>(null);
+
+  const requestInput: RequestInputFn = useCallback((opts, callback) => {
+    setInputModal({ label: opts.label, defaultValue: opts.defaultValue ?? 'https://', callback });
+  }, []);
 
   const currentDocRef = useRef<TiptapDoc | null>(null);
 
@@ -356,9 +363,9 @@ export function RichTextEditor({
         onImproveClick?.();
         return;
       }
-      if (c.apply && editor) c.apply(editor);
+      if (c.apply && editor) c.apply(editor, requestInput);
     },
-    [editor, dismissTrigger, onImproveClick],
+    [editor, dismissTrigger, onImproveClick, requestInput],
   );
 
   // Cmd+Enter (Mac) / Ctrl+Enter (Win) to save — mirrors Slack/Teams keyboard UX
@@ -604,6 +611,15 @@ export function RichTextEditor({
           if (action === 'ask-caty') onImproveClick?.();
         }}
       />
+
+      {inputModal && (
+        <LinkInputModal
+          isOpen
+          title={inputModal.label}
+          onClose={() => setInputModal(null)}
+          onConfirm={(url) => { inputModal.callback(url || null); setInputModal(null); }}
+        />
+      )}
 
       {imageState && (
         <>

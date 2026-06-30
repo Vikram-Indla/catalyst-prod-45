@@ -9,6 +9,11 @@
  */
 import type { Editor } from '@tiptap/react';
 
+export type RequestInputFn = (
+  opts: { label: string; defaultValue?: string },
+  callback: (value: string | null) => void,
+) => void;
+
 export type ModalIconId =
   | 'caty' | 'task' | 'image' | 'mention' | 'emoji' | 'expand'
   | 'table' | 'code' | 'status' | 'panel' | 'date' | 'decision'
@@ -33,8 +38,8 @@ export interface ModalElement {
   /** For the heading variant — passed to the heading icon. */
   iconText?: string;
   categories: ModalCategory[];
-  /** Inline editor-only action. */
-  apply?: (editor: Editor) => void;
+  /** Inline editor-only action. requestInput shows ADS modal instead of window.prompt. */
+  apply?: (editor: Editor, requestInput?: RequestInputFn) => void;
   /** Action routed by the parent (needs more context than the editor). */
   externalAction?: ExternalAction;
 }
@@ -74,9 +79,10 @@ export const MODAL_ELEMENTS: ModalElement[] = [
     iconId: 'image', iconColor: 'orange',
     categories: ['all'],
     // Inline image insert via URL prompt — for full upload use the toolbar.
-    apply: (e) => {
-      const url = window.prompt('Image URL', 'https://');
-      if (url) e.chain().focus().setImage({ src: url }).run();
+    apply: (e, requestInput) => {
+      const insert = (url: string | null) => { if (url) e.chain().focus().setImage({ src: url }).run(); };
+      if (requestInput) requestInput({ label: 'Image URL', defaultValue: 'https://' }, insert);
+      else insert(window.prompt('Image URL', 'https://'));
     },
   },
   {
@@ -228,9 +234,10 @@ export const MODAL_ELEMENTS: ModalElement[] = [
     description: 'Add a link',
     iconId: 'link', iconColor: 'blue',
     categories: ['all'],
-    apply: (e) => {
-      const url = window.prompt('Enter URL', 'https://');
-      if (url) e.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    apply: (e, requestInput) => {
+      const insert = (url: string | null) => { if (url) e.chain().focus().extendMarkRange('link').setLink({ href: url }).run(); };
+      if (requestInput) requestInput({ label: 'Link URL', defaultValue: 'https://' }, insert);
+      else insert(window.prompt('Enter URL', 'https://'));
     },
   },
   {

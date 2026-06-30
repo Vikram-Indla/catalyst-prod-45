@@ -18,7 +18,7 @@
  * scrolls. First item in the active tab is auto-selected on open / on
  * tab change. Insert applies the selection and closes.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Editor } from '@tiptap/react';
 // eslint-disable-next-line no-restricted-imports
@@ -67,7 +67,9 @@ import {
   type ModalIconColor,
   type ModalIconId,
   type ExternalAction,
+  type RequestInputFn,
 } from '../../data/modalElements';
+import { LinkInputModal } from '@/components/shared/LinkInputModal';
 
 interface Props {
   isOpen: boolean;
@@ -149,6 +151,11 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
   const [search, setSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [inputModal, setInputModal] = useState<{ label: string; defaultValue: string; callback: (v: string | null) => void } | null>(null);
+
+  const requestInput: RequestInputFn = useCallback((opts, callback) => {
+    setInputModal({ label: opts.label, defaultValue: opts.defaultValue ?? 'https://', callback });
+  }, []);
 
   const items = useMemo(() => filterModalElements(tab, search), [tab, search]);
 
@@ -197,12 +204,12 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
     if (selected.externalAction) {
       onExternalAction?.(selected.externalAction);
     } else if (selected.apply && editor) {
-      selected.apply(editor);
+      selected.apply(editor, requestInput);
     }
     onClose();
   };
 
-  return createPortal(
+  const modalPortal = createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -553,5 +560,19 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
       </div>
     </div>,
     document.body,
+  );
+
+  return (
+    <>
+      {modalPortal}
+      {inputModal && (
+        <LinkInputModal
+          isOpen
+          title={inputModal.label}
+          onClose={() => setInputModal(null)}
+          onConfirm={(url) => { inputModal.callback(url || null); setInputModal(null); }}
+        />
+      )}
+    </>
   );
 }
