@@ -78,49 +78,41 @@ export function CatalystListPageLayout({
   footer,
 }: CatalystListPageLayoutProps) {
   const showTabBar = tabs && tabs.length > 0;
-  const showToolbar = onSearchChange || (toolbarFilters && toolbarFilters.length > 0) || toolbarActions;
+  // Toolbar = search + filter dropdowns row (toolbarActions like Export CSV excluded from here)
+  const showToolbar = onSearchChange || (toolbarFilters && toolbarFilters.length > 0);
 
   return (
     <AtlaskitPageShell flush chromeBand={chromeBand ?? null}>
+      {/* Row 1: Tabs + primary CTA (tabBarActions) — always a clean navigation band */}
       {showTabBar && onTabChange ? (
         <CatalystQuickTabBar
           tabs={tabs}
           activeTab={activeTab ?? tabs[0]?.id ?? ''}
           onTabChange={onTabChange}
-          actionsStretch={!!showToolbar}
-          actions={
-            showToolbar ? (
-              <CatalystListToolbar
-                compact
-                search={search}
-                searchPlaceholder={searchPlaceholder}
-                onSearchChange={onSearchChange}
-                filters={toolbarFilters}
-                hasActiveFilters={hasActiveFilters}
-                onClearAll={onClearAllFilters}
-                actions={<>{toolbarActions}{tabBarActions}</>}
-              />
-            ) : tabBarActions
-          }
+          actionsStretch={false}
+          actions={tabBarActions}
         />
       ) : null}
 
-      {showToolbar && !showTabBar && (
+      {/* Row 2: Search + filter dropdowns + secondary actions (Export CSV etc.) */}
+      {showToolbar ? (
         <CatalystListToolbar
+          compact={showTabBar}
           search={search}
           searchPlaceholder={searchPlaceholder}
           onSearchChange={onSearchChange}
           filters={toolbarFilters}
           hasActiveFilters={hasActiveFilters}
           onClearAll={onClearAllFilters}
-          actions={
-            tabBarActions
-              ? <>{toolbarActions}{tabBarActions}</>
-              : toolbarActions
-          }
+          actions={toolbarActions}
         />
-      )}
+      ) : toolbarActions ? (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 24px' }}>
+          {toolbarActions}
+        </div>
+      ) : null}
 
+      {/* No tabs, no search, but CTA exists */}
       {!showToolbar && tabBarActions && !showTabBar && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 24px' }}>
           {tabBarActions}
