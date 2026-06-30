@@ -222,11 +222,8 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
         ? <ProjectPageHeader
             hubType={isProduct ? 'product' : isIncident ? 'incident' : isRelease ? 'release' : 'project'}
             projectKey={projectKey}
-            trail={[
-              { text: 'Filters', href: backHref },
-              { text: filter.name },
-            ]}
-            hideTitle
+            trail={[{ text: 'Filters', href: backHref }]}
+            title={filter.name}
           />
         : null}
     >
