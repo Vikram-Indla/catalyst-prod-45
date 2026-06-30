@@ -4,6 +4,17 @@ import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import { MoreHorizontal } from '@/lib/atlaskit-icons';
+import AkStarStarredIcon from '@atlaskit/icon/core/star-starred';
+import AkStarUnstarredIcon from '@atlaskit/icon/core/star-unstarred';
+import AkEditIcon from '@atlaskit/icon/core/edit';
+import AkCopyIcon from '@atlaskit/icon/core/copy';
+import AkFilterIcon from '@atlaskit/icon/core/filter';
+import AkLinkIcon from '@atlaskit/icon/core/link';
+import AkPersonIcon from '@atlaskit/icon/core/person';
+import AkBoardIcon from '@atlaskit/icon/core/board';
+import AkTimelineIcon from '@atlaskit/icon/core/timeline';
+import AkDashboardIcon from '@atlaskit/icon/core/dashboard';
+import AkDeleteIcon from '@atlaskit/icon/core/delete';
 import {
   useCopyFilter,
   useUpdateSavedFilter,
@@ -241,7 +252,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
     }
   }
 
-  function menuItem(label: React.ReactNode, onClick: () => void, disabled = false) {
+  function menuItem(label: React.ReactNode, onClick: () => void, disabled = false, icon?: React.ReactNode) {
     return (
       <button
         key={typeof label === 'string' ? label : undefined}
@@ -250,20 +261,27 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
         disabled={disabled}
         onClick={(e) => { e.stopPropagation(); if (!disabled) { onClick(); closeMenu(); } }}
         style={{
-          display: 'block',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
           width: '100%',
           padding: '8px 16px',
           background: 'none',
           border: 'none',
           textAlign: 'left',
           fontSize: 'var(--ds-font-size-400)',
-          color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
+          color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled)') : token('color.text', 'var(--ds-text)'),
           cursor: disabled ? 'not-allowed' : 'pointer',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'); }}
+        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle)'); }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
       >
+        {icon && (
+          <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--ds-icon-subtle)' }}>
+            {icon}
+          </span>
+        )}
         {label}
       </button>
     );
@@ -318,21 +336,24 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             padding: '4px 0',
           }}
         >
-          {menuItem(isStarred ? 'Unstar filter' : 'Star filter', handleToggleStar)}
+          {menuItem(
+            isStarred ? 'Unstar filter' : 'Star filter',
+            handleToggleStar,
+            false,
+            isStarred ? <AkStarStarredIcon label="" color="currentColor" /> : <AkStarUnstarredIcon label="" color="currentColor" />,
+          )}
           {divider}
-          {isOwner && menuItem('Edit filter', () => setEditOpen(true))}
-          {menuItem('Copy filter', () => copyFilter.mutate(filter))}
-          {isOwner && menuItem('Rename', () => { setRenameValue(filter.name); setRenameOpen(true); })}
+          {isOwner && menuItem('Edit filter', () => setEditOpen(true), false, <AkEditIcon label="" color="currentColor" />)}
+          {menuItem('Copy filter', () => copyFilter.mutate(filter), false, <AkCopyIcon label="" color="currentColor" />)}
+          {isOwner && menuItem('Rename', () => { setRenameValue(filter.name); setRenameOpen(true); }, false, <AkFilterIcon label="" color="currentColor" />)}
           {menuItem('Copy link', () => {
             const base = window.location.origin;
             const path = projectKey
               ? `/project-hub/${projectKey}/filters/create?filterId=${filter.id}`
               : `/product-hub/allwork?filterId=${filter.id}`;
             navigator.clipboard.writeText(base + path).catch(() => {});
-          })}
-          {isOwner && menuItem(isPrivate ? 'Share with organisation' : 'Make private', handleToggleVisibility)}
-          {menuItem('View version history', () => setHistoryOpen(true))}
-          {isOwner && menuItem('Change owner', () => setTransferOpen(true))}
+          }, false, <AkLinkIcon label="" color="currentColor" />)}
+          {isOwner && menuItem('Change owner', () => setTransferOpen(true), false, <AkPersonIcon label="" color="currentColor" />)}
 
           {ENABLE_FILTER_TO_KANBAN && (
             <>
@@ -345,7 +366,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   existingBoard.data?.id ??
                   (filter.used_by_board_ids?.length ? filter.used_by_board_ids[0] : null);
                 return menuItem(
-                  linkedBoardId ? 'Open Kanban' : 'Create Kanban from filter',
+                  linkedBoardId ? 'Open Kanban board' : 'Create Kanban board',
                   () => {
                     if (linkedBoardId) {
                       if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${linkedBoardId}`);
@@ -354,6 +375,8 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                     setKanbanName(`${filter.name} board`);
                     setCreateKanbanOpen(true);
                   },
+                  false,
+                  <AkBoardIcon label="" color="currentColor" />,
                 );
               })()}
             </>
@@ -363,7 +386,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <>
               {divider}
               {menuItem(
-                existingRoadmap.data ? 'Open roadmap' : 'Create roadmap from filter',
+                existingRoadmap.data ? 'Open Timeline' : 'Create Timeline',
                 () => {
                   if (existingRoadmap.data) {
                     if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
@@ -372,6 +395,8 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   setRoadmapName(`${filter.name} roadmap`);
                   setCreateRoadmapOpen(true);
                 },
+                false,
+                <AkTimelineIcon label="" color="currentColor" />,
               )}
             </>
           )}
@@ -380,7 +405,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <>
               {divider}
               {menuItem(
-                existingDashboard.data ? 'Open dashboard' : 'Create dashboard from filter',
+                existingDashboard.data ? 'Open Dashboard' : 'Create Dashboard',
                 () => {
                   if (existingDashboard.data) {
                     if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/dashboards/${existingDashboard.data.id}`);
@@ -389,6 +414,8 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   setDashboardName(`${filter.name} dashboard`);
                   setCreateDashboardOpen(true);
                 },
+                false,
+                <AkDashboardIcon label="" color="currentColor" />,
               )}
             </>
           )}
@@ -396,14 +423,18 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           {!ENABLE_FILTER_TO_KANBAN && isOwner && (
             <>
               {divider}
-              {menuItem('Create board from filter', () => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); })}
+              {menuItem('Create board from filter', () => { setBoardName(`${filter.name} board`); setCreateBoardOpen(true); }, false, <AkBoardIcon label="" color="currentColor" />)}
             </>
           )}
 
           {ENABLE_FILTER_WHATSAPP_AI_SUMMARY && (
             <>
               {divider}
-              {menuItem('Copy WhatsApp summary', () => setWhatsAppOpen(true))}
+              {menuItem('Send WhatsApp summary', () => setWhatsAppOpen(true), false,
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>,
+              )}
             </>
           )}
 
@@ -411,8 +442,10 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             <>
               {divider}
               {menuItem(
-                <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)') }}>Delete</span>,
+                <span style={{ color: 'var(--ds-text-danger)' }}>Delete</span>,
                 () => setDeleteOpen(true),
+                false,
+                <span style={{ color: 'var(--ds-text-danger)' }}><AkDeleteIcon label="" color="currentColor" /></span>,
               )}
             </>
           )}
