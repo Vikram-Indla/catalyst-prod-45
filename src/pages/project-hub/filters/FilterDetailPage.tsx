@@ -215,42 +215,25 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
     navigate(backHref);
   };
 
-  const breadcrumb = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 24px 0' }}>
-      <button
-        onClick={() => navigate(backHref)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px',
-          fontSize: 'var(--ds-font-size-300)', color: token('color.link'), fontWeight: token('font.weight.medium') }}
-      >
-        Filters
-      </button>
-      <span style={{ color: token('color.text.subtlest'), fontSize: 'var(--ds-font-size-300)' }}>/</span>
-      <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>{filter.name}</span>
-    </div>
-  );
-
   return (
     <AtlaskitPageShell
       flush
       chromeBand={projectKey
-        ? <ProjectPageHeader hubType={isProduct ? 'product' : 'project'} projectKey={projectKey} title="Filters" />
+        ? <ProjectPageHeader
+            hubType={isProduct ? 'product' : isIncident ? 'incident' : isRelease ? 'release' : 'project'}
+            projectKey={projectKey}
+            trail={[
+              { text: 'Filters', href: backHref },
+              { text: filter.name },
+            ]}
+            hideTitle
+          />
         : null}
     >
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-        {breadcrumb}
-
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '16px 24px 0', gap: 16 }}>
           <div>
-            <h1 style={{
-              margin: 0,
-              fontSize: 'var(--ds-font-size-800)',
-              fontWeight: 653,
-              color: token('color.text'),
-              lineHeight: '28px',
-            }}>
-              {filter.name}
-            </h1>
             {filter.description && (
               <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle'), maxWidth: 640 }}>
                 {filter.description}
