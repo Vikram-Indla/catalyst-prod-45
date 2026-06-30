@@ -40,7 +40,7 @@ export function CatalystQuickTabBar({
         display: 'flex',
         alignItems: 'center',
         gap: 0,
-        padding: '0 24px',
+        padding: '10px 24px 0 24px',
         borderBottom: `1px solid ${token('color.border')}`,
         flexShrink: 0,
       }}
@@ -57,7 +57,7 @@ export function CatalystQuickTabBar({
               borderBottom: isActive
                 ? `2px solid ${token('color.border.selected', 'var(--ds-link)')}`
                 : '2px solid transparent',
-              padding: '4px 16px',
+              padding: '6px 16px',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: isActive ? 600 : 400,
               color: isActive

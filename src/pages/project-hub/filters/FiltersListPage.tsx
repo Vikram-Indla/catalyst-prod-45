@@ -60,7 +60,7 @@ interface FiltersListPageProps {
 }
 
 
-const ICON_COLOR = 'var(--ds-icon)';
+const ICON_COLOR = token('color.icon');
 
 // ── Permission entry builders ───────────────────────────────────────────────
 // Build PermissionEntry[] from Jira share/edit permissions or Catalyst-native
@@ -167,9 +167,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pageSize, setPageSize] = useState(25);
   const [page, setPage] = useState(0);
-  const [columnVisibility, setColumnVisibility] = useState<Set<string>>(
-    () => new Set(['name', 'owner', 'viewers', 'editors', 'starred', 'updated'])
-  );
 
   // getSession() reads from local storage (no network) — resolves before first
   // render completes, avoiding the race where the kebab opened before the user
@@ -661,8 +658,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         isLoading={isLoading}
         selectable
         onSelectionChange={setSelectedIds}
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={setColumnVisibility}
         density="comfortable"
         ariaLabel="Filters directory"
         showRowCount
