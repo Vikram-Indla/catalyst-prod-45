@@ -36,6 +36,7 @@ import {
   useCreateDashboardFromFilter,
 } from '@/hooks/workhub/useFilterDerivedViews';
 import { useParams, useNavigate } from 'react-router-dom';
+import { catalystToast } from '@/lib/catalystToast';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
@@ -347,9 +348,11 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           {menuItem('Copy link', () => {
             const base = window.location.origin;
             const path = projectKey
-              ? `/project-hub/${projectKey}/filters/create?filterId=${filter.id}`
+              ? `/${hubPrefix}/${projectKey}/filters/create?filterId=${filter.id}`
               : `/product-hub/allwork?filterId=${filter.id}`;
-            navigator.clipboard.writeText(base + path).catch(() => {});
+            navigator.clipboard.writeText(base + path)
+              .then(() => catalystToast.success('Link copied'))
+              .catch(() => catalystToast.error('Could not copy link'));
           }, false, <AkLinkIcon label="" color="currentColor" />)}
           {isOwner && menuItem('Change owner', () => setTransferOpen(true), false, <AkPersonIcon label="" color="currentColor" />)}
 
