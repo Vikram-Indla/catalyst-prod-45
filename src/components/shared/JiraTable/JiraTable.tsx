@@ -1121,7 +1121,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken) !important;
+        background: var(--ds-surface) !important;
       }
       .dark .jira-table-grid thead th {
         background: var(--ds-surface-sunken) !important;
