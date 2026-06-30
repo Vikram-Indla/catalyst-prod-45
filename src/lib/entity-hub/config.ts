@@ -10,7 +10,7 @@
  * /release-hub/releases-management.
  */
 
-export type EntityKind = 'release' | 'sprint';
+export type EntityKind = 'release' | 'sprint' | 'milestone';
 
 export interface EntityScopePickerOption {
   id: string;        // ph_projects.id
@@ -34,17 +34,34 @@ export interface EntityConfig {
   };
 
   /** Supabase table name. */
-  table: 'ph_releases' | 'ph_jira_sprints';
+  table: 'ph_releases' | 'ph_jira_sprints' | 'product_milestones';
 
-  /** Progress aggregation view. */
-  progressView: 'vw_ph_release_progress' | 'vw_sprint_jira_progress';
+  /** Progress aggregation view. Optional — milestone has no canonical view yet. */
+  progressView?: 'vw_ph_release_progress' | 'vw_sprint_jira_progress';
 
   /**
-   * Which ph_issues field links an issue to this entity.
+   * Which ph_issues field links an issue to this entity (release/sprint only).
    * - 'fix_version_name'  → matches ph_issues.sprint_release[i].name (fix versions JSONB; release-side)
    * - 'sprint_name'       → matches ph_issues.sprint_name (text; sprint-side)
+   * Milestones link via business_request_milestone_links instead of ph_issues —
+   * WorkItemsSection branches on config.kind before reaching this field.
    */
-  matchIssueByField: 'fix_version_name' | 'sprint_name';
+  matchIssueByField?: 'fix_version_name' | 'sprint_name';
+
+  /**
+   * Column-name map. ReleaseDetailPage + ReleaseSidePanel build SELECTs and
+   * UPDATEs against these column names so the same component can drive
+   * ph_releases (name/project_id/release_date) and product_milestones
+   * (title/product_id/target_date) without forking the code.
+   */
+  columnMap: {
+    /** Primary display-name column. release/sprint: 'name'. milestone: 'title'. */
+    nameColumn: 'name' | 'title';
+    /** Parent FK column. release/sprint: 'project_id'. milestone: 'product_id'. */
+    fkProjectColumn: 'project_id' | 'product_id';
+    /** End-date column. release/sprint: 'release_date'. milestone: 'target_date'. */
+    releaseDateColumn: 'release_date' | 'target_date';
+  };
 
   /**
    * Scope picker source. Releases historically pulled from `products` ∩
@@ -63,12 +80,12 @@ export interface EntityConfig {
   buildWorkHref: (id: string, ctx?: { projectKey?: string }) => string;
 
   /** React-query key prefix to keep release/sprint caches separate. */
-  queryKeyPrefix: 'projecthub-releases' | 'projecthub-sprints';
+  queryKeyPrefix: 'projecthub-releases' | 'projecthub-sprints' | 'product-milestones';
 
   /** Approvers config (table + FK column). */
   approvers: {
-    table: 'ph_release_approvers' | 'ph_sprint_approvers';
-    fkColumn: 'release_id' | 'sprint_id';
+    table: 'ph_release_approvers' | 'ph_sprint_approvers' | 'product_milestone_approvers';
+    fkColumn: 'release_id' | 'sprint_id' | 'milestone_id';
     profileFkAlias: string; // PostgREST embed alias for profiles JOIN
   };
 }
@@ -98,6 +115,11 @@ export const RELEASE_CONFIG: EntityConfig = {
     table: 'ph_release_approvers',
     fkColumn: 'release_id',
     profileFkAlias: 'profiles!ph_release_approvers_user_id_fkey',
+  },
+  columnMap: {
+    nameColumn: 'name',
+    fkProjectColumn: 'project_id',
+    releaseDateColumn: 'release_date',
   },
 };
 
@@ -129,8 +151,60 @@ export const SPRINT_CONFIG: EntityConfig = {
     fkColumn: 'sprint_id',
     profileFkAlias: 'profiles!ph_sprint_approvers_user_id_fkey',
   },
+  columnMap: {
+    nameColumn: 'name',
+    fkProjectColumn: 'project_id',
+    releaseDateColumn: 'release_date',
+  },
+};
+
+// ─── Milestone config ────────────────────────────────────────────────────────
+//
+// 2026-06-30 (CAT-MILESTONE-DETAIL-20260630-001):
+// /product-hub/:key/milestones/:milestoneId mounts the canonical
+// ReleaseDetailPage with this config — same pattern as SprintDetailPage.
+// Differences vs release/sprint:
+//   - table = product_milestones (different column names — see columnMap)
+//   - approvers table = product_milestone_approvers
+//   - work items link via business_request_milestone_links → business_requests
+//     (NOT ph_issues.sprint_release). WorkItemsSection branches on
+//     config.kind === 'milestone' before reaching matchIssueByField.
+
+export const MILESTONE_CONFIG: EntityConfig = {
+  kind: 'milestone',
+  label: {
+    singular: 'Milestone',
+    plural: 'Milestones',
+    lowerSingular: 'milestone',
+    lowerPlural: 'milestones',
+    scopePicker: 'Product',
+    scopePickerLower: 'product',
+    actionRelease: 'Complete',
+  },
+  table: 'product_milestones',
+  // progressView + matchIssueByField intentionally omitted — milestone has
+  // neither a progress view nor a ph_issues link.
+  scopePickerSource: 'products_intersect_ph_projects',
+  baseUrl: '/product-hub',
+  buildDetailHref: (id, ctx) =>
+    `/product-hub/${ctx?.projectKey ?? ''}/milestones/${id}`,
+  buildWorkHref: (id, ctx) =>
+    `/product-hub/${ctx?.projectKey ?? ''}/milestones/${id}/work`,
+  queryKeyPrefix: 'product-milestones',
+  approvers: {
+    table: 'product_milestone_approvers',
+    fkColumn: 'milestone_id',
+    profileFkAlias: 'profiles!product_milestone_approvers_user_id_fkey',
+  },
+  columnMap: {
+    nameColumn: 'title',
+    fkProjectColumn: 'product_id',
+    releaseDateColumn: 'target_date',
+  },
 };
 
 export function getEntityConfig(kind: EntityKind): EntityConfig {
-  return kind === 'sprint' ? SPRINT_CONFIG : RELEASE_CONFIG;
+  if (kind === 'sprint') return SPRINT_CONFIG;
+  if (kind === 'milestone') return MILESTONE_CONFIG;
+  return RELEASE_CONFIG;
 }

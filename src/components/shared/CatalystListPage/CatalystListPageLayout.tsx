@@ -94,18 +94,47 @@ export function CatalystListPageLayout({
         />
       ) : null}
 
-      {/* Row 2: Search + filter dropdowns + secondary actions (Export CSV etc.) */}
+      {/* Row 2: Search + filter dropdowns + secondary actions (Export CSV etc.).
+          When no tab bar but a primary CTA (tabBarActions) is provided, inline
+          the CTA at the right end of the toolbar row so it stays visible —
+          matches the Catalyst CTA convention used on Filters/Boards/Roadmaps. */}
       {showToolbar ? (
-        <CatalystListToolbar
-          compact={showTabBar}
-          search={search}
-          searchPlaceholder={searchPlaceholder}
-          onSearchChange={onSearchChange}
-          filters={toolbarFilters}
-          hasActiveFilters={hasActiveFilters}
-          onClearAll={onClearAllFilters}
-          actions={toolbarActions}
-        />
+        !showTabBar && tabBarActions ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '4px 24px',
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <CatalystListToolbar
+                compact
+                search={search}
+                searchPlaceholder={searchPlaceholder}
+                onSearchChange={onSearchChange}
+                filters={toolbarFilters}
+                hasActiveFilters={hasActiveFilters}
+                onClearAll={onClearAllFilters}
+                actions={toolbarActions}
+              />
+            </div>
+            <div style={{ flexShrink: 0 }}>{tabBarActions}</div>
+          </div>
+        ) : (
+          <CatalystListToolbar
+            compact={showTabBar}
+            search={search}
+            searchPlaceholder={searchPlaceholder}
+            onSearchChange={onSearchChange}
+            filters={toolbarFilters}
+            hasActiveFilters={hasActiveFilters}
+            onClearAll={onClearAllFilters}
+            actions={toolbarActions}
+          />
+        )
       ) : toolbarActions ? (
         <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 24px' }}>
           {toolbarActions}

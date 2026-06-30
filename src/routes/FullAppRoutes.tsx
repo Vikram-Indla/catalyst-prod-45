@@ -63,6 +63,7 @@ const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
 const ReleasesPageWrapperLazy = lazy(() => import("../pages/project-hub/ReleasesPageWrapper").then(m => ({ default: m.ReleasesPageWrapper })));
 const MilestonesPageLazy = lazy(() => import("../pages/product-hub/MilestonesPage").then(m => ({ default: m.MilestonesPage })));
+const MilestoneDetailPageLazy = lazy(() => import("../pages/product-hub/MilestoneDetailPage").then(m => ({ default: m.MilestoneDetailPage })));
 const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
 const ReleaseWorkNavigatorPageLazy = lazy(() => import("../pages/release-hub/ReleaseWorkNavigatorPage").then(m => ({ default: m.ReleaseWorkNavigatorPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
@@ -543,6 +544,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
         <Route path="/product-hub/:key/dependencies" element={<MG k="producthub" t="ProductHub"><S><ProductDependenciesPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/milestones" element={<MG k="producthub" t="ProductHub"><S><MilestonesPageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/milestones/:milestoneId" element={<MG k="producthub" t="ProductHub"><S><MilestoneDetailPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/releases" element={<MG k="producthub" t="ProductHub"><S><ReleasesPageWrapperLazy /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
