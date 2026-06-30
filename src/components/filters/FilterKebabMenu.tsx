@@ -25,7 +25,7 @@ import {
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
-import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
+import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems'; // useToggleStar/useStarredItemIds kept for future unified-star integration
 import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD, ENABLE_FILTER_WHATSAPP_AI_SUMMARY } from '@/lib/featureFlags';
 import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useJqlResults } from '@/hooks/workhub/useJqlResults';
@@ -103,19 +103,18 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
 
-  // Star this saved filter into the unified star store. metadata carries the
-  // label + detail route so the Starred hub can render and open it.
-  const toggleStar = useToggleStar();
-  const { data: starredIds } = useStarredItemIds();
-  const isStarred = starredIds?.has(filter.id) ?? false;
+  // Star state is authoritative from ph_saved_filters.starred_by_user_ids so
+  // the kebab and the inline row star button always agree on the same value.
+  const starFilter = useStarFilter();
   const hubPrefix = hubType === 'product' ? 'product-hub' : 'project-hub';
   const filterRoute = projectKey ? `/${hubPrefix}/${projectKey}/filters/${filter.id}` : undefined;
+  const isStarred = currentUserId ? (filter.starred_by_user_ids ?? []).includes(currentUserId) : false;
   function handleToggleStar() {
-    toggleStar.mutate({
-      itemId: filter.id,
-      itemType: 'filter',
-      isCurrentlyStarred: isStarred,
-      ...(isStarred ? {} : { metadata: { label: filter.name, subtitle: 'Filter', ...(filterRoute ? { route: filterRoute } : {}) } }),
+    if (!currentUserId) return;
+    starFilter.mutate({
+      filterId: filter.id,
+      currentStarredIds: filter.starred_by_user_ids ?? [],
+      userId: currentUserId,
     });
   }
   const createKanban = useCreateKanbanFromFilter();

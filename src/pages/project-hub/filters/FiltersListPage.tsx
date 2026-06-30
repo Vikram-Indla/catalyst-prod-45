@@ -596,28 +596,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     },
   ];
 
-  function handleExportCsv() {
-    const rows = visibleFilters.map(f => [
-      `"${(f.name ?? '').replace(/"/g, '""')}"`,
-      `"${(f.description ?? '').replace(/"/g, '""')}"`,
-      `"${(f.jql_query ?? '').replace(/"/g, '""')}"`,
-      `"${(f.is_shared ? 'Shared' : 'Private')}"`,
-      `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
-    ].join(','));
-    const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'filters.csv'; a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  const exportCsvAction = (
-    <Button appearance="subtle" onClick={handleExportCsv}>
-      Export CSV
-    </Button>
-  );
-
   const createCta = (
     <Tooltip content="Create filter (N)">
       {(tooltipProps) => (
@@ -639,13 +617,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         : `${visibleFilters.length} of ${filters.length} filter${filters.length !== 1 ? 's' : ''}`)
     : undefined;
 
-  // Export CSV demoted to footer — low-frequency utility, not primary band
-  const footerText = filterCountText ? (
-    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <span>{filterCountText}</span>
-      {exportCsvAction}
-    </span>
-  ) : undefined;
+  const footerText = filterCountText ?? undefined;
 
   return (
     <CatalystListPageLayout
