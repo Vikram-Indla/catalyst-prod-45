@@ -13,6 +13,7 @@
  * roles", group name, stacked users) — never lozenges.
  */
 import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
@@ -207,6 +208,35 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const hubScope = hubType === 'product' ? 'product' as const : 'project' as const;
   const { data: filters = [], isLoading, error } = useFiltersForProject(projectKey, hubScope);
 
+  // Batch-resolve account IDs in JQL subtitles → display names
+  const ACCOUNT_ID_RE_LIST = /[0-9a-f]{24}|[0-9a-zA-Z]{60,}/g;
+  const allAccountIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const f of filters) {
+      const matches = f.jql_query?.match(ACCOUNT_ID_RE_LIST) ?? [];
+      for (const m of matches) ids.add(m);
+    }
+    return [...ids];
+  }, [filters]);
+
+  const { data: profileMap = {} } = useQuery<Record<string, string>>({
+    queryKey: ['jql-profile-map', allAccountIds],
+    enabled: allAccountIds.length > 0,
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name').in('id', allAccountIds);
+      const map: Record<string, string> = {};
+      for (const p of (data ?? [])) if (p.full_name) map[p.id] = p.full_name;
+      return map;
+    },
+  });
+
+  function resolveJqlDisplay(jql: string): string {
+    return jql.replace(/"([0-9a-f]{24}|[0-9a-zA-Z]{60,})"/g, (_, id) =>
+      profileMap[id] ? `"${profileMap[id]}"` : `"${id}"`
+    );
+  }
+
   const starFilter = useStarFilter();
 
   // Dropdown option pools — derived from the live rows (Jira derives them the same way)
@@ -395,7 +425,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
               }}>
-                {f.jql_query}
+                {resolveJqlDisplay(f.jql_query)}
               </span>
             )}
             {visibleTypes.length > 0 && (
