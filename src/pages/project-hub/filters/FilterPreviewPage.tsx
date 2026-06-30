@@ -811,15 +811,31 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
      so paren-wrapping was never needed for correctness anyway. */
   const effectiveJql = useMemo(() => {
     if (isProduct || isTasks) return '';
-    if (!isIncident) return jql;
-    const guard = 'issuetype = "Production Incident"';
     const raw = (jql ?? '').trim();
-    if (!raw) return guard;
-    const orderByMatch = raw.match(/\s+ORDER\s+BY\s+.+$/i);
-    const orderBy = orderByMatch ? orderByMatch[0] : '';
-    const body = orderBy ? raw.slice(0, raw.length - orderBy.length).trim() : raw;
-    return body ? `${body} AND ${guard}${orderBy}` : `${guard}${orderBy}`;
-  }, [isProduct, isIncident, isTasks, jql]);
+
+    if (isIncident) {
+      const guard = 'issuetype = "Production Incident"';
+      if (!raw) return guard;
+      const orderByMatch = raw.match(/\s+ORDER\s+BY\s+.+$/i);
+      const orderBy = orderByMatch ? orderByMatch[0] : '';
+      const body = orderBy ? raw.slice(0, raw.length - orderBy.length).trim() : raw;
+      return body ? `${body} AND ${guard}${orderBy}` : `${guard}${orderBy}`;
+    }
+
+    // Project hub: pin scope to this project unless JQL already names a project.
+    if (!isProduct && !isIncident && !isTasks && !isRelease && !isTest && projectKey) {
+      if (!/\bproject\s*=/i.test(raw)) {
+        const guard = `project = "${projectKey}"`;
+        if (!raw) return guard;
+        const orderByMatch = raw.match(/\s+ORDER\s+BY\s+.+$/i);
+        const orderBy = orderByMatch ? orderByMatch[0] : '';
+        const body = orderBy ? raw.slice(0, raw.length - orderBy.length).trim() : raw;
+        return `${guard} AND (${body})${orderBy}`;
+      }
+    }
+
+    return raw;
+  }, [isProduct, isIncident, isTasks, isRelease, isTest, jql, projectKey]);
   const projectResults = useJqlResults(effectiveJql);
   const productResults = useProductBrResults(isProduct ? productInfo.id : null, canonicalFilter, search);
   const tasksResults = useTasksResults(canonicalFilter, search, isTasks);
