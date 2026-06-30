@@ -30,6 +30,7 @@ import { useCatyReleaseSummarize } from '@/components/releases/detail/summarize/
 import { useReleaseSummaryStream } from '@/components/releases/detail/summarize/useReleaseSummaryStream';
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 const BORDER = 'var(--ds-border)';
@@ -291,28 +292,127 @@ export function ReleaseDetailPage({
   return (
     <div style={{ display: 'flex', alignItems: 'stretch', height: '100%', minHeight: 0, overflow: 'hidden', paddingRight: sidebarCollapsed ? 20 : 0 }}>
       <div style={{ flex: 1, minWidth: 0, height: '100%', overflowY: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Breadcrumb — canonical TicketBreadcrumbs. itemType + projectHref
-          come from EntityConfig so sprint surface reads "Sprint / Iteration",
-          milestone surface reads "Milestone", etc. */}
-      {project && (
+      {/* Breadcrumb.
+          Sprint surface uses the canonical ProjectPageHeader (same component
+          that drives /project-hub/:key/dashboard etc.) so the breadcrumb +
+          title styling matches the rest of the project hub. Release +
+          milestone keep the existing TicketBreadcrumbs until those surfaces
+          are migrated. */}
+      {project && config.kind === 'sprint' && (
+        <ProjectPageHeader
+          hubType="project"
+          projectKey={project.key}
+          paddingX={0}
+          trail={[
+            { text: 'Sprints', href: listHrefOverride ?? `/project-hub/${project.key}/sprints` },
+            { text: title },
+          ]}
+          title={
+            isEditingTitle ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  ref={titleInputRef}
+                  value={titleDraft}
+                  onChange={(e) => setTitleDraft(e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); saveTitle(); }
+                    else if (e.key === 'Escape') { e.preventDefault(); cancelEditTitle(); }
+                  }}
+                  style={{
+                    font: 'inherit',
+                    color: TEXT,
+                    padding: '0 6px',
+                    border: `2px solid ${LINK}`,
+                    borderRadius: 3,
+                    outline: 'none',
+                    background: 'var(--ds-surface)',
+                    minWidth: 240,
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Save title"
+                  disabled={!canSaveTitle}
+                  onClick={saveTitle}
+                  style={{
+                    all: 'unset',
+                    cursor: canSaveTitle ? 'pointer' : 'not-allowed',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 28,
+                    height: 28,
+                    borderRadius: 3,
+                    border: '1px solid var(--ds-border)',
+                    background: 'var(--ds-surface)',
+                    color: canSaveTitle ? 'var(--ds-text)' : 'var(--ds-text-disabled)',
+                    opacity: canSaveTitle ? 1 : 0.6,
+                  }}
+                >
+                  <CheckIcon label="" size="small" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Cancel"
+                  onClick={cancelEditTitle}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 28,
+                    height: 28,
+                    borderRadius: 3,
+                    border: '1px solid var(--ds-border)',
+                    background: 'var(--ds-surface)',
+                    color: 'var(--ds-text-subtle)',
+                  }}
+                >
+                  <CrossIcon label="" size="small" />
+                </button>
+              </span>
+            ) : (
+              <span
+                onClick={startEditTitle}
+                title="Click to edit"
+                style={{ cursor: 'pointer' }}
+              >
+                {title}
+              </span>
+            )
+          }
+          actions={
+            <>
+              <Button
+                appearance="subtle"
+                iconBefore={(p) => <FeedbackIcon {...p} label="" />}
+                onClick={() => setIsFeedbackOpen(true)}
+              >
+                Give feedback
+              </Button>
+              <Button appearance="default" onClick={handleSummarize}>
+                ✦ Summarize {config.label.singular}
+              </Button>
+            </>
+          }
+        />
+      )}
+      {project && config.kind !== 'sprint' && (
         <TicketBreadcrumbs
           projectKey={project.key}
           projectName={project.name}
-          itemType={
-            config.kind === 'sprint'    ? 'Sprint / Iteration' :
-            config.kind === 'milestone' ? 'Milestone'          :
-            'Release'
-          }
+          itemType={config.kind === 'milestone' ? 'Milestone' : 'Release'}
           itemKey={title}
           projectHref={listHrefOverride ?? (
-            config.kind === 'sprint'    ? `/project-hub/${project.key}/sprints`    :
             config.kind === 'milestone' ? `/product-hub/${project.key}/milestones` :
             '/release-hub/releases-management'
           )}
         />
       )}
 
-      {/* Title row */}
+      {/* Title row — sprint surface renders title inside ProjectPageHeader above. */}
+      {config.kind !== 'sprint' && (
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         {isEditingTitle ? (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -417,6 +517,7 @@ export function ReleaseDetailPage({
           ✦ Summarize {config.label.singular}
         </Button>
       </div>
+      )}
 
       {/* Editable section name — persists to ph_releases.section_name.
           Body description persists to ph_releases.section_description_adf
