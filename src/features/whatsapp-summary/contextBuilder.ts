@@ -3,7 +3,7 @@
  *
  * Runs BEFORE the AI. Responsibility:
  *   1. Permission-gate: items without a key/summary are excluded silently.
- *   2. Filter by TimePeriod and ItemScope.
+ *   2. Filter by ItemScope (auto-derived from summaryType — no UI control).
  *   3. Classify each item (businessStatus, isBlocked, isInReview, isDecisionNeeded, etaDate).
  *   4. Sanitize: strip HTML, truncate summary, replace internal IDs with display names.
  *   5. Cap at options.maxItems (hard ceiling: 30).
@@ -22,8 +22,6 @@ import type {
   SanitizedItem,
   BusinessStatus,
   EtaSource,
-  TimePeriod,
-  ItemScope,
 } from './types';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -103,7 +101,7 @@ function classifyBusinessStatus(row: JqlResultRow): BusinessStatus {
   return 'in_progress'; // safe default for non-empty non-done categories
 }
 
-function resolveEta(row: JqlResultRow, today: Date): { etaDate: string | null; etaSource: EtaSource } {
+function resolveEta(row: JqlResultRow): { etaDate: string | null; etaSource: EtaSource } {
   if (row.dueDate) {
     return { etaDate: row.dueDate, etaSource: 'due_date' };
   }
@@ -113,7 +111,7 @@ function resolveEta(row: JqlResultRow, today: Date): { etaDate: string | null; e
   return { etaDate: null, etaSource: 'missing' };
 }
 
-function daysStale(row: JqlResultRow, today: Date): number | null {
+function daysStaleFor(row: JqlResultRow, today: Date): number | null {
   if (!row.updated) return null;
   return daysBetween(new Date(row.updated), today);
 }
@@ -126,44 +124,27 @@ function isOverdue(row: JqlResultRow, today: Date): boolean {
 }
 
 function sanitizeSummary(raw: string): string {
-  // Strip HTML tags (safety: raw_json comments are excluded, but summary may have some)
   const stripped = raw.replace(/<[^>]+>/g, '').trim();
   return stripped.length > SUMMARY_MAX_CHARS
     ? stripped.slice(0, SUMMARY_MAX_CHARS - 1) + '…'
     : stripped;
 }
 
-// ── Time-period filter ────────────────────────────────────────────────────────
+// ── Scope — auto-derived from summaryType, no UI control ─────────────────────
 
-function passesTimePeriod(row: JqlResultRow, period: TimePeriod, today: Date): boolean {
-  if (period === 'all_time') return true;
-  if (period === 'current_sprint') return !!row.sprintName;
-
-  const days = period === 'last_7_days' ? 7 : period === 'last_14_days' ? 14 : 30;
-  const cutoff = new Date(today);
-  cutoff.setDate(cutoff.getDate() - days);
-
-  // An item "belongs to" a period if it was updated within the window.
-  // Items with no updated date are excluded — zero-assumption.
-  if (!row.updated) return false;
-  return new Date(row.updated).getTime() >= cutoff.getTime();
-}
-
-// ── Scope filter ──────────────────────────────────────────────────────────────
-
-function passesItemScope(row: JqlResultRow, scope: ItemScope, today: Date): boolean {
-  if (scope === 'all') return true;
-  const status = classifyBusinessStatus(row);
-  if (scope === 'in_progress') return status === 'in_progress' || status === 'in_review';
-  if (scope === 'blocked') return status === 'blocked';
-  if (scope === 'due_soon') {
-    if (!row.dueDate) return false;
-    const due = parseLocalDate(row.dueDate);
-    const sevenAhead = new Date(today);
-    sevenAhead.setDate(sevenAhead.getDate() + 7);
-    return due.getTime() >= today.getTime() && due.getTime() <= sevenAhead.getTime();
-  }
-  return true;
+function derivedScopeFilter(summaryType: string) {
+  return (row: JqlResultRow): boolean => {
+    if (summaryType === 'blockers') {
+      const st = classifyBusinessStatus(row);
+      return st === 'blocked';
+    }
+    if (summaryType === 'eta') {
+      // Only items with an explicit due date are meaningful for ETA summaries
+      return !!row.dueDate;
+    }
+    // 'full' and 'progress' — include all items
+    return true;
+  };
 }
 
 // ── Sanitize a single row into a SanitizedItem ───────────────────────────────
@@ -173,9 +154,8 @@ function sanitizeRow(row: JqlResultRow, today: Date): SanitizedItem {
   const isBlocked = businessStatus === 'blocked';
   const isInReview = businessStatus === 'in_review';
   const isDecisionNeeded = matchesAny(row.status ?? '', DECISION_STATUS_PATTERNS);
-  const { etaDate, etaSource } = resolveEta(row, today);
+  const { etaDate, etaSource } = resolveEta(row);
 
-  // Blocker reason: flag_reason first, then nothing (never fabricate)
   const blockerReason = isBlocked
     ? (row.flagReason?.trim() || null)
     : null;
@@ -194,7 +174,7 @@ function sanitizeRow(row: JqlResultRow, today: Date): SanitizedItem {
     sprintName: row.sprintName ?? null,
     isInReview,
     isDecisionNeeded,
-    daysStale: daysStale(row, today),
+    daysStale: daysStaleFor(row, today),
     priority: row.priority ?? null,
   };
 }
@@ -210,14 +190,13 @@ export function getFilterSummaryContext(
 ): FilterSummaryContext {
   const today = todayMidnight();
   const maxItems = Math.min(options.maxItems, MAX_ITEMS_HARD_CEILING);
+  const scopeFilter = derivedScopeFilter(options.summaryType);
 
-  // Step 1: Permission gate — exclude rows missing key or summary (cannot identify item).
+  // Step 1: Permission gate — exclude rows missing key or summary.
   const permittedRows = allRows.filter(r => r.key && r.summary);
 
-  // Step 2: Time-period and scope filters.
-  const filtered = permittedRows.filter(
-    r => passesTimePeriod(r, options.timePeriod, today) && passesItemScope(r, options.itemScope, today),
-  );
+  // Step 2: Scope filter (auto-derived from summaryType — no time-period filter).
+  const filtered = permittedRows.filter(scopeFilter);
 
   // Step 3: Classify and sanitize ALL filtered rows (needed for accurate counts).
   const allSanitized: SanitizedItem[] = filtered.map(r => sanitizeRow(r, today));
@@ -236,7 +215,6 @@ export function getFilterSummaryContext(
     if (item.etaSource === 'missing' && item.businessStatus !== 'done') missingEta++;
   }
 
-  // Overdue needs the original rows for date comparison.
   for (const r of filtered) {
     if (isOverdue(r, today)) overdue++;
   }

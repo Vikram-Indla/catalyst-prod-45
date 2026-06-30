@@ -56,13 +56,7 @@ interface FilterSummaryContext {
   generatedAt: string;
   options: {
     summaryType: string;
-    audience: string;
-    tone: string;
-    itemScope: string;
-    timePeriod: string;
-    includeBlockers: boolean;
-    includeEta: boolean;
-    includeDecisions: boolean;
+    recipientRole: string;
     maxItems: number;
   };
   counts: {
@@ -106,19 +100,35 @@ async function logGovernance(params: {
 
 // ── Prompt construction ───────────────────────────────────────────────────────
 
+// ── Role → persona map (mirrors ROLE_GROUPS in AdminAccessPage) ──────────────
+
+const ROLE_PERSONA: Record<string, { label: string; detail: string; tone: string }> = {
+  business_owner:       { label: "a Business Owner",        detail: "high-level outcomes, risks, and key decisions — no Jira ticket detail",        tone: "professional and concise" },
+  product_owner:        { label: "a Product Owner",         detail: "feature progress, blockers to delivery, and sprint coverage",                   tone: "professional and direct" },
+  product_manager:      { label: "a Product Manager",       detail: "progress, blockers, ETAs, and decisions needed",                                tone: "professional and structured" },
+  project_manager:      { label: "a Project Manager",       detail: "full item-level detail — key, assignee, status, blockers, ETAs",                tone: "formal and precise" },
+  project_coordinator:  { label: "a Project Coordinator",   detail: "full item list with status and assignee",                                       tone: "friendly and clear" },
+  release_manager:      { label: "a Release Manager",       detail: "ETA coverage, overdue items, and sprint alignment",                             tone: "professional and focused on dates" },
+  architect:            { label: "an Architect",            detail: "progress on technical items, blockers, and decisions needed",                   tone: "professional and technical" },
+  developer:            { label: "a Developer",             detail: "full item-level status — what's in progress, blocked, or in review",            tone: "direct and technical" },
+  qa_tester:            { label: "a QA Tester",             detail: "items in review or testing, blockers, and decisions needed",                   tone: "direct and factual" },
+  operations_engineer:  { label: "an Operations Engineer",  detail: "in-progress and blocked items relevant to operations",                          tone: "direct and factual" },
+  technical_support:    { label: "a Technical Support lead","detail": "items in progress and any blockers or decisions pending",                     tone: "friendly and factual" },
+  support:              { label: "a Support lead",          detail: "high-level progress and any items that affect customers",                       tone: "friendly and clear" },
+  governance:           { label: "a Governance reviewer",   detail: "milestone status, decisions needed, and risk items",                            tone: "formal and structured" },
+  pmo:                  { label: "a PMO lead",              detail: "progress, ETA coverage, overdue items, and decisions needed",                   tone: "formal and structured" },
+  admin:                { label: "an Admin",                detail: "full status — all items, assignees, blockers, and ETAs",                        tone: "professional and complete" },
+  guest:                { label: "a Guest stakeholder",     detail: "high-level summary only — counts and key highlights, no ticket-level detail",   tone: "friendly and brief" },
+};
+
 function buildSystemPrompt(ctx: FilterSummaryContext): string {
   const { options } = ctx;
-  const audienceLabel =
-    options.audience === "executive"
-      ? "a senior executive who wants a short, decisive summary"
-      : options.audience === "stakeholder"
-        ? "a business stakeholder who wants clear progress and blockers"
-        : "the delivery team who want full item-level detail";
-  const toneLabel =
-    options.tone === "formal" ? "professional and formal" : "friendly and conversational";
+  const role = (options as any).recipientRole as string ?? "business_owner";
+  const persona = ROLE_PERSONA[role] ?? ROLE_PERSONA["business_owner"];
 
-  return `You are a senior delivery manager writing a WhatsApp status update for ${audienceLabel}.
-Your tone must be ${toneLabel}.
+  return `You are a senior delivery manager writing a WhatsApp status update for ${persona.label}.
+Include: ${persona.detail}.
+Tone: ${persona.tone}.
 
 ━━━━━━━━━━━━━━━ ABSOLUTE RULES ━━━━━━━━━━━━━━━
 
@@ -135,7 +145,7 @@ Your tone must be ${toneLabel}.
 3. STATE MISSING DATA PLAINLY — if a field is missing or null, say so directly. Examples:
    - etaSource = "missing" → "ETA is not clear — no target date is set"
    - blockerReason = null → "flagged as blocked (no reason given)"
-   - daysStale > 14 → "no updates in ${">"}14 days"
+   - daysStale > 14 → "no updates in more than 14 days"
 
 4. NO HALLUCINATION — you have not read the Jira issues. You only know what the structured data says. Do not add business context, impact, urgency, or sentiment that is not in the data.
 
@@ -152,11 +162,7 @@ Summary type: ${options.summaryType}
 ${options.summaryType === "blockers" ? "Focus entirely on blocked items and what is blocking them." : ""}
 ${options.summaryType === "eta" ? "Focus entirely on ETAs — which items have dates, which are missing dates, and what sprint coverage looks like." : ""}
 ${options.summaryType === "progress" ? "Focus on what has moved forward (in progress, in review, done recently)." : ""}
-${options.summaryType === "full" ? "Cover progress, blockers, ETAs, and any decisions needed." : ""}
-
-Include blockers: ${options.includeBlockers}
-Include ETAs: ${options.includeEta}
-Include decisions needed: ${options.includeDecisions}`;
+${options.summaryType === "full" ? "Cover progress, blockers, ETAs, and any decisions needed." : ""}`;
 }
 
 function buildUserPrompt(ctx: FilterSummaryContext): string {
@@ -282,7 +288,9 @@ serve(async (req) => {
               ? "Payment required."
               : "AI gateway error.",
         }),
-        { status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        // Return 200 so Supabase client preserves the JSON body — non-2xx causes
+        // functions.invoke() to discard the body and emit a generic error string.
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -317,7 +325,7 @@ serve(async (req) => {
         filterName: ctx.filterName,
         itemCount: ctx.cappedItemCount,
         summaryType: ctx.options.summaryType,
-        audience: ctx.options.audience,
+        recipientRole: ctx.options.recipientRole,
         isTruncated: ctx.isTruncated,
       },
       status: "ok",

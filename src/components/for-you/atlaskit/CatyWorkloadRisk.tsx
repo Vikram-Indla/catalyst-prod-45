@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { readWorkloadRiskSnapshot, writeWorkloadRiskSnapshot } from '@/hooks/aiWorkloadRiskSnapshot';
 import { token } from '@atlaskit/tokens';
 import Lozenge from '@atlaskit/lozenge';
 import ProgressBar from '@atlaskit/progress-bar';
@@ -14,7 +15,7 @@ interface CatyWorkloadRiskProps { teamMembers: Array<{ userId: string; name: str
 
 export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
   const { user } = useAuth();
-  const [data, setData] = useState<WorkloadRiskData | null>(null);
+  const [data, setData] = useState<WorkloadRiskData | null>(() => readWorkloadRiskSnapshot() ?? null);
   const [isLoading, setIsLoading] = useState(false);
   
   const analyzeWorkload = useCallback(async () => {
@@ -38,6 +39,7 @@ export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
       const { data: result, error } = await supabase.functions.invoke('ai-digest', { body: { mode: 'workload-risk', context } });
       if (!error && result?.workload) {
         setData(result.workload);
+        writeWorkloadRiskSnapshot(result.workload);
       } else {
         setData({ summary: 'Workload analysis is being set up. Check back soon.', members: [] });
       }

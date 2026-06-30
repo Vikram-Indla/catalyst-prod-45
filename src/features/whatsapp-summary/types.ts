@@ -9,27 +9,32 @@
 // ── Options ───────────────────────────────────────────────────────────────────
 
 export type SummaryType = 'progress' | 'blockers' | 'eta' | 'full';
-export type Audience = 'team' | 'stakeholder' | 'executive';
-export type Tone = 'formal' | 'casual';
-
-/** Which items to include in the AI payload. */
-export type ItemScope = 'all' | 'in_progress' | 'blocked' | 'due_soon';
 
 /**
- * Time window to restrict items by.
- * 'current_sprint' requires sprint_name to be non-null on the item.
+ * Recipient role — mirrors the app_role enum from the access management module.
+ * Used by the edge function to tailor tone, detail level, and framing.
  */
-export type TimePeriod = 'last_7_days' | 'last_14_days' | 'last_30_days' | 'current_sprint' | 'all_time';
+export type RecipientRole =
+  | 'admin'
+  | 'product_owner'
+  | 'product_manager'
+  | 'business_owner'
+  | 'project_manager'
+  | 'project_coordinator'
+  | 'release_manager'
+  | 'architect'
+  | 'developer'
+  | 'qa_tester'
+  | 'operations_engineer'
+  | 'technical_support'
+  | 'support'
+  | 'governance'
+  | 'pmo'
+  | 'guest';
 
 export interface WhatsAppSummaryOptions {
   summaryType: SummaryType;
-  audience: Audience;
-  tone: Tone;
-  itemScope: ItemScope;
-  timePeriod: TimePeriod;
-  includeBlockers: boolean;
-  includeEta: boolean;
-  includeDecisions: boolean;
+  recipientRole: RecipientRole;
   maxItems: number; // enforced by context builder (cap: 30)
 }
 

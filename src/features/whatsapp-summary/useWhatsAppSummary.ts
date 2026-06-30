@@ -18,13 +18,7 @@ import type {
 
 const DEFAULT_OPTIONS: WhatsAppSummaryOptions = {
   summaryType: 'full',
-  audience: 'stakeholder',
-  tone: 'formal',
-  itemScope: 'all',
-  timePeriod: 'last_7_days',
-  includeBlockers: true,
-  includeEta: true,
-  includeDecisions: true,
+  recipientRole: 'business_owner',
   maxItems: 20,
 };
 
@@ -52,7 +46,7 @@ export function useWhatsAppSummary(
     setState(prev => ({ ...prev, editableText: text }));
   }, []);
 
-  const generate = useCallback(async () => {
+  const generate = useCallback(async (overrideOptions?: Partial<WhatsAppSummaryOptions>) => {
     if (rows.length === 0) {
       setState(prev => ({
         ...prev,
@@ -62,7 +56,16 @@ export function useWhatsAppSummary(
       return;
     }
 
-    setState(prev => ({ ...prev, phase: 'building_context', errorMessage: null }));
+    setState(prev => ({
+      ...prev,
+      phase: 'building_context',
+      errorMessage: null,
+      options: overrideOptions ? { ...prev.options, ...overrideOptions } : prev.options,
+    }));
+
+    const effectiveOptions = overrideOptions
+      ? { ...state.options, ...overrideOptions }
+      : state.options;
 
     // Step 1: build the sanitized context (deterministic, no network call)
     const ctx: FilterSummaryContext = getFilterSummaryContext(
@@ -70,15 +73,14 @@ export function useWhatsAppSummary(
       filterJql,
       projectKey,
       rows,
-      state.options,
+      effectiveOptions,
     );
 
     if (ctx.cappedItems.length === 0) {
-      // All items were filtered out by time-period or scope — not an error, show a message
       setState(prev => ({
         ...prev,
         phase: 'error',
-        errorMessage: 'No items match the selected scope and time period. Try "All time" or "All items".',
+        errorMessage: 'No items match the selected summary type. Try "Full update".',
       }));
       return;
     }
@@ -92,10 +94,9 @@ export function useWhatsAppSummary(
         { body: ctx },
       );
 
-      if (error || !data?.generatedText) {
-        const edgeError = error?.message ?? 'AI returned no text.';
+      if (error || !data?.generatedText || (data as any)?.error) {
+        const edgeError = (data as any)?.message ?? error?.message ?? 'AI returned no text.';
         console.warn('generate-whatsapp-summary error:', edgeError);
-        // Fall back to deterministic summary — never block the copy path
         const fallback = buildFallbackSummary(ctx);
         setState(prev => ({
           ...prev,
