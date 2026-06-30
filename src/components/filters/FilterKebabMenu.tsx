@@ -19,13 +19,12 @@ import {
   useCopyFilter,
   useUpdateSavedFilter,
   useDeleteSavedFilter,
-
+  useStarFilter,
   useExistingBoardForFilter,
   useBoardsForProject,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
-import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems'; // useToggleStar/useStarredItemIds kept for future unified-star integration
 import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD, ENABLE_FILTER_WHATSAPP_AI_SUMMARY } from '@/lib/featureFlags';
 import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useJqlResults } from '@/hooks/workhub/useJqlResults';
