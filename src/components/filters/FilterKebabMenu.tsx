@@ -380,43 +380,6 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             </>
           )}
 
-          {ENABLE_FILTER_TO_ROADMAP && (
-            <>
-              {divider}
-              {menuItem(
-                existingRoadmap.data ? 'Open Timeline' : 'Create Timeline',
-                () => {
-                  if (existingRoadmap.data) {
-                    if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
-                    return;
-                  }
-                  setRoadmapName(`${filter.name} roadmap`);
-                  setCreateRoadmapOpen(true);
-                },
-                false,
-                <AkTimelineIcon label="" color="currentColor" />,
-              )}
-            </>
-          )}
-
-          {ENABLE_FILTER_TO_DASHBOARD && (
-            <>
-              {divider}
-              {menuItem(
-                existingDashboard.data ? 'Open Dashboard' : 'Create Dashboard',
-                () => {
-                  if (existingDashboard.data) {
-                    if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/dashboards/${existingDashboard.data.id}`);
-                    return;
-                  }
-                  setDashboardName(`${filter.name} dashboard`);
-                  setCreateDashboardOpen(true);
-                },
-                false,
-                <AkDashboardIcon label="" color="currentColor" />,
-              )}
-            </>
-          )}
 
           {!ENABLE_FILTER_TO_KANBAN && isOwner && (
             <>
