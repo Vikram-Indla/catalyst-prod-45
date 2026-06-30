@@ -963,7 +963,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         pointer-events: none;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
+        background: transparent !important;
+        border-top: 1px solid var(--ds-border) !important;
       }
 
       /* ── Apr 27, 2026 (L59): Sticky Key-column prefix ──
@@ -1015,7 +1016,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
+        background: transparent !important;
       }
       /* 2026-05-10 Jira-parity: group header rows stick below the thead
          while their child rows scroll past. top:40px = thead height.
@@ -1024,7 +1025,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         position: sticky;
         top: 40px;
         z-index: 1;
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken));
+        background: var(--ds-surface) !important;
+        border-top: 1px solid var(--ds-border) !important;
       }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
