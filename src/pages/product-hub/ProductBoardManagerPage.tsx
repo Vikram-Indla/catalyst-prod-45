@@ -1,44 +1,56 @@
+/**
+ * ProductHub Board Manager — resolves product key to ph_projects id
+ * then renders the shared BoardManagerPage.
+ *
+ * boards.project_id FKs to ph_projects, not to the products table,
+ * so we must resolve via ph_projects.key (not products.code).
+ */
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
 import BoardManagerPage from '@/components/boards/BoardManagerPage';
-import Spinner from '@atlaskit/spinner';
-
-function useProductByCode(code: string | undefined): { id: string | null; name: string } {
-  const { data } = useQuery({
-    queryKey: ['product-by-code', code],
-    enabled: !!code,
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('products')
-        .select('id, name')
-        .eq('code', code!.toUpperCase())
-        .maybeSingle();
-      return data as { id: string; name: string } | null;
-    },
-  });
-  return { id: data?.id ?? null, name: data?.name ?? code ?? '' };
-}
 
 export default function ProductBoardManagerPage() {
   const { key } = useParams<{ key: string }>();
-  const { id: productId, name: productName } = useProductByCode(key);
 
-  if (!productId) {
+  const { data: project, isLoading } = useQuery({
+    queryKey: ['ph-project-for-product-boards', key],
+    queryFn: async () => {
+      if (!key) return null;
+      const { data, error } = await supabase
+        .from('ph_projects')
+        .select('id, key, name')
+        .eq('key', key.toUpperCase())
+        .maybeSingle();
+      if (error || !data) { console.warn(error?.message ?? `ph_project not found for key: ${key}`); return null; }
+      return { id: data.id, key: data.key, name: data.name };
+    },
+    enabled: !!key,
+  });
+
+  if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: 32 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         <Spinner size="large" />
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest)' }}>
+        Product not found
       </div>
     );
   }
 
   return (
     <BoardManagerPage
-      projectIdOverride={productId}
+      projectIdOverride={project.id}
       basePath={`/product-hub/${key}/boards`}
-      projectName={productName}
-      projectKey={key?.toUpperCase()}
+      projectName={project.name}
+      projectKey={project.key}
     />
   );
 }
