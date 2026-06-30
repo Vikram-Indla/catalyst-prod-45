@@ -593,6 +593,7 @@ export default function RoadmapsListPage() {
   );
 
   return (
+    <>
     <CatalystListPageLayout
       chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
       tabs={QUICK_TABS}
@@ -648,5 +649,6 @@ export default function RoadmapsListPage() {
         </ModalFooter>
       </ModalDialog>
     )}
+    </>
   );
 }
