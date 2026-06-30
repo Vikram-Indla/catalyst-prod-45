@@ -58,6 +58,9 @@ import {
   canonicalFilterValueToJql,
 } from '@/lib/jql/canonicalFilterJql';
 
+// Fixed column set for filter preview — hides column manager (Jira parity: no column picker on filter view)
+const FILTER_PREVIEW_COLS = new Set(['key', 'parent', 'status', 'assignee', 'priority', 'created']);
+
 /* ═══════════════════════════════════════════════════════════════════════════
    2026-06-15 — Product-mode helpers
    ───────────────────────────────────────────────────────────────────────────
@@ -648,11 +651,6 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const [sortKey, setSortKey] = useState<string>('updated');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-
-  // Column picker — mirrors BacklogPage's canonical column-visibility state.
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
-    () => new Set(['key', 'status', 'parent', 'assignee'])
-  );
 
   // Column order + widths — localStorage keys scoped to avoid collision with BacklogPage
   const COL_WIDTHS_KEY = `ph-filter-col-widths-v1:${projectKey}`;
@@ -1316,8 +1314,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
               try { localStorage.setItem(COL_WIDTHS_KEY, JSON.stringify(widths)); } catch { /* quota */ }
             }}
             stickyCreateFooter={{ onRefresh: () => {} }}
-            columnVisibility={visibleColumns}
-            onColumnVisibilityChange={setVisibleColumns}
+            columnVisibility={FILTER_PREVIEW_COLS}
             contextMenuActions={[]}
             selectable
             selection={selectedIds}

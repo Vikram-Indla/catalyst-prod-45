@@ -3485,8 +3485,7 @@ function AssigneeAvatarStack({
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           ) : (
-            {/* ads-scanner:ignore-next-line — 7px micro-initials in 18px avatar, no ADS token equivalent */}
-            <span style={{ fontSize: 7, fontWeight: 700, color: 'var(--ds-text-subtle)', userSelect: 'none', lineHeight: 1 }}>
+            <span style={{ fontSize: 7 /* ads-scanner:ignore-line */, fontWeight: 700, color: 'var(--ds-text-subtle)', userSelect: 'none', lineHeight: 1 }}>
               {opt.label.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
             </span>
           )}
@@ -3504,8 +3503,7 @@ function AssigneeAvatarStack({
             border: '1.5px solid var(--ds-surface)',
             marginLeft: -(SIZE / 3),
             background: 'var(--ds-background-neutral)',
-            /* ads-scanner:ignore-next-line — 8px overflow pill, no ADS token for micro-size */
-            fontSize: 8,
+            fontSize: 8, /* ads-scanner:ignore-line */
             fontWeight: 700,
             color: 'var(--ds-text-subtle)',
             flexShrink: 0,
