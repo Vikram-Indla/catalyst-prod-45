@@ -599,11 +599,19 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     </Tooltip>
   );
 
-  const footerText = !isLoading && visibleFilters.length > 0
+  const filterCountText = !isLoading && visibleFilters.length > 0
     ? (visibleFilters.length === filters.length
         ? `${filters.length} filter${filters.length !== 1 ? 's' : ''}`
         : `${visibleFilters.length} of ${filters.length} filter${filters.length !== 1 ? 's' : ''}`)
     : undefined;
+
+  // Export CSV demoted to footer — low-frequency utility, not primary band
+  const footerText = filterCountText ? (
+    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <span>{filterCountText}</span>
+      {exportCsvAction}
+    </span>
+  ) : undefined;
 
   return (
     <CatalystListPageLayout
@@ -625,7 +633,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       toolbarFilters={toolbarFilters}
       hasActiveFilters={!!(search || ownerFilter || projectFilter || groupFilter)}
       onClearAllFilters={() => { setSearch(''); setOwnerFilter(null); setProjectFilter(null); setGroupFilter(null); }}
-      toolbarActions={exportCsvAction}
       selectedCount={selectedIds.size}
       bulkActions={bulkActions}
       onDeselect={() => setSelectedIds(new Set())}
