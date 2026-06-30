@@ -162,6 +162,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
   const isProduct = mode === 'product';
   const isIncident = mode === 'incident';
   const isTasks = !!tasksItems;
+  const derivedFilterContext = isTasks ? 'tasks' : isIncident ? 'incident' : isProduct ? 'product' : 'project';
   const isRelease = entityKind === 'release';
   const navigate = useNavigate();
 
@@ -707,6 +708,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
         saveFilterLabel={urlFilterId ? 'Update filter' : 'Save filter'}
         facetOptionItems={isProduct ? enrichedProductItems : undefined}
         leftToolbarSlot={leftToolbarSlot}
+        filterContext={derivedFilterContext}
       />
 
       {/* Save filter modal — opened from toolbar's Save filter button.
