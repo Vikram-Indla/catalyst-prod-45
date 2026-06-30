@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
+import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
+import Heading from '@atlaskit/heading';
 import Textfield from '@atlaskit/textfield';
 import AvatarGroup from '@atlaskit/avatar-group';
 import AkFlag, { FlagGroup } from '@atlaskit/flag';
@@ -1172,17 +1174,35 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     <AtlaskitPageShell
       flush
       chromeBand={
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 'var(--ds-font-size-800)',
-            fontWeight: 653,
-            color: token('color.text', 'var(--ds-text)'),
-            lineHeight: '28px',
-          }}
-        >
-          {savedFilterName ?? 'Create filter'}
-        </h1>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <Breadcrumbs>
+            {isProduct && projectKey ? (
+              <BreadcrumbsItem
+                href={`/product-hub/${projectKey}`}
+                text={productInfo?.name ?? projectKey}
+                onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate(`/product-hub/${projectKey}`); }}
+              />
+            ) : isIncident ? (
+              <BreadcrumbsItem href="/incident-hub" text="Incident Hub" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/incident-hub'); }} />
+            ) : isTasks ? (
+              <BreadcrumbsItem href="/tasks" text="Tasks" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/tasks'); }} />
+            ) : isRelease ? (
+              <BreadcrumbsItem href="/release-hub" text="Release Hub" onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate('/release-hub'); }} />
+            ) : projectKey ? (
+              <BreadcrumbsItem
+                href={`/project-hub/${projectKey}`}
+                text={projectKey}
+                onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate(`/project-hub/${projectKey}`); }}
+              />
+            ) : null}
+            <BreadcrumbsItem
+              href={isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`}
+              text="Filters"
+              onClick={(e: React.MouseEvent) => { e.preventDefault(); navigate(isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`); }}
+            />
+          </Breadcrumbs>
+          <Heading level="h600" as="h1">{savedFilterName ?? 'Create filter'}</Heading>
+        </div>
       }
     >
       {/* Ask Caty inline bar — replaces toolbar row when open (mirrors BacklogPage) */}
@@ -1215,37 +1235,20 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             tooltip="Ask Caty about these results"
           />
 
-          {/* JC-1: Basic / JQL toggle — Jira-style adjacent buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-            <button
+          {/* JC-1: Basic / JQL toggle — ADS canonical ButtonGroup */}
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, gap: 0 }}>
+            <Button
+              appearance={filterMode === 'basic' ? 'primary' : 'default'}
               onClick={switchToBasic}
-              style={{
-                height: 32, padding: '0 8px', fontSize: 'var(--ds-font-size-400)',
-                fontWeight: filterMode === 'basic' ? 600 : 400,
-                border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', 'var(--ds-border-focused)') : token('color.border', 'var(--ds-border)')}`,
-                borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', 'var(--ds-border-focused)')}` : 'none',
-                borderRadius: '3px 0 0 3px',
-                background: 'transparent',
-                color: filterMode === 'basic' ? token('color.link', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
-                cursor: 'pointer',
-              }}
             >
               Basic
-            </button>
-            <button
+            </Button>
+            <Button
+              appearance={filterMode === 'jql' ? 'primary' : 'default'}
               onClick={switchToJql}
-              style={{
-                height: 32, padding: '0 8px', fontSize: 'var(--ds-font-size-400)',
-                fontWeight: filterMode === 'jql' ? 600 : 400,
-                border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', 'var(--ds-border-focused)') : token('color.border', 'var(--ds-border)')}`,
-                borderRadius: '0 3px 3px 0',
-                background: 'transparent',
-                color: filterMode === 'jql' ? token('color.link', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
-                cursor: 'pointer',
-              }}
             >
               JQL
-            </button>
+            </Button>
           </div>
 
           {filterMode === 'jql' ? (
