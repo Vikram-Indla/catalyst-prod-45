@@ -210,6 +210,58 @@ function useTasksJqlResults(jql: string, enabled: boolean) {
   });
 }
 
+/** Maps DB column names → human-readable chip labels. */
+const JQL_COLUMN_LABELS: Record<string, string> = {
+  project_key: 'Project',
+  assignee_display_name: 'Assignee',
+  assignee_account_id: 'Assignee',
+  status: 'Status',
+  status_category: 'Status category',
+  issue_type: 'Type',
+  priority: 'Priority',
+  labels: 'Label',
+  sprint_name: 'Sprint',
+  due_date: 'Due date',
+  effective_due_date: 'Due date',
+  jira_created_at: 'Created',
+  jira_updated_at: 'Updated',
+  parent_key: 'Parent',
+  resolution: 'Resolution',
+  reporter_display_name: 'Reporter',
+};
+
+/** Maps FilterMethod codes → readable operator symbols. */
+const JQL_OP_LABELS: Record<string, string> = {
+  eq: '=',
+  neq: '≠',
+  in: 'in',
+  not_in: 'not in',
+  gt: '>',
+  gte: '≥',
+  lt: '<',
+  lte: '≤',
+  is: 'is',
+  not_is: 'is not',
+};
+
+const ACCOUNT_ID_RE = /^[0-9a-f]{24}$|^[0-9a-zA-Z]{60,}$/;
+
+function toTitleCase(s: string): string {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/** Replace known UUID/account-ID values with display names. */
+function resolveFilterValue(column: string, value: string | null, currentUserDisplayName: string | null): string | null {
+  if (!value) return value;
+  if (value === 'currentUser()') return currentUserDisplayName ?? 'Current user';
+  if (ACCOUNT_ID_RE.test(value)) {
+    // looks like an account ID — can't resolve without a fetch; show as-is in the
+    // hope that the parent also triggers a profile lookup. Worst case shows ID.
+    return currentUserDisplayName && value.length > 20 ? currentUserDisplayName : value;
+  }
+  return value;
+}
+
 interface FilterResultsPanelProps {
   jql: string;
   /** Shown in the empty state when jql is blank. */
@@ -438,29 +490,30 @@ export function FilterResultsPanel({
         {isFetching && hasJql && <Spinner size="small" />}
       </div>
 
-      {/* Active-filter chips — one per parsed JqlFilter from useJQLFilteredIssues */}
+      {/* Active-filter chips — human-readable labels, no raw DB column names or UUIDs */}
       {activeFilters.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
-          {activeFilters.map((f, i) => (
-            <span key={i} style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0,
-              fontSize: 'var(--ds-font-size-100)',
-              fontWeight: 500,
-              padding: '0px 6px',
-              borderRadius: 3,
-              background: `var(--ds-background-neutral)`,
-              color: token('color.text.subtle'),
-              border: `1px solid ${token('color.border')}`,
-            }}>
-              <span style={{ color: token('color.text'), fontWeight: 600 }}>{f.column}</span>
-              <span style={{ opacity: 0.7 }}>{f.method}</span>
-              <span style={{ color: token('color.text') }}>
-                {Array.isArray(f.value) ? f.value.join(', ') : (f.value ?? 'EMPTY')}
+          {activeFilters.map((f, i) => {
+            const label = JQL_COLUMN_LABELS[f.column] ?? toTitleCase(f.column);
+            const op = JQL_OP_LABELS[f.method] ?? f.method;
+            const val = Array.isArray(f.value)
+              ? f.value.map(v => resolveFilterValue(f.column, v, currentUserDisplayName)).join(', ')
+              : resolveFilterValue(f.column, f.value, currentUserDisplayName);
+            return (
+              <span key={i} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 0,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+                padding: '0px 6px', borderRadius: 3,
+                background: 'var(--ds-background-neutral)',
+                color: token('color.text.subtle'),
+                border: `1px solid ${token('color.border')}`,
+              }}>
+                <span style={{ color: token('color.text'), fontWeight: 600 }}>{label}</span>
+                <span style={{ opacity: 0.6 }}>{` ${op} `}</span>
+                <span style={{ color: token('color.text') }}>{val ?? '—'}</span>
               </span>
-            </span>
-          ))}
+            );
+          })}
         </div>
       )}
 

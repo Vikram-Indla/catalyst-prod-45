@@ -286,17 +286,20 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   // Row click + name link open the read-only detail page. The builder is
   // reached only via an explicit Edit action (kebab modal in the list, or the
   // "Edit filter" button on the detail page). G1, 2026-06-19.
-  const detailHref = (f: SavedFilterFull) => hubType === 'product'
-    ? `/product-hub/${projectKey}/filters/${f.id}`
-    : hubType === 'incident'
-      ? `/incident-hub/filters/${f.id}`
-      : hubType === 'tasks'
-        ? `/tasks/filters/${f.id}`
-        : hubType === 'release'
-          ? `/release-hub/filters/${f.id}`
-          : hubType === 'test'
-            ? `/testhub/filters/${f.id}`
-            : `/project-hub/${projectKey}/filters/${f.id}`;
+  const detailHref = (f: SavedFilterFull) => {
+    const seg = f.slug || f.id;
+    return hubType === 'product'
+      ? `/product-hub/${projectKey}/filters/${seg}`
+      : hubType === 'incident'
+        ? `/incident-hub/filters/${seg}`
+        : hubType === 'tasks'
+          ? `/tasks/filters/${seg}`
+          : hubType === 'release'
+            ? `/release-hub/filters/${seg}`
+            : hubType === 'test'
+              ? `/testhub/filters/${seg}`
+              : `/project-hub/${projectKey}/filters/${seg}`;
+  };
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {

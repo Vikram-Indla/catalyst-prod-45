@@ -41,6 +41,7 @@ export interface SavedFilterFull extends SavedFilter {
   last_used_at: string | null;
   use_count: number;
   health_status: FilterHealth;
+  slug: string;
   // Jira directory sync (migration 20260610200000) — verbatim Jira structures
   jira_filter_id?: string | null;
   jira_owner_name?: string | null;
@@ -49,6 +50,29 @@ export interface SavedFilterFull extends SavedFilter {
   edit_permissions?: JiraSharePermission[];
   // joined
   owner?: OwnerProfile | null;
+}
+
+/** Slugify a filter name: lowercase, non-alphanum → hyphens, max 80 chars. */
+export function filterNameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
+/** Generate a unique slug by appending -2, -3... if base slug is taken. */
+async function resolveUniqueSlug(baseName: string, excludeId?: string): Promise<string> {
+  const base = filterNameToSlug(baseName);
+  let candidate = base;
+  let counter = 2;
+  while (true) {
+    let q = (supabase as any).from('ph_saved_filters').select('id').eq('slug', candidate);
+    if (excludeId) q = q.neq('id', excludeId);
+    const { data } = await q.limit(1);
+    if (!data?.length) return candidate;
+    candidate = `${base}-${counter++}`;
+  }
 }
 
 /** Verbatim Jira /rest/api/3/filter sharePermissions entry (subset we render) */
@@ -94,10 +118,12 @@ export function useCreateSavedFilter() {
   return useMutation({
     mutationFn: async (params: CreateSavedFilterParams) => {
       const { data: { user } } = await supabase.auth.getUser();
+      const slug = await resolveUniqueSlug(params.name);
       const { data, error } = await supabase
         .from('ph_saved_filters')
         .insert({
           name: params.name,
+          slug,
           filter_config: params.filter_config,
           page: params.page || 'workitems',
           is_shared: params.is_shared ?? false,
@@ -148,9 +174,13 @@ export function useUpdateSavedFilter() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: UpdateSavedFilterParams }) => {
+      const payload: Record<string, unknown> = { ...updates };
+      if (updates.name) {
+        payload.slug = await resolveUniqueSlug(updates.name, id);
+      }
       const { error } = await supabase
         .from('ph_saved_filters')
-        .update(updates as any)
+        .update(payload as any)
         .eq('id', id);
       if (error) throw new Error(error.message);
     },
