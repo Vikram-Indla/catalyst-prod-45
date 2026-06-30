@@ -40,8 +40,10 @@ import AkPersonAvatarIcon from '@atlaskit/icon/glyph/person';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
 import AkMoreIcon from '@atlaskit/icon/glyph/more';
-import AkFilterIcon from '@atlaskit/icon/core/filter';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
+import AkCollapseVerticalIcon from '@atlaskit/icon/core/collapse-vertical';
 import AkEditIcon from '@atlaskit/icon/core/edit';
 import AkCommentIcon from '@atlaskit/icon/core/comment';
 import AkClockIcon from '@atlaskit/icon/core/clock';
@@ -1847,93 +1849,46 @@ export default function TasksTaskListView() {
               (BacklogPage.atlaskit.tsx:5285). */}
           <TasksGroupByControl value={groupBy} onChange={setGroupBy} />
 
-          {/* View options — wired ToolbarMenuButton (2026-06-17, Backlog
-              parity BacklogPage.atlaskit.tsx:3173). Hide done · Expand all ·
-              Collapse all · density. */}
-          <ToolbarMenuButton
-            icon={<AkFilterIcon label="" size="small" />}
-            ariaLabel="View options"
-            tooltipContent="View options"
-            buttonStyle={TOOLBAR_ICON_BTN_STYLE}
-            groups={[
-              {
-                items: [
-                  {
-                    id: 'hide-done',
-                    label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
-                    onClick: () => setHideDoneItems((v) => !v),
-                  },
-                  {
-                    id: 'expand-all',
-                    label: 'Expand all groups',
-                    // Not applicable when ungrouped — disable so the affordance
-                    // reads as inert (Norman: visible-but-disabled > dead-click).
-                    isDisabled: groupBy === 'none',
-                    onClick: () => { setCollapsedGroups(new Set()); flag.success('Expanded all groups'); },
-                  },
-                  {
-                    id: 'collapse-all',
-                    label: 'Collapse all groups',
-                    isDisabled: groupBy === 'none' || !groupedRows,
-                    onClick: () => {
-                      if (groupedRows) {
-                        setCollapsedGroups(new Set(groupedRows.map((g) => g.id)));
-                        flag.success('Collapsed all groups');
-                      }
-                    },
-                  },
-                ],
-              },
-              {
-                items: [
-                  { id: 'density-compact', label: density === 'compact' ? '✓ Compact' : 'Compact', onClick: () => setDensity('compact') },
-                  { id: 'density-comfortable', label: density === 'comfortable' ? '✓ Comfortable' : 'Comfortable', onClick: () => setDensity('comfortable') },
-                ],
-              },
-            ]}
-          />
-
-          {/* More actions ⋯ — wired ToolbarMenuButton (2026-06-17, Backlog
-              parity BacklogPage.atlaskit.tsx:3239). Tasks-applicable subset:
-              hide-done toggle · Refresh · Export CSV · Go to board. (No
-              hierarchy/bulk-change/import — not modelled in Tasks Hub.) */}
+          {/* Consolidated "..." menu — single overflow for all view/data actions. */}
           <ToolbarMenuButton
             icon={<AkMoreIcon label="" size="small" />}
             ariaLabel="More actions"
             tooltipContent="More actions"
             buttonStyle={TOOLBAR_ICON_BTN_STYLE}
             groups={[
-              {
-                items: [
-                  {
-                    id: 'toggle-hide-done',
-                    label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
-                    onClick: () => setHideDoneItems((v) => !v),
-                  },
-                  {
-                    id: 'refresh',
-                    label: 'Refresh',
-                    icon: <AkRefreshIcon label="" size="small" />,
-                    onClick: () => { queryClient.invalidateQueries({ queryKey: ['planner-tasks'] }); flag.success('Refreshed'); },
-                  },
-                  {
-                    id: 'export-csv',
-                    label: 'Export to CSV',
-                    icon: <AkDownloadIcon label="" size="small" />,
-                    onClick: handleExportCSV,
-                  },
-                ],
-              },
-              {
-                items: [
-                  {
-                    id: 'go-board',
-                    label: 'Go to board',
-                    icon: <AkBoardIcon label="" size="small" />,
-                    onClick: () => navigate('/tasks/board'),
-                  },
-                ],
-              },
+              // View toggles
+              { items: [
+                { id: 'toggle-hide-done',
+                  label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
+                  icon: <AkEyeOpenStrikethroughIcon label="" size="small" />,
+                  onClick: () => setHideDoneItems((v) => !v) },
+                { id: 'expand-all',
+                  label: 'Expand all groups',
+                  icon: <AkExpandVerticalIcon label="" size="small" />,
+                  isDisabled: groupBy === 'none',
+                  onClick: () => { setCollapsedGroups(new Set()); flag.success('Expanded all groups'); } },
+                { id: 'collapse-all',
+                  label: 'Collapse all groups',
+                  icon: <AkCollapseVerticalIcon label="" size="small" />,
+                  isDisabled: groupBy === 'none' || !groupedRows,
+                  onClick: () => {
+                    if (groupedRows) {
+                      setCollapsedGroups(new Set(groupedRows.map((g) => g.id)));
+                      flag.success('Collapsed all groups');
+                    }
+                  } },
+              ]},
+              // Density
+              { items: [
+                { id: 'density-compact',     label: density === 'compact'     ? '✓ Compact'     : 'Compact',     onClick: () => setDensity('compact') },
+                { id: 'density-comfortable', label: density === 'comfortable' ? '✓ Comfortable' : 'Comfortable', onClick: () => setDensity('comfortable') },
+              ]},
+              // Data & navigation
+              { items: [
+                { id: 'refresh',    label: 'Refresh',       icon: <AkRefreshIcon label="" size="small" />,  onClick: () => { queryClient.invalidateQueries({ queryKey: ['planner-tasks'] }); flag.success('Refreshed'); } },
+                { id: 'export-csv', label: 'Export to CSV', icon: <AkDownloadIcon label="" size="small" />, onClick: handleExportCSV },
+                { id: 'go-board',   label: 'Go to board',  icon: <AkBoardIcon label="" size="small" />,    onClick: () => navigate('/tasks/board') },
+              ]},
             ]}
           />
 

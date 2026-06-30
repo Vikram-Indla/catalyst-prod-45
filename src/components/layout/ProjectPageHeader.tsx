@@ -136,27 +136,37 @@ export function ProjectPageHeader({
       ? `/product-hub/${projectKey}`
       : `/project-hub/${projectKey}`;
 
-  const breadcrumbItems: BreadcrumbItem[] = [
-    { key: "home", text: "Home", href: "/for-you" },
-    { key: "root", text: rootLabel, href: rootHref },
-    ...(!isGlobalHub && !trail
-      ? [{
+  // Breadcrumb: entity name acts as root (no "Home / Hub" prefix).
+  // Structure: [entity] / current   — or for global hubs: [root] / current
+  const breadcrumbItems: BreadcrumbItem[] = isGlobalHub
+    ? [
+        { key: "root", text: rootLabel, href: rootHref },
+        ...(trail
+          ? trail.map((c, i) => ({
+              key: `trail-${i}`,
+              text: c.text,
+              href: c.href,
+              isCurrent: i === trail.length - 1 && !c.href,
+            }))
+          : [{ key: "current", text: routeWord, isCurrent: true }]),
+      ]
+    : [
+        {
           key: "entity",
           text: projectName,
           href: entityHref,
           iconBefore: <ProjectIcon projectKey={projectKey} size="xsmall" name={projectName} />,
           ariaLabel: projectName,
-        }]
-      : []),
-    ...(trail
-      ? trail.map((c, i) => ({
-          key: `trail-${i}`,
-          text: c.text,
-          href: c.href,
-          isCurrent: i === trail.length - 1 && !c.href,
-        }))
-      : [{ key: "current", text: routeWord, isCurrent: true }]),
-  ];
+        },
+        ...(trail
+          ? trail.map((c, i) => ({
+              key: `trail-${i}`,
+              text: c.text,
+              href: c.href,
+              isCurrent: i === trail.length - 1 && !c.href,
+            }))
+          : [{ key: "current", text: routeWord, isCurrent: true }]),
+      ];
 
   return (
     <div
