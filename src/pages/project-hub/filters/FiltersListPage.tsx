@@ -224,9 +224,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     enabled: allAccountIds.length > 0,
     staleTime: 300_000,
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name').in('id', allAccountIds);
+      // JQL stores Jira account IDs (24-char hex), not Supabase UUIDs — match via jira_account_id
+      const { data } = await supabase
+        .from('profiles')
+        .select('jira_account_id, full_name')
+        .in('jira_account_id', allAccountIds);
       const map: Record<string, string> = {};
-      for (const p of (data ?? [])) if (p.full_name) map[p.id] = p.full_name;
+      for (const p of (data ?? [])) if (p.full_name && p.jira_account_id) map[p.jira_account_id] = p.full_name;
       return map;
     },
   });
