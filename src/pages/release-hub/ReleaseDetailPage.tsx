@@ -49,6 +49,8 @@ interface ReleaseRow {
   target_date: string | null;
   section_name: string | null;
   section_description_adf: any | null;
+  /** Milestone-only — populated when config.kind === 'milestone'. */
+  quarter?: string | null;
 }
 
 interface ReleaseDetailPageProps {
@@ -78,12 +80,28 @@ export function ReleaseDetailPage({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ issueKey: string; issueType: string | null } | null>(null);
 
+  // 2026-06-30: select string is config-aware so milestone (product_milestones)
+  // can alias title→name, product_id→project_id, target_date→release_date and
+  // re-use the ReleaseRow shape without forking this component.
+  const selectString = useMemo(() => {
+    const cm = config.columnMap;
+    const cols: string[] = ['id'];
+    cols.push(cm.nameColumn === 'name' ? 'name, title' : `name:${cm.nameColumn}`);
+    cols.push('description', 'status');
+    cols.push(cm.fkProjectColumn === 'project_id' ? 'project_id' : `project_id:${cm.fkProjectColumn}`);
+    cols.push('start_date');
+    cols.push(cm.releaseDateColumn === 'release_date' ? 'release_date, target_date' : `release_date:${cm.releaseDateColumn}`);
+    cols.push('section_name', 'section_description_adf');
+    if (config.kind === 'milestone') cols.push('quarter');
+    return cols.join(', ');
+  }, [config]);
+
   const { data: release, isLoading } = useQuery<ReleaseRow>({
     queryKey: [config.queryKeyPrefix, 'one', releaseId],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from(config.table)
-        .select('id, name, title, description, status, project_id, start_date, release_date, target_date, section_name, section_description_adf')
+        .select(selectString)
         .eq('id', releaseId!)
         .single();
       if (error) throw new Error(error.message);
@@ -92,9 +110,21 @@ export function ReleaseDetailPage({
     enabled: !!releaseId,
   });
 
+  // Parent entity: release/sprint live under ph_projects.
+  // milestone lives under products (different table, different code column).
   const { data: project } = useQuery({
-    queryKey: ['ph-project', release?.project_id],
+    queryKey: ['entity-parent', config.kind, release?.project_id],
     queryFn: async () => {
+      if (config.kind === 'milestone') {
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, code, name')
+          .eq('id', release!.project_id)
+          .maybeSingle();
+        if (error) throw new Error(error.message);
+        if (!data) return null;
+        return { id: data.id, key: data.code, name: data.name } as { id: string; key: string; name: string };
+      }
       const { data, error } = await supabase
         .from('ph_projects')
         .select('id, key, name')
@@ -111,10 +141,12 @@ export function ReleaseDetailPage({
       const oldName = (release?.name || release?.title || '').trim();
       const newName = name.trim();
 
-      if (oldName && oldName !== newName) {
+      if (oldName && oldName !== newName && config.kind !== 'milestone') {
         // Both release + sprint linkage live in ph_issues.sprint_release
         // JSONB (the canonical Jira payload). sprint_name text column is
-        // wiped by jira-sync — never write to it.
+        // wiped by jira-sync — never write to it. Milestones link via
+        // business_request_milestone_links instead of ph_issues, so this
+        // rename loop does not apply when config.kind === 'milestone'.
         const { data: rows, error: rErr } = await (supabase as any)
           .from('ph_issues')
           .select('id, sprint_release')
@@ -133,9 +165,17 @@ export function ReleaseDetailPage({
         }
       }
 
+      const updatePayload: Record<string, string> = {
+        [config.columnMap.nameColumn]: newName,
+      };
+      // ph_releases / ph_jira_sprints carry both `name` and `title` columns;
+      // keep them in sync. product_milestones only has `title`.
+      if (config.columnMap.nameColumn === 'name') {
+        updatePayload.title = newName;
+      }
       const { error } = await (supabase as any)
         .from(config.table)
-        .update({ name: newName, title: newName })
+        .update(updatePayload)
         .eq('id', releaseId!);
       if (error) throw new Error(error.message);
     },
@@ -252,17 +292,23 @@ export function ReleaseDetailPage({
     <div style={{ display: 'flex', alignItems: 'stretch', height: '100%', minHeight: 0, overflow: 'hidden', paddingRight: sidebarCollapsed ? 20 : 0 }}>
       <div style={{ flex: 1, minWidth: 0, height: '100%', overflowY: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Breadcrumb — canonical TicketBreadcrumbs. itemType + projectHref
-          come from EntityConfig so sprint surface reads "Sprint / Iteration"
-          and links back to /project-hub/:key/sprints. */}
+          come from EntityConfig so sprint surface reads "Sprint / Iteration",
+          milestone surface reads "Milestone", etc. */}
       {project && (
         <TicketBreadcrumbs
           projectKey={project.key}
           projectName={project.name}
-          itemType={config.kind === 'sprint' ? 'Sprint / Iteration' : 'Release'}
+          itemType={
+            config.kind === 'sprint'    ? 'Sprint / Iteration' :
+            config.kind === 'milestone' ? 'Milestone'          :
+            'Release'
+          }
           itemKey={title}
-          projectHref={listHrefOverride ?? (config.kind === 'sprint'
-            ? `/project-hub/${project.key}/sprints`
-            : '/release-hub/releases-management')}
+          projectHref={listHrefOverride ?? (
+            config.kind === 'sprint'    ? `/project-hub/${project.key}/sprints`    :
+            config.kind === 'milestone' ? `/product-hub/${project.key}/milestones` :
+            '/release-hub/releases-management'
+          )}
         />
       )}
 
@@ -495,6 +541,7 @@ export function ReleaseDetailPage({
               projectId={release.project_id}
               projectKey={project?.key ?? null}
               description={release.description}
+              quarter={release.quarter ?? null}
               config={config}
             />
           </div>

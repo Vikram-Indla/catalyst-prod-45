@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import AkFilterIcon from '@atlaskit/icon/core/filter';
@@ -75,6 +75,7 @@ function useMilestones(productId: string | undefined) {
 
 export function MilestonesPage() {
   const { key: productCode = '' } = useParams<{ key: string }>();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { data: product, isLoading: productLoading } = useProductId(productCode);
@@ -225,7 +226,7 @@ export function MilestonesPage() {
           rows={grouped ? undefined : filtered}
           groups={grouped ?? undefined}
           calculateProgress={() => null}
-          onOpenDetail={() => {}}
+          onOpenDetail={(id) => navigate(`/product-hub/${productCode}/milestones/${id}`)}
           onRelease={async (r) => {
             try {
               await productMilestoneService.updateMilestone(r.id, { status: 'completed' });

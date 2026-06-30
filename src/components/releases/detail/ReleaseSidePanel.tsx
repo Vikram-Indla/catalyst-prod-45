@@ -24,6 +24,7 @@ import { catalystFlag } from '@/lib/catalystFlag';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { QuarterSelect } from '@/components/shared/QuarterSelect';
 import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 // 2026-06-26: kept from incoming branch — used by user-picker render
 // at line 817 to derive a deterministic avatar URL from display name.
@@ -59,6 +60,8 @@ interface Props {
   projectId: string;
   projectKey: string | null;
   description: string | null | undefined;
+  /** Milestone-only — drives the Quarter row rendered for kind === 'milestone'. */
+  quarter?: string | null;
   /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG (existing
    *  release-hub behaviour). Sprint surface passes SPRINT_CONFIG so writes
    *  hit ph_jira_sprints and queries scope correctly. */
@@ -167,39 +170,69 @@ export function ReleaseSidePanel(props: Props) {
             }}
           />
           <DateField
-            label="Release date"
+            label={config.kind === 'milestone' ? 'Target date' : 'Release date'}
             value={props.releaseDate}
             onSave={async (v) => {
+              // ph_releases / ph_jira_sprints keep release_date + target_date
+              // in sync. product_milestones only has target_date.
+              const updatePayload: Record<string, string | null> = {
+                [config.columnMap.releaseDateColumn]: v || null,
+              };
+              if (config.columnMap.releaseDateColumn === 'release_date') {
+                updatePayload.target_date = v || null;
+              }
               const { error } = await (supabase as any)
                 .from(table)
-                .update({ release_date: v || null, target_date: v || null })
+                .update(updatePayload)
                 .eq('id', releaseId);
               if (error) throw new Error(error.message);
               refetch();
-              catalystFlag.success('Release date updated.');
+              catalystFlag.success(`${config.kind === 'milestone' ? 'Target' : 'Release'} date updated.`);
             }}
           />
         </div>
 
-        <div style={{ display: 'flex', gap: 16 }}>
-          <ProjectField
-            projectId={projectId}
-            onChange={async (nextId) => {
-              if (!nextId || nextId === projectId) return;
+        {/* Quarter — milestone-only row, sits between dates and description
+            (mirrors the order in the milestone create modal). */}
+        {config.kind === 'milestone' && (
+          <QuarterField
+            value={props.quarter ?? null}
+            onSave={async (next) => {
               const { error } = await (supabase as any)
                 .from(table)
-                .update({ project_id: nextId })
+                .update({ quarter: next || null })
                 .eq('id', releaseId);
-              if (error) {
-                catalystFlag.error(error.message);
-                return;
-              }
+              if (error) throw new Error(error.message);
               refetch();
-              catalystFlag.success('Project updated.');
+              catalystFlag.success('Quarter updated.');
             }}
           />
-          <ContributorsField contributors={contributors} />
-        </div>
+        )}
+
+        {/* ProjectField + Contributors only render for release/sprint.
+            milestones don't currently support cross-product moves and have no
+            canonical contributor source (BR assignees ≠ milestone contributors). */}
+        {config.kind !== 'milestone' && (
+          <div style={{ display: 'flex', gap: 16 }}>
+            <ProjectField
+              projectId={projectId}
+              onChange={async (nextId) => {
+                if (!nextId || nextId === projectId) return;
+                const { error } = await (supabase as any)
+                  .from(table)
+                  .update({ [config.columnMap.fkProjectColumn]: nextId })
+                  .eq('id', releaseId);
+                if (error) {
+                  catalystFlag.error(error.message);
+                  return;
+                }
+                refetch();
+                catalystFlag.success('Project updated.');
+              }}
+            />
+            <ContributorsField contributors={contributors} />
+          </div>
+        )}
 
         <DescriptionField
           value={props.description ?? ''}
@@ -894,9 +927,15 @@ function StatusDropdown({
   }, [open]);
 
   const setStatusDirect = async (next: DBStatus) => {
+    // product_milestones has no `actual_date` column — skip the reset on
+    // milestone status changes; only release/sprint own that field.
+    const payload: Record<string, unknown> = { status: next };
+    if (next !== 'released' && config.kind !== 'milestone') {
+      payload.actual_date = null;
+    }
     const { error } = await (supabase as any)
       .from(config.table)
-      .update({ status: next, ...(next === 'released' ? {} : { actual_date: null }) })
+      .update(payload)
       .eq('id', releaseId);
     if (error) {
       catalystFlag.error(error.message);
@@ -1028,6 +1067,54 @@ function StatusDropdown({
         />
       )}
     </>
+  );
+}
+
+// ─── Quarter field — canonical QuarterSelect with click-to-edit pattern ────
+
+function QuarterField({
+  value, onSave,
+}: { value: string | null; onSave: (v: string | null) => Promise<void> }) {
+  const [editing, setEditing] = useState(false);
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: TEXT }}>Quarter</span>
+      {editing ? (
+        <QuarterSelect
+          value={value}
+          onChange={async (next) => {
+            try {
+              await onSave(next);
+            } catch (e: any) {
+              catalystFlag.error(e?.message || 'Failed to save');
+            }
+            setEditing(false);
+          }}
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          style={{
+            all: 'unset',
+            cursor: 'pointer',
+            padding: '0px 6px',
+            margin: '-2px -6px',
+            borderRadius: 3,
+            fontSize: 'var(--ds-font-size-400)',
+            color: value ? TEXT : SUBTLEST,
+            background: hover ? HOVER_BG : 'transparent',
+            alignSelf: 'flex-start',
+          }}
+        >
+          {value || '—'}
+        </button>
+      )}
+    </div>
   );
 }
 

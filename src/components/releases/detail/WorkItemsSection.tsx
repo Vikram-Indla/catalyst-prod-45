@@ -175,6 +175,65 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
   const { data: items = [], isLoading, error } = useQuery<Issue[]>({
     queryKey: ['ph_entity_items', entityKind, releaseId, releaseName],
     queryFn: async () => {
+      // 2026-06-30: milestone path reads business_request_milestone_links
+      // (NOT ph_issues.sprint_release). BRs are shaped into the Issue type so
+      // the same render pipeline applies. enabled gate is on releaseId not
+      // releaseName for milestones — BR linkage uses milestone_id directly.
+      if (entityKind === 'milestone') {
+        const { data, error: lErr } = await (supabase as any)
+          .from('business_request_milestone_links')
+          .select(`
+            id,
+            sequence_in_milestone,
+            created_at,
+            business_requests (
+              id,
+              request_key,
+              title,
+              request_type,
+              process_step,
+              urgency,
+              assignee,
+              created_at
+            )
+          `)
+          .eq('milestone_id', releaseId)
+          .order('sequence_in_milestone', { ascending: true });
+        if (lErr) throw new Error(lErr.message);
+        const rows = (data ?? []) as Array<{
+          id: string;
+          business_requests: {
+            id: string;
+            request_key: string | null;
+            title: string | null;
+            request_type: string | null;
+            process_step: string | null;
+            urgency: string | null;
+            assignee: string | null;
+            created_at: string | null;
+          } | null;
+        }>;
+        return rows
+          .filter((r) => r.business_requests)
+          .map((r) => {
+            const br = r.business_requests!;
+            return {
+              id: br.id,
+              issue_key: br.request_key ?? '',
+              summary: br.title ?? '',
+              issue_type: br.request_type,
+              status: br.process_step,
+              status_category: br.process_step,
+              priority: br.urgency,
+              assignee_account_id: null,
+              assignee_display_name: br.assignee,
+              parent_key: null,
+              jira_created_at: br.created_at,
+              sprint_release: null,
+            } as Issue;
+          });
+      }
+
       const target = (releaseName || '').trim();
       if (!target) return [];
 
@@ -228,7 +287,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
         return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
       }) as Issue[];
     },
-    enabled: !!releaseName,
+    enabled: entityKind === 'milestone' ? !!releaseId : !!releaseName,
   });
 
   // Epic candidates derived from items (unique parent_key)
