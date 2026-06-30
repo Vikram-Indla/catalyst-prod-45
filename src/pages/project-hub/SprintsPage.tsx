@@ -15,8 +15,9 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
-import TextField from '@atlaskit/textfield';
 import AkFilterIcon from '@atlaskit/icon/core/filter';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { CatalystListPageLayout } from '@/components/shared/CatalystListPage';
 import AkEyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
@@ -288,44 +289,37 @@ export function SprintsPage() {
   if (isLoading) return <div style={{ padding: '24px' }}>Loading sprints…</div>;
   if (error)     return <div style={{ padding: '24px' }}>Error loading sprints</div>;
 
-  return (
-    <div style={{ padding: '24px' }}>
-      {/* Header: title + sprint count */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h1 style={{ fontSize: 'var(--ds-font-size-400, 24px)', fontWeight: 600, margin: 0, color: 'var(--ds-text)' }}>
-          Sprints
-        </h1>
-        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
-          This space has {sprints.length} sprints
-        </span>
-      </div>
+  const toolbarCustomActions = (
+    <>
+      <StatusFilter value={statusFilter} onChange={setStatusFilter} />
+      <ProductFilter
+        options={projectOptions}
+        value={projectFilter}
+        onChange={setProjectFilter}
+        label="Project"
+        placeholder="Search projects"
+      />
+      <GroupFilter value={groupBy} onChange={setGroupBy} />
+      {toolbarViewOptionsButton}
+    </>
+  );
 
-      {/* Toolbar */}
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
-        <div style={{ width: '240px' }}>
-          <TextField
-            placeholder="Search sprints"
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            isCompact
-          />
-        </div>
-        <StatusFilter value={statusFilter} onChange={setStatusFilter} />
-        <ProductFilter
-          options={projectOptions}
-          value={projectFilter}
-          onChange={setProjectFilter}
-          label="Project"
-          placeholder="Search projects"
-        />
-        <GroupFilter value={groupBy} onChange={setGroupBy} />
-        {toolbarViewOptionsButton}
-        <div style={{ flex: 1 }} />
+  return (
+    <CatalystListPageLayout
+      chromeBand={
+        <ProjectPageHeader hubType="project" projectKey={projectKey} />
+      }
+      search={search}
+      searchPlaceholder="Search sprints"
+      onSearchChange={(v) => setSearch(v)}
+      toolbarActions={toolbarCustomActions}
+      tabBarActions={
         <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
           Create sprint
         </Button>
-      </div>
-
+      }
+      footer={`This space has ${sprints.length} sprint${sprints.length === 1 ? '' : 's'}`}
+    >
       {filtered.length > 0 ? (
         <ReleasesTable
           rows={grouped ? undefined : filtered}
@@ -408,6 +402,6 @@ export function SprintsPage() {
           config={SPRINT_CONFIG}
         />
       )}
-    </div>
+    </CatalystListPageLayout>
   );
 }

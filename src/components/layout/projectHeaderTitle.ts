@@ -28,6 +28,9 @@ const PROJECT_ROUTE_WORD_MAP: Record<string, string> = {
   timeline: 'Timeline',
   releases: 'Releases',
   reports: 'Reports',
+  sprints: 'Sprints',
+  milestones: 'Milestones',
+  roadmaps: 'Roadmaps',
 };
 
 /** product-hub route segment → display word (bare nouns, mirrors PROJECT_ROUTE_WORD_MAP). */
@@ -40,6 +43,9 @@ const PRODUCT_ROUTE_WORD_MAP: Record<string, string> = {
   filters: 'Filters',
   dashboard: 'Dashboard',
   settings: 'Settings',
+  milestones: 'Milestones',
+  releases: 'Releases',
+  roadmaps: 'Roadmaps',
 };
 
 /**
@@ -66,6 +72,7 @@ const GLOBAL_HUB_ROUTE_WORD_MAP: Record<string, string> = {
   // release-hub
   overview: 'Dashboard',
   releases: 'Releases',
+  'releases-management': 'Releases',
   'release-kanban': 'Board',
   'all-releases': 'Releases',
   'production-events': 'Production events',

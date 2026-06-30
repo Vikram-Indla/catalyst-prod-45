@@ -28,7 +28,7 @@ import { useInJira } from '../context/InJiraContext';
 import { IssueType, IssuePriority } from '../types';
 import { cn } from '@/lib/utils';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
-import { JiraStatusLozenge } from '@/components/workflow';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
 
 // Issue type icons/labels
 const ISSUE_TYPES: { value: IssueType; label: string; color: string }[] = [
@@ -225,7 +225,7 @@ export function CreateIssueModal() {
                 Status
               </Label>
               <div className="flex items-center gap-2 px-3 py-2 bg-surface-2 rounded-md border border-border-default">
-                <JiraStatusLozenge category={initialStatusCategory} name={initialStatus} variant="subtle" />
+                <StatusLozenge status={initialStatus} statusCategory={initialStatusCategory} />
                 <span className="text-xs text-text-secondary">
                   New {selectedType?.label.toLowerCase()}s start in this state
                 </span>

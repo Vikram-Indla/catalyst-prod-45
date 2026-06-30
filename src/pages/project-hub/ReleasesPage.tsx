@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
-import TextField from '@atlaskit/textfield';
 import AkFilterIcon from '@atlaskit/icon/core/filter';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { CatalystListPageLayout } from '@/components/shared/CatalystListPage';
 import AkEyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
@@ -52,6 +53,8 @@ interface ProgressRow {
 export function ReleasesPage() {
   const { key } = useParams<{ key?: string }>();
   const projectKey = key || 'BAU'; // release-hub context defaults to BAU
+  const { pathname } = useLocation();
+  const isGlobalReleaseHub = pathname.startsWith('/release-hub');
 
   const { data: rawReleases, isLoading, error } = useWHReleases();
   const { data: releaseProgressRows } = useReleaseProgress();
@@ -381,72 +384,50 @@ export function ReleasesPage() {
   if (isLoading) return <div style={{ padding: '24px' }}>Loading releases…</div>;
   if (error) return <div style={{ padding: '24px' }}>Error loading releases</div>;
 
+  const releaseCount = releases.filter((r) => productProjectIds.has(r.project_id)).length;
+
+  const toolbarCustomActions = (
+    <>
+      <StatusFilter value={statusFilter} onChange={setStatusFilter} />
+      <ProductFilter
+        options={productOptions}
+        value={productFilter}
+        onChange={setProductFilter}
+      />
+      <GroupFilter value={groupBy} onChange={setGroupBy} />
+      {toolbarViewOptionsButton}
+    </>
+  );
+
   return (
-    <div style={{ padding: '24px' }}>
-      {/* Header: title + release count */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          marginBottom: '16px',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: 'var(--ds-font-size-400, 24px)',
-            fontWeight: 600,
-            margin: 0,
-            color: 'var(--ds-text)',
-          }}
-        >
-          Releases
-        </h1>
-        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
-          This space has {releases.filter((r) => productProjectIds.has(r.project_id)).length} releases
-        </span>
-      </div>
-
-      {/* Toolbar: search + filters + give feedback + create */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-          alignItems: 'center',
-          marginBottom: '16px',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ width: '240px' }}>
-          <TextField
-            placeholder="Search releases"
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            isCompact
-          />
+    <CatalystListPageLayout
+      chromeBand={
+        isGlobalReleaseHub ? (
+          <ProjectPageHeader hubType="release" />
+        ) : (
+          <ProjectPageHeader hubType="project" projectKey={projectKey} />
+        )
+      }
+      search={search}
+      searchPlaceholder="Search releases"
+      onSearchChange={(v) => setSearch(v)}
+      toolbarActions={toolbarCustomActions}
+      tabBarActions={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button
+            appearance="subtle"
+            iconBefore={(iconProps) => <FeedbackIcon {...iconProps} label="" />}
+            onClick={() => setIsFeedbackModalOpen(true)}
+          >
+            Give feedback
+          </Button>
+          <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
+            Create release
+          </Button>
         </div>
-        <StatusFilter value={statusFilter} onChange={setStatusFilter} />
-        <ProductFilter
-          options={productOptions}
-          value={productFilter}
-          onChange={setProductFilter}
-        />
-        <GroupFilter value={groupBy} onChange={setGroupBy} />
-        {toolbarViewOptionsButton}
-        <div style={{ flex: 1 }} />
-        <Button
-          appearance="subtle"
-          iconBefore={(iconProps) => <FeedbackIcon {...iconProps} label="" />}
-          onClick={() => setIsFeedbackModalOpen(true)}
-        >
-          Give feedback
-        </Button>
-        <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
-          Create release
-        </Button>
-      </div>
-
-      {/* Flat releases table (matches Jira; no collapsible sections) */}
+      }
+      footer={`This space has ${releaseCount} release${releaseCount === 1 ? '' : 's'}`}
+    >
       {filtered.length > 0 ? (
         <ReleasesTable
           rows={grouped ? undefined : filtered}
@@ -542,6 +523,6 @@ export function ReleasesPage() {
           onSuccess={() => setSuccessFlag(`Release "${mergingRelease.name}" has been merged.`)}
         />
       )}
-    </div>
+    </CatalystListPageLayout>
   );
 }

@@ -24,6 +24,30 @@ import { deriveRouteWord } from "./projectHeaderTitle";
 import { WorkItemStarButton } from "@/components/shared/WorkItemStarButton";
 import type { StarredItemType } from "@/hooks/home/useStarredItems";
 import ProjectIcon from "@/components/shared/ProjectIcon";
+import AkReleaseIcon from "@atlaskit/icon/core/release";
+import AkSprintIcon from "@atlaskit/icon/core/sprint";
+import AkTargetIcon from "@atlaskit/icon/core/target";
+import AkRoadmapIcon from "@atlaskit/icon/core/roadmap";
+
+/** Canonical breadcrumb icons for entity-list surfaces. Keyed by the breadcrumb
+ *  TEXT so trail entries and auto-derived route words pick up the same icon.
+ *  Render at xsmall (12px) to match the ProjectIcon size used on the entity
+ *  crumb — keeps visual hierarchy uniform across hub surfaces. */
+const ENTITY_BREADCRUMB_ICON: Record<string, React.ReactElement> = {
+  Releases:   <AkReleaseIcon  label="" color="currentColor" />,
+  Sprints:    <AkSprintIcon   label="" color="currentColor" />,
+  Milestones: <AkTargetIcon   label="" color="currentColor" />,
+  Roadmaps:   <AkRoadmapIcon  label="" color="currentColor" />,
+};
+
+function withEntityIcon(item: BreadcrumbItem): BreadcrumbItem {
+  if (item.iconBefore) return item;
+  // Only the root/link crumb gets the entity icon — the current (last) crumb
+  // is bold + already carries the page title; icon there reads as a duplicate.
+  if (item.isCurrent) return item;
+  const icon = ENTITY_BREADCRUMB_ICON[item.text];
+  return icon ? { ...item, iconBefore: icon } : item;
+}
 
 interface Props {
   projectKey?: string;
@@ -185,7 +209,7 @@ export function ProjectPageHeader({
         className="cat-breadcrumb-host"
         style={{ fontSize: 12, flexShrink: 0, opacity: 0.8 }}
       >
-        <Breadcrumbs items={breadcrumbItems} LinkComponent={Link} />
+        <Breadcrumbs items={breadcrumbItems.map(withEntityIcon)} LinkComponent={Link} />
       </div>
 
       {!hideTitle && (
