@@ -72,7 +72,7 @@ export function CatalystQuickTabBar({
         );
       })}
       {actions && (
-        <div style={{ marginLeft: 'auto', ...(actionsStretch ? { flex: 1 } : {}) }}>
+        <div style={{ marginLeft: 'auto', paddingBottom: 8, ...(actionsStretch ? { flex: 1 } : {}) }}>
           {actions}
         </div>
       )}
