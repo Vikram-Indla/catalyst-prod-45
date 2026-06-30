@@ -1116,33 +1116,18 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     <AtlaskitPageShell
       flush
       chromeBand={
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <ProjectPageHeader
-            projectKey={projectKey ?? ''}
-            hubType={isProduct ? 'product' : isIncident ? 'incident' : isRelease ? 'release' : 'project'}
-            trail={[
-              {
-                text: 'Filters',
-                href: isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`,
-              },
-              { text: filterName || (savedFilterId ? 'Edit filter' : 'Create filter') },
-            ]}
-            hideTitle
-          />
-          <div
-            role="heading"
-            aria-level={1}
-            style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, lineHeight: '28px', paddingLeft: 'var(--ds-space-250)' }}
-          >
-            <Textfield
-              appearance="subtle"
-              placeholder="Filter name…"
-              value={filterName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilterName(e.target.value)}
-              aria-label="Filter name"
-            />
-          </div>
-        </div>
+        <ProjectPageHeader
+          projectKey={projectKey ?? ''}
+          hubType={isProduct ? 'product' : isIncident ? 'incident' : isRelease ? 'release' : 'project'}
+          trail={[
+            {
+              text: 'Filters',
+              href: isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`,
+            },
+            { text: filterName || (savedFilterId ? 'Edit filter' : 'Create filter') },
+          ]}
+          hideTitle
+        />
       }
     >
       {/* Ask Caty inline bar — replaces toolbar row when open (mirrors BacklogPage) */}

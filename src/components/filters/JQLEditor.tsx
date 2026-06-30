@@ -309,8 +309,15 @@ export function JQLEditor({
   // ── singleLine branch ──────────────────────────────────────────────────────
   if (singleLine) {
     return (
-      <div style={{ position: 'relative', width: '100%' }}>
-        {/* Highlight overlay (absolute, behind input text) */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        background: `var(--ds-surface)`,
+        border: `2px solid ${borderColor}`,
+        borderRadius: 3,
+        transition: 'border-color 0.15s',
+      }}>
+        {/* Highlight overlay — sits behind the transparent input; provides syntax colour */}
         <div
           aria-hidden
           style={{
@@ -325,7 +332,6 @@ export function JQLEditor({
             overflow: 'hidden',
             pointerEvents: 'none',
             userSelect: 'none',
-            borderRadius: 3,
             color: token('color.text'),
           }}
         >
@@ -348,11 +354,9 @@ export function JQLEditor({
             ...textStyle,
             color: 'transparent',
             caretColor: token('color.text'),
-            background: `var(--ds-surface)`,
-            border: `2px solid ${borderColor}`,
-            borderRadius: 3,
+            background: 'transparent',
+            border: 'none',
             outline: 'none',
-            transition: 'border-color 0.15s',
           }}
           onFocus={() => setFocused(true)}
           onBlur={() => {
