@@ -161,19 +161,25 @@ export function ProjectPageHeader({
       : `/project-hub/${projectKey}`;
 
   // Breadcrumb: entity name acts as root (no "Home / Hub" prefix).
-  // Structure: [entity] / current   — or for global hubs: [root] / current
+  // Level-1 pages (no trail): breadcrumb shows [entity] only — the Heading
+  // below already names the page; repeating routeWord as a terminal crumb
+  // creates a confusing "X / X" visual for pages that are one hop from root.
+  // Level-2+ pages (trail provided): breadcrumb shows [entity] / trail…
+  // where the trail supplies real back-links and a terminal current-page crumb.
+  const trailItems = trail
+    ? trail.map((c, i) => ({
+        key: `trail-${i}`,
+        text: c.text,
+        href: c.href,
+        onClick: c.onClick,
+        isCurrent: i === trail.length - 1 && !c.href,
+      }))
+    : [];
+
   const breadcrumbItems: BreadcrumbItem[] = isGlobalHub
     ? [
         { key: "root", text: rootLabel, href: rootHref },
-        ...(trail
-          ? trail.map((c, i) => ({
-              key: `trail-${i}`,
-              text: c.text,
-              href: c.href,
-              onClick: c.onClick,
-              isCurrent: i === trail.length - 1 && !c.href,
-            }))
-          : [{ key: "current", text: routeWord, isCurrent: true }]),
+        ...trailItems,
       ]
     : [
         {
@@ -183,15 +189,7 @@ export function ProjectPageHeader({
           iconBefore: <ProjectIcon projectKey={projectKey} size="xsmall" name={projectName} />,
           ariaLabel: projectName,
         },
-        ...(trail
-          ? trail.map((c, i) => ({
-              key: `trail-${i}`,
-              text: c.text,
-              href: c.href,
-              onClick: c.onClick,
-              isCurrent: i === trail.length - 1 && !c.href,
-            }))
-          : [{ key: "current", text: routeWord, isCurrent: true }]),
+        ...trailItems,
       ];
 
   return (
