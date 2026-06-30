@@ -28,7 +28,7 @@ export default function ProjectBoardManagerPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32 }}>
         <Spinner size="large" />
       </div>
     );
@@ -36,7 +36,7 @@ export default function ProjectBoardManagerPage() {
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32, color: 'var(--ds-text-subtlest)' }}>
         Project not found
       </div>
     );

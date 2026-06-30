@@ -2,8 +2,9 @@
  * ProductHub Board Manager — resolves product key to ph_projects id
  * then renders the shared BoardManagerPage.
  *
- * boards.project_id FKs to ph_projects, not to the products table,
- * so we must resolve via ph_projects.key (not products.code).
+ * boards.project_id FKs to ph_projects, so we resolve via ph_projects.key.
+ * INV/MINI/SEN/ENT exist as ph_projects rows (excluded from the project list
+ * via excludedProjectKeys in useProjectHub.ts, but present in the DB).
  */
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -31,7 +32,7 @@ export default function ProductBoardManagerPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32 }}>
         <Spinner size="large" />
       </div>
     );
@@ -39,7 +40,7 @@ export default function ProductBoardManagerPage() {
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32, color: 'var(--ds-text-subtlest)' }}>
         Product not found
       </div>
     );
