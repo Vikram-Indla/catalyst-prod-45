@@ -1149,6 +1149,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             {
               text: 'Filters',
               href: isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`,
+              onClick: () => navigate(isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`),
             },
             ...(savedFilterName ? [] : [{ text: 'Create filter' }]),
           ]}

@@ -66,7 +66,7 @@ interface Props {
    * detail page can show "Home / Releases / Change Records / CHG8841". Each
    * entry except the last should carry an href; the last is the current page.
    */
-  trail?: { text: string; href?: string }[];
+  trail?: { text: string; href?: string; onClick?: () => void }[];
   /** Hide the H2 title row (detail pages render their own rich header below). */
   hideTitle?: boolean;
   /** Override the auto-derived title (e.g. entity name on detail pages). */
@@ -170,6 +170,7 @@ export function ProjectPageHeader({
               key: `trail-${i}`,
               text: c.text,
               href: c.href,
+              onClick: c.onClick,
               isCurrent: i === trail.length - 1 && !c.href,
             }))
           : [{ key: "current", text: routeWord, isCurrent: true }]),
@@ -187,6 +188,7 @@ export function ProjectPageHeader({
               key: `trail-${i}`,
               text: c.text,
               href: c.href,
+              onClick: c.onClick,
               isCurrent: i === trail.length - 1 && !c.href,
             }))
           : [{ key: "current", text: routeWord, isCurrent: true }]),
