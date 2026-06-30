@@ -54,6 +54,7 @@ export default function MyWorkPage() {
       displayName="Test Cases"
       baseUrl="/testhub"
       dataSource={adapterWithChrome}
+      filterContext="testhub"
     />
   );
 }

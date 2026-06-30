@@ -720,7 +720,7 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems, filterContext = 'project' }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
   /* 2026-06-17: when set, BacklogPage opens the right side-panel for
      the matching row on first render. Used by the canonical
      "Open in full page" button on TaskCatalystView so the landing URL
@@ -760,6 +760,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
      release. Used by ReleaseWorkNavigatorPage when the fix-version
      chip is cleared. */
   allItems?: boolean;
+  /** Passed to CanonicalFilter — controls field visibility and work type set. Defaults to 'project'. */
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }) {
   // Optional adapter — when present, BacklogPage reads rows + status vocab
   // from the adapter (e.g. business_requests for product hub) and routes all
@@ -4011,7 +4013,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             myFilters={savedFiltersForCanonical}
             scopeType="project"
             scopeKey={projectKey}
-            filterContext="project"
+            filterContext={filterContext}
             value={canonicalFilter}
             onChange={setCanonicalFilter}
             statusOptions={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance as any }))}
@@ -4152,10 +4154,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             totalRowCount={items.length}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
-            // 2026-05-17: Feature flags declare intent explicitly per canonical
-            // governance framework. BacklogPage has sticky footer create only
-            // (no group inline-create affordances per user feedback 2026-05-17).
-            enableGroupCreateButton={false}
+            enableGroupCreateButton
+            onAddToGroup={(groupId) => setInlineCreateGroup(groupId)}
             enableStickyCreateFooter={true}
             // Apr 28 2026 (carryover #13 — chevron discoverability):
             // expandedRowIds passes through expandedIds directly. Removed
