@@ -555,7 +555,7 @@ export default function FullAppRoutes() {
             no longer mounted by any route; kept on disk pending PO sign-off
             before deletion. */}
         <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><FilterPreviewPageLazy mode="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/:filterId" element={<MG k="producthub" t="ProductHub"><S><FilterDetailPageLazy mode="product" /></S></MG>} />
+        <Route path="/product-hub/:key/filters/:filterId" element={<MG k="producthub" t="ProductHub"><S><FilterPreviewPageLazy mode="product" /></S></MG>} />
         {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
             per-product. Anyone deep-linking to the old global path lands on the
             products listing. Per-product filters still live at /product-hub/:key/filters. */}
@@ -662,7 +662,7 @@ export default function FullAppRoutes() {
             /tasks/:view so the static segment outranks the param route. */}
         <Route path="/tasks/filters" element={<S><TasksFiltersListPage /></S>} />
         <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
-        <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
+        <Route path="/tasks/filters/:filterId" element={<S><TasksFilterPreviewPage /></S>} />
         <Route path="/tasks/:view" element={<ModuleGuard moduleCode="planner"><S><PlannerPage /></S></ModuleGuard>} />
         {/* Deprecated 2026-06-17: My Tasks removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
@@ -710,7 +710,7 @@ export default function FullAppRoutes() {
             Static segments BEFORE :id-style routes. */}
         <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />
         <Route path="/testhub/filters/create" element={<S><TestHubFilterPreviewPage /></S>} />
-        <Route path="/testhub/filters/:filterId" element={<S><TestHubFilterDetailPage /></S>} />
+        <Route path="/testhub/filters/:filterId" element={<S><TestHubFilterPreviewPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
@@ -731,7 +731,7 @@ export default function FullAppRoutes() {
             scoped via the 'INCIDENTS' projectKey sentinel. */}
         <Route path="/incident-hub/filters" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFiltersListPage /></S></MG>} />
         <Route path="/incident-hub/filters/create" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterPreviewPage /></S></MG>} />
-        <Route path="/incident-hub/filters/:filterId" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterDetailPage /></S></MG>} />
+        <Route path="/incident-hub/filters/:filterId" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterPreviewPage /></S></MG>} />
         {/* 2026-06-17: Timeline tab — canonical TimelineView with
             useIncidentHubTimeline data (ph_issues filtered to
             issue_type='Production Incident'). Same Gantt chrome as
@@ -767,7 +767,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/work" element={<S><ReleasesWorkCanonical /></S>} />
         <Route path="/release-hub/filters" element={<S><ReleaseFiltersListPage /></S>} />
         <Route path="/release-hub/filters/create" element={<S><ReleaseFilterPreviewPage /></S>} />
-        <Route path="/release-hub/filters/:filterId" element={<S><ReleaseFilterDetailPage /></S>} />
+        <Route path="/release-hub/filters/:filterId" element={<S><ReleaseFilterPreviewPage /></S>} />
         <Route path="/release-hub/timeline" element={<S><ReleasesTimelineCanonical /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
@@ -1065,7 +1065,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/:key/filters/create" element={<S><FilterPreviewPageLazy /></S>} />
-        <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
+        <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterPreviewPageLazy /></S>} />
         <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/filters/create" element={<Navigate to="/project-hub" replace />} />
         <Route path="/project-hub/:key/timeline/:issueKey" element={<S><TimelineDetailPageLazy /></S>} />

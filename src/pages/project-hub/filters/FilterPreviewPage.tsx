@@ -622,7 +622,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const isTasks = mode === 'tasks';
   const isRelease = mode === 'release';
   const isTest = mode === 'test';
-  const { key: routeKey } = useParams<{ key: string }>();
+  const { key: routeKey, filterId: routeFilterId } = useParams<{ key: string; filterId: string }>();
   /* `projectKey` keeps its original name through the file so we don't have to
      touch hundreds of references. In project mode it's the project key (e.g.
      'BAU'); in product mode it's the product code (e.g. 'INV'); in incident
@@ -639,7 +639,8 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const productInfo = useProductByCode(isProduct ? routeKey : undefined);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const urlFilterId = searchParams.get('filterId');
+  // Route param (:filterId) takes priority over ?filterId= query param
+  const urlFilterId = routeFilterId ?? searchParams.get('filterId');
   const urlJql = searchParams.get('jql');
 
   const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilterValue>(emptyCanonicalFilterValue);
@@ -740,11 +741,22 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     enabled: !!urlFilterId,
     staleTime: 60_000,
     queryFn: async () => {
-      const { data } = await supabase
+      if (!urlFilterId) return null;
+      const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const col = UUID_RE.test(urlFilterId) ? 'id' : 'slug';
+      const { data, error } = await supabase
         .from('ph_saved_filters')
         .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
-        .eq('id', urlFilterId)
+        .eq(col, urlFilterId)
         .maybeSingle();
+      if (error && col === 'slug') {
+        const { data: d2 } = await supabase
+          .from('ph_saved_filters')
+          .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
+          .eq('id', urlFilterId)
+          .maybeSingle();
+        return d2 ?? null;
+      }
       return data ?? null;
     },
   });
@@ -1138,9 +1150,12 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
               text: 'Filters',
               href: isProduct && projectKey ? `/product-hub/${projectKey}/filters` : isIncident ? '/incident-hub/filters' : isTasks ? '/tasks/filters' : isRelease ? '/release-hub/filters' : `/project-hub/${projectKey}/filters`,
             },
-            { text: filterName || (savedFilterId ? 'Edit filter' : 'Create filter') },
+            ...(savedFilterName ? [] : [{ text: 'Create filter' }]),
           ]}
-          hideTitle
+          {...(savedFilterName
+            ? { title: savedFilterName }
+            : { hideTitle: true }
+          )}
         />
       }
     >
