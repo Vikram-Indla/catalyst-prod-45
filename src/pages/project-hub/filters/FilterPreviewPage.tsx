@@ -180,7 +180,7 @@ function useProductBrFacetItems(productId: string | null): WorkItem[] {
   return data;
 }
 
-function useProductBrResults(productId: string | null, filters: FilterState, search: string) {
+function useProductBrResults(productId: string | null, filters: CanonicalFilterValue, search: string) {
   return useQuery({
     queryKey: ['product-br-results', productId, JSON.stringify(filters), search],
     enabled: !!productId,
@@ -223,12 +223,7 @@ function useProductBrResults(productId: string | null, filters: FilterState, sea
           return filters.labels.some(l => rLabels.includes(l));
         });
       }
-      if (filters.sprintReleases.length > 0) {
-        items = items.filter(r => {
-          const sr = (r as any).sprintRelease as string[];
-          return Array.isArray(sr) && filters.sprintReleases.some(v => sr.includes(v));
-        });
-      }
+      // sprintReleases: not in CanonicalFilterValue — skip
       if (search.trim()) {
         const q = search.toLowerCase();
         items = items.filter(r => r.summary.toLowerCase().includes(q) || r.key.toLowerCase().includes(q));
@@ -485,7 +480,7 @@ function useTasksFacetItems(enabled: boolean): WorkItem[] {
  *  small field-aware filter pass here. Supported fields: assignee, status,
  *  priority, duedate, summary search. Free-text search lifts the search box
  *  value over the title field. */
-function useTasksResults(filters: FilterState, search: string, enabled: boolean) {
+function useTasksResults(filters: CanonicalFilterValue, search: string, enabled: boolean) {
   return useQuery({
     queryKey: ['tasks-filter-results', JSON.stringify(filters), search],
     enabled,
@@ -828,8 +823,8 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     return body ? `${body} AND ${guard}${orderBy}` : `${guard}${orderBy}`;
   }, [isProduct, isIncident, isTasks, jql]);
   const projectResults = useJqlResults(effectiveJql);
-  const productResults = useProductBrResults(isProduct ? productInfo.id : null, filters, search);
-  const tasksResults = useTasksResults(filters, search, isTasks);
+  const productResults = useProductBrResults(isProduct ? productInfo.id : null, canonicalFilter, search);
+  const tasksResults = useTasksResults(canonicalFilter, search, isTasks);
   const data = isProduct ? productResults.data
     : isTasks ? tasksResults.data
     : projectResults.data;
@@ -892,7 +887,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
       updateFilter.mutate(
         {
           id: savedFilterId,
-          updates: { jql_query: jql.trim() || null, filter_config: filters },
+          updates: { jql_query: jql.trim() || null, filter_config: canonicalFilter },
         },
         {
           onSuccess: () => {
