@@ -15,6 +15,8 @@ import { BulkEditModal } from '@/pages/admin/components/BulkEditModal';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { loadXLSX } from '@/lib/exportLoaders';
 import { catalystToast } from '@/lib/catalystToast';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import DownloadIcon from '@atlaskit/icon/core/download';
@@ -56,6 +58,7 @@ export default function ResourcePlannerPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const pageSize = 50;
 
   // Fetch reference data for bulk edit
@@ -367,8 +370,7 @@ export default function ResourcePlannerPage() {
   });
 
   const handleBulkDelete = () => {
-    if (!confirm(`Delete ${selectedIds.size} users? This cannot be undone.`)) return;
-    bulkDeleteMutation.mutate(Array.from(selectedIds));
+    setShowBulkDeleteModal(true);
   };
 
   // Render pagination buttons
@@ -700,6 +702,23 @@ export default function ResourcePlannerPage() {
           locations={locations}
         />
       </div>
+
+      {showBulkDeleteModal && (
+        <ModalDialog onClose={() => setShowBulkDeleteModal(false)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle appearance="danger">Delete users</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              Delete <strong>{selectedIds.size} user{selectedIds.size !== 1 ? 's' : ''}</strong>? This cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setShowBulkDeleteModal(false)}>Cancel</Button>
+            <Button appearance="danger" onClick={() => { bulkDeleteMutation.mutate(Array.from(selectedIds)); setShowBulkDeleteModal(false); }}>Delete</Button>
+          </ModalFooter>
+        </ModalDialog>
+      )}
     </AdminGuard>
   );
 }

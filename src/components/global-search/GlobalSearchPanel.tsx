@@ -18,6 +18,7 @@ import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 import { workItemStarType } from '@/lib/starType';
 import type { StarredItemType } from '@/hooks/home/useStarredItems';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
+import { catalystToast } from '@/lib/catalystToast';
 import type { SearchResult } from '@/types/global-search';
 
 // ── Data hooks ────────────────────────────────────────────────────────────────
@@ -234,7 +235,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         item: it,
         activate: () => {
           if (it.archived_at) {
-            alert(`${it.item_key} is archived and read-only. Only an admin can unarchive this item from Profile → Archive Manager.`);
+            catalystToast.warning(`${it.item_key} is archived and read-only. Only an admin can unarchive this item from Profile → Archive Manager.`);
             return;
           }
           if (it.item_key && it.project_key) {

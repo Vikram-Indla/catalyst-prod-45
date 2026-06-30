@@ -15,6 +15,7 @@ import { getArchivedIssues, unarchiveIssue } from '@/modules/project-work-hub/li
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import ProjectIcon from '@/components/shared/ProjectIcon';
 import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ManagedItem {
   issue_key: string;
@@ -199,7 +200,7 @@ export default function ArchiveManagerPage() {
       setItems(prev => prev.filter(i => i.issue_key !== issueKey));
       setSelected(prev => { const n = new Set(prev); n.delete(issueKey); return n; });
     } catch (e: any) {
-      alert(e.message || 'Failed to unarchive');
+      catalystToast.error(e.message || 'Failed to unarchive');
     } finally {
       setUnarchiving(prev => { const n = new Set(prev); n.delete(issueKey); return n; });
     }

@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { Bookmark, Users2, X, MoreVertical } from '@/lib/atlaskit-icons';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useSavedFilters, useCreateSavedFilter, useUpdateSavedFilter, useDeleteSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 
@@ -27,6 +28,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
   const [dropdownId, setDropdownId] = useState<string | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,7 +118,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
                   { label: 'Rename', action: () => { setRenamingId(sf.id); setRenameValue(sf.name); setDropdownId(null); } },
                   { label: 'Update with current', action: () => { updateFilter.mutate({ id: sf.id, updates: { filter_config: currentFilters as any } }); setDropdownId(null); } },
                   { label: sf.is_shared ? 'Unshare' : 'Share', action: () => { updateFilter.mutate({ id: sf.id, updates: { is_shared: !sf.is_shared } }); setDropdownId(null); } },
-                  { label: 'Delete', action: () => { if (confirm('Delete this saved filter?')) { deleteFilter.mutate(sf.id); setDropdownId(null); if (activeFilterId === sf.id) onDeactivate(); } }, danger: true },
+                  { label: 'Delete', action: () => { setDeleteTarget({ id: sf.id, name: sf.name }); setDropdownId(null); }, danger: true },
                 ].map(item => (
                   <button
                     key={item.label}
@@ -171,6 +173,16 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
       >
         <X className="w-3 h-3" /> Clear
       </button>
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteTarget(null)}
+          issueKey={deleteTarget.name}
+          issueSummary={null}
+          typeLabel="saved filter"
+          onConfirm={() => { deleteFilter.mutate(deleteTarget.id); if (activeFilterId === deleteTarget.id) onDeactivate(); setDeleteTarget(null); }}
+        />
+      )}
     </div>
   );
 }

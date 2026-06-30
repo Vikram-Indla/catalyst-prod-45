@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
@@ -388,6 +389,7 @@ function TransitionGroupRow({
 }) {
   const [open, setOpen] = useState(isGlobal); // global is open by default, others closed
   const [showPicker, setShowPicker] = useState(false);
+  const [deleteRuleTarget, setDeleteRuleTarget] = useState<string | null>(null);
 
   const existingToIds = new Set(transitions.map((t) => t.to_status_id));
   const available = allTypeStatuses.filter(
@@ -396,6 +398,7 @@ function TransitionGroupRow({
   const fromStatusId = fromStatus ? fromStatus.id : null;
 
   return (
+    <>
     <div
       style={{
         border: '1px solid var(--ds-border)',
@@ -529,9 +532,10 @@ function TransitionGroupRow({
                   isGlobal={isGlobalTrans}
                   onRemove={() => {
                     if (isGlobalTrans) {
-                      if (!window.confirm('This global rule affects all work item types. Delete it?')) return;
+                      setDeleteRuleTarget(t.id);
+                    } else {
+                      onDeleteTransition(t.id, false);
                     }
-                    onDeleteTransition(t.id, isGlobalTrans);
                   }}
                 />
               );
@@ -597,6 +601,18 @@ function TransitionGroupRow({
         </div>
       )}
     </div>
+
+    {deleteRuleTarget && (
+      <ConfirmDeleteDialog
+        isOpen
+        onClose={() => setDeleteRuleTarget(null)}
+        issueKey=""
+        issueSummary="This global rule affects all work item types."
+        typeLabel="workflow rule"
+        onConfirm={() => { onDeleteTransition(deleteRuleTarget, true); setDeleteRuleTarget(null); }}
+      />
+    )}
+  </>
   );
 }
 
@@ -924,6 +940,7 @@ export function WorkflowTypePanel({
   const [wfMode, setWfMode] = useState<'editor' | 'diagram'>('editor');
   const [showAddStatus, setShowAddStatus] = useState(false);
   const [showCopyMenu, setShowCopyMenu] = useState(false);
+  const [deleteStatusTarget, setDeleteStatusTarget] = useState<TypeStatus | null>(null);
   const copyBtnRef = useRef<HTMLButtonElement>(null);
 
   if (isLoading) {
@@ -997,14 +1014,10 @@ export function WorkflowTypePanel({
       (t) => t.from_status_id === status.id || t.to_status_id === status.id
     );
     if (usedInTransitions) {
-      if (
-        !window.confirm(
-          `"${status.name}" is referenced in transitions. Removing it will also delete those transitions. Continue?`
-        )
-      )
-        return;
+      setDeleteStatusTarget(status);
+    } else {
+      removeTypeStatus.mutate(status.id);
     }
-    removeTypeStatus.mutate(status.id);
   }
 
   function handleSetInitial(statusId: string) {
@@ -1312,6 +1325,17 @@ export function WorkflowTypePanel({
             ))}
           </div>
         </>
+      )}
+
+      {deleteStatusTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteStatusTarget(null)}
+          issueKey={deleteStatusTarget.name}
+          issueSummary={`Removing "${deleteStatusTarget.name}" will also delete its transitions.`}
+          typeLabel="status"
+          onConfirm={() => { removeTypeStatus.mutate(deleteStatusTarget.id); setDeleteStatusTarget(null); }}
+        />
       )}
     </div>
   );

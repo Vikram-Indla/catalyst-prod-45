@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ export default function DependenciesPage() {
   const [visualizationMode, setVisualizationMode] = useState<'list' | 'matrix' | 'wheel'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDependencyId, setSelectedDependencyId] = useState<string | undefined>();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
   
   // Analytics drawer state (for wheel)
   const [analyticsDrawerOpen, setAnalyticsDrawerOpen] = useState(false);
@@ -629,11 +631,7 @@ export default function DependenciesPage() {
                             key={dep.id}
                             onEdit={() => handleRowClick(dep.id)}
                             onDelete={async () => {
-                              if (confirm('Delete this dependency?')) {
-                                await supabase.from('dependencies').delete().eq('id', dep.id);
-                                queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-                                catalystToast.success('Dependency deleted');
-                              }
+                              setDeleteTarget({ id: dep.id });
                             }}
                             onChangeStatus={async (status) => {
                               await supabase.from('dependencies').update({ status: status as any }).eq('id', dep.id);
@@ -769,6 +767,22 @@ export default function DependenciesPage() {
             }}
             dependencyId={selectedDependencyId}
           />
+
+          {deleteTarget && (
+            <ConfirmDeleteDialog
+              isOpen
+              onClose={() => setDeleteTarget(null)}
+              issueKey={null}
+              issueSummary={null}
+              typeLabel="dependency"
+              onConfirm={async () => {
+                await supabase.from('dependencies').delete().eq('id', deleteTarget.id);
+                queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+                catalystToast.success('Dependency deleted');
+                setDeleteTarget(null);
+              }}
+            />
+          )}
 
         </div>
       </div>

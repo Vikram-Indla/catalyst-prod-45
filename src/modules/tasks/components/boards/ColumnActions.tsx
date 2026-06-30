@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import { MoreHorizontal, Trash2, Palette, Check } from '@/lib/atlaskit-icons';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +40,8 @@ const STATUS_COLORS = [
 
 export function ColumnActions({ column }: ColumnActionsProps) {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string; moveTasksToBacklog: boolean } | null>(null);
+
   const deleteColumn = useDeleteColumn();
   const updateColumn = useUpdateColumn();
 
@@ -47,23 +49,19 @@ export function ColumnActions({ column }: ColumnActionsProps) {
     ['backlog', 'planned', 'progress', 'review', 'done'].includes(column.slug);
 
   const handleDelete = async () => {
-    // Check for tasks in this column
     const { count } = await supabase
       .from('tasks')
       .select('*', { count: 'exact', head: true })
       .eq('status_id', column.id)
       .is('deleted_at', null);
 
-    if (count && count > 0) {
-      const confirmed = window.confirm(
-        `This column has ${count} task(s). Move them to Backlog and delete the column?`
-      );
-      if (!confirmed) return;
-      
-      deleteColumn.mutate({ id: column.id, moveTasksToBacklog: true });
-    } else {
-      deleteColumn.mutate({ id: column.id });
-    }
+    setDeleteTarget({ id: column.id, name: column.name, moveTasksToBacklog: !!(count && count > 0) });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    deleteColumn.mutate({ id: deleteTarget.id, moveTasksToBacklog: deleteTarget.moveTasksToBacklog });
+    setDeleteTarget(null);
   };
 
   const handleColorChange = (color: string) => {
@@ -72,6 +70,15 @@ export function ColumnActions({ column }: ColumnActionsProps) {
   };
 
   return (
+    <>
+    <ConfirmDeleteDialog
+      isOpen={!!deleteTarget}
+      onClose={() => setDeleteTarget(null)}
+      issueKey={deleteTarget?.name ?? null}
+      issueSummary={null}
+      typeLabel="column"
+      onConfirm={handleConfirmDelete}
+    />
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="boards-column__add-btn opacity-0 group-hover:opacity-100 transition-opacity">
@@ -134,5 +141,6 @@ export function ColumnActions({ column }: ColumnActionsProps) {
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
   );
 }

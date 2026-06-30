@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import {
   useAllCustomFieldDefs,
@@ -459,6 +461,7 @@ export default function FieldRegistryPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<CustomFieldDef | null>(null);
   const [searchQ, setSearchQ] = useState('');
+  const [deactivateTarget, setDeactivateTarget] = useState<CustomFieldDef | null>(null);
 
   const filtered = fields.filter(f =>
     f.name.toLowerCase().includes(searchQ.toLowerCase()) ||
@@ -583,10 +586,7 @@ export default function FieldRegistryPage() {
                 {
                   label: 'Deactivate',
                   danger: true,
-                  onClick: () => {
-                    if (confirm(`Deactivate "${field.name}"? It will be hidden from all layouts.`))
-                      deactivate.mutate(field.id);
-                  },
+                  onClick: () => setDeactivateTarget(field),
                 },
               ]} />
             </div>
@@ -599,6 +599,23 @@ export default function FieldRegistryPage() {
           <a href="/admin/fields/layout" style={{ color: T.brand }}>Field layouts</a>.
         </p>
       </div>
+
+      {deactivateTarget && (
+        <ModalDialog onClose={() => setDeactivateTarget(null)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle appearance="warning">Deactivate field</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              Deactivate <strong>"{deactivateTarget.name}"</strong>? It will be hidden from all layouts.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setDeactivateTarget(null)}>Cancel</Button>
+            <Button appearance="warning" onClick={() => { deactivate.mutate(deactivateTarget.id); setDeactivateTarget(null); }}>Deactivate</Button>
+          </ModalFooter>
+        </ModalDialog>
+      )}
     </AdminGuard>
   );
 }

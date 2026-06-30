@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { Plus, ChevronDown, ChevronRight, TrendingUp, Edit, Trash2 } from '@/lib/atlaskit-icons';
 import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useDeleteKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
 import { CheckInModal } from './CheckInModal';
@@ -38,6 +39,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
   const updateKeyResult = useUpdateKeyResult();
   const deleteKeyResult = useDeleteKeyResult();
   const createCheckIn = useCreateCheckIn();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
 
   const handleAddKeyResult = () => {
     if (!newKrName.trim()) return;
@@ -80,15 +82,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
 
   const handleDelete = (krId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this key result?')) {
-      deleteKeyResult.mutate(
-        { id: krId, objectiveId },
-        {
-          onSuccess: () => catalystToast.success('Key result deleted'),
-          onError: () => catalystToast.error('Failed to delete key result'),
-        }
-      );
-    }
+    setDeleteTarget({ id: krId });
   };
 
   const handleCreate = () => {
@@ -256,6 +250,25 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
         objectiveId={objectiveId}
         keyResult={selectedKeyResult}
       />
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteTarget(null)}
+          issueKey={null}
+          issueSummary={null}
+          typeLabel="key result"
+          onConfirm={() => {
+            deleteKeyResult.mutate(
+              { id: deleteTarget.id, objectiveId },
+              {
+                onSuccess: () => catalystToast.success('Key result deleted'),
+                onError: () => catalystToast.error('Failed to delete key result'),
+              }
+            );
+            setDeleteTarget(null);
+          }}
+        />
+      )}
     </div>
   );
 }

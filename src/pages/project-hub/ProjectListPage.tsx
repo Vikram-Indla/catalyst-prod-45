@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, FolderKanban, Plus, ChevronLeft, ChevronRight as ChevronRightIcon, ExternalLink, Copy, Star, Archive } from '@/lib/atlaskit-icons';
 import { catalystToast } from '@/lib/catalystToast';
+import { ConfirmArchiveDialog } from '@/components/catalyst-detail-views/shared/ConfirmArchiveDialog';
 import { ProjectToolbar } from '@/components/project-hub/ProjectToolbar';
 import { ProjectTable } from '@/components/project-hub/ProjectTable';
 import { ProjectCardGrid } from '@/components/project-hub/ProjectCardGrid';
@@ -32,6 +33,9 @@ export default function ProjectListPage() {
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(25);
   const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
+
+  // Archive dialog state
+  const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null);
 
   // Context menu state
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; project: PHProject } | null>(null);
@@ -153,7 +157,10 @@ export default function ProjectListPage() {
 
   // Archive project
   const archiveProject = useCallback(async (projectId: string, projectName: string) => {
-    if (!confirm(`Archive "${projectName}"? It will be hidden from the project list.`)) return;
+    setArchiveTarget({ id: projectId, name: projectName });
+  }, []);
+
+  const doArchiveProject = useCallback(async (projectId: string) => {
     try {
       const { error } = await supabase
         .from('ph_projects')
@@ -363,6 +370,19 @@ export default function ProjectListPage() {
       </div>
 
       <CreateProjectModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
+
+      {archiveTarget && (
+        <ConfirmArchiveDialog
+          isOpen
+          onClose={() => setArchiveTarget(null)}
+          issueSummary={archiveTarget.name}
+          onConfirm={() => {
+            const id = archiveTarget.id;
+            setArchiveTarget(null);
+            doArchiveProject(id);
+          }}
+        />
+      )}
     </div>
   );
 }

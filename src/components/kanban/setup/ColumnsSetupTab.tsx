@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCreateColumn, useDeleteColumn } from '@/hooks/useKanbanBoards';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,7 @@ export function ColumnsSetupTab({ boardId, columns }: ColumnsSetupTabProps) {
   const [newColumnName, setNewColumnName] = useState('');
   const [newColumnType, setNewColumnType] = useState<ColumnType>('Not Started');
   const [wipLimit, setWipLimit] = useState<string>('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
   
   const createColumn = useCreateColumn();
   const deleteColumn = useDeleteColumn();
@@ -54,10 +56,8 @@ export function ColumnsSetupTab({ boardId, columns }: ColumnsSetupTabProps) {
     setWipLimit('');
   };
 
-  const handleDeleteColumn = async (columnId: string) => {
-    if (confirm('Are you sure you want to delete this column?')) {
-      await deleteColumn.mutateAsync({ id: columnId, boardId });
-    }
+  const handleDeleteColumn = (columnId: string) => {
+    setDeleteTarget({ id: columnId });
   };
 
   return (
@@ -159,6 +159,18 @@ export function ColumnsSetupTab({ boardId, columns }: ColumnsSetupTabProps) {
           </div>
         )}
       </div>
+
+      <ConfirmDeleteDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={null}
+        issueSummary={null}
+        typeLabel="column"
+        onConfirm={async () => {
+          if (deleteTarget) await deleteColumn.mutateAsync({ id: deleteTarget.id, boardId });
+          setDeleteTarget(null);
+        }}
+      />
 
       {/* Column Settings Dialog */}
       <Dialog open={!!settingsColumnId} onOpenChange={() => setSettingsColumnId(null)}>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/standard-button';
 import Spinner from '@atlaskit/spinner';
@@ -36,6 +37,7 @@ export default function TestPrioritiesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editColor, setEditColor] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<TMCasePriority | null>(null);
 
   const handleAdd = async () => {
     if (!newName.trim() || !projectId) return;
@@ -95,7 +97,6 @@ export default function TestPrioritiesPage() {
   };
 
   const handleDelete = async (p: TMCasePriority) => {
-    if (!confirm(`Delete priority "${p.name}"?`)) return;
     try {
       await deletePriority.mutateAsync({ id: p.id, projectId: p.project_id });
       catalystToast.success('Priority deleted');
@@ -243,7 +244,7 @@ export default function TestPrioritiesPage() {
                   ) : (
                     <div style={{ display: 'flex', gap: 4 }}>
                       <Button appearance="subtle" spacing="compact" onClick={() => startEdit(p)}>Edit</Button>
-                      <Button appearance="subtle" spacing="compact" onClick={() => handleDelete(p)}>Delete</Button>
+                      <Button appearance="subtle" spacing="compact" onClick={() => setDeleteTarget(p)}>Delete</Button>
                     </div>
                   )}
                 </td>
@@ -251,6 +252,13 @@ export default function TestPrioritiesPage() {
             ))}
           </tbody>
         </table>
+      <ConfirmDeleteDialog
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={deleteTarget?.name}
+        typeLabel="test priority"
+        onConfirm={() => { if (deleteTarget) handleDelete(deleteTarget); setDeleteTarget(null); }}
+      />
       </div>
     </div>
   );

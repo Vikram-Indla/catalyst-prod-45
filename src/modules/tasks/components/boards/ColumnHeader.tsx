@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Plus, MoreHorizontal, Trash2, Palette } from '@/lib/atlaskit-icons';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,7 +58,8 @@ const getStatusClass = (slug: string): string => {
 
 export function ColumnHeader({ column, onAddTask, isDragging }: ColumnHeaderProps) {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string; moveTasksToBacklog: boolean } | null>(null);
+
   const deleteColumn = useDeleteColumn();
   const updateColumn = useUpdateColumn();
   
@@ -75,23 +77,19 @@ export function ColumnHeader({ column, onAddTask, isDragging }: ColumnHeaderProp
   };
 
   const handleDelete = async () => {
-    // Check for tasks in this column
     const { count } = await supabase
       .from('tasks')
       .select('*', { count: 'exact', head: true })
       .eq('status_id', column.id)
       .is('deleted_at', null);
 
-    if (count && count > 0) {
-      const confirmed = window.confirm(
-        `This column has ${count} task(s). Move them to Backlog and delete the column?`
-      );
-      if (!confirmed) return;
-      
-      deleteColumn.mutate({ id: column.id, moveTasksToBacklog: true });
-    } else {
-      deleteColumn.mutate({ id: column.id });
-    }
+    setDeleteTarget({ id: column.id, name: column.name, moveTasksToBacklog: !!(count && count > 0) });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    deleteColumn.mutate({ id: deleteTarget.id, moveTasksToBacklog: deleteTarget.moveTasksToBacklog });
+    setDeleteTarget(null);
   };
 
   const handleColorChange = (color: string) => {
@@ -204,6 +202,15 @@ export function ColumnHeader({ column, onAddTask, isDragging }: ColumnHeaderProp
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <ConfirmDeleteDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={deleteTarget?.name ?? null}
+        issueSummary={null}
+        typeLabel="column"
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

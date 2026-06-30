@@ -16,6 +16,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Button, { IconButton } from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
@@ -166,6 +167,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [pageSize, setPageSize] = useState(25);
   const [page, setPage] = useState(0);
 
@@ -612,8 +614,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       label: 'Delete',
       isDanger: true,
       onClick: () => {
-        if (!window.confirm(`Delete ${selectedIds.size} filter${selectedIds.size > 1 ? 's' : ''}? This cannot be undone.`)) return;
-        setSelectedIds(new Set());
+        setShowBulkDeleteModal(true);
       },
     },
   ];
@@ -755,5 +756,22 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         </div>
       )}
     </CatalystListPageLayout>
+
+    {showBulkDeleteModal && (
+      <ModalDialog onClose={() => setShowBulkDeleteModal(false)} width="small">
+        <ModalHeader hasCloseButton>
+          <ModalTitle appearance="danger">Delete filters</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+            Delete <strong>{selectedIds.size} filter{selectedIds.size > 1 ? 's' : ''}</strong>? This cannot be undone.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setShowBulkDeleteModal(false)}>Cancel</Button>
+          <Button appearance="danger" onClick={() => { setSelectedIds(new Set()); setShowBulkDeleteModal(false); }}>Delete</Button>
+        </ModalFooter>
+      </ModalDialog>
+    )}
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
@@ -21,6 +22,7 @@ interface KeyResultCardProps {
 export function KeyResultCard({ keyResult, objectiveId, readOnly = false, className }: KeyResultCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCheckIn, setShowCheckIn] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
   const deleteKeyResult = useDeleteKeyResult();
   
   const startValue = keyResult.baseline_value ?? keyResult.start_value ?? 0;
@@ -42,10 +44,8 @@ export function KeyResultCard({ keyResult, objectiveId, readOnly = false, classN
     return 'removed';                         // red (low confidence)
   };
 
-  const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this key result?')) {
-      await deleteKeyResult.mutateAsync({ id: keyResult.id, objectiveId });
-    }
+  const handleDelete = () => {
+    setDeleteTarget({ id: keyResult.id });
   };
 
   const title = keyResult.summary ?? keyResult.title;
@@ -162,6 +162,19 @@ export function KeyResultCard({ keyResult, objectiveId, readOnly = false, classN
         open={showCheckIn}
         onClose={() => setShowCheckIn(false)}
       />
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteTarget(null)}
+          issueKey={null}
+          issueSummary={null}
+          typeLabel="key result"
+          onConfirm={async () => {
+            await deleteKeyResult.mutateAsync({ id: deleteTarget.id, objectiveId });
+            setDeleteTarget(null);
+          }}
+        />
+      )}
     </>
   );
 }

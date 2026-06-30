@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,6 +13,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2 } from '@/lib/atlaskit-icons';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 
 interface FeatureContextMenuProps {
   featureId: string;
@@ -22,6 +23,7 @@ interface FeatureContextMenuProps {
 
 export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureContextMenuProps) {
   const { toast } = useToast();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Fetch PIs for Move to PI submenu
   const { data: programIncrements } = useQuery({
@@ -179,12 +181,11 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
   };
 
   const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this feature?')) {
-      deleteFeatureMutation.mutate();
-    }
+    setShowDeleteDialog(true);
   };
 
   return (
+    <>
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
@@ -251,5 +252,17 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
+
+    {showDeleteDialog && (
+      <ConfirmDeleteDialog
+        isOpen
+        onClose={() => setShowDeleteDialog(false)}
+        issueKey=""
+        issueSummary="this feature"
+        typeLabel="feature"
+        onConfirm={() => { deleteFeatureMutation.mutate(); setShowDeleteDialog(false); }}
+      />
+    )}
+    </>
   );
 }

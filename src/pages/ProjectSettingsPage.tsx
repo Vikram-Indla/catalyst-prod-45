@@ -27,6 +27,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { AlertTriangle, Info, Search } from '@/lib/atlaskit-icons';
+import { ConfirmArchiveDialog } from '@/components/catalyst-detail-views/shared/ConfirmArchiveDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -49,6 +50,7 @@ export default function ProjectSettingsPage() {
   const { projectKey } = useParams<{ projectKey: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
   // Check if this is an old key alias and redirect if needed
   const { isAlias, currentKey, isLoading: isResolvingKey } = useProjectKeyResolver(projectKey);
@@ -514,10 +516,7 @@ function AdvancedTab({ project }: { project: Project }) {
   });
 
   const handleArchive = () => {
-    if (confirm('Are you sure you want to archive this project?')) {
-      catalystToast.success('Project archived');
-      navigate('/projects');
-    }
+    setShowArchiveDialog(true);
   };
 
   const handleDelete = () => {
@@ -596,6 +595,19 @@ function AdvancedTab({ project }: { project: Project }) {
           )}
         </CardContent>
       </Card>
+
+      {showArchiveDialog && (
+        <ConfirmArchiveDialog
+          isOpen
+          onClose={() => setShowArchiveDialog(false)}
+          issueSummary={project.name}
+          onConfirm={() => {
+            setShowArchiveDialog(false);
+            catalystToast.success('Project archived');
+            navigate('/projects');
+          }}
+        />
+      )}
     </div>
   );
 }

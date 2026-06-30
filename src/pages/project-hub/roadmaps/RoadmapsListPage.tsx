@@ -318,6 +318,7 @@ export default function RoadmapsListPage() {
   const [ownerFilter, setOwnerFilter] = useState<{ label: string; value: string } | null>(null);
   const [visibilityFilter, setVisibilityFilter] = useState<{ label: string; value: string } | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [sortKey, setSortKey] = useState<string>('title');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
   const [columnVisibility, setColumnVisibility] = useState<Set<string>>(
@@ -521,8 +522,7 @@ export default function RoadmapsListPage() {
       label: 'Delete',
       isDanger: true,
       onClick: () => {
-        if (!window.confirm(`Delete ${selectedIds.size} roadmap${selectedIds.size > 1 ? 's' : ''}? This cannot be undone.`)) return;
-        setSelectedIds(new Set());
+        setShowBulkDeleteModal(true);
       },
     },
   ];
@@ -631,5 +631,22 @@ export default function RoadmapsListPage() {
         emptyView={emptyView}
       />
     </CatalystListPageLayout>
+
+    {showBulkDeleteModal && (
+      <ModalDialog onClose={() => setShowBulkDeleteModal(false)} width="small">
+        <ModalHeader hasCloseButton>
+          <ModalTitle appearance="danger">Delete roadmaps</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+            Delete <strong>{selectedIds.size} roadmap{selectedIds.size > 1 ? 's' : ''}</strong>? This cannot be undone.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setShowBulkDeleteModal(false)}>Cancel</Button>
+          <Button appearance="danger" onClick={() => { setSelectedIds(new Set()); setShowBulkDeleteModal(false); }}>Delete</Button>
+        </ModalFooter>
+      </ModalDialog>
+    )}
   );
 }

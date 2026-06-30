@@ -46,6 +46,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const [spaceFilter, setSpaceFilter] = useState<string | null>(null);
   const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<BoardListItem | null>(null);
   const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
   const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
 
@@ -83,9 +84,8 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
 
   const handleDelete = useCallback((board: BoardListItem) => {
     if (!projectId) return;
-    if (!window.confirm(`Delete board "${board.name}"? This cannot be undone.`)) return;
-    deleteBoard.mutate({ boardId: board.id, projectId });
-  }, [deleteBoard, projectId]);
+    setDeleteTarget(board);
+  }, [projectId]);
 
   const locationLabel = projectName
     ? `${projectName}${projectKey ? ` (${projectKey})` : ''}`
@@ -291,6 +291,31 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
 
       {createOpen && (
         <CreateBoardModal projectId={projectId!} basePath={boardBasePath} onClose={() => setCreateOpen(false)} />
+      )}
+
+      {deleteTarget && (
+        <ModalDialog onClose={() => setDeleteTarget(null)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle appearance="danger">Delete board</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              Delete <strong>"{deleteTarget.name}"</strong>? This cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button
+              appearance="danger"
+              onClick={() => {
+                if (projectId) deleteBoard.mutate({ boardId: deleteTarget.id, projectId });
+                setDeleteTarget(null);
+              }}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
       )}
 
       {moveTarget && (

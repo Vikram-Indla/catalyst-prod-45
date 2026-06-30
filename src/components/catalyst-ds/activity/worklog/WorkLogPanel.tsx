@@ -12,6 +12,7 @@ import { Edit2, Trash2 } from '@/lib/atlaskit-icons';
 import Tooltip from '@atlaskit/tooltip';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import type { MentionRosterEntry } from '@/lib/mentions/parseMentions';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 
 function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -129,6 +130,7 @@ function WorkLogEntry({
   showPill?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
   const authorName = entry.author?.full_name || entry.author?.email || 'Unknown';
   const { user } = useAuth();
   const currentUserId = user?.id ?? null;
@@ -160,6 +162,7 @@ function WorkLogEntry({
   }
 
   return (
+    <>
     <div style={{ display: 'flex', gap: 12, padding: '12px 0' }}>
       <span style={{ flexShrink: 0 }}>
         <Avatar src={entry.author?.avatar_url ?? undefined} name={authorName} size="small" />
@@ -211,9 +214,7 @@ function WorkLogEntry({
                   type="button"
                   aria-label="Delete work log"
                   style={iconBtn}
-                  onClick={() => {
-                    if (window.confirm('Delete this work log?')) void onDelete(entry.id);
-                  }}
+                  onClick={() => setDeleteTarget({ id: entry.id })}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)';
                   }}
@@ -229,6 +230,17 @@ function WorkLogEntry({
         )}
       </div>
     </div>
+    {deleteTarget && (
+      <ConfirmDeleteDialog
+        isOpen
+        onClose={() => setDeleteTarget(null)}
+        issueKey={null}
+        issueSummary={null}
+        typeLabel="work log"
+        onConfirm={() => { void onDelete(deleteTarget.id); setDeleteTarget(null); }}
+      />
+    )}
+    </>
   );
 }
 

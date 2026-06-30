@@ -3,16 +3,17 @@
 // Slide-out panel showing all dependencies for an item
 // =====================================================
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link2, Check, Trash2 } from '@/lib/atlaskit-icons';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { 
-  useDependenciesForItem, 
+import {
+  useDependenciesForItem,
   useDeleteDependency,
-  useUpdateDependency 
+  useUpdateDependency
 } from '@/hooks/useDependencies';
 import { WorkItemType, STATUS_CONFIG, WorkflowStatus } from '@/types/views';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 
 interface DependencyDrawerProps {
   open: boolean;
@@ -36,15 +37,14 @@ export function DependencyDrawer({
   const { data, isLoading } = useDependenciesForItem(itemType, itemId);
   const deleteMutation = useDeleteDependency();
   const updateMutation = useUpdateDependency();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
 
   const handleResolve = (dependencyId: string) => {
     updateMutation.mutate({ id: dependencyId, input: { is_resolved: true } });
   };
 
   const handleDelete = (dependencyId: string) => {
-    if (confirm('Remove this dependency?')) {
-      deleteMutation.mutate(dependencyId);
-    }
+    setDeleteTarget({ id: dependencyId });
   };
 
   const getStatusConfig = (status: string | undefined) => {
@@ -197,6 +197,16 @@ export function DependencyDrawer({
           )}
         </div>
       </SheetContent>
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteTarget(null)}
+          issueKey={null}
+          issueSummary={null}
+          typeLabel="dependency"
+          onConfirm={() => { deleteMutation.mutate(deleteTarget.id); setDeleteTarget(null); }}
+        />
+      )}
     </Sheet>
   );
 }

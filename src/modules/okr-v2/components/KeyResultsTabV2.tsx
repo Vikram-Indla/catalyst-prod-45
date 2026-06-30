@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight, Link2, Calendar } from '@/lib/atlaskit-icons';
 import { KeyResultDialogV2 } from './KeyResultDialogV2';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { format } from 'date-fns';
 
 interface KeyResultsTabV2Props {
@@ -27,6 +28,7 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
   const [selectedKR, setSelectedKR] = useState<KeyResultV2 | null>(null);
   const [expandedKrs, setExpandedKrs] = useState<Set<string>>(new Set());
   const [alignmentDrawerKR, setAlignmentDrawerKR] = useState<KeyResultV2 | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; objectiveId: string } | null>(null);
 
   const toggleExpanded = (krId: string) => {
     const newExpanded = new Set(expandedKrs);
@@ -51,12 +53,16 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
 
   const handleDelete = (kr: KeyResultV2, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this key result?')) {
-      deleteKR.mutate(
-        { id: kr.id, objectiveId: kr.objective_id },
-        { onSuccess: () => onMutation?.() }
-      );
-    }
+    setDeleteTarget({ id: kr.id, objectiveId: kr.objective_id });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    deleteKR.mutate(
+      { id: deleteTarget.id, objectiveId: deleteTarget.objectiveId },
+      { onSuccess: () => onMutation?.() }
+    );
+    setDeleteTarget(null);
   };
 
   const handleAlignWork = (kr: KeyResultV2, e: React.MouseEvent) => {
@@ -224,6 +230,15 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
         open={!!alignmentDrawerKR}
         onClose={handleAlignmentDrawerClose}
         objectiveId={objectiveId}
+      />
+
+      <ConfirmDeleteDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={null}
+        issueSummary={null}
+        typeLabel="key result"
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

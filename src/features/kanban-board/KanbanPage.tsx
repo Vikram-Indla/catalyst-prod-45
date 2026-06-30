@@ -3,6 +3,7 @@
  * Mounted at /project-hub/:key/kanban. 100% Atlaskit; shares only the data source.
  */
 import React, { useMemo, useState, useCallback, useRef } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -62,6 +63,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
      navigates to /:hub/:key/standups (mode-aware) instead of opening an
      in-board panel. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
   const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
@@ -128,9 +130,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (label) { await addLabel(issue.id, issue.labels, label); refetch(); }
   }, [addLabel, refetch]);
   const onArchive = useCallback(async (issue: BoardIssue) => { await archiveIssue(issue.id); refetch(); }, [archiveIssue, refetch]);
-  const onDelete = useCallback(async (issue: BoardIssue) => {
-    if (window.confirm(`Delete ${issue.issueKey}? This removes it from the board.`)) { await deleteIssue(issue.id); refetch(); }
-  }, [deleteIssue, refetch]);
+  const onDelete = useCallback((issue: BoardIssue) => {
+    setDeleteTarget({ id: issue.id, issueKey: issue.issueKey });
+  }, []);
   const onEditSummary = useCallback(async (issue: BoardIssue, summary: string) => {
     if (summary.trim() && summary !== issue.summary) { await updateSummary(issue.id, summary.trim()); refetch(); }
   }, [updateSummary, refetch]);
@@ -398,6 +400,21 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
       )}
 
       {/* StandupHistoryPanel mount removed 2026-06-15 — see /:hub/:key/standups route. */}
+
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteTarget(null)}
+          issueKey={deleteTarget.issueKey}
+          issueSummary=""
+          typeLabel="issue"
+          onConfirm={async () => {
+            await deleteIssue(deleteTarget.id);
+            setDeleteTarget(null);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 }

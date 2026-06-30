@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -315,6 +316,7 @@ export default function DefectDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [comment, setComment] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Mock activity data
   const activity = [
@@ -379,10 +381,8 @@ export default function DefectDetailPage() {
   }, [defect]);
 
   const handleDelete = useCallback(() => {
-    if (confirm(`Are you sure you want to delete ${defect?.id}?`)) {
-      catalystToast.success(`${defect?.id} deleted`);
-      navigate('/releases/defects');
-    }
+    catalystToast.success(`${defect?.id} deleted`);
+    navigate('/releases/defects');
   }, [defect, navigate]);
 
   const handleAddComment = useCallback(() => {
@@ -511,7 +511,7 @@ export default function DefectDetailPage() {
                     Link Test Case
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleDelete} className="text-red-600 text-[13px]">
+                  <DropdownMenuItem onClick={() => setShowDeleteConfirm(true)} className="text-[13px]">
                     <Trash2 className="w-3.5 h-3.5 mr-2" />
                     Delete
                   </DropdownMenuItem>
@@ -1039,7 +1039,14 @@ export default function DefectDetailPage() {
           onReassign={handleReassign}
         />
       )}
-      
+
+      <ConfirmDeleteDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        issueKey={defect?.id}
+        typeLabel="defect"
+        onConfirm={() => { setShowDeleteConfirm(false); handleDelete(); }}
+      />
     </div>
   );
 }

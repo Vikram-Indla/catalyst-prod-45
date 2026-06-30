@@ -9,6 +9,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
@@ -869,6 +870,7 @@ function AddSourceWizard({
 function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => void }) {
   const qc = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -983,9 +985,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
             role="menuitem"
             onClick={() => {
               setMenuOpen(false);
-              if (confirm(`Disconnect "${config.source_label}"?\n\nThis removes the sync config. Business requests already synced are NOT deleted.`)) {
-                disconnect.mutate();
-              }
+              setShowDisconnectModal(true);
             }}
             style={{
               display: 'block', width: '100%', textAlign: 'left',
@@ -1094,6 +1094,26 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
         }}>
           {config.last_sync_error}
         </div>
+      )}
+
+      {showDisconnectModal && (
+        <ModalDialog onClose={() => setShowDisconnectModal(false)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle appearance="danger">Disconnect integration</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              Disconnect <strong>{config.source_label}</strong>?
+            </p>
+            <p style={{ marginTop: 8, color: 'var(--ds-text-subtle)' }}>
+              This removes the sync config. Business requests already synced are NOT deleted.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setShowDisconnectModal(false)}>Cancel</Button>
+            <Button appearance="danger" onClick={() => { disconnect.mutate(); setShowDisconnectModal(false); }}>Disconnect</Button>
+          </ModalFooter>
+        </ModalDialog>
       )}
     </div>
   );

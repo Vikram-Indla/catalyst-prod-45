@@ -104,6 +104,7 @@ import "./ask-caty-input.css";
 import { AskCatyInlineBar } from "@/components/caty/AskCatyInlineBar";
 import { CatyAiSearch } from "@/components/caty/CatyAiSearch";
 import { FilterSaveModal } from "@/components/filters/FilterSaveModal";
+import { ConfirmDeleteDialog } from "@/components/catalyst-detail-views/shared/ConfirmDeleteDialog";
 import { JiraBasicFilter } from "@/components/shared/JiraBasicFilter";
 import type { FilterCategory as JiraFilterCategory } from "@/components/shared/JiraBasicFilter";
 
@@ -1087,8 +1088,13 @@ function SavedFiltersDropdown({
   });
 
   const handleDelete = async (id: string, name: string) => {
-    const ok = window.confirm(`Delete saved filter "${name}"?`);
-    if (!ok) return;
+    setDeleteFilterTarget({ id, name });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteFilterTarget) return;
+    const { id, name: filterName } = deleteFilterTarget;
+    setDeleteFilterTarget(null);
     const { error } = await (supabase as any)
       .from("ph_saved_filters")
       .delete()
@@ -1097,13 +1103,14 @@ function SavedFiltersDropdown({
       onShowFlag(`Delete failed: ${error.message}`, "error");
       return;
     }
-    onShowFlag(`Deleted "${name}"`, "success");
+    onShowFlag(`Deleted "${filterName}"`, "success");
     refetch();
   };
 
   if (rows.length === 0) return null;
 
   return (
+    <>
     <DropdownMenu
       trigger={({ triggerRef, ...props }) => (
         <Button
@@ -1154,6 +1161,18 @@ function SavedFiltersDropdown({
         ))}
       </DropdownItemGroup>
     </DropdownMenu>
+
+    {deleteFilterTarget && (
+      <ConfirmDeleteDialog
+        isOpen
+        onClose={() => setDeleteFilterTarget(null)}
+        issueKey={deleteFilterTarget.name}
+        issueSummary=""
+        typeLabel="saved filter"
+        onConfirm={handleDeleteConfirm}
+      />
+    )}
+  </>
   );
 }
 
@@ -1299,6 +1318,7 @@ export function AllWorkToolbar({
   );
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [savedFiltersRefreshKey, setSavedFiltersRefreshKey] = useState(0);
+  const [deleteFilterTarget, setDeleteFilterTarget] = useState<{ id: string; name: string } | null>(null);
 
   // Full-project options pool — fetches ALL distinct facet values for the
   // project, independent of the current filter and page window.

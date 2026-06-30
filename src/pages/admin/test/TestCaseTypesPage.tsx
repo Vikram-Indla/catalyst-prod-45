@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/standard-button';
 import Spinner from '@atlaskit/spinner';
@@ -33,6 +34,7 @@ export default function TestCaseTypesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editIcon, setEditIcon] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<TMCaseType | null>(null);
 
   const handleAdd = async () => {
     if (!newName.trim() || !projectId) return;
@@ -90,7 +92,6 @@ export default function TestCaseTypesPage() {
   };
 
   const handleDelete = async (t: TMCaseType) => {
-    if (!confirm(`Delete type "${t.name}"?`)) return;
     try {
       await deleteType.mutateAsync({ id: t.id, projectId: t.project_id });
       catalystToast.success('Case type deleted');
@@ -243,7 +244,7 @@ export default function TestCaseTypesPage() {
                   ) : (
                     <div style={{ display: 'flex', gap: 4 }}>
                       <Button appearance="subtle" spacing="compact" onClick={() => startEdit(t)}>Edit</Button>
-                      <Button appearance="subtle" spacing="compact" onClick={() => handleDelete(t)}>Delete</Button>
+                      <Button appearance="subtle" spacing="compact" onClick={() => setDeleteTarget(t)}>Delete</Button>
                     </div>
                   )}
                 </td>
@@ -252,6 +253,13 @@ export default function TestCaseTypesPage() {
           </tbody>
         </table>
       </div>
+      <ConfirmDeleteDialog
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={deleteTarget?.name}
+        typeLabel="test case type"
+        onConfirm={() => { if (deleteTarget) handleDelete(deleteTarget); setDeleteTarget(null); }}
+      />
     </div>
   );
 }

@@ -9,12 +9,14 @@ import { useReportDefinitions, useDeleteReport } from '@/hooks/useReportAnalytic
 import { ReportBuilder } from './ReportBuilder';
 import { ReportDefinition } from '@/types/reports';
 import { formatDistanceToNow } from 'date-fns';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 
 export function SavedReportsList() {
   const { data: reports, isLoading } = useReportDefinitions();
   const deleteReport = useDeleteReport();
   const [showBuilder, setShowBuilder] = useState(false);
   const [editingReport, setEditingReport] = useState<ReportDefinition | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ReportDefinition | null>(null);
 
   return (
     <div className="space-y-4">
@@ -50,7 +52,7 @@ export function SavedReportsList() {
                       <DropdownMenuItem><Play className="h-4 w-4 mr-2" />Run Report</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => { setEditingReport(report); setShowBuilder(true); }}><Edit className="h-4 w-4 mr-2" />Edit</DropdownMenuItem>
                       <DropdownMenuItem><Calendar className="h-4 w-4 mr-2" />Schedule</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600" onClick={() => { if (confirm(`Delete "${report.name}"?`)) deleteReport.mutateAsync(report.id); }}>
+                      <DropdownMenuItem onClick={() => setDeleteTarget(report)}>
                         <Trash2 className="h-4 w-4 mr-2" />Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -68,6 +70,14 @@ export function SavedReportsList() {
           <ReportBuilder existingReport={editingReport} onClose={() => { setShowBuilder(false); setEditingReport(null); }} />
         </DialogContent>
       </Dialog>
+
+      <ConfirmDeleteDialog
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={deleteTarget?.name}
+        typeLabel="report"
+        onConfirm={() => { if (deleteTarget) { deleteReport.mutateAsync(deleteTarget.id); } setDeleteTarget(null); }}
+      />
     </div>
   );
 }

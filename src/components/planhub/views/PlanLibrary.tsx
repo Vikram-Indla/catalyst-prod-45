@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Search, FolderOpen, Trash2 } from '@/lib/atlaskit-icons';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +18,7 @@ export default function PlanLibrary({ onPlanSelect }: Props) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filters, setFilters] = useState<PlanFilters>({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
 
   // Fetch plans
   const { data: plans, isLoading } = useQuery({
@@ -83,9 +85,7 @@ export default function PlanLibrary({ onPlanSelect }: Props) {
 
   const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this plan?')) {
-      deletePlan.mutate(id);
-    }
+    setDeleteTarget({ id });
   };
 
   return (
@@ -285,6 +285,18 @@ export default function PlanLibrary({ onPlanSelect }: Props) {
           }}
         />
       )}
+
+      <ConfirmDeleteDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={null}
+        issueSummary={null}
+        typeLabel="plan"
+        onConfirm={() => {
+          if (deleteTarget) deletePlan.mutate(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+      />
     </>
   );
 }

@@ -13,6 +13,7 @@ import { useFreezeWindowsList, useDeleteFreezeWindow, type FreezeWindowRow } fro
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateFreezeWindowModal } from '@/components/releasehub/CreateFreezeWindowModal';
 import { catalystToast } from '@/lib/catalystToast';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
@@ -89,12 +90,19 @@ export default function FreezeWindowsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const { canManage } = useReleaseOpsPermissions();
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
   const handleDelete = (id: string, name: string) => {
-    if (!window.confirm(`Delete freeze window "${name}"?`)) return;
-    del.mutate(id, {
+    setDeleteTarget({ id, name });
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return;
+    del.mutate(deleteTarget.id, {
       onSuccess: () => catalystToast.success('Freeze window deleted'),
       onError: () => catalystToast.error('Failed to delete'),
     });
+    setDeleteTarget(null);
   };
 
   return (
@@ -126,6 +134,17 @@ export default function FreezeWindowsPage() {
       )}
 
       {showCreate && <CreateFreezeWindowModal onClose={() => setShowCreate(false)} />}
+
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen
+          onClose={() => setDeleteTarget(null)}
+          issueKey={deleteTarget.name}
+          issueSummary=""
+          typeLabel="freeze window"
+          onConfirm={handleDeleteConfirm}
+        />
+      )}
     </div>
   );
 }

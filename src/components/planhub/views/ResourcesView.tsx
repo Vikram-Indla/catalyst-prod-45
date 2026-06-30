@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Users, AlertTriangle, UserX, Trash2 } from '@/lib/atlaskit-icons';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +14,7 @@ export default function ResourcesView({ planId }: Props) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
 
   // Fetch resources for selected plan
   const { data: resources, isLoading } = useQuery({
@@ -64,9 +66,7 @@ export default function ResourcesView({ planId }: Props) {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Remove this resource?')) {
-      deleteResource.mutate(id);
-    }
+    setDeleteTarget({ id });
   };
 
   if (!planId) {
@@ -228,6 +228,18 @@ export default function ResourcesView({ planId }: Props) {
           </div>
         )}
       </div>
+
+      <ConfirmDeleteDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={null}
+        issueSummary={null}
+        typeLabel="resource"
+        onConfirm={() => {
+          if (deleteTarget) deleteResource.mutate(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+      />
 
       {/* Add Resource Modal */}
       {showAddModal && (

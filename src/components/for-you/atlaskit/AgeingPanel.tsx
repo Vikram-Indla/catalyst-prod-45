@@ -10,6 +10,7 @@
  *   - No emoji lock icons — uses ADS tokens only
  */
 import React, { useMemo, useState, useCallback } from 'react';
+import { catalystToast } from '@/lib/catalystToast';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import Spinner from '@atlaskit/spinner';
@@ -646,7 +647,7 @@ export default function AgeingPanel() {
 
   const handleUnarchive = useCallback(async (issueKey: string) => {
     if (!user?.id || !isAdmin) {
-      alert('Only admins can unarchive items. Contact your administrator.');
+      catalystToast.warning('Only admins can unarchive items. Contact your administrator.');
       return;
     }
     try {
@@ -657,7 +658,7 @@ export default function AgeingPanel() {
       if (error) throw error;
       refetch();
     } catch (e: any) {
-      alert(e.message || 'Failed to unarchive.');
+      catalystToast.error(e.message || 'Failed to unarchive.');
     }
   }, [user?.id, isAdmin, refetch]);
 
@@ -682,7 +683,7 @@ export default function AgeingPanel() {
           await archiveIssue(issueKey, user?.id);
           refetch();
         } catch (e: any) {
-          alert(e.message || 'Failed to archive.');
+          catalystToast.error(e.message || 'Failed to archive.');
         }
       }}
       onArchiveBatch={async (issueKeys: string[]) => {
@@ -696,7 +697,7 @@ export default function AgeingPanel() {
         }
         refetch();
         if (errors.length > 0) {
-          alert(`Failed to archive: ${errors.join(', ')}`);
+          catalystToast.error(`Failed to archive: ${errors.join(', ')}`);
         }
       }}
       onNavigateArchives={() => navigate('/for-you/archives')}

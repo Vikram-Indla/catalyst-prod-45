@@ -3,6 +3,7 @@
  * Wraps BoardColumn with @dnd-kit sortable for horizontal reordering
  */
 
+import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDroppable } from '@dnd-kit/core';
@@ -14,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { ColumnActions } from './ColumnActions';
 import { useDeleteColumn } from '../../hooks/useColumnManagement';
 import { supabase } from '@/integrations/supabase/client';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 
 import '@/styles/boards.css';
 
@@ -37,13 +39,14 @@ const getStatusClass = (slug: string): string => {
   return statusMap[slug] || 'backlog';
 };
 
-export function SortableColumn({ 
-  column, 
-  tasks, 
-  onTaskClick, 
-  onAddTask 
+export function SortableColumn({
+  column,
+  tasks,
+  onTaskClick,
+  onAddTask
 }: SortableColumnProps) {
   const deleteColumn = useDeleteColumn();
+  const [deleteTarget, setDeleteTarget] = useState<{ moveTasksToBacklog?: boolean } | null>(null);
   
   // Column sortable (for horizontal reordering)
   const {
@@ -82,16 +85,9 @@ export function SortableColumn({
       .is('deleted_at', null);
 
     if (count && count > 0) {
-      const confirmed = window.confirm(
-        `This column has ${count} task(s). Move them to Backlog and delete the column?`
-      );
-      if (!confirmed) return;
-      
-      deleteColumn.mutate({ id: column.id, moveTasksToBacklog: true });
+      setDeleteTarget({ moveTasksToBacklog: true });
     } else {
-      const confirmed = window.confirm(`Delete the "${column.name}" column?`);
-      if (!confirmed) return;
-      deleteColumn.mutate({ id: column.id });
+      setDeleteTarget({});
     }
   };
 
@@ -192,5 +188,17 @@ export function SortableColumn({
         </button>
       </div>
     </div>
+
+      <ConfirmDeleteDialog
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        issueKey={column.name}
+        issueSummary={deleteTarget?.moveTasksToBacklog ? 'Tasks in this column will be moved to Backlog.' : undefined}
+        typeLabel="column"
+        onConfirm={() => {
+          deleteColumn.mutate({ id: column.id, moveTasksToBacklog: deleteTarget?.moveTasksToBacklog });
+          setDeleteTarget(null);
+        }}
+      />
   );
 }

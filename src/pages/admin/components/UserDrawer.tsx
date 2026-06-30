@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
+import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -42,6 +43,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Fetch reference data
   const { data: departments = [] } = useQuery({
@@ -304,7 +306,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
 
   // Delete mutation
   const handleDelete = async () => {
-    if (!user || !confirm('Are you sure you want to delete this user?')) return;
+    if (!user) return;
 
     setIsDeleting(true);
     try {
@@ -538,9 +540,9 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
 
         <div className="um-drawer-footer">
           {isEditMode && (
-            <button 
+            <button
               className="um-btn um-btn-danger"
-              onClick={handleDelete}
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={isDeleting}
             >
               {isDeleting ? <Spinner size="small" /> : <TrashIcon label="" size="small" />}
@@ -563,6 +565,13 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
       </div>
 
       <style>{drawerCSS}</style>
+
+      <ConfirmDeleteDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        typeLabel="user"
+        onConfirm={() => { setShowDeleteConfirm(false); handleDelete(); }}
+      />
     </>
   );
 }
