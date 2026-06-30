@@ -92,7 +92,6 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
     fontSize: 'var(--ds-font-size-100)',
     fontWeight: 700,
     color: 'var(--ds-text)',
-    textTransform: 'uppercase',
     letterSpacing: '0.3px',
     fontFamily: 'var(--cp-font-body)',
     marginBottom: 4,
@@ -119,7 +118,7 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
           value={url}
           placeholder="https://www.figma.com/file/xxx/my-file?node-id=xxx"
           onChange={(e) => setUrl(e.target.value)}
-          onBlur={() => { setUrlFocused(false); setUrlTouched(true); }}
+          onBlur={() => { setUrlFocused(false); if (url.trim()) setUrlTouched(true); }}
           onFocus={() => setUrlFocused(true)}
           onKeyDown={handleKeyDown}
           disabled={isSubmitting}

@@ -59,8 +59,8 @@ export function CatalystQuickActions({
   }, [showMenu]);
 
   const textColor = 'var(--ds-text)';
-  const hoverBg = 'var(--ds-text, rgba(11, 18, 14, 0.06))';
-  const borderColor = 'var(--ds-text, rgba(11, 18, 14, 0.14))';
+  const hoverBg = 'var(--ds-background-neutral-hovered)';
+  const borderColor = 'var(--ds-border)';
 
   const menuItems = [
     { id: 'child', icon: <ChildIssuesIcon label="" color={textColor} />, label: 'Create child work item', section: 'primary', action: () => {
@@ -186,8 +186,8 @@ export function CatalystQuickActions({
             role="menu"
             aria-label="Add options"
             style={{
-            position: 'absolute', left: 0, top: 32, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4,
-            boxShadow: 'var(--ds-text, rgba(30,31,33,0.15)) 0px 8px 12px, var(--ds-text, rgba(30,31,33,0.31)) 0px 0px 1px',
+            position: 'absolute', left: 0, top: 32, background: 'var(--ds-surface-overlay)', borderRadius: 4,
+            boxShadow: 'var(--ds-shadow-overlay)',
             width: 266, zIndex: 400, padding: 0,
             animation: 'cv-slide-down 0.15s ease-out',
           }}>

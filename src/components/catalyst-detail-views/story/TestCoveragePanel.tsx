@@ -159,7 +159,7 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
                 border: 'none',
                 padding: 0,
                 cursor: 'pointer',
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
                 borderRadius: 3,
               }}
             >
@@ -182,7 +182,7 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
                 display: 'inline',
                 fontSize: 14,
                 fontWeight: 400,
-                color: 'var(--ds-text-subtlest, #626F86)',
+                color: 'var(--ds-text-subtlest)',
                 marginLeft: 4,
               }}
             >
