@@ -244,9 +244,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const starFilter = useStarFilter();
 
   // Dropdown option pools — derived from the live rows (Jira derives them the same way)
-  const ownerOptions = useMemo<SelectOption[]>(() => {
-    const names = [...new Set(filters.map(ownerName).filter(Boolean))].sort();
-    return names.map(n => ({ label: n, value: n }));
+  const ownerOptions = useMemo(() => {
+    const seen = new Map<string, { label: string; value: string; avatarUrl?: string }>();
+    for (const f of filters) {
+      const name = ownerName(f);
+      if (name && !seen.has(name)) {
+        seen.set(name, { label: name, value: name, avatarUrl: f.owner?.avatar_url ?? undefined });
+      }
+    }
+    return [...seen.values()].sort((a, b) => a.label.localeCompare(b.label));
   }, [filters]);
 
   const projectOptions = useMemo<SelectOption[]>(() => {
@@ -580,7 +586,23 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   ];
 
   const toolbarFilters: ToolbarFilter[] = [
-    { id: 'owner', placeholder: 'Owner', options: ownerOptions, value: ownerFilter, onChange: v => setOwnerFilter(v) },
+    {
+      id: 'owner',
+      placeholder: 'Owner',
+      options: ownerOptions,
+      value: ownerFilter,
+      onChange: v => setOwnerFilter(v),
+      formatOptionLabel: (opt) => (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <AkAvatar
+            src={opt.avatarUrl}
+            name={opt.label}
+            size="xsmall"
+          />
+          <span>{opt.label}</span>
+        </span>
+      ),
+    },
     ...(projectOptions.length > 0 ? [{ id: 'project', placeholder: 'Project', options: projectOptions, value: projectFilter, onChange: (v: ToolbarFilterOption | null) => setProjectFilter(v) }] : []),
     ...(groupOptions.length > 0 ? [{ id: 'group', placeholder: 'Group', options: groupOptions, value: groupFilter, onChange: (v: ToolbarFilterOption | null) => setGroupFilter(v) }] : []),
   ];

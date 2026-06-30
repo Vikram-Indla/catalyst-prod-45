@@ -23,6 +23,8 @@ import { Search } from '@/lib/atlaskit-icons';
 export interface ToolbarFilterOption {
   label: string;
   value: string;
+  /** Optional avatar URL — rendered by formatOptionLabel when provided. */
+  avatarUrl?: string;
 }
 
 export interface ToolbarFilter {
@@ -31,6 +33,8 @@ export interface ToolbarFilter {
   options: ToolbarFilterOption[];
   value: ToolbarFilterOption | null;
   onChange: (v: ToolbarFilterOption | null) => void;
+  /** Custom react-select option renderer. When omitted, defaults to label text. */
+  formatOptionLabel?: (option: ToolbarFilterOption) => React.ReactNode;
 }
 
 interface CatalystListToolbarProps {
@@ -101,6 +105,7 @@ export function CatalystListToolbar({
             menuPortalTarget={document.body}
             menuPosition="fixed"
             styles={portalSelectStyles}
+            {...(f.formatOptionLabel ? { formatOptionLabel: f.formatOptionLabel } : {})}
           />
         </div>
       ))}
