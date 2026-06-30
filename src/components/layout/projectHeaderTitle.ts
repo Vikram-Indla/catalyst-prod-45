@@ -72,6 +72,7 @@ const GLOBAL_HUB_ROUTE_WORD_MAP: Record<string, string> = {
   // release-hub
   overview: 'Dashboard',
   releases: 'Releases',
+  'releases-management': 'Releases',
   'release-kanban': 'Board',
   'all-releases': 'Releases',
   'production-events': 'Production events',
