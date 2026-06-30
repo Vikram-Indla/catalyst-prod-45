@@ -49,7 +49,7 @@ function AttachmentItem({ attachment }: { attachment: ChatAttachment }) {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 4,
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 400,
           color: 'var(--cv2-text-strong)',
           textDecoration: 'none',
@@ -150,7 +150,7 @@ function FileCard({ attachment }: { attachment: ChatAttachment }) {
       <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <span
           style={{
-            fontSize: 'var(--ds-font-size-300)',
+            font: 'var(--ds-font-body-small)',
             fontWeight: 700,
             color: 'var(--cv2-text-strong)',
             overflow: 'hidden',
@@ -160,7 +160,7 @@ function FileCard({ attachment }: { attachment: ChatAttachment }) {
         >
           {attachment.filename}
         </span>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>
+        <span style={{ font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>
           {formatBytes(attachment.byteSize)}
         </span>
       </span>

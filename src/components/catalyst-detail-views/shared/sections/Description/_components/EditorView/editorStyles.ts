@@ -13,7 +13,7 @@
  *
  * Bump STYLE_ID when the rules below change so HMR re-injects.
  */
-const STYLE_ID = "catalyst-tiptap-editor-styles-v51";
+const STYLE_ID = "catalyst-tiptap-editor-styles-v52";
 
 export function injectEditorStyles(): void {
   if (typeof document === "undefined") return;
@@ -22,6 +22,20 @@ export function injectEditorStyles(): void {
   const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
+    /* Suppress ADS global :focus-visible outline on the ProseMirror contenteditable.
+       The shell handles the focus indicator via :focus-within + border-color swap. */
+    .catalyst-tiptap-editor:focus,
+    .catalyst-tiptap-editor:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Shell focus ring — ADS-compliant: swap from --ds-border to --ds-border-focused
+       when any child (toolbar, contenteditable) holds focus. */
+    .catalyst-description-editor-shell:focus-within {
+      border-color: var(--ds-border-focused) !important;
+    }
+
     .catalyst-tiptap-editor {
       outline: none; /* outer wrapper handles focus indicator via :focus-within */
       font-size: 14px;

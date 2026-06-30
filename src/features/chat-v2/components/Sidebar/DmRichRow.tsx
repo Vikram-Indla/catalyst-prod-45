@@ -1,4 +1,5 @@
 import React from 'react';
+import Badge from '@atlaskit/badge';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { HeadphonesIcon } from '../shared/Icon';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
@@ -72,7 +73,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
               flex: 1,
               minWidth: 0,
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               fontWeight: hasUnread ? 700 : 700,
               color: 'var(--cv2-text-strong)',
               overflow: 'hidden',
@@ -97,7 +98,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
               style={{
                 flex: '0 0 auto',
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 'var(--ds-font-size-200)',
+                font: 'var(--ds-font-body-small)',
                 color: hasUnread ? 'var(--cv2-text-strong)' : 'var(--cv2-text-muted)',
                 whiteSpace: 'nowrap',
               }}
@@ -110,7 +111,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
               color: hasUnread ? 'var(--cv2-text)' : 'var(--cv2-text-muted)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -123,26 +124,8 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         )}
       </div>
       {hasUnread && (
-        <span
-          aria-label={`${unreadCount} unread`}
-          style={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text)',
-            fontSize: 11,
-            fontWeight: 700,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {unreadCount > 99 ? '99+' : unreadCount}
+        <span aria-label={`${unreadCount} unread`} style={{ position: 'absolute', top: 10, right: 10 }}>
+          <Badge appearance="important">{unreadCount}</Badge>
         </span>
       )}
     </button>
@@ -158,8 +141,8 @@ function AvatarStack({
   names: string[];
   isGroup: boolean;
 }) {
-  const size = 36;
-  const stackSize = 26;
+  const size = 28;
+  const stackSize = 22;
   if (!isGroup) {
     return (
       <PresenceAvatar

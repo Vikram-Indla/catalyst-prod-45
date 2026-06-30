@@ -28,7 +28,7 @@ export function HuddleEventRow({
         display: 'flex', flexDirection: 'column', gap: 2,
         padding: '8px 20px', margin: '0px 0',
         color: 'var(--cv2-text-muted, var(--ds-text-subtle))',
-        fontFamily: 'var(--cv2-font)', fontSize: 13,
+        fontFamily: 'var(--cv2-font)', font: 'var(--ds-font-body-small)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

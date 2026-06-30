@@ -127,9 +127,10 @@ interface ToolbarProps {
      (right cluster) while the result panel renders in a full-width slot
      below the toolbar without being clipped by the toolbar's fixed height. */
   boardInsightPanelTarget?: HTMLElement | null;
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, boardInsightPanelTarget }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, boardInsightPanelTarget, filterContext = 'project' }) => {
   const groupLabels: Record<GroupByMode, string> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
     subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
@@ -192,6 +193,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
         onChange={handleCanonicalChange}
         scopeType="project"
         scopeKey={projectKey}
+        filterContext={filterContext}
         workTypeOptions={kanbanWorkTypeOptions}
         assigneeOptions={kanbanAssigneeOptions}
         myFilters={savedFilters.map((f) => ({ id: f.id, name: f.name }))}

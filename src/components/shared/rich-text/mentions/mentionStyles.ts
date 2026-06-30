@@ -101,13 +101,13 @@ export function injectMentionStyles(): void {
       content: "@";
     }
 
-    /* ── OTHER-user — Atlassian inline mention: link-blue text on a
-       faint neutral tint (NOT a solid grey pill). Matches @atlaskit/mention
-       read-mode rendering. */
+    /* ── OTHER-user — neutral grey pill with dark text. Only the
+       current-user mention gets the brand-blue fill; everyone else reads
+       as a quiet grey chip (image-83 parity, 2026-06-30). */
     span[data-mention-id]:not([data-mention-self="true"]),
     span.atlaskit-mention[data-id]:not([data-mention-self="true"]) {
-      background: var(--ds-background-neutral-subtle) !important;
-      color: var(--ds-link) !important;
+      background: var(--ds-background-neutral) !important;
+      color: var(--ds-text) !important;
     }
 
     /* ── CURRENT-user — bold brand blue + white text ───────────────── */

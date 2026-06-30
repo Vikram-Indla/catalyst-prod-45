@@ -281,6 +281,7 @@ const PlanResourcePlannerPage = lazy(() => import("../modules/plan/ResourcePlann
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
+const QuartersAdminPage = lazy(() => import("../pages/admin/QuartersAdminPage"));
 const JiraSyncPage = lazy(() => import("../pages/admin/connections/JiraSyncPage").then(m => ({ default: m.JiraSyncPage })));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 // Connections hub — each integration gets a page under /admin/connections/*
@@ -950,6 +951,7 @@ export default function FullAppRoutes() {
           <Route path="workflows/versions" element={<S><WorkflowVersioningPage /></S>} />
           <Route path="test-ops" element={<S><TestOpsPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
+          <Route path="quarters" element={<S><QuartersAdminPage /></S>} />
           {/* ── Connections hub (/admin/connections/*) — 2026-06-21 ─────────────
               Replaces the old /admin/workhub/* section. Each integration owns
               a page; old workhub paths redirect for backward compatibility.    */}

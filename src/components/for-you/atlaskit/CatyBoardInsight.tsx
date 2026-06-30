@@ -246,7 +246,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         borderRadius: 999,
         background: token('elevation.surface', 'var(--ds-surface)'),
         color: token('color.text', 'var(--ds-text)'),
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body)',
         fontWeight: 500,
         cursor: isLoading ? 'default' : 'pointer',
         opacity: isLoading ? 0.7 : 1,
@@ -273,7 +273,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
   ) : (
     <CatyInsightCard title="Board health" onRefresh={() => generateInsight({ force: true })} onDismiss={() => setInsight(null)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)') }}>
+            <p style={{ margin: 0, font: 'var(--ds-font-body-small)', fontWeight: 400, color: token('color.text', 'var(--ds-text)') }}>
               {insight.summary}
             </p>
 
@@ -285,15 +285,16 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
                 {/* Column header row */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: col.topBlocker ? 4 : 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)') }}>
+                    <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
                       {col.column}
                     </span>
-                    <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
+                    <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                       {col.count} {col.count === 1 ? 'item' : 'items'}
                     </span>
                   </div>
                   <span style={{
-                    font: `600 12px/16px var(--ds-font-family-body, "Atlassian Sans")`,
+                    font: 'var(--ds-font-body-small)',
+                    fontWeight: 600,
                     color: col.avgDaysSinceUpdate > 30
                       ? token('color.text.danger', 'var(--ds-text-danger)')
                       : col.avgDaysSinceUpdate > 14
@@ -313,24 +314,25 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
                       onClick={() => useGlobalSearchStore.getState().openDetail({ id: col.topBlocker!.issueKey })}
                     >
                       <JiraIssueTypeIcon type={col.topBlocker.issueType} size={14} />
-                      <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', 'var(--ds-link)'), flexShrink: 0 }}>
+                      <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 500, fontFamily: 'var(--ds-font-family-code, monospace)', color: token('color.link', 'var(--ds-link)'), flexShrink: 0 }}>
                         {col.topBlocker.issueKey}
                       </span>
-                      <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 400, color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {col.topBlocker.summary}
                       </span>
                     </div>
                     {/* Line 2: project + reporter avatar + days */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingInlineStart: 24, paddingBlockStart: 0 }}>
-                      <span style={{ font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
+                      <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 500, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                         {col.topBlocker.project}
                       </span>
                       <CatalystAvatar size="xsmall" src={resolveAvatarUrl(col.topBlocker.reporter) || undefined} name={col.topBlocker.reporter} />
-                      <span style={{ font: `400 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
+                      <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                         {col.topBlocker.reporter}
                       </span>
                       <span style={{
-                        font: `600 11px/14px var(--ds-font-family-body, "Atlassian Sans")`,
+                        font: 'var(--ds-font-body-small)',
+                        fontWeight: 600,
                         color: col.topBlocker.daysSinceUpdate > 60
                           ? token('color.text.danger', 'var(--ds-text-danger)')
                           : col.topBlocker.daysSinceUpdate > 21
@@ -345,7 +347,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
 
                 {/* AI action */}
                 {col.action && (
-                  <p style={{ margin: '4px 0 0', font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', 'var(--ds-icon)') }}>
+                  <p style={{ margin: '4px 0 0', font: 'var(--ds-font-body-small)', fontWeight: 400, color: token('color.text.subtle', 'var(--ds-icon)') }}>
                     {col.action}
                   </p>
                 )}

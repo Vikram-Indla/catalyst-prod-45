@@ -257,30 +257,21 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
             <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4, color: token('color.text') }}>
               Description <span style={{ fontWeight: 400, color: token('color.text.subtle') }}>(optional)</span>
             </label>
-            <div
-              style={{
-                border: `1px solid ${token('color.border.input')}`,
-                borderRadius: 4,
-                background: token('color.background.input'),
-                overflow: 'hidden',
+            <RichTextEditor
+              initialAdf={null}
+              hideActionButtons
+              placeholder="What this product line covers"
+              minHeight={100}
+              onSave={() => {}}
+              onCancel={() => {}}
+              onChange={(tiptapJson) => {
+                try {
+                  setDescriptionAdf(tiptapToAdf(tiptapJson));
+                } catch {
+                  /* noop — keep last good ADF */
+                }
               }}
-            >
-              <RichTextEditor
-                initialAdf={null}
-                hideActionButtons
-                placeholder="What this product line covers"
-                minHeight={100}
-                onSave={() => {}}
-                onCancel={() => {}}
-                onChange={(tiptapJson) => {
-                  try {
-                    setDescriptionAdf(tiptapToAdf(tiptapJson));
-                  } catch {
-                    /* noop — keep last good ADF */
-                  }
-                }}
-              />
-            </div>
+            />
           </div>
 
           {/* Icon */}

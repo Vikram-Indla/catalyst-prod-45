@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -1138,6 +1139,7 @@ function AddCasesModal({
                         options={versionOptions}
                         onChange={opt => setLockedVersions(prev => ({ ...prev, [c.id]: opt?.value ?? null }))}
                         menuPortalTarget={document.body}
+                        styles={portalSelectStyles}
                       />
                     </div>
                   )}

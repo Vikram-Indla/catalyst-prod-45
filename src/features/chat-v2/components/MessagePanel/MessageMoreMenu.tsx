@@ -212,13 +212,13 @@ const Item = React.forwardRef<HTMLButtonElement, {
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => {
         if (!active) {
           (e.currentTarget as HTMLElement).style.background = danger
-            ? 'rgba(224,30,90,0.12)' // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+            ? 'var(--ds-background-danger)'
             : 'var(--cv2-bg-row-hover)';
         }
       }}
@@ -231,12 +231,12 @@ const Item = React.forwardRef<HTMLButtonElement, {
       </span>
       <span style={{ flex: 1 }}>{label}</span>
       {shortcut && (
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
+        <span style={{ font: 'var(--ds-font-body-small)', color: active ? 'var(--ds-text-inverse)' : 'var(--cv2-text-muted)' }}>
           {shortcut}
         </span>
       )}
       {trailingArrow && (
-        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-surface)' : 'var(--cv2-text-subtle)' }} />
+        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-text-inverse)' : 'var(--cv2-text-subtle)' }} />
       )}
     </button>
   );

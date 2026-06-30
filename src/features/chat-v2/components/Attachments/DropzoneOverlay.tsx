@@ -17,7 +17,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
         alignItems: 'center',
         justifyContent: 'center',
         gap: 16,
-        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.6))',
+        background: 'var(--ds-blanket)',
         backdropFilter: 'blur(2px)',
         WebkitBackdropFilter: 'blur(2px)',
         zIndex: 50,
@@ -28,22 +28,22 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
     >
       <DropzoneArt />
       <div style={{ textAlign: 'center', padding: '0 24px' }}>
-        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface)' }}>
+        <div style={{ font: 'var(--ds-font-heading-large)', fontWeight: 700, marginBottom: 8, color: 'var(--ds-text-inverse)' }}>
           Upload to {workspaceTitle}
         </div>
         {recipientName && (
-          <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-surface, rgba(255,255,255,0.7))' }}>
+          <div style={{ font: 'var(--ds-font-body)', color: 'var(--ds-text-inverse)' }}>
             Hold{' '}
             <kbd
               style={{
                 display: 'inline-block',
                 padding: '0px 6px',
                 margin: '0 2px',
-                background: 'var(--ds-surface, rgba(255,255,255,0.12))',
-                border: '1px solid var(--ds-surface, rgba(255,255,255,0.2))',
+                background: 'var(--ds-background-neutral)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 3,
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 'var(--ds-font-size-200)',
+                font: 'var(--ds-font-body-small)',
                 fontWeight: 600,
                 color: 'var(--ds-text-inverse)',
               }}
@@ -72,7 +72,7 @@ function DropzoneArt() {
           background: '#7E57C2', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           borderRadius: 10,
           transform: 'rotate(-10deg)',
-          boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(0,0,0,0.35))',
+          boxShadow: 'var(--ds-shadow-overlay)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -94,7 +94,7 @@ function DropzoneArt() {
           background: '#4FC3F7', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           borderRadius: 10,
           transform: 'rotate(8deg)',
-          boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(0,0,0,0.35))',
+          boxShadow: 'var(--ds-shadow-overlay)',
         }}
       />
       {/* Front green image card */}
@@ -108,7 +108,7 @@ function DropzoneArt() {
           height: 84,
           background: 'var(--ds-surface)',
           borderRadius: 10,
-          boxShadow: '0 10px 28px var(--ds-shadow-raised, rgba(0,0,0,0.45))',
+          boxShadow: 'var(--ds-shadow-overlay)',
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'flex-end',
@@ -131,8 +131,8 @@ function DropzoneArt() {
               width: 14,
               height: 14,
               borderRadius: '50%',
-              background: '#FFD54F', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-              boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
+              background: '#FFD54F', // ads-scanner:ignore-line — illustration art (sun on photo card), no ADS token equivalent (probed 2026-06-29)
+              boxShadow: 'var(--ds-shadow-overlay)',
             }}
           />
         </div>

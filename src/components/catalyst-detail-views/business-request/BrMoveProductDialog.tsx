@@ -7,6 +7,7 @@
  * C10 from the Product branch gap report.
  */
 import React, { useState } from 'react';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
@@ -106,7 +107,7 @@ export function BrMoveProductDialog({
           isSearchable
           placeholder="Search products…"
           menuPortalTarget={document.body}
-          styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+          styles={portalSelectStyles}
         />
       </ModalBody>
       <ModalFooter>

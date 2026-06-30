@@ -135,10 +135,10 @@ export function AddPeopleModal({
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+            <div style={{ font: 'var(--ds-font-heading-large)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
               Add people to <span style={{ color: 'var(--cv2-text-subtle)' }}>#</span>{channelTitle}
             </div>
-            <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-subtle)' }}>
+            <div style={{ marginTop: 4, font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-subtle)' }}>
               You can also add email addresses of people who aren't members of{' '}
               <strong style={{ color: 'var(--cv2-text-strong)' }}>{workspaceName}</strong>
             </div>
@@ -185,7 +185,7 @@ export function AddPeopleModal({
               border: 'none',
               outline: 'none',
               fontFamily: 'inherit',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body)',
               padding: '4px 4px',
             }}
           />
@@ -231,7 +231,7 @@ function Chip({ person, onRemove }: { person: PeopleHit; onRemove: () => void })
         padding: '4px 6px 4px 4px',
         background: 'var(--cv2-bg-row-selected)',
         borderRadius: 6,
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 700,
         color: 'var(--cv2-text-strong)',
       }}
@@ -280,7 +280,7 @@ function PersonRow({ hit, onPick }: { hit: PeopleHit; onPick: () => void }) {
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
       }}
     >
       <Avatar name={hit.name} size={28} />
@@ -306,7 +306,7 @@ function Avatar({ name, size }: { name: string; size: number }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: 'var(--ds-font-size-100)',
+        font: 'var(--ds-font-body-small)',
         fontWeight: 700,
       }}
     >
@@ -324,12 +324,12 @@ function PrimaryBtn({ onClick, disabled, children }: { onClick: () => void; disa
       style={{
         height: 36,
         padding: '0 18px',
-        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 'var(--ds-font-size-400)',
+        font: 'var(--ds-font-body)',
         fontWeight: 700,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}

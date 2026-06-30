@@ -3,6 +3,7 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
+import { QuarterSelect } from '@/components/shared/QuarterSelect';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { productMilestoneService } from '@/services/product-milestone.service';
 import type { ProductMilestone } from '@/types/product-milestone';
@@ -140,10 +141,12 @@ export function MilestoneCreateModal({
 
               <div>
                 <label style={labelStyle}>Quarter</label>
-                <Textfield
-                  value={quarter}
-                  onChange={(e) => setQuarter(e.currentTarget.value)}
-                  placeholder="e.g. Q3 2026"
+                <QuarterSelect
+                  inputId="milestone-quarter"
+                  value={quarter || null}
+                  onChange={(v) => setQuarter(v ?? '')}
+                  placeholder="Select quarter"
+                  defaultCurrentQuarter={!isEdit}
                 />
               </div>
 

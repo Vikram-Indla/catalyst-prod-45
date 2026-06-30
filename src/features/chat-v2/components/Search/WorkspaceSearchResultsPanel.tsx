@@ -49,8 +49,8 @@ export function WorkspaceSearchResultsPanel({
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-500)',
-              fontWeight: 800,
+              font: 'var(--ds-font-body-large)',
+              fontWeight: 700,
               color: 'var(--cv2-text-strong)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -62,7 +62,7 @@ export function WorkspaceSearchResultsPanel({
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-200)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-muted)',
             }}
           >
@@ -119,7 +119,7 @@ export function WorkspaceSearchResultsPanel({
                     textAlign: 'left',
                     color: 'inherit',
                     fontFamily: 'var(--cv2-font)',
-                    fontSize: 'var(--ds-font-size-400)',
+                    font: 'var(--ds-font-body)',
                   }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';
@@ -144,7 +144,7 @@ export function WorkspaceSearchResultsPanel({
                     >
                       <span
                         style={{
-                          fontSize: 'var(--ds-font-size-300)',
+                          font: 'var(--ds-font-body-small)',
                           fontWeight: 700,
                           color: 'var(--cv2-text-strong)',
                           whiteSpace: 'nowrap',
@@ -156,7 +156,7 @@ export function WorkspaceSearchResultsPanel({
                       </span>
                       <span
                         style={{
-                          fontSize: 'var(--ds-font-size-100)',
+                          font: 'var(--ds-font-body-small)',
                           color: 'var(--cv2-text-muted)',
                           whiteSpace: 'nowrap',
                           flex: '0 0 auto',
@@ -167,7 +167,7 @@ export function WorkspaceSearchResultsPanel({
                     </div>
                     <div
                       style={{
-                        fontSize: 'var(--ds-font-size-100)',
+                        font: 'var(--ds-font-body-small)',
                         color: 'var(--cv2-text-muted)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -195,7 +195,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
       <p
         style={{
           margin: '4px 0 0',
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           color: 'var(--cv2-text)',
           display: '-webkit-box',
           WebkitLineClamp: 2,
@@ -215,7 +215,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
     <p
       style={{
         margin: '4px 0 0',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         color: 'var(--cv2-text)',
         display: '-webkit-box',
         WebkitLineClamp: 2,
@@ -226,7 +226,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
       {before}
       <mark
         style={{
-          background: 'rgba(255, 196, 0, 0.35)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+          background: 'var(--ds-background-warning)',
           color: 'inherit',
           padding: 0,
           borderRadius: 2,
@@ -246,7 +246,7 @@ function Empty({ message }: { message: string }) {
         padding: '40px 20px',
         textAlign: 'center',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-300)',
+        font: 'var(--ds-font-body-small)',
         color: 'var(--cv2-text-muted)',
       }}
     >

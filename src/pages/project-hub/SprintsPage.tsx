@@ -17,6 +17,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import AkFilterIcon from '@atlaskit/icon/core/filter';
+import AkEyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
+import AkCollapseVerticalIcon from '@atlaskit/icon/core/collapse-vertical';
 import { ToolbarMenuButton } from '@/components/shared/JiraTable';
 import { useQuery } from '@tanstack/react-query';
 import { catalystFlag } from '@/lib/catalystFlag';
@@ -258,15 +262,15 @@ export function SprintsPage() {
       groups={[
         {
           items: [
-            { id: 'toggle-released',   label: isStatusVisible('released')   ? 'Hide released'   : 'Show released',   onClick: () => toggleStatusVisibility('released') },
-            { id: 'toggle-unreleased', label: isStatusVisible('unreleased') ? 'Hide unreleased' : 'Show unreleased', onClick: () => toggleStatusVisibility('unreleased') },
-            { id: 'toggle-archived',   label: isStatusVisible('archived')   ? 'Hide archived'   : 'Show archived',   onClick: () => toggleStatusVisibility('archived') },
+            { id: 'toggle-released',   icon: isStatusVisible('released')   ? <AkEyeOpenStrikethroughIcon label="" size="small" /> : <AkEyeOpenIcon label="" size="small" />, label: isStatusVisible('released')   ? 'Hide released'   : 'Show released',   onClick: () => toggleStatusVisibility('released') },
+            { id: 'toggle-unreleased', icon: isStatusVisible('unreleased') ? <AkEyeOpenStrikethroughIcon label="" size="small" /> : <AkEyeOpenIcon label="" size="small" />, label: isStatusVisible('unreleased') ? 'Hide unreleased' : 'Show unreleased', onClick: () => toggleStatusVisibility('unreleased') },
+            { id: 'toggle-archived',   icon: isStatusVisible('archived')   ? <AkEyeOpenStrikethroughIcon label="" size="small" /> : <AkEyeOpenIcon label="" size="small" />, label: isStatusVisible('archived')   ? 'Hide archived'   : 'Show archived',   onClick: () => toggleStatusVisibility('archived') },
           ],
         },
         {
           items: [
-            { id: 'expand-all',   label: 'Expand all groups',   onClick: () => setCollapsedGroups(new Set()) },
-            { id: 'collapse-all', label: 'Collapse all groups', onClick: () => setCollapsedGroups(grouped ? new Set(grouped.map((g) => g.id)) : new Set()) },
+            { id: 'expand-all',   icon: <AkExpandVerticalIcon label="" size="small" />,   label: 'Expand all groups',   onClick: () => setCollapsedGroups(new Set()) },
+            { id: 'collapse-all', icon: <AkCollapseVerticalIcon label="" size="small" />, label: 'Collapse all groups', onClick: () => setCollapsedGroups(grouped ? new Set(grouped.map((g) => g.id)) : new Set()) },
           ],
         },
         {

@@ -205,7 +205,7 @@ function DropdownShell({
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 4,
-        boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
+        boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
         maxHeight: 'calc(100vh - 200px)',
         overflowY: 'auto',
         fontFamily: 'var(--ds-font-family-sans, ui-sans-serif, system-ui, sans-serif)',

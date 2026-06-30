@@ -13,7 +13,9 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { catalystToast } from '@/lib/catalystToast';
-import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
+import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 import { UserPicker } from '@/components/ui/user-picker';
 import {
   Command,
@@ -91,7 +93,7 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
   const queryClient = useQueryClient();
 
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [descriptionAdf, setDescriptionAdf] = useState<AdfDoc | null>(null);
   const [status, setStatus] = useState('');
   const [themeId, setThemeId] = useState<string | null>(null);
   const [linkedBusinessRequestId, setLinkedBusinessRequestId] = useState<string | null>(null);
@@ -119,7 +121,11 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
   useEffect(() => {
     if (epic) {
       setName(epic.name || '');
-      setDescription(epic.description || '');
+      try {
+        setDescriptionAdf(epic.description ? JSON.parse(epic.description) : null);
+      } catch {
+        setDescriptionAdf(null);
+      }
       setStatus(epic.status || 'proposed');
       setThemeId((epic as any).theme_id || null);
       setLinkedBusinessRequestId((epic as any).linked_business_request_id || null);
@@ -162,7 +168,7 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
         .from('epics')
         .update({
           name: name.trim(),
-          description: description.trim() || null,
+          description: descriptionAdf ? JSON.stringify(descriptionAdf) : null,
           status,
           theme_id: themeId,
           linked_business_request_id: linkedBusinessRequestId,
@@ -341,9 +347,16 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
 
             {/* Description */}
             <FormSection title="Description">
-              <div className="rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--dialog-input-bg)', border: '1px solid var(--dialog-input-border)' }}>
-                <RichTextEditor value={description} onChange={setDescription} placeholder="Enter epic description..." minHeight="120px" />
-              </div>
+              <RichTextEditor
+                key={epicId}
+                initialAdf={descriptionAdf}
+                hideActionButtons
+                onSave={() => {}}
+                onCancel={() => {}}
+                onChange={(tiptapDoc) => setDescriptionAdf(tiptapToAdf(tiptapDoc))}
+                placeholder="Enter epic description..."
+                minHeight={120}
+              />
             </FormSection>
 
             <div className="h-4" />

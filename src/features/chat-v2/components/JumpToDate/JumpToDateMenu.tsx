@@ -74,7 +74,7 @@ export function JumpToDateMenu({
 
 function Header({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{children}</div>
+    <div style={{ padding: '4px 14px', font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>{children}</div>
   );
 }
 
@@ -89,7 +89,7 @@ function Item({ onClick, children }: { onClick: () => void; children: React.Reac
         padding: '8px 14px',
         background: 'transparent', color: 'var(--cv2-text)',
         border: 'none', cursor: 'pointer',
-        fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)',
+        fontFamily: 'inherit', font: 'var(--ds-font-body)',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}

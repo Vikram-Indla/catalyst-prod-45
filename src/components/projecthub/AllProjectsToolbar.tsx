@@ -13,6 +13,7 @@ import type { ProjectFilters } from '@/types/projecthub';
 
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import Textfield from '@atlaskit/textfield';
 // Block A rule 3 (2026-05-01): swap @atlaskit/badge → @atlaskit/lozenge for
 // tab-count chips. Lozenge is the canonical ADS primitive for state/scalar
@@ -135,7 +136,7 @@ export function AllProjectsToolbar({
             spacing="compact"
             aria-label="Filter by status"
             menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-            styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            styles={portalSelectStyles}
             components={{
               SingleValue: (props: any) => (
                 <div

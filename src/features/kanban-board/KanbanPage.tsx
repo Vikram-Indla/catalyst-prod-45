@@ -48,6 +48,7 @@ interface KanbanPageProps {
 export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPageProps = {}) {
   const params = useParams<{ key: string; boardId?: string }>();
   const key = keyOverride ?? params.key;
+  const kanbanFilterContext = mode === 'test' ? 'testhub' : mode === 'incident' ? 'incident' : mode === 'tasks' ? 'tasks' : mode === 'product' ? 'product' : 'project';
   const boardId = params.boardId;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -326,6 +327,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
         boardInsightPanelTarget={boardInsightPanelEl}
+        filterContext={kanbanFilterContext}
       />
 
       {/* 2026-06-15: Portal target for the Board Health result panel.

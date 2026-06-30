@@ -300,6 +300,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
         onFilterOpenChange={setFilterOpen}
         selectedAssignees={toolbarAssignees}
         onAssigneesChange={setToolbarAssignees}
+        filterContext="business-request"
         onSaveFilter={
           (isCreateMode || !!urlFilterId) ? () => setSaveModalOpen(true) : undefined
         }

@@ -7,6 +7,7 @@ import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import Textfield from '@atlaskit/textfield';
 import { useBoards } from '@/hooks/useBoards';
 import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
@@ -490,7 +491,7 @@ function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
           placeholder="Select destination project…"
           isSearchable
           menuPortalTarget={document.body}
-          styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+          styles={portalSelectStyles}
         />
       </ModalBody>
       <ModalFooter>
@@ -545,7 +546,7 @@ function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
           placeholder="Select project…"
           isSearchable
           menuPortalTarget={document.body}
-          styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+          styles={portalSelectStyles}
         />
       </ModalBody>
       <ModalFooter>

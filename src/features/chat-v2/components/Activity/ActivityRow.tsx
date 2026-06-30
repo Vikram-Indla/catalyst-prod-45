@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react';
+import Badge from '@atlaskit/badge';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { DmsIcon, MentionIcon, ReplyArrowIcon, ThreadInIcon } from '../shared/Icon';
 import { formatActivityTime } from '../../lib/formatTimestamp';
@@ -148,8 +149,8 @@ export function ActivityRow({
         padding: '12px 14px',
         borderRadius: 8,
         background: 'transparent',
-        border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid var(--cv2-border)',
-        boxShadow: isSelected ? '0 4px 14px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.28))' : 'none',
+        border: isSelected ? '1px solid var(--ds-background-discovery-bold)' : '1px solid var(--cv2-border)',
+        boxShadow: isSelected ? 'var(--ds-shadow-overlay)' : 'none',
         cursor: 'pointer',
         outline: 'none',
         WebkitTapHighlightColor: 'transparent',
@@ -174,8 +175,8 @@ export function ActivityRow({
             <span
               style={{
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 'var(--ds-font-size-400)',
-                fontWeight: 700,
+                font: 'var(--ds-font-body)',
+                fontWeight: 600,
                 color: 'var(--cv2-text-strong)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -201,19 +202,19 @@ export function ActivityRow({
               gap: 4,
               marginTop: 0,
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-200)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text-subtle)',
               cursor: isThread ? 'pointer' : 'default',
             }}
           >
             {subline.icon}
-            <span style={{ fontWeight: 600 }}>{subline.text}</span>
+            <span style={{ fontWeight: 500 }}>{subline.text}</span>
           </div>
           <p
             style={{
               margin: '4px 0 0',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-400)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text)',
               lineHeight: 1.4,
               display: '-webkit-box',
@@ -262,7 +263,7 @@ function RowWithCheckbox({
           alignItems: 'center',
           justifyContent: 'center',
           background: 'transparent',
-          color: isChecked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-text-subtle)',
+          color: isChecked ? 'var(--cv2-accent)' : 'var(--cv2-text-subtle)',
           border: 'none',
           cursor: 'pointer',
         }}
@@ -270,7 +271,7 @@ function RowWithCheckbox({
         {isChecked ? (
           <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true">
             <rect x="1" y="1" width="16" height="16" rx="2" fill="currentColor" />
-            <path d="M4.6 9.1l3 3 5.4-5.6" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4.6 9.1l3 3 5.4-5.6" fill="none" stroke="var(--ds-text-inverse)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : (
           <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true">
@@ -322,15 +323,15 @@ function DenseRow({
         background: 'transparent',
         // Selection cue: purple outline + soft shadow. No background change so
         // layout doesn't shift (preserves hover hit-testing on the row).
-        border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid transparent',
+        border: isSelected ? '1px solid var(--ds-background-discovery-bold)' : '1px solid transparent',
         // Divider lives on the row itself so the wrapping group container can
         // be borderless inside. Declared AFTER `border` so the shorthand does
         // not stomp it back to transparent.
         borderBottom: isSelected
-          ? '1px solid var(--ds-background-discovery-bold, #7C3AED)'
+          ? '1px solid var(--ds-background-discovery-bold)'
           : (isLastInGroup ? '1px solid transparent' : '1px solid var(--cv2-border)'),
         borderRadius: isSelected ? 8 : 0,
-        boxShadow: isSelected ? '0 4px 14px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.28))' : 'none',
+        boxShadow: isSelected ? 'var(--ds-shadow-overlay)' : 'none',
         cursor: 'pointer',
         outline: 'none',
         WebkitTapHighlightColor: 'transparent',
@@ -350,14 +351,14 @@ function DenseRow({
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--cv2-text-subtle)' }}
               >
                 <ThreadInIcon size={12} />
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
+                <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 500 }}>
                   Thread in {item.conversationTitle}
                 </span>
               </span>
             ) : (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--cv2-text-subtle)' }}>
                 <DmsIcon size={12} />
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
+                <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 500 }}>
                   {item.conversationKind === 'dm' || item.conversationKind === 'group_dm' ? 'DM' : item.conversationTitle}
                 </span>
               </span>
@@ -374,7 +375,7 @@ function DenseRow({
             style={{
               margin: '4px 0 0',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-300)',
+              font: 'var(--ds-font-body-small)',
               color: 'var(--cv2-text)',
               lineHeight: 1.35,
               display: '-webkit-box',
@@ -425,8 +426,8 @@ function SingleLineRow({
         padding: '12px 18px',
         borderRadius: 8,
         background: 'transparent',
-        border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid var(--cv2-border)',
-        boxShadow: isSelected ? '0 4px 14px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.28))' : 'none',
+        border: isSelected ? '1px solid var(--ds-background-discovery-bold)' : '1px solid var(--cv2-border)',
+        boxShadow: isSelected ? 'var(--ds-shadow-overlay)' : 'none',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
@@ -444,8 +445,8 @@ function SingleLineRow({
       <span
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-400)',
-          fontWeight: 700,
+          font: 'var(--ds-font-body)',
+          fontWeight: 600,
           color: 'var(--cv2-text-strong)',
           whiteSpace: 'nowrap',
           flex: '0 0 auto',
@@ -463,9 +464,9 @@ function SingleLineRow({
           alignItems: 'center',
           gap: 4,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-300)',
+          font: 'var(--ds-font-body-small)',
           color: 'var(--cv2-text-subtle)',
-          fontWeight: 600,
+          fontWeight: 500,
           flex: '0 0 auto',
           maxWidth: 260,
           whiteSpace: 'nowrap',
@@ -487,7 +488,7 @@ function SingleLineRow({
           flex: 1,
           minWidth: 0,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           color: 'var(--cv2-text)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -524,7 +525,7 @@ function RightInfo({
       className="cv2-right-info"
       style={{
         fontFamily: 'var(--cv2-font)',
-        fontSize: 'var(--ds-font-size-200)',
+        font: 'var(--ds-font-body-small)',
         color: 'var(--cv2-text-muted)',
         whiteSpace: 'nowrap',
       }}
@@ -545,23 +546,8 @@ function RightInfo({
         />
       </span>
       {item.isUnread && (
-        <span
-          aria-label="Unread"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: 16,
-            height: 16,
-            padding: '0 4px',
-            borderRadius: 8,
-            background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text)',
-            fontSize: 11,
-            fontWeight: 700,
-          }}
-        >
-          1
+        <span aria-label="Unread">
+          <Badge appearance="important">1</Badge>
         </span>
       )}
     </span>

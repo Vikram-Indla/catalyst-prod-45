@@ -106,7 +106,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(8, 9, 12, 0.55)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+        background: 'var(--ds-blanket)',
         zIndex: 10000,
         display: 'flex',
         alignItems: 'center',
@@ -123,7 +123,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
           background: 'var(--cv2-bg-panel)',
           color: 'var(--cv2-text)',
           borderRadius: 12,
-          boxShadow: '0 24px 60px var(--ds-shadow-raised, rgba(0,0,0,0.45))',
+          boxShadow: 'var(--ds-shadow-overlay)',
           fontFamily: 'var(--cv2-font)',
           display: 'flex',
           flexDirection: 'column',
@@ -140,7 +140,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             padding: '16px 24px 16px',
           }}
         >
-          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ font: 'var(--ds-font-heading-large)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             Summarize custom date range
           </div>
           <button
@@ -255,8 +255,8 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             style={{
               background: 'transparent',
               border: 'none',
-              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link, #0C66E4)',
-              fontSize: 'var(--ds-font-size-400)',
+              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link)',
+              font: 'var(--ds-font-body)',
               fontWeight: 600,
               cursor: !start && !end ? 'default' : 'pointer',
             }}
@@ -273,7 +273,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
                 border: '1px solid var(--cv2-border-strong)',
                 borderRadius: 6,
                 padding: '8px 18px',
-                fontSize: 'var(--ds-font-size-400)',
+                font: 'var(--ds-font-body)',
                 fontWeight: 700,
                 cursor: 'pointer',
               }}
@@ -287,12 +287,12 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
                 if (start && end) onSubmit({ start: toISO(start), end: toISO(end) });
               }}
               style={{
-                background: canSubmit ? '#007A5A' : 'var(--ds-surface, rgba(255,255,255,0.08))',
-                color: canSubmit ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
+                background: canSubmit ? 'var(--ds-background-success-bold)' : 'var(--ds-background-neutral)',
+                color: canSubmit ? 'var(--ds-text-inverse)' : 'var(--cv2-text-muted)',
                 border: 'none',
                 borderRadius: 6,
                 padding: '8px 18px',
-                fontSize: 'var(--ds-font-size-400)',
+                font: 'var(--ds-font-body)',
                 fontWeight: 700,
                 cursor: canSubmit ? 'pointer' : 'default',
               }}
@@ -332,7 +332,7 @@ function DateInput({
         gap: 8,
         height: 40,
         padding: '0 12px',
-        border: `1px solid ${showRing ? 'var(--ds-link, #0C66E4)' : 'var(--cv2-border-strong)'}`,
+        border: `1px solid ${showRing ? 'var(--ds-link)' : 'var(--cv2-border-strong)'}`,
         borderRadius: 6,
         background: 'transparent',
       }}
@@ -354,7 +354,7 @@ function DateInput({
           border: 'none',
           outline: 'none',
           color: 'var(--cv2-text)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           fontFamily: 'var(--cv2-font)',
         }}
       />
@@ -421,7 +421,7 @@ function CalendarMonth({
       <div
         style={{
           textAlign: 'center',
-          fontSize: 'var(--ds-font-size-500)',
+          font: 'var(--ds-font-body-large)',
           fontWeight: 700,
           padding: '4px 0 10px',
           color: 'var(--cv2-text-strong)',
@@ -436,7 +436,7 @@ function CalendarMonth({
           gap: 0,
           paddingBottom: 4,
           color: 'var(--cv2-text-muted)',
-          fontSize: 'var(--ds-font-size-200)',
+          font: 'var(--ds-font-body-small)',
           fontWeight: 600,
           textAlign: 'center',
         }}
@@ -532,7 +532,7 @@ function DayCell({
 
   // Cell-filling background for range / hover-range cells.
   let cellFill = 'transparent';
-  if (isInRange && !isEndpoint) cellFill = 'rgba(29, 155, 209, 0.18)'; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  if (isInRange && !isEndpoint) cellFill = 'var(--ds-background-selected)';
 
   // Inner button: round endpoints (covers full cell when selected),
   // circle for today indicator, otherwise plain text.
@@ -542,13 +542,13 @@ function DayCell({
   let buttonRadius: string | number = 6;
 
   if (isEndpoint) {
-    buttonBackground = 'var(--ds-link, #0065FF)';
-    buttonColor = 'var(--ds-surface, #FFFFFF)';
-    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
+    buttonBackground = 'var(--ds-link)';
+    buttonColor = 'var(--ds-text-inverse)';
+    buttonBorder = '2px solid var(--ds-link)';
     buttonRadius = 6;
   } else if (isToday) {
-    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
-    buttonColor = 'var(--ds-link, #0C66E4)';
+    buttonBorder = '2px solid var(--ds-link)';
+    buttonColor = 'var(--ds-link)';
     buttonRadius = '50%';
   } else if (isInRange) {
     buttonColor = 'var(--cv2-text-strong)';
@@ -580,7 +580,7 @@ function DayCell({
           color: buttonColor,
           border: buttonBorder,
           borderRadius: buttonRadius,
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
           fontWeight: isEndpoint || isToday ? 700 : 500,
           cursor: isFuture ? 'not-allowed' : 'pointer',
           opacity: isFuture ? 0.45 : 1,

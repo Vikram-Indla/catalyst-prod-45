@@ -21,7 +21,7 @@ export function ScheduledTab({ conversationById, onSelectScheduled }: ScheduledT
           textAlign: 'center',
           color: 'var(--cv2-text-muted)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 'var(--ds-font-size-400)',
+          font: 'var(--ds-font-body)',
         }}
       >
         No messages scheduled.

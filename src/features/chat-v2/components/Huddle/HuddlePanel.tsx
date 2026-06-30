@@ -39,7 +39,7 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
         borderLeft: '3px solid var(--ds-border-success)',
       }}
     >
-      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>
+      <span style={{ font: 'var(--ds-font-body-small)', fontWeight: 600, color: 'var(--ds-text)' }}>
         Huddle
       </span>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -59,7 +59,7 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
             display: 'inline-flex', alignItems: 'center', gap: 4,
             border: '1px solid var(--ds-border-success)', cursor: 'pointer',
             background: 'var(--ds-background-success)', color: 'var(--ds-text)',
-            borderRadius: 999, padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+            borderRadius: 999, padding: '4px 12px', font: 'var(--ds-font-body-small)', fontWeight: 600,
           }}
         >
           <ScreenGlyph /> {active?.conversationName} is sharing their screen · View
@@ -104,7 +104,7 @@ function btnStyle(color = 'var(--ds-text)'): React.CSSProperties {
     background: 'var(--ds-surface)',
     borderRadius: 4,
     padding: '4px 8px',
-    fontSize: 'var(--ds-font-size-300)',
+    font: 'var(--ds-font-body-small)',
     cursor: 'pointer',
     color,
   };

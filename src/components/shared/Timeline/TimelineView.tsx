@@ -159,6 +159,7 @@ export default function TimelineView(props: TimelineViewProps) {
     detailEntityKind,
     buildDependenciesRoute,
     locatedKey,
+    filterContext,
   } = props;
 
   const navigate = useNavigate();
@@ -1289,6 +1290,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   onChange={handleCanonicalChange}
                   scopeType="timeline"
                   scopeKey={hubKey}
+                  filterContext={filterContext}
                   statusOptions={canonicalStatusOptions}
                   assigneeOptions={canonicalAssigneeOptions}
                   workTypeOptions={canonicalWorkTypeOptions}
@@ -2314,7 +2316,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       border: "none",
                       padding: "0 2px",
                       cursor: "pointer",
-                      fontSize: 'var(--ds-font-size-400)',
+                      font: 'var(--ds-font-body)',
                       fontWeight: 500,
                       color: "var(--ds-text-subtle)",
                       fontFamily: "var(--ds-font-family-body)",
@@ -2366,11 +2368,11 @@ export default function TimelineView(props: TimelineViewProps) {
                         gap: 4,
                         height: 26,
                         padding: "4px 10px",
-                        border: "1px solid rgba(11,18,14,0.14)", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+                        border: "1px solid var(--ds-border)",
                         borderRadius: 3,
                         background: "transparent",
                         cursor: "pointer",
-                        fontSize: 'var(--ds-font-size-400)',
+                        font: 'var(--ds-font-body)',
                         fontWeight: 500,
                         color: "var(--ds-text-subtle)",
                         fontFamily: "var(--ds-font-family-body)",
@@ -2874,8 +2876,8 @@ export default function TimelineView(props: TimelineViewProps) {
                     >
                       <span
                         style={{
-                          fontSize: 'var(--ds-font-size-200)',
-                          fontWeight: 600,
+                          font: 'var(--ds-font-body)',
+                          fontWeight: 500,
                           color: "var(--ds-text-subtle)",
                           whiteSpace: "nowrap",
                         }}
@@ -2904,7 +2906,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     >
                       <span
                         style={{
-                          fontSize: 'var(--ds-font-size-100)',
+                          font: 'var(--ds-font-body-small)',
                           fontWeight: 500,
                           color: "var(--ds-text-subtle)",
                           whiteSpace: "nowrap",

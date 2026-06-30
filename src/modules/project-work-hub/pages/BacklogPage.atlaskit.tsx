@@ -55,9 +55,8 @@ import AkCloseIcon from '@atlaskit/icon/core/close';
 import AkMaximizeIcon from '@atlaskit/icon/core/maximize';
 import AkMinimizeIcon from '@atlaskit/icon/core/minimize';
 import AkPersonAvatarIcon from '@atlaskit/icon/core/person-avatar';
-import AkFilterIcon from '@atlaskit/icon/core/filter';
-import AkRefreshIcon from '@atlaskit/icon/core/refresh';
-import AkDownloadIcon from '@atlaskit/icon/core/download';
+import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
 import AkCommentIcon from '@atlaskit/icon/core/comment';
 import AkClockIcon from '@atlaskit/icon/core/clock';
 import AkArrowUpIcon from '@atlaskit/icon/core/arrow-up';
@@ -80,6 +79,7 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { Fieldset, Label } from '@atlaskit/form';
 
 import {
@@ -720,7 +720,7 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems, filterContext = 'project' }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
   /* 2026-06-17: when set, BacklogPage opens the right side-panel for
      the matching row on first render. Used by the canonical
      "Open in full page" button on TaskCatalystView so the landing URL
@@ -760,6 +760,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
      release. Used by ReleaseWorkNavigatorPage when the fix-version
      chip is cleared. */
   allItems?: boolean;
+  /** Passed to CanonicalFilter — controls field visibility and work type set. Defaults to 'project'. */
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }) {
   // Optional adapter — when present, BacklogPage reads rows + status vocab
   // from the adapter (e.g. business_requests for product hub) and routes all
@@ -2158,7 +2160,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     return keys.map((k) => {
       const sample = buckets.get(k)![0];
       let labelNode: React.ReactNode = null;
-      if (groupBy === 'status') {
+      if (groupBy === 'type') {
+        const t = sample.type || '';
+        const iconType =
+          t === 'epic' ? 'Epic' :
+          t === 'feature' ? 'Feature' :
+          t === 'story' ? 'Story' :
+          t === 'bug' ? 'QA Bug' :
+          t === 'incident' ? 'Production Incident' : k;
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <JiraIssueTypeIcon type={iconType} size={14} />
+            <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle)' }}>{k}</span>
+          </span>
+        );
+      } else if (groupBy === 'status') {
         // 2026-05-08: use StatusPill (exact Jira hex colors) instead of Atlaskit
         // Lozenge — Atlaskit's token resolution in Catalyst's theme differs from
         // Jira's rendering (e.g. success → rgb(239,255,214) vs Jira's rgb(179,223,114)).
@@ -2182,17 +2198,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const p = (sample.priority || '').toLowerCase();
         const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
           highest:  { level: 4, color: 'var(--ds-icon-accent-red)' }, critical: { level: 4, color: 'var(--ds-icon-accent-red)' },
-          high:     { level: 3, color: 'var(--ds-text-warning, var(--cp-amber))' },
+          high:     { level: 3, color: 'var(--ds-text-warning)' },
           medium:   { level: 2, color: 'var(--ds-text-success)' },
           low:      { level: 1, color: 'var(--ds-text-success)' },
-          lowest:   { level: 0, color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' },
+          lowest:   { level: 0, color: 'var(--ds-border)' },
         };
-        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' };
+        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border)' };
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} title={k}>
             <span style={{ display: 'inline-flex', gap: 0 }}>
               {[1, 2, 3, 4].map((i) => (
-                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }} />
+                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border)' }} />
               ))}
             </span>
             <span>{k}</span>
@@ -2254,7 +2270,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </span>
         );
       }
-      return { id: k, label: k, labelNode: labelNode ?? undefined, rows: buckets.get(k)! };
+      const rowCount = buckets.get(k)!.length;
+      return {
+        id: k,
+        label: k,
+        labelNode: labelNode ?? undefined,
+        rows: buckets.get(k)!,
+        meta: `${rowCount} ${rowCount === 1 ? 'work item' : 'work items'}`,
+      };
     });
   }, [groupBy, items, search, typeFilter, filterValue, hideDoneItems, sortKey, sortDir, avatarsByName]);
 
@@ -3125,7 +3148,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               value={REQUEST_TYPE_OPTIONS.find(o => o.value === (r.request_type ?? '')) ?? null}
               onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
               menuPortalTarget={document.body}
-              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              styles={portalSelectStyles}
             />
           )}
           readView={() => (
@@ -3158,7 +3181,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               value={CATEGORY_OPTIONS.find(o => o.value === (r.category ?? '')) ?? null}
               onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
               menuPortalTarget={document.body}
-              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              styles={portalSelectStyles}
             />
           )}
           readView={() => (
@@ -3193,7 +3216,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 value={current}
                 onChange={(opt: any) => fp.onChange(opt?.value ?? null)}
                 menuPortalTarget={document.body}
-                styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+                styles={portalSelectStyles}
               />
             )}
             readView={() => (
@@ -3734,93 +3757,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     color: token('color.text.subtle', 'var(--ds-text-subtle)'), cursor: 'pointer',
   };
 
-  // P1 #8 — Settings (view-options) icon button. Separate from "Manage
-  // columns" (which JiraTable owns inside the table head's `+` button).
-  // Apr 27, 2026 (re-probe iter 2): @atlaskit/dropdown-menu rendered an
-  // EMPTY portal on this surface (verified via Chrome MCP — aria-expanded
-  // flipped to true but atlaskitPortalCount=0, no role="menu" in DOM,
-  // body innerText didn't include "Density"). Same documented bug that
-  // drove GroupByControl's bespoke portal pattern (see line ~2162).
-  // Switched to the shared ToolbarMenuButton helper which uses
-  // ReactDOM.createPortal directly and computes anchor from the trigger
-  // rect — verified working pattern on this exact React tree.
-  // Apr 27 2026 (jira-compare regression iter 3 — View options menu
-  // parity). Replaced Catalyst's Density/Layout items with Jira's actual
-  // view-options menu (probed from /jira/.../list?groupBy=status):
-  //   - Hide done work items   (toggle, filters status="done"|"closed")
-  //   - Expand all work items  (clears collapsedGroups)
-  //   - Collapse all work items (sets every group id to collapsed)
-  // The "Hide done" item shows a check/✓ glyph when active so the toggle
-  // state is visible without a real shadcn-style switch on the menu.
-  const toolbarViewOptionsButton = (
-    <ToolbarMenuButton
-      icon={<AkFilterIcon label="" size="small" />}
-      ariaLabel="View options"
-      tooltipContent="View options"
-      buttonStyle={toolbarIconButtonStyle}
-      groups={[
-        {
-          items: [
-            {
-              id: 'hide-done',
-              label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
-              onClick: () => setHideDoneItems((v) => !v),
-            },
-            {
-              id: 'expand-all',
-              label: 'Expand all work items',
-              onClick: () => {
-                // Row hierarchy is driven by expandedIds (childrenOf keys = every
-                // parent that has children); also clear group collapse so both
-                // ungrouped and grouped views open fully (CAT-DEF-008).
-                setExpandedIds(new Set(childrenOf.keys()));
-                setCollapsedGroups(new Set());
-                flag.success('Expanded all work items');
-              },
-            },
-            {
-              id: 'collapse-all',
-              label: 'Collapse all work items',
-              onClick: () => {
-                setExpandedIds(new Set());
-                setCollapsedGroups(groupedRows ? new Set(groupedRows.map((g) => g.id)) : new Set());
-                flag.success('Collapsed all work items');
-              },
-            },
-          ],
-        },
-        {
-          items: [
-            {
-              id: 'density-compact',
-              label: density === 'compact' ? '✓ Compact' : 'Compact',
-              onClick: () => setDensity('compact'),
-            },
-            {
-              id: 'density-comfortable',
-              label: density === 'comfortable' ? '✓ Comfortable' : 'Comfortable',
-              onClick: () => setDensity('comfortable'),
-            },
-          ],
-        },
-      ]}
-    />
-  );
-
-  // 2026-05-12 — More actions overflow ⋯. Probed Jira's 10-item set:
-  //   1. Apply settings from old List view   — Jira-internal migration, N/A
-  //   2. View work items as a chart          — out of scope (no chart pivot)
-  //   3. Format rules                        — Jira-specific, N/A
-  //   4. Hide done work items [toggle]       — implemented (state at L646)
-  //   5. Show hierarchy [toggle]             — implemented (state at L649)
-  //   6. Export →                            — implemented (CSV)
-  //   7. Import work items from CSV          — stub flag
-  //   8. Bulk change work items              — opens bulk wizard (task #7)
-  //   9. Go to all work items                — wired to /allwork route
-  //  10. Give feedback                       — out of scope
-  // `selectedHasCatalyst` (used below for the bulk-change disable state) is
-  // computed above the loading guards — see its definition near `effectiveLoading`.
-  // Items grouped: view-toggles, data-ops, navigation.
   const toolbarMoreActionsButton = (
     <ToolbarMenuButton
       icon={<AkMoreIcon label="" size="small" />}
@@ -3828,35 +3764,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       tooltipContent="More actions"
       buttonStyle={toolbarIconButtonStyle}
       groups={[
-        // Group 1 — view toggles (Jira parity items 4 + 5)
         { items: [
           { id: 'toggle-hide-done',
             label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
-            icon: <AkArchiveBoxIcon label="" size="small" />,
+            icon: <AkEyeOpenStrikethroughIcon label="" size="small" />,
             onClick: () => setHideDoneItems((v) => !v) },
-          { id: 'toggle-hierarchy',
-            label: showHierarchy ? 'Hide hierarchy' : 'Show hierarchy',
-            icon: <AkChevronDownIcon label="" size="small" />,
-            onClick: () => setShowHierarchy((v) => !v) },
-        ]},
-        // Group 2 — data ops (Jira parity items 6 + 7 + 8)
-        { items: [
-          { id: 'save-filter', label: 'Save current filter', icon: <AkLinkIcon label="" size="small" />,
-            onClick: () => setSaveFilterOpen(true), opensModal: true },
-          { id: 'refresh', label: 'Refresh', icon: <AkRefreshIcon label="" size="small" />, onClick: handleRefreshBacklog },
-          { id: 'export', label: 'Export to CSV', icon: <AkDownloadIcon label="" size="small" />, onClick: handleExportCSV },
-          { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
-            onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
-          { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
-            // Disabled when the selection has no Catalyst-owned rows (incl. empty
-            // selection) — bulk edit can't write Jira-synced rows (CAT-DEF-012).
-            isDisabled: !selectedHasCatalyst,
-            onClick: () => setBulkWizardOpen(true), opensModal: true },
-        ]},
-        // Group 3 — navigation (Jira parity item 9)
-        { items: [
-          { id: 'all-work', label: 'Go to all work items', icon: <AkLinkIcon label="" size="small" />,
-            onClick: () => navigate(`/project-hub/${projectKey}/allwork`) },
+          { id: 'expand-all',
+            label: 'Expand all work items',
+            icon: <AkExpandVerticalIcon label="" size="small" />,
+            onClick: () => {
+              setExpandedIds(new Set(childrenOf.keys()));
+              setCollapsedGroups(new Set());
+              flag.success('Expanded all work items');
+            } },
         ]},
       ]}
     />
@@ -3888,7 +3808,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // {x:48, y:16} which gave card.x=55 in Catalyst (50px in from
       // chrome) — twice Jira's. Reducing to {x:24, y:16} so the card
       // edge aligns with toolbar/table inset measured from Jira.
-      cardPadding={{ x: 24, y: 16 }}
+      cardPadding={{ x: 24, y: 4 }}
       cardBorder="1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))"
       // Apr 27 2026 (jira-compare regression D-001/002/003): chrome-band
       // slot. Renders Projects breadcrumb + project icon + H1 ABOVE the
@@ -4047,7 +3967,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // toolbar and (via marginBottom + the JiraTable wrapper below)
         // bleeds the same inset to the table head + body — see the
         // sibling wrapper directly after this div.
-        padding: panelItem ? `32px ${panelWidth + 24}px 32px 24px` : '32px 24px 32px',
+        padding: panelItem ? `6px ${panelWidth + 24}px 6px 24px` : '6px 24px 6px',
         overflow: 'hidden',
         marginBottom: 4,
         // 2026-06-25: `hideChrome` (release navigator) suppresses this row
@@ -4093,14 +4013,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             myFilters={savedFiltersForCanonical}
             scopeType="project"
             scopeKey={projectKey}
+            filterContext={filterContext}
             value={canonicalFilter}
             onChange={setCanonicalFilter}
             statusOptions={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance as any }))}
             assigneeOptions={assigneeOptions.map((a) => ({ id: a.id, label: a.name, avatarUrl: a.avatarUrl ?? undefined }))}
             labelOptions={canonicalLabelOptions}
-            /* workTypeOptions omitted — CanonicalFilter falls back to
-               DEFAULT_CANONICAL_WORK_TYPE_OPTIONS which covers all 16
-               Jira work-item types (CLAUDE.md 2026-06-12 hierarchy). */
           />
         </div>
         {/* Apr 28, 2026 — Phase A.3 (next-session): @atlaskit/avatar-group
@@ -4160,11 +4078,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           value={groupBy}
           onChange={(opt) => { setGroupBy(opt); setCollapsedGroups(new Set()); }}
         />
-        {/* P1 #8 — Settings (view-options) icon: density / layout menu.
-            Distinct from JiraTable's column-picker `+` (which lives
-            inside the table head and owns column visibility). */}
-        {toolbarViewOptionsButton}
-        {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
         {toolbarMoreActionsButton}
 
         {/* 2026-05-12 — Pagination counter: "X of Y" format. Shows total visible
@@ -4228,7 +4141,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             minHeight: 0,
             // paddingRight drives panel-open layout (must be last / not overridden by shorthand).
             // Other three sides: 24px to match toolbar inset.
-            paddingTop: 24,
+            paddingTop: 4,
             paddingLeft: 24,
             paddingBottom: 24,
           }}
@@ -4241,10 +4154,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             totalRowCount={items.length}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
-            // 2026-05-17: Feature flags declare intent explicitly per canonical
-            // governance framework. BacklogPage has sticky footer create only
-            // (no group inline-create affordances per user feedback 2026-05-17).
-            enableGroupCreateButton={false}
+            enableGroupCreateButton
+            onAddToGroup={(groupId) => setInlineCreateGroup(groupId)}
             enableStickyCreateFooter={true}
             // Apr 28 2026 (carryover #13 — chevron discoverability):
             // expandedRowIds passes through expandedIds directly. Removed
@@ -4432,7 +4343,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             page={1}
             onPageChange={undefined as any}
             density={density}
-            enableVirtualization
+            enableVirtualization={!groupedRows}
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
             onColumnOrderChange={(next) => setColumnOrder(next)}

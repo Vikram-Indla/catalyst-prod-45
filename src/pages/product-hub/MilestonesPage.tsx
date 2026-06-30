@@ -1,8 +1,12 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import AkFilterIcon from '@atlaskit/icon/core/filter';
+import AkEyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
+import AkCollapseVerticalIcon from '@atlaskit/icon/core/collapse-vertical';
 import { ToolbarMenuButton } from '@/components/shared/JiraTable';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { catalystFlag } from '@/lib/catalystFlag';
@@ -13,6 +17,7 @@ import type { ProductMilestoneWithProgress } from '@/types/product-milestone';
 import { ReleasesTable } from '@/components/releases/ReleasesTable';
 import { MilestoneCreateModal } from '@/components/product-hub/MilestoneCreateModal';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { CatalystListPageLayout } from '@/components/shared/CatalystListPage';
 import {
   StatusFilter,
   GroupFilter,
@@ -163,15 +168,15 @@ export function MilestonesPage() {
       groups={[
         {
           items: [
-            { id: 'toggle-released',   label: isStatusVisible('released')   ? 'Hide completed'   : 'Show completed',   onClick: () => toggleStatusVisibility('released') },
-            { id: 'toggle-unreleased', label: isStatusVisible('unreleased') ? 'Hide active'      : 'Show active',      onClick: () => toggleStatusVisibility('unreleased') },
-            { id: 'toggle-archived',   label: isStatusVisible('archived')   ? 'Hide cancelled'   : 'Show cancelled',   onClick: () => toggleStatusVisibility('archived') },
+            { id: 'toggle-released',   icon: isStatusVisible('released')   ? <AkEyeOpenStrikethroughIcon label="" size="small" /> : <AkEyeOpenIcon label="" size="small" />, label: isStatusVisible('released')   ? 'Hide completed'   : 'Show completed',   onClick: () => toggleStatusVisibility('released') },
+            { id: 'toggle-unreleased', icon: isStatusVisible('unreleased') ? <AkEyeOpenStrikethroughIcon label="" size="small" /> : <AkEyeOpenIcon label="" size="small" />, label: isStatusVisible('unreleased') ? 'Hide active'      : 'Show active',      onClick: () => toggleStatusVisibility('unreleased') },
+            { id: 'toggle-archived',   icon: isStatusVisible('archived')   ? <AkEyeOpenStrikethroughIcon label="" size="small" /> : <AkEyeOpenIcon label="" size="small" />, label: isStatusVisible('archived')   ? 'Hide cancelled'   : 'Show cancelled',   onClick: () => toggleStatusVisibility('archived') },
           ],
         },
         {
           items: [
-            { id: 'expand-all',   label: 'Expand all groups',   onClick: () => setCollapsedGroups(new Set()) },
-            { id: 'collapse-all', label: 'Collapse all groups', onClick: () => setCollapsedGroups(grouped ? new Set(grouped.map((g) => g.id)) : new Set()) },
+            { id: 'expand-all',   icon: <AkExpandVerticalIcon label="" size="small" />,   label: 'Expand all groups',   onClick: () => setCollapsedGroups(new Set()) },
+            { id: 'collapse-all', icon: <AkCollapseVerticalIcon label="" size="small" />, label: 'Collapse all groups', onClick: () => setCollapsedGroups(grouped ? new Set(grouped.map((g) => g.id)) : new Set()) },
           ],
         },
         {
@@ -187,40 +192,33 @@ export function MilestonesPage() {
   if (isLoading) return <div style={{ padding: '24px' }}>Loading milestones…</div>;
   if (error)     return <div style={{ padding: '24px' }}>Error loading milestones</div>;
 
-  const headerActions = (
+  const toolbarCustomActions = (
     <>
-      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
-        This product has {milestones.length} milestone{milestones.length !== 1 ? 's' : ''}
-      </span>
-      <Button appearance="primary" onClick={() => { setEditingMilestone(null); setIsCreateModalOpen(true); }}>
-        Create milestone
-      </Button>
+      <StatusFilter value={statusFilter} onChange={setStatusFilter} />
+      <GroupFilter value={groupBy} onChange={setGroupBy} />
+      {toolbarViewOptionsButton}
     </>
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <ProjectPageHeader
-        hubType="product"
-        projectKey={productCode}
-        title="Milestones"
-        actions={headerActions}
-      />
-
-      <div style={{ padding: '0 20px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ width: '240px' }}>
-          <TextField
-            placeholder="Search milestones"
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            isCompact
-          />
-        </div>
-        <StatusFilter value={statusFilter} onChange={setStatusFilter} />
-        <GroupFilter value={groupBy} onChange={setGroupBy} />
-        {toolbarViewOptionsButton}
-      </div>
+    <CatalystListPageLayout
+      chromeBand={
+        <ProjectPageHeader
+          hubType="product"
+          projectKey={productCode}
+          title="Milestones"
+        />
+      }
+      search={search}
+      searchPlaceholder="Search milestones"
+      onSearchChange={(v) => setSearch(v)}
+      toolbarActions={toolbarCustomActions}
+      tabBarActions={
+        <Button appearance="primary" onClick={() => { setEditingMilestone(null); setIsCreateModalOpen(true); }}>
+          Create milestone
+        </Button>
+      }
+    >
 
       {filtered.length > 0 ? (
         <ReleasesTable
@@ -267,14 +265,12 @@ export function MilestonesPage() {
           hideSprintsColumn
         />
       ) : (
-        <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
+        <div style={{ padding: '48px 0', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
           {milestones.length === 0
             ? 'No milestones yet. Create your first milestone to start tracking delivery targets.'
             : 'No milestones match this filter.'}
         </div>
       )}
-
-      </div>
 
       <MilestoneCreateModal
         isOpen={isCreateModalOpen}
@@ -290,6 +286,6 @@ export function MilestonesPage() {
           );
         }}
       />
-    </div>
+    </CatalystListPageLayout>
   );
 }

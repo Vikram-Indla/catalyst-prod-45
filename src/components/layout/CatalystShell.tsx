@@ -581,6 +581,7 @@ function CatalystShellContent() {
   // (/project-hub/:key/allwork without :issueKey) still keeps HubSurface.
   const isSelfFramedRoute =
     /^\/(project|product)-hub\/[^/]+\/backlog/.test(location.pathname) ||
+    /^\/(project|product)-hub\/[^/]+\/(boards|filters|timeline|milestones)/.test(location.pathname) ||
     /^\/project-hub\/[^/]+\/allwork\/[^/]+/.test(location.pathname) ||
     /^\/release-hub\/releases-management\/[^/]+$/.test(location.pathname) ||
     /^\/release-hub\/releases-management\/[^/]+\/work$/.test(location.pathname) ||

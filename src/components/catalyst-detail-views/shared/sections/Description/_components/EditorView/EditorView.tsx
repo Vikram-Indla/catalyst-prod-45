@@ -29,8 +29,8 @@ interface EditorViewProps {
   editor: Editor | null;
   toolbar?: ReactNode;
   bodyOverlay?: ReactNode;
-  /** Minimum body height in px. Default 220 (description default). Comments
-   *  pass a smaller value (~80) for a compact 2-row starting height. */
+  /** Minimum body height in px. Default 40 — editor auto-grows with content.
+   *  Set higher only when a fixed minimum is explicitly required. */
   minHeight?: number;
   /** Optional content rendered INSIDE the bordered editor shell, below
    *  the scrolling body. Used by the comment editor for the mention-
@@ -48,7 +48,7 @@ export function EditorView({
   editor,
   toolbar,
   bodyOverlay,
-  minHeight = 220,
+  minHeight = 40,
   footer,
   bodyAfterEditor,
 }: EditorViewProps) {
@@ -73,10 +73,9 @@ export function EditorView({
         borderRadius: 4,
         background: "var(--ds-surface)",
         boxShadow: "0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))",
-        /* Caps the editor height; when content exceeds this, the body
-           scrolls internally with the toolbar staying pinned in place. */
+        /* Editor grows with content up to 70vh, then the body scrolls
+           internally with the toolbar staying pinned at top. */
         maxHeight: "70vh",
-        minHeight,
         overflow: "hidden",
       }}
     >
@@ -85,8 +84,7 @@ export function EditorView({
         ref={bodyRef}
         className="catalyst-description-editor-body"
         style={{
-          flex: 1,
-          minHeight: 0,
+          minHeight,
           overflowY: "auto",
           /* Extra left padding reserves a gutter for the drag handle
              so content position is stable whether or not it's visible. */

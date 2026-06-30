@@ -23,6 +23,9 @@ import Tooltip from '@atlaskit/tooltip';
 import LockIcon from '@atlaskit/icon/core/lock-locked';
 import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import { UserAvatar } from '@/components/shared/UserAvatar';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { parseJqlWorkTypes } from '@/lib/filters/parseJqlWorkTypes';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import {
@@ -45,6 +48,7 @@ import { Star, StarOff, Plus } from '@/lib/atlaskit-icons';
 import { relativeFromIso } from '@/components/shared/RelativeTime';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import Select from '@atlaskit/select';
 
 /* 2026-06-17: 'tasks' added — same chrome, /tasks/filters links, no :key in
  *  URL. Saves use the 'TASKS' projectKey sentinel. Per CLAUDE.md "ADOPT
@@ -161,6 +165,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useState(0);
   const [columnVisibility, setColumnVisibility] = useState<Set<string>>(
     () => new Set(['name', 'owner', 'viewers', 'editors', 'starred', 'updated'])
   );
@@ -272,6 +278,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
+  // Reset to page 0 whenever filters change
+  React.useEffect(() => { setPage(0); }, [visibleFilters.length]);
+
+  const pagedFilters = useMemo(
+    () => visibleFilters.slice(page * pageSize, (page + 1) * pageSize),
+    [visibleFilters, page, pageSize]
+  );
+
   // Row click + name link open the read-only detail page. The builder is
   // reached only via an explicit Edit action (kebab modal in the list, or the
   // "Edit filter" button on the detail page). G1, 2026-06-19.
@@ -324,38 +338,87 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       alwaysVisible: true,
       defaultVisible: true,
       accessor: f => f.name,
-      cell: ({ row: f }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, overflow: 'hidden' }}>
-          <Link
-            to={detailHref(f)}
-            onClick={e => e.stopPropagation()}
-            style={{
-              color: token('color.link'),
-              fontWeight: token('font.weight.medium'),
-              fontSize: 'var(--ds-font-size-400)',
-              textDecoration: 'none',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
-          >
-            {f.name}
-          </Link>
-          {f.jql_query && (
-            <span style={{
-              fontSize: 'var(--ds-font-size-200)',
-              color: token('color.text.subtlest'),
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
-              {f.jql_query}
-            </span>
-          )}
-        </div>
-      ),
+      cell: ({ row: f }) => {
+        const workTypes = parseJqlWorkTypes(f.jql_query);
+        const visibleTypes = workTypes.slice(0, 3);
+        const overflow = workTypes.length - visibleTypes.length;
+        const boardCount = f.used_by_board_ids?.length ?? 0;
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Link
+                to={detailHref(f)}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  color: token('color.link'),
+                  fontWeight: token('font.weight.medium'),
+                  fontSize: 'var(--ds-font-size-400)',
+                  textDecoration: 'none',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 1,
+                  minWidth: 0,
+                }}
+                onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+              >
+                {f.name}
+              </Link>
+              {boardCount > 0 && (
+                <Tooltip content={`Used by ${boardCount} Kanban board${boardCount > 1 ? 's' : ''}`}>
+                  {(tp) => (
+                    <span
+                      {...tp}
+                      style={{
+                        flexShrink: 0,
+                        fontSize: 'var(--ds-font-size-100)',
+                        color: 'var(--ds-text-subtle)',
+                        background: 'var(--ds-background-neutral-subtle)',
+                        borderRadius: 3,
+                        padding: '1px 5px',
+                        whiteSpace: 'nowrap',
+                        cursor: 'default',
+                      }}
+                    >
+                      ⬜ {boardCount}
+                    </span>
+                  )}
+                </Tooltip>
+              )}
+            </div>
+            {f.jql_query && (
+              <span style={{
+                fontSize: 'var(--ds-font-size-200)',
+                color: token('color.text.subtlest'),
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {f.jql_query}
+              </span>
+            )}
+            {visibleTypes.length > 0 && (
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                {visibleTypes.map(t => (
+                  <Tooltip key={t} content={t}>
+                    {(tp) => (
+                      <span {...tp} style={{ display: 'inline-flex' }}>
+                        <JiraIssueTypeIcon issueType={t} size={14} />
+                      </span>
+                    )}
+                  </Tooltip>
+                ))}
+                {overflow > 0 && (
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+                    +{overflow}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       id: 'owner',
@@ -368,8 +431,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         const name = ownerName(f);
         return name ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <AkAvatar src={resolveAvatarUrl(name)} name={name} size="xsmall" />
-            {/* aria-hidden avoids double screen-reader announcement (AkAvatar also labels with name) */}
+            <UserAvatar
+              userId={f.owner?.id}
+              name={name}
+              avatarUrl={f.owner?.avatar_url ?? undefined}
+              size="xsmall"
+            />
+            {/* aria-hidden avoids double screen-reader announcement (UserAvatar labels with name) */}
             <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text') }}>{name}</span>
           </div>
         ) : (
@@ -494,35 +562,26 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     },
   ];
 
+  function handleExportCsv() {
+    const rows = visibleFilters.map(f => [
+      `"${(f.name ?? '').replace(/"/g, '""')}"`,
+      `"${(f.description ?? '').replace(/"/g, '""')}"`,
+      `"${(f.jql_query ?? '').replace(/"/g, '""')}"`,
+      `"${(f.is_shared ? 'Shared' : 'Private')}"`,
+      `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
+    ].join(','));
+    const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'filters.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const exportCsvAction = (
-    <button
-      onClick={() => {
-        const rows = visibleFilters.map(f => [
-          `"${(f.name ?? '').replace(/"/g, '""')}"`,
-          `"${(f.description ?? '').replace(/"/g, '""')}"`,
-          `"${(f.jql ?? '').replace(/"/g, '""')}"`,
-          `"${(f.is_shared ? 'Shared' : 'Private')}"`,
-          `"${(f.updated_at ? new Date(f.updated_at).toLocaleDateString() : '')}"`,
-        ].join(','));
-        const csv = ['Name,Description,JQL,Visibility,Updated', ...rows].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'filters.csv'; a.click();
-        URL.revokeObjectURL(url);
-      }}
-      style={{
-        background: 'none',
-        border: 'none',
-        padding: '0 4px',
-        fontSize: 'var(--ds-font-size-400)',
-        color: token('color.text.subtle'),
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <Button appearance="subtle" onClick={handleExportCsv}>
       Export CSV
-    </button>
+    </Button>
   );
 
   const createCta = (
@@ -540,11 +599,19 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     </Tooltip>
   );
 
-  const footerText = !isLoading && visibleFilters.length > 0
+  const filterCountText = !isLoading && visibleFilters.length > 0
     ? (visibleFilters.length === filters.length
         ? `${filters.length} filter${filters.length !== 1 ? 's' : ''}`
         : `${visibleFilters.length} of ${filters.length} filter${filters.length !== 1 ? 's' : ''}`)
     : undefined;
+
+  // Export CSV demoted to footer — low-frequency utility, not primary band
+  const footerText = filterCountText ? (
+    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <span>{filterCountText}</span>
+      {exportCsvAction}
+    </span>
+  ) : undefined;
 
   return (
     <CatalystListPageLayout
@@ -566,7 +633,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       toolbarFilters={toolbarFilters}
       hasActiveFilters={!!(search || ownerFilter || projectFilter || groupFilter)}
       onClearAllFilters={() => { setSearch(''); setOwnerFilter(null); setProjectFilter(null); setGroupFilter(null); }}
-      toolbarActions={exportCsvAction}
       selectedCount={selectedIds.size}
       bulkActions={bulkActions}
       onDeselect={() => setSelectedIds(new Set())}
@@ -586,7 +652,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       )}
       <JiraTable<SavedFilterFull>
         columns={columns}
-        data={visibleFilters}
+        data={pagedFilters}
         getRowId={f => f.id}
         onRowClick={f => navigate(detailHref(f))}
         sortKey={sortKey}
@@ -616,18 +682,52 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 : 'No filters yet'}
             </span>
             {!search && !ownerFilter && !projectFilter && !groupFilter && (
-              <>
-                <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
-                  Save a JQL query as a filter to find and reuse it later.
-                </span>
-                <Button appearance="primary" onClick={() => navigate(createHref)}>
-                  Create filter
-                </Button>
-              </>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
+                Save a JQL query as a filter to find and reuse it later.
+              </span>
             )}
           </div>
         }
       />
+      {visibleFilters.length > 25 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, padding: '8px 0' }}>
+          {Math.ceil(visibleFilters.length / pageSize) > 1 && (
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              <Button
+                appearance="subtle"
+                isDisabled={page === 0}
+                onClick={() => setPage(p => p - 1)}
+              >
+                ‹ Prev
+              </Button>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', padding: '0 4px' }}>
+                {page + 1} / {Math.ceil(visibleFilters.length / pageSize)}
+              </span>
+              <Button
+                appearance="subtle"
+                isDisabled={(page + 1) * pageSize >= visibleFilters.length}
+                onClick={() => setPage(p => p + 1)}
+              >
+                Next ›
+              </Button>
+            </div>
+          )}
+          <div style={{ width: 80 }}>
+            <Select<{ label: string; value: number }>
+              options={[
+                { label: '25', value: 25 },
+                { label: '50', value: 50 },
+                { label: '100', value: 100 },
+              ]}
+              value={{ label: String(pageSize), value: pageSize }}
+              onChange={opt => { if (opt) { setPageSize(opt.value); setPage(0); } }}
+              menuPlacement="top"
+              isSearchable={false}
+              aria-label="Rows per page"
+            />
+          </div>
+        </div>
+      )}
     </CatalystListPageLayout>
   );
 }

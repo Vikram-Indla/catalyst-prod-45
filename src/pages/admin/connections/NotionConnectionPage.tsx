@@ -19,6 +19,7 @@ import Toggle from '@atlaskit/toggle';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import { Label } from '@atlaskit/form';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import DynamicTable from '@atlaskit/dynamic-table';
 import Badge from '@atlaskit/badge';
 import InlineMessage from '@atlaskit/inline-message';
@@ -246,14 +247,14 @@ function ExclusionRulesEditor({
             value={fieldOpts.find((o) => o.value === rule.field) || null}
             onChange={(o) => update(i, { field: (o as any)?.value || '' })}
             menuPortalTarget={document.body}
-            styles={{ menuPortal: (b) => ({ ...b, zIndex: 9999 }) }}
+            styles={portalSelectStyles}
           />
           <Select
             options={OP_OPTIONS}
             value={OP_OPTIONS.find((o) => o.value === rule.op) || OP_OPTIONS[0]}
             onChange={(o) => update(i, { op: (o as any)?.value || 'is' })}
             menuPortalTarget={document.body}
-            styles={{ menuPortal: (b) => ({ ...b, zIndex: 9999 }) }}
+            styles={portalSelectStyles}
           />
           <Textfield
             value={rule.value}
@@ -538,7 +539,7 @@ function WizardStep2({
               onChange({ mapping: { ...state.mapping, [prop.name]: (opt as any)?.value ?? '' } })
             }
             menuPortalTarget={document.body}
-            styles={{ menuPortal: (b) => ({ ...b, zIndex: 9999 }) }}
+            styles={portalSelectStyles}
           />
         ),
       },

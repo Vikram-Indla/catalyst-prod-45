@@ -36,8 +36,15 @@ function renderIssueOption(opt: IssueOption) {
 // the modal instead of being clipped inside ModalBody's scroll area (Jira parity).
 const MENU_PORTAL_PROPS = {
   menuPortalTarget: typeof document !== 'undefined' ? document.body : undefined,
-  styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
-} as const;
+  menuPosition: 'fixed' as const,
+  styles: {
+    menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+    menu: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+    option: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+    singleValue: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+    input: (base: any) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  },
+};
 
 interface AddDependencyModalProps {
   isOpen: boolean;

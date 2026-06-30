@@ -44,7 +44,7 @@ body[data-cv2-theme] {
   /* Component-specific dimensions */
   --cv2-hover-toolbar-h: 32px;
   --cv2-reaction-pill-h: 22px;
-  --cv2-intra-gap: 0px;
+  --cv2-intra-gap: var(--ds-space-075);
   --cv2-group-gap: 16px;
   --cv2-page-pad-x: 20px;
   --cv2-modal-z: 1000;
@@ -62,71 +62,25 @@ body[data-cv2-theme="dark"] {
   --cv2-bg-rail: var(--ds-surface);
   --cv2-bg-sidebar: var(--ds-surface);
   --cv2-bg-panel: var(--ds-surface);
-  --cv2-bg-row-hover: var(--ds-surface, rgba(255, 255, 255, 0.04));
-  --cv2-bg-row-active: var(--ds-surface, rgba(255, 255, 255, 0.07));
-  --cv2-bg-rail-active: var(--ds-surface, rgba(255, 255, 255, 0.10));
-  --cv2-bg-toolbar: var(--ds-text);
-  --cv2-bg-composer: transparent;
-  --cv2-bg-composer-border: var(--ds-surface, rgba(255, 255, 255, 0.22));
-  --cv2-bg-reaction: rgba(29, 155, 240, 0.10);
-  --cv2-bg-reaction-mine: rgba(29, 155, 240, 0.18);
-  --cv2-bg-banner: var(--ds-surface, rgba(255, 255, 255, 0.04));
-
-  --cv2-text: var(--ds-border);
-  --cv2-text-strong: var(--ds-surface);
-  --cv2-text-muted: var(--ds-text-disabled);
-  --cv2-text-subtle: var(--ds-text-disabled);
-  --cv2-text-link: var(--ds-link);
-
-  --cv2-border: var(--ds-surface, rgba(255, 255, 255, 0.07));
-  --cv2-border-strong: var(--ds-surface, rgba(255, 255, 255, 0.14));
-  --cv2-divider: var(--ds-surface, rgba(255, 255, 255, 0.05));
-
-  --cv2-accent: var(--ds-link);
-  --cv2-accent-hover: var(--ds-link);
-  --cv2-unread: var(--ds-background-danger-bold);
-  --cv2-unread-text: var(--ds-text-inverse);
-  --cv2-presence-online: var(--ds-background-success-bold);
-  --cv2-success: var(--ds-background-success-bold);
-  --cv2-warning: var(--ds-background-warning-bold);
-  --cv2-danger: var(--ds-background-danger-bold);
-  --cv2-saved-fg: var(--ds-link);
-  --cv2-saved-bg: rgba(29, 155, 209, 0.10);
-  --cv2-bg-modal: var(--ds-text);
-  --cv2-bg-overlay: var(--ds-shadow-raised, rgba(0, 0, 0, 0.55));
-  --cv2-bg-input: var(--ds-text);
-  --cv2-shadow-toolbar: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
-  --cv2-shadow-modal: 0 16px 48px var(--ds-shadow-raised, rgba(0, 0, 0, 0.55));
-  --cv2-highlight-jump: rgba(236, 178, 46, 0.28);
-}
-
-/* ── Light theme ──────────────────────────────────────────────────── */
-.cv2-chat-shell[data-cv2-theme="light"],
-body[data-cv2-theme="light"] {
-  /* Rail removed 2026-06-18 — sidebar now mounts at the Catalyst shell
-     position with ADS neutral tokens (matches the / screen sidebar). */
-  --cv2-bg-rail: var(--ds-surface);
-  --cv2-bg-sidebar: var(--ds-surface);
-  --cv2-bg-panel: var(--ds-surface);
-  --cv2-bg-row-hover: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
-  --cv2-bg-row-active: rgba(29, 155, 209, 0.12);
-  --cv2-bg-rail-active: var(--ds-surface, rgba(255, 255, 255, 0.18));
-  --cv2-bg-toolbar: var(--ds-surface);
+  --cv2-bg-row-hover: var(--ds-background-neutral-subtle-hovered);
+  --cv2-bg-row-active: var(--ds-background-selected);
+  --cv2-bg-rail-active: var(--ds-background-selected);
+  --cv2-bg-toolbar: var(--ds-surface-overlay);
   --cv2-bg-composer: transparent;
   --cv2-bg-composer-border: var(--ds-border);
-  --cv2-bg-reaction: rgba(29, 155, 240, 0.08);
-  --cv2-bg-reaction-mine: rgba(29, 155, 240, 0.16);
-  --cv2-bg-banner: var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
+  --cv2-bg-reaction: var(--ds-background-information);
+  --cv2-bg-reaction-mine: var(--ds-background-information-hovered);
+  --cv2-bg-banner: var(--ds-surface-sunken);
 
   --cv2-text: var(--ds-text);
   --cv2-text-strong: var(--ds-text);
-  --cv2-text-muted: var(--ds-text-subtlest);
+  --cv2-text-muted: var(--ds-text-subtle);
   --cv2-text-subtle: var(--ds-text-subtlest);
   --cv2-text-link: var(--ds-link);
 
-  --cv2-border: var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-  --cv2-border-strong: var(--ds-shadow-raised, rgba(0, 0, 0, 0.16));
-  --cv2-divider: var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  --cv2-border: var(--ds-border);
+  --cv2-border-strong: var(--ds-border-bold);
+  --cv2-divider: var(--ds-border);
 
   --cv2-accent: var(--ds-link);
   --cv2-accent-hover: var(--ds-link-pressed);
@@ -137,13 +91,59 @@ body[data-cv2-theme="light"] {
   --cv2-warning: var(--ds-background-warning-bold);
   --cv2-danger: var(--ds-background-danger-bold);
   --cv2-saved-fg: var(--ds-link);
-  --cv2-saved-bg: rgba(18, 100, 163, 0.08);
-  --cv2-bg-modal: var(--ds-surface);
-  --cv2-bg-overlay: var(--ds-shadow-raised, rgba(0, 0, 0, 0.35));
+  --cv2-saved-bg: var(--ds-background-information);
+  --cv2-bg-modal: var(--ds-surface-overlay);
+  --cv2-bg-overlay: var(--ds-blanket);
   --cv2-bg-input: var(--ds-surface-sunken);
-  --cv2-shadow-toolbar: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
-  --cv2-shadow-modal: 0 16px 48px var(--ds-shadow-raised, rgba(0, 0, 0, 0.18));
-  --cv2-highlight-jump: rgba(236, 178, 46, 0.22);
+  --cv2-shadow-toolbar: var(--ds-shadow-overlay);
+  --cv2-shadow-modal: var(--ds-shadow-overlay);
+  --cv2-highlight-jump: var(--ds-background-warning);
+}
+
+/* ── Light theme ──────────────────────────────────────────────────── */
+.cv2-chat-shell[data-cv2-theme="light"],
+body[data-cv2-theme="light"] {
+  /* Rail removed 2026-06-18 — sidebar now mounts at the Catalyst shell
+     position with ADS neutral tokens (matches the / screen sidebar). */
+  --cv2-bg-rail: var(--ds-surface);
+  --cv2-bg-sidebar: var(--ds-surface);
+  --cv2-bg-panel: var(--ds-surface);
+  --cv2-bg-row-hover: var(--ds-background-neutral-subtle-hovered);
+  --cv2-bg-row-active: var(--ds-background-selected);
+  --cv2-bg-rail-active: var(--ds-background-selected);
+  --cv2-bg-toolbar: var(--ds-surface-overlay);
+  --cv2-bg-composer: transparent;
+  --cv2-bg-composer-border: var(--ds-border);
+  --cv2-bg-reaction: var(--ds-background-information);
+  --cv2-bg-reaction-mine: var(--ds-background-information-hovered);
+  --cv2-bg-banner: var(--ds-surface-sunken);
+
+  --cv2-text: var(--ds-text);
+  --cv2-text-strong: var(--ds-text);
+  --cv2-text-muted: var(--ds-text-subtle);
+  --cv2-text-subtle: var(--ds-text-subtlest);
+  --cv2-text-link: var(--ds-link);
+
+  --cv2-border: var(--ds-border);
+  --cv2-border-strong: var(--ds-border-bold);
+  --cv2-divider: var(--ds-border);
+
+  --cv2-accent: var(--ds-link);
+  --cv2-accent-hover: var(--ds-link-pressed);
+  --cv2-unread: var(--ds-background-danger-bold);
+  --cv2-unread-text: var(--ds-text-inverse);
+  --cv2-presence-online: var(--ds-background-success-bold);
+  --cv2-success: var(--ds-background-success-bold);
+  --cv2-warning: var(--ds-background-warning-bold);
+  --cv2-danger: var(--ds-background-danger-bold);
+  --cv2-saved-fg: var(--ds-link);
+  --cv2-saved-bg: var(--ds-background-information);
+  --cv2-bg-modal: var(--ds-surface-overlay);
+  --cv2-bg-overlay: var(--ds-blanket);
+  --cv2-bg-input: var(--ds-surface-sunken);
+  --cv2-shadow-toolbar: var(--ds-shadow-overlay);
+  --cv2-shadow-modal: var(--ds-shadow-overlay);
+  --cv2-highlight-jump: var(--ds-background-warning);
 }
 
 /* Animated removal pulse for message bubbles (used by delete confirmation). */
@@ -258,12 +258,12 @@ body[data-cv2-theme="light"] {
   text-decoration: none;
 }
 .cv2-mention[data-self="false"] {
-  background: rgba(38, 132, 255, 0.16); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--ds-link-pressed);
+  background: var(--ds-background-neutral);
+  color: var(--ds-text);
 }
 .cv2-mention[data-self="true"] {
-  background: rgba(255, 159, 64, 0.18); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--ds-background-warning-bold);
+  background: var(--ds-background-brand-bold);
+  color: var(--ds-text-inverse);
 }
 
 /* Shimmer used by the AI Summary loading state */

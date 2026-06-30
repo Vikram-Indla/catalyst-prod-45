@@ -83,7 +83,7 @@ export function LaterFilterMenu({ anchorRect, hideUpcoming, onChange, onClose }:
             border: 'none',
             cursor: 'pointer',
             fontFamily: 'inherit',
-            fontSize: 'var(--ds-font-size-400)',
+            font: 'var(--ds-font-body)',
             textAlign: 'left',
           }}
         >

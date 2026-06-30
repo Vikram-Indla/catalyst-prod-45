@@ -69,6 +69,7 @@ export default function TestHubTimelinePage() {
 
   return (
     <TimelineView
+      filterContext="testhub"
       items={items}
       isLoading={isLoading}
       error={error}

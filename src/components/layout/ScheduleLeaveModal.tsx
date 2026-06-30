@@ -35,7 +35,11 @@ interface Props {
 // render above it rather than behind it.
 const SELECT_PORTAL_STYLES = {
   menuPortal: (base: React.CSSProperties) => ({ ...base, zIndex: 9999 }),
-} as const;
+  menu: (base: React.CSSProperties) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  option: (base: React.CSSProperties) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  singleValue: (base: React.CSSProperties) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  input: (base: React.CSSProperties) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+};
 
 // Option type for the backup contact picker
 interface BackupOption {

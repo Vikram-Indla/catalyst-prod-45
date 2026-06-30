@@ -294,6 +294,7 @@ export default function TasksTimelineView() {
 
   return (
     <TimelineView
+      filterContext="tasks"
       items={tree}
       isLoading={isLoading}
       error={error}

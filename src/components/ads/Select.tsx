@@ -15,6 +15,7 @@
  * prefer the dedicated wrappers in this folder rather than raw Select.
  */
 import AkSelect, { type OptionType as AkOptionType } from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { type ReactNode } from 'react';
 
 export interface SelectOption<V extends string | number = string> {
@@ -72,6 +73,8 @@ export function Select<V extends string | number = string>({
       isSearchable={isSearchable}
       menuPlacement={menuPlacement}
       menuPortalTarget={usePortal ? document.body : undefined}
+      menuPosition={usePortal ? 'fixed' : undefined}
+      styles={usePortal ? portalSelectStyles : undefined}
       aria-label={rest['aria-label']}
       testId={testId}
       spacing="default"

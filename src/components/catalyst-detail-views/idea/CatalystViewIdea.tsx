@@ -510,30 +510,21 @@ export default function CatalystViewIdea({
 
                 <FieldBlock label="DESCRIPTION">
                   {canEdit ? (
-                    <div
-                      style={{
-                        border: '1px solid var(--ds-border-input)',
-                        borderRadius: 4,
-                        background: 'var(--ds-background-input)',
-                        overflow: 'hidden',
+                    <RichTextEditor
+                      initialAdf={descSeed}
+                      hideActionButtons
+                      placeholder="Add a description…"
+                      minHeight={100}
+                      onSave={() => {}}
+                      onCancel={() => {}}
+                      onChange={(tiptapJson) => {
+                        try {
+                          setLocalDescriptionAdf(tiptapToAdf(tiptapJson));
+                        } catch {
+                          /* noop — keep last good ADF */
+                        }
                       }}
-                    >
-                      <RichTextEditor
-                        initialAdf={descSeed}
-                        hideActionButtons
-                        placeholder="Add a description…"
-                        minHeight={100}
-                        onSave={() => {}}
-                        onCancel={() => {}}
-                        onChange={(tiptapJson) => {
-                          try {
-                            setLocalDescriptionAdf(tiptapToAdf(tiptapJson));
-                          } catch {
-                            /* noop — keep last good ADF */
-                          }
-                        }}
-                      />
-                    </div>
+                    />
                   ) : localDescriptionAdf ? (
                     <DisplayView adf={localDescriptionAdf} />
                   ) : (

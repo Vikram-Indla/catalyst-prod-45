@@ -146,7 +146,14 @@ export function UserOverridesModal({ isOpen, onClose, userId, roleId }: UserOver
                               options={OVERRIDE_OPTIONS}
                               onChange={opt => setLocalOverrides(prev => ({ ...prev, [group]: opt?.value ?? 'Inherited' }))}
                               menuPortalTarget={document.body}
-                              styles={{ menuPortal: (base) => ({ ...base, zIndex: 10000 }), control: (base) => ({ ...base, minHeight: 32 }) }}
+                              styles={{
+                                menuPortal: (base) => ({ ...base, zIndex: 10000 }),
+                                control: (base) => ({ ...base, minHeight: 32 }),
+                                menu: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                                option: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                                singleValue: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                                input: (base) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+                              }}
                             />
                           </td>
                         </tr>

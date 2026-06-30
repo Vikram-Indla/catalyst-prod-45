@@ -254,6 +254,8 @@ interface Props {
    * no toolbar state is owned here.
    */
   leftToolbarSlot?: React.ReactNode;
+  /** Passed through to CanonicalFilter — controls which fields and work types are shown. */
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }
 
 /** Coerce any value (string / number / object / null) to a clean string
@@ -1167,11 +1169,13 @@ function CanonicalAllWorkFilterBridge({
   selectedFilters,
   onSelectedFiltersChange,
   facetOptions,
+  filterContext = 'project',
 }: {
   projectKey: string;
   selectedFilters: FilterState;
   onSelectedFiltersChange?: (next: FilterState) => void;
   facetOptions: Record<FilterFacet, FacetOption[]>;
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }) {
   const canonicalValue: CanonicalFilterValue = React.useMemo(() => ({
     ...emptyCanonicalFilterValue,
@@ -1227,6 +1231,7 @@ function CanonicalAllWorkFilterBridge({
       onChange={handleChange}
       scopeType="project"
       scopeKey={projectKey}
+      filterContext={filterContext}
       statusOptions={statusOptions}
       assigneeOptions={assigneeOptions}
       labelOptions={labelOptions}
@@ -1254,6 +1259,7 @@ export function AllWorkToolbar({
   saveFilterLabel = 'Save filter',
   facetOptionItems,
   leftToolbarSlot,
+  filterContext = 'project',
 }: Props) {
   /* ── ALL HOOKS FIRST — React Rules of Hooks: no hook after a conditional return ── */
 
@@ -1489,6 +1495,7 @@ export function AllWorkToolbar({
         selectedFilters={selectedFilters}
         onSelectedFiltersChange={onSelectedFiltersChange}
         facetOptions={facetOptions}
+        filterContext={filterContext}
       />
 
       {/* Save filter modal — standalone canonical FilterSaveModal */}

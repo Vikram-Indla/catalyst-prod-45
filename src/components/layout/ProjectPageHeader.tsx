@@ -136,63 +136,84 @@ export function ProjectPageHeader({
       ? `/product-hub/${projectKey}`
       : `/project-hub/${projectKey}`;
 
-  const breadcrumbItems: BreadcrumbItem[] = [
-    { key: "home", text: "Home", href: "/for-you" },
-    { key: "root", text: rootLabel, href: rootHref },
-    ...(!isGlobalHub && !trail
-      ? [{
+  // Breadcrumb: entity name acts as root (no "Home / Hub" prefix).
+  // Structure: [entity] / current   — or for global hubs: [root] / current
+  const breadcrumbItems: BreadcrumbItem[] = isGlobalHub
+    ? [
+        { key: "root", text: rootLabel, href: rootHref },
+        ...(trail
+          ? trail.map((c, i) => ({
+              key: `trail-${i}`,
+              text: c.text,
+              href: c.href,
+              isCurrent: i === trail.length - 1 && !c.href,
+            }))
+          : [{ key: "current", text: routeWord, isCurrent: true }]),
+      ]
+    : [
+        {
           key: "entity",
           text: projectName,
           href: entityHref,
           iconBefore: <ProjectIcon projectKey={projectKey} size="xsmall" name={projectName} />,
           ariaLabel: projectName,
-        }]
-      : []),
-    ...(trail
-      ? trail.map((c, i) => ({
-          key: `trail-${i}`,
-          text: c.text,
-          href: c.href,
-          isCurrent: i === trail.length - 1 && !c.href,
-        }))
-      : [{ key: "current", text: routeWord, isCurrent: true }]),
-  ];
+        },
+        ...(trail
+          ? trail.map((c, i) => ({
+              key: `trail-${i}`,
+              text: c.text,
+              href: c.href,
+              isCurrent: i === trail.length - 1 && !c.href,
+            }))
+          : [{ key: "current", text: routeWord, isCurrent: true }]),
+      ];
 
   return (
     <div
       style={{
-        padding: `8px ${paddingX}px 4px`,
+        padding: `4px ${paddingX}px 0px`,
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        gap: 2,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
         flexShrink: 0,
+        minHeight: 36,
       }}
     >
-      <div className="cat-breadcrumb-host" style={{ fontSize: 14 }}>
+      {/* Breadcrumb inline — de-emphasised, left side */}
+      <div
+        className="cat-breadcrumb-host"
+        style={{ fontSize: 12, flexShrink: 0, opacity: 0.8 }}
+      >
         <Breadcrumbs items={breadcrumbItems} LinkComponent={Link} />
       </div>
+
       {!hideTitle && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 8,
-          }}
-        >
+        <>
+          <span
+            aria-hidden
+            style={{
+              color: "var(--ds-border-bold)",
+              fontSize: 14,
+              lineHeight: 1,
+              flexShrink: 0,
+              userSelect: "none",
+            }}
+          >
+            /
+          </span>
+
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 8,
+              gap: 6,
               minWidth: 0,
+              flex: 1,
             }}
           >
             <Heading size="large">{title ?? routeWord}</Heading>
             {starType && (
-              // Star this surface instance. item_id = pathname (unique per surface);
-              // metadata carries label/route so the Starred hub can render + open it.
               <WorkItemStarButton
                 itemId={pathname}
                 itemType={starType}
@@ -206,6 +227,7 @@ export function ProjectPageHeader({
               />
             )}
           </div>
+
           {actions && (
             <div
               style={{
@@ -218,7 +240,7 @@ export function ProjectPageHeader({
               {actions}
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

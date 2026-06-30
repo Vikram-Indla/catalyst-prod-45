@@ -17,6 +17,7 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
+import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { Search } from '@/lib/atlaskit-icons';
 
 export interface ToolbarFilterOption {
@@ -42,6 +43,8 @@ interface CatalystListToolbarProps {
   onClearAll?: () => void;
   /** Extra action nodes rendered after Clear all (e.g., Export CSV button). */
   actions?: React.ReactNode;
+  /** No outer padding — for embedding inside another row (e.g., tab bar). */
+  compact?: boolean;
 }
 
 export function CatalystListToolbar({
@@ -52,6 +55,7 @@ export function CatalystListToolbar({
   hasActiveFilters = false,
   onClearAll,
   actions,
+  compact = false,
 }: CatalystListToolbarProps) {
   return (
     <div
@@ -60,7 +64,7 @@ export function CatalystListToolbar({
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: 8,
-        padding: '12px 24px',
+        padding: compact ? '0' : '4px 24px',
         flexShrink: 0,
       }}
     >
@@ -96,7 +100,7 @@ export function CatalystListToolbar({
             isClearable
             menuPortalTarget={document.body}
             menuPosition="fixed"
-            styles={{ menuPortal: (base: object) => ({ ...base, zIndex: 9999 }) }}
+            styles={portalSelectStyles}
           />
         </div>
       ))}

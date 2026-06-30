@@ -851,6 +851,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          editor cells override with their own cursors (text/pointer).
          2026-05-16: reverted to 40px (Jira compact DOM probe = 40px). */
       .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; min-height: 40px; }
+      .jira-table-grid tbody tr.jira-table-group-row > td { height: 40px; }
       /* 2026-05-10 Per-column filter chevron — hover-reveal on header.
          Active-filter state keeps chevron visible (opacity:1 inline). */
       .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
@@ -963,7 +964,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         pointer-events: none;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
+        background: transparent !important;
+        border-top: 1px solid var(--ds-border) !important;
       }
 
       /* ── Apr 27, 2026 (L59): Sticky Key-column prefix ──
@@ -1015,7 +1017,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
+        background: transparent !important;
       }
       /* 2026-05-10 Jira-parity: group header rows stick below the thead
          while their child rows scroll past. top:40px = thead height.
@@ -1024,7 +1026,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         position: sticky;
         top: 40px;
         z-index: 1;
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken));
+        background: var(--ds-surface) !important;
+        border-top: 1px solid var(--ds-border) !important;
       }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
@@ -1119,7 +1122,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken) !important;
+        background: var(--ds-surface) !important;
       }
       .dark .jira-table-grid thead th {
         background: var(--ds-surface-sunken) !important;
@@ -1626,12 +1629,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {(g as any).labelNode}
                 </span>
               ) : (
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text)' }}>
                   {g.label}
                 </span>
               )}
               {g.meta && (
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtlest)' }}>
                   {g.meta}
                 </span>
               )}
