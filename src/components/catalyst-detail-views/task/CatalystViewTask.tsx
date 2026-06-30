@@ -122,7 +122,7 @@ export default function CatalystViewTask({
   ), [issue, itemId, projectKey, onOpenItem, isOpen, queryClient]);
 
   const rightContent = useMemo(() => (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="task" statusPill={<StatusLozengeDropdown status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="task" statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category ?? undefined} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 

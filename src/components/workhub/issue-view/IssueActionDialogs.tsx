@@ -15,6 +15,9 @@ import { catalystToast } from '@/lib/catalystToast';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import AtlaskitEditor, { type ADFEntity } from '@/components/shared/AtlaskitEditor';
 
 /* ═══ Shared styles ═══ */
 const overlayStyle: React.CSSProperties = {
@@ -55,6 +58,16 @@ const inputStyle: React.CSSProperties = {
 const DEFAULT_ADD_FLAG_NOTE = 'none';    // BAU-4375 uses "flag" and "none"; we default to "none" if blank
 const DEFAULT_REMOVE_FLAG_NOTE = 'none'; // BAU-4375 uses "remove" and "none"; we default to "none" if blank
 const FLAG_VALUE = 'Impediment';         // Jira canonical flag value
+
+function extractPlainText(adf: ADFEntity): string {
+  if (!adf || typeof adf !== 'object') return '';
+  const content = (adf as any).content ?? [];
+  return content
+    .flatMap((node: any) => node.content ?? [])
+    .filter((n: any) => n.type === 'text')
+    .map((n: any) => n.text ?? '')
+    .join('');
+}
 
 function normalizeNote(note?: string, fallback = 'none') {
   const trimmed = (note ?? '').trim();
@@ -240,7 +253,120 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   );
 }
 
-/* ═══ 2. CLONE WIZARD ═══ */
+/* ═══ 2. ADD FLAG MODAL (board/card context — ADS ModalDialog, Jira parity) ═══ */
+export function AddFlagModal({
+  issueId, issueKey, issueTitle, issueType, flagged, tableName = 'ph_issues', onClose,
+}: {
+  issueId: string;
+  issueKey: string;
+  issueTitle?: string;
+  issueType?: string;
+  flagged: boolean;
+  tableName?: 'ph_issues' | 'business_requests';
+  onClose: () => void;
+}) {
+  const [adf, setAdf] = useState<ADFEntity | null>(null);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const newFlagged = !flagged;
+      const noteText = adf ? extractPlainText(adf) : '';
+      const nextFlagReason = newFlagged ? (noteText.trim() || FLAG_VALUE) : null;
+
+      const updatePayload: Record<string, unknown> = { is_flagged: newFlagged };
+      // business_requests has no flag_reason column
+      if (tableName === 'ph_issues') {
+        updatePayload.flag_reason = nextFlagReason;
+      }
+
+      const { error } = await (supabase.from(tableName) as any)
+        .update(updatePayload)
+        .eq('id', issueId);
+      if (error) throw error;
+
+      if (tableName === 'ph_issues') {
+        const commentNote = newFlagged
+          ? normalizeNote(noteText, DEFAULT_ADD_FLAG_NOTE)
+          : normalizeNote(noteText, DEFAULT_REMOVE_FLAG_NOTE);
+        const commentText = newFlagged
+          ? `:flag_on: Flag added\n${commentNote}`
+          : `:flag_off: Flag removed\n${commentNote}`;
+
+        try {
+          await supabase.from('activity_logs').insert({
+            entity_id: issueId, entity_type: 'ph_issue',
+            action: newFlagged ? 'flag_added' : 'flag_removed',
+            after_json: { is_flagged: newFlagged, flag_reason: nextFlagReason, comment: commentText },
+          });
+        } catch (e) {
+          console.warn('Flag activity log skipped:', e);
+        }
+      }
+
+      return { newFlagged, nextFlagReason };
+    },
+    onSuccess: ({ newFlagged, nextFlagReason }) => {
+      syncFlagCaches(queryClient, issueKey, newFlagged, nextFlagReason ?? null);
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
+      queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+      queryClient.invalidateQueries({ queryKey: ['project-work-items'] });
+      catalystToast.success(newFlagged ? 'Flag added' : 'Flag removed');
+      onClose();
+    },
+    onError: () => catalystToast.error('Failed to update flag'),
+  });
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader hasCloseButton>
+        <ModalTitle>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Flag size={20} color="var(--ds-text-danger)" />
+            {flagged ? 'Remove Flag' : 'Add Flag'}
+          </span>
+        </ModalTitle>
+      </ModalHeader>
+
+      <ModalBody>
+        {(issueKey || issueTitle) && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, overflow: 'hidden' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', whiteSpace: 'nowrap' }}>Work item</span>
+            {issueType && <JiraIssueTypeIcon type={issueType} size={16} />}
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {issueKey}{issueTitle ? ` ${issueTitle}` : ''}
+            </span>
+          </div>
+        )}
+
+        <AtlaskitEditor
+          appearance="comment"
+          placeholder={
+            flagged
+              ? 'Optional: let your team know why the flag was removed'
+              : 'Optional: Let your team know why this work item has been flagged'
+          }
+          onChange={(value) => setAdf(value)}
+          minHeight={120}
+        />
+      </ModalBody>
+
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button
+          appearance="primary"
+          isDisabled={mutation.isPending}
+          onClick={() => mutation.mutate()}
+        >
+          {mutation.isPending ? 'Updating...' : 'Confirm'}
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+/* ═══ 3. CLONE WIZARD ═══ */
 export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
   issueId: string; issueKey: string; item: any; projectKey: string; onClose: () => void;
 }) {

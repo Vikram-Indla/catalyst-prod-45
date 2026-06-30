@@ -97,7 +97,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
           </div>
         </FieldRow>
         <FieldRow label="Status">
-          <StatusLozenge status={item.status} />
+          <StatusLozenge status={item.status} statusCategory={item.status_category ?? undefined} />
         </FieldRow>
         <FieldRow label="Priority">
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

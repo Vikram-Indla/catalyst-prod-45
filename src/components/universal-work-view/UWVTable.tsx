@@ -208,6 +208,8 @@ export function UWVTable({
         cell: makeStatusCell(
           (r: UWVItem) => r.status || null,
           (s) => lozengeAppearance('', s ?? ''),
+          undefined,
+          (r: UWVItem) => r.statusCategory || null,
         ),
       },
       {

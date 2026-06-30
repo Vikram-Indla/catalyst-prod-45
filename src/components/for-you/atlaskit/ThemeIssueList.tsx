@@ -192,7 +192,7 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
                   {row.issue_key}
                 </Pressable>
               </Inline>
-              <StatusLozenge status={toStatusCategory(row.status)}>
+              <StatusLozenge status={toStatusCategory(row.status)} statusCategory={row.status_category ?? undefined}>
                 {row.status || 'To Do'}
               </StatusLozenge>
             </Inline>

@@ -416,6 +416,8 @@ export function FilterResultsPanel({
       cell: makeStatusCell(
         (r: JqlResultRow) => r.status || null,
         s => lozengeAppearance('', s ?? ''),
+        undefined,
+        (r: JqlResultRow) => r.statusCategory || null,
       ),
     },
     {

@@ -19,8 +19,7 @@ import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { LOZENGE, PRIORITY_COLORS, WORK_ITEM_ICONS } from './constants';
 import { getStatusCategory, getAvatarColor, formatDateShort } from './helpers';
 import { detailLabelStyle, detailValueStyle } from './constants';
-import Lozenge from '@atlaskit/lozenge';
-import { statusToLozenge } from '../../../utils/statusToLozenge';
+import { StatusLozenge as CanonicalStatusLozenge } from '@/components/shared/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 /* ── IssueIcon ─────────────────────────────── */
@@ -46,25 +45,15 @@ export function IssueIcon({ type, size = 16 }: { type: string; size?: number }) 
 }
 
 /* ── StatusLozenge ─────────────────────────── */
-/**
- * §20 / L41 — Thin Atlaskit wrapper. Keeps the external prop contract
- * (`{status, category}`) so no call sites need to change. The `category`
- * prop is kept for backward-compat but the actual appearance is derived
- * purely from the status string via `statusToLozenge`, which is the single
- * source of truth. This is why "In UAT" no longer renders cyan.
- */
-export function StatusLozenge({ status, category: _category }: { status: string; category?: string | null }) {
-  return <Lozenge appearance={statusToLozenge(status)}>{status}</Lozenge>;
+/** Thin wrapper preserving the local `{status, category}` contract. Delegates to canonical StatusLozenge. */
+export function StatusLozenge({ status, category }: { status: string; category?: string | null }) {
+  return <CanonicalStatusLozenge status={status} statusCategory={category ?? undefined} />;
 }
 
 /* ── JiraStatusPill ────────────────────────── */
-/**
- * §20 / L41 — Same Atlaskit wrapper, rendered with `isBold` for the
- * emphasised pill variant (used in history rows / current-status summary
- * where a heavier pill reads better in dense prose).
- */
-export function JiraStatusPill({ status, category: _category }: { status: string; category: string }) {
-  return <Lozenge appearance={statusToLozenge(status)} isBold>{status}</Lozenge>;
+/** Bold-size status pill. Delegates to canonical StatusLozenge at 'md' size. */
+export function JiraStatusPill({ status, category }: { status: string; category: string }) {
+  return <CanonicalStatusLozenge status={status} statusCategory={category ?? undefined} size="md" />;
 }
 
 /* ── Skel ──────────────────────────────────── */
@@ -141,8 +130,8 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
       <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{item.summary}</span>
       {columns.status && (
         <span className="sdm-status-lozenge">
-          {/* §20 / L41 — Atlaskit Lozenge only; no inline LOZENGE[category] styles. */}
-          <Lozenge appearance={statusToLozenge(item.status)}>{item.status}</Lozenge>
+          {/* §20 / L41 — Canonical StatusLozenge; appearance derived from status string. */}
+          <StatusLozenge status={item.status} category={item.status_category} />
         </span>
       )}
       {columns.assignee && (

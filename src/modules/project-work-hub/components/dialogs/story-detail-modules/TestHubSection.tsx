@@ -10,7 +10,7 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import type { TmTestCase, ThTestExecution, TestResult } from './types';
 import { LOZENGE, TEST_RESULT_STYLES } from './constants';
 import { getAvatarColor, formatDateShort } from './helpers';
-import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
+import { SectionBlock, SkeletonRows, EmptyState, StatusLozenge } from './shared-components';
 import { statusToLozenge, type LozengeAppearance } from '../../../utils/statusToLozenge';
 
 const LOZENGE_STYLES: Record<LozengeAppearance, { bg: string; color: string }> = {
@@ -109,7 +109,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                   </span>
                   <span className="sdm-child-key" style={{ color: 'var(--ds-text-subtle)' }}>{tc.case_key}</span>
                   <span className="sdm-child-summary">{tc.title}</span>
-                  <span className="sdm-status-lozenge"><CatalystLozenge appearance={statusToLozenge(tc.status)}>{tc.status}</CatalystLozenge></span>
+                  <span className="sdm-status-lozenge"><StatusLozenge status={tc.status} /></span>
                   <span className="sdm-date-col">{formatDateShort(tc.created_at)}</span>
                   <div className="sdm-row-actions">
                     <button className="sdm-row-action-btn" title="Open in TestHub"><LinkExternalIcon label="Open in TestHub" /></button>

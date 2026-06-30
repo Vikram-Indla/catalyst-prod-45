@@ -17,7 +17,7 @@ import type { LinkedSourceConfig } from '@/components/workhub/create-story/Creat
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
-import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
+import { SectionBlock, SkeletonRows, EmptyState, StatusLozenge } from './shared-components';
 import Lozenge from '@atlaskit/lozenge';
 import { statusToLozenge } from '../../../utils/statusToLozenge';
 
@@ -541,7 +541,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   >{target.issue_key}</span>
                   <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                    <Lozenge appearance={statusToLozenge(target.status)}>{target.status}</Lozenge>
+                    <StatusLozenge status={target.status} />
                     <ChevronDownIcon label="" size="small" />
                   </span>
                   {target.assignee_display_name ? (

@@ -81,7 +81,7 @@ export default function CatalystViewSubtask({
           <IssueIcon type={parentIssue.issue_type} size={14} />
           <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{parentIssue.issue_key}</span>
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
-          <StatusLozenge status={parentIssue.status} category={parentIssue.status_category} />
+          <StatusLozenge status={parentIssue.status} statusCategory={parentIssue.status_category ?? undefined} />
         </div>
       )}
 
@@ -122,7 +122,7 @@ export default function CatalystViewSubtask({
   ), [issue, itemId, projectKey, onOpenItem, isOpen, parentIssue]);
 
   const rightContent = useMemo(() => (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" statusPill={<StatusLozengeDropdown status={issue?.status} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category ?? undefined} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 

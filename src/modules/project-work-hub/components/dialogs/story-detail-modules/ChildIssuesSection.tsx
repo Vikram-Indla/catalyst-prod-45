@@ -22,7 +22,7 @@ import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { DEFAULT_COLUMNS, STATUS_OPTION_GROUPS, LOZENGE } from './constants';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { nextPos, getAvatarColor, formatDateShort, resolveStatusCategory } from './helpers';
-import { SectionBlock, IssueIcon, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
+import { SectionBlock, IssueIcon, ColumnPicker, SkeletonRows, EmptyState, StatusLozenge } from './shared-components';
 import Lozenge from '@atlaskit/lozenge';
 import { statusToLozenge } from '../../../utils/statusToLozenge';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -124,7 +124,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
           display: 'inline-flex', alignItems: 'center', fontFamily: 'inherit',
         }}
       >
-        <Lozenge appearance={statusToLozenge(item.status)}>{item.status}</Lozenge>
+        <StatusLozenge status={item.status} />
       </button>
       {open && (
         <div style={{

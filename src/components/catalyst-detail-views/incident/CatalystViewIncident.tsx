@@ -118,7 +118,7 @@ export default function CatalystViewIncident({
       parentSource="incident"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
-      statusPill={<StatusLozengeDropdown status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category ?? undefined} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     >
       {/* Tier 3.4: PI Release field */}

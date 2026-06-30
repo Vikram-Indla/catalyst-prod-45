@@ -124,7 +124,7 @@ export function AllWorkTab({
                     <div className="awRowMain">
                       <div className="awRowTop">
                         <span className="awKey">{ch.issue_key}</span>
-                        <StatusLozenge status={ch.status} />
+                        <StatusLozenge status={ch.status} statusCategory={ch.status_category ?? undefined} />
                       </div>
                       <div className="awSummary" style={{ WebkitLineClamp: 1 }}>{ch.summary}</div>
                     </div>

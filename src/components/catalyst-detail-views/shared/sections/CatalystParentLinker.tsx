@@ -707,7 +707,7 @@ function renderBrGroup(
             >
               {item.title}
             </span>
-            <StatusLozenge status={item.process_step} category={statusCat} />
+            <StatusLozenge status={item.process_step} statusCategory={statusCat ?? undefined} />
             {isSelected && (
               <CheckIcon
                 size="small"

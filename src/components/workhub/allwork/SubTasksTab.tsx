@@ -108,7 +108,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
 
       {/* Row 2: Status + Assignee + Priority + Updated */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 24 }}>
-        <StatusLozenge status={item.status} />
+        <StatusLozenge status={item.status} statusCategory={item.status_category ?? undefined} />
 
         {item.assignee_display_name && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

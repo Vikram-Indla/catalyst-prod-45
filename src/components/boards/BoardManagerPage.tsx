@@ -221,7 +221,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       value: userFilter ? { label: userFilter, value: userFilter } : null,
       onChange: v => setUserFilter(v ? v.value : null),
     },
-  ], [spaceFilterOptions, userFilterOptions, spaceFilter, userFilter]);
+  ], [projectFilterOptions, userFilterOptions, spaceFilter, userFilter]);
 
   const createCta = useMemo(() => (
     <Button

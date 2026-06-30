@@ -4,6 +4,7 @@
  */
 import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
+import { AddFlagModal } from '@/components/workhub/issue-view/IssueActionDialogs';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -67,6 +68,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
      in-board panel. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
+  const [flagTarget, setFlagTarget] = useState<BoardIssue | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelModalIssue, setLabelModalIssue] = useState<BoardIssue | null>(null);
   const [labelInput, setLabelInput] = useState('');
@@ -110,7 +112,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (key && boardId) navigate(`/project-hub/${key}/boards/${boardId}/map-statuses`);
   }, [key, boardConfig.boardId, navigate]);
   const [hideDone, setHideDone] = useState(true);
-  const { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
+  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
   const onAssign = useCallback(async (issue: BoardIssue, name: string | null) => {
@@ -122,9 +124,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     refetch();
   }, [updateStatus, refetch]);
 
-  const onFlag = useCallback(async (issue: BoardIssue) => {
-    await toggleFlag(issue.id, !issue.isFlagged); refetch();
-  }, [toggleFlag, refetch]);
+  const onFlag = useCallback((issue: BoardIssue) => {
+    setFlagTarget(issue);
+  }, []);
   const onCopyLink = useCallback((issue: BoardIssue) => {
     navigator.clipboard?.writeText(`${window.location.origin}/project-hub/${key}/issue/${issue.issueKey}`);
   }, [key]);
@@ -420,6 +422,18 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
             setDeleteTarget(null);
             refetch();
           }}
+        />
+      )}
+
+      {flagTarget && (
+        <AddFlagModal
+          issueId={flagTarget.id}
+          issueKey={flagTarget.issueKey}
+          issueTitle={flagTarget.summary}
+          issueType={flagTarget.issueType}
+          flagged={flagTarget.isFlagged}
+          tableName={mode === 'product' ? 'business_requests' : 'ph_issues'}
+          onClose={() => { setFlagTarget(null); refetch(); }}
         />
       )}
 

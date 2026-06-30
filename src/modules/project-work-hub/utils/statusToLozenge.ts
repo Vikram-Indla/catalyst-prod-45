@@ -139,7 +139,15 @@ export function statusToLozenge(
   if (statusCategory) {
     const c = statusCategory.toLowerCase();
     if (c === 'done') return 'success';
-    if (c === 'in_progress' || c === 'indeterminate') return 'inprogress';
+    if (c === 'in_progress' || c === 'indeterminate') {
+      // Semantic overrides: "On Hold" / "Blocked" have distinct warning/danger
+      // colors even when Jira places them in the in_progress category.
+      // Mirrors the same semantic-special logic applied to the 'to do' branch.
+      const lowerName = status?.trim().toLowerCase() ?? '';
+      if (lowerName.includes('block') || lowerName === 'cancelled' || lowerName === 'canceled') return 'removed';
+      if (lowerName === 'on hold' || lowerName === 'paused' || lowerName.includes('hold')) return 'moved';
+      return 'inprogress';
+    }
     if (c === 'removed') return 'removed';
     // c === 'to do' / 'todo' / 'new': category wins, EXCEPT for semantic
     // specials (Blocked → red, On Hold → yellow, Awaiting Info → blue).

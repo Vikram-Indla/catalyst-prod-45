@@ -106,7 +106,7 @@ export function WorkItemRow({
 
       {/* 5. Status — StatusLozenge guardrail */}
       <div>
-        <StatusLozenge status={item.status} />
+        <StatusLozenge status={item.status} statusCategory={item.status_category ?? undefined} />
       </div>
 
       {/* 5b. Sprint/Iteration */}

@@ -554,7 +554,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       </div>
                       <div>
                         <span className="text-[11px] block mb-1" style={{ color: 'var(--fg-3)' }}>Status</span>
-                        <StatusLozenge status={currentItem.status} />
+                        <StatusLozenge status={currentItem.status} statusCategory={currentItem.status_category ?? undefined} />
                       </div>
                     </div>
                   </div>
@@ -676,7 +676,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--bd-subtle, var(--cp-ink-1, var(--ds-text)))', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', letterSpacing: '0.05em' }}>Status</span>
-                <StatusLozenge status={currentItem.status} />
+                <StatusLozenge status={currentItem.status} statusCategory={currentItem.status_category ?? undefined} />
               </div>
 
               <div className="mb-4">

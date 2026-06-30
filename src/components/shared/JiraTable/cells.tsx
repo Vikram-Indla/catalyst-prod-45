@@ -446,6 +446,7 @@ export function makeStatusCell(
   getStatus: (row: any) => string | null,
   appearanceFor: (status: string | null) => LozengeAppearance,
   labelFor?: (status: string | null) => string,
+  getStatusCategory?: (row: any) => string | null | undefined,
 ) {
   return function StatusCell({ row }: CellProps<any>) {
     const status = getStatus(row);
@@ -456,9 +457,11 @@ export function makeStatusCell(
         </span>
       );
     const displayLabel = labelFor ? labelFor(status) : status;
+    const statusCategory = getStatusCategory ? (getStatusCategory(row) ?? undefined) : undefined;
     return (
       <StatusLozengeDropdown
         status={displayLabel}
+        statusCategory={statusCategory}
         interactive={false}
         size="sm"
       />

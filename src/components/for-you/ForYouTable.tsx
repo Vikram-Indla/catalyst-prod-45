@@ -292,7 +292,7 @@ export function CatalystTable({
 
                     {/* Row 3: status + hub + priority */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <StatusLozenge status={item.status} />
+                      <StatusLozenge status={item.status} statusCategory={item.statusCategory ?? undefined} />
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
@@ -377,7 +377,7 @@ export function CatalystTable({
       case 'status':
         return (
           <td key={colKey} style={{ width: columnWidths.status, textAlign: 'center' }}>
-            <StatusLozenge status={item.status} />
+            <StatusLozenge status={item.status} statusCategory={item.statusCategory ?? undefined} />
           </td>
         );
       case 'project':
