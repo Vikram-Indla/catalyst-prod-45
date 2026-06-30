@@ -788,7 +788,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
      actually constrains incident results. Tasks mode follows the same
      pattern — the 'TASKS' sentinel is for save scope only, and the tasks
      query path doesn't go through the ph_issues JQL engine at all. */
-  const jqlProjectKey = (isIncident || isTasks || isRelease) ? undefined : projectKey;
+  const jqlProjectKey = (isIncident || isTasks || isRelease || isProduct) ? undefined : projectKey;
   const jql = useMemo(() => {
     if (filterMode === 'jql') return jqlText || canonicalFilterValueToJql(canonicalFilter, { projectKey: jqlProjectKey });
     return savedFilterJql ?? canonicalFilterValueToJql(canonicalFilter, { projectKey: jqlProjectKey });
