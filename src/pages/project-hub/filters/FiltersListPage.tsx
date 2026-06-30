@@ -643,6 +643,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const footerText = filterCountText ?? undefined;
 
   return (
+    <>
     <CatalystListPageLayout
       chromeBand={hubType === 'tasks'
         ? undefined
@@ -773,5 +774,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         </ModalFooter>
       </ModalDialog>
     )}
+    </>
   );
 }
