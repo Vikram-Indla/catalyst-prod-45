@@ -650,6 +650,13 @@ export function CanonicalFilter({
       >
         <FilterIcon label="" />
         <span>Filter</span>
+        {effValue.assignee.length > 0 && (
+          <AssigneeAvatarStack
+            selectedIds={effValue.assignee}
+            options={effectiveAssigneeOptions}
+            max={3}
+          />
+        )}
         {activeFieldCount > 0 && (
           <span
             style={{
@@ -3406,5 +3413,110 @@ function OptionRow({
         )}
       </span>
     </div>
+  );
+}
+
+// ─── AssigneeAvatarStack ──────────────────────────────────────────────────────
+// Renders up to `max` stacked mini-avatars for selected assignees, then "+N".
+// Used in the Filter trigger button to give visual feedback on active assignee
+// selections without opening the drawer.
+
+function AssigneeAvatarStack({
+  selectedIds,
+  options,
+  max = 3,
+}: {
+  selectedIds: string[];
+  options: CanonicalAssigneeOption[];
+  max?: number;
+}) {
+  const optMap = useMemo(() => {
+    const m = new Map<string, CanonicalAssigneeOption>();
+    options.forEach((o) => m.set(o.id, o));
+    return m;
+  }, [options]);
+
+  const selected = useMemo(
+    () => selectedIds.map((id) => optMap.get(id)).filter((o): o is CanonicalAssigneeOption => !!o),
+    [selectedIds, optMap],
+  );
+
+  const visible = selected.slice(0, max);
+  const overflow = selected.length - visible.length;
+
+  if (visible.length === 0) return null;
+
+  const SIZE = 18;
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        marginLeft: 4,
+        flexShrink: 0,
+      }}
+      aria-label={`${selected.length} assignee${selected.length > 1 ? 's' : ''} selected`}
+    >
+      {visible.map((opt, i) => (
+        <span
+          key={opt.id}
+          title={opt.label}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: SIZE,
+            height: SIZE,
+            borderRadius: '50%',
+            border: '1.5px solid var(--ds-surface)',
+            marginLeft: i === 0 ? 0 : -(SIZE / 3),
+            flexShrink: 0,
+            overflow: 'hidden',
+            background: 'var(--ds-background-neutral)',
+            zIndex: visible.length - i,
+            position: 'relative',
+          }}
+        >
+          {opt.avatarUrl ? (
+            <img
+              src={opt.avatarUrl}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
+            {/* ads-scanner:ignore-next-line — 7px micro-initials in 18px avatar, no ADS token equivalent */}
+            <span style={{ fontSize: 7, fontWeight: 700, color: 'var(--ds-text-subtle)', userSelect: 'none', lineHeight: 1 }}>
+              {opt.label.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+            </span>
+          )}
+        </span>
+      ))}
+      {overflow > 0 && (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: SIZE,
+            padding: '0 4px',
+            borderRadius: SIZE / 2,
+            border: '1.5px solid var(--ds-surface)',
+            marginLeft: -(SIZE / 3),
+            background: 'var(--ds-background-neutral)',
+            /* ads-scanner:ignore-next-line — 8px overflow pill, no ADS token for micro-size */
+            fontSize: 8,
+            fontWeight: 700,
+            color: 'var(--ds-text-subtle)',
+            flexShrink: 0,
+            position: 'relative',
+            zIndex: 0,
+            userSelect: 'none',
+          }}
+        >
+          +{overflow}
+        </span>
+      )}
+    </span>
   );
 }
