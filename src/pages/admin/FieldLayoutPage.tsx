@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { UnsavedChangesModal } from '@/components/shared/UnsavedChangesModal';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
@@ -461,6 +462,7 @@ export default function FieldLayoutPage() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [pendingDiscard, setPendingDiscard] = useState<(() => void) | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   // Local working copy of the layout (so Save/Discard works)
@@ -651,7 +653,10 @@ export default function FieldLayoutPage() {
                 <button
                   key={t}
                   onClick={() => {
-                    if (dirty && !confirm('Discard unsaved changes?')) return;
+                    if (dirty) {
+                      setPendingDiscard(() => () => setSelectedType(t));
+                      return;
+                    }
                     setSelectedType(t);
                   }}
                   style={{
@@ -681,8 +686,12 @@ export default function FieldLayoutPage() {
             <select
               value={selectedProject ?? ''}
               onChange={e => {
-                if (dirty && !confirm('Discard unsaved changes?')) return;
-                setSelectedProject(e.target.value || null);
+                const newVal = e.target.value || null;
+                if (dirty) {
+                  setPendingDiscard(() => () => setSelectedProject(newVal));
+                  return;
+                }
+                setSelectedProject(newVal);
               }}
               style={{
                 padding: '4px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
@@ -779,6 +788,11 @@ export default function FieldLayoutPage() {
           )}
         </div>
       </div>
+      <UnsavedChangesModal
+        isOpen={!!pendingDiscard}
+        onCancel={() => setPendingDiscard(null)}
+        onDiscard={() => { pendingDiscard?.(); setPendingDiscard(null); }}
+      />
     </AdminGuard>
   );
 }

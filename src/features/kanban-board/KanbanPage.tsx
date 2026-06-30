@@ -4,6 +4,9 @@
  */
 import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -64,6 +67,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
      in-board panel. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
+  const [showLabelModal, setShowLabelModal] = useState(false);
+  const [labelModalIssue, setLabelModalIssue] = useState<BoardIssue | null>(null);
+  const [labelInput, setLabelInput] = useState('');
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
   const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
@@ -125,10 +131,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const onCopyKey = useCallback((issue: BoardIssue) => {
     navigator.clipboard?.writeText(issue.issueKey);
   }, []);
-  const onAddLabel = useCallback(async (issue: BoardIssue) => {
-    const label = window.prompt('Add label')?.trim();
-    if (label) { await addLabel(issue.id, issue.labels, label); refetch(); }
-  }, [addLabel, refetch]);
+  const onAddLabel = useCallback((issue: BoardIssue) => {
+    setLabelInput('');
+    setLabelModalIssue(issue);
+    setShowLabelModal(true);
+  }, []);
   const onArchive = useCallback(async (issue: BoardIssue) => { await archiveIssue(issue.id); refetch(); }, [archiveIssue, refetch]);
   const onDelete = useCallback((issue: BoardIssue) => {
     setDeleteTarget({ id: issue.id, issueKey: issue.issueKey });
@@ -414,6 +421,60 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
             refetch();
           }}
         />
+      )}
+
+      {showLabelModal && (
+        <ModalDialog onClose={() => setShowLabelModal(false)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle>Add label</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div>
+              <label style={{
+                display: 'block',
+                marginBottom: 4,
+                fontSize: 'var(--ds-font-size-300)',
+                fontWeight: 600,
+                color: 'var(--ds-text)',
+              }}>
+                Label
+              </label>
+              <Textfield
+                value={labelInput}
+                onChange={(e) => setLabelInput((e.target as HTMLInputElement).value)}
+                placeholder="Enter label"
+                autoFocus
+                onKeyDown={async (e) => {
+                  if (e.key === 'Enter') {
+                    const trimmed = labelInput.trim();
+                    if (trimmed && labelModalIssue) {
+                      await addLabel(labelModalIssue.id, labelModalIssue.labels, trimmed);
+                      refetch();
+                    }
+                    setShowLabelModal(false);
+                  }
+                }}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setShowLabelModal(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
+              isDisabled={!labelInput.trim()}
+              onClick={async () => {
+                const trimmed = labelInput.trim();
+                if (trimmed && labelModalIssue) {
+                  await addLabel(labelModalIssue.id, labelModalIssue.labels, trimmed);
+                  refetch();
+                }
+                setShowLabelModal(false);
+              }}
+            >
+              Add
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
       )}
     </div>
   );

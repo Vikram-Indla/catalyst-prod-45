@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { UnsavedChangesModal } from '@/components/shared/UnsavedChangesModal';
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ export function CreateEditTestPlanDialog({
   onSuccess 
 }: CreateEditTestPlanDialogProps) {
   const [activeTab, setActiveTab] = useState<TabId>('basic');
+  const [pendingDiscard, setPendingDiscard] = useState<(() => void) | null>(null);
   const isEditing = !!editPlanId;
 
   // Fetch existing plan if editing
@@ -83,8 +85,12 @@ export function CreateEditTestPlanDialog({
 
   const handleClose = useCallback(() => {
     if (isDirty) {
-      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to close?');
-      if (!confirmed) return;
+      setPendingDiscard(() => () => {
+        reset();
+        setActiveTab('basic');
+        onOpenChange(false);
+      });
+      return;
     }
     reset();
     setActiveTab('basic');
@@ -328,6 +334,11 @@ export function CreateEditTestPlanDialog({
           </div>
         </div>
       </DialogContent>
+      <UnsavedChangesModal
+        isOpen={!!pendingDiscard}
+        onCancel={() => setPendingDiscard(null)}
+        onDiscard={() => { pendingDiscard?.(); setPendingDiscard(null); }}
+      />
     </Dialog>
   );
 }

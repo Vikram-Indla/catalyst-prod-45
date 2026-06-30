@@ -15,6 +15,9 @@
  *   - "Cancel" discards draft, closes panel.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { useQuery } from '@tanstack/react-query';
 import { X, Info, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
@@ -1353,10 +1356,12 @@ function ColumnsSection({
     setPresets(next);
     try { localStorage.setItem(presetKey, JSON.stringify(next)); } catch { /* quota */ }
   };
+  const [showPresetModal, setShowPresetModal] = useState(false);
+  const [presetName, setPresetName] = useState('My defaults');
+
   const savePresetPrompt = () => {
-    const name = (typeof window !== 'undefined' ? window.prompt('Preset name:', 'My defaults') : null)?.trim();
-    if (!name) return;
-    persistPresets({ ...presets, [name]: [...active] });
+    setPresetName('My defaults');
+    setShowPresetModal(true);
   };
   const loadPreset = (name: string) => {
     const cols = presets[name];
@@ -1580,6 +1585,54 @@ function ColumnsSection({
             );
           })()}
         </div>
+      )}
+
+      {showPresetModal && (
+        <ModalDialog onClose={() => setShowPresetModal(false)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle>Save preset</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div>
+              <label style={{
+                display: 'block',
+                marginBottom: 4,
+                fontSize: 'var(--ds-font-size-300)',
+                fontWeight: 600,
+                color: 'var(--ds-text)',
+              }}>
+                Preset name
+              </label>
+              <Textfield
+                value={presetName}
+                onChange={(e) => setPresetName(e.target.value)}
+                placeholder="My defaults"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const trimmed = presetName.trim();
+                    if (trimmed) persistPresets({ ...presets, [trimmed]: [...active] });
+                    setShowPresetModal(false);
+                  }
+                }}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setShowPresetModal(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
+              isDisabled={!presetName.trim()}
+              onClick={() => {
+                const trimmed = presetName.trim();
+                if (trimmed) persistPresets({ ...presets, [trimmed]: [...active] });
+                setShowPresetModal(false);
+              }}
+            >
+              Save
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
       )}
     </div>
   );

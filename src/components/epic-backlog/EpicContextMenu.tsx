@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,6 +13,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2, ParkingCircle } from '@/lib/atlaskit-icons';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 
 interface EpicContextMenuProps {
   epicId: string;
@@ -22,6 +25,10 @@ interface EpicContextMenuProps {
 
 export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenuProps) {
   const { toast } = useToast();
+  const [moveModal, setMoveModal] = useState(false);
+  const [moveRankInput, setMoveRankInput] = useState('');
+  const [dupModal, setDupModal] = useState(false);
+  const [dupNameInput, setDupNameInput] = useState('');
 
   // Fetch PIs for Move to PI submenu
   const { data: programIncrements } = useQuery({
@@ -168,20 +175,31 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
   });
 
   const handleMoveToPosition = () => {
-    const position = prompt('Enter position (rank number):');
-    if (position && !isNaN(Number(position))) {
-      moveToPositionMutation.mutate(Number(position));
+    setMoveRankInput('');
+    setMoveModal(true);
+  };
+
+  const handleMoveConfirm = () => {
+    if (moveRankInput && !isNaN(Number(moveRankInput))) {
+      moveToPositionMutation.mutate(Number(moveRankInput));
     }
+    setMoveModal(false);
   };
 
   const handleDuplicate = () => {
-    const newName = prompt('Enter name for duplicated epic:', '');
-    if (newName && newName.trim()) {
-      duplicateMutation.mutate(newName.trim());
+    setDupNameInput('');
+    setDupModal(true);
+  };
+
+  const handleDupConfirm = () => {
+    if (dupNameInput.trim()) {
+      duplicateMutation.mutate(dupNameInput.trim());
     }
+    setDupModal(false);
   };
 
   return (
+    <>
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
@@ -235,5 +253,48 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
+
+    {moveModal && (
+      <ModalDialog onClose={() => setMoveModal(false)}>
+        <ModalHeader hasCloseButton>
+          <ModalTitle>Move to position</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <Textfield
+            autoFocus
+            type="number"
+            min={1}
+            placeholder="Enter rank number"
+            value={moveRankInput}
+            onChange={(e) => setMoveRankInput((e.target as HTMLInputElement).value)}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setMoveModal(false)}>Cancel</Button>
+          <Button appearance="primary" onClick={handleMoveConfirm} isDisabled={!moveRankInput || isNaN(Number(moveRankInput))}>Move</Button>
+        </ModalFooter>
+      </ModalDialog>
+    )}
+
+    {dupModal && (
+      <ModalDialog onClose={() => setDupModal(false)}>
+        <ModalHeader hasCloseButton>
+          <ModalTitle>Duplicate epic</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <Textfield
+            autoFocus
+            placeholder="Enter name for duplicated epic"
+            value={dupNameInput}
+            onChange={(e) => setDupNameInput((e.target as HTMLInputElement).value)}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setDupModal(false)}>Cancel</Button>
+          <Button appearance="primary" onClick={handleDupConfirm} isDisabled={!dupNameInput.trim()}>Duplicate</Button>
+        </ModalFooter>
+      </ModalDialog>
+    )}
+    </>
   );
 }

@@ -4,6 +4,7 @@
  * Uses @dnd-kit for drag-and-drop status pills between columns/backlog/unmapped
  */
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { UnsavedChangesModal } from '@/components/shared/UnsavedChangesModal';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { KANBAN_TOKENS } from '@/components/kanban/kanban-tokens';
@@ -417,6 +418,7 @@ export default function MapStatusesPage() {
   const [dragStatusId, setDragStatusId] = useState<string | null>(null);
   const [dragColumnId, setDragColumnId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DraftColumn | null>(null);
+  const [pendingDiscard, setPendingDiscard] = useState<(() => void) | null>(null);
 
   // Unsaved changes guard
   useEffect(() => {
@@ -428,7 +430,8 @@ export default function MapStatusesPage() {
 
   const handleBack = useCallback(() => {
     if (hasChanges) {
-      if (!window.confirm('You have unsaved changes. Discard them?')) return;
+      setPendingDiscard(() => () => navigate(boardId ? `/project-hub/${key}/boards/${boardId}` : `/project-hub/${key}/boards`));
+      return;
     }
     navigate(boardId ? `/project-hub/${key}/boards/${boardId}` : `/project-hub/${key}/boards`);
   }, [hasChanges, navigate, key]);
@@ -698,6 +701,11 @@ export default function MapStatusesPage() {
           onCancel={() => setDeleteTarget(null)}
         />
       )}
+      <UnsavedChangesModal
+        isOpen={!!pendingDiscard}
+        onCancel={() => setPendingDiscard(null)}
+        onDiscard={() => { pendingDiscard?.(); setPendingDiscard(null); }}
+      />
     </div>
   );
 }

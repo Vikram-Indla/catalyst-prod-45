@@ -26,6 +26,10 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { LinkInputModal } from '@/components/shared/LinkInputModal';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { createPortal } from 'react-dom';
 import type { Editor } from '@tiptap/react';
 // eslint-disable-next-line no-restricted-imports
@@ -95,6 +99,8 @@ export function ImageToolbar({
   const [ellipsisMenu, setEllipsisMenu] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const [imgModal, setImgModal] = useState<'link' | 'alt' | null>(null);
+  const [altInput, setAltInput] = useState('');
 
   // ── Measure the image rect; re-runs on scroll/resize so the toolbar
   //    tracks the image. Position is re-derived from the latest rect. ──
@@ -202,20 +208,15 @@ export function ImageToolbar({
   }, [editor, imagePos]);
 
   const handleAddLink = useCallback(() => {
-    const href = window.prompt('Enter URL', 'https://');
-    if (!href) return;
-    updateAttrs({ /* link stored as part of image attrs — future */ });
-    // No native link wrapping on image nodes in v1; placeholder.
-    console.info('[ImageToolbar] add-link not yet wired; href:', href);
     setEllipsisMenu(false);
-  }, [updateAttrs]);
+    setImgModal('link');
+  }, []);
 
   const handleAddAlt = useCallback(() => {
-    const alt = window.prompt('Describe this image', '');
-    if (alt == null) return;
-    updateAttrs({ alt });
     setEllipsisMenu(false);
-  }, [updateAttrs]);
+    setAltInput('');
+    setImgModal('alt');
+  }, []);
 
   const handlePreview = useCallback(() => {
     if (!src) return;
@@ -352,6 +353,56 @@ export function ImageToolbar({
           onDelete={handleDelete}
           onClose={() => setEllipsisMenu(false)}
         />
+      )}
+
+      <LinkInputModal
+        isOpen={imgModal === 'link'}
+        onClose={() => setImgModal(null)}
+        onConfirm={(href) => {
+          updateAttrs({ /* link stored as part of image attrs — future */ });
+          console.info('[ImageToolbar] add-link not yet wired; href:', href);
+          setImgModal(null);
+        }}
+        title="Add link to image"
+      />
+
+      {imgModal === 'alt' && (
+        <ModalDialog onClose={() => setImgModal(null)} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle>Add alt text</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div>
+              <label style={{
+                display: 'block',
+                marginBottom: 4,
+                fontSize: 'var(--ds-font-size-300)',
+                fontWeight: 600,
+                color: 'var(--ds-text)',
+              }}>
+                Description
+              </label>
+              <Textfield
+                value={altInput}
+                onChange={(e) => setAltInput((e.target as HTMLInputElement).value)}
+                placeholder="Describe this image"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    updateAttrs({ alt: altInput });
+                    setImgModal(null);
+                  }
+                }}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setImgModal(null)}>Cancel</Button>
+            <Button appearance="primary" onClick={() => { updateAttrs({ alt: altInput }); setImgModal(null); }}>
+              Save
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
       )}
     </>,
     document.body,

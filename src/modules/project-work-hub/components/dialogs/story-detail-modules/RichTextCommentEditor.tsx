@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
+import { LinkInputModal } from '@/components/shared/LinkInputModal';
 import TextBoldIcon from '@atlaskit/icon/core/text-bold';
 import TextItalicIcon from '@atlaskit/icon/core/text-italic';
 import TextUnderlineIcon from '@atlaskit/icon/core/text-underline';
@@ -28,6 +29,7 @@ export function RichTextCommentEditor({
   const [isEmpty, setIsEmpty] = useState(!initialValue);
   const [isFocused, setIsFocused] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
 
   // @mention state
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
@@ -243,10 +245,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><ImageIcon label="Insert image" /></button>
-          <button style={toolbarBtnStyle} onClick={() => {
-            const url = prompt('Enter link URL:');
-            if (url) execCmd('createLink', url);
-          }} title="Insert link"
+          <button style={toolbarBtnStyle} onClick={() => setLinkModalOpen(true)} title="Insert link"
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><LinkIcon label="Insert link" /></button>
@@ -342,5 +341,11 @@ export function RichTextCommentEditor({
         >Cancel</button>
       </div>
     </div>
+    <LinkInputModal
+      isOpen={linkModalOpen}
+      onClose={() => setLinkModalOpen(false)}
+      onConfirm={(url) => execCmd('createLink', url)}
+      title="Insert link"
+    />
   );
 }

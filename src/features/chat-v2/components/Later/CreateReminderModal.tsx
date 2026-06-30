@@ -5,6 +5,7 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { LinkInputModal } from '@/components/shared/LinkInputModal';
 import {
   BoldIcon,
   CalendarIcon,
@@ -60,6 +61,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTime, setShowTime] = useState(false);
   const [text, setText] = useState('');
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -85,7 +87,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
     if (textRef.current) setText(textRef.current.innerText);
   };
 
-  return createPortal(
+  const modalPortal = createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -192,11 +194,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
               <FmtBtn label="Underline" onClick={() => fmt('underline')}><UnderlineIcon size={14} /></FmtBtn>
               <FmtBtn label="Strikethrough" onClick={() => fmt('strikeThrough')}><StrikethroughIcon size={14} /></FmtBtn>
               <Divider />
-              <FmtBtn label="Link" onClick={() => {
-                const url = prompt('Link URL');
-                if (url) document.execCommand('createLink', false, url);
-                if (textRef.current) setText(textRef.current.innerText);
-              }}><LinkIcon size={14} /></FmtBtn>
+              <FmtBtn label="Link" onClick={() => setLinkModalOpen(true)}><LinkIcon size={14} /></FmtBtn>
               <FmtBtn label="Ordered list" onClick={() => fmt('insertOrderedList')}><ListOrderedIcon size={14} /></FmtBtn>
               <FmtBtn label="Bullet list" onClick={() => fmt('insertUnorderedList')}><ListBulletIcon size={14} /></FmtBtn>
               <FmtBtn label="Quote" onClick={() => fmt('formatBlock')}><QuoteIcon size={14} /></FmtBtn>
@@ -236,6 +234,21 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
       </div>
     </div>,
     document.body,
+  );
+
+  return (
+    <>
+      {modalPortal}
+      <LinkInputModal
+        isOpen={linkModalOpen}
+        onClose={() => setLinkModalOpen(false)}
+        onConfirm={(url) => {
+          document.execCommand('createLink', false, url);
+          if (textRef.current) setText(textRef.current.innerText);
+        }}
+        title="Insert link"
+      />
+    </>
   );
 }
 

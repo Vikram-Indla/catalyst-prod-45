@@ -1,4 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { LinkInputModal } from '@/components/shared/LinkInputModal';
 
 interface ComposerEditorProps {
   /** Markdown source. Composer owns the value; editor mounts it once and emits markdown out. */
@@ -43,6 +44,9 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
     const editorRef = useRef<HTMLDivElement>(null);
     const [empty, setEmpty] = useState(true);
     const lastEmitRef = useRef('');
+    const [linkModal, setLinkModal] = useState<{ hasSelection: boolean } | null>(null);
+    // Saved selection range so we can restore it after the modal opens
+    const savedRangeRef = useRef<Range | null>(null);
 
     const detectMentionTrigger = () => {
       if (!onMentionTrigger) return;
@@ -71,12 +75,52 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
       detectMentionTrigger();
     };
 
+    const openLinkModal = () => {
+      const el = editorRef.current;
+      if (!el) return;
+      el.focus();
+      const sel = window.getSelection();
+      const hasSelection = !!(sel && sel.toString() !== '');
+      // Save the current selection so we can restore it when the modal confirms
+      if (sel && sel.rangeCount > 0) {
+        savedRangeRef.current = sel.getRangeAt(0).cloneRange();
+      }
+      setLinkModal({ hasSelection });
+    };
+
+    const applyLinkFromModal = (url: string, text?: string) => {
+      const el = editorRef.current;
+      if (!el) return;
+      el.focus();
+      // Restore the selection that was active when the modal opened
+      const saved = savedRangeRef.current;
+      if (saved) {
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(saved);
+        savedRangeRef.current = null;
+      }
+      const sel = window.getSelection();
+      if (!sel || sel.toString() === '') {
+        // No selection — insert link with label
+        const label = text ?? url;
+        document.execCommand('insertHTML', false,
+          `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
+      } else {
+        document.execCommand('createLink', false, url);
+      }
+      emitChange();
+    };
+
     useImperativeHandle(ref, () => ({
       focus: () => {
         editorRef.current?.focus();
         placeCursorAtEnd(editorRef.current);
       },
-      toggleFormat: (action: FormatAction) => applyFormat(editorRef.current, action, emitChange),
+      toggleFormat: (action: FormatAction) => {
+        if (action === 'link') { openLinkModal(); return; }
+        applyFormat(editorRef.current, action, emitChange);
+      },
       insertText: (text: string) => {
         editorRef.current?.focus();
         document.execCommand('insertText', false, text);
@@ -120,7 +164,7 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
           applyFormat(editorRef.current, 'underline', emitChange);
         } else if (k === 'k') {
           e.preventDefault();
-          applyFormat(editorRef.current, 'link', emitChange);
+          openLinkModal();
         }
       }
     };
@@ -142,6 +186,13 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
 
     return (
       <div style={{ position: 'relative' }}>
+        <LinkInputModal
+          isOpen={!!linkModal}
+          onClose={() => setLinkModal(null)}
+          onConfirm={applyLinkFromModal}
+          withText={linkModal?.hasSelection === false}
+          title="Insert link"
+        />
         {empty && (
           <span
             aria-hidden="true"
@@ -197,18 +248,9 @@ function applyFormat(el: HTMLElement | null, action: FormatAction, emit: () => v
   if (!el) return;
   el.focus();
   if (action === 'link') {
-    const sel = window.getSelection();
-    if (!sel || sel.toString() === '') {
-      const url = window.prompt('Link URL', 'https://');
-      if (!url) return;
-      const label = window.prompt('Link text', url) ?? url;
-      document.execCommand('insertHTML', false,
-        `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
-    } else {
-      const url = window.prompt('Link URL', 'https://');
-      if (!url) return;
-      document.execCommand('createLink', false, url);
-    }
+    // Link insertion is handled by the LinkInputModal in the component.
+    // applyFormat should not be called for 'link' — this branch is a safety fallback.
+    return;
   } else {
     const cmd = ACTION_TO_COMMAND[action];
     if (cmd) document.execCommand(cmd, false);

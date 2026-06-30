@@ -14,6 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2 } from '@/lib/atlaskit-icons';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 
 interface FeatureContextMenuProps {
   featureId: string;
@@ -24,6 +27,10 @@ interface FeatureContextMenuProps {
 export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureContextMenuProps) {
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [moveModal, setMoveModal] = useState(false);
+  const [moveRankInput, setMoveRankInput] = useState('');
+  const [dupModal, setDupModal] = useState(false);
+  const [dupNameInput, setDupNameInput] = useState('');
 
   // Fetch PIs for Move to PI submenu
   const { data: programIncrements } = useQuery({
@@ -167,17 +174,27 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
   });
 
   const handleMoveToPosition = () => {
-    const position = prompt('Enter position (rank number):');
-    if (position && !isNaN(Number(position))) {
-      moveToPositionMutation.mutate(Number(position));
+    setMoveRankInput('');
+    setMoveModal(true);
+  };
+
+  const handleMoveConfirm = () => {
+    if (moveRankInput && !isNaN(Number(moveRankInput))) {
+      moveToPositionMutation.mutate(Number(moveRankInput));
     }
+    setMoveModal(false);
   };
 
   const handleDuplicate = () => {
-    const newName = prompt('Enter name for duplicated feature:', '');
-    if (newName && newName.trim()) {
-      duplicateMutation.mutate(newName.trim());
+    setDupNameInput('');
+    setDupModal(true);
+  };
+
+  const handleDupConfirm = () => {
+    if (dupNameInput.trim()) {
+      duplicateMutation.mutate(dupNameInput.trim());
     }
+    setDupModal(false);
   };
 
   const handleDelete = () => {
@@ -262,6 +279,48 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
         typeLabel="feature"
         onConfirm={() => { deleteFeatureMutation.mutate(); setShowDeleteDialog(false); }}
       />
+    )}
+
+    {moveModal && (
+      <ModalDialog onClose={() => setMoveModal(false)}>
+        <ModalHeader hasCloseButton>
+          <ModalTitle>Move to position</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <Textfield
+            autoFocus
+            type="number"
+            min={1}
+            placeholder="Enter rank number"
+            value={moveRankInput}
+            onChange={(e) => setMoveRankInput((e.target as HTMLInputElement).value)}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setMoveModal(false)}>Cancel</Button>
+          <Button appearance="primary" onClick={handleMoveConfirm} isDisabled={!moveRankInput || isNaN(Number(moveRankInput))}>Move</Button>
+        </ModalFooter>
+      </ModalDialog>
+    )}
+
+    {dupModal && (
+      <ModalDialog onClose={() => setDupModal(false)}>
+        <ModalHeader hasCloseButton>
+          <ModalTitle>Duplicate feature</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <Textfield
+            autoFocus
+            placeholder="Enter name for duplicated feature"
+            value={dupNameInput}
+            onChange={(e) => setDupNameInput((e.target as HTMLInputElement).value)}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setDupModal(false)}>Cancel</Button>
+          <Button appearance="primary" onClick={handleDupConfirm} isDisabled={!dupNameInput.trim()}>Duplicate</Button>
+        </ModalFooter>
+      </ModalDialog>
     )}
     </>
   );
