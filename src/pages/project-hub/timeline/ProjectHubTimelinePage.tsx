@@ -379,6 +379,7 @@ export default function ProjectHubTimelinePage() {
 
   return (
     <TimelineView
+      filterContext="project"
       items={tree}
       isLoading={isLoading}
       error={error}

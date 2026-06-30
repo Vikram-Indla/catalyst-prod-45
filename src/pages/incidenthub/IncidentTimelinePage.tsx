@@ -357,6 +357,7 @@ export default function IncidentTimelinePage() {
 
   return (
     <TimelineView
+      filterContext="incident"
       items={tree}
       isLoading={isLoading}
       error={error}

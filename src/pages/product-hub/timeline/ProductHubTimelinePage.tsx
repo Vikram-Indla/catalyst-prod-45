@@ -506,6 +506,7 @@ export default function ProductHubTimelinePage() {
 
   return (
     <TimelineView
+      filterContext="product"
       items={items}
       isLoading={isLoading}
       error={error}

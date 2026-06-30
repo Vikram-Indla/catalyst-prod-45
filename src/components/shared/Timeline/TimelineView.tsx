@@ -159,6 +159,7 @@ export default function TimelineView(props: TimelineViewProps) {
     detailEntityKind,
     buildDependenciesRoute,
     locatedKey,
+    filterContext,
   } = props;
 
   const navigate = useNavigate();
@@ -1289,6 +1290,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   onChange={handleCanonicalChange}
                   scopeType="timeline"
                   scopeKey={hubKey}
+                  filterContext={filterContext}
                   statusOptions={canonicalStatusOptions}
                   assigneeOptions={canonicalAssigneeOptions}
                   workTypeOptions={canonicalWorkTypeOptions}

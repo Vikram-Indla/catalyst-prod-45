@@ -202,12 +202,14 @@ export interface CanonicalFilterProps {
   scopeKey?: string;
   /**
    * Context that drives which fields appear in the Basic tab.
-   * 'business-request' — hides Parent; work type = BR/BRD/BizGap/ChangeReq
-   * 'project'          — shows Parent; work type = project-scoped types
+   * 'business-request' — hides Parent + Severity; work type = BR/BRD/BizGap/ChangeReq
+   * 'project'          — shows Parent; work type = Feature/Story/Task/Sub-task
    * 'product'          — all fields; work type = all types
    * 'testhub'          — hides Parent; work type = QA Bug/Defect
+   * 'incident'         — hides Parent; work type = Production Incident only
+   * 'tasks'            — hides Parent + Severity; work type = Task/Sub-task
    */
-  filterContext?: 'business-request' | 'product' | 'project' | 'testhub';
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }
 
 const BASIC_FIELDS = ['Parent', 'Assignee', 'Status', 'Labels', 'Work type', 'Priority', 'Severity'];
@@ -255,18 +257,24 @@ export function CanonicalFilter({
   const activeFieldCount = countCanonicalActiveFields(effValue);
   const onClearAll = useCallback(() => setEff(emptyCanonicalFilterValue), [setEff]);
 
-  // Context-aware field set.
-  // Parent is hidden when context is BR or TestHub (they are top-level, no parent).
-  const showParent = filterContext !== 'business-request' && filterContext !== 'testhub';
+  // Context-aware field visibility.
+  const NO_PARENT_CONTEXTS = ['business-request', 'testhub', 'incident', 'tasks'];
+  const NO_SEVERITY_CONTEXTS = ['business-request', 'tasks'];
+  const showParent = !NO_PARENT_CONTEXTS.includes(filterContext ?? '');
+  const showSeverity = !NO_SEVERITY_CONTEXTS.includes(filterContext ?? '');
 
   // Work type options scoped to context.
   const BR_WORK_TYPES = new Set(['Business Request', 'Business Gap', 'BRD Task', 'Change Request']);
-  const PROJECT_WORK_TYPES = new Set(['Feature', 'Story', 'Task', 'Sub-task', 'QA Bug', 'Change Request', 'Production Incident']);
+  const PROJECT_WORK_TYPES = new Set(['Feature', 'Story', 'Task', 'Sub-task']);
   const TESTHUB_WORK_TYPES = new Set(['QA Bug', 'Defect']);
+  const INCIDENT_WORK_TYPES = new Set(['Production Incident']);
+  const TASKS_WORK_TYPES = new Set(['Task', 'Sub-task']);
   const contextWorkTypeOptions = useMemo(() => {
     if (!filterContext || filterContext === 'product') return workTypeOptions;
     const allowed = filterContext === 'business-request' ? BR_WORK_TYPES
       : filterContext === 'project' ? PROJECT_WORK_TYPES
+      : filterContext === 'incident' ? INCIDENT_WORK_TYPES
+      : filterContext === 'tasks' ? TASKS_WORK_TYPES
       : TESTHUB_WORK_TYPES;
     const filtered = workTypeOptions.filter((w) => allowed.has(w.label));
     return filtered.length > 0 ? filtered : workTypeOptions;
@@ -833,7 +841,7 @@ export function CanonicalFilter({
                   overflowY: 'auto',
                 }}
               >
-                {pinnedFields.filter((f) => showParent || f !== 'Parent').map((f) => (
+                {pinnedFields.filter((f) => (showParent || f !== 'Parent') && (showSeverity || f !== 'Severity')).map((f) => (
                   <FieldItem
                     key={f}
                     label={f}
@@ -853,10 +861,10 @@ export function CanonicalFilter({
                     onDrop={() => dropOn(f)}
                   />
                 ))}
-                {unpinnedFields.filter((f) => showParent || f !== 'Parent').length > 0 && (
+                {unpinnedFields.filter((f) => (showParent || f !== 'Parent') && (showSeverity || f !== 'Severity')).length > 0 && (
                   <div style={{ height: 1, background: borderSubtle, margin: '4px 0' }} />
                 )}
-                {unpinnedFields.filter((f) => showParent || f !== 'Parent').map((f) => (
+                {unpinnedFields.filter((f) => (showParent || f !== 'Parent') && (showSeverity || f !== 'Severity')).map((f) => (
                   <FieldItem
                     key={f}
                     label={f}

@@ -230,4 +230,9 @@ export interface TimelineViewProps {
    *  pill and its ancestor chevrons magenta — until the user opens another
    *  item. Sourced from the `?locate=<key>` query param. */
   locatedKey?: string;
+
+  /** Passed to CanonicalFilter — controls which fields and work types appear.
+   *  Should match the hub that hosts the timeline (product/project/testhub/incident/tasks).
+   *  Defaults to 'product' (all fields) when omitted. */
+  filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }
