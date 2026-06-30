@@ -9,10 +9,31 @@ export const DEFAULT_COLUMNS: ColumnConfig = {
   status: true, assignee: true, priority: true, created: false, updated: true,
 };
 
+/**
+ * CANONICAL STATUS CATEGORY MAP — HARD RULE (confirmed 2026-07-01)
+ *
+ * Every Catalyst status belongs to exactly one category. No deviations.
+ * Unknown statuses fall to 'todo' (safe fallback — never lie with in_progress).
+ *
+ * Category = data-layer workflow state. Lozenge appearance = UI color only.
+ * On Hold / Blocked are in_progress (active workflow) but render yellow/red
+ * via semantic override in statusToLozenge.ts. These are independent concerns.
+ */
 export const STATUS_CATEGORIES: Record<string, string[]> = {
-  todo: ['Backlog', 'To Do', 'In Requirements', 'In Design', 'Ready for Development', 'Technical Validation'],
-  in_progress: ['In Development', 'In Progress', 'In Review', 'In QA', 'In Entity Integration', 'In UAT', 'In BETA', 'End to End Testing', 'On Hold', 'Analysis', 'Blocked', 'Awaiting Info'],
-  done: ['Production Ready', 'Beta Ready', 'In Production', 'Done', 'Closed'],
+  todo: [
+    'Backlog', 'To Do', 'In Requirements', 'In Design', 'Technical Validation',
+  ],
+  in_progress: [
+    'In Development', 'In Progress', 'In Review', 'In QA', 'In Entity Integration',
+    'In UAT', 'In BETA', 'End to End Testing', 'On Hold', 'Analysis', 'Blocked',
+    'Awaiting Info', 'Ready for Development', 'Ready for QA', 'Ready for Review',
+    'Implementation', 'In Implementation', 'Paused',
+  ],
+  done: [
+    'Production Ready', 'Beta Ready', 'In Production', 'Done', 'Closed',
+    'Released', 'Completed', 'Approved', 'Resolved',
+    'Cancelled', 'Canceled', "Won't Do", 'Wont Do', 'Rejected',
+  ],
 };
 
 /**

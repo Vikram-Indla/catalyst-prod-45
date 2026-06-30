@@ -74,13 +74,12 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   'beta ready': 'success',
   'resolved': 'success',
 
-  // ── Done / resolved bucket (Jira statusCategory = 'done') ──
-  // jira-compare 2026-05-16: BAU DOM probe on BAU-5922 confirmed "Ready for QA"
-  // renders bg rgb(148,199,72) (lime green = success). Previously mapped to
-  // 'default' (grey) which was wrong. These statuses belong in the done bucket
-  // per BAU's Jira workflow configuration.
-  'ready for qa': 'success',
-  'ready for review': 'success',
+  // ── Active workflow gates (Catalyst product decision 2026-07-01) ──
+  // "Ready for QA" / "Ready for Review" = in_progress category.
+  // BAU Jira renders these green (done bucket) but Catalyst intentionally
+  // treats them as active workflow gates — work is not done until QA passes.
+  'ready for qa': 'inprogress',
+  'ready for review': 'inprogress',
 
   // ── In-flight bucket ──
   'in progress': 'inprogress',
@@ -105,11 +104,10 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   // variant (defined above in the Specials block) which takes precedence.
   'technical validation': 'default',
 
-  // ── Terminal / rejection bucket ──
-  // DEFAULT_STATUS_OPTIONS defines these as 'success' (Done category).
-  // statusToLozenge name-lookup was missing them → fell to 'default' (gray).
-  // These are covered by statusCategory when passed, but this handles non-canonical paths.
-  'rejected': 'success',
+  // ── Terminal / rejection bucket (category = done, 2026-07-01) ──
+  // Visual: rejected → grey (neutral closure), cancelled/won't do → red (see Specials above).
+  // Category is always 'done' for all three — terminal states.
+  'rejected': 'default',
   "won't do": 'removed',
   'wont do': 'removed',
 };
@@ -138,7 +136,12 @@ export function statusToLozenge(
   // 0. Workflow-category override (Jira NIN parity).
   if (statusCategory) {
     const c = statusCategory.toLowerCase();
-    if (c === 'done') return 'success';
+    if (c === 'done') {
+      // Semantic overrides: terminal-rejection states are done but render red.
+      const lowerName = status?.trim().toLowerCase() ?? '';
+      if (lowerName === 'cancelled' || lowerName === 'canceled' || lowerName === "won't do" || lowerName === 'wont do') return 'removed';
+      return 'success';
+    }
     if (c === 'in_progress' || c === 'indeterminate') {
       // Semantic overrides: "On Hold" / "Blocked" have distinct warning/danger
       // colors even when Jira places them in the in_progress category.
