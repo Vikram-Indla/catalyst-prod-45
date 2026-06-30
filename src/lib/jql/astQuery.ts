@@ -23,9 +23,10 @@ function leaf(f: JqlFilter, currentUserName?: string): string | null {
   let v = f.value;
   if (v === '__currentUser__') v = currentUserName ?? '';
   const c = f.column;
+  const ci = c === 'issue_type'; // case-insensitive for Jira-capitalized type names
   switch (f.method) {
-    case 'eq':     return `${c}.eq.${q(v as string)}`;
-    case 'neq':    return `${c}.neq.${q(v as string)}`;
+    case 'eq':     return ci ? `${c}.ilike.${q(v as string)}` : `${c}.eq.${q(v as string)}`;
+    case 'neq':    return ci ? `${c}.not.ilike.${q(v as string)}` : `${c}.neq.${q(v as string)}`;
     case 'in':     return `${c}.in.(${(v as string[]).map(q).join(',')})`;
     case 'not_in': return `${c}.not.in.(${(v as string[]).map(q).join(',')})`;
     case 'gt':     return `${c}.gt.${q(v as string)}`;

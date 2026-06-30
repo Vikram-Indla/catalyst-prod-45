@@ -34,9 +34,12 @@ export function applyJqlToQuery<T>(query: any, filters: import('./translator').J
       val = currentUserName ?? null;
     }
 
+    // issue_type stores Jira-capitalized values ("Epic", "QA Bug") but JQL
+    // values come in lowercase — use ilike for case-insensitive exact match.
+    const ciCol = f.column === 'issue_type';
     switch (f.method) {
-      case 'eq':      query = query.eq(f.column, val); break;
-      case 'neq':     query = query.neq(f.column, val); break;
+      case 'eq':      query = ciCol ? query.ilike(f.column, val as string) : query.eq(f.column, val); break;
+      case 'neq':     query = ciCol ? query.not(f.column, 'ilike', val as string) : query.neq(f.column, val); break;
       case 'in':      query = query.in(f.column, val as string[]); break;
       case 'not_in':  query = query.not(f.column, 'in', `(${(val as string[]).join(',')})`); break;
       case 'gt':      query = query.gt(f.column, val); break;
