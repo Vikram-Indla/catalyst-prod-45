@@ -3026,8 +3026,19 @@ function FieldEditor(props: FieldEditorProps) {
       id: a.id,
       label: a.label,
       icon: a.avatarUrl ? (
-        <img src={a.avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%' }} />
-      ) : undefined,
+        <img src={a.avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+      ) : (
+        <span style={{
+          width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+          background: 'var(--ds-background-neutral)',
+          border: '1px solid var(--ds-border)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 9, fontWeight: 600, color: 'var(--ds-text-subtle)',
+          userSelect: 'none',
+        }}>
+          {a.label.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+        </span>
+      ),
     }));
   } else if (fieldKey === 'labels') {
     options = props.labelOptions.map((l) => ({ id: l, label: l }));
