@@ -50,6 +50,8 @@ export interface Board {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  isDefault?: boolean;
+  primaryWorkItemType?: string;
 }
 
 export interface BoardQuickFilter {
@@ -127,4 +129,6 @@ export interface CreateBoardInput {
   boardQuery?: string;
   filterId?: string;
   columns?: Array<{ name: string; isBacklog?: boolean; isDone?: boolean }>;
+  isDefault?: boolean;
+  primaryWorkItemType?: string;
 }

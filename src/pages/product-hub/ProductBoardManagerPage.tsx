@@ -52,6 +52,7 @@ export default function ProductBoardManagerPage() {
       basePath={`/product-hub/${key}/boards`}
       projectName={project.name}
       projectKey={project.key}
+      mode="product"
     />
   );
 }

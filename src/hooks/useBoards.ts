@@ -76,6 +76,8 @@ export function useBoards(projectId: string | undefined, projectKey?: string) {
         filterId: b.filter_id ?? null,
         leadName: b.filter_id ? (filterOwnerMap[b.filter_id]?.name ?? null) : null,
         leadAvatarUrl: b.filter_id ? (filterOwnerMap[b.filter_id]?.avatarUrl ?? null) : null,
+        isDefault: b.is_default ?? false,
+        primaryWorkItemType: b.primary_work_item_type ?? null,
       }));
     },
     enabled: !!projectId,

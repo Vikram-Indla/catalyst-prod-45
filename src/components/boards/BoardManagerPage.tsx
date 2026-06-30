@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, Star, MoreHorizontal, Kanban } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
+import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
@@ -21,22 +22,25 @@ import {
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import CreateBoardModal from './CreateBoardModal';
 import type { BoardListItem } from '@/types/board';
+import { useEnsurePrimaryBoard } from '@/hooks/useEnsurePrimaryBoard';
 
 interface BoardManagerPageProps {
   projectIdOverride?: string;
   basePath?: string;
-  /** Project name for the Location column — resolved by ProjectBoardManagerPage */
   projectName?: string;
-  /** Project key for the Location column — resolved by ProjectBoardManagerPage */
   projectKey?: string;
+  mode?: 'project' | 'product' | 'test' | 'incident';
 }
 
-export default function BoardManagerPage({ projectIdOverride, basePath, projectName, projectKey }: BoardManagerPageProps = {}) {
+export default function BoardManagerPage({ projectIdOverride, basePath, projectName: _projectName, projectKey, mode = 'project' }: BoardManagerPageProps = {}) {
   const { projectId: paramProjectId } = useParams<{ projectId: string }>();
   const projectId = projectIdOverride || paramProjectId;
   const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
   const { data: boards = [], isLoading, error } = useBoards(projectId, projectKey);
+
+  useEnsurePrimaryBoard({ projectId, projectKey, boards, isLoading, mode });
+
   const deleteBoard = useDeleteBoard();
   const moveBoard = useMoveBoard();
   const copyBoard = useCopyBoard();
@@ -83,10 +87,6 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
     setDeleteTarget(board);
   }, [projectId]);
 
-  const locationLabel = projectName
-    ? `${projectName}${projectKey ? ` (${projectKey})` : ''}`
-    : (projectKey ?? '—');
-
 const columns: Column<BoardListItem>[] = useMemo(() => [
     {
       id: '__star',
@@ -120,15 +120,26 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       accessor: (b) => b.name,
       cell: ({ row }) => (
         <span style={{
-          color: 'var(--ds-link)',
-          fontSize: 'var(--ds-font-size-400)',
-          fontWeight: 400,
+          display: 'flex', alignItems: 'center', gap: 8,
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          cursor: 'pointer',
         }}>
-          {row.name}
+          <span style={{
+            color: 'var(--ds-link)',
+            fontSize: 'var(--ds-font-size-400)',
+            fontWeight: 400,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+            flexShrink: 1,
+          }}>
+            {row.name}
+          </span>
+          {row.isDefault && (
+            <span style={{ flexShrink: 0 }}>
+              <Lozenge appearance="new">Default</Lozenge>
+            </span>
+          )}
         </span>
       ),
     },
@@ -152,29 +163,20 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       ),
     },
     {
-      id: 'location',
-      label: 'Location',
+      id: 'primary_work_item_type',
+      label: 'Primary Work Item',
       width: 22,
-      accessor: () => locationLabel,
-      cell: () => (
+      accessor: (b) => b.primaryWorkItemType,
+      cell: ({ row }) => row.primaryWorkItemType ? (
         <span style={{
-          display: 'flex', alignItems: 'center', gap: 8,
           fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)',
-          overflow: 'hidden',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          display: 'block',
         }}>
-          {/* Board icon — matches Jira's board list location column */}
-          <span style={{
-            width: 16, height: 16, borderRadius: 2, flexShrink: 0,
-            background: 'var(--ds-background-accent-blue-subtler)',
-            color: 'var(--ds-icon-accent-blue)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Kanban size={10} />
-          </span>
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {locationLabel}
-          </span>
+          {row.primaryWorkItemType}
         </span>
+      ) : (
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest)' }}>—</span>
       ),
     },
     {
@@ -199,7 +201,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
         </span>
       ),
     },
-  ], [locationLabel, handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
+  ], [handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
 
   const projectFilterOptions = useMemo(() =>
     projectsWithBoards.map(p => ({ label: p.name, value: p.id })), [projectsWithBoards]);
@@ -239,50 +241,74 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
         : `${filtered.length} of ${boards.length} board${boards.length !== 1 ? 's' : ''}`)
     : undefined;
 
+  const hasBoards = boards.length > 0;
+
   return (
     <>
     <CatalystListPageLayout
       chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
       tabBarActions={createCta}
-      search={search}
+      search={hasBoards ? search : undefined}
       searchPlaceholder="Search boards"
-      onSearchChange={setSearch}
-      toolbarFilters={toolbarFilters}
-      hasActiveFilters={!!(search || spaceFilter || userFilter)}
+      onSearchChange={hasBoards ? setSearch : undefined}
+      toolbarFilters={hasBoards ? toolbarFilters : []}
+      hasActiveFilters={hasBoards && !!(search || spaceFilter || userFilter)}
       onClearAllFilters={() => { setSearch(''); setSpaceFilter(null); setUserFilter(null); }}
-      footer={footerText}
+      footer={hasBoards ? footerText : undefined}
     >
       {error && (
         <div style={{ padding: '8px 0' }}>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.danger', 'var(--ds-text-danger)') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
             Board query error: {(error as Error).message}
           </span>
         </div>
       )}
-      <JiraTable<BoardListItem>
-        data={filtered}
-        columns={columns}
-        getRowId={(b) => b.id}
-        onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
-        isLoading={isLoading}
-        density="comfortable"
-        ariaLabel="Boards directory"
-        emptyView={
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            padding: '48px 32px', gap: 12, color: token('color.text.subtle'),
+      {!isLoading && !hasBoards ? (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: '80px 32px', gap: 16,
+        }}>
+          <span style={{
+            width: 48, height: 48, borderRadius: 8, flexShrink: 0,
+            background: 'var(--ds-background-neutral)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--ds-icon-subtle)',
           }}>
-            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: token('font.weight.medium') }}>
-              {search || spaceFilter || userFilter ? 'No boards match your search' : 'No boards yet'}
+            <Kanban size={24} />
+          </span>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
+              No boards yet
             </span>
-            {!search && !spaceFilter && !userFilter && (
-              <Button appearance="primary" onClick={() => setCreateOpen(true)}>
-                Create board
-              </Button>
-            )}
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
+              Create your first board to start organising work
+            </span>
           </div>
-        }
-      />
+          <Button appearance="primary" iconBefore={() => <Plus size="small" />} onClick={() => setCreateOpen(true)}>
+            Create board
+          </Button>
+        </div>
+      ) : (
+        <JiraTable<BoardListItem>
+          data={filtered}
+          columns={columns}
+          getRowId={(b) => b.id}
+          onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
+          isLoading={isLoading}
+          density="comfortable"
+          ariaLabel="Boards directory"
+          emptyView={
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              padding: '48px 32px', gap: 12,
+            }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
+                No boards match your search
+              </span>
+            </div>
+          }
+        />
+      )}
     </CatalystListPageLayout>
 
       {createOpen && (
@@ -353,6 +379,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
   onMove: () => void;
   onCopy: () => void;
   onDuplicate: () => void;
+  isDefault?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -457,24 +484,27 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
               {label}
             </button>
           ))}
-          {/* Divider */}
-          <div style={{ height: 1, background: token('color.border', 'var(--ds-border)'), margin: '4px 0' }} />
-          {/* Danger action */}
-          <button
-            type="button"
-            role="menuitem"
-            onClick={handleItem(onDelete)}
-            style={{
-              display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
-              border: 'none', background: 'transparent', cursor: 'pointer',
-              textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
-              color: token('color.text.danger', 'var(--ds-text-danger)'),
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'); }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-          >
-            Delete
-          </button>
+          {/* Delete — hidden for system default boards */}
+          {!board.isDefault && (
+            <>
+              <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleItem(onDelete)}
+                style={{
+                  display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
+                  border: 'none', background: 'transparent', cursor: 'pointer',
+                  textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
+                  color: 'var(--ds-text-danger)',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>,
         document.body
       )}

@@ -18,6 +18,8 @@ export function useCreateBoard() {
         p_color: input.color ?? 'var(--ds-link)',
         p_columns: input.columns ? JSON.stringify(input.columns) : null,
         p_board_query: input.boardQuery ?? null,
+        p_is_default: input.isDefault ?? false,
+        p_primary_work_item_type: input.primaryWorkItemType ?? null,
         p_user_id: null,
       });
       if (error) throw error;
