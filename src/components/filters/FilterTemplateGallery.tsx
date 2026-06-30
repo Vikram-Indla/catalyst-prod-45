@@ -123,7 +123,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                 gap: 8,
                 transition: 'box-shadow 120ms',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = `var(--ds-shadow-raised, 0 1px 4px rgba(9,30,66,0.13))`; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = `var(--ds-shadow-raised)`; }}
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
             >
               {/* Card header: category icon + name */}

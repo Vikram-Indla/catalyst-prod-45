@@ -75,7 +75,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
     background:   `var(--ds-surface-overlay)`,
     border:       `1px solid ${token('color.border')}`,
     borderRadius: 4,
-    boxShadow:    `var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15))`,
+    boxShadow:    `var(--ds-shadow-overlay)`,
     overflow:     'hidden',
     display:      'flex',
     flexDirection: 'column',
@@ -125,7 +125,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
               }}
               onMouseEnter={e => {
                 if (!isSel) (e.currentTarget as HTMLButtonElement).style.background =
-                  `var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))`;
+                  `var(--ds-background-neutral-subtle-hovered)`;
               }}
               onMouseLeave={e => {
                 if (!isSel) (e.currentTarget as HTMLButtonElement).style.background = 'none';

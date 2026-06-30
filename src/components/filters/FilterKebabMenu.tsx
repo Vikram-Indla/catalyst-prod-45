@@ -328,7 +328,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             transform: 'translateX(-100%)',
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.25))'),
+            boxShadow: token('elevation.shadow.overlay'),
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             zIndex: 9999,
             minWidth: 180,
