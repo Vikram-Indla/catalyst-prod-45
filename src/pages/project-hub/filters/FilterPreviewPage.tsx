@@ -1167,7 +1167,10 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
           surface="list"
           onClose={() => setAskCatyOpen(false)}
           onJqlGenerated={(generatedJql) => {
-            setSavedFilterJql(generatedJql);
+            // AND with the current filter JQL so the AI refines within context,
+            // not replaces it entirely.
+            const base = (savedFilterJql ?? jqlText ?? '').trim();
+            setSavedFilterJql(base ? `(${base}) AND (${generatedJql})` : generatedJql);
             markDirty();
           }}
         />
