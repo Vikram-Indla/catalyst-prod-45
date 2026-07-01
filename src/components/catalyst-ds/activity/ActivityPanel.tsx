@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
-import { cn } from '@/lib/utils';
 import { ChevronDown } from '@/lib/atlaskit-icons';
 import type {
   CdsComment,
@@ -337,40 +336,53 @@ function ActivityPanel({
   );
 
   return (
-    <div className={cn('flex flex-col', className)}>
-      <div className="flex items-center justify-between mb-4">
+    <div style={{ display: 'flex', flexDirection: 'column' }} className={className}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <h2
-          className="text-[var(--ds-text)] dark:text-[var(--ds-text)]"
-          style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
+          style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: '20px', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text)' }}
         >
           Activity
         </h2>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-1">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                'px-3 py-1.5 rounded text-[14px] font-normal transition-colors duration-150',
-                activeTab === tab.key
-                  ? 'bg-[var(--ds-background-selected)] text-[var(--ds-link)] dark:bg-[var(--ds-background-information)] dark:text-[var(--ds-background-information-bold)]'
-                  : 'text-[var(--ds-text-subtle)] hover:bg-[var(--ds-surface-sunken)] dark:text-[var(--ds-text-subtlest)] dark:hover:bg-[var(--ds-surface-overlay)]'
-              )}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 3,
+                fontSize: 14,
+                fontWeight: 400,
+                border: 'none',
+                cursor: 'pointer',
+                background: activeTab === tab.key ? 'var(--ds-background-selected)' : 'transparent',
+                color: activeTab === tab.key ? 'var(--ds-link)' : 'var(--ds-text-subtle)',
+              }}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        <div className="relative">
+        <div style={{ position: 'relative' }}>
           <button
             type="button"
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] hover:text-[var(--ds-text)] dark:hover:text-[var(--ds-text)] transition-colors"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              fontSize: 14,
+              color: 'var(--ds-text-subtlest)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px 0',
+            }}
           >
             {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
             <ChevronDown className="h-3.5 w-3.5" />
@@ -378,8 +390,19 @@ function ActivityPanel({
 
           {sortOpen && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] dark:border-[var(--ds-border)] rounded-md shadow-lg py-1 min-w-[140px]">
+              <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setSortOpen(false)} />
+              <div style={{
+                position: 'absolute',
+                right: 0,
+                top: 'calc(100% + 4px)',
+                zIndex: 50,
+                background: 'var(--ds-surface-raised)',
+                border: '1px solid var(--ds-border)',
+                borderRadius: 4,
+                boxShadow: 'var(--ds-shadow-overlay)',
+                padding: '4px 0',
+                minWidth: 140,
+              }}>
                 {(['newest', 'oldest'] as CdsSortOrder[]).map((order) => (
                   <button
                     key={order}
@@ -388,12 +411,17 @@ function ActivityPanel({
                       setSortOrder(order);
                       setSortOpen(false);
                     }}
-                    className={cn(
-                      'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
-                      order === sortOrder
-                        ? 'bg-[var(--ds-background-selected)] text-[var(--ds-link)] dark:bg-[var(--ds-background-information)] dark:text-[var(--ds-background-information-bold)]'
-                        : 'text-[var(--ds-text)] dark:text-[var(--ds-text)] hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-overlay)]'
-                    )}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '6px 12px',
+                      fontSize: 14,
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: order === sortOrder ? 'var(--ds-background-selected)' : 'transparent',
+                      color: order === sortOrder ? 'var(--ds-link)' : 'var(--ds-text)',
+                    }}
                   >
                     {order === 'newest' ? 'Newest first' : 'Oldest first'}
                   </button>
@@ -439,13 +467,13 @@ function ActivityPanel({
       )}
 
       {activeTab === 'worklog' && (
-        <div className="mt-2">
+        <div style={{ marginTop: 8 }}>
           <WorkLogPanel workItemId={workItemId ?? undefined} />
         </div>
       )}
 
       {activeTab === 'all' && (
-        <div className="flex flex-col">
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           <AllTabFeed
             mergedAll={mergedAll}
             isLoadingComments={isLoadingComments}
@@ -454,12 +482,12 @@ function ActivityPanel({
           />
 
           {hasMoreHistory && (
-            <div className="py-3 text-center">
+            <div style={{ padding: '12px 0', textAlign: 'center' }}>
               <button
                 type="button"
                 onClick={onLoadMoreHistory}
                 disabled={isLoadingMoreHistory}
-                className="text-[14px] font-medium text-[var(--ds-link)] dark:text-[var(--ds-background-information-bold)] hover:underline disabled:opacity-50"
+                style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', opacity: isLoadingMoreHistory ? 0.5 : 1 }}
               >
                 {isLoadingMoreHistory ? 'Loading...' : 'Load more activity'}
               </button>
@@ -515,8 +543,8 @@ function AllTabFeed({
 
   if (isLoadingComments || isLoadingHistory) {
     return (
-      <div className="mt-4 text-center py-8">
-        <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
+      <div style={{ marginTop: 16, textAlign: 'center', padding: '32px 0' }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest)' }}>
           Loading activity...
         </p>
       </div>
@@ -524,11 +552,11 @@ function AllTabFeed({
   }
   if (mergedAll.length === 0) {
     return (
-      <div className="mt-4 text-center py-10">
-        <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
+      <div style={{ marginTop: 16, textAlign: 'center', padding: '40px 0' }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest)' }}>
           No activity yet
         </p>
-        <p className="mt-1 text-[12px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
+        <p style={{ marginTop: 4, fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
           Comments and updates will show up here. Switch to the Comments tab to start the conversation.
         </p>
       </div>
@@ -536,12 +564,12 @@ function AllTabFeed({
   }
 
   return (
-    <div className="mt-4 divide-y divide-[var(--ds-border)] dark:divide-[var(--ds-border,var(--cp-ink-1))]">
+    <div style={{ marginTop: 16 }}>
       {stream.map((s) => {
         if (s.kind === 'worklog') {
           const isAuthor = user?.id === s.entry.author_id;
           return (
-            <div key={s.key}>
+            <div key={s.key} style={{ borderTop: '1px solid var(--ds-border)' }}>
               <WorkLogEntry
                 entry={s.entry}
                 canEdit={isAuthor || isAdmin}
@@ -556,7 +584,7 @@ function AllTabFeed({
         const item = s.item;
         if (item.type === 'comment' && item.comment) {
           return (
-            <div key={item.id} style={{ paddingTop: 4, paddingBottom: 4 }}>
+            <div key={item.id} style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 4, paddingBottom: 4 }}>
               <Comment
                 comment={item.comment}
                 extras={<div style={{ marginTop: 4 }}><HistoryPill label="COMMENT" /></div>}
@@ -569,12 +597,13 @@ function AllTabFeed({
         // (status / priority / assignee diff widgets) already lives
         // inside ActivityItem, so we get all of it for free.
         return (
-          <ActivityItem
-            key={item.id}
-            item={item}
-            jiraUserMap={undefined}
-            showTypeBadge
-          />
+          <div key={item.id} style={{ borderTop: '1px solid var(--ds-border)' }}>
+            <ActivityItem
+              item={item}
+              jiraUserMap={undefined}
+              showTypeBadge
+            />
+          </div>
         );
       })}
     </div>

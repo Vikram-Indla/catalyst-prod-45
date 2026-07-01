@@ -115,7 +115,7 @@
 .sp-progress-track {
   flex: 1;
   height: 6px;
-  background: var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  background: var(--ds-background-neutral);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -124,13 +124,13 @@
   /* 2026-06-23 (Vikram) — progress fill uses the canonical Catalyst done
      green token --cp-status-done-green (var(--ds-background-success-bold, #6A9A23)). Defined in index.css
      :root + .dark. Was Jira-parity var(--ds-background-success-bold, #6A9A23) lime previously. */
-  background: var(--cp-status-done-green, var(--ds-background-success-bold, #6A9A23));
+  background: var(--cp-status-done-green, var(--ds-background-success-bold));
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 .sp-progress-label {
   font-size: 12px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   white-space: nowrap;
   line-height: 1;
 }
@@ -834,12 +834,12 @@
   gap: 4px;
   height: 32px;
   padding: 0 8px;
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  border: 1px solid var(--ds-border);
   border-radius: 3px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  background: var(--ds-surface);
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   font-family: inherit;
 }
 .sp-type-selector-btn:hover {
@@ -850,10 +850,10 @@
   top: calc(100% + 2px);
   left: 0;
   min-width: 180px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
   border-radius: 4px;
-  box-shadow: var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.25));
+  box-shadow: var(--ds-shadow-overlay);
   z-index: 60;
   overflow: hidden;
 }

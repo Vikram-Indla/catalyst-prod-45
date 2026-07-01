@@ -73,8 +73,9 @@ export function AiSuggestChildrenPanel({
   onCreate,
   onCreateAll,
 }: AiSuggestChildrenPanelProps) {
-  const [collapsed, setCollapsed] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [collapsed, setCollapsed] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [hint, setHint] = useState('');
@@ -143,12 +144,18 @@ export function AiSuggestChildrenPanel({
     ],
   );
 
-  // Auto-fetch on mount.
+  // Fetch on first expand (demand-triggered, not on mount).
   useEffect(() => {
-    void fetchSuggestions();
-    return () => abortRef.current?.abort();
+    if (!collapsed && !hasFetched) {
+      setHasFetched(true);
+      setLoading(true);
+      void fetchSuggestions();
+    }
+    return () => {
+      if (collapsed) abortRef.current?.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [collapsed]);
 
   const handleHintSubmit = () => {
     const h = hint.trim();

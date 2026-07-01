@@ -194,7 +194,7 @@ function SwitcherPanel({
         position: 'fixed',
         top: rect.bottom + 4,
         left: rect.left,
-        width: 288,
+        width: 320,
         maxHeight: 440,
         overflowY: 'auto',
         background: 'var(--ds-surface-overlay)',
@@ -381,6 +381,7 @@ function ItemRow({ item, isCurrent, onNavigate }: {
   const [hovered, setHovered] = useState(false);
 
   const colorSwatch = item.color ? (
+    /* ads-scanner:ignore-next-line — user-assigned workstream color, no ADS token equivalent */
     <span style={{
       width: 8, height: 8, borderRadius: '50%', background: item.color,
       display: 'inline-block', flexShrink: 0,
@@ -429,9 +430,9 @@ function ItemRow({ item, isCurrent, onNavigate }: {
           {item.name}
         </div>
         <div style={{
-          fontSize: 'var(--ds-font-size-100)', fontFamily: 'monospace',
+          fontSize: 'var(--ds-font-size-075)',
           color: 'var(--ds-text-subtlest)',
-          marginTop: 0,
+          marginTop: 1,
         }}>
           {item.key}
         </div>
@@ -611,9 +612,9 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
   const [triggerHover, setTriggerHover] = useState(false);
 
   const triggerBg = open
-    ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.12))'
+    ? 'var(--ds-background-neutral-pressed)'
     : triggerHover
-      ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+      ? 'var(--ds-background-neutral-subtle-hovered)'
       : 'transparent';
 
   // Hub icon via canonical ProjectIcon so the trigger matches the sidebar
@@ -662,7 +663,7 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
         // Borderless menu-button: transparent idle, subtle hover/open — no
         // heavy pressed fill (ADS nav-item convention; 2026-06-16 critique).
         background: (open || triggerHover)
-          ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+          ? 'var(--ds-background-neutral-subtle-hovered)'
           : 'transparent',
         border: 'none', borderRadius: 6, cursor: 'pointer',
         transition: 'background 80ms',

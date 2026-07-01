@@ -434,7 +434,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px 0 4px;
-  border-top: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  border-top: 1px solid var(--ds-border);
 }
 
 .lwi-toolbar__row {
