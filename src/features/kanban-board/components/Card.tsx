@@ -74,7 +74,7 @@ export const Card: React.FC<CardProps> = ({
     background: token('elevation.surface.raised', 'var(--ds-surface)'),
     borderRadius: SIZES.CARD_RADIUS,
     padding: SIZES.CARD_PADDING,
-    boxShadow: token('elevation.shadow.raised', '0 1px 1px #091E4240, 0 0 1px #091E424F'),
+    boxShadow: token('elevation.shadow.raised', 'var(--ds-shadow-raised)'),
     cursor: 'pointer', userSelect: 'none', outline: 'none',
     transition: 'background-color 100ms ease',
   };
@@ -300,7 +300,7 @@ export const Card: React.FC<CardProps> = ({
                 style={{
                   display: 'inline-flex', cursor: onAvatarClick ? 'pointer' : 'default',
                   borderRadius: 3, padding: 0, transition: 'background-color 100ms ease',
-                  ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))') } : {}),
+                  ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)') } : {}),
                 }}
               >
                 {issue.assigneeName

@@ -1,5 +1,5 @@
 {
-  "hardcodedColors": 66,
+  "hardcodedColors": 0,
   "description": "Hard-coded hex color violations (Phase 5: 673 → 77 after scanner refinement for pragmatic fallback support)",
   "updated": "2026-06-28",
   "phase": 5,

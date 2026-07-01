@@ -207,8 +207,8 @@
 }
 .sp-ak-table .jira-table-grid table thead > tr > th[data-actions-sticky] {
   box-shadow:
-    inset 1px 0 0 0 var(--ds-border, #C1C7D0),
-    inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
+    inset 1px 0 0 0 var(--ds-border),
+    inset 0 -1px 0 0 var(--ds-border) !important;
 }
 
 /* Jira-parity: constrain data rows to 40px height (Jira measured 40px on BAU-5538).

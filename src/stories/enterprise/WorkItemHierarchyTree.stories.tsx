@@ -32,12 +32,12 @@ const MOCK: WorkItem[] = [
   node('1', 'BAU-4466', 'Senaei App – Revamp (UI)', 1, 'Epic', 'var(--ds-background-discovery-bold, #6E5DC6)', 'Epic', 'In Progress', 'indeterminate', [
     node('2', 'BAU-5174', 'Landing Page – DGA modification', 2, 'Feature', 'var(--ds-background-success-bold, #1F845A)', 'Feature', 'In Development', 'indeterminate', [
       // ads-scanner:ignore-line — Storybook mock, test hierarchy color
-      node('3', 'BAU-5957', 'Update product details survey', 3, 'Story', '#4688EC', 'Story', 'Ready for Development', 'new', [
+      node('3', 'BAU-5957', 'Update product details survey', 3, 'Story', 'var(--ds-background-information-bold)', 'Story', 'Ready for Development', 'new', [
         // ads-scanner:ignore-line — Storybook mock, test hierarchy color
-        node('4', 'BAU-5958', 'Add price field validation rule', 4, 'Sub-task', '#4688EC', 'Sub-task', 'In Progress', 'indeterminate'),
+        node('4', 'BAU-5958', 'Add price field validation rule', 4, 'Sub-task', 'var(--ds-background-information-bold)', 'Sub-task', 'In Progress', 'indeterminate'),
       ]),
       // ads-scanner:ignore-line — Storybook mock, test hierarchy color
-      node('5', 'BAU-5872', 'Add production-quantity validation', 3, 'Story', '#4688EC', 'Story', 'Done', 'done'),
+      node('5', 'BAU-5872', 'Add production-quantity validation', 3, 'Story', 'var(--ds-background-information-bold)', 'Story', 'Done', 'done'),
     ]),
     node('6', 'BAU-5078', 'Enable Active Directory SSO login', 2, 'Feature', 'var(--ds-background-success-bold, #1F845A)', 'Feature', 'In Development', 'indeterminate'),
   ]),

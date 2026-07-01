@@ -412,3 +412,116 @@ export const SLUG_CONTRACT_CHECKLIST = [
 ] as const;
 
 export type SlugContractItem = typeof SLUG_CONTRACT_CHECKLIST[number];
+
+// ─── GRID G — AVATAR & PEOPLE PICKER CONTRACT ────────────────────────────────
+
+/**
+ * Import paths that are canonical for avatar rendering (Grid G).
+ * Only these paths may import @atlaskit/avatar directly.
+ */
+export const AVATAR_CANONICAL_PATHS: readonly string[] = [
+  'src/components/ads/Avatar.tsx',
+  'src/components/shared/CatalystAvatar.tsx',
+];
+
+/**
+ * Import paths that satisfy G1/G3 (valid avatar usage in product code).
+ */
+export const AVATAR_ALLOWED_IMPORTS: readonly string[] = [
+  '@/components/shared/CatalystAvatar',
+  '@/components/shared/UserAvatar',
+];
+
+/**
+ * Banned CDN URL patterns — mirrors isBannedAvatarSrc() in CatalystAvatar.tsx.
+ * Rule G2.
+ */
+const BANNED_AVATAR_SRC_PATTERNS: readonly RegExp[] = [
+  /gravatar\.com/,
+  /atl-paas\.net/,
+  /googleusercontent\.com/,
+  /secure\.gravatar/,
+];
+
+/**
+ * Returns true if an avatar src URL is banned (external CDN).
+ * Rule G2 — mirrors runtime check in CatalystAvatar.isBannedAvatarSrc().
+ *
+ * @example
+ * isBannedAvatarSrc('https://secure.gravatar.com/avatar/abc')  // true
+ * isBannedAvatarSrc('/assets/avatars/john.png')                 // false
+ */
+export function isBannedAvatarSrc(src: string | null | undefined): boolean {
+  if (!src) return false;
+  return BANNED_AVATAR_SRC_PATTERNS.some(re => re.test(src));
+}
+
+/**
+ * Returns true if a file path is allowed to import @atlaskit/avatar directly.
+ * All other files must use CatalystAvatar or UserAvatar.
+ * Rule G1, G3.
+ */
+export function isAvatarCanonicalFile(filePath: string): boolean {
+  return AVATAR_CANONICAL_PATHS.some(p => filePath.endsWith(p) || filePath.includes(p));
+}
+
+/**
+ * Validate that an avatar usage site uses a canonical import.
+ * Rule G1.
+ *
+ * @param importPath — the import path found in a source file
+ * @param filePath   — the source file's repo-relative path
+ */
+export function validateAvatarImport(
+  importPath: string,
+  filePath: string,
+): CREValidationResult {
+  // Direct @atlaskit/avatar import is only allowed in canonical files
+  if (
+    importPath === '@atlaskit/avatar' ||
+    importPath === '@atlaskit/avatar-group'
+  ) {
+    if (isAvatarCanonicalFile(filePath)) {
+      return { ok: true };
+    }
+    return {
+      ok: false,
+      reason:
+        `G1 violation: "${importPath}" is banned in product code. ` +
+        `Use CatalystAvatar from '@/components/shared/CatalystAvatar' or ` +
+        `UserAvatar from '@/components/shared/UserAvatar'.`,
+    };
+  }
+
+  return { ok: true };
+}
+
+/**
+ * Validate that an avatar src prop does not point to a banned CDN.
+ * Rule G2.
+ */
+export function validateAvatarSrc(src: string | null | undefined): CREValidationResult {
+  if (isBannedAvatarSrc(src)) {
+    return {
+      ok: false,
+      reason:
+        `G2 violation: avatar src "${src}" is a banned external CDN URL ` +
+        `(Gravatar/atl-paas/googleusercontent). Pass null and let CatalystAvatar ` +
+        `render ADS-palette initials instead.`,
+    };
+  }
+  return { ok: true };
+}
+
+/**
+ * Avatar contract checklist — what every new user-identity render must satisfy.
+ * Rules G1–G4. Used in PR review and activate-feature pre-flight.
+ */
+export const AVATAR_CONTRACT_CHECKLIST = [
+  'Use CatalystAvatar or UserAvatar — never @atlaskit/avatar directly',
+  'Pass src={user.avatarUrl ?? undefined} — do not pass Gravatar/atl-paas URLs',
+  'People pickers must render CatalystAvatar per option — no custom initials span',
+  'Avatar stacks must wrap CatalystAvatar instances — not @atlaskit/avatar-group directly',
+] as const;
+
+export type AvatarContractItem = typeof AVATAR_CONTRACT_CHECKLIST[number];

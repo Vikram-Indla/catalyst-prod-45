@@ -30,7 +30,7 @@
   font-family: var(--cp-font-body);
   transition: background-color 0.1s, border-color 0.1s;
 }
-.jf-trigger-btn:hover { background-color: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)); }
+.jf-trigger-btn:hover { background-color: var(--ds-background-neutral-subtle-pressed); }
 .jf-trigger-btn--active {
   background-color: var(--ds-background-information);
   color: var(--ds-link, rgb(24, 104, 219));
@@ -66,8 +66,8 @@
   background: var(--ds-surface, rgb(255, 255, 255));
   border-radius: 4px;
   box-shadow:
-    var(--ds-text, rgba(30, 31, 33, 0.15)) 0px 8px 12px 0px,
-    var(--ds-text, rgba(30, 31, 33, 0.31)) 0px 0px 1px 0px;
+    var(--ds-text) 0px 8px 12px 0px,
+    var(--ds-text) 0px 0px 1px 0px;
   overflow: hidden;
   z-index: 500;
   color: var(--ds-text, rgb(23, 43, 77));
@@ -105,7 +105,7 @@
   align-items: center;
   gap: 0px;
   padding: 4px;
-  border: 0.556px solid var(--ds-text, rgba(11, 18, 14, 0.14));
+  border: 0.556px solid var(--ds-text);
   border-radius: 6px;
   background: transparent;
   width: fit-content;
@@ -129,7 +129,7 @@
   font-family: inherit;
   transition: background-color 0.1s, color 0.1s;
 }
-.jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06)); }
+.jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: var(--ds-background-neutral-subtle-hovered); }
 .jf-tab--active {
   background-color: var(--ds-background-information);
   color: var(--ds-link, rgb(24, 104, 219));
@@ -171,7 +171,7 @@
   top: 0;
   bottom: 16px;
   width: 1px;
-  background-color: var(--ds-text, rgba(11, 18, 14, 0.14));
+  background-color: var(--ds-text);
 }
 .jf-left-scroll {
   display: flex;
@@ -204,7 +204,7 @@
   font-family: inherit;
   transition: background-color 0.1s;
 }
-.jf-category-item:hover:not(.jf-category-item--active) { background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)); }
+.jf-category-item:hover:not(.jf-category-item--active) { background-color: var(--ds-background-neutral-subtle-hovered); }
 .jf-category-item--active {
   background-color: var(--ds-background-information);
   color: var(--ds-link, rgb(24, 104, 219));
@@ -374,10 +374,10 @@
   transition: background-color 0.08s;
 }
 .jf-option-item:hover .jf-option-inner {
-  background-color: var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06));
+  background-color: var(--ds-shadow-overlay);
 }
 .jf-option-item--checked .jf-option-inner {
-  background-color: var(--ds-link, rgba(24, 104, 219, 0.06));
+  background-color: var(--ds-link);
 }
 .jf-checkbox-wrap {
   display: flex;
@@ -484,7 +484,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06));
+  background-color: var(--ds-shadow-overlay);
   color: var(--ds-text, rgb(23, 43, 77));
   border-radius: 3px;
   padding: 0px 8px;

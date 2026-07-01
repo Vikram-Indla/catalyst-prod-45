@@ -8,7 +8,7 @@ const MOCK_ITEM: WorkItem = {
   mode: 'DEL', level: 'story', project: 'BAU Project', projectKey: 'BAU',
   hub: 'ProjectHub', hubLabel: 'Project hub',
   updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), createdAt: '2026-05-01T00:00:00Z',
-  assignee: { id: '1', name: 'Vikram Indla', initials: 'VI', avatarColor: '#0C66E4' },
+  assignee: { id: '1', name: 'Vikram Indla', initials: 'VI', avatarColor: 'var(--ds-background-brand-bold)' },
   issueType: 'Story', group: 'THIS_WEEK', starred: false,
   status: 'In Progress', priority: 'High', priorityLevel: 2,
 };

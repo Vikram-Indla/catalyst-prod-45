@@ -362,7 +362,7 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
                     // Active state
                     isActive ? [
                       "bg-blue-50 dark:bg-blue-950/40 border-l-blue-600",
-                      "shadow-[inset_0_0_0_1px_var(--ds-background-information, rgba(37,99,235,0.1)),0_1px_3px_var(--ds-shadow-raised, rgba(0,0,0,0.06))]"
+                      "shadow-[inset_0_0_0_1px_var(--ds-background-information),0_1px_3px_var(--ds-shadow-raised)]"
                     ] : [
                       // Inactive state
                       "bg-white dark:bg-slate-900 border-l-transparent",
@@ -445,7 +445,7 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
                     // Active state
                     isActive ? [
                       "bg-blue-50 dark:bg-blue-950/40 border-l-blue-600",
-                      "shadow-[inset_0_0_0_1px_var(--ds-background-information, rgba(37,99,235,0.1)),0_1px_3px_var(--ds-shadow-raised, rgba(0,0,0,0.06))]"
+                      "shadow-[inset_0_0_0_1px_var(--ds-background-information),0_1px_3px_var(--ds-shadow-raised)]"
                     ] : [
                       // Inactive state
                       "bg-white dark:bg-slate-900 border-l-transparent",

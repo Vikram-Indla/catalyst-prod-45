@@ -104,7 +104,7 @@ function EditKebabMenu({
           background: token('elevation.surface.overlay', 'var(--ds-surface)'),
           border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
           borderRadius: 4,
-          boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
+          boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised)), 0 0 1px var(--ds-shadow-raised))'),
           minWidth: 200,
           padding: '4px 0',
         }}>
@@ -466,7 +466,7 @@ useEffect(() => {
     background: token('elevation.surface.raised', 'var(--ds-surface)'),
     boxShadow: token(
       'elevation.shadow.raised',
-      '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.21))',
+      '0 1px 1px var(--ds-background-neutral-subtle-pressed), 0 0 1px var(--ds-shadow-raised))',
     ),
     border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
     borderRadius: 3,

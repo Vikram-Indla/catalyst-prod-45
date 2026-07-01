@@ -654,14 +654,14 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     borderRadius: 8,
                     border: `1px solid ${T.border}`,
                     boxShadow: isSelected
-                      ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,.25)), 0 12px 40px var(--ds-background-information, rgba(37,99,235,.2))'
-                      : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
+                      ? '0 0 0 3px var(--ds-background-information), 0 12px 40px var(--ds-background-information)'
+                      : '0 4px 16px var(--ds-shadow-raised))',
                     background: 'var(--bg-app)',
                     zIndex: isSelected ? 10 : 4,
                     overflow: 'hidden',
                   }}
-                  onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px var(--ds-shadow-raised, rgba(0,0,0,.12))'; (e.currentTarget as any).style.borderColor = 'var(--fg-4)'; }}
-                  onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08))'; (e.currentTarget as any).style.borderColor = T.border; }}
+                  onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px var(--ds-shadow-raised))'; (e.currentTarget as any).style.borderColor = 'var(--fg-4)'; }}
+                  onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 4px 16px var(--ds-shadow-raised))'; (e.currentTarget as any).style.borderColor = T.border; }}
                 >
                   {/* 3px left accent bar */}
                   <div style={{

@@ -85,20 +85,23 @@ const mockRequest = (id: string, title: string, priority: string, status: string
   id, initiativeKey: `MDT-${id}`, title, titleAr: title, titleEn: title,
   type: 'business_request', priority: priority as any, status: status as any,
   progress: 45, startDate: '2026-04-01', endDate: '2026-06-30',
-  ownerName: 'Vikram Indla', ownerInitials: 'VI', ownerColor: '#0052CC', starred: false,
+  // ads-scanner:ignore-next-line — story mock data
+  ownerName: 'Vikram Indla', ownerInitials: 'VI', ownerColor: 'var(--ds-background-brand-bold)', starred: false,
 } as any);
 
 // ads-scanner:ignore-next-line — Storybook mock data with test colors
 const groups: RoadmapGroup[] = [
   {
-    key: 'p0', label: 'P0 — Critical', color: '#ef4444', isExpanded: true,
+    // ads-scanner:ignore-next-line — story mock data
+    key: 'p0', label: 'P0 — Critical', color: 'var(--ds-background-danger-bold)', isExpanded: true,
     items: [
       mockRequest('801', 'Customs Exemption Workflow Redesign', 'P0', 'Active'),
       mockRequest('802', 'Fast Track Shipping Integration', 'P0', 'Active'),
     ],
   },
   {
-    key: 'p1', label: 'P1 — High', color: '#f59e0b', isExpanded: true,
+    // ads-scanner:ignore-next-line — story mock data
+    key: 'p1', label: 'P1 — High', color: 'var(--ds-background-warning-bold)', isExpanded: true,
     items: [
       mockRequest('811', 'Know Your Journey Platform', 'P1', 'Planned'),
       mockRequest('812', 'Support Tickets — Senaei Post Login', 'P1', 'Active'),

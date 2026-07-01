@@ -65,7 +65,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
       margin: '0px 8px 4px', padding: 8, display: 'flex', flexDirection: 'column', gap: 8,
       background: token('elevation.surface.raised', 'var(--ds-surface)'),
       border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold)')}`, borderRadius: SIZES.CARD_RADIUS,
-      boxShadow: token('elevation.shadow.raised', '0 1px 1px #091E4240, 0 0 1px #091E424F'),
+      boxShadow: token('elevation.shadow.raised', 'var(--ds-shadow-raised)'),
     }}>
       <input
         ref={ref}

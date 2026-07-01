@@ -482,7 +482,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           position: 'absolute', top: '48%', right: 0, marginTop: 4,
           width: 330, borderRadius: 14,
           background: dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface)', border: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border)'}`,
-          boxShadow: dk ? '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.50)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
+          boxShadow: dk ? '0 12px 40px var(--ds-shadow-raised), 0 2px 8px var(--ds-shadow-raised)' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
           zIndex: 50, overflow: 'hidden',
           animation: 'ewi-fadein 0.2s ease-out',
         }}>
@@ -491,7 +491,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
             background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered), var(--cp-blue))', padding: '12px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--ds-background-information)" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--ds-background-information)" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="var(--ds-background-information)" /></svg>
               <span style={{ color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>Export Work Items</span>
             </div>
             <div style={{ color: 'var(--ds-background-information)', fontSize: 'var(--ds-font-size-100)', marginLeft: 24 }}>Select months · Sheet 1 = Resources</div>
@@ -512,7 +512,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '8px 10px', borderRadius: 8, marginBottom: 4,
                     cursor: 'pointer', transition: 'background 100ms',
-                    background: checked ? (dk ? 'var(--ds-background-success-bold, rgba(74, 222, 128, 0.06))' : 'var(--ds-background-success)') : 'transparent',
+                    background: checked ? (dk ? 'var(--ds-background-success-bold)' : 'var(--ds-background-success)') : 'transparent',
                     border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
                   onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? 'var(--ds-surface-overlay)' : '#f8f9fa'; }}
@@ -527,7 +527,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   <div style={{
                     width: 18, height: 18, borderRadius: 4,
                     border: `2px solid ${checked ? 'var(--sem-success)' : (dk ? 'var(--ds-text-subtlest)' : 'var(--ds-text-disabled)')}`,
-                    background: checked ? (dk ? 'var(--ds-background-success-bold, rgba(74, 222, 128, 0.15))' : 'var(--ds-background-success)') : (dk ? 'transparent' : 'var(--ds-surface)'),
+                    background: checked ? (dk ? 'var(--ds-background-success-bold)' : 'var(--ds-background-success)') : (dk ? 'transparent' : 'var(--ds-surface)'),
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, transition: 'all 150ms',
                   }}>
@@ -543,7 +543,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   {opt.isFuture && (
                     <span style={{
                       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: dk ? 'var(--ds-background-warning-bold)' : 'var(--ds-background-warning-bold)',
-                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, var(--ds-background-warning))', borderRadius: 4, padding: '0px 7px',
+                      background: dk ? 'var(--ds-background-warning-bold)' : 'var(--ds-background-warning, var(--ds-background-warning))', borderRadius: 4, padding: '0px 7px',
                     }}>UPCOMING</span>
                   )}
                 </label>

@@ -196,7 +196,7 @@ function TabButton({
         whiteSpace: 'nowrap',
         outline: 'none',
         boxShadow: isActive && !isDark
-          ? token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.16))')
+          ? token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed), 0 0 1px var(--ds-shadow-raised))')
           : 'none',
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
       }}

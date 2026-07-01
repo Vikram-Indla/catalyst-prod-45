@@ -59,7 +59,7 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
       }}
       onMouseEnter={e => {
         // ads-scanner:ignore-next-line — Atlaskit token fallback, no ADS shadow token covers this compound value
-        (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px 0 var(--ds-shadow-raised, rgba(9,30,66,0.31))');
+        (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised)), 0 0 1px 0 var(--ds-shadow-raised))');
         (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', 'var(--ds-border-focused, var(--ds-border-focused))');
       }}
       onMouseLeave={e => {
@@ -174,7 +174,7 @@ function ProjectSwimlane({
           borderRadius: collapsed ? 6 : '6px 6px 0 0',
           // ads-scanner:ignore-next-line — Atlaskit token fallback, no ADS shadow token covers this compound value
           boxShadow: collapsed
-            ? token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))')
+            ? token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised)), 0 0 1px var(--ds-shadow-raised))')
             : 'none',
           cursor: 'pointer',
           userSelect: 'none',

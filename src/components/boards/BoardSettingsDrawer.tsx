@@ -166,19 +166,19 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'var(--ds-blanket, rgba(15,23,42,0.30))',
+      background: 'var(--ds-blanket)',
       display: 'flex', justifyContent: 'flex-end',
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
         width: 420, height: '100%', background: 'var(--cp-float)',
-        borderLeft: '0.75px solid var(--ds-border, rgba(15,23,42,0.08))',
-        boxShadow: 'var(--ds-shadow-overlay, -8px 0 32px var(--ds-border, rgba(15,23,42,0.12)))',
+        borderLeft: '0.75px solid var(--ds-border)',
+        boxShadow: 'var(--ds-shadow-overlay, -8px 0 32px var(--ds-border))',
         display: 'flex', flexDirection: 'column',
       }}>
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 24px', borderBottom: '0.75px solid var(--ds-border, rgba(15,23,42,0.08))',
+          padding: '16px 24px', borderBottom: '0.75px solid var(--ds-border)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
             <h2 style={{
@@ -201,7 +201,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', borderBottom: '0.75px solid var(--ds-border, rgba(15,23,42,0.08))', padding: '8px 12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', borderBottom: '0.75px solid var(--ds-border)', padding: '8px 12px' }}>
           {TABS.map(t => {
             const active = tab === t.key;
             return (
@@ -270,8 +270,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     <button key={opt.value} onClick={() => setVisibility(opt.value)} style={{
                       display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px',
                       borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                      border: `0.75px solid ${visibility === opt.value ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
-                      background: visibility === opt.value ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--bg-app)',
+                      border: `0.75px solid ${visibility === opt.value ? 'var(--cp-blue)' : 'var(--ds-border)'}`,
+                      background: visibility === opt.value ? 'var(--ds-background-selected)' : 'var(--bg-app)',
                     }}>
                       <RadioCircle selected={visibility === opt.value} />
                       <div style={{ flex: 1 }}>
@@ -337,7 +337,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   {QUERY_PRESETS.map(p => (
                     <button key={p.label} onClick={() => setBoardQuery(p.jql(null))} style={{
                       fontSize: 'var(--ds-font-size-100)', padding: '4px 8px', borderRadius: 10,
-                      border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))',
+                      border: '0.75px solid var(--ds-border)',
                       background: 'var(--bg-app)', color: 'var(--cp-blue)',
                       cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                     }}>
@@ -356,7 +356,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   <div key={f.id} style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '8px', borderRadius: 6, marginBottom: 8,
-                    border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))',
+                    border: '0.75px solid var(--ds-border)',
                     background: 'var(--bg-app)',
                   }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -384,7 +384,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                 ))}
 
                 {addingFilter ? (
-                  <div style={{ padding: 8, border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))', borderRadius: 6, background: 'var(--bg-1)', marginTop: 8 }}>
+                  <div style={{ padding: 8, border: '0.75px solid var(--ds-border)', borderRadius: 6, background: 'var(--bg-1)', marginTop: 8 }}>
                     <FieldLabel>Filter label</FieldLabel>
                     <input value={newFilterName} onChange={e => setNewFilterName(e.target.value)}
                       placeholder="e.g. My Issues, Blocked…"
@@ -402,7 +402,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => setAddingFilter(false)} style={{
                         height: 28, padding: '0 12px', borderRadius: 4,
-                        border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))', background: 'var(--bg-app)',
+                        border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)',
                         fontSize: 11.5, cursor: 'pointer', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
                       }}>Cancel</button>
                       <button onClick={handleAddFilter} disabled={!newFilterName.trim() || !newFilterJql.trim()} style={{
@@ -418,7 +418,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                 ) : (
                   <button onClick={() => setAddingFilter(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
-                    border: '0.75px dashed var(--ds-border, rgba(15,23,42,0.12))', borderRadius: 6,
+                    border: '0.75px dashed var(--ds-border)', borderRadius: 6,
                     background: 'transparent', cursor: 'pointer',
                     fontSize: 11.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 8,
                   }}>
@@ -435,7 +435,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                 {columns.map((col) => (
                   <div key={col.id} style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '8px',
-                    border: `0.75px solid ${col.statusIds.length === 0 ? 'var(--sem-warning)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
+                    border: `0.75px solid ${col.statusIds.length === 0 ? 'var(--sem-warning)' : 'var(--ds-border)'}`,
                     borderRadius: 6, background: 'var(--bg-app)',
                     borderLeftWidth: col.statusIds.length === 0 ? 3 : 0.75,
                   }}>
@@ -445,7 +445,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                       fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
-                    {col.isBacklog && <Badge bg="var(--ds-background-brand-subtle, rgba(37,99,235,0.06))" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))">Backlog</Badge>}
+                    {col.isBacklog && <Badge bg="var(--ds-background-brand-subtle)" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))">Backlog</Badge>}
                     {col.isDone && <Badge bg="var(--ds-background-success)" color="var(--sem-success)">Done</Badge>}
                     <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
                       width: 22, height: 22, borderRadius: 4, border: 'none',
@@ -464,7 +464,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   style={{ ...inputStyle, flex: 1 }} />
                 <button onClick={handleAddColumn} disabled={!newColName.trim()} style={{
                   display: 'flex', alignItems: 'center', gap: 4, height: 48, padding: '0 8px',
-                  border: '0.75px dashed var(--ds-border, rgba(15,23,42,0.12))',
+                  border: '0.75px dashed var(--ds-border)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
                   fontSize: 11.5, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontFamily: 'var(--cp-font-body)',
                 }}>
@@ -500,8 +500,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   <button key={opt.value} onClick={() => setSwimlane(opt.value)} style={{
                     display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px',
                     borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                    border: `0.75px solid ${swimlane === opt.value ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
-                    background: swimlane === opt.value ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--bg-app)',
+                    border: `0.75px solid ${swimlane === opt.value ? 'var(--cp-blue)' : 'var(--ds-border)'}`,
+                    background: swimlane === opt.value ? 'var(--ds-background-selected)' : 'var(--bg-app)',
                   }}>
                     <RadioCircle selected={swimlane === opt.value} />
                     <div>
@@ -518,8 +518,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   {(['default', 'compact'] as const).map(layout => (
                     <button key={layout} onClick={() => setCardLayout(layout)} style={{
                       flex: 1, padding: '8px', borderRadius: 6, cursor: 'pointer', textAlign: 'center',
-                      border: `0.75px solid ${cardLayout === layout ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
-                      background: cardLayout === layout ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--ds-surface)',
+                      border: `0.75px solid ${cardLayout === layout ? 'var(--cp-blue)' : 'var(--ds-border)'}`,
+                      background: cardLayout === layout ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
                       fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text)',
                     }}>
                       {layout === 'default' ? 'Default' : 'Compact'}
@@ -622,11 +622,11 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
         {/* Footer */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
-          padding: '8px 16px', borderTop: '0.75px solid var(--ds-border, rgba(15,23,42,0.08))',
+          padding: '8px 16px', borderTop: '0.75px solid var(--ds-border)',
         }}>
           <button onClick={onClose} style={{
             height: 30, padding: '8px 12px', borderRadius: 6,
-            border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))', background: 'var(--bg-app)',
+            border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)',
             fontSize: 11.5, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
           }}>Cancel</button>
@@ -646,7 +646,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
 
 const inputStyle: React.CSSProperties = {
   width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
-  border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))', borderRadius: 6,
+  border: '0.75px solid var(--ds-border)', borderRadius: 6,
   fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
   outline: 'none', background: 'var(--bg-app)',
 };
@@ -678,7 +678,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
   return (
     <div style={{
       width: 16, height: 16, borderRadius: '50%', flexShrink: 0, marginTop: 0,
-      border: `1.5px solid ${selected ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.15))'}`,
+      border: `1.5px solid ${selected ? 'var(--cp-blue)' : 'var(--ds-border)'}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',

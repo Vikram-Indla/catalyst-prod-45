@@ -621,7 +621,7 @@ export function FilterTriggerAndPopup({
                 "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
               borderRadius: 4,
               boxShadow:
-                "var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
+                "var(--ds-shadow-overlay)",
             }}
           >
             {renderContent()}
@@ -897,7 +897,7 @@ export function FilterChip({
                 "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
               borderRadius: 4,
               boxShadow:
-                "var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
+                "var(--ds-shadow-overlay)",
               fontFamily: "var(--cp-font-body)",
             }}
           >

@@ -243,8 +243,8 @@ export default function WidgetWrapper({
         marginInline: isSoloed ? 'auto' : undefined,
         background: token('elevation.surface', 'var(--ds-surface)'),
         boxShadow: isSoloed
-          ? token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))')
-          : token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
+          ? token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised)), 0 0 1px var(--ds-shadow-raised))')
+          : token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised)), 0 0 1px var(--ds-shadow-raised))'),
         // 2026-06-09 Spec parity (Filter Results gadget v1) — radius 8px,
         // top accent 3px var(--ds-link), 1px ds-border on remaining sides + shadow.
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,

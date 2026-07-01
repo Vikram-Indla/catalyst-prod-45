@@ -236,11 +236,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
             background: 'var(--bg-app)', border: '1px solid var(--ds-border)', borderRadius: '8px',
             padding: '8px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
-            boxShadow: '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))', fontFamily: 'var(--cp-font-body)',
+            boxShadow: '0 1px 3px var(--ds-shadow-overlay)', fontFamily: 'var(--cp-font-body)',
             transition: 'border-color .15s, box-shadow .15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px var(--ds-shadow-overlay, rgba(15,23,42,.08))'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ds-border)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px var(--ds-shadow-overlay)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ds-border)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-overlay)'; }}
           >
             <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -294,8 +294,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
               fontSize: 'var(--ds-font-size-600)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
-                ? '0 0 0 3px var(--ds-background-success-bold, rgba(22,163,74,.25)), 0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))'
-                : '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
+                ? '0 0 0 3px var(--ds-background-success-bold), 0 2px 8px var(--ds-background-success-bold)'
+                : '0 2px 8px var(--ds-background-success-bold)',
               transition: 'box-shadow .15s',
               fontVariantNumeric: 'tabular-nums',
             }}>
@@ -315,7 +315,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               position: 'absolute', right: '48px', top: '48%', transform: 'translateY(-50%)',
               width: '340px', maxHeight: '420px', background: 'var(--cp-float)',
               border: '1px solid var(--ds-border)', borderRadius: '12px',
-              boxShadow: '0 8px 30px var(--ds-shadow-overlay, rgba(15,23,42,.12)), 0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,.06))',
+              boxShadow: '0 8px 30px var(--ds-shadow-overlay)',
               overflow: 'hidden', zIndex: 11,
             }}>
               {/* Header */}

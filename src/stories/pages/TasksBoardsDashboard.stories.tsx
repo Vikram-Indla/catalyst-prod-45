@@ -74,7 +74,8 @@ export const KPIStrip: StoryObj = {
         userRole="Team Lead"
         assignedWorkstreams={[
           { id: 'w1', name: 'Platform', color: 'var(--ds-link)' },
-          { id: 'w2', name: 'Frontend', color: '#00B8D9' },
+          // ads-scanner:ignore-next-line — story mock data
+          { id: 'w2', name: 'Frontend', color: 'var(--ds-background-discovery-bold)' },
         ]}
       />
     </Wrap>

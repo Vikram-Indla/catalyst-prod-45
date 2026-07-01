@@ -61,7 +61,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   }, []);
 
   const tooltipBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
-  const tooltipShadow = isDark ? '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12))';
+  const tooltipShadow = isDark ? '0 20px 60px var(--ds-shadow-raised))' : '0 20px 60px var(--ds-shadow-raised))';
   const progressTrackBg = isDark ? 'var(--ds-border, var(--cp-ink-1))' : surface.borderLight;
 
   return (
@@ -90,8 +90,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           boxShadow: isDark
             ? 'none'
             : (isHovered || isSelected
-              ? '0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.08))'
-              : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06))'),
+              ? '0 4px 8px var(--ds-shadow-raised)), 0 2px 4px var(--ds-shadow-raised))'
+              : '0 1px 3px var(--ds-shadow-raised)), 0 1px 2px var(--ds-shadow-raised))'),
           filter: isHovered ? 'brightness(1.05)' : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
           transition: 'transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease',
@@ -121,7 +121,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               paddingLeft: 8, paddingRight: 4, lineHeight: '26px',
               flex: 1,
-              textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+              textShadow: '0 1px 2px var(--ds-shadow-raised))',
             }}
           >
             {width > 12 ? item.titleEn : item.initiativeKey}
@@ -175,7 +175,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
                 background: m.completed ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : barColor,
                 border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 1,
                 transform: 'rotate(45deg)', zIndex: 3,
-                boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
+                boxShadow: '0 1px 3px var(--ds-shadow-raised))',
               }}
             />
           );

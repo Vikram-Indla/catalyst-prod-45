@@ -106,7 +106,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                     fontWeight: 700,
                     fontFamily: 'var(--cp-font-mono)',
                     color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-3)',
-                    boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.06))',
+                    boxShadow: '0 1px 2px var(--ds-shadow-raised))',
                   }}
                 >
                   {colIssues.length}
@@ -206,8 +206,8 @@ function BoardCard({
         borderRadius: 12,
         border: isOnHold ? '1px dashed var(--cp-warning)40' : '1px solid var(--divider)',
         boxShadow: hovered
-          ? '0 4px 12px var(--ds-shadow-overlay, rgba(15,23,42,.1)), 0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.06))'
-          : '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,.06)), 0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.1))',
+          ? '0 4px 12px var(--ds-shadow-overlay)'
+          : '0 1px 2px var(--ds-shadow-overlay)',
         transform: hovered ? 'translateY(-1px)' : 'none',
         transition: 'all 150ms ease',
         overflow: 'hidden',
@@ -226,7 +226,7 @@ function BoardCard({
       <div
         className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10 bg-[var(--bg-app)]"
         style={{
-          boxShadow: '0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,.12))',
+          boxShadow: '0 2px 8px var(--ds-shadow-overlay)',
           padding: '0px 4px',
           opacity: hovered ? 1 : 0,
           transform: hovered ? 'translateY(0)' : 'translateY(-4px)',

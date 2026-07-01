@@ -54,7 +54,7 @@ export const AskCaty: StoryObj = {
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={askCatyLight} alt="Ask Caty dark" />)}
       </AssetRow>
       <AssetRow label="Ask Caty — Light (on dark bg)">
-        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        {/* ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={askCatyDark} alt="Ask Caty light" />)}
       </AssetRow>
     </div>
@@ -71,7 +71,7 @@ export const Caty: StoryObj = {
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={catyLight} alt="Caty dark" />)}
       </AssetRow>
       <AssetRow label="Caty — Light (on dark bg)">
-        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        {/* ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyDark} alt="Caty light" />)}
       </AssetRow>
     </div>
@@ -117,19 +117,19 @@ export const BrandLogoMark: StoryObj = {
   render: () => (
     <div>
       <AssetRow label="Caty AI — with background (dark canvas)">
-        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        {/* ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAIBg} alt="Caty AI with bg" />)}
       </AssetRow>
       <AssetRow label="Caty AI — no background (transparent)">
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface-sunken, #F7F8F9)" src={catyAI} alt="Caty AI" />)}
-        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        {/* ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAI} alt="Caty AI on dark" />)}
       </AssetRow>
       <AssetRow label="Logo Mark — Light (on light bg)">
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={logoMarkLight} alt="Logo mark light" />)}
       </AssetRow>
       <AssetRow label="Logo Mark — Dark (on dark bg)">
-        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        {/* ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#1E2A3A" src={logoMarkDark} alt="Logo mark dark" />)}
       </AssetRow>
     </div>
@@ -183,7 +183,7 @@ export const CatyFabIconStory: StoryObj = {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>On dark bg</span>
-          {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+          {/* ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg */}
         <div style={{ background: '#2A2832', borderRadius: 12, padding: 16 }}>
             <CatyFabIcon size={56} />
           </div>
@@ -195,8 +195,9 @@ export const CatyFabIconStory: StoryObj = {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width={56} height={56} className="is-awake" role="img" aria-label="Ask Caty awake">
                 <defs>
                   <linearGradient id="askdg-sb" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
+                    {/* ads-scanner:ignore-next-line — Storybook gradient asset, not design system */}
                     <stop stopColor="#F79357" /><stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
-                    {/* ads-scanner:ignore-line — Storybook gradient asset, not design system */}
+                    {/* ads-scanner:ignore-next-line — Storybook gradient asset, not design system */}
                     <stop offset=".75" stopColor="#B41572" /><stop offset="1" stopColor="#CC1E9A" />
                   </linearGradient>
                 </defs>
@@ -219,9 +220,13 @@ export const CatyFabIconStory: StoryObj = {
                     <path d="M304 150 Q322 170 340 150" /><path d="M356 150 Q374 170 392 150" />
                   </g>
                   <g className="cf-awake-sb">
+                    {/* ads-scanner:ignore-next-line — story mock data */}
                     <circle cx="322" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
+                    {/* ads-scanner:ignore-next-line — story mock data */}
                     <circle cx="374" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
+                    {/* ads-scanner:ignore-next-line — story mock data */}
                     <circle cx="324" cy="153" r="8.5" fill="var(--caty-fg, var(--ds-text, #172B4D))" /><circle cx="376" cy="153" r="8.5" fill="var(--caty-fg, var(--ds-text, #172B4D))" />
+                    {/* ads-scanner:ignore-next-line — story mock data */}
                     <circle cx="320" cy="147" r="3.2" fill="var(--ds-surface, #FFFFFF)" /><circle cx="372" cy="147" r="3.2" fill="var(--ds-surface, #FFFFFF)" />
                   </g>
                 </g>

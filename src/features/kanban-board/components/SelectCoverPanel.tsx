@@ -39,21 +39,17 @@ type SwatchDef = { name: string; background: string };
 
 const COLOR_HUES = ['Grey', 'Blue', 'Cyan', 'Green', 'Lime', 'Yellow', 'Orange', 'Red', 'Pink', 'Purple'];
 
-/* ads-scanner:ignore-next-line — cover palette hex list (UI presets, no ADS equivalent) */
 const SOLID_LIGHT_HEXES: string[] = [
-  '#E5E5E5', '#DBE4FF', '#DDF4FF', '#D9F5EB', '#E5F5D5', '#F7F0B5', '#F9E9D2', '#FBD9D0', '#F8D2DE', '#EED8F5',
+  '#E5E5E5', '#DBE4FF', '#DDF4FF', '#D9F5EB', '#E5F5D5', '#F7F0B5', '#F9E9D2', '#FBD9D0', '#F8D2DE', '#EED8F5', // ads-scanner:ignore-line — Jira-parity cover palette, no ADS token equivalent (2026-07-01)
 ];
-/* ads-scanner:ignore-next-line — cover palette hex list (UI presets, no ADS equivalent) */
 const SOLID_MEDIUM_HEXES: string[] = [
-  '#C5C5C5', '#A9BEF7', '#B4E5F5', '#A1E4CB', '#B7DE99', '#EDD86A', '#F5C58C', '#F5A697', '#F2A6BA', '#DDB2F0',
+  '#C5C5C5', '#A9BEF7', '#B4E5F5', '#A1E4CB', '#B7DE99', '#EDD86A', '#F5C58C', '#F5A697', '#F2A6BA', '#DDB2F0', // ads-scanner:ignore-line — Jira-parity cover palette, no ADS token equivalent (2026-07-01)
 ];
-/* ads-scanner:ignore-next-line — cover palette hex list (UI presets, no ADS equivalent) */
 const SOLID_DARK_HEXES: string[] = [
-  '#7A7A7A', '#5B87E8', '#54B6E0', '#3EAE83', '#8EBE47', '#E0BC00', '#E29431', '#DD4B39', '#DF4384', '#A64FD3',
+  '#7A7A7A', '#5B87E8', '#54B6E0', '#3EAE83', '#8EBE47', '#E0BC00', '#E29431', '#DD4B39', '#DF4384', '#A64FD3', // ads-scanner:ignore-line — Jira-parity cover palette, no ADS token equivalent (2026-07-01)
 ];
-/* ads-scanner:ignore-next-line — cover palette hex list (UI presets, no ADS equivalent) */
 const SOLID_DARKER_HEXES: string[] = [
-  '#4A4A4A', '#2C5FCB', '#1D7FAE', '#137056', '#5C7A22', '#946000', '#8F4A00', '#8B1E10', '#7A1F4E', '#5F1A99',
+  '#4A4A4A', '#2C5FCB', '#1D7FAE', '#137056', '#5C7A22', '#946000', '#8F4A00', '#8B1E10', '#7A1F4E', '#5F1A99', // ads-scanner:ignore-line — Jira-parity cover palette, no ADS token equivalent (2026-07-01)
 ];
 
 const SOLID_ROWS: SwatchDef[][] = [
@@ -63,18 +59,17 @@ const SOLID_ROWS: SwatchDef[][] = [
   SOLID_DARKER_HEXES.map((hex, i) => ({ name: `Bold ${COLOR_HUES[i].toLowerCase()}`,   background: hex })),
 ];
 
-/* ads-scanner:ignore-next-line — cover gradient list (UI presets, no ADS equivalent) */
 const GRADIENT_HEX_PAIRS: Array<[string, string]> = [
-  ['#4A4A4A', '#262626'],
-  ['#2C5FCB', '#133F91'],
-  ['#1D7FAE', '#0B4B6D'],
-  ['#137056', '#08402B'],
-  ['#5C7A22', '#33470E'],
-  ['#946000', '#522C00'],
-  ['#8F4A00', '#4E1F00'],
-  ['#8B1E10', '#4A0800'],
-  ['#7A1F4E', '#3D0F26'],
-  ['#5F1A99', '#2E0855'],
+  ['#4A4A4A', '#262626'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#2C5FCB', '#133F91'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#1D7FAE', '#0B4B6D'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#137056', '#08402B'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#5C7A22', '#33470E'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#946000', '#522C00'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#8F4A00', '#4E1F00'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#8B1E10', '#4A0800'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#7A1F4E', '#3D0F26'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
+  ['#5F1A99', '#2E0855'], // ads-scanner:ignore-line — Jira-parity cover gradient palette (2026-07-01)
 ];
 const GRADIENTS: SwatchDef[] = GRADIENT_HEX_PAIRS.map(([from, to], i) => ({
   name: `${COLOR_HUES[i]} gradient`,

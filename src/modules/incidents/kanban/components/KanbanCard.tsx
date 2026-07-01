@@ -89,10 +89,10 @@ function SeverityBadge({ severity }: { severity: string }) {
     switch (severity) {
       case 'SEV1':
         // Dark red background, light red text for dark mode
-        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger)] dark:bg-[var(--ds-text-danger, var(--ds-text-danger))] dark:text-[var(--ds-border-danger)] dark:border dark:border-[var(--ds-text-danger)]";
+        return "bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)] dark:bg-[var(--ds-text-danger, var(--ds-text-danger))] dark:text-[var(--ds-border-danger)] dark:border dark:border-[var(--ds-text-danger)]";
       case 'SEV2':
         // Amber variant for dark mode
-        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning)] dark:bg-[var(--ds-text-warning, var(--ds-text-warning))] dark:text-[var(--ds-background-warning, var(--ds-background-warning))] dark:border dark:border-[var(--ds-text-warning, var(--ds-text-warning))]";
+        return "bg-[var(--ds-background-warning-bold)] text-[var(--ds-text-warning)] dark:bg-[var(--ds-text-warning, var(--ds-text-warning))] dark:text-[var(--ds-background-warning, var(--ds-background-warning))] dark:border dark:border-[var(--ds-text-warning, var(--ds-text-warning))]";
       case 'SEV3':
       case 'SEV4':
       default:
@@ -173,9 +173,9 @@ export const KanbanCard = memo(function KanbanCard({
         // Hover state
         "hover:border-[var(--ds-background-neutral-hovered)] dark:hover:border-[var(--ds-border-bold)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1))]",
         // Shadow
-        "shadow-[0_1px_3px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.05))),0_1px_2px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.03)))]",
+        "shadow-[0_1px_3px_var(--ds-shadow-raised, var(--ds-shadow-raised)),0_1px_2px_var(--ds-shadow-raised, var(--ds-shadow-raised))]",
         "dark:shadow-none",
-        isDragging && "shadow-[0_4px_12px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.15)))]",
+        isDragging && "shadow-[0_4px_12px_var(--ds-shadow-raised, var(--ds-shadow-raised))]",
         // Left border for severity
         isBreached && "border-l-[3px] border-l-[var(--ds-text-danger)]",
         isAtRisk && !isBreached && "border-l-[3px] border-l-[var(--ds-text-warning)]"
@@ -193,7 +193,7 @@ export const KanbanCard = memo(function KanbanCard({
           {incident.is_major_incident && (
             <span className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
-              "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning)]",
+              "bg-[var(--ds-background-warning-bold)] text-[var(--ds-text-warning)]",
               "dark:bg-[#431407] dark:text-[var(--ds-background-warning)] dark:border dark:border-[var(--ds-text-danger)]"
             )}>
               <AlertTriangle className="h-2.5 w-2.5" />

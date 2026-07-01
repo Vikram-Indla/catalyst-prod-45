@@ -304,7 +304,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
 function CheckboxSVG({ checked }: { checked: boolean }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="jf-checkbox-svg"
-      style={{ color: checked ? 'var(--ds-link, rgb(24, 104, 219))' : 'var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14))' }}
+      style={{ color: checked ? 'var(--ds-link, rgb(24, 104, 219))' : 'var(--ds-background-neutral-subtle-pressed)' }}
     >
       <g fillRule="evenodd">
         <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" fill="currentColor" />
@@ -332,7 +332,7 @@ function SearchIcon() {
 function InfoIcon() {
   return (
     <svg width="16" height="16" viewBox="-8 -8 32 32" fill="none">
-      <path fill="var(--ds-link, rgb(24,104,219))" fillRule="evenodd" d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M6.5 6.75v1.5h.75v4.25h1.5v-5A.75.75 0 0 0 8 6.75zM8 3.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2" clipRule="evenodd" />
+      <path fill="var(--ds-link)" fillRule="evenodd" d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M6.5 6.75v1.5h.75v4.25h1.5v-5A.75.75 0 0 0 8 6.75zM8 3.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2" clipRule="evenodd" />
     </svg>
   );
 }

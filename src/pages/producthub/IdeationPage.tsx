@@ -257,7 +257,7 @@ export default function IdeationPage() {
               background: 'var(--cp-bg-page)', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none',
             }}
-            onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.08))'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; }}
+            onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information)'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; }}
             onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))'; }}
           />
         </div>

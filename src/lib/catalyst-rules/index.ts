@@ -16,6 +16,13 @@
  *   getOwningModule(type)                  — which module owns this type
  *   getAllowedTypesForModule(module)        — all types creatable in module
  *   MODULE_OWNED_TYPES                     — full ownership map (Grid A)
+ *
+ * Grid G — Avatar & People Picker:
+ *   validateAvatarImport(importPath, file)  — G1: ban @atlaskit/avatar in product code
+ *   validateAvatarSrc(src)                  — G2: ban Gravatar/atl-paas CDN URLs
+ *   isBannedAvatarSrc(src)                  — G2: runtime CDN check (mirrors CatalystAvatar)
+ *   isAvatarCanonicalFile(filePath)         — G1: true for canonical wrapper files
+ *   AVATAR_CONTRACT_CHECKLIST               — G1–G4 PR checklist items
  */
 export {
   MODULE_OWNED_TYPES,
@@ -28,6 +35,14 @@ export {
   validateCreation,
   validateHierarchy,
   validateLink,
+  // Grid G — Avatar & People Picker Contract
+  AVATAR_CANONICAL_PATHS,
+  AVATAR_ALLOWED_IMPORTS,
+  AVATAR_CONTRACT_CHECKLIST,
+  isBannedAvatarSrc,
+  isAvatarCanonicalFile,
+  validateAvatarImport,
+  validateAvatarSrc,
 } from './CatalystRules';
 
-export type { CREModule, CRETypeName, CREValidationResult } from './CatalystRules';
+export type { CREModule, CRETypeName, CREValidationResult, AvatarContractItem } from './CatalystRules';

@@ -82,7 +82,7 @@ export default function DirectNotificationRow({
     ? "var(--ds-surface-overlay)"
     : token(
         "color.background.neutral.hovered",
-        "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))"
+        "var(--ds-background-neutral-subtle-hovered)"
       );
   const pressBg = isDark
     ? "var(--ds-border, var(--cp-ink-1))"
@@ -105,8 +105,8 @@ export default function DirectNotificationRow({
     "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))";
 
   const threadBorderColor = isDark
-    ? "var(--ds-surface, rgba(255,255,255,0.10))"
-    : "var(--ds-text, rgba(11,18,14,0.14))";
+    ? "var(--ds-surface)"
+    : "var(--ds-text)";
   const threadBg = "transparent";
 
   const handleClick = useCallback(() => {

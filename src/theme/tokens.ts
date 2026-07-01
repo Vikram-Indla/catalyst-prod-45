@@ -45,10 +45,12 @@ export const surface = {
   pressed: 'hsl(var(--accent))',
   selected: 'hsl(var(--brand-primary-pale))',
   // Atlaskit blue.subtlest @ 12% alpha — replaces Golden Hour hsl(35 46% 60%)
+  // ads-scanner:ignore-next-line — custom token definition
   selectedHovered: 'rgba(76, 154, 255, 0.12)',
 
   // Brand surfaces
   // Atlaskit blue.subtlest @ 8% alpha — replaces Golden Hour hsl(35 46% 60%)
+  // ads-scanner:ignore-next-line — custom token definition
   brandSubtle: 'rgba(76, 154, 255, 0.08)',
   brandBold: 'hsl(var(--brand-primary))',
   
@@ -96,6 +98,7 @@ export const border = {
   // Structural borders
   default: 'hsl(var(--border))',
   // Atlaskit color.border (N40 var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
+  // ads-scanner:ignore-next-line — custom token definition
   subtle: 'rgba(223, 225, 230, 0.5)',
   strong: 'hsl(var(--neutral-400))',
   
@@ -119,11 +122,17 @@ export const border = {
 // ============================================
 export const elevation = {
   none: 'none',
+  // ads-scanner:ignore-next-line — custom token definition
   sm: '0 1px 2px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))',
+  // ads-scanner:ignore-next-line — custom token definition
   md: '0 4px 6px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 2px 4px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06))',
+  // ads-scanner:ignore-next-line — custom token definition
   lg: '0 10px 15px -3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))',
+  // ads-scanner:ignore-next-line — custom token definition
   xl: '0 20px 25px -5px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 10px 10px -5px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04))',
+  // ads-scanner:ignore-next-line — custom token definition
   overlay: '0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
+  // ads-scanner:ignore-next-line — custom token definition
   drawer: '-4px 0 20px rgba(26, 26, 26, 0.08)',
 } as const;
 
@@ -403,7 +412,9 @@ export const catalyst = {
 // ============================================
 export const statusLozenge = {
   grey:  { lightBg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', lightText: 'var(--ds-text)', darkBg: 'var(--ds-background-neutral)', darkText: 'var(--ds-text-subtlest)' },
+  // ads-scanner:ignore-next-line — custom token definition
   blue:  { lightBg: 'var(--ds-background-information)', lightText: 'var(--ds-link-pressed)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', darkText: 'var(--ds-background-information-bold)' },
+  // ads-scanner:ignore-next-line — custom token definition
   green: { lightBg: 'var(--ds-background-success)', lightText: 'var(--ds-text-success)', darkBg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))', darkText: 'var(--ds-background-success)' },
 } as const;
 

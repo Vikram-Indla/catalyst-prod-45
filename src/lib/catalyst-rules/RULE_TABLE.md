@@ -246,6 +246,66 @@ const { data } = await supabase.from('table').select('...').eq(field, slugOrId).
 
 ---
 
+## GRID G — Avatar & People Picker Contract
+
+Every surface that renders a user identity (assignee, reporter, member, owner) MUST use the canonical avatar stack. No exceptions.
+
+### G1 — Canonical Avatar Component
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| G1 | Every user/assignee/reporter/member identity render MUST use `CatalystAvatar` (`@/components/shared/CatalystAvatar`) or `UserAvatar` (`@/components/shared/UserAvatar`). Direct `@atlaskit/avatar` or `@atlaskit/avatar-group` imports in product code are BANNED. | ESLint `no-restricted-imports` gate in `eslint.config.js`; `grep -rn "from '@atlaskit/avatar'" src/ | grep -v "CatalystAvatar.tsx\|Avatar.tsx"` → zero results |
+
+**Canonical hierarchy (use in this order):**
+1. `UserAvatar` — face component with country flag chip; use where profile context is shown
+2. `CatalystAvatar` — photo → ADS-palette initials → nothing; use everywhere else
+3. `@atlaskit/avatar` — ALLOWED ONLY in `src/components/ads/Avatar.tsx` and `src/components/shared/CatalystAvatar.tsx`
+
+**Canonical references:**
+- `src/components/shared/CatalystAvatar.tsx` — canonical wrapper
+- `src/components/shared/UserAvatar.tsx` — face component
+
+### G2 — Fallback Chain (mandatory)
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| G2 | Avatar fallback chain is FIXED and must be respected by all callers: (1) local bundled photo via `resolveAvatarUrl(name)` — if found, renders image; (2) deterministic ADS-palette initials circle derived from name hash — if no photo; (3) nothing (empty avatar slot). External CDN URLs (Gravatar, `atl-paas.net`, `googleusercontent.com`) are BANNED — `isBannedAvatarSrc()` in `CatalystAvatar` rejects them at runtime. | `CatalystAvatar.isBannedAvatarSrc()` blocks banned URLs at render time |
+
+**BANNED fallback patterns:**
+```tsx
+// BANNED — gray silhouette, bypasses CDN ban + ADS palette
+<Avatar name={user.name} src={user.avatarUrl} />
+
+// BANNED — custom initials span, not ADS palette
+<span style={{ background: '#333', color: 'white' }}>{initials}</span>
+
+// BANNED — raw img tag for user photo
+<img src={user.gravatar} alt={user.name} />
+```
+
+**REQUIRED pattern:**
+```tsx
+// CORRECT — CatalystAvatar handles photo → initials → nothing
+<CatalystAvatar size="medium" name={user.name} src={user.avatarUrl ?? undefined} />
+
+// CORRECT — UserAvatar for full profile context
+<UserAvatar size="medium" user={user} />
+```
+
+### G3 — People Picker / Assignee Picker Contract
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| G3 | Every user picker, assignee picker, people selector, or member-list dropdown MUST render each option with `CatalystAvatar` or `UserAvatar`. No plain initials span, no `<img>` tag, no colored `<div>` with text. Canonical people-picker component is `ProfilePicker` from `@/components/ads` — use before hand-rolling. | Code review; `grep -rn "ProfilePicker\|CatalystAvatar\|UserAvatar" src/components/` confirms usage |
+
+### G4 — AvatarGroup Contract
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| G4 | Avatar stacks / groups MUST wrap `CatalystAvatar` instances, never raw `@atlaskit/avatar-group`. Overflow count (`+N`) must use `<Badge>` from `@atlaskit/badge` — never a custom colored div. | `grep -rn "from '@atlaskit/avatar-group'" src/ | grep -v "CatalystAvatar.tsx\|Avatar.tsx"` → zero results |
+
+---
+
 ## Change Log
 
 | Date       | Row  | Change                          | Confirmed by |
@@ -256,6 +316,7 @@ const { data } = await supabase.from('table').select('...').eq(field, slugOrId).
 | 2026-07-01 | C10  | Same-type linking: BAN          | Vikram       |
 | 2026-07-01 | E1–E5 | Grid E added: Hub L1/L2 breadcrumb pattern, CatalystPageHeader ban, global hub rule, hand-rolled breadcrumb ban | Vikram |
 | 2026-07-01 | F1–F6 | Grid F added: Slug & URL Contract — no UUIDs in route params, slug columns on navigable tables, Routes.* builders only, dual-mode hooks, frozen slugs, redirect mounting outside CatalystShell | Vikram |
+| 2026-07-01 | G1–G4 | Grid G added: Avatar & People Picker Contract — CatalystAvatar/UserAvatar mandatory, CDN ban, ADS-palette fallback chain, ProfilePicker for people pickers, AvatarGroup via wrapped CatalystAvatar | Vikram |
 
 ---
 
