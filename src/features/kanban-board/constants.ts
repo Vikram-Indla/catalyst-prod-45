@@ -136,10 +136,7 @@ export const DEFAULT_VISIBLE_FIELDS = {
   epic: true,
   dueDate: true,
   priority: true,
-  estimate: true,
   assignee: true,
-  daysInColumn: false,
-  childProgress: true,
 } as const;
 
 export const QUICK_FILTERS = [

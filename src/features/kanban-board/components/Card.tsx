@@ -5,6 +5,7 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
+import Lozenge from '@atlaskit/lozenge';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { UnassignedAvatar } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -209,17 +210,10 @@ export const Card: React.FC<CardProps> = ({
       {/* Health badge (product mode only) */}
       {healthRequestKey && <HealthBadge requestKey={healthRequestKey} />}
 
-      {/* Epic chip */}
+      {/* Epic chip — green lozenge, Jira parity */}
       {visibleFields.epic && issue.parentSummary && (
         <div>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 4px', borderRadius: 3,
-            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
-            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-            fontSize: 'var(--ds-font-size-100)', maxWidth: '100%', overflow: 'hidden',
-          }}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.parentSummary}</span>
-          </span>
+          <Lozenge appearance="success" isBold maxWidth={200}>{issue.parentSummary}</Lozenge>
         </div>
       )}
 
@@ -284,13 +278,6 @@ export const Card: React.FC<CardProps> = ({
           {visibleFields.priority && issue.priority && (
             <Tooltip content={`${issue.priority} priority`} delay={SIZES.TOOLTIP_DELAY}>
               <span style={{ display: 'inline-flex' }}><PriorityIcon priority={issue.priority} size={SIZES.ICON_CARD} /></span>
-            </Tooltip>
-          )}
-          {visibleFields.estimate && issue.storyPoints != null && (
-            <Tooltip content={`Story point estimate: ${issue.storyPoints}`} delay={SIZES.TOOLTIP_DELAY}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', 'var(--ds-background-neutral)'), color: token('color.text.subtlest', 'var(--ds-icon-subtle, var(--ds-text-subtlest))'), fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
-                {issue.storyPoints}
-              </span>
             </Tooltip>
           )}
           {visibleFields.assignee && (

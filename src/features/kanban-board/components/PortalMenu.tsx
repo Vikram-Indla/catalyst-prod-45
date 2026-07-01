@@ -184,15 +184,15 @@ export const MenuItem: React.FC<{
     onClick={disabled ? undefined : onClick}
     style={{
       width: '100%', height: SIZES.MENU_ITEM_HEIGHT, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
-      border: 'none', background: selected ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
+      border: 'none', background: 'transparent',
       color: disabled
         ? token('color.text.disabled', 'var(--ds-text-disabled)')
-        : selected ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
+        : token('color.text', 'var(--ds-text)'),
       fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', fontFamily: 'inherit',
       cursor: disabled ? 'not-allowed' : 'pointer', textAlign: 'left',
     }}
-    onMouseEnter={(e) => { if (!selected && !disabled) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
-    onMouseLeave={(e) => { if (!selected && !disabled) e.currentTarget.style.background = 'transparent'; }}
+    onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
+    onMouseLeave={(e) => { if (!disabled) e.currentTarget.style.background = 'transparent'; }}
   >
     {variant !== 'plain' && (
       <span style={{ width: 16, display: 'inline-flex', flexShrink: 0 }}>

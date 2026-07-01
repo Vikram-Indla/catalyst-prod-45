@@ -10,7 +10,9 @@ import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Textfield from '@atlaskit/textfield';
 import { IconButton } from '@atlaskit/button/new';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import SettingsIcon from '@atlaskit/icon/glyph/settings';
+import PreferencesIcon from '@atlaskit/icon/glyph/preferences';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import Toggle from '@atlaskit/toggle';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { PortalMenu, MenuItem, TriggerChevron } from './PortalMenu';
 import { SIZES, STRINGS, QUICK_FILTERS } from '../constants';
@@ -31,10 +33,25 @@ const ALWAYS_FIELD_LABELS: { key: keyof CardVisibleFields; label: string }[] = [
   { key: 'workItemKey', label: 'Work item key' },
   { key: 'priority', label: 'Priority' },
   { key: 'assignee', label: 'Assignee' },
-  { key: 'estimate', label: 'Estimate' },
-  { key: 'daysInColumn', label: 'Days in column' },
-  { key: 'childProgress', label: 'Child progress' },
 ];
+
+const sectionStyle: React.CSSProperties = {
+  padding: '8px 16px 4px', fontWeight: 600, fontSize: 'var(--ds-font-size-400)',
+  color: token('color.text', 'var(--ds-text)'),
+};
+
+const actionRowStyle: React.CSSProperties = {
+  width: '100%', padding: '8px 16px', border: 'none', background: 'none',
+  cursor: 'pointer', textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
+  color: token('color.text', 'var(--ds-text)'), fontFamily: 'inherit',
+};
+
+const ToggleRow: React.FC<{ label: string; isChecked: boolean; onChange: () => void }> = ({ label, isChecked, onChange }) => (
+  <div style={{ display: 'flex', alignItems: 'center', padding: '4px 16px', gap: 8 }}>
+    <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text)') }}>{label}</span>
+    <Toggle isChecked={isChecked} onChange={(_e) => onChange()} size="regular" />
+  </div>
+);
 
 function AvatarFilter({ api, avatars }: { api: FilterApi; avatars: Map<string, string | null> }) {
   const shown = api.allAssignees.slice(0, SIZES.AVATAR_MAX_SHOWN);
@@ -97,7 +114,8 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, filterContext = 'project', hasSwimlanes = false, onExpandAll, onCollapseAll, showEpic = false, showDueDate = false }) => {
   const groupLabels: Partial<Record<GroupByMode, string>> = {
-    none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
+    none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE,
+    ...(showEpic ? { epic: STRINGS.GROUP_EPIC } : {}),
     priority: STRINGS.GROUP_PRIORITY,
   };
 
@@ -181,29 +199,38 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, o
             background: token('color.background.selected', 'var(--ds-background-selected)'), color: token('color.text.selected', 'var(--ds-link, var(--ds-link))') }}>End standup</button>
       )}
 
-      <PortalMenu ariaLabel="View settings" align="right" minWidth={220} trigger={() => (
+      <PortalMenu ariaLabel="View settings" align="right" minWidth={280} trigger={() => (
         <span role="button" aria-label="View settings" style={{ display: 'inline-flex' }}>
-          <IconButton icon={SettingsIcon} label="View settings" appearance="subtle" />
+          <IconButton icon={PreferencesIcon} label="View settings" appearance="subtle" />
         </span>
       )}>
         {(close) => (
           <>
-            <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>Card fields</div>
-            {ALWAYS_FIELD_LABELS.map((f) => (
-              <MenuItem key={f.key} selected={visibleFields[f.key]} onClick={() => onToggleField(f.key)}>{f.label}</MenuItem>
-            ))}
-            {showEpic && (
-              <MenuItem key="epic" selected={visibleFields.epic} onClick={() => onToggleField('epic')}>Epic</MenuItem>
-            )}
-            {showDueDate && (
-              <MenuItem key="dueDate" selected={visibleFields.dueDate} onClick={() => onToggleField('dueDate')}>Due date</MenuItem>
-            )}
+            {/* Panel header */}
+            <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px 8px', borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}` }}>
+              <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>View settings</span>
+              <button aria-label="Close" onClick={close} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, display: 'inline-flex', color: token('color.icon', 'var(--ds-icon)'), borderRadius: 3 }}>
+                <CrossIcon label="" size="small" primaryColor={token('color.icon', 'var(--ds-icon)')} />
+              </button>
+            </div>
+            {/* Fields section */}
+            <div style={{ padding: '4px 0' }}>
+              <div style={sectionStyle}>Fields</div>
+              {ALWAYS_FIELD_LABELS.map((f) => (
+                <ToggleRow key={f.key} label={f.label} isChecked={visibleFields[f.key]} onChange={() => onToggleField(f.key)} />
+              ))}
+              {showEpic && <ToggleRow label="Epic" isChecked={visibleFields.epic} onChange={() => onToggleField('epic')} />}
+              {showDueDate && <ToggleRow label="Due date" isChecked={visibleFields.dueDate} onChange={() => onToggleField('dueDate')} />}
+            </div>
+            {/* Swimlanes section */}
             {hasSwimlanes && (
               <>
                 <div role="separator" style={{ height: 1, background: token('color.border', 'var(--ds-border)'), margin: '4px 0' }} />
-                <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>Swimlanes</div>
-                <MenuItem variant="plain" onClick={() => { onExpandAll?.(); close(); }}>Expand all</MenuItem>
-                <MenuItem variant="plain" onClick={() => { onCollapseAll?.(); close(); }}>Collapse all</MenuItem>
+                <div style={{ padding: '4px 0' }}>
+                  <div style={sectionStyle}>Swimlanes</div>
+                  <button style={actionRowStyle} onClick={() => { onExpandAll?.(); close(); }}>Expand all</button>
+                  <button style={actionRowStyle} onClick={() => { onCollapseAll?.(); close(); }}>Collapse all</button>
+                </div>
               </>
             )}
           </>

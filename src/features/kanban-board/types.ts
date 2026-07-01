@@ -72,10 +72,7 @@ export interface CardVisibleFields {
   epic: boolean;
   dueDate: boolean;
   priority: boolean;
-  estimate: boolean;
   assignee: boolean;
-  daysInColumn: boolean;
-  childProgress: boolean;
 }
 
 /** A swimlane group (group-by != none). */
