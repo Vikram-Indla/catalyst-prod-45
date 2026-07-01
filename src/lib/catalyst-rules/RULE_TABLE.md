@@ -168,6 +168,84 @@ Canonical: `src/pages/project-hub/filters/FilterDetailPage.tsx`
 
 ---
 
+## GRID F — Slug & URL Contract
+
+Every route that navigates to an entity MUST use a human-readable slug, key, or
+display-key. UUIDs are permanently banned from URL params. This grid is enforced
+at code-review, pre-commit, and via `CatalystRules.isValidRouteParam()`.
+
+### F1 — No UUID/bare-ID in route params
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| F1 | Route params MUST NOT end in `Id`, `ID`, `_id`, `uuid`, or `UUID`. Only `:slug`, `:key`, `:*Key`, or `:*Slug` suffixes allowed. | `grep -rn '/:.*[Ii][Dd]\b\|/:.*uuid' src/routes/` → zero results |
+
+**Banned param names (examples):** `:boardId`, `:teamId`, `:portfolioId`, `:cycleId`, `:releaseId`, `:filterId`, `:sprintId`, `:id`
+
+**Allowed param names (examples):** `:boardSlug`, `:teamSlug`, `:portfolioKey`, `:cycleKey`, `:releaseSlug`, `:filterId` ← **only** when the column is named `slug` or `key` on the table
+
+### F2 — Every new navigable table needs a slug column
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| F2 | Any new Supabase table with a detail route MUST ship: (a) `slug TEXT NOT NULL UNIQUE` column, (b) `catalyst_slugify()`-based INSERT trigger, (c) entry in `src/lib/routes.ts`, (d) `useXBySlug()` dual-mode resolution hook. | Migration review checklist item; CRE pre-commit hook |
+
+Canonical trigger pattern (must match exactly):
+```sql
+CREATE OR REPLACE FUNCTION public.<table>_set_slug() RETURNS TRIGGER LANGUAGE plpgsql AS $$
+DECLARE base_slug TEXT; candidate TEXT; counter INT := 1;
+BEGIN
+  IF NEW.slug IS NOT NULL AND NEW.slug <> '' THEN RETURN NEW; END IF;
+  base_slug := catalyst_slugify(NEW.name);
+  IF base_slug IS NULL OR base_slug = '' THEN base_slug := '<prefix>-' || substring(NEW.id::text, 1, 8); END IF;
+  candidate := base_slug;
+  WHILE EXISTS (SELECT 1 FROM public.<table> WHERE slug = candidate AND id IS DISTINCT FROM NEW.id)
+  LOOP candidate := base_slug || '-' || counter; counter := counter + 1; END LOOP;
+  NEW.slug := candidate; RETURN NEW;
+END; $$;
+```
+
+### F3 — URL construction via `Routes.*` builders only
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| F3 | All navigation call sites MUST use typed builders from `src/lib/routes.ts`. String-concatenating a UUID into a URL path (e.g. `` `/board/${board.id}` ``) is banned. | `grep -rn 'navigate.*\$\{[a-zA-Z]*\.[Ii][Dd]\}' src/` → zero results on nav call sites |
+
+```typescript
+// BANNED
+navigate(`/project-hub/${key}/boards/${board.id}`)
+
+// REQUIRED
+import { Routes } from '@/lib/routes';
+navigate(Routes.projectHub.board(key, board.slug))
+```
+
+### F4 — Dual-mode resolution in every slug hook
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| F4 | Every `useXBySlug()` hook MUST accept both slug AND UUID via `isValidUUID(param) ? 'id' : 'slug'`. This provides backward compat for any stale UUID links until Phase 4 permanent redirects land. | Hook code review; `isValidUUID` import required |
+
+```typescript
+// REQUIRED pattern in every resolution hook
+const field = isValidUUID(slugOrId) ? 'id' : 'slug';
+const { data } = await supabase.from('table').select('...').eq(field, slugOrId).maybeSingle();
+```
+
+### F5 — Slugs are frozen on creation
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| F5 | A slug is derived from `name` at INSERT time via `catalyst_slugify()`. It NEVER changes when the entity is renamed. `name` / `display_name` can change freely. Dedup suffix (`-2`, `-3`) appended at creation if collision. | INSERT trigger must guard `IF NEW.slug IS NOT NULL AND NEW.slug <> '' THEN RETURN NEW` — never overwrite existing slug |
+
+### F6 — UUID→slug redirects mount OUTSIDE CatalystShell
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| F6 | Any component that redirects a UUID URL to its slug equivalent MUST be mounted in `FullAppRoutes.tsx` OUTSIDE the `<CatalystShell>` wrapper. Mounting inside CatalystShell causes Navigate re-render loops. | Code review; canonical pattern: `IncidentBacklogKeyRedirect` in `FullAppRoutes.tsx` |
+
+---
+
 ## Change Log
 
 | Date       | Row  | Change                          | Confirmed by |
@@ -177,6 +255,7 @@ Canonical: `src/pages/project-hub/filters/FilterDetailPage.tsx`
 | 2026-07-01 | C2   | Business Request ↔ Production Incident: ALLOW (was proposed BAN) | Vikram |
 | 2026-07-01 | C10  | Same-type linking: BAN          | Vikram       |
 | 2026-07-01 | E1–E5 | Grid E added: Hub L1/L2 breadcrumb pattern, CatalystPageHeader ban, global hub rule, hand-rolled breadcrumb ban | Vikram |
+| 2026-07-01 | F1–F6 | Grid F added: Slug & URL Contract — no UUIDs in route params, slug columns on navigable tables, Routes.* builders only, dual-mode hooks, frozen slugs, redirect mounting outside CatalystShell | Vikram |
 
 ---
 

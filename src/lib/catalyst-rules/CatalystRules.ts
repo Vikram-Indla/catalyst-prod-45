@@ -298,3 +298,117 @@ export function validateLink(sourceType: string, targetType: string): CREValidat
   }
   return { ok: true, resolvedType: src };
 }
+
+// ─── GRID F — SLUG & URL CONTRACT ────────────────────────────────────────────
+
+/**
+ * Route param name suffixes that signal a UUID leak.
+ * Rule F1: params ending in these are banned from all Catalyst routes.
+ */
+const BANNED_PARAM_SUFFIXES: readonly string[] = [
+  'Id',
+  'ID',
+  '_id',
+  'uuid',
+  'UUID',
+];
+
+/**
+ * Literal param names that are always banned (bare :id is the worst offender).
+ * Rule F1.
+ */
+const BANNED_PARAM_NAMES: readonly string[] = ['id', ':id'];
+
+/**
+ * Suffixes that confirm a param is slug/key-based and therefore allowed.
+ * Rule F1.
+ */
+const ALLOWED_PARAM_SUFFIXES: readonly string[] = [
+  'Slug',
+  'slug',
+  'Key',
+  'key',
+];
+
+/**
+ * Returns true if a route param name is compliant with the slug contract.
+ * Rule F1: no Id/ID/_id/uuid suffix; must use Slug/slug/Key/key suffix
+ * or be a recognised display-key param (issueKey, taskKey, incidentKey, cycleKey).
+ *
+ * @example
+ * isValidRouteParam('boardSlug')      // true
+ * isValidRouteParam('portfolioKey')   // true
+ * isValidRouteParam('incidentKey')    // true  — display-key
+ * isValidRouteParam('boardId')        // false — F1 violation
+ * isValidRouteParam('id')             // false — F1 violation
+ */
+export function isValidRouteParam(paramName: string): boolean {
+  const bare = paramName.replace(/^:/, '');
+
+  // Hard-banned literal names
+  if (BANNED_PARAM_NAMES.includes(bare)) return false;
+
+  // Banned suffix patterns
+  if (BANNED_PARAM_SUFFIXES.some(s => bare.endsWith(s))) return false;
+
+  // Must end in an allowed suffix to pass positively
+  return ALLOWED_PARAM_SUFFIXES.some(s => bare.endsWith(s));
+}
+
+/**
+ * Validate a route param name against the slug contract (Grid F, rule F1).
+ * Returns CREValidationResult for consistent error surface.
+ */
+export function validateRouteParam(paramName: string): CREValidationResult {
+  if (isValidRouteParam(paramName)) {
+    return { ok: true };
+  }
+  const bare = paramName.replace(/^:/, '');
+  const isBannedLiteral = BANNED_PARAM_NAMES.includes(bare);
+  const bannedSuffix = BANNED_PARAM_SUFFIXES.find(s => bare.endsWith(s));
+
+  if (isBannedLiteral) {
+    return {
+      ok: false,
+      reason: `Route param ":${bare}" is banned (F1). Rename to ":${bare}Slug" or ":${bare}Key".`,
+    };
+  }
+  if (bannedSuffix) {
+    const suggested = bare.replace(new RegExp(`${bannedSuffix}$`), 'Slug');
+    return {
+      ok: false,
+      reason: `Route param ":${bare}" ends in "${bannedSuffix}" (F1 violation). Rename to ":${suggested}".`,
+    };
+  }
+  return {
+    ok: false,
+    reason: `Route param ":${bare}" does not end in a slug/key suffix (F1). Use Slug, Key, or a display-key suffix.`,
+  };
+}
+
+/**
+ * Returns true if a navigation call site is building a URL with an entity UUID
+ * (detects the pattern `${entity.id}` or `${someVar}` where var ends in Id/ID).
+ *
+ * This is a static-analysis helper for code review tooling.
+ * Rule F3: all URL construction must use Routes.* builders, never raw .id concat.
+ *
+ * @param codeFragment — a snippet of TypeScript/TSX source
+ */
+export function containsUuidNavigation(codeFragment: string): boolean {
+  // Matches: `${anything.id}` or `${thingId}` or `${thing_id}`
+  return /\$\{[^}]*(?:\.id\b|[Ii][Dd])\}/.test(codeFragment);
+}
+
+/**
+ * Slug contract checklist — what every new navigable table must ship.
+ * Rule F2. Used in PR review and activate-feature pre-flight.
+ */
+export const SLUG_CONTRACT_CHECKLIST = [
+  'slug TEXT NOT NULL UNIQUE column on table',
+  'catalyst_slugify()-based INSERT trigger (frozen on creation)',
+  'Typed builder registered in src/lib/routes.ts',
+  'useXBySlug() dual-mode resolution hook (isValidUUID ? id : slug)',
+] as const;
+
+export type SlugContractItem = typeof SLUG_CONTRACT_CHECKLIST[number];
