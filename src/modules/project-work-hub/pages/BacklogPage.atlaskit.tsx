@@ -973,13 +973,14 @@ export default function NativeBacklogPage() {
         'reporter',        // modal: Reporter
         'labels',          // modal: Labels
       ]}
+      bannedTypes={['bug', 'incident']}
     />
   );
 }
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems, filterContext = 'project' }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems, filterContext = 'project', bannedTypes }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
   /* 2026-06-17: when set, BacklogPage opens the right side-panel for
      the matching row on first render. Used by the canonical
      "Open in full page" button on TaskCatalystView so the landing URL
@@ -1021,6 +1022,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   allItems?: boolean;
   /** Passed to CanonicalFilter — controls field visibility and work type set. Defaults to 'project'. */
   filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
+  /** CRE-driven exclusion list. Items whose BacklogItem.type is in this set are stripped before render.
+   *  Use BacklogItem type strings: 'bug' | 'incident' | 'story' | 'epic' | 'feature' | 'task' */
+  bannedTypes?: string[];
 }) {
   // Optional adapter — when present, BacklogPage reads rows + status vocab
   // from the adapter (e.g. business_requests for product hub) and routes all
@@ -2060,8 +2064,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     if (restrictToIssueKeys && restrictToIssueKeys.length === 0) {
       return [];
     }
+    // CRE rule enforcement (A4/A5/D1): strip types that don't belong in this module.
+    if (bannedTypes && bannedTypes.length > 0) {
+      const banned = new Set(bannedTypes);
+      return out.filter((it) => !banned.has(it.type));
+    }
     return out;
-  }, [effectiveEpics, effectiveStories, initiativesByKey, parentTypeMap, restrictToIssueKeys]);
+  }, [effectiveEpics, effectiveStories, initiativesByKey, parentTypeMap, restrictToIssueKeys, bannedTypes]);
 
   // ── Three-level tree: Request → Epic → Story.
   //   - Items with parent_id go into childrenOf[parent_id].

@@ -3381,6 +3381,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                 "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
               borderRadius: 4,
               boxShadow:
+                // ads-scanner:ignore-next-line — Atlaskit token fallback, no ADS shadow token covers this compound value
                 "0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))",
               padding: 4,
               fontFamily:
