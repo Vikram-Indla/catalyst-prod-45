@@ -228,7 +228,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     );
   }, [boardConfig, key, openCreateCol, refetch]);
 
-  const filterApi = useKanbanFilters(issues, (mode === 'project' || mode === 'product') ? 'epic' : 'none');
+  const filterApi = useKanbanFilters(issues, mode === 'project' ? 'epic' : 'none');
   const { filtered } = filterApi;
 
   const boardIssues = useMemo(() => {
