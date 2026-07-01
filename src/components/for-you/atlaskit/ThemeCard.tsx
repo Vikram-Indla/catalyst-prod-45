@@ -54,7 +54,7 @@ import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import ClipboardIcon from '@atlaskit/icon/glyph/clipboard';
+import CopyIcon from '@atlaskit/icon/glyph/copy';
 import { AvatarGroup, Heading } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
@@ -577,7 +577,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           spacing="compact"
           appearance="subtle"
           onClick={handleCopy}
-          iconBefore={ClipboardIcon}
+          iconBefore={CopyIcon}
         >
           {copyState === 'copied' ? 'Copied' : 'Copy summary'}
         </Button>
