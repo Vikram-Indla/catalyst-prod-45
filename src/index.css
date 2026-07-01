@@ -295,7 +295,7 @@
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
   --cp-primary: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
   --cp-primary-hover: var(--ds-link-pressed, #1d4ed8);
-  --cp-bg-hover: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  --cp-bg-hover: var(--ds-background-neutral-subtle);
   --cp-bg-selected: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   --ph-row-height: 36px;
   --ph-header-height: 36px;
@@ -371,10 +371,10 @@
   --cp-radius-default: 6px;
   --cp-radius-lg: 8px;
   --cp-radius-full: 9999px;
-  --cp-shadow-xs: 0 1px 2px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
-  --cp-shadow-sm: 0 1px 3px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
-  --cp-shadow-md: 0 4px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-  --cp-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  --cp-shadow-xs: var(--ds-shadow-raised);
+  --cp-shadow-sm: var(--ds-shadow-raised);
+  --cp-shadow-md: var(--ds-shadow-raised);
+  --cp-shadow-lg: var(--ds-shadow-overlay);
   --cp-shadow-xl: 0 4px 16px
     var(--ds-background-information, rgba(37, 99, 235, 0.4));
   --cp-shadow-overlay: 0px 8px 12px var(--ds-text, rgba(30, 31, 33, 0.15)),
@@ -909,25 +909,23 @@ html:has(body[data-scroll-locked]) {
     --text-2: var(--ds-text-subtle, #44546f);
     --text-3: var(--ds-text-subtlest, #626f86);
     --text-4: var(--ds-text-disabled, #8590a2);
-    --stroke-1: var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-    --stroke-2: var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
-    --divider: var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-    --row-hover: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+    --stroke-1: var(--ds-border);
+    --stroke-2: var(--ds-border-bold);
+    --divider: var(--ds-border);
+    --row-hover: var(--ds-background-neutral-subtle);
     --row-selected: var(--ds-background-information, rgba(37, 99, 235, 0.08));
     --row-active: var(--ds-background-information, rgba(37, 99, 235, 0.12));
     --input-bg: var(
       --cp-bg-elevated,
       var(--cp-bg-elevated, var(--ds-surface, #ffffff))
     );
-    --input-bd: var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
+    --input-bd: var(--ds-border);
     --input-focus: var(
       --cp-workstream-catalyst-primary,
       var(--ds-link, #2563eb)
     );
-    --shadow-1: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)),
-      0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
-    --shadow-2: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)),
-      0 2px 4px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+    --shadow-1: var(--ds-shadow-raised);
+    --shadow-2: var(--ds-shadow-overlay);
 
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Chart Palette (Light Mode)
@@ -1022,10 +1020,10 @@ html:has(body[data-scroll-locked]) {
     );
 
     /* === NO-DRIFT TEXT LADDER (Light Mode) === */
-    --fg-1: var(--ds-shadow-raised, rgba(0, 0, 0, 0.92)); /* Primary text */
-    --fg-2: var(--ds-shadow-raised, rgba(0, 0, 0, 0.72)); /* Secondary text */
-    --fg-3: var(--ds-shadow-raised, rgba(0, 0, 0, 0.55)); /* Muted/hints */
-    --fg-4: var(--ds-shadow-raised, rgba(0, 0, 0, 0.38)); /* Disabled */
+    --fg-1: var(--ds-text);              /* Primary text */
+    --fg-2: var(--ds-text-subtle);       /* Secondary text */
+    --fg-3: var(--ds-text-subtlest);     /* Muted/hints */
+    --fg-4: var(--ds-text-disabled);     /* Disabled */
 
     /* === V5 CANONICAL — NO-DRIFT Semantic Tokens (Light Mode) === */
     --info-fg: var(
@@ -1047,14 +1045,14 @@ html:has(body[data-scroll-locked]) {
     --danger-bg: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08));
     --danger-bd: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.15));
 
-    --neutral-fg: var(--ds-shadow-raised, rgba(0, 0, 0, 0.72));
-    --neutral-bg: var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
-    --neutral-bd: var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+    --neutral-fg: var(--ds-text-subtle);
+    --neutral-bg: var(--ds-background-neutral-subtle);
+    --neutral-bd: var(--ds-border);
 
     /* === SHADOW TOKENS (D1 Spec Compliant) === */
     --shadow-color: 0 0% 10%; /* var(--ds-text, #172B4D) */
-    --shadow-elev-1: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-    --shadow-elev-2: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+    --shadow-elev-1: var(--ds-shadow-raised);
+    --shadow-elev-2: var(--ds-shadow-raised);
 
     /* ═══════════════════════════════════════════════════════════════
        USERS MODULE — RING-FENCED DESIGN SYSTEM
@@ -1092,7 +1090,7 @@ html:has(body[data-scroll-locked]) {
     --users-text-muted: 215 16% 47%; /* var(--ds-text-subtlest, #626F86) - WCAG AA compliant */
     --users-border: 214 32% 91%; /* var(--cp-bg-sunken, var(--ds-border, #DFE1E6)) */
     --users-border-light: 213 27% 96%; /* var(--ds-surface-sunken, #F7F8F9) */
-    --shadow-elev-3: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+    --shadow-elev-3: var(--ds-shadow-overlay);
     --shadow-brand: 0 4px 14px -2px var(--ds-background-information, rgba(37, 99, 235, 0.25));
     --shadow-ai: 0 4px 14px -2px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3));
     --shadow-focus-ring: 0 0 0 3px hsl(var(--brand-primary-light));
@@ -1315,8 +1313,8 @@ html:has(body[data-scroll-locked]) {
     --table-toolbar-input-border: var(--ds-border, #e8e8e8); /* border-subtle */
 
     /* Table selection */
-    --table-section-bg: var(--ds-shadow-raised, rgba(0, 0, 0, 0.02));
-    --row-hover: var(--ds-shadow-raised, rgba(0, 0, 0, 0.02));
+    --table-section-bg: var(--ds-background-neutral-subtle);
+    --row-hover: var(--ds-background-neutral-subtle);
     --selection-row-bg: var(
       --ds-background-information,
       rgba(37, 99, 235, 0.06)
@@ -1685,16 +1683,12 @@ html:has(body[data-scroll-locked]) {
     --neutral-bd: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
 
     /* === F) SHADOWS (Modern, soft depth) === */
-    --shadow-1: 0 1px 0 var(--ds-text, #172b4d),
-      0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.55));
-    --shadow-2: 0 1px 0 var(--cp-border, var(--ds-background-neutral, #f1f2f4)),
-      0 14px 38px var(--ds-shadow-raised, rgba(0, 0, 0, 0.6));
+    --shadow-1: var(--ds-shadow-raised);
+    --shadow-2: var(--ds-shadow-overlay);
     --shadow-color: 0 0% 0%;
     --shadow-elev-1: var(--shadow-1);
     --shadow-elev-2: var(--shadow-2);
-    --shadow-elev-3: 0 1px 0
-        var(--cp-border, var(--ds-background-neutral, #f1f2f4)),
-      0 20px 50px var(--ds-shadow-raised, rgba(0, 0, 0, 0.65));
+    --shadow-elev-3: var(--ds-shadow-overlay);
     --shadow-brand: 0 4px 12px
       var(--ds-background-information-bold, rgba(59, 130, 246, 0.25)); /* Blue brand shadow */
 
@@ -3796,7 +3790,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
   border: 2px solid
     var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #ffffff)));
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
+  box-shadow: var(--ds-shadow-raised);
   cursor: pointer;
   margin-top: -6px;
 }
@@ -3808,7 +3802,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
   border: 2px solid
     var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #ffffff)));
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
+  box-shadow: var(--ds-shadow-raised);
   cursor: pointer;
 }
 
@@ -4034,9 +4028,8 @@ input[type="range"]::-moz-range-thumb {
   --cp-ok: var(--ds-background-success, #dffcf0);
   --cp-ok-bg: var(--ds-background-success-bold, rgba(74, 222, 128, 0.1));
   --cp-prg-bg: var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
-  --cp-shadow-overlay: 0px 8px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5)),
-    0px 0px 1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.6));
-  --cp-shadow-xs: 0 1px 2px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  --cp-shadow-overlay: var(--ds-shadow-overlay);
+  --cp-shadow-xs: var(--ds-shadow-raised);
   --cp-t1: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
   --cp-t2: var(--ds-text-subtlest, #626f86);
   --cp-t3: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
@@ -4053,7 +4046,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-warn-bg: var(--ds-background-warning-bold, rgba(251, 191, 36, 0.1));
   --divider: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
   --ring: var(--ds-background-information-bold, rgba(59, 130, 246, 0.7));
-  --shadow: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  --shadow: var(--ds-shadow-overlay);
   --text-1: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
   --text-2: var(--ds-text-subtlest, #626f86);
   --text-3: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
@@ -4573,22 +4566,13 @@ input[type="range"]::-moz-range-thumb {
   --text-2: var(--ds-text-subtlest, #626f86);
   --text-3: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
   --divider: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  --shadow: var(--ds-shadow-overlay);
   --stroke-1: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
 
-  /* Atlaskit Modal blanket — Jira parity: neutral darken, NOT navy/blue tint.
-     Atlaskit's default --ds-blanket in dark mode has a blue cast (rgba(10,17,33,0.5)).
-     Override to neutral black @ 50% to match Jira web modal backdrop. */
-  --ds-blanket: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
-  --ds-blanket-bold: var(--ds-shadow-raised, rgba(0, 0, 0, 0.65));
-  --ds-blanket-subtle: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
-}
-
-/* Light mode pairing — Jira light blanket is also neutral, not navy. */
-:root {
-  --ds-blanket: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
-  --ds-blanket-bold: var(--ds-shadow-raised, rgba(0, 0, 0, 0.65));
-  --ds-blanket-subtle: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  /* DECISION 2026-07-01: Blanket override removed — --ds-shadow-raised is a full
+     box-shadow declaration post-ADS, making rgba fallback unreachable and blanket
+     invisible. Atlaskit's default --ds-blanket is correct. If the blue cast in dark
+     mode modals becomes a visible issue, re-add with a documented escape hatch. */
 }
 
 .dark .border,
@@ -6302,7 +6286,7 @@ html.dark .cp-feed-type-tile,
     var(--ds-surface, #ffffff)
   ) !important;
   border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  box-shadow: var(--ds-shadow-raised);
 }
 .dark .jus-table-row {
   border-bottom: 0.75px solid
@@ -7147,7 +7131,7 @@ html.dark .cp-feed-type-tile,
 
 /* ── Dark mode ADF elements ── */
 .dark .adf-description-content .adf-mention {
-  background: var(--ds-shadow-raised, rgba(9, 30, 66, 0.4));
+  background: var(--ds-background-neutral);
   color: var(--ds-background-information-bold, #0c66e4);
 }
 .dark .adf-description-content .adf-date {
@@ -7247,7 +7231,7 @@ html.dark .cp-feed-type-tile,
   transition: background 100ms ease;
 }
 .ph-list-table tbody tr:hover td {
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  background: var(--ds-background-neutral-subtle);
 }
 .ph-row-selected td {
   background: var(
@@ -7269,7 +7253,7 @@ html.dark .cp-feed-type-tile,
   transition: background 100ms;
 }
 .ph-icon-btn:hover {
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  background: var(--ds-background-neutral-subtle);
 }
 .ph-icon-btn:focus-visible,
 .ph-iss-key:focus-visible,
@@ -7621,7 +7605,7 @@ table th[class*="css-"] {
 }
 
 .cv-sprintreleases-select__multi-value__remove:hover {
-  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+  background-color: var(--ds-background-neutral);
   border-radius: 2px;
 }
 
