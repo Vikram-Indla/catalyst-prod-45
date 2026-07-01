@@ -15,7 +15,7 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
-import { Board } from './components/Board';
+import { Board, buildGroups } from './components/Board';
 import { Toolbar } from './components/Toolbar';
 import { CardContextMenu } from './components/CardContextMenu';
 import AddIcon from '@atlaskit/icon/glyph/add';
@@ -82,11 +82,16 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const [visibleFields, setVisibleFields] = useState<CardVisibleFields>(() => {
     try {
       const saved = localStorage.getItem('kanban-visible-fields');
-      return saved ? JSON.parse(saved) : { ...DEFAULT_VISIBLE_FIELDS };
+      // Merge with defaults so new fields always get their initial value
+      return saved ? { ...DEFAULT_VISIBLE_FIELDS, ...JSON.parse(saved) } : { ...DEFAULT_VISIBLE_FIELDS };
     } catch {
       return { ...DEFAULT_VISIBLE_FIELDS };
     }
   });
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const onToggleGroup = useCallback((key: string) => {
+    setCollapsed((s) => { const n = new Set(s); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  }, []);
   const toggleField = useCallback((f: keyof CardVisibleFields) => {
     setVisibleFields((v) => {
       const updated = { ...v, [f]: !v[f] };
@@ -243,6 +248,13 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
 
   const avatars = useBoardAvatars(useMemo(() => issues.map((i) => i.assigneeName).filter(Boolean) as string[], [issues]));
 
+  const boardGroups = useMemo(() => buildGroups(boardIssues, filterApi.groupBy), [boardIssues, filterApi.groupBy]);
+  const onExpandAll = useCallback(() => setCollapsed(new Set()), []);
+  const onCollapseAll = useCallback(() => setCollapsed(new Set(boardGroups.map((g) => g.key))), [boardGroups]);
+  const hasSwimlanes = filterApi.groupBy !== 'none';
+  const showEpic = mode === 'project';
+  const showDueDate = mode === 'project' || mode === 'tasks' || mode === 'release';
+
   const idToKey = useMemo(() => {
     const m = new Map<string, string>();
     for (const i of issues) m.set(i.id, i.issueKey);
@@ -318,6 +330,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
         filterContext={kanbanFilterContext}
+        hasSwimlanes={hasSwimlanes}
+        onExpandAll={onExpandAll}
+        onCollapseAll={onCollapseAll}
+        showEpic={showEpic}
+        showDueDate={showDueDate}
       />
 
 
@@ -347,6 +364,8 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               visibleFields={visibleFields}
               selectedId={selectedId}
               groupBy={filterApi.groupBy}
+              collapsed={collapsed}
+              onToggleGroup={onToggleGroup}
               onSelect={onSelect}
               onMove={onMove}
               onAddColumn={onAddColumn}

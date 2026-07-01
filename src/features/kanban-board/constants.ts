@@ -131,6 +131,10 @@ export const PRIORITY_CONFIG: Record<string, PriorityConfig> = {
 
 export const DEFAULT_VISIBLE_FIELDS = {
   labels: false,
+  workType: true,
+  workItemKey: true,
+  epic: true,
+  dueDate: true,
   priority: true,
   estimate: true,
   assignee: true,

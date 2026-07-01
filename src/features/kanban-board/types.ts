@@ -65,6 +65,10 @@ export interface BoardOption {
 /** Card field visibility (View settings). */
 export interface CardVisibleFields {
   labels: boolean;
+  workType: boolean;
+  workItemKey: boolean;
+  epic: boolean;
+  dueDate: boolean;
   priority: boolean;
   estimate: boolean;
   assignee: boolean;

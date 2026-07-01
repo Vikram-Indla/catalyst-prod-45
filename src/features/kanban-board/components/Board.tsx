@@ -12,6 +12,7 @@ import EpicIcon from '@atlaskit/icon-object/glyph/epic/16';
 import { ColumnHeader, ColumnBody } from './Column';
 import { DraggableCard } from './DraggableCard';
 import { SwimlaneHeader } from './SwimlaneHeader';
+import { PriorityIcon } from './PriorityIcon';
 import { indexColumns, resolveColumnId } from '../data/columnConfig';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardConfig, BoardIssue, CardVisibleFields, GroupByMode, KanbanColumn, StatusCategory } from '../types';
@@ -32,6 +33,8 @@ interface BoardProps {
   visibleFields: CardVisibleFields;
   selectedId: string | null;
   groupBy: GroupByMode;
+  collapsed: Set<string>;
+  onToggleGroup: (key: string) => void;
   onSelect: (id: string) => void;
   onAvatarClick?: (issue: BoardIssue, anchor: HTMLElement) => void;
   renderMenu?: (issue: BoardIssue) => React.ReactNode;
@@ -88,7 +91,8 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
   );
 };
 
-interface Group { key: string; label: string; avatarName?: string | null; issues: BoardIssue[]; }
+export interface BoardGroup { key: string; label: string; avatarName?: string | null; issues: BoardIssue[]; }
+type Group = BoardGroup;
 
 const DroppableBody: React.FC<{
   colId: string; groupKey: string; ariaLabel: string; fill: boolean;
@@ -113,7 +117,7 @@ const DroppableBody: React.FC<{
   return <ColumnBody ref={ref} ariaLabel={ariaLabel} fill={fill} isDragOver={overKey === myKey} footer={footer} items={items} renderItem={renderItem} />;
 };
 
-function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
+export function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
   if (groupBy === 'none') return [{ key: '__all__', label: '', issues }];
   const map = new Map<string, Group>();
   const NONE = '__none__';
@@ -131,12 +135,11 @@ function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
+  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, collapsed, onToggleGroup, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
   hideDone = true, onToggleHideDone,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
   const [overrides, setOverrides] = useState<Map<string, string>>(new Map());
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   useEffect(() => { setOverrides(new Map()); }, [issues]);
 
@@ -239,17 +242,21 @@ export const Board: React.FC<BoardProps> = ({
                 label={g.label} count={g.issues.length} collapsed={isCollapsed}
                 showAvatar={groupBy === 'assignee'} avatarName={g.avatarName}
                 avatarUrl={g.avatarName ? avatars.get(g.avatarName) : null}
-                labelNode={groupBy === 'epic' && g.key !== '__none__' ? (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                    <EpicIcon label="" />
-                    {/* ads-scanner:ignore-next-line — epic identity swatch, user-data color, no ADS token (probed 2026-07-01) */}
-                    <span style={{ width: 10, height: 10, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
-                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400 }}>
-                      {g.key}
+                labelNode={
+                  groupBy === 'epic' && g.key !== '__none__' ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                      <EpicIcon label="" />
+                      {/* ads-scanner:ignore-next-line — epic identity swatch, user-data color, no ADS token (probed 2026-07-01) */}
+                      <span style={{ width: 10, height: 10, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400 }}>
+                        {g.key}
+                      </span>
                     </span>
-                  </span>
-                ) : undefined}
-                onToggle={() => setCollapsed((s) => { const n = new Set(s); n.has(g.key) ? n.delete(g.key) : n.add(g.key); return n; })}
+                  ) : groupBy === 'priority' && g.key !== '__none__' ? (
+                    <PriorityIcon priority={g.key} size={16} />
+                  ) : undefined
+                }
+                onToggle={() => onToggleGroup(g.key)}
               />
             )}
             {!isCollapsed && (

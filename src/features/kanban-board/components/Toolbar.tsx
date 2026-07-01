@@ -26,10 +26,12 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { GroupByMode, CardVisibleFields } from '../types';
 
 
-const FIELD_LABELS: { key: keyof CardVisibleFields; label: string }[] = [
+const ALWAYS_FIELD_LABELS: { key: keyof CardVisibleFields; label: string }[] = [
+  { key: 'workType', label: 'Work type' },
+  { key: 'workItemKey', label: 'Work item key' },
   { key: 'priority', label: 'Priority' },
-  { key: 'estimate', label: 'Estimate' },
   { key: 'assignee', label: 'Assignee' },
+  { key: 'estimate', label: 'Estimate' },
   { key: 'daysInColumn', label: 'Days in column' },
   { key: 'childProgress', label: 'Child progress' },
 ];
@@ -86,12 +88,17 @@ interface ToolbarProps {
   onMapStatuses: () => void;
   projectKey?: string;
   filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
+  hasSwimlanes?: boolean;
+  onExpandAll?: () => void;
+  onCollapseAll?: () => void;
+  showEpic?: boolean;
+  showDueDate?: boolean;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, filterContext = 'project' }) => {
-  const groupLabels: Record<GroupByMode, string> = {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, filterContext = 'project', hasSwimlanes = false, onExpandAll, onCollapseAll, showEpic = false, showDueDate = false }) => {
+  const groupLabels: Partial<Record<GroupByMode, string>> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
-    subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
+    priority: STRINGS.GROUP_PRIORITY,
   };
 
   const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
@@ -161,9 +168,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, o
 
       {/* Right cluster */}
       <PortalMenu ariaLabel={STRINGS.GROUP_BY} align="right" minWidth={180} trigger={({ open }) => (
-        <button style={triggerStyle(api.groupBy !== 'none' || open)}>{api.groupBy === 'none' ? 'Group' : `Group: ${groupLabels[api.groupBy]}`}<TriggerChevron /></button>
+        <button style={triggerStyle(api.groupBy !== 'none' || open)}>{api.groupBy === 'none' || !groupLabels[api.groupBy] ? 'Group' : `Group: ${groupLabels[api.groupBy]}`}<TriggerChevron /></button>
       )}>
-        {(close) => (Object.keys(groupLabels) as GroupByMode[]).map((g) => (
+        {(close) => (Object.keys(groupLabels) as GroupByMode[]).filter(g => groupLabels[g] !== undefined).map((g) => (
           <MenuItem key={g} variant="radio" selected={api.groupBy === g} onClick={() => { api.setGroupBy(g); close(); }}>{groupLabels[g]}</MenuItem>
         ))}
       </PortalMenu>
@@ -174,17 +181,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, o
             background: token('color.background.selected', 'var(--ds-background-selected)'), color: token('color.text.selected', 'var(--ds-link, var(--ds-link))') }}>End standup</button>
       )}
 
-      <PortalMenu ariaLabel="View settings" align="right" minWidth={200} trigger={() => (
+      <PortalMenu ariaLabel="View settings" align="right" minWidth={220} trigger={() => (
         <span role="button" aria-label="View settings" style={{ display: 'inline-flex' }}>
           <IconButton icon={SettingsIcon} label="View settings" appearance="subtle" />
         </span>
       )}>
-        {() => (
+        {(close) => (
           <>
             <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>Card fields</div>
-            {FIELD_LABELS.map((f) => (
+            {ALWAYS_FIELD_LABELS.map((f) => (
               <MenuItem key={f.key} selected={visibleFields[f.key]} onClick={() => onToggleField(f.key)}>{f.label}</MenuItem>
             ))}
+            {showEpic && (
+              <MenuItem key="epic" selected={visibleFields.epic} onClick={() => onToggleField('epic')}>Epic</MenuItem>
+            )}
+            {showDueDate && (
+              <MenuItem key="dueDate" selected={visibleFields.dueDate} onClick={() => onToggleField('dueDate')}>Due date</MenuItem>
+            )}
+            {hasSwimlanes && (
+              <>
+                <div role="separator" style={{ height: 1, background: token('color.border', 'var(--ds-border)'), margin: '4px 0' }} />
+                <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>Swimlanes</div>
+                <MenuItem variant="plain" onClick={() => { onExpandAll?.(); close(); }}>Expand all</MenuItem>
+                <MenuItem variant="plain" onClick={() => { onCollapseAll?.(); close(); }}>Collapse all</MenuItem>
+              </>
+            )}
           </>
         )}
       </PortalMenu>
