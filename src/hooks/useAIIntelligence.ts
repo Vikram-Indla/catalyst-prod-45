@@ -85,7 +85,7 @@ export function useHubClosures(resourceId: string | undefined, jiraAccountId: st
         if (!hubMap.has(hub)) hubMap.set(hub, { closed: 0, total: 0 });
         const entry = hubMap.get(hub)!;
         entry.total++;
-        if (row.status_category === 'Done') entry.closed++;
+        if (row.status_category === 'done') entry.closed++;
       }
 
       return Array.from(hubMap.entries()).map(([hub, { closed, total }]) => ({
@@ -113,7 +113,7 @@ export function useDeliveryBacklog(resourceId: string | undefined, jiraAccountId
 
       if (error || !issues) return { metrics: { avgSubtaskDays: null, avgStoryDays: null, avgBugDays: null, pickupSpeedHours: null }, hubs: [] };
 
-      const doneItems = issues.filter((i: any) => i.status_category === 'Done');
+      const doneItems = issues.filter((i: any) => i.status_category === 'done');
       const typeAvgs = (type: string) => {
         const typed = doneItems.filter((i: any) => i.issue_type === type && i.jira_created_at && i.jira_updated_at);
         if (typed.length === 0) return null;

@@ -215,11 +215,11 @@ export function useResource360People() {
 
         // Check if parent story is active (status_category !== 'Done')
         const parentStory = issue.parent_key ? parentStoryMap.get(issue.parent_key) : undefined;
-        if (!parentStory || parentStory.status_category === 'Done') return;
+        if (!parentStory || parentStory.status_category === 'done') return;
 
         // Count this subtask
         person.total_subtasks++;
-        if (issue.status_category === 'Done') {
+        if (issue.status_category === 'done') {
           person.done_subtasks++;
         } else {
           person.active_subtasks++;

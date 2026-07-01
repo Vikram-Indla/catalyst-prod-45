@@ -100,7 +100,7 @@ export function useProjectTestingStatus(projectId?: string, projectName?: string
         for (const link of tc?.tm_requirement_links ?? []) {
           if (link.requirement_type !== 'story') continue;
           const story = storyByKey.get(link.external_key);
-          if (story && story.status_category === 'Done') {
+          if (story && story.status_category === 'done') {
             mismatches.push({
               issue_key: story.issue_key,
               summary: story.summary,

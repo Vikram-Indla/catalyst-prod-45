@@ -349,7 +349,7 @@ export function useDashboardOverdueItems(
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, effective_due_date, assignee_display_name, issue_type')
         .is('deleted_at', null)
-        .neq('status_category', 'Done')
+        .neq('status_category', 'done')
         // 2026-06-09 Vikram parity — exclude subtasks (Backend / Frontend /
         // Sub-task / Integration). Overdue widget should surface parent
         // tickets only; subtasks roll up to their parent.

@@ -67,7 +67,7 @@ export function useProductStatus(epicKey?: string) {
       for (const cid of failedCases) {
         const sk = caseToStory.get(cid);
         const story = sk ? storyByKey.get(sk) : undefined;
-        if (story && story.status_category === 'Done') mismatches.push({ issue_key: story.issue_key, summary: story.summary, status: story.status, case_key: cid.slice(0, 8), test_status: 'failed' });
+        if (story && story.status_category === 'done') mismatches.push({ issue_key: story.issue_key, summary: story.summary, status: story.status, case_key: cid.slice(0, 8), test_status: 'failed' });
       }
 
       const coveredStories = stories.filter((s) => coveredKeys.has(s.issue_key)).length;

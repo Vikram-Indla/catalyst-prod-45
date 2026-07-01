@@ -367,7 +367,7 @@ async function fetchMyClosed(ctx: UserContext): Promise<QueryResult> {
     .select(FIELDS)
     .is('jira_removed_at', null)
     .ilike('assignee_display_name', ctx.displayName)
-    .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
+    .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
     .gte('jira_updated_at', weekStart)
     .order('jira_updated_at', { ascending: false })
     .limit(20);
@@ -524,7 +524,7 @@ async function fetchReleaseReadiness(ctx: UserContext): Promise<QueryResult> {
     if (!projectStats[p]) projectStats[p] = { total: 0, done: 0, inProgress: 0, blocked: 0 };
     projectStats[p].total++;
     const s = (item.status || '').toLowerCase();
-    if (item.status_category === 'Done' || s.includes('done') || s.includes('closed') || s.includes('resolved')) projectStats[p].done++;
+    if (item.status_category === 'done' || s.includes('done') || s.includes('closed') || s.includes('resolved')) projectStats[p].done++;
     else if (s.includes('block') || s.includes('impediment')) projectStats[p].blocked++;
     else if (s.includes('progress') || s.includes('review') || s.includes('test')) projectStats[p].inProgress++;
   });
@@ -551,7 +551,7 @@ async function fetchProjectSummary(ctx: UserContext): Promise<QueryResult> {
     supabase.from('ph_issues').select('*', { count: 'exact', head: true }).in('project_key', ctx.projectKeys).is('jira_removed_at', null)
       .or('status.ilike.%blocked%,status.ilike.%impediment%'),
     supabase.from('ph_issues').select('*', { count: 'exact', head: true }).in('project_key', ctx.projectKeys).is('jira_removed_at', null)
-      .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status_category.eq.Done')
+      .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status_category.eq.done')
       .gte('jira_updated_at', weekStart),
     supabase.from('ph_issues').select('*', { count: 'exact', head: true }).is('jira_removed_at', null)
       .ilike('assignee_display_name', ctx.displayName)

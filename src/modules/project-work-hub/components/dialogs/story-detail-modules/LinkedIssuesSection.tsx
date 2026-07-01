@@ -387,7 +387,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             issue_key: ct.issue_key,
             summary: ct.title,
             status: ct.status,
-            status_category: ct.status === 'Done' ? 'Done' : ct.status === 'In Progress' ? 'In Progress' : 'To Do',
+            status_category: ct.status === 'Done' ? 'done' : ct.status === 'In Progress' ? 'in_progress' : 'todo',
             issue_type: ct.issue_type,
             assignee_account_id: ct.assignee_id,
             assignee_display_name: null,

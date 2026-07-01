@@ -116,9 +116,9 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         // Specific status target: "moved 1 item to 'Monitor'" → filter by that status
         query = query.ilike('status', targetStatus);
       } else if (isClosure) {
-        query = query.eq('status_category', 'Done');
+        query = query.eq('status_category', 'done');
       } else if (isReopen) {
-        query = query.neq('status_category', 'Done');
+        query = query.neq('status_category', 'done');
       } else if (isDefect) {
         query = query.in('issue_type', ['Bug', 'Defect']);
       }

@@ -89,7 +89,7 @@ export function useSprintTestingStatus(sprintName?: string) {
         if (status !== 'failed') continue;
         const storyKey = caseToStory.get(caseId);
         const story = storyKey ? storyByKey.get(storyKey) : undefined;
-        if (story && story.status_category === 'Done') {
+        if (story && story.status_category === 'done') {
           mismatches.push({ issue_key: story.issue_key, summary: story.summary, status: story.status, case_key: caseKeyById.get(caseId) ?? '—', test_status: 'failed' });
         }
       }

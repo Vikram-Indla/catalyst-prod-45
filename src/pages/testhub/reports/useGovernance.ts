@@ -62,7 +62,7 @@ export function useGovernance(projectName?: string, projectId?: string) {
       for (const s of stories) {
         const cases = storyCases.get(s.issue_key) ?? [];
         const statuses = cases.map((c) => caseStatus.get(c) ?? 'not_run');
-        const done = s.status_category === 'Done';
+        const done = s.status_category === 'done';
         if (cases.length === 0) continue; // uncovered stories live in the coverage report, not here
         if (done && statuses.includes('failed')) {
           rows.push({ issue_key: s.issue_key, summary: s.summary, status: s.status, rule: 'Done + failing test', detail: 'Story marked Done but a linked test failed.' });

@@ -68,7 +68,7 @@ export function useSyncMDTToRequests() {
 
         // Filter out Done Business Requests only
         const filteredIssues = parentIssues.filter((i: any) => {
-          const isDoneBusinessRequest = i.status_category === 'Done' &&
+          const isDoneBusinessRequest = i.status_category === 'done' &&
             (i.issue_type || '').toLowerCase().includes('business request');
           return !isDoneBusinessRequest;
         });

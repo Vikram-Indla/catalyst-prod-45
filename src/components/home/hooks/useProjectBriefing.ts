@@ -193,7 +193,7 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
         .select('issue_type, project_key, assignee_display_name')
         .in('project_key', userCtx.projectKeys)
         .is('jira_removed_at', null)
-        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
+        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
         .gte('jira_updated_at', weekStart);
 
       const byType: Record<string, number> = {};

@@ -66,7 +66,7 @@ export function useWeeklyStory(resourceId: string | undefined, jiraAccountId: st
         .from('ph_issues')
         .select('id', { count: 'exact', head: true })
         .eq('assignee_account_id', jiraAccountId)
-        .not('status_category', 'eq', 'Done')
+        .not('status_category', 'eq', 'done')
         .not('status', 'in', '("Cancelled","Canceled")')
         .lt('jira_created_at', weekStart.toISOString()) as any);
 
@@ -83,9 +83,9 @@ export function useWeeklyStory(resourceId: string | undefined, jiraAccountId: st
         const events: WeekDayEvent[] = items.map((item: any) => {
           const time = new Date(item.jira_updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
           const statusBadge: 'progress' | 'done' | 'review' | undefined =
-            item.status_category === 'Done' ? 'done' :
+            item.status_category === 'done' ? 'done' :
             item.status === 'In Review' || item.status === 'Review' ? 'review' :
-            item.status_category === 'In Progress' ? 'progress' : undefined;
+            item.status_category === 'in_progress' ? 'progress' : undefined;
 
           return {
             time,
@@ -103,9 +103,9 @@ export function useWeeklyStory(resourceId: string | undefined, jiraAccountId: st
       });
 
       // Compute KPIs
-      const closed = weekItems.filter((i: any) => i.status_category === 'Done').length;
+      const closed = weekItems.filter((i: any) => i.status_category === 'done').length;
       const inReview = weekItems.filter((i: any) => i.status === 'In Review' || i.status === 'Review').length;
-      const pickedUp = weekItems.filter((i: any) => i.status_category === 'In Progress').length;
+      const pickedUp = weekItems.filter((i: any) => i.status_category === 'in_progress').length;
       const remaining = (backlogCount || 0) - closed;
 
       // Generate hook text

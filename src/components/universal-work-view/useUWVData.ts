@@ -167,7 +167,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
             const today = new Date().toISOString().split('T')[0];
             q = q
               .lt('effective_due_date', today)
-              .neq('status_category', 'Done')
+              .neq('status_category', 'done')
               .not('effective_due_date', 'is', null);
           }
           if (params.dataType === 'onhold') {

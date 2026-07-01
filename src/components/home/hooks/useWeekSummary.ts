@@ -35,7 +35,7 @@ export function useWeekSummary(userCtx: UserContext | undefined) {
         .select('issue_type')
         .is('jira_removed_at', null)
         .ilike('assignee_display_name', userCtx.displayName)
-        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
+        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
         .gte('jira_updated_at', weekStart);
 
       const byType: Record<string, number> = {};
@@ -50,7 +50,7 @@ export function useWeekSummary(userCtx: UserContext | undefined) {
         .select('project_key')
         .is('jira_removed_at', null)
         .in('project_key', userCtx.projectKeys)
-        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
+        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
         .gte('jira_updated_at', weekStart);
 
       const byProject: Record<string, number> = {};

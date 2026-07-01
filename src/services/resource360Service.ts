@@ -88,9 +88,9 @@ export const fetchResourceSummary = async (resourceId: string, jiraAccountId?: s
 
   const items = (issues || []) as any[];
   const total = items.length;
-  const todo = items.filter((i: any) => i.status_category === 'To Do').length;
-  const inProgress = items.filter((i: any) => i.status_category === 'In Progress').length;
-  const done = items.filter((i: any) => i.status_category === 'Done').length;
+  const todo = items.filter((i: any) => i.status_category === 'todo').length;
+  const inProgress = items.filter((i: any) => i.status_category === 'in_progress').length;
+  const done = items.filter((i: any) => i.status_category === 'done').length;
 
   const result = {
     total_items: total,

@@ -288,9 +288,9 @@ const classifyIssue = (issue: any): 'done' | 'blocked' | 'inprogress' | 'todo' |
   const cat = issue.status_category;
   const status = issue.status;
   if (BLOCKED_STATUSES.has(status)) return 'blocked';
-  if (cat === 'Done') return 'done';
-  if (cat === 'In Progress') return 'inprogress';
-  if (cat === 'To Do') return 'todo';
+  if (cat === 'done') return 'done';
+  if (cat === 'in_progress') return 'inprogress';
+  if (cat === 'todo') return 'todo';
   return null;
 };
 
@@ -338,7 +338,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
         .eq('issue_type', 'Epic')
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .not('status_category', 'eq', 'Done')
+        .not('status_category', 'eq', 'done')
         .limit(500);
 
       // Also exclude epics linked via ph_issue_links → MIM/MDT initiatives
@@ -459,7 +459,7 @@ function useEpicStatusOrder(projectKey: string) {
         .not('status', 'is', null)
         .limit(500);
       if (!data) return [];
-      const catOrder: Record<string, number> = { 'To Do': 1, 'In Progress': 2, 'Done': 3 };
+      const catOrder: Record<string, number> = { 'todo': 1, 'in_progress': 2, 'done': 3 };
       const seen = new Set<string>();
       const withCat: { status: string; catRank: number }[] = [];
       for (const row of data) {
@@ -855,7 +855,7 @@ function SettingsPopupBody({
         categoryMap.set(cat, set);
       });
 
-      const categoryOrder = ['To Do', 'In Progress', 'Done', 'Other'];
+      const categoryOrder = ['todo', 'in_progress', 'done', 'Other'];
       const sortedCategories = [...categoryMap.keys()].sort((a, b) => {
         const ia = categoryOrder.indexOf(a);
         const ib = categoryOrder.indexOf(b);
@@ -1072,8 +1072,8 @@ const lozengeAppearance = (
   if (!statusCategory) return 'default';
   const cat = statusCategory.toLowerCase();
   if (cat === 'done') return 'success';
-  if (cat === 'in progress') return 'inprogress';
-  if (cat === 'to do') return 'default';
+  if (cat === 'in_progress') return 'inprogress';
+  if (cat === 'todo') return 'default';
   return 'default';
 };
 
@@ -1791,9 +1791,9 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         issue_key: s.issue_key,
         summary: s.summary,
         total: 1,
-        done: s.status_category === 'Done' ? 1 : 0,
-        todo: s.status_category === 'To Do' ? 1 : 0,
-        inprogress: s.status_category === 'In Progress' ? 1 : 0,
+        done: s.status_category === 'done' ? 1 : 0,
+        todo: s.status_category === 'todo' ? 1 : 0,
+        inprogress: s.status_category === 'in_progress' ? 1 : 0,
         blocked: ['On Hold', 'Blocked', 'Awaiting Info'].includes(s.status) ? 1 : 0,
         status: s.status,
         status_category: s.status_category,
