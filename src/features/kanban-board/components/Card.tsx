@@ -10,6 +10,7 @@ import { UnassignedAvatar } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/core/edit';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import { PriorityIcon } from './PriorityIcon';
 import { SIZES, STRINGS } from '../constants';
@@ -72,16 +73,22 @@ export const Card: React.FC<CardProps> = ({
     cursor: 'pointer', userSelect: 'none', outline: 'none',
     transition: 'background-color 100ms ease',
   };
+  // Jira-parity: flagged cards get the warning cream background — no left
+  // border, no orange bar, no ring. Marker inside the card is the filled
+  // red flag icon in the footer, next to priority.
+  // Sticky history: an item currently UNflagged but previously flagged
+  // gets a subtle blue "information" tint so users see it was flagged before.
   if (issue.isFlagged) {
-    base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', 'var(--ds-background-warning-bold)')}`;
-    base.background = token('color.background.warning', '#FFFBF0');
-    base.paddingLeft = SIZES.CARD_PADDING - SIZES.CARD_FLAG_BORDER;
-    base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold)')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    base.background = token('color.background.warning', 'var(--ds-background-warning)');
+  } else if (issue.wasFlagged) {
+    base.background = token('color.background.information', 'var(--ds-background-information)');
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
-      ? token('color.background.warning.hovered', '#F8E6A0')
-      : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral)');
+      ? token('color.background.warning', 'var(--ds-background-warning)')
+      : issue.wasFlagged
+        ? token('color.background.information', 'var(--ds-background-information)')
+        : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral)');
   }
   if (isSelected) {
     base.outline = `2px solid ${token('color.border.selected', 'var(--ds-link)')}`;
@@ -218,6 +225,18 @@ export const Card: React.FC<CardProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {issue.isFlagged && (
+            <Tooltip content="Flagged" delay={SIZES.TOOLTIP_DELAY}>
+              <span aria-label="Flagged" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Canonical Atlaskit filled flag glyph — same one Jira ships.
+                    Jira-parity accent red for the fill (token). */}
+                <FlagFilledIcon
+                  label=""
+                  color={token('color.icon.accent.red', 'var(--ds-icon-accent-red)')}
+                />
+              </span>
+            </Tooltip>
+          )}
           {visibleFields.priority && issue.priority && (
             <Tooltip content={`${issue.priority} priority`} delay={SIZES.TOOLTIP_DELAY}>
               <span style={{ display: 'inline-flex' }}><PriorityIcon priority={issue.priority} size={SIZES.ICON_CARD} /></span>

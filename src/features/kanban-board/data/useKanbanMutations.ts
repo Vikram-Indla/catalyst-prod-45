@@ -179,25 +179,18 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
   }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── toggleFlag ────────────────────────────────────────────────────── */
+  /* 2026-07-01: all 5 mode tables now have is_flagged + was_flagged
+     (migration 20260701131032_flag_columns_all_modes). Same write across all
+     modes: set is_flagged; sticky was_flagged flips true on add, never resets. */
   const toggleFlag = useCallback(async (issueId: string, isFlagged: boolean) => {
-    if (isTest) {
-      void isFlagged; void issueId;
-      return;
-    }
-    if (isRelease) {
-      /* rh_releases has no is_flagged column — silent no-op. Health is the
-         canonical "needs attention" signal for releases (set elsewhere). */
-      void isFlagged; void issueId;
-      return;
-    }
-    if (isTasks) {
-      /* tasks table has no is_flagged column — no-op so the card menu's
-         flag toggle silently does nothing instead of erroring. */
-      void isFlagged; void issueId;
-      return;
-    }
-    const table = isProduct ? 'business_requests' : 'ph_issues';
-    const { error } = await (supabase as any).from(table).update({ is_flagged: isFlagged }).eq('id', issueId);
+    const table = isTest    ? 'tm_test_cases'
+                : isRelease ? 'rh_releases'
+                : isTasks   ? 'tasks'
+                : isProduct ? 'business_requests'
+                :             'ph_issues';
+    const patch: Record<string, unknown> = { is_flagged: isFlagged };
+    if (isFlagged) patch.was_flagged = true;
+    const { error } = await (supabase as any).from(table).update(patch).eq('id', issueId);
     if (error) throw error;
   }, [isProduct, isTasks, isRelease, isTest]);
 

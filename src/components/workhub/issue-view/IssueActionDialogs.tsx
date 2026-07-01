@@ -279,7 +279,7 @@ export function AddFlagModal({
   issueTitle?: string;
   issueType?: string;
   flagged: boolean;
-  tableName?: 'ph_issues' | 'business_requests';
+  tableName?: 'ph_issues' | 'business_requests' | 'tasks' | 'rh_releases' | 'tm_test_cases';
   onClose: () => void;
 }) {
   // 2026-07-01: replaced AtlaskitEditor with the canonical RichTextEditor
@@ -295,11 +295,15 @@ export function AddFlagModal({
       const noteText = tiptapPlainText(tipDoc);
       const nextFlagReason = newFlagged ? (noteText.trim() || FLAG_VALUE) : null;
 
-      const updatePayload: Record<string, unknown> = { is_flagged: newFlagged };
-      // business_requests has no flag_reason column
-      if (tableName === 'ph_issues') {
-        updatePayload.flag_reason = nextFlagReason;
-      }
+      // 2026-07-01: every mode table now has is_flagged + flag_reason + was_flagged
+      // (migration 20260701131032_flag_columns_all_modes). Write all three uniformly.
+      const updatePayload: Record<string, unknown> = {
+        is_flagged: newFlagged,
+        flag_reason: nextFlagReason,
+      };
+      // Sticky "was flagged at least once" marker. Only set to true; never
+      // reset — even after unflag, the card keeps its blue history tint.
+      if (newFlagged) updatePayload.was_flagged = true;
 
       const { error } = await (supabase.from(tableName) as any)
         .update(updatePayload)
@@ -307,6 +311,8 @@ export function AddFlagModal({
       if (error) throw error;
 
       if (tableName === 'ph_issues') {
+        // Activity log only wired for ph_issues today — other tables have their
+        // own activity streams if any.
         const commentNote = newFlagged
           ? normalizeNote(noteText, DEFAULT_ADD_FLAG_NOTE)
           : normalizeNote(noteText, DEFAULT_REMOVE_FLAG_NOTE);

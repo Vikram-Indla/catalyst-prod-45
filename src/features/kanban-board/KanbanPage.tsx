@@ -497,7 +497,13 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           issueTitle={flagTarget.summary}
           issueType={flagTarget.issueType}
           flagged={flagTarget.isFlagged}
-          tableName={mode === 'product' ? 'business_requests' : 'ph_issues'}
+          tableName={
+            mode === 'product' ? 'business_requests'
+            : mode === 'tasks'   ? 'tasks'
+            : mode === 'release' ? 'rh_releases'
+            : mode === 'test'    ? 'tm_test_cases'
+            :                      'ph_issues'
+          }
           onClose={() => { setFlagTarget(null); refetch(); }}
         />
       )}

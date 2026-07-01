@@ -34,7 +34,7 @@ export const TEST_BOARD_COLUMNS: KanbanColumn[] = [
   { id: 'col-deprecated', name: 'DEPRECATED', category: 'done',        statuses: ['DEPRECATED'], max: null },
 ];
 
-const TEST_CASE_SELECT = 'id, key, title, status, project_id, folder_id, priority_id, type_id, assigned_to, created_at, updated_at';
+const TEST_CASE_SELECT = 'id, key, title, status, project_id, folder_id, priority_id, type_id, assigned_to, is_flagged, was_flagged, created_at, updated_at';
 
 /* 2026-06-19: release-mode columns mirror the 9-stage release lifecycle the
    legacy releaseBoardAdapter used. Defined here (not imported from the legacy
@@ -53,7 +53,7 @@ export const RELEASE_BOARD_COLUMNS: KanbanColumn[] = [
 ];
 
 const RELEASE_SELECT =
-  'id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at, created_at, product_id, release_manager_id';
+  'id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, is_flagged, was_flagged, updated_at, created_at, product_id, release_manager_id';
 
 /* 2026-06-17: tasks mode SELECT lists.
    - Tasks live in `tasks` with FK to task_statuses (slug + name + order).
@@ -64,12 +64,12 @@ const RELEASE_SELECT =
 const TASKS_SELECT = '*';
 
 const PAGE = 1000;
-const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, due_date';
+const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, was_flagged, jira_updated_at, jira_created_at, due_date';
 
 /* SELECT list for product mode. Mirrors the OLD KanbanBoardPage product
    branch and adds the columns landed by 20260615120000_product_board_parity:
      is_flagged, parent_request_id, tags. */
-const BR_SELECT = 'id, request_key, title, process_step, urgency, project_manager_user_id, is_flagged, parent_request_id, tags, created_at, updated_at';
+const BR_SELECT = 'id, request_key, title, process_step, urgency, project_manager_user_id, is_flagged, was_flagged, parent_request_id, tags, created_at, updated_at';
 
 /** Fetch one page of project issues (raw rows). When the board was created from a
  *  saved filter, `jql` carries that filter's query so the board only shows matching
@@ -122,6 +122,7 @@ function mapRow(r: any): BoardIssue {
     parentSummary: r.parent_summary ?? null,
     sprintRelease: fv,
     isFlagged: !!r.is_flagged,
+    wasFlagged: !!r.was_flagged,
     updatedAt: r.jira_updated_at ?? null,
     createdAt: r.jira_created_at ?? null,
     statusChangedAt: null, // ph_issues has no status_changed_at column
@@ -156,6 +157,7 @@ function mapProductRow(
     parentSummary: parent?.summary ?? null,
     sprintRelease: null,
     isFlagged: !!r.is_flagged,
+    wasFlagged: !!r.was_flagged,
     updatedAt: r.updated_at ?? null,
     createdAt: r.created_at ?? null,
     statusChangedAt: null,
@@ -396,7 +398,8 @@ export function useKanbanData(
       parentKey: null,
       parentSummary: null,
       sprintRelease: null,
-      isFlagged: false,
+      isFlagged: !!r.is_flagged,
+      wasFlagged: !!r.was_flagged,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -426,7 +429,10 @@ export function useKanbanData(
       parentKey: null,
       parentSummary: null,
       sprintRelease: r.version ?? null,
-      isFlagged: r.health === 'at_risk',
+      // Prefer the explicit is_flagged column now that rh_releases has one;
+      // fall back to at_risk health as legacy signal for older data.
+      isFlagged: !!r.is_flagged || r.health === 'at_risk',
+      wasFlagged: !!r.was_flagged,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -689,7 +695,8 @@ export function useKanbanData(
       parentKey: null,
       parentSummary: null,
       sprintRelease: null,
-      isFlagged: false,
+      isFlagged: !!r.is_flagged,
+      wasFlagged: !!r.was_flagged,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
