@@ -11,51 +11,54 @@ import type { BoardListItem } from '@/types/board';
 
 type BoardMode = 'project' | 'product' | 'test' | 'incident';
 
+// Column objects use snake_case to match what the create_board() RPC reads
+// via v_col->>'is_backlog' and v_col->>'is_done'.
+interface RpcColumn { name: string; is_backlog: boolean; is_done: boolean }
 interface PrimaryBoardConfig {
   primaryWorkItemType: string;
-  columns: Array<{ name: string; isBacklog?: boolean; isDone?: boolean }>;
+  columns: RpcColumn[];
 }
 
 const BOARD_CONFIG: Record<BoardMode, PrimaryBoardConfig> = {
   project: {
     primaryWorkItemType: 'Story',
     columns: [
-      { name: 'In Requirements', isBacklog: true, isDone: false },
-      { name: 'Ready for Dev', isBacklog: false, isDone: false },
-      { name: 'In Development', isBacklog: false, isDone: false },
-      { name: 'In Testing', isBacklog: false, isDone: false },
-      { name: 'In UAT', isBacklog: false, isDone: false },
-      { name: 'Done', isBacklog: false, isDone: true },
+      { name: 'In Requirements', is_backlog: true, is_done: false },
+      { name: 'Ready for Dev', is_backlog: false, is_done: false },
+      { name: 'In Development', is_backlog: false, is_done: false },
+      { name: 'In Testing', is_backlog: false, is_done: false },
+      { name: 'In UAT', is_backlog: false, is_done: false },
+      { name: 'Done', is_backlog: false, is_done: true },
     ],
   },
   product: {
     primaryWorkItemType: 'Business Request',
     columns: [
-      { name: 'New', isBacklog: true, isDone: false },
-      { name: 'Demand Intake', isBacklog: false, isDone: false },
-      { name: 'Analysis & Design', isBacklog: false, isDone: false },
-      { name: 'Implementation', isBacklog: false, isDone: false },
-      { name: 'Review & QA', isBacklog: false, isDone: false },
-      { name: 'Done', isBacklog: false, isDone: true },
+      { name: 'New', is_backlog: true, is_done: false },
+      { name: 'Demand Intake', is_backlog: false, is_done: false },
+      { name: 'Analysis & Design', is_backlog: false, is_done: false },
+      { name: 'Implementation', is_backlog: false, is_done: false },
+      { name: 'Review & QA', is_backlog: false, is_done: false },
+      { name: 'Done', is_backlog: false, is_done: true },
     ],
   },
   test: {
     primaryWorkItemType: 'QA Bug',
     columns: [
-      { name: 'Draft', isBacklog: true, isDone: false },
-      { name: 'In Review', isBacklog: false, isDone: false },
-      { name: 'Approved', isBacklog: false, isDone: false },
-      { name: 'Deprecated', isBacklog: false, isDone: true },
+      { name: 'Draft', is_backlog: true, is_done: false },
+      { name: 'In Review', is_backlog: false, is_done: false },
+      { name: 'Approved', is_backlog: false, is_done: false },
+      { name: 'Deprecated', is_backlog: false, is_done: true },
     ],
   },
   incident: {
     primaryWorkItemType: 'Production Incident',
     columns: [
-      { name: 'Reported', isBacklog: true, isDone: false },
-      { name: 'Under Investigation', isBacklog: false, isDone: false },
-      { name: 'In Fix', isBacklog: false, isDone: false },
-      { name: 'Monitoring', isBacklog: false, isDone: false },
-      { name: 'Closed', isBacklog: false, isDone: true },
+      { name: 'Reported', is_backlog: true, is_done: false },
+      { name: 'Under Investigation', is_backlog: false, is_done: false },
+      { name: 'In Fix', is_backlog: false, is_done: false },
+      { name: 'Monitoring', is_backlog: false, is_done: false },
+      { name: 'Closed', is_backlog: false, is_done: true },
     ],
   },
 };

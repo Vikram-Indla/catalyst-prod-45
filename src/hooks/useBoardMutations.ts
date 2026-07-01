@@ -16,7 +16,7 @@ export function useCreateBoard() {
         p_board_type: input.boardType ?? 'kanban',
         p_swimlane_type: input.swimlaneType ?? 'none',
         p_color: input.color ?? 'var(--ds-link)',
-        p_columns: input.columns ? JSON.stringify(input.columns) : null,
+        p_columns: input.columns ?? null,
         p_board_query: input.boardQuery ?? null,
         p_is_default: input.isDefault ?? false,
         p_primary_work_item_type: input.primaryWorkItemType ?? null,

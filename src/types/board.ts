@@ -128,7 +128,8 @@ export interface CreateBoardInput {
   color?: string;
   boardQuery?: string;
   filterId?: string;
-  columns?: Array<{ name: string; isBacklog?: boolean; isDone?: boolean }>;
+  /** Keys must match create_board() RPC: name, is_backlog, is_done */
+  columns?: Array<Record<string, unknown>>;
   isDefault?: boolean;
   primaryWorkItemType?: string;
 }
