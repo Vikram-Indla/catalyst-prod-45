@@ -493,6 +493,25 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
     },
     [onFocusedRowChange]
   );
+  // Cell focus (mouse click) — { rowId, colId }. Drives the blue cell box +
+  // light row background (Jira cell-select, img #89-#91).
+  const [focusedCell, setFocusedCell] = useState<{ rowId: string; colId: string } | null>(null);
+  // Capture-phase so it runs BEFORE inner editors/links stopPropagation.
+  const onCellFocusCapture = useCallback(
+    (row: any, colId: string | undefined, e: React.MouseEvent) => {
+      if (!colId || row == null) return;
+      // Work cell: don't steal focus from the key link, the title/summary, or
+      // the row hover-action buttons — those keep their own click behaviour.
+      // Every other cell (assignee, status, …) focuses even though it opens an
+      // editor (img #91).
+      if (colId === "key") {
+        const t = e.target as HTMLElement;
+        if (t.closest("[data-jira-table-row-open], [data-jira-summary-slot], a, button")) return;
+      }
+      setFocusedCell({ rowId: String(getRowId(row)), colId });
+    },
+    [getRowId],
+  );
 
   // Page-sliced data. When grouping is active we don't paginate — groups
   // show their own rows. Otherwise we slice by page × rowsPerPage so the
@@ -604,12 +623,28 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
     const style = __existingStyle ?? document.createElement("style");
     style.id = "backlog-table-focus-css";
     style.textContent = `
-      /* Focus ring via blue left bar + subtle bg */
+      /* Keyboard focus ring (arrow-key nav) — kept. Mouse CLICK no longer sets
+         row focus; it uses cell focus instead (below). */
       .jira-table-grid .jira-table-row-focused > td:first-child {
         box-shadow: inset 3px 0 0 var(--ds-link);
       }
       .jira-table-grid .jira-table-row-focused > td {
         background-color: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
+      }
+      /* Cell focus (2026-07-01, user request img #89-#91): clicking a cell draws
+         a blue box INSIDE that cell + a light background on the whole row.
+         Replaces the old click-adds-a-blue-left-bar-on-the-row behavior. */
+      .jira-table-grid table tbody > tr[data-row-focused-cell="true"] > td {
+        background-color: var(--ds-background-selected) !important;
+      }
+      .jira-table-grid table tbody > tr > td[data-cell-focused="true"] {
+        box-shadow: inset 0 0 0 2px var(--ds-border-focused) !important;
+        border-radius: 3px;
+      }
+      /* When the title is being edited the overlay input carries its own
+         border, so drop the cell-focus box on the Work cell. */
+      .jira-table-grid table tbody > tr > td[data-col-id="key"]:has([data-summary-editing="true"]) {
+        box-shadow: none !important;
       }
       /* 2026-06-30 Jira parity: row dividers are a real 1px border-bottom in
          --ds-border (Jira DOM probe = rgba(11,18,14,0.14) = color.border). The
@@ -679,9 +714,10 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:not(.jira-table-group-row):hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
       }
-      /* 2026-06-30 (user request): ONLY the Work cell (ticket key + name) gets
-         the slightly darker hover; the rest of the row keeps the subtle tint. */
-      .jira-table-grid table tbody > tr:not(.jira-table-group-row):hover > td[data-col-id="key"] {
+      /* 2026-07-01 (user request): the Work cell's DARKER hover applies ONLY
+         when the cursor is over the Work cell itself (not on general row
+         hover). Row hover still gives every cell the subtle tint above. */
+      .jira-table-grid table tbody > tr:not(.jira-table-group-row) > td[data-col-id="key"]:hover {
         background-color: var(--ds-background-neutral-hovered) !important;
       }
       /* Drag-source row: solid blue at FULL opacity while it is being dragged
@@ -1792,8 +1828,15 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           const explicitOpen = target.closest("[data-jira-table-row-open]");
           const interactive = target.closest("a, button");
           if (interactive && !explicitOpen) return;
-          setFocusedRow(id);
-          onRowClick?.(row);
+          // 2026-07-01 (user request): the Key link still opens the detail
+          // panel. A plain cell-body click NO LONGER opens the panel or sets
+          // the row-level focus (no blue left bar) — it only cell-focuses via
+          // the cell's onClickCapture (blue box + light row bg, img #89-#91).
+          if (explicitOpen) {
+            setFocusedCell(null);
+            setFocusedRow(id);
+            onRowClick?.(row);
+          }
         },
         // Right-click → context menu at cursor. Skipped inside form controls
         // and editor buttons so native menus still work there.
@@ -2252,6 +2295,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           .join(" ")}
         data-drag-row-id={!isGroup && r.row != null ? String(getRowId(r.row)) : undefined}
         data-drag-source={!isGroup && r.row != null && draggingRowId === String(getRowId(r.row)) ? "true" : undefined}
+        data-row-focused-cell={!isGroup && r.row != null && focusedCell?.rowId === String(getRowId(r.row)) ? "true" : undefined}
         onClick={r.onClick}
         onContextMenu={r.onContextMenu}
         onMouseMove={isGroup ? undefined : (e) => onRowZoneMove(e, r.row)}
@@ -2271,6 +2315,8 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
               key={c.key}
               colSpan={c.colSpan}
               data-col-id={c.colId}
+              data-cell-focused={!isGroup && r.row != null && c.colId && focusedCell?.rowId === String(getRowId(r.row)) && focusedCell?.colId === c.colId ? "true" : undefined}
+              onClickCapture={isGroup ? undefined : (e) => onCellFocusCapture(r.row, c.colId, e)}
               data-jt-drag-over={isDropTarget ? "true" : undefined}
               data-jt-drag-source={
                 c.colId && dragId === c.colId ? "true" : undefined
@@ -2979,6 +3025,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                             data-index={vRow.index}
                             data-drag-row-id={!isGroup && r.row != null ? String(getRowId(r.row)) : undefined}
                             data-drag-source={!isGroup && r.row != null && draggingRowId === String(getRowId(r.row)) ? "true" : undefined}
+                            data-row-focused-cell={!isGroup && r.row != null && focusedCell?.rowId === String(getRowId(r.row)) ? "true" : undefined}
                             ref={virtualizer?.measureElement as any}
                             className={[
                               r.className,
@@ -3005,6 +3052,8 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                                   key={c.key}
                                   colSpan={c.colSpan}
                                   data-col-id={c.colId}
+                                  data-cell-focused={!isGroup && r.row != null && c.colId && focusedCell?.rowId === String(getRowId(r.row)) && focusedCell?.colId === c.colId ? "true" : undefined}
+                                  onClickCapture={isGroup ? undefined : (e) => onCellFocusCapture(r.row, c.colId, e)}
                                   data-resize-state={
                                     c.colId && resizing?.id === c.colId
                                       ? "active"

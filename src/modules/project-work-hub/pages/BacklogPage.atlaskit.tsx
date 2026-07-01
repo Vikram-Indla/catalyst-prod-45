@@ -7210,7 +7210,7 @@ function InlineGroupCreateRow({
         // is indented like a child. Normal create keeps the 8px left pad.
         paddingLeft: childMode ? 44 : 8,
         background: token('elevation.surface', 'var(--ds-surface)'),
-        border: `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
+        border: `3px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
         borderRadius: 4,
         boxSizing: 'border-box',
       }}

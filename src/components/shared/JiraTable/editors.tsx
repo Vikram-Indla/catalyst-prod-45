@@ -594,6 +594,7 @@ function SummaryOverlayEditor<T>({
     <div
       ref={slotRef}
       data-summary-editing={editing ? 'true' : undefined}
+      data-jira-summary-slot
       onClick={(e) => { if (!editing) { e.stopPropagation(); startEdit(); } }}
       style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', cursor: editing ? 'default' : 'text' }}
     >
@@ -636,7 +637,7 @@ function SummaryOverlayEditor<T>({
             width: box.width,
             height: box.height,
             padding: '0 8px',
-            border: `1px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
+            border: `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
             borderRadius: 3,
             outline: 'none',
             fontSize: 14,
@@ -904,7 +905,7 @@ export function makeSummaryInlineEditCell<T>({
                     background: 'transparent',
                     borderRadius: 3,
                     cursor: 'pointer',
-                    color: 'var(--ds-text-subtle)',
+                    color: 'var(--ds-text)',
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
@@ -957,7 +958,7 @@ export function makeSummaryInlineEditCell<T>({
                     background: 'transparent',
                     borderRadius: 3,
                     cursor: 'pointer',
-                    color: 'var(--ds-text-subtle)',
+                    color: 'var(--ds-text)',
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
