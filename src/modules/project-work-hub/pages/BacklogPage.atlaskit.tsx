@@ -272,61 +272,165 @@ function HealthCell({ row }: { row: BacklogItem }) {
  * drop targets do the actual reorder. So drag starts straight from the visible
  * box (exactly like clicking the "+" button works from its own element).
  */
-function DragHandleGrip({ row }: { row: BacklogItem }) {
+function DragHandleGrip({
+  row,
+  onMove,
+  onChangeParent,
+}: {
+  row: BacklogItem;
+  onMove?: (row: BacklogItem, dir: 'first' | 'up' | 'down' | 'last') => void;
+  onChangeParent?: (row: BacklogItem) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
+  // Long-press → drag; short click → menu (Jira img #80).
+  const armedRef = useRef(false);      // long-press satisfied → drag allowed
+  const draggingRef = useRef(false);
+  const justDraggedRef = useRef(false);
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [menu, setMenu] = useState<{ top: number; left: number } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    /* The source-row blue highlight is now owned by BacklogTable (React state
-       `draggingRowId` → tr[data-drag-source] CSS), so it survives re-renders
-       and covers the virtualized row path. The grip only supplies the drag
-       payload + the cursor chip. */
     return draggable({
       element: el,
+      // Only allow the drag once the pointer has been held long enough.
+      canDrag: () => armedRef.current,
       getInitialData: () => ({ rowId: row.id, title: row.title }),
-      /* DISABLE the native drag image. Chromium draws a 1px dark border on the
-         top/left of every native custom drag preview — un-removable via CSS
-         because the compositor adds it. Atlassian's own pattern (Jira parity)
-         is to render a real DOM pill that follows the cursor instead (see
-         <DragRowPreview/>), which has no native image and therefore no border,
-         and lets the ADS elevation shadow render properly. */
       onGenerateDragPreview: ({ nativeSetDragImage }) => {
         disableNativeDragPreview({ nativeSetDragImage });
+      },
+      onDragStart: () => { draggingRef.current = true; },
+      onDrop: () => {
+        draggingRef.current = false;
+        armedRef.current = false;
+        justDraggedRef.current = true;
+        setTimeout(() => { justDraggedRef.current = false; }, 60);
       },
     });
   }, [row.id, row.title]);
 
+  // Close the menu on outside click.
+  useEffect(() => {
+    if (!menu) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (ref.current?.contains(t)) return;
+      if (menuRef.current?.contains(t)) return;
+      setMenu(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [menu]);
+
+  const startPress = () => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    pressTimer.current = setTimeout(() => { armedRef.current = true; }, 220);
+  };
+  const endPress = () => {
+    if (pressTimer.current) { clearTimeout(pressTimer.current); pressTimer.current = null; }
+    if (!draggingRef.current) armedRef.current = false;
+  };
+
+  const MENU_ITEMS: Array<{ id: 'first' | 'up' | 'down' | 'last' | 'parent'; label: string }> = [
+    { id: 'first', label: 'Move to top' },
+    { id: 'up', label: 'Move up' },
+    { id: 'down', label: 'Move down' },
+    { id: 'last', label: 'Move to bottom' },
+    { id: 'parent', label: 'Change parent' },
+  ];
+
   return (
-    <div
-      ref={ref}
-      aria-hidden
-      style={{
-        width: 18,
-        height: 18,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: token('elevation.surface', 'var(--ds-surface)'),
-        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
-        borderRadius: 4,
-        boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
-        color: token('color.icon.subtle', 'var(--ds-icon-subtle)'),
-        cursor: 'grab',
-      }}
-    >
-      <span style={{ display: 'inline-flex', transform: 'scale(0.72)' }}>
-        {/* 6-dot grip — no ADS equivalent; inline SVG */}
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
-          <circle cx="2" cy="2" r="1.5" />
-          <circle cx="8" cy="2" r="1.5" />
-          <circle cx="2" cy="8" r="1.5" />
-          <circle cx="8" cy="8" r="1.5" />
-          <circle cx="2" cy="14" r="1.5" />
-          <circle cx="8" cy="14" r="1.5" />
-        </svg>
-      </span>
-    </div>
+    <>
+      <div
+        ref={ref}
+        aria-label="Reorder work item"
+        onPointerDown={startPress}
+        onPointerUp={endPress}
+        onPointerLeave={endPress}
+        onClick={(e) => {
+          e.stopPropagation();
+          // A completed drag suppresses the menu; a short click opens it.
+          if (justDraggedRef.current || draggingRef.current) return;
+          const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          setMenu({ top: r.bottom + 4, left: r.left });
+        }}
+        style={{
+          width: 18,
+          height: 18,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: token('elevation.surface', 'var(--ds-surface)'),
+          border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+          borderRadius: 4,
+          boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
+          color: token('color.icon.subtle', 'var(--ds-icon-subtle)'),
+          cursor: 'pointer',
+        }}
+      >
+        <span style={{ display: 'inline-flex', transform: 'scale(0.72)' }}>
+          {/* 6-dot grip — no ADS equivalent; inline SVG */}
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+            <circle cx="2" cy="2" r="1.5" />
+            <circle cx="8" cy="2" r="1.5" />
+            <circle cx="2" cy="8" r="1.5" />
+            <circle cx="8" cy="8" r="1.5" />
+            <circle cx="2" cy="14" r="1.5" />
+            <circle cx="8" cy="14" r="1.5" />
+          </svg>
+        </span>
+      </div>
+      {menu && ReactDOM.createPortal(
+        <div
+          ref={menuRef}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: menu.top,
+            left: menu.left,
+            minWidth: 180,
+            padding: '4px 0',
+            background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
+            zIndex: 10002,
+          }}
+        >
+          {MENU_ITEMS.map((it) => (
+            <button
+              key={it.id}
+              type="button"
+              onClick={() => {
+                setMenu(null);
+                if (it.id === 'parent') onChangeParent?.(row);
+                else onMove?.(row, it.id);
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '8px 16px',
+                border: 'none',
+                background: 'transparent',
+                color: token('color.text', 'var(--ds-text)'),
+                fontSize: 14,
+                lineHeight: '20px',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              {it.label}
+            </button>
+          ))}
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }
 
@@ -2903,6 +3007,55 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedRows, projectKey, projectId, supabase, queryClient, sortKey, setSortKey, setSortDir]);
 
+  // ── Grip menu moves (Jira img #80) — Move to top/up/down/bottom ──
+  // Computes a new sort_order from the neighbours in the visible list (same
+  // midpoint scheme the drag monitor uses) and persists it.
+  const handleGripMove = useCallback(async (r: BacklogItem, dir: 'first' | 'up' | 'down' | 'last') => {
+    const rows = sortedRows;
+    const idx = rows.findIndex((x) => x.id === r.id);
+    if (idx === -1) return;
+    const rankOf = (x?: BacklogItem) => (x?.rank_order ?? null);
+    let newRank: number;
+    if (dir === 'first') {
+      newRank = (rankOf(rows[0]) ?? 0) - 10;
+    } else if (dir === 'last') {
+      newRank = (rankOf(rows[rows.length - 1]) ?? 0) + 10;
+    } else if (dir === 'up') {
+      if (idx <= 0) return;
+      const prev = rankOf(rows[idx - 1]) ?? 0;
+      const prevPrev = rankOf(rows[idx - 2]) ?? (prev - 20);
+      newRank = (prev + prevPrev) / 2;
+    } else {
+      if (idx >= rows.length - 1) return;
+      const next = rankOf(rows[idx + 1]) ?? 0;
+      const nextNext = rankOf(rows[idx + 2]) ?? (next + 20);
+      newRank = (next + nextNext) / 2;
+    }
+    try {
+      if (dataSource && (r as any).source === BIZ_SOURCE && dataSource.onSetRank) {
+        await dataSource.onSetRank(r.id, newRank);
+        dataSource.invalidationKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k as any }));
+      } else {
+        const { error } = await supabase
+          .from('ph_issues')
+          .update({ sort_order: newRank, jira_updated_at: new Date().toISOString() })
+          .eq('issue_key', r.id);
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+        queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+      }
+      if (sortKey !== null) { setSortKey(null); setSortDir(null); }
+      flag.success('Moved', r.key || r.id);
+    } catch (e: any) {
+      flag.error('Move failed', e?.message ?? String(e));
+    }
+  }, [sortedRows, dataSource, supabase, projectId, queryClient, sortKey, setSortKey, setSortDir, flag]);
+
+  const handleGripChangeParent = useCallback((r: BacklogItem) => {
+    openDetail(r);
+    flag.info('Change parent', 'Set the parent in the detail panel.');
+  }, [openDetail, flag]);
+
   // ── Column schema ──
   // F8 (iter-9): __caret column dropped — caret affordance folded into the
   // Type col cell renderer instead (matches Jira's inline expand pattern).
@@ -4652,7 +4805,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
-            renderRowDragHandle={(row) => <DragHandleGrip row={row} />}
+            renderRowDragHandle={(row) => <DragHandleGrip row={row} onMove={handleGripMove} onChangeParent={handleGripChangeParent} />}
             {...({ renderRowDropAnchor: (row: BacklogItem) => <RowDropAnchor row={row} /> } as any)}
             /* 2026-06-30 (user request): show the drag handle on hover even
                when grouped (Jira shows it for within-group rank). Hidden only
