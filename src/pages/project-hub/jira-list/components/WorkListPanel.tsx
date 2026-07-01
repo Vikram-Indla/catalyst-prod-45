@@ -402,6 +402,7 @@ export function WorkListPanel({
                     font: 'inherit',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
+                    lineHeight: 'var(--ds-line-height-body)',
                     color: 'var(--ds-text-subtlest)',
                     cursor: 'pointer',
                     textDecoration: 'underline',

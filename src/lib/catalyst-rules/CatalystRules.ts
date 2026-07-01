@@ -9,11 +9,14 @@
  *   2. Hierarchy          — canBeChildOf(child, parent) (Grid B)
  *   3. Link restrictions  — canLinkTo(source, target) (Grid C)
  *   4. Creation rights    — canCreateInModule(type, module) (Grid D)
+ *   5. Route param contract — isValidRouteParam (Grid F)
+ *   6. Avatar contract    — validateAvatarImport, validateAvatarSrc (Grid G)
+ *   7. Row typography contract — CANONICAL_ROW_TYPOGRAPHY, containsHardcodedLineHeight (Grid H)
  *
  * ALL surfaces that create, link, or parent work items MUST query this engine.
  * No surface may hardcode type lists or module mappings.
  *
- * Confirmed by Vikram: 2026-07-01
+ * Confirmed by Vikram: 2026-07-01 (Grids A–G) · 2026-07-02 (Grid H, pending confirmation)
  * Council session: CRE design + opportunity analysis
  */
 
@@ -21,6 +24,7 @@ import {
   getAllowedChildTypes,
   isSubtaskFamily,
 } from '@/components/catalyst-detail-views/shared/parent-rules';
+import { isTerminalStatus } from '@/components/ads';
 
 // ─── TYPE ALIASES ────────────────────────────────────────────────────────────
 
@@ -522,6 +526,75 @@ export const AVATAR_CONTRACT_CHECKLIST = [
   'Pass src={user.avatarUrl ?? undefined} — do not pass Gravatar/atl-paas URLs',
   'People pickers must render CatalystAvatar per option — no custom initials span',
   'Avatar stacks must wrap CatalystAvatar instances — not @atlaskit/avatar-group directly',
+] as const;
+
+/**
+ * Returns true if an assignee/people picker should be locked for this status.
+ * Rule G5: locks ONLY on a terminal status — an assignee merely being set
+ * does NOT lock the field. Supersedes the prior "lock once assigned,
+ * forever" behavior. Delegates to the existing canonical `isTerminalStatus`
+ * (`@/components/ads`) so there is one "cannot be changed" concept
+ * app-wide, not a second parallel one — covers done-category statuses
+ * (done/closed/resolved/released/approved/...) plus non-done terminal
+ * outcomes (rejected/declined/cancelled/won't-fix/duplicate/...).
+ *
+ * @example
+ * isAssigneeLocked('CLOSED')      // true
+ * isAssigneeLocked('canceled')    // true
+ * isAssigneeLocked('IN DELIVERY') // false
+ * isAssigneeLocked(null)          // false
+ */
+export function isAssigneeLocked(status: string | null | undefined): boolean {
+  return isTerminalStatus(status);
+}
+
+// ─── GRID H — ROW TYPOGRAPHY CONTRACT ────────────────────────────────────────
+
+/**
+ * Canonical key/title token pair for every Jira/work-item row surface
+ * (Board, Backlog, All Work, Sprint, and any future row surface).
+ * Rule H1. Reference implementations: JiraTable/cells.tsx (makeKeyCell),
+ * JiraTable/editors.tsx (SummaryOverlayEditor).
+ * Confirmed by Vikram: 2026-07-02. CAT-TYPOGRAPHY-ROWSYNC-20260702-001.
+ */
+export const CANONICAL_ROW_TYPOGRAPHY = {
+  key: {
+    fontSize: 'var(--ds-font-size-300)',   // 13px
+    lineHeight: 'var(--ds-line-height-body)', // 20px
+  },
+  title: {
+    fontSize: 'var(--ds-font-size-400)',   // 14px
+    lineHeight: 'var(--ds-line-height-body)', // 20px
+  },
+} as const;
+
+/**
+ * Matches hardcoded lineHeight literals (1, 1.4, 1.5) or Tailwind
+ * leading-[...] utility classes. Rule H2.
+ */
+const BANNED_LINE_HEIGHT_PATTERN =
+  /lineHeight:\s*['"]?(1|1\.4|1\.5)['"]?\s*[,}]|leading-\[/;
+
+/**
+ * Returns true if the given source text contains a banned hardcoded
+ * line-height literal in place of var(--ds-line-height-body).
+ * Rule H2. Known documented exception: JiraTable/editors.tsx ~line 861
+ * (InlineEdit readView fallback — descender-clipping workaround, not
+ * currently rendered by any of the four audited row surfaces).
+ */
+export function containsHardcodedLineHeight(source: string): boolean {
+  return BANNED_LINE_HEIGHT_PATTERN.test(source);
+}
+
+/**
+ * Row typography contract checklist — what every new row/table/card
+ * surface rendering a work item must satisfy. Rules H1–H3.
+ */
+export const ROW_TYPOGRAPHY_CONTRACT_CHECKLIST = [
+  'Issue key text: var(--ds-font-size-300) / var(--ds-line-height-body) — 13px/20px',
+  'Issue title/summary text: var(--ds-font-size-400) / var(--ds-line-height-body) — 14px/20px',
+  'No hardcoded lineHeight: 1 / 1.4 / 1.5 or Tailwind leading-[...] in row cell components',
+  'Reuse JiraTable/cells.tsx or JiraTable/editors.tsx — do not hand-roll a new row renderer',
 ] as const;
 
 export type AvatarContractItem = typeof AVATAR_CONTRACT_CHECKLIST[number];

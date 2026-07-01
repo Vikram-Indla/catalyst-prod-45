@@ -306,6 +306,34 @@ Every surface that renders a user identity (assignee, reporter, member, owner) M
 
 ---
 
+## GRID H — Row Typography Contract
+
+Every Jira/work-item row surface (Board, Backlog, All Work, Sprint, and any future row surface) MUST render issue key and title/summary text through the same canonical token pair. No exceptions, no per-surface reinvention.
+
+### H1 — Canonical token pair
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| H1 | Issue KEY text = `var(--ds-font-size-300)` / `var(--ds-line-height-body)` (13px/20px). Issue TITLE/summary text = `var(--ds-font-size-400)` / `var(--ds-line-height-body)` (14px/20px). Applies to every row/table/card surface that renders a work item. | DOM computed-style probe (Chrome MCP) against Board as reference; `CatalystRules.CANONICAL_ROW_TYPOGRAPHY` |
+
+### H2 — No hardcoded line-height literals
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| H2 | Hardcoded `lineHeight` literals (`1`, `1.4`, `1.5`) or Tailwind `leading-[...]` classes BANNED in row/table cell components. Every line-height MUST reference `var(--ds-line-height-body)`. | `CatalystRules.containsHardcodedLineHeight()`; `grep -rn "lineHeight: 1\b\|lineHeight: 1\.4\|lineHeight: 1\.5\|leading-\[" src/components/shared/JiraTable/ src/pages/project-hub/` → zero results outside documented exceptions |
+
+### H3 — Canonical reference implementations
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| H3 | New row-rendering components MUST match, not reinvent, the canonical implementations: `src/components/shared/JiraTable/cells.tsx` (`makeKeyCell`) and `src/components/shared/JiraTable/editors.tsx` (`SummaryOverlayEditor`). Board's kanban card is the historical reference the other surfaces were normalized to (2026-07-02 typography-parity fix: `CAT-TYPOGRAPHY-ROWSYNC-20260702-001`). | Code review — new row surfaces must import/reuse these, not hand-roll |
+
+**Known documented exception:** `src/components/shared/JiraTable/editors.tsx` line ~861 (`InlineEdit` readView fallback branch, used when `overlayEditor` is false) intentionally keeps `lineHeight: 1.4` — comment dated 2026-06-11 explains it prevents descender clipping (g/y/p/q/j) under an `overflow:hidden` parent. Left as-is; not currently rendered by any of the four audited surfaces (Board/Backlog/All Work/Sprint).
+
+**Open follow-up (not yet done):** Board's kanban card still renders through a separate component from the shared `cells.tsx`/`editors.tsx` machinery — H3 states the target, but the actual migration onto one shared component (so drift becomes structurally impossible, not just token-corrected) is a separate, larger Plan Lock, not covered by this rule's initial confirmation.
+
+---
+
 ## Change Log
 
 | Date       | Row  | Change                          | Confirmed by |
@@ -317,6 +345,7 @@ Every surface that renders a user identity (assignee, reporter, member, owner) M
 | 2026-07-01 | E1–E5 | Grid E added: Hub L1/L2 breadcrumb pattern, CatalystPageHeader ban, global hub rule, hand-rolled breadcrumb ban | Vikram |
 | 2026-07-01 | F1–F6 | Grid F added: Slug & URL Contract — no UUIDs in route params, slug columns on navigable tables, Routes.* builders only, dual-mode hooks, frozen slugs, redirect mounting outside CatalystShell | Vikram |
 | 2026-07-01 | G1–G4 | Grid G added: Avatar & People Picker Contract — CatalystAvatar/UserAvatar mandatory, CDN ban, ADS-palette fallback chain, ProfilePicker for people pickers, AvatarGroup via wrapped CatalystAvatar | Vikram |
+| 2026-07-02 | H1–H3 | Grid H added: Row Typography Contract — canonical key/title token pair (`--ds-font-size-300`/`-400` + new `--ds-line-height-body` token), ban on hardcoded lineHeight literals, cells.tsx/editors.tsx as canonical reference. Codifies the CAT-TYPOGRAPHY-ROWSYNC-20260702-001 fix. | Vikram |
 
 ---
 

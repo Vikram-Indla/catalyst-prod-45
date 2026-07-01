@@ -610,7 +610,7 @@ function SummaryOverlayEditor<T>({
           // Match the Work-tab card title colour — primary --ds-text (not the
           // subtle grey the list used before).
           color: 'var(--ds-text)',
-          lineHeight: 1.4,
+          lineHeight: 'var(--ds-line-height-body)',
           visibility: editing ? 'hidden' : 'visible',
           ...wrapStyle,
         }}

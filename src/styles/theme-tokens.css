@@ -20,6 +20,8 @@
   --ds-font-size-600: 18px;  /* section heading — section titles            */
   --ds-font-size-700: 22px;  /* large heading — modal titles, page sections */
   --ds-font-size-800: 28px;  /* xl heading — empty state, display text      */
+
+  --ds-line-height-body: 20px;  /* pairs with font-size-300/-400 — canonical row line-height */
 }
 
 /* ── LIGHT MODE (DEFAULT) ── */
