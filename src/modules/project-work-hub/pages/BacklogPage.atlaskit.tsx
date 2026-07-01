@@ -7208,7 +7208,7 @@ function InlineGroupCreateRow({
         paddingBottom: 3,
         // Child-create: extra LEFT padding INSIDE so the content (type picker)
         // is indented like a child. Normal create keeps the 8px left pad.
-        paddingLeft: childMode ? 28 : 8,
+        paddingLeft: childMode ? 44 : 8,
         background: token('elevation.surface', 'var(--ds-surface)'),
         border: `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
         borderRadius: 4,

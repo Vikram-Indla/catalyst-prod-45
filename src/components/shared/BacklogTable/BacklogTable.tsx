@@ -830,6 +830,14 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:has([data-summary-editing="true"]) [data-jira-row-hover-action] {
         display: none !important;
       }
+      /* Inline-create row (group "+" and row "+" child create) sits in one
+         full-width colSpan <td>. Zero its horizontal padding so the create
+         form spans edge-to-edge (removes the left/right gap). The child form
+         adds its own inner left padding to indent. */
+      .jira-table-grid table tbody > tr.jira-table-group-inline-create-row > td {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
       /* Provide a positioned ancestor for the absolute button so it
          stays inside the cell visually (off-screen but anchored). */
       .cv-cell-inline-edit-no-label form {
@@ -1704,11 +1712,21 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                           e.currentTarget.style.background = "transparent";
                         }}
                       >
-                        {isExpanded ? (
-                          <ChevronDownIcon label="" size="small" />
-                        ) : (
-                          <ChevronRightIcon label="" size="small" />
-                        )}
+                        {/* Inline stroke chevron — thin (1.5) + larger than the
+                            Atlaskit filled glyph (which read as thick/small). */}
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          {isExpanded ? <path d="M6 9l6 6 6-6" /> : <path d="M9 6l6 6-6 6" />}
+                        </svg>
                       </button>
                     );
                   }
@@ -1891,11 +1909,21 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                     flexShrink: 0,
                   }}
                 >
-                  {/* 2026-06-30 Jira DOM probe: group-header chevron GLYPH is 12px
-                      inside a 24px button (color rgb(80,82,88) = --ds-text-subtle).
-                      size="medium" (24px glyph) was way too big; size="small" (16px,
-                      nearest ADS step) matches Jira's clean thin chevron. */}
-                  <ChevronDownIcon label="" size="small" />
+                  {/* Inline stroke chevron (thin 1.5, larger) — the collapsed
+                      state rotates the parent span -90deg. */}
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
                 </span>
               )}
               {/* 2026-05-08 Jira parity: label BEFORE + button.
@@ -1971,7 +1999,10 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                       e.currentTarget.style.background = "transparent";
                     }}
                   >
-                    <PlusIcon label="" size="small" />
+                    {/* Scaled down — the group "+" read too large next to the label. */}
+                    <span style={{ display: "inline-flex", transform: "scale(0.72)" }}>
+                      <PlusIcon label="" size="small" />
+                    </span>
                   </button>
                 </span>
               )}
