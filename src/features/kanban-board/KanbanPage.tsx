@@ -73,6 +73,25 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
      navigates to /:hub/:key/standups (mode-aware) instead of opening an
      in-board panel. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  /* Deselect a card when the user clicks anywhere outside a card OR its
+     related menu portals (⋯ context menu, Move/Change submenus). Without
+     this the blue selection border sticks forever after clicking a card
+     even when the user has moved on to another surface. */
+  React.useEffect(() => {
+    if (!selectedId) return;
+    const onDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest('[data-issue-id]')) return;         // clicked another card / same card body
+      if (target.closest('[role="menu"]')) return;           // ⋯ menu OR any submenu portal
+      if (target.closest('[data-kanban-submenu="true"]')) return;
+      if (target.closest('[role="dialog"]')) return;         // modal / drawer clicks
+      setSelectedId(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [selectedId]);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
   const [flagTarget, setFlagTarget] = useState<BoardIssue | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
@@ -114,16 +133,29 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (key && slug) navigate(`/project-hub/${key}/boards/${slug}/map-statuses`);
   }, [key, resolvedBoard?.slug, boardSlug, navigate]);
   const [hideDone, setHideDone] = useState(true);
-  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition } = useKanbanMutations(mode);
+  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
+  /* Cards currently mid-mutation (menu Move Up/Down, ⋯ Change status click,
+     or drag-drop reorder). Board renders the skeleton overlay for each id. */
+  const [reorderBusyIds, setReorderBusyIds] = useState<Set<string>>(new Set());
   const onAssign = useCallback(async (issue: BoardIssue, name: string | null) => {
     await updateAssignee(issue.id, name, null); refetch();
   }, [updateAssignee, refetch]);
 
   const onMove = useCallback(async (issueId: string, status: string, category: StatusCategory) => {
-    await updateStatus(issueId, status, category);
-    refetch();
+    // Mark card busy so <Card> shows the skeleton overlay while the status
+    // write + refetch run. Covers both the ⋯ → Change status click AND the
+    // cross-column drag-drop path (Board monitor onDrop calls onMove).
+    setReorderBusyIds((s) => { const n = new Set(s); n.add(issueId); return n; });
+    try {
+      await updateStatus(issueId, status, category);
+      await refetch();
+    } catch (err) {
+      console.error('[kanban] updateStatus failed', err);
+    } finally {
+      setReorderBusyIds((s) => { const n = new Set(s); n.delete(issueId); return n; });
+    }
   }, [updateStatus, refetch]);
 
   const onFlag = useCallback((issue: BoardIssue) => {
@@ -169,7 +201,17 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     return bucket;
   }, [issues, boardConfig.columns, columnIdx]);
 
-  const [reorderBusyIds, setReorderBusyIds] = useState<Set<string>>(new Set());
+  const onReorderColumn = useCallback(async (_destColId: string, newColumnIds: string[], movedIssueId: string) => {
+    setReorderBusyIds((s) => { const n = new Set(s); n.add(movedIssueId); return n; });
+    try {
+      await reorderColumn(newColumnIds);
+      await refetch();
+    } catch (err) {
+      console.error('[kanban] reorderColumn failed', err);
+    } finally {
+      setReorderBusyIds((s) => { const n = new Set(s); n.delete(movedIssueId); return n; });
+    }
+  }, [reorderColumn, refetch]);
   const onReorder = useCallback(async (issueId: string, direction: 'up' | 'down' | 'top' | 'bottom', columnIssueIds: string[]) => {
     // Mark card busy so <Card> shows a spinner overlay while the RPC + refetch
     // run — otherwise the click looks silent for the 200-500ms round trip.
@@ -405,6 +447,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               busyIds={reorderBusyIds}
               onSelect={onSelect}
               onMove={onMove}
+              onReorderColumn={onReorderColumn}
               onAddColumn={onAddColumn}
               onEditSummary={onEditSummary}
               onAvatarClick={(issue, anchor) => setAssigneeTarget({ issue, anchor })}

@@ -48,6 +48,9 @@ export interface KanbanMutations {
   /** Move a card within its column (persistent DB rank via kanban_move_position RPC).
    *  columnIssueIds must be the FULL current-column ordering as the client sees it. */
   moveIssuePosition: (issueId: string, direction: MovePositionDirection, columnIssueIds: string[]) => Promise<void>;
+  /** Re-rank a column to an arbitrary order (drop-between-cards drag).
+   *  newColumnIds is the FINAL desired order — server assigns 1024-step positions. */
+  reorderColumn: (newColumnIds: string[]) => Promise<void>;
 }
 
 function categoryToJira(cat?: StatusCategory): string | undefined {
@@ -567,5 +570,25 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     [isProduct, isTasks, isRelease, isTest],
   );
 
-  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition };
+  /* ── reorderColumn ─────────────────────────────────────────────────────
+     Called after a drag-drop within a single column. newColumnIds is the
+     desired new order; the RPC rewrites board_position for every id. */
+  const reorderColumn = useCallback(
+    async (newColumnIds: string[]) => {
+      if (!newColumnIds.length) return;
+      const table = isTest    ? 'tm_test_cases'
+                  : isRelease ? 'rh_releases'
+                  : isTasks   ? 'tasks'
+                  : isProduct ? 'business_requests'
+                  :             'ph_issues';
+      const { error } = await (supabase as any).rpc('kanban_reorder_column', {
+        p_table: table,
+        p_column_ids: newColumnIds,
+      });
+      if (error) throw error;
+    },
+    [isProduct, isTasks, isRelease, isTest],
+  );
+
+  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn };
 }

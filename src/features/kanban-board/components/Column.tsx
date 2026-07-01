@@ -3,9 +3,11 @@
  * ColumnBody (scrollable droppable card list). Split so swimlane mode can
  * render headers once at the top and bodies per lane (Jira-accurate).
  */
-import React, { forwardRef, useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { token } from '@atlaskit/tokens';
+import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
 import { SIZES } from '../constants';
 import type { BoardIssue, KanbanColumn, WipState } from '../types';
 
@@ -57,7 +59,50 @@ interface ColumnBodyProps {
   footer?: React.ReactNode;
   /** lane bodies size to content; flat single-lane fills height */
   fill?: boolean;
+  /** Owning column id + group key — used to register an end-of-list drop slot
+   *  so the Jira-style blue line + terminal circle also renders below the last
+   *  card AND on an empty column (both cases have no per-card drop target the
+   *  cursor can land on). */
+  colId?: string;
+  groupKey?: string;
 }
+
+/** End-of-column drop slot: fills whatever vertical space remains after the
+ *  cards and registers itself as a pragmatic-dnd drop target. Renders the same
+ *  Jira drop indicator (blue bar + circle) when hovered, so users see feedback
+ *  when dropping below the last card or into an empty column. */
+const EndDropSlot: React.FC<{ colId: string; groupKey: string; empty: boolean }> = ({ colId, groupKey, empty }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [over, setOver] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    return dropTargetForElements({
+      element: el,
+      canDrop: ({ source }) => source.data?.type === 'card',
+      getData: () => ({ type: 'end-slot', colId, groupKey }),
+      onDragEnter: () => setOver(true),
+      onDragLeave: () => setOver(false),
+      onDrop: () => setOver(false),
+    });
+  }, [colId, groupKey]);
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'relative',
+        // Empty column: give the slot a real height so the whole body is a
+        // valid drop area. Non-empty: shrink to the gap between last card
+        // and column bottom, but keep a small min-height so users can still
+        // drop below the last card cleanly.
+        minHeight: empty ? 80 : 24,
+        flex: empty ? 1 : undefined,
+      }}
+    >
+      {over && <DropIndicator edge="top" gap="8px" type="terminal" />}
+    </div>
+  );
+};
 
 /** Below this count, render the plain flex list (virtualization overhead not worth it). */
 const VIRTUALIZE_THRESHOLD = 20;
@@ -75,7 +120,7 @@ const ESTIMATED_CARD_HEIGHT = 104;
  * so off-screen cards never need to be mounted to receive a drop.
  */
 export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
-  ({ ariaLabel, isDragOver, items, renderItem, footer, fill }, forwardedRef) => {
+  ({ ariaLabel, isDragOver, items, renderItem, footer, fill, colId, groupKey }, forwardedRef) => {
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const setRef = (el: HTMLDivElement | null) => {
       scrollRef.current = el;
@@ -155,6 +200,7 @@ export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
           ) : (
             items.map((it, i) => renderItem(it, i))
           )}
+          {colId && <EndDropSlot colId={colId} groupKey={groupKey ?? '__all__'} empty={items.length === 0} />}
         </div>
         {footer}
       </div>

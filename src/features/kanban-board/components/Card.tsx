@@ -89,7 +89,7 @@ export const Card: React.FC<CardProps> = ({
     base.background = token('color.background.selected', 'var(--ds-background-selected)');
   }
   if (isDragging) { base.opacity = 0.4; base.background = token('color.background.disabled', '#091E420F'); }
-  if (isBusy) { base.pointerEvents = 'none'; }
+  if (isBusy) { base.pointerEvents = 'none'; base.opacity = 0.55; }
 
   const due = issue.dueDate ? fmtDue(issue.dueDate) : null;
 
@@ -136,17 +136,6 @@ export const Card: React.FC<CardProps> = ({
             </div>
             <div className="kb-skeleton-bar" style={{ width: 22, height: 22, borderRadius: '50%' }} />
           </div>
-        </div>
-      )}
-
-      {/* Drag handle (left side, hover-only) */}
-      {hover && !isDragging && (
-        <div style={{ position: 'absolute', left: 0, top: '48%', transform: 'translateY(-50%)', opacity: 0.3, transition: 'opacity 100ms ease' }}>
-          <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 0 }}>
-            {[0, 1, 2].map((i) => (
-              <span key={i} style={{ width: 12, height: 1.5, background: token('color.icon.subtle', 'var(--ds-icon-subtle)'), borderRadius: 1 }} />
-            ))}
-          </span>
         </div>
       )}
 
