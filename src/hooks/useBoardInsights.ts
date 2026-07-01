@@ -29,7 +29,7 @@ interface RawIssue {
   issue_type: string | null;
   priority: string | null;
   assignee_display_name: string | null;
-  assignee_user_id: string | null;
+  assignee_account_id: string | null;
   sprint_name: string | null;
   is_flagged: boolean | null;
   jira_updated_at: string | null;
@@ -40,7 +40,7 @@ interface RawIssue {
 }
 
 const INSIGHTS_SELECT =
-  'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, assignee_user_id, sprint_name, is_flagged, jira_updated_at, jira_created_at, due_date, project_key, parent_key';
+  'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, assignee_account_id, sprint_name, is_flagged, jira_updated_at, jira_created_at, due_date, project_key, parent_key';
 
 // ── Scored output types ──────────────────────────────────────────────────────
 
@@ -136,7 +136,7 @@ function scoreIssue(
   const isOverdue = daysOverdue !== null && daysOverdue > 0;
   const isFlagged = !!issue.is_flagged;
   const isStatusAtRisk = cfg.statusRiskKeywords.some(kw => statusText.includes(kw));
-  const isUnassigned = !issue.assignee_user_id;
+  const isUnassigned = !issue.assignee_account_id;
   const isHighOrCriticalPriority = priority === 'critical' || priority === 'high';
   const isStale7d = staleDays !== null && staleDays >= cfg.staleThresholds.high;
   const isStale3d = staleDays !== null && staleDays >= cfg.staleThresholds.medium;
@@ -216,7 +216,7 @@ function scoreIssue(
   }
 
   // Confidence
-  const hasKeyFields = !!issue.due_date && !!issue.assignee_user_id && !!issue.jira_updated_at;
+  const hasKeyFields = !!issue.due_date && !!issue.assignee_account_id && !!issue.jira_updated_at;
   const hasMinFields = !!issue.jira_updated_at || !!issue.due_date;
   const confidence: 'High' | 'Medium' | 'Low' = hasKeyFields ? 'High' : hasMinFields ? 'Medium' : 'Low';
 
@@ -229,7 +229,7 @@ function scoreIssue(
     statusCategory: issue.status_category,
     priority: issue.priority,
     assignee: issue.assignee_display_name,
-    assigneeId: issue.assignee_user_id,
+    assigneeId: issue.assignee_account_id,
     sprintName: issue.sprint_name,
     dueDate: issue.due_date,
     lastUpdated: issue.jira_updated_at,

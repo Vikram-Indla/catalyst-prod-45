@@ -204,8 +204,8 @@ export default function BoardInsightsPanel({ board, projectKey, onClose }: Board
             <>
               <div style={{
                 padding: '8px 16px 4px',
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
-                letterSpacing: '0.07em', color: 'var(--ds-text-subtlest)',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+                color: 'var(--ds-text-subtlest)',
                 flexShrink: 0,
               }}>
                 Work items for attention · {filtered.length}
@@ -233,8 +233,8 @@ export default function BoardInsightsPanel({ board, projectKey, onClose }: Board
                 borderRadius: 8, padding: '12px 16px',
               }}>
                 <div style={{
-                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
-                  letterSpacing: '0.06em', color: 'var(--ds-text-subtlest)', marginBottom: 8,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+                  color: 'var(--ds-text-subtlest)', marginBottom: 8,
                 }}>
                   Board signals
                 </div>
@@ -261,7 +261,7 @@ export default function BoardInsightsPanel({ board, projectKey, onClose }: Board
             }}>
               <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginBottom: 4 }}>
                 <Info size={12} style={{ color: 'var(--ds-icon-subtle)', flexShrink: 0 }} />
-                <span style={{ fontSize: 'var(--ds-font-size-050)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--ds-text-subtlest)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest)' }}>
                   Data coverage
                 </span>
               </div>
