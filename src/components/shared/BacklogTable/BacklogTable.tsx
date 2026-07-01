@@ -779,8 +779,8 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
              SIBLINGS of .cv-cell-inline-edit-no-label, so their own
              hover affordance is untouched. */
       .cv-cell-inline-edit-no-label,
-      .cv-cell-inline-edit-no-label *,
-      .cv-cell-inline-edit-no-label *:hover {
+      .cv-cell-inline-edit-no-label:not(:has(input)) *,
+      .cv-cell-inline-edit-no-label:not(:has(input)) *:hover {
         background: transparent !important;
       }
       /* Kill the 2px transparent border on the readView's role=presentation
@@ -801,7 +801,11 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
          layout flow so the title sits at y=0 of the wrapper; keep it
          focusable for keyboard users (don't touch pointer-events /
          tabindex / visibility). Standard sr-only pattern. */
-      .cv-cell-inline-edit-no-label button {
+      /* Scope to READ mode only (:not(:has(input))). In EDIT mode the wrapper
+         contains the <input>, and its <button>s are Atlaskit's ✓/✗ confirm +
+         cancel controls — those must stay VISIBLE (Jira parity img #67). The
+         old unscoped rule sr-only'd them too, so edit mode had no ✓/✗. */
+      .cv-cell-inline-edit-no-label:not(:has(input)) button {
         position: absolute !important;
         width: 1px !important;
         height: 1px !important;
@@ -811,6 +815,20 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         clip: rect(0, 0, 0, 0) !important;
         white-space: nowrap !important;
         border: 0 !important;
+      }
+      /* ── Inline title edit — Jira parity (2026-07-01) ─────────────────────
+         The backlog overlay editor PORTALS its <input> + ✓/✗ to <body>, so the
+         cell has no in-cell <input> to detect edit mode. The editing slot marks
+         itself with [data-summary-editing="true"] instead. While editing: keep
+         the row WHITE (not the focused-row sunken grey) and HIDE the row
+         hover-action icons. Higher specificity than the :hover rules above so
+         the white bg wins on every cell (incl. the key cell). */
+      .jira-table-grid table tbody > tr:has([data-summary-editing="true"]):not(.jira-table-group-row) > td,
+      .jira-table-grid table tbody > tr:has([data-summary-editing="true"]):not(.jira-table-group-row) > td[data-col-id="key"] {
+        background-color: var(--ds-surface) !important;
+      }
+      .jira-table-grid table tbody > tr:has([data-summary-editing="true"]) [data-jira-row-hover-action] {
+        display: none !important;
       }
       /* Provide a positioned ancestor for the absolute button so it
          stays inside the cell visually (off-screen but anchored). */
@@ -2137,7 +2155,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   // or rounded container — the box sits ON the table's left border, fully
   // visible. Top ~8px of the row → insert-above "+"; rest → drag handle.
   const [floatAfford, setFloatAfford] = useState<
-    { id: string; row: TRow; left: number; top: number; width: number; height: number; zone: 'top' | 'center' } | null
+    { id: string; row: TRow; left: number; top: number; width: number; height: number; zone: 'top' | 'center'; viewLeft: number; viewRight: number } | null
   >(null);
   /* Id of the row currently being drag-reordered (null when idle). Driven by a
      pdnd monitor so it survives re-renders and covers BOTH the plain and the
@@ -2163,9 +2181,6 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
     if (floatHideTimer.current) { clearTimeout(floatHideTimer.current); floatHideTimer.current = null; }
   };
   const onRowZoneMove = (e: React.MouseEvent<HTMLTableRowElement>, row: TRow) => {
-    // No hover affordances while a drag-reorder is in flight — otherwise a
-    // stray grip renders on whichever row the cursor crosses during the drag.
-    if (draggingRowId) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const zone: 'top' | 'center' = (e.clientY - rect.top) <= 8 ? 'top' : 'center';
     const id = String(getRowId(row));
@@ -2174,10 +2189,15 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
     // The insert-above "+" is the only PORTALED affordance (top zone).
     e.currentTarget.setAttribute('data-hz', zone);
     cancelFloatHide();
+    // Visible viewport bounds — the insert "+" line is clamped to these so it
+    // never runs off the right edge on a horizontally-scrolled/wide table.
+    const vp = viewportRef.current?.getBoundingClientRect();
+    const viewLeft = vp ? vp.left : rect.left;
+    const viewRight = vp ? vp.right : rect.right;
     setFloatAfford((prev) =>
       prev && prev.id === id && prev.zone === zone
         ? prev
-        : { id, row, left: rect.left, top: rect.top, width: rect.width, height: rect.height, zone },
+        : { id, row, left: rect.left, top: rect.top, width: rect.width, height: rect.height, zone, viewLeft, viewRight },
     );
   };
   const onRowZoneLeave = (e?: React.MouseEvent<HTMLTableRowElement>) => {
@@ -3575,15 +3595,20 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       {floatAfford && !draggingRowId && floatAfford.zone === 'top' && onInsertAbove
         && createPortal(
           <>
-            {/* Full-width blue insert line on the row's TOP border — same
-                pattern as the drag drop-line, marks where the new item lands. */}
+            {/* Blue insert line on the row's TOP border — same pattern as the
+                drag drop-line, marks where the new item lands. Clamped to the
+                visible viewport so it never overflows the table's right edge. */}
             <div
               aria-hidden
               style={{
                 position: 'fixed',
-                left: floatAfford.left,
+                left: Math.max(floatAfford.left, floatAfford.viewLeft),
                 top: floatAfford.top - 1,
-                width: floatAfford.width,
+                width: Math.max(
+                  0,
+                  Math.min(floatAfford.left + floatAfford.width, floatAfford.viewRight) -
+                    Math.max(floatAfford.left, floatAfford.viewLeft),
+                ),
                 height: 2,
                 background: 'var(--ds-border-brand)',
                 borderRadius: 1,

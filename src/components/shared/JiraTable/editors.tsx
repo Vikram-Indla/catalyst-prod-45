@@ -477,6 +477,198 @@ export function makeStatusEditCellAkPopup<T>({
   };
 }
 
+/* ─── Summary editor — overlay variant (Jira parity) ────────────────────────
+ * Mirrors the detail-page SubtasksPanel InlineSummaryEditor: a plain overlay
+ * <input> that can overflow the Work cell into adjacent columns (the cell is
+ * un-clipped via CSS in edit mode) + ✓/✗ action buttons PORTALED to <body> and
+ * anchored to the input rect, so they are never clipped by the table's
+ * overflow. Opt-in via `overlayEditor` — the Atlaskit InlineEdit path stays the
+ * default for the other consumers. */
+function SummaryOverlayEditor<T>({
+  row,
+  summary,
+  onChange,
+  wrapStyle,
+}: {
+  row: T;
+  summary: string;
+  onChange: (row: T, next: string) => void;
+  wrapStyle: React.CSSProperties;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(summary);
+  // `slotRef` is the summary's normal in-cell position (rendered in BOTH modes,
+  // invisible while editing) — it keeps the Work cell's layout intact so the
+  // key/icon on its left never move or get covered. The <input> and ✓/✗ are
+  // PORTALED to <body> and positioned from this slot's rect, so they float on
+  // top of the neighbouring cells and are never part of the cell's flex layout.
+  const slotRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+  const [actionsPos, setActionsPos] = useState<{ top: number; left: number } | null>(null);
+
+  // Position the floating input from the slot rect + the row height. Extends
+  // 400px past the slot so it overflows across the adjacent cells like Jira.
+  useLayoutEffect(() => {
+    if (!editing) return;
+    const compute = () => {
+      const slot = slotRef.current;
+      if (!slot) return;
+      const s = slot.getBoundingClientRect();
+      const rowEl = (slot.closest('tr') ?? slot.closest('td')) as HTMLElement | null;
+      const rowRect = rowEl ? rowEl.getBoundingClientRect() : s;
+      const H = 32;
+      setBox({
+        left: s.left,
+        top: rowRect.top + (rowRect.height - H) / 2,
+        width: Math.max(s.width + 400, 360),
+        height: H,
+      });
+    };
+    compute();
+    window.addEventListener('scroll', compute, true);
+    window.addEventListener('resize', compute);
+    return () => {
+      window.removeEventListener('scroll', compute, true);
+      window.removeEventListener('resize', compute);
+    };
+  }, [editing]);
+
+  // Anchor the ✓/✗ to the floating input's bottom-right.
+  useLayoutEffect(() => {
+    if (!editing || !box) return;
+    setActionsPos({ top: box.top + box.height + 6, left: box.left + box.width - 68 });
+  }, [editing, box]);
+
+  // Focus + select once, when the floating input first mounts.
+  useEffect(() => {
+    if (editing && box && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing, !!box]);
+
+  const commit = () => {
+    const t = draft.trim();
+    if (t && t !== summary) onChange(row, t);
+    setEditing(false);
+    setBox(null);
+  };
+  const cancel = () => { setEditing(false); setBox(null); };
+
+  const startEdit = () => { setDraft(summary); setEditing(true); };
+
+  // Outside-click (across slot + portaled input + portaled actions) dismisses.
+  useEffect(() => {
+    if (!editing) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (slotRef.current?.contains(t)) return;
+      if (inputRef.current?.contains(t)) return;
+      if (actionsRef.current?.contains(t)) return;
+      cancel();
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [editing]);
+
+  const btnStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 32,
+    padding: 0,
+    border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+    background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
+    borderRadius: 3,
+    color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+    cursor: 'pointer',
+    flexShrink: 0,
+    boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
+  };
+
+  return (
+    <div
+      ref={slotRef}
+      data-summary-editing={editing ? 'true' : undefined}
+      onClick={(e) => { if (!editing) { e.stopPropagation(); startEdit(); } }}
+      style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', cursor: editing ? 'default' : 'text' }}
+    >
+      {/* In-cell slot: shows the title normally; while editing it stays laid
+          out but invisible so the cell width (and the key on its left) hold. */}
+      <span
+        title={editing ? undefined : (summary || undefined)}
+        style={{
+          display: 'block',
+          padding: '0 2px',
+          borderRadius: 3,
+          width: '100%',
+          // Match the Work-tab card title colour — primary --ds-text (not the
+          // subtle grey the list used before).
+          color: 'var(--ds-text)',
+          lineHeight: 1.4,
+          visibility: editing ? 'hidden' : 'visible',
+          ...wrapStyle,
+        }}
+      >
+        {summary || <span data-jira-cell-ghost>Click to add summary</span>}
+      </span>
+
+      {editing && box && createPortal(
+        <input
+          ref={inputRef}
+          type="text"
+          value={draft}
+          onMouseDown={(e) => e.stopPropagation()}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') { e.preventDefault(); commit(); }
+            if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+          }}
+          maxLength={255}
+          style={{
+            position: 'fixed',
+            left: box.left,
+            top: box.top,
+            width: box.width,
+            height: box.height,
+            padding: '0 8px',
+            border: `1px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
+            borderRadius: 3,
+            outline: 'none',
+            fontSize: 14,
+            color: token('color.text', 'var(--ds-text)'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
+            fontFamily: 'inherit',
+            boxSizing: 'border-box',
+            zIndex: 10000,
+          }}
+        />,
+        document.body,
+      )}
+
+      {editing && actionsPos && createPortal(
+        <div
+          ref={actionsRef}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{ position: 'fixed', top: actionsPos.top, left: actionsPos.left, display: 'flex', gap: 4, zIndex: 10001 }}
+        >
+          <button type="button" aria-label="Confirm" title="Confirm" onMouseDown={(e) => e.preventDefault()} onClick={commit} style={btnStyle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </button>
+          <button type="button" aria-label="Cancel" title="Cancel" onMouseDown={(e) => e.preventDefault()} onClick={cancel} style={btnStyle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+        </div>,
+        document.body,
+      )}
+    </div>
+  );
+}
+
 /* ─── Summary editor (Atlaskit InlineEdit) ──────────────────────────────── */
 
 export function makeSummaryInlineEditCell<T>({
@@ -488,9 +680,17 @@ export function makeSummaryInlineEditCell<T>({
   onCreateChild,
   canCreateChild,
   wrapLines,
+  overlayEditor,
 }: {
   getSummary: (row: T) => string;
   canEdit?: (row: T) => boolean;
+  /**
+   * Opt-in: use the SubtasksPanel-style OVERLAY editor (plain overlay input
+   * that can overflow into adjacent cells + portaled ✓/✗ action buttons)
+   * instead of the Atlaskit InlineEdit. Backlog surfaces set this for Jira
+   * parity; other consumers keep the default InlineEdit.
+   */
+  overlayEditor?: boolean;
   /**
    * When set to a positive integer N, long summaries wrap up to N lines
    * (line-clamp) instead of truncating with ellipsis on one line. Omit
@@ -606,6 +806,14 @@ export function makeSummaryInlineEditCell<T>({
           className="cv-cell-inline-edit-no-label"
           style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}
         >
+          {overlayEditor ? (
+            <SummaryOverlayEditor
+              row={row}
+              summary={summary}
+              onChange={onChange}
+              wrapStyle={wrapStyle}
+            />
+          ) : (
           <InlineEdit<string>
             // Fix #2 (iter-9): Atlaskit InlineEdit defaults to fit-content
             // sizing on its readView container. Without this prop the inner
@@ -663,6 +871,7 @@ export function makeSummaryInlineEditCell<T>({
               if (value !== undefined && value !== summary) onChange(row, value);
             }}
           />
+          )}
         </div>
         {showHoverActions && (
           <span

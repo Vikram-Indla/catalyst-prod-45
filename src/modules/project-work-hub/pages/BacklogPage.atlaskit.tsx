@@ -178,9 +178,7 @@ import type {
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 // 2026-07-01 (user request img47): compact drag preview (type icon + title).
-import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
-import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview';
-import { createRoot } from 'react-dom/client';
+import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 
 // ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
 const AkChevronsLeftIcon = () => (
@@ -286,58 +284,15 @@ function DragHandleGrip({ row }: { row: BacklogItem }) {
        payload + the cursor chip. */
     return draggable({
       element: el,
-      getInitialData: () => ({ rowId: row.id }),
+      getInitialData: () => ({ rowId: row.id, title: row.title }),
+      /* DISABLE the native drag image. Chromium draws a 1px dark border on the
+         top/left of every native custom drag preview — un-removable via CSS
+         because the compositor adds it. Atlassian's own pattern (Jira parity)
+         is to render a real DOM pill that follows the cursor instead (see
+         <DragRowPreview/>), which has no native image and therefore no border,
+         and lets the ADS elevation shadow render properly. */
       onGenerateDragPreview: ({ nativeSetDragImage }) => {
-        setCustomNativeDragPreview({
-          nativeSetDragImage,
-          getOffset: pointerOutsideOfPreview({ x: '12px', y: '8px' }),
-          /* Build the chip with PLAIN DOM, synchronously. A React createRoot
-             render (even inside flushSync) proved unreliable for the native
-             drag-image snapshot — the container read back empty, so the chip
-             showed no icon/title. Plain DOM guarantees the content exists the
-             instant pdnd snapshots it. */
-          render: ({ container }) => {
-            /* The pdnd container's OWN background is not painted into the drag
-               image (only an inner element's is), and Chrome draws a 1px dark
-               border on the drag image's outer edge (top/left). So: make the
-               container a TRANSPARENT frame with padding — the dark-edge
-               artifact lands on this empty padding — and render the visible
-               white pill as an INNER element inset from that edge. */
-            container.style.cssText = 'padding:4px;background:transparent;border:none;';
-            const chip = document.createElement('div');
-            chip.style.cssText =
-              'display:inline-flex;align-items:center;gap:8px;max-width:320px;' +
-              'padding:6px 10px;background:var(--ds-surface-overlay);' +
-              'border:none;border-radius:8px;color:var(--ds-text);opacity:1;' +
-              'font-size:14px;line-height:20px;white-space:nowrap;';
-            /* Real work-item type icon: clone the <img> already rendered (and
-               cached) in the source row's Work cell, so the chip shows the
-               EXACT type glyph and paints synchronously for the drag snapshot.
-               Falls back to no icon if the row isn't found. */
-            const escaped = (window as any).CSS?.escape
-              ? CSS.escape(String(row.id))
-              : String(row.id);
-            const srcImg = document.querySelector(
-              `[data-drag-row-id="${escaped}"] td[data-col-id="key"] img`,
-            ) as HTMLImageElement | null;
-            if (srcImg?.src) {
-              const icon = document.createElement('img');
-              icon.src = srcImg.src;
-              icon.width = 16;
-              icon.height = 16;
-              icon.style.cssText = 'flex-shrink:0;display:block;';
-              chip.appendChild(icon);
-            }
-            const label = document.createElement('span');
-            label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;';
-            label.textContent = row.title;
-            chip.appendChild(label);
-            container.appendChild(chip);
-            return () => {
-              container.replaceChildren();
-            };
-          },
-        });
+        disableNativeDragPreview({ nativeSetDragImage });
       },
     });
   }, [row.id, row.title]);
@@ -376,6 +331,84 @@ function DragHandleGrip({ row }: { row: BacklogItem }) {
 }
 
 /**
+ * DragRowPreview — the cursor-following drag pill (Jira parity, img #60).
+ *
+ * Mounted ONCE on the page. A pdnd monitor tracks the active row drag: on start
+ * it captures the row title (from the drag payload) + the real type icon (from
+ * the source row's cached <img>), and on every move it repositions a portaled
+ * pill just off the cursor. Because this is a REAL DOM element — not a native
+ * drag image — it has no Chromium 1px border artifact, and the ADS
+ * `elevation.shadow.overlay` renders as a proper soft shadow.
+ */
+function DragRowPreview() {
+  const [state, setState] = useState<
+    { title: string; iconSrc: string | null; x: number; y: number } | null
+  >(null);
+
+  useEffect(() => {
+    return monitorForElements({
+      onDragStart: ({ source, location }) => {
+        const rowId = source.data?.rowId;
+        if (rowId == null) return;
+        const title = (source.data?.title as string) ?? '';
+        const escaped = (window as any).CSS?.escape
+          ? CSS.escape(String(rowId))
+          : String(rowId);
+        const img = document.querySelector(
+          `[data-drag-row-id="${escaped}"] td[data-col-id="key"] img`,
+        ) as HTMLImageElement | null;
+        const input = location.current.input;
+        setState({ title, iconSrc: img?.src ?? null, x: input.clientX, y: input.clientY });
+      },
+      onDrag: ({ location }) => {
+        const input = location.current.input;
+        setState((s) => (s ? { ...s, x: input.clientX, y: input.clientY } : s));
+      },
+      onDrop: () => setState(null),
+    });
+  }, []);
+
+  if (!state) return null;
+  return ReactDOM.createPortal(
+    <div
+      aria-hidden
+      style={{
+        position: 'fixed',
+        left: state.x + 12,
+        top: state.y + 8,
+        zIndex: 10000,
+        pointerEvents: 'none',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        maxWidth: 320,
+        padding: '6px 10px',
+        background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+        borderRadius: 8,
+        boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
+        color: token('color.text', 'var(--ds-text)'),
+        fontSize: 14,
+        lineHeight: '20px',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {state.iconSrc && (
+        <img
+          src={state.iconSrc}
+          width={16}
+          height={16}
+          style={{ flexShrink: 0, display: 'block' }}
+          aria-hidden
+        />
+      )}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{state.title}</span>
+    </div>,
+    document.body,
+  );
+}
+
+/**
  * RowDropAnchor — invisible in-cell element that registers its <tr> as a pdnd
  * drop target (via closest('tr'), which works because it renders inside the
  * row). Rendered once per data row. Draws the full-width blue insert line on
@@ -387,12 +420,17 @@ function RowDropAnchor({ row }: { row: BacklogItem }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [dropEdge, setDropEdge] = useState<Edge | null>(null);
   const [trRect, setTrRect] = useState<DOMRect | null>(null);
+  // Rect of the horizontal scroll container. The <tr> is as wide as the SUM of
+  // all columns, which can exceed the visible viewport, so the insert line is
+  // clamped to this to stop it running off the right edge of the table.
+  const [viewRect, setViewRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     const anchor = ref.current;
     if (!anchor) return;
     const tr = anchor.closest('tr') as HTMLElement | null;
     if (!tr) return;
+    const viewport = tr.closest('.jira-table-viewport') as HTMLElement | null;
     return dropTargetForElements({
       element: tr,
       getData: ({ input, element }) =>
@@ -400,25 +438,36 @@ function RowDropAnchor({ row }: { row: BacklogItem }) {
       onDrag: ({ self }) => {
         setDropEdge(extractClosestEdge(self.data));
         setTrRect(tr.getBoundingClientRect());
+        setViewRect(viewport ? viewport.getBoundingClientRect() : null);
       },
       onDragLeave: () => setDropEdge(null),
       onDrop: () => setDropEdge(null),
     });
   }, [row.id]);
 
+  if (!dropEdge || !trRect) {
+    return <span ref={ref} aria-hidden style={{ width: 0, height: 0, overflow: 'hidden' }} />;
+  }
+
+  // Clamp the line to the visible viewport so it never overflows the table.
+  const left = viewRect ? Math.max(trRect.left, viewRect.left) : trRect.left;
+  const right = viewRect ? Math.min(trRect.right, viewRect.right) : trRect.right;
+  const width = Math.max(0, right - left);
+  const y = dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1;
+
   return (
     <>
       <span ref={ref} aria-hidden style={{ width: 0, height: 0, overflow: 'hidden' }} />
-      {dropEdge && trRect && ReactDOM.createPortal(
+      {ReactDOM.createPortal(
         <div aria-hidden style={{ pointerEvents: 'none' }}>
-          {/* Full-width blue insert line + hollow circle node on its left end —
-              exact Jira drop indicator (img #55). */}
+          {/* Blue insert line (clamped to viewport) + hollow circle node on its
+              left end — exact Jira drop indicator (img #55). */}
           <div
             style={{
               position: 'fixed',
-              left: trRect.left,
-              width: trRect.width,
-              top: dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1,
+              left,
+              width,
+              top: y,
               height: 2,
               background: token('color.border.brand', 'var(--ds-link)'),
               zIndex: 9999,
@@ -428,8 +477,8 @@ function RowDropAnchor({ row }: { row: BacklogItem }) {
           <div
             style={{
               position: 'fixed',
-              left: trRect.left - 3,
-              top: (dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1) - 3,
+              left: left - 3,
+              top: y - 3,
               width: 8,
               height: 8,
               borderRadius: '50%',
@@ -2946,6 +2995,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         );
         const summaryCellRenderer = makeSummaryInlineEditCell<BacklogItem>({
           getSummary: (r) => r.title,
+          // 2026-07-01 Jira parity: overlay editor (overflow input + portaled
+          // ✓/✗) mirroring the detail-page SubtasksPanel editor.
+          overlayEditor: true,
           // 2026-06-30 Jira parity: Jira's summary cell clamps to a SINGLE
           // line (-webkit-line-clamp:1) so every row is exactly 40px and the
           // list reads clean. 2-line wrap made rows variable-height and
@@ -4290,6 +4342,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          {/* Cursor-following drag pill (no native drag image → no border artifact). */}
+          <DragRowPreview />
           <BacklogTable<BacklogItem>
             columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
@@ -4601,11 +4655,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             renderRowDragHandle={(row) => <DragHandleGrip row={row} />}
             {...({ renderRowDropAnchor: (row: BacklogItem) => <RowDropAnchor row={row} /> } as any)}
             /* 2026-06-30 (user request): show the drag handle on hover even
-               when grouped (Jira shows it for within-group rank). Still hidden
-               when a custom sort is active — a sorted list can't be reordered. */
+               when grouped (Jira shows it for within-group rank). Hidden only
+               when a real, explicit column sort is active — a sorted list can't
+               be reordered.
+               2026-07-01: `sortKey === null` is the MANUAL/rank-order state the
+               reorder handlers set after a drop (setSortKey(null)). That is a
+               reorderable state, NOT a sort — treating null as "sorted" hid the
+               grip permanently after the first successful reorder. So null and
+               the default both keep the grip visible; only a non-null,
+               non-default sort hides it. */
             rowDragHandleHidden={
-              sortKey !== DEFAULT_SORT_KEY ||
-              sortDir !== DEFAULT_SORT_DIR
+              sortKey != null &&
+              (sortKey !== DEFAULT_SORT_KEY || sortDir !== DEFAULT_SORT_DIR)
             }
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
