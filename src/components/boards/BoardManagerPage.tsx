@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, Star, Settings, Trash2, Kanban } from '@/lib/atlaskit-icons';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
-import AkAvatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { useBoards } from '@/hooks/useBoards';
 import { useDeleteBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
@@ -26,14 +26,14 @@ interface BoardManagerPageProps {
   mode?: 'project' | 'product' | 'test' | 'incident';
 }
 
-export default function BoardManagerPage({ projectIdOverride, basePath, projectName: _projectName, projectKey, mode = 'project' }: BoardManagerPageProps = {}) {
+export default function BoardManagerPage({ projectIdOverride, basePath, projectName, projectKey, mode = 'project' }: BoardManagerPageProps = {}) {
   const { projectId: paramProjectId } = useParams<{ projectId: string }>();
   const projectId = projectIdOverride || paramProjectId;
   const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
   const { data: boards = [], isLoading, error } = useBoards(projectId, projectKey);
 
-  useEnsurePrimaryBoard({ projectId, projectKey, boards, isLoading, mode });
+  useEnsurePrimaryBoard({ projectId, projectKey, projectName, boards, isLoading, mode });
 
   const deleteBoard = useDeleteBoard();
   const toggleStar = useToggleBoardStar();
@@ -135,7 +135,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
           display: 'flex', alignItems: 'center', gap: 8,
           fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
         }}>
-          <AkAvatar name={row.leadName} size="xsmall" />
+          <CatalystAvatar name={row.leadName} size="xsmall" src={row.leadAvatarUrl ?? undefined} />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {row.leadName}
           </span>
@@ -332,6 +332,8 @@ function BoardRowActions({ board, onEditSettings, onDelete }: {
     <span
       className="jira-row-menu-trigger"
       style={{ display: 'inline-flex', gap: 2, opacity: 0, transition: 'opacity 120ms ease' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0'; }}
     >
       <button
         type="button"

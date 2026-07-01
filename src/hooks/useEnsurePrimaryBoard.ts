@@ -66,6 +66,7 @@ const BOARD_CONFIG: Record<BoardMode, PrimaryBoardConfig> = {
 interface UseEnsurePrimaryBoardArgs {
   projectId: string | undefined;
   projectKey: string | undefined;
+  projectName?: string | undefined;
   boards: BoardListItem[];
   isLoading: boolean;
   mode: BoardMode;
@@ -74,6 +75,7 @@ interface UseEnsurePrimaryBoardArgs {
 export function useEnsurePrimaryBoard({
   projectId,
   projectKey,
+  projectName,
   boards,
   isLoading,
   mode,
@@ -91,8 +93,10 @@ export function useEnsurePrimaryBoard({
     provisioning.current = true;
     const config = BOARD_CONFIG[mode];
 
+    const boardName = projectName ? `${projectName} Board` : 'Primary Board';
+
     createBoard.mutateAsync({
-      name: 'Primary Board',
+      name: boardName,
       projectId,
       boardType: 'kanban',
       visibility: 'project',

@@ -403,6 +403,32 @@ Run [`docs/ways-of-working/CATALYST_SELF_TEST.md`](docs/ways-of-working/CATALYST
 
 ---
 
+## SLUG CONTRACT — ALL NEW ROUTES ⛔
+
+> **CAT-SLUGS-UNIVERSAL-20260701-001. No UUID params in new routes. Ever.**
+
+Any new Supabase table that will be navigated by URL MUST:
+
+1. Include `slug TEXT NOT NULL UNIQUE` column
+2. Include a `generate_slug()` DB trigger on INSERT (auto-derived from `name`, deduplicated with suffix `-2`, `-3`)
+3. Register a typed builder in `src/lib/routes.ts`
+4. Register a `useXBySlug()` resolution hook in `src/hooks/`
+
+**No new `:id` or `:uuid` route params allowed.**
+Only `:slug`, `:key`, or display-key (`:issueKey`, `:taskKey`, `:incidentKey`).
+
+**Never build URLs by string concatenation.** Import from `src/lib/routes.ts`:
+```ts
+import { Routes } from '@/lib/routes';
+navigate(Routes.projectHub.board(projectKey, board.slug));
+```
+
+**Slug policy: FROZEN on creation.** The `name` field can change freely. The slug does not.
+
+**UUID-based legacy URLs** must be handled by `UuidToSlugRedirect` components mounted OUTSIDE CatalystShell.
+
+---
+
 ## SUPPORTING DOCS
 
 | Doc | Purpose |
