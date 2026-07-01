@@ -264,12 +264,10 @@ function InlineCreateCardComponent({
     return mergedAssignees.filter(a => a.name.toLowerCase().includes(q));
   }, [assigneeSearch, mergedAssignees]);
 
-  // Focus summary on mount + default the due date to today so the picker
-  // input reads today's date the moment the form opens (Jira parity).
+  // Focus summary on mount. Due date starts empty — Jira parity: the picker
+  // shows no date until the user explicitly picks one.
   useEffect(() => {
     summaryRef.current?.focus();
-    if (!dueDate) setDueDate(new Date().toISOString().slice(0, 10));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* Close child popovers (type + assignee + date) on click outside.
