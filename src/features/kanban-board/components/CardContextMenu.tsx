@@ -10,6 +10,7 @@ import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { PortalMenu, MenuItem } from './PortalMenu';
 import { SubmenuItem } from './SubmenuItem';
 import { SelectCoverPanel } from './SelectCoverPanel';
+import type { WorkItemTable } from '../data/useCoverGallery';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import type { BoardIssue, KanbanColumn, StatusCategory } from '../types';
 import type { MovePositionDirection } from '../data/useKanbanMutations';
@@ -35,6 +36,8 @@ interface Props {
   onSetParent: (issue: BoardIssue, parentKey: string, parentSummary: string) => void;
   onLinkOpen: (issue: BoardIssue) => void;
   onSetCover: (issue: BoardIssue, cover: string | null) => void;
+  /** Underlying table for the cover image gallery — mode-dispatched by the host. */
+  coverTable: WorkItemTable;
   onArchive: (issue: BoardIssue) => void;
   onDelete: (issue: BoardIssue) => void;
 }
@@ -234,6 +237,8 @@ export const CardContextMenu: React.FC<Props> = (p) => {
                 {(closeSub) => (
                   <SelectCoverPanel
                     currentCover={issue.cover}
+                    workItemId={issue.id}
+                    workItemTable={p.coverTable}
                     onSelect={(cover) => p.onSetCover(issue, cover)}
                     onRemove={() => p.onSetCover(issue, null)}
                     onClose={() => { closeSub(); close(); }}

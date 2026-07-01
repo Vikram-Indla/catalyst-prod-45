@@ -145,6 +145,11 @@ export interface CatalystViewBaseLayoutProps {
    *  the value from ph_issues.cover and forward setState here. */
   cover?: string | null;
   onCoverChange?: (cover: string | null) => void | Promise<void>;
+  /** UUID of the underlying row (ph_issues.id or equivalent) so the Upload
+   *  tab in SelectCoverPanel can persist images into card_cover_images. */
+  coverItemId?: string | null;
+  /** Which table `coverItemId` belongs to. Defaults to ph_issues. */
+  coverItemTable?: 'ph_issues' | 'business_requests' | 'tasks' | 'rh_releases' | 'tm_test_cases';
 
   /* Loading */
   isLoading?: boolean;
@@ -169,7 +174,7 @@ export function CatalystViewBase({
   moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
-  cover, onCoverChange,
+  cover, onCoverChange, coverItemId, coverItemTable,
   isLoading, isNotFound, hideSidebar, fullPageHrefBuilder,
 }: CatalystViewBaseLayoutProps) {
 
@@ -677,6 +682,8 @@ export function CatalystViewBase({
         {onCoverChange && !isLoading && !isNotFound && (
           <CoverStrap
             cover={cover ?? null}
+            workItemId={coverItemId ?? null}
+            workItemTable={coverItemTable ?? 'ph_issues'}
             onSelect={(bg) => onCoverChange(bg)}
             onRemove={() => onCoverChange(null)}
           />

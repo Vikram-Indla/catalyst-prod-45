@@ -116,11 +116,13 @@ export const Card: React.FC<CardProps> = ({
           aria-hidden
           style={{
             width: `calc(100% + ${SIZES.CARD_PADDING * 2}px)`,
-            height: 36,
+            // Uploaded image covers get a taller header so the artwork
+            // reads clearly; solid + gradient covers stay a thin strap.
+            height: /url\(/.test(issue.cover) ? 96 : 36,
             marginTop: -SIZES.CARD_PADDING,
             marginLeft: -SIZES.CARD_PADDING,
             marginRight: -SIZES.CARD_PADDING,
-            marginBottom: 4,
+            marginBottom: 8,
             background: issue.cover,
             borderTopLeftRadius: SIZES.CARD_RADIUS,
             borderTopRightRadius: SIZES.CARD_RADIUS,

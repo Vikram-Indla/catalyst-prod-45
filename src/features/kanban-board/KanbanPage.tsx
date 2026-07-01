@@ -253,6 +253,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
         onAddLabel={onAddLabel} onSetParent={onSetParent} onLinkOpen={onLinkOpen}
         onSetCover={onSetCover}
+        coverTable={mode === 'product' ? 'business_requests'
+                  : mode === 'tasks'   ? 'tasks'
+                  : mode === 'release' ? 'rh_releases'
+                  : mode === 'test'    ? 'tm_test_cases'
+                  :                      'ph_issues'}
         onArchive={onArchive} onDelete={onDelete}
       />
     );

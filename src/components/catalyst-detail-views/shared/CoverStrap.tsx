@@ -18,10 +18,15 @@ import { token } from '@atlaskit/tokens';
 import EditIcon from '@atlaskit/icon/core/edit';
 import Tooltip from '@atlaskit/tooltip';
 import { SelectCoverPanel } from '@/features/kanban-board/components/SelectCoverPanel';
+import type { WorkItemTable } from '@/features/kanban-board/data/useCoverGallery';
 
 interface Props {
   cover: string | null | undefined;
   height?: number;
+  /** Work item context so the SelectCoverPanel Upload tab can read + write
+   *  the gallery. When omitted, Upload falls back to local-only data URLs. */
+  workItemId?: string | null;
+  workItemTable?: WorkItemTable | null;
   onSelect: (cover: string) => void;
   onRemove: () => void;
 }
@@ -30,7 +35,7 @@ const PICKER_WIDTH = 380;
 const PICKER_GAP = 6;
 const VIEWPORT_MARGIN = 8;
 
-export const CoverStrap: React.FC<Props> = ({ cover, height = 100, onSelect, onRemove }) => {
+export const CoverStrap: React.FC<Props> = ({ cover, height = 100, workItemId, workItemTable, onSelect, onRemove }) => {
   const anchorRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState(false);
@@ -157,6 +162,8 @@ export const CoverStrap: React.FC<Props> = ({ cover, height = 100, onSelect, onR
         >
           <SelectCoverPanel
             currentCover={cover}
+            workItemId={workItemId ?? null}
+            workItemTable={workItemTable ?? null}
             onSelect={(bg) => { onSelect(bg); }}
             onRemove={() => { onRemove(); }}
             onClose={close}
