@@ -33,6 +33,7 @@ import { useKanbanMutations } from './data/useKanbanMutations';
 import { useCurrentUser } from './data/useCurrentUser';
 import { captureStandupSession } from './data/standupCapture';
 import { useKanbanFilters } from './hooks/useKanbanFilters';
+import { catalystFlag } from '@/lib/catalystFlag';
 import { indexColumns, resolveColumnId } from './data/columnConfig';
 import { useCardDesigns } from './data/useCardDesigns';
 import { DEFAULT_VISIBLE_FIELDS, SIZES, STRINGS } from './constants';
@@ -154,7 +155,13 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
       await updateStatus(issueId, status, category);
       await refetch();
     } catch (err) {
+      // Rethrow so Board's onDrop cancels the follow-up reorder RPC. Toast
+      // surfaces the canonical workflow / RLS message to the user (silent
+      // failures left cards stuck in the source column looking reordered).
+      const msg = err instanceof Error ? err.message : 'Move blocked';
       console.error('[kanban] updateStatus failed', err);
+      catalystFlag.error(msg);
+      throw err;
     } finally {
       setReorderBusyIds((s) => { const n = new Set(s); n.delete(issueId); return n; });
     }
