@@ -5,7 +5,7 @@ import {
   SmilePlus,
   Edit,
   MoreHorizontal,
-  Copy,
+  LinkExternal,
   Trash2,
 } from '@/lib/atlaskit-icons';
 import { toast } from '@/components/ui/sonner';
@@ -378,7 +378,7 @@ export function CommentToolbar({
                         toast.error('Could not copy link');
                       }
                     }}
-                    icon={<Copy />}
+                    icon={<LinkExternal />}
                   >
                     Copy link
                   </MenuItem>
