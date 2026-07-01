@@ -8,12 +8,22 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import EpicIcon from '@atlaskit/icon-object/glyph/epic/16';
 import { ColumnHeader, ColumnBody } from './Column';
 import { DraggableCard } from './DraggableCard';
 import { SwimlaneHeader } from './SwimlaneHeader';
 import { indexColumns, resolveColumnId } from '../data/columnConfig';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardConfig, BoardIssue, CardVisibleFields, GroupByMode, KanbanColumn, StatusCategory } from '../types';
+
+/* ads-scanner:ignore-next-line — epic identity palette, user-data colors, no ADS token equivalent (probed 2026-07-01) */
+const EPIC_PALETTE = ['#6554C0', '#FF7452', '#36B37E', '#00B8D9', '#FF5630', '#FFAB00', '#0052CC', '#403294', '#00875A', '#BF2600'];
+
+function epicSwatchColor(key: string): string {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+  return EPIC_PALETTE[Math.abs(h) % EPIC_PALETTE.length];
+}
 
 interface BoardProps {
   boardConfig: BoardConfig;
@@ -229,6 +239,16 @@ export const Board: React.FC<BoardProps> = ({
                 label={g.label} count={g.issues.length} collapsed={isCollapsed}
                 showAvatar={groupBy === 'assignee'} avatarName={g.avatarName}
                 avatarUrl={g.avatarName ? avatars.get(g.avatarName) : null}
+                labelNode={groupBy === 'epic' && g.key !== '__none__' ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                    <EpicIcon label="" />
+                    {/* ads-scanner:ignore-next-line — epic identity swatch, user-data color, no ADS token (probed 2026-07-01) */}
+                    <span style={{ width: 10, height: 10, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400 }}>
+                      {g.key}
+                    </span>
+                  </span>
+                ) : undefined}
                 onToggle={() => setCollapsed((s) => { const n = new Set(s); n.has(g.key) ? n.delete(g.key) : n.add(g.key); return n; })}
               />
             )}
