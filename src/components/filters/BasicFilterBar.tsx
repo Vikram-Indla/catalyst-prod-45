@@ -16,7 +16,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Lozenge from '@atlaskit/lozenge';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
@@ -28,7 +28,6 @@ import LowPriIcon     from '@atlaskit/icon/core/priority-low';
 import LowestPriIcon  from '@atlaskit/icon/core/priority-lowest';
 import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
 import Button from '@atlaskit/button/new';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import type {
   JiraFilterValue,
   AssigneeOption,
@@ -391,10 +390,10 @@ export function BasicFilterBar({
                   isChecked={value.assignees.includes(a.id)}
                   onChange={() => toggleMulti('assignees', a.id, value.assignees)}
                   icon={
-                    <Avatar
+                    <CatalystAvatar
                       size="xsmall"
                       name={a.name}
-                      src={resolveAvatarUrl(a.name) ?? a.avatarUrl ?? undefined}
+                      src={a.avatarUrl ?? undefined}
                     />
                   }
                 />
