@@ -41,6 +41,8 @@ export interface KanbanMutations {
   createIssue: (input: NewIssueInput) => Promise<void>;
   updateSummary: (issueId: string, summary: string) => Promise<void>;
   addLabel: (issueId: string, current: string[], label: string) => Promise<void>;
+  /** Replace the entire labels array (multi-select Add labels modal). */
+  setLabels: (issueId: string, labels: string[]) => Promise<void>;
   archiveIssue: (issueId: string) => Promise<void>;
   deleteIssue: (issueId: string) => Promise<void>;
   setParent: (issueId: string, parentKey: string | null, parentSummary: string | null) => Promise<void>;
@@ -540,6 +542,20 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     if (error) throw error;
   }, [isProduct, isTasks, isRelease, isTest]);
 
+  /* ── setLabels ─────────────────────────────────────────────────────────
+     Replace the whole labels array. Every mode table now has a labels text[]
+     column (migration 20260701133437_labels_columns_all_modes). */
+  const setLabels = useCallback(async (issueId: string, labels: string[]) => {
+    const table = isTest    ? 'tm_test_cases'
+                : isRelease ? 'rh_releases'
+                : isTasks   ? 'tasks'
+                : isProduct ? 'business_requests'
+                :             'ph_issues';
+    const clean = Array.from(new Set(labels.map((l) => l.trim()).filter(Boolean)));
+    const { error } = await (supabase as any).from(table).update({ labels: clean }).eq('id', issueId);
+    if (error) throw error;
+  }, [isProduct, isTasks, isRelease, isTest]);
+
   /* ── moveIssuePosition ─────────────────────────────────────────────────
      Persistent per-column reorder. Dispatch the mode to its underlying
      table and hand the whole column's current ordering to the RPC so the
@@ -583,5 +599,5 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     [isProduct, isTasks, isRelease, isTest],
   );
 
-  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn };
+  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn };
 }

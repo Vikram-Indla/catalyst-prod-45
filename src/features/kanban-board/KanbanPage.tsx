@@ -7,7 +7,6 @@ import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/C
 import { AddFlagModal } from '@/components/workhub/issue-view/IssueActionDialogs';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import Textfield from '@atlaskit/textfield';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useBoardBySlug } from '@/hooks/useBoardBySlug';
 import { token } from '@atlaskit/tokens';
@@ -19,6 +18,7 @@ import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
 import { Toolbar } from './components/Toolbar';
 import { CardContextMenu } from './components/CardContextMenu';
+import { AddLabelsModal } from './components/AddLabelsModal';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
 import { AssigneePicker } from './components/AssigneePicker';
@@ -96,7 +96,6 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const [flagTarget, setFlagTarget] = useState<BoardIssue | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelModalIssue, setLabelModalIssue] = useState<BoardIssue | null>(null);
-  const [labelInput, setLabelInput] = useState('');
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
   const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
@@ -119,7 +118,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     navigator.clipboard?.writeText(window.location.href);
   }, []);
 
-  const { projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId, mode);
+  const { projectId, projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId, mode);
   const [extraColumns, setExtraColumns] = useState<KanbanColumn[]>([]);
   const boardConfig = useMemo(() =>
     extraColumns.length ? { ...baseBoardConfig, columns: [...baseBoardConfig.columns, ...extraColumns] } : baseBoardConfig,
@@ -133,7 +132,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (key && slug) navigate(`/project-hub/${key}/boards/${slug}/map-statuses`);
   }, [key, resolvedBoard?.slug, boardSlug, navigate]);
   const [hideDone, setHideDone] = useState(true);
-  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn } = useKanbanMutations(mode);
+  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
   /* Cards currently mid-mutation (menu Move Up/Down, ⋯ Change status click,
@@ -168,7 +167,6 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     navigator.clipboard?.writeText(issue.issueKey);
   }, []);
   const onAddLabel = useCallback((issue: BoardIssue) => {
-    setLabelInput('');
     setLabelModalIssue(issue);
     setShowLabelModal(true);
   }, []);
@@ -508,58 +506,20 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         />
       )}
 
-      {showLabelModal && (
-        <ModalDialog onClose={() => setShowLabelModal(false)} width="small">
-          <ModalHeader hasCloseButton>
-            <ModalTitle>Add label</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div>
-              <label style={{
-                display: 'block',
-                marginBottom: 4,
-                fontSize: 'var(--ds-font-size-300)',
-                fontWeight: 600,
-                color: 'var(--ds-text)',
-              }}>
-                Label
-              </label>
-              <Textfield
-                value={labelInput}
-                onChange={(e) => setLabelInput((e.target as HTMLInputElement).value)}
-                placeholder="Enter label"
-                autoFocus
-                onKeyDown={async (e) => {
-                  if (e.key === 'Enter') {
-                    const trimmed = labelInput.trim();
-                    if (trimmed && labelModalIssue) {
-                      await addLabel(labelModalIssue.id, labelModalIssue.labels, trimmed);
-                      refetch();
-                    }
-                    setShowLabelModal(false);
-                  }
-                }}
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={() => setShowLabelModal(false)}>Cancel</Button>
-            <Button
-              appearance="primary"
-              isDisabled={!labelInput.trim()}
-              onClick={async () => {
-                const trimmed = labelInput.trim();
-                if (trimmed && labelModalIssue) {
-                  await addLabel(labelModalIssue.id, labelModalIssue.labels, trimmed);
-                  refetch();
-                }
-                setShowLabelModal(false);
-              }}
-            >
-              Add
-            </Button>
-          </ModalFooter>
-        </ModalDialog>
+      {showLabelModal && labelModalIssue && (
+        <AddLabelsModal
+          issueId={labelModalIssue.id}
+          issueKey={labelModalIssue.issueKey}
+          currentLabels={labelModalIssue.labels}
+          mode={mode}
+          projectKey={mode === 'project' ? key : null}
+          productId={mode === 'product' ? projectId : null}
+          onSave={async (labels) => {
+            await setLabels(labelModalIssue.id, labels);
+            refetch();
+          }}
+          onClose={() => setShowLabelModal(false)}
+        />
       )}
     </div>
   );
