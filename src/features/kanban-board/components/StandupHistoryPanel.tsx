@@ -12,7 +12,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -135,7 +135,7 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
     <div style={{ border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 8, padding: 12, marginBottom: 8, background: token('elevation.surface', 'var(--ds-surface)') }}>
       {/* Driver + timing */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <Avatar size="small" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
+        <CatalystAvatar size="small" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>{s.driver_name ?? 'Unknown'} drove this standup</div>
           <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>

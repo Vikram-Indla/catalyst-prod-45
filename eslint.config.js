@@ -53,6 +53,23 @@ const makeAdsForbidAtlaskit = (severity) => ({
     ],
     patterns: [
       {
+        // Avatar-specific gate — tighter than the general @atlaskit/* warn because
+        // direct @atlaskit/avatar imports bypass CatalystAvatar's CDN ban and
+        // deterministic initials palette, producing gray-circle silhouettes.
+        // Only two files may import @atlaskit/avatar directly:
+        //   src/components/ads/Avatar.tsx         — the ADS wrapper
+        //   src/components/shared/CatalystAvatar.tsx — the canonical chain
+        // All product code must use CatalystAvatar or UserAvatar.
+        group: ["@atlaskit/avatar", "@atlaskit/avatar-group"],
+        message:
+          "@atlaskit/avatar and @atlaskit/avatar-group are BANNED in product code. " +
+          "Use CatalystAvatar from '@/components/shared/CatalystAvatar' (applies CDN ban + ADS-palette initials) " +
+          "or UserAvatar from '@/components/shared/UserAvatar' (face component with flag chip). " +
+          "Direct imports bypass the Gravatar/atl-paas ban and produce gray silhouettes instead of " +
+          "deterministic colored initials. Only src/components/ads/Avatar.tsx and " +
+          "src/components/shared/CatalystAvatar.tsx may import @atlaskit/avatar directly.",
+      },
+      {
         // Forbid every @atlaskit/* component/primitive package. The token
         // runtime resolver (@atlaskit/tokens) is intentionally exempted: it
         // is a utility, not a component, and the Catalyst ADS wrapper
@@ -157,6 +174,45 @@ const adsMigratedFiles = [
   "src/components/admin/v2/**/*.{ts,tsx}",
   "src/hooks/admin/useAdminMutation.{ts,tsx}",
   "src/hooks/admin/useAdminV2*.{ts,tsx}",
+  // Avatar migration — CAT-avatar-sweep
+  "src/features/chat/components/feed/ProfileHoverCard.tsx",
+  "src/features/chat/components/feed/MessageFeed.tsx",
+  "src/features/chat/components/later/LaterSurface.tsx",
+  "src/features/chat/components/thread/ThreadPane.tsx",
+  "src/features/chat-v2/components/Huddle/HuddlePanel.tsx",
+  "src/features/kanban-board/components/SwimlaneHeader.tsx",
+  "src/features/kanban-board/components/StandupPanel.tsx",
+  "src/features/kanban-board/components/Toolbar.tsx",
+  "src/features/kanban-board/components/StandupHistoryPanel.tsx",
+  "src/components/catalyst-detail-views/shared/ProposalTable.tsx",
+  "src/components/filters/TransferOwnershipModal.tsx",
+  "src/components/filters/FilterVersionHistory.tsx",
+  "src/components/workhub/create-story/CreateStoryModal.tsx",
+  "src/components/global-search/FilterDropdown.tsx",
+  "src/components/layout/HuddleFab.tsx",
+  "src/components/layout/HuddleIncoming.tsx",
+  "src/components/layout/NotificationItem.tsx",
+  "src/components/for-you/atlaskit/RecommendedPanel.tsx",
+  "src/components/for-you/atlaskit/SummarizeDigestModal.tsx",
+  "src/components/shared/JiraTable/editors.tsx",
+  "src/components/shared/JiraFilterAtlaskit.tsx",
+  "src/components/shared/IssueHoverCard.tsx",
+  "src/components/shared/Timeline/primitives.tsx",
+  "src/components/shared/Timeline/dependencies/DependencyUI.tsx",
+  "src/components/business-requests/CreateBusinessRequestModal.tsx",
+  "src/components/project-hub/dashboard/widgets/DemandFulfilmentGadget.tsx",
+  "src/modules/tasks/views/TasksTaskListView.tsx",
+  "src/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection.tsx",
+  "src/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection.tsx",
+  "src/modules/project-work-hub/components/linked-work-items/LinkTypeGroup.tsx",
+  "src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx",
+  "src/modules/project-work-hub/pages/StoryBacklogPage.atlaskit.tsx",
+  "src/pages/product-hub/AllProductsPage.tsx",
+  "src/pages/standups/StandupHistoryPage.tsx",
+  "src/pages/project-hub/filters/FiltersListPage.tsx",
+  "src/pages/project-hub/filters/FilterDetailPage.tsx",
+  "src/pages/project-hub/roadmaps/RoadmapsListPage.tsx",
+  "src/pages/project-hub/jira-list/components/WorkListPanel.tsx",
 ];
 
 /**

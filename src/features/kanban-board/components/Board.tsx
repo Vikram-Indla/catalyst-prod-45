@@ -9,12 +9,23 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { token } from '@atlaskit/tokens';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+import EpicIcon from '@atlaskit/icon-object/glyph/epic/16';
 import { ColumnHeader, ColumnBody } from './Column';
 import { DraggableCard } from './DraggableCard';
 import { SwimlaneHeader } from './SwimlaneHeader';
+import { PriorityIcon } from './PriorityIcon';
 import { indexColumns, resolveColumnId } from '../data/columnConfig';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardConfig, BoardIssue, CardVisibleFields, GroupByMode, KanbanColumn, StatusCategory } from '../types';
+
+/* ads-scanner:ignore-next-line — epic identity palette, user-data colors, no ADS token equivalent (probed 2026-07-01) */
+const EPIC_PALETTE = ['#6554C0', '#FF7452', '#36B37E', '#00B8D9', '#FF5630', '#FFAB00', '#0052CC', '#403294', '#00875A', '#BF2600'];
+
+function epicSwatchColor(key: string): string {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+  return EPIC_PALETTE[Math.abs(h) % EPIC_PALETTE.length];
+}
 
 interface BoardProps {
   boardConfig: BoardConfig;
@@ -26,6 +37,8 @@ interface BoardProps {
   /** Set of issue ids currently busy with a per-card mutation (reorder RPC in
    *  flight). Card renders a spinner overlay for members. */
   busyIds?: Set<string>;
+  collapsed: Set<string>;
+  onToggleGroup: (key: string) => void;
   onSelect: (id: string) => void;
   onAvatarClick?: (issue: BoardIssue, anchor: HTMLElement) => void;
   renderMenu?: (issue: BoardIssue) => React.ReactNode;
@@ -89,7 +102,8 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
   );
 };
 
-interface Group { key: string; label: string; avatarName?: string | null; issues: BoardIssue[]; }
+export interface BoardGroup { key: string; label: string; avatarName?: string | null; issues: BoardIssue[]; }
+type Group = BoardGroup;
 
 const DroppableBody: React.FC<{
   colId: string; groupKey: string; ariaLabel: string; fill: boolean;
@@ -114,7 +128,7 @@ const DroppableBody: React.FC<{
   return <ColumnBody ref={ref} ariaLabel={ariaLabel} fill={fill} isDragOver={overKey === myKey} footer={footer} items={items} renderItem={renderItem} colId={colId} groupKey={groupKey} />;
 };
 
-function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
+export function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
   if (groupBy === 'none') return [{ key: '__all__', label: '', issues }];
   const map = new Map<string, Group>();
   const NONE = '__none__';
@@ -132,12 +146,12 @@ function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, busyIds, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onReorderColumn, onAddColumn, onEditSummary, cardHealthKey, designsByIssue,
+  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, busyIds, collapsed, onToggleGroup,
+  onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onReorderColumn, onAddColumn, onEditSummary, cardHealthKey, designsByIssue,
   hideDone = true, onToggleHideDone,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
   const [overrides, setOverrides] = useState<Map<string, string>>(new Map());
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   useEffect(() => { setOverrides(new Map()); }, [issues]);
 
@@ -294,7 +308,21 @@ export const Board: React.FC<BoardProps> = ({
                 label={g.label} count={g.issues.length} collapsed={isCollapsed}
                 showAvatar={groupBy === 'assignee'} avatarName={g.avatarName}
                 avatarUrl={g.avatarName ? avatars.get(g.avatarName) : null}
-                onToggle={() => setCollapsed((s) => { const n = new Set(s); n.has(g.key) ? n.delete(g.key) : n.add(g.key); return n; })}
+                labelNode={
+                  groupBy === 'epic' && g.key !== '__none__' ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                      <EpicIcon label="" />
+                      {/* ads-scanner:ignore-next-line — epic identity swatch, user-data color, no ADS token (probed 2026-07-01) */}
+                      <span style={{ width: 10, height: 10, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400 }}>
+                        {g.key}
+                      </span>
+                    </span>
+                  ) : groupBy === 'priority' && g.key !== '__none__' ? (
+                    <PriorityIcon priority={g.key} size={16} />
+                  ) : undefined
+                }
+                onToggle={() => onToggleGroup(g.key)}
               />
             )}
             {!isCollapsed && (

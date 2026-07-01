@@ -30,7 +30,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 // ── Atlaskit ────────────────────────────────────────
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Textfield from '@atlaskit/textfield';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
@@ -1181,7 +1181,7 @@ function AssigneeStackFilter({
             zIndex: 4 - i,
           }}
         >
-          <Avatar size="small" name={name} src={url || undefined} appearance="circle" />
+          <CatalystAvatar size="small" name={name} src={url || undefined} appearance="circle" />
         </span>
       ))}
       {remaining > 0 && (

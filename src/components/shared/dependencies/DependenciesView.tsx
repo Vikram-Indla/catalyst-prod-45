@@ -59,7 +59,7 @@ export default function DependenciesView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, background: T.surface }}>
-      <ProjectPageHeader title="Dependencies" projectKey={scopeKey} hubType={hubType} />
+      <ProjectPageHeader projectKey={scopeKey} hubType={hubType} />
 
       {/* Explicit responsive height: the hub shell does not bound height:100%
           to the viewport, so a flex:1 canvas collapses. 150px ≈ top nav + header. */}

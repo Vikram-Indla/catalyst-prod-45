@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams, useParams } from 'react-router-dom';
+import { useTeamBySlug } from '@/hooks/useTeamBySlug';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -30,10 +31,13 @@ const METRIC_LABELS: Record<MetricId, string> = {
 
 export function WorkTreePage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { teamId, programId } = useParams<{ teamId?: string; programId?: string }>();
-  
+  const { teamSlug, programId } = useParams<{ teamSlug?: string; programId?: string }>();
+  const { data: teamRecord } = useTeamBySlug(teamSlug);
+  // Resolve slug or UUID to a stable UUID for downstream queries
+  const teamId = teamRecord?.id ?? teamSlug;
+
   // Default to 'team' view when accessed from team context
-  const defaultView = teamId ? 'team' : 'top-down';
+  const defaultView = teamSlug ? 'team' : 'top-down';
   const view = (searchParams.get('view') || defaultView) as WorkTreeView;
   const [configsOpen, setConfigsOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);

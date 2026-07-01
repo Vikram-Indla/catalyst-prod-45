@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/core/close';
 import { supabase } from '@/integrations/supabase/client';
@@ -230,7 +230,7 @@ function MsgRow({
     >
       <div className="c-msg__avatar">
         {isFull ? (
-          <Avatar
+          <CatalystAvatar
             name={msg.authorName}
             src={msg.authorAvatarUrl ?? undefined}
             size="medium"

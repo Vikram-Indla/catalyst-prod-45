@@ -34,7 +34,7 @@ import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 // 2026-06-09 — switched from raw @atlaskit/lozenge to ADS wrapper so the
 // inline-block shrink-wrap applies (otherwise grid cells stretch the lozenge bg).
 import { Lozenge } from '@/components/ads';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import EmptyState from '@atlaskit/empty-state';
 
 import { RadioGroup } from '@atlaskit/radio';
@@ -63,7 +63,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 // CatalystOwnerAvatar removed — DemandRowItem uses Atlaskit Avatar size="xsmall" directly
-import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import { useGadgetSettings as usePanelGadgetSettings } from '@/hooks/useGadgetSettings';
@@ -1331,15 +1330,13 @@ function DemandRowItem({
           }}
           title={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
         >
-          <Avatar
+          <CatalystAvatar
             size="small"
             /* 2026-06-09 Vikram compliance — external avatar CDN banned.
                row.assignee_avatar (Supabase profile.avatar_url) could be
                gravatar/atl-paas; ignore it. Use resolveAvatarUrl(name)
                bundled local OR null (→ initials). */
-            src={row.assignee_name && row.assignee_name !== '—'
-              ? resolveAvatarUrl(row.assignee_name) ?? undefined
-              : undefined}
+            src={row.assignee_avatar ?? undefined}
             name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
           />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1470,9 +1467,9 @@ function DemandRowItem({
                     }}
                     title={hasAssignee ? storyAssignee : 'Unassigned'}
                   >
-                    <Avatar
+                    <CatalystAvatar
                       size="small"
-                      src={hasAssignee ? resolveAvatarUrl(storyAssignee) ?? undefined : undefined}
+                      src={undefined}
                       name={hasAssignee ? storyAssignee : 'Unassigned'}
                     />
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1672,9 +1669,9 @@ function DemandRowItem({
                             }}
                             title={hasAssignee ? storyAssignee : 'Unassigned'}
                           >
-                            <Avatar
+                            <CatalystAvatar
                               size="small"
-                              src={hasAssignee ? resolveAvatarUrl(storyAssignee) ?? undefined : undefined}
+                              src={undefined}
                               name={hasAssignee ? storyAssignee : 'Unassigned'}
                             />
                             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>

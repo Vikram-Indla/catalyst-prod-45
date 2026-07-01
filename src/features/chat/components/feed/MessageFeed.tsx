@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import type { ChatConversation, ChatMessage } from '@/types/chat';
 import { supabase } from '@/integrations/supabase/client';
@@ -304,7 +304,7 @@ function MsgGroupBlock({
                   }}
                   aria-label={`View profile of ${msg.authorName}`}
                 >
-                  <Avatar
+                  <CatalystAvatar
                     name={msg.authorName}
                     src={msg.authorAvatarUrl ?? undefined}
                     size="medium"

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { usePortfolioByKey } from '@/hooks/usePortfolioByKey';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -45,7 +46,10 @@ interface EpicWithScoring {
 }
 
 export default function EpicEstimationPage() {
-  const { portfolioId } = useParams();
+  const { portfolioKey, portfolioId: legacyPortfolioId } = useParams<{ portfolioKey?: string; portfolioId?: string }>();
+  const portfolioParam = portfolioKey ?? legacyPortfolioId;
+  const { data: portfolioRecord } = usePortfolioByKey(portfolioParam);
+  const portfolioId = portfolioRecord?.id ?? (portfolioParam && /^[0-9a-f-]{36}$/.test(portfolioParam) ? portfolioParam : undefined);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -182,8 +186,8 @@ export default function EpicEstimationPage() {
   };
 
   const handleManageBacklog = () => {
-    if (portfolioId) {
-      navigate(`/portfolio/${portfolioId}/backlog`);
+    if (portfolioParam) {
+      navigate(`/portfolio/${portfolioRecord?.key ?? portfolioParam}/backlog`);
     } else {
       navigate('/items/epics');
     }

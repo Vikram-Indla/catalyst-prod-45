@@ -1,6 +1,6 @@
 // src/components/layout/HuddleIncoming.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useIncomingHuddle } from '@/hooks/chat/useIncomingHuddle';
 import { startRing, stopRing } from '@/lib/chat/huddle/ringtone';
 
@@ -112,7 +112,7 @@ export function HuddleIncoming() {
       }}
     >
       <span style={{ position: 'relative', flex: '0 0 auto', display: 'inline-flex', borderRadius: '50%' }}>
-        <Avatar size="medium" />
+        <CatalystAvatar size="medium" />
         <span ref={ringRef} aria-hidden style={{
           position: 'absolute', inset: 0, borderRadius: '50%',
           border: `2px solid ${green}`, pointerEvents: 'none',

@@ -15,7 +15,7 @@ import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import Lozenge from '@atlaskit/lozenge';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Spinner from '@atlaskit/spinner';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,7 +26,6 @@ import { nextPos } from './helpers';
 import { ConfirmDialog } from './ConfirmDialog';
 import { createChildIssue, type WorkItemSource } from '../../../lib/workItemRepo';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import { catalystToast } from '@/lib/catalystToast';
 import '../../linked-work-items/linked-work-items.css';
 
@@ -309,10 +308,9 @@ function IncidentRow({
       </span>
       <span className="lwi-row__assignee">
         {item.assignee_display_name ? (
-          <Avatar
+          <CatalystAvatar
             size="small"
             name={item.assignee_display_name}
-            src={resolveAvatarUrl(item.assignee_display_name) ?? undefined}
             borderColor="transparent"
           />
         ) : (

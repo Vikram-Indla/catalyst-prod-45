@@ -2,7 +2,7 @@ import { useMemo, useRef, useEffect, useState, useCallback, type ReactNode } fro
 import { createPortal } from 'react-dom'; // portal-fix
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 
@@ -181,7 +181,7 @@ export function FilterDropdown({
                   }}
                 >
                   <Checkbox isChecked={checked} onChange={() => toggle(opt.id)} />
-                  {opt.icon ?? <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
+                  {opt.icon ?? <CatalystAvatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
                   <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.name}
                     {opt.tag ? <span style={{ color: 'var(--ds-text-subtle)' }}> ({opt.tag})</span> : null}

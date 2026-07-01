@@ -20,7 +20,7 @@ import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateSpaceModal } from '@/spaces';
 import { token } from '@atlaskit/tokens';
 import { FlagsHost, flag } from '@/components/shared/JiraTable/flags';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { supabase } from '@/integrations/supabase/client';
 import { buildProjectSyncStats, SYNC_COUNT_DATE_BOUNDARY } from '@/hooks/projecthub-sync-utils';
@@ -178,8 +178,8 @@ export default function AllProjectsPage() {
         fontFamily: 'var(--cp-font-body)',
       }}
     >
-      <CatalystPageHeader
-        title="All Projects"
+      <ProjectPageHeader
+        hubType="project"
         actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
             {isNarrow ? (

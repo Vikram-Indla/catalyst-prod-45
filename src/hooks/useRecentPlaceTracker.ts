@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { isValidUUID } from "@/lib/utils/assertUuid";
 import type { Database } from "@/integrations/supabase/types";
 
 type RoomType = Database["public"]["Enums"]["room_type"];
@@ -22,11 +23,15 @@ interface RoomContext {
  */
 export function useRecentPlaceTracker() {
   const location = useLocation();
-  const params = useParams<{ 
-    programId?: string; 
-    portfolioId?: string; 
+  const params = useParams<{
+    programId?: string;
+    portfolioId?: string;
+    portfolioKey?: string;
     teamId?: string;
+    teamSlug?: string;
   }>();
+  const teamParam = params.teamSlug ?? params.teamId;
+  const portfolioParam = params.portfolioKey ?? params.portfolioId;
   const lastTrackedRef = useRef<string | null>(null);
 
   // Fetch entity names for the current context
@@ -45,29 +50,31 @@ export function useRecentPlaceTracker() {
   });
 
   const { data: portfolio } = useQuery({
-    queryKey: ["portfolio-name", params.portfolioId],
+    queryKey: ["portfolio-name", portfolioParam],
     queryFn: async () => {
-      if (!params.portfolioId) return null;
-      const { data } = await supabase
-        .from("programs")
-        .select("id, name")
-        .eq("id", params.portfolioId)
-        .single();
-      return data;
+      if (!portfolioParam) return null;
+      const field = isValidUUID(portfolioParam) ? "id" : "key";
+      const { data } = await (supabase as any)
+        .from("portfolios")
+        .select("id, key, name")
+        .eq(field, portfolioParam)
+        .maybeSingle();
+      return data ?? null;
     },
-    enabled: !!params.portfolioId,
+    enabled: !!portfolioParam,
   });
 
   const { data: team } = useQuery({
-    queryKey: ["team-name", params.teamId],
+    queryKey: ["team-name", teamParam],
     queryFn: async () => {
-      if (!params.teamId) return null;
-      const { data } = await supabase
+      if (!teamParam) return null;
+      const field = isValidUUID(teamParam) ? "id" : "slug";
+      const { data } = await (supabase as any)
         .from("teams")
-        .select("id, name, project_id")
-        .eq("id", params.teamId)
-        .single();
-      
+        .select("id, name, project_id, slug")
+        .eq(field, teamParam)
+        .maybeSingle();
+
       if (data?.project_id) {
         const { data: programData } = await supabase
           .from("projects")
@@ -76,9 +83,9 @@ export function useRecentPlaceTracker() {
           .single();
         return { ...data, programName: programData?.name || null };
       }
-      return { ...data, programName: null };
+      return data ? { ...data, programName: null } : null;
     },
-    enabled: !!params.teamId,
+    enabled: !!teamParam,
   });
 
   // Single fixed UUID for Product Room (all pages within Product Room share this)
@@ -125,37 +132,38 @@ export function useRecentPlaceTracker() {
     }
 
     // Portfolio Room pages
-    if (params.portfolioId && portfolio) {
-      const isRoomPage = path.includes("/room") || path.endsWith(`/portfolio/${params.portfolioId}`);
+    if (portfolioParam && portfolio) {
+      const portfolioUrlKey = (portfolio as any).key ?? portfolioParam;
+      const isRoomPage = path.includes("/room") || path.endsWith(`/portfolio/${portfolioParam}`);
       if (isRoomPage) {
         return {
           roomType: "portfolio" as RoomType,
-          roomId: params.portfolioId,
+          roomId: portfolio.id,
           roomName: portfolio.name,
           roomSubtitle: "Portfolio Room",
           pageKey: "room",
-          targetUrl: `/portfolio/${params.portfolioId}/room`,
+          targetUrl: `/portfolio/${portfolioUrlKey}/room`,
         };
       }
       // Other portfolio pages (backlog, roadmaps, etc.)
       if (path.includes("/backlog")) {
         return {
           roomType: "portfolio" as RoomType,
-          roomId: params.portfolioId,
+          roomId: portfolio.id,
           roomName: portfolio.name,
           roomSubtitle: "Backlog",
           pageKey: "backlog",
-          targetUrl: `/portfolio/${params.portfolioId}/backlog`,
+          targetUrl: `/portfolio/${portfolioUrlKey}/backlog`,
         };
       }
       if (path.includes("/roadmaps")) {
         return {
           roomType: "portfolio" as RoomType,
-          roomId: params.portfolioId,
+          roomId: portfolio.id,
           roomName: portfolio.name,
           roomSubtitle: "Roadmaps",
           pageKey: "roadmaps",
-          targetUrl: `/portfolio/${params.portfolioId}/roadmaps`,
+          targetUrl: `/portfolio/${portfolioUrlKey}/roadmaps`,
         };
       }
     }
@@ -197,37 +205,38 @@ export function useRecentPlaceTracker() {
     }
 
     // Team Room pages
-    if (params.teamId && team) {
+    if (teamParam && team) {
+      const teamUrlKey = (team as any).slug ?? teamParam;
       const isRoomPage = path.includes("/room");
       if (isRoomPage) {
         return {
           roomType: "team" as RoomType,
-          roomId: params.teamId,
+          roomId: team.id,
           roomName: team.name,
-          roomSubtitle: team.programName || "Team Room",
+          roomSubtitle: (team as any).programName || "Team Room",
           pageKey: "room",
-          targetUrl: `/team/${params.teamId}/room`,
+          targetUrl: `/team/${teamUrlKey}/room`,
         };
       }
       // Other team pages
       if (path.includes("/backlog")) {
         return {
           roomType: "team" as RoomType,
-          roomId: params.teamId,
+          roomId: team.id,
           roomName: team.name,
           roomSubtitle: "Backlog",
           pageKey: "backlog",
-          targetUrl: `/team/${params.teamId}/backlog`,
+          targetUrl: `/team/${teamUrlKey}/backlog`,
         };
       }
       if (path.includes("/stories")) {
         return {
           roomType: "team" as RoomType,
-          roomId: params.teamId,
+          roomId: team.id,
           roomName: team.name,
           roomSubtitle: "Stories",
           pageKey: "stories",
-          targetUrl: `/team/${params.teamId}/stories`,
+          targetUrl: `/team/${teamUrlKey}/stories`,
         };
       }
     }

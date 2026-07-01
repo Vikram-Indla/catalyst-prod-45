@@ -8,7 +8,7 @@
 
 import React, { forwardRef, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Select from '@atlaskit/select';
 import { portalSelectStyles } from '@/lib/select-portal-styles';
 import Tooltip from '@atlaskit/tooltip';
@@ -464,8 +464,8 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
                 <span>{issue?.status ? <StatusLozenge status={issue.status} appearance={statusToLozenge(issue.status)} /> : '—'}</span>
                 <span>
                   {issue?.assigneeDisplayName
-                    ? <Avatar size="small" name={issue.assigneeDisplayName} src={issue.assigneeAvatarUrl ?? undefined} />
-                    : <Avatar size="small" />}
+                    ? <CatalystAvatar size="small" name={issue.assigneeDisplayName} src={issue.assigneeAvatarUrl ?? undefined} />
+                    : <CatalystAvatar size="small" />}
                 </span>
                 <LeadTimeCell issue={issue} />
                 <Tooltip content="Remove dependency" position="top">

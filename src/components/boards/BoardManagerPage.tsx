@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Star, Settings, Trash2, Kanban } from '@/lib/atlaskit-icons';
+import { Plus, Star, Settings, Trash2, Kanban, Activity } from '@/lib/atlaskit-icons';
+import BoardInsightsPanel from './BoardInsightsPanel';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
@@ -15,7 +16,7 @@ import {
 } from '@/components/shared/CatalystListPage';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import CreateBoardModal from './CreateBoardModal';
-import type { BoardListItem } from '@/types/board';
+import type { Board, BoardListItem } from '@/types/board';
 import { useEnsurePrimaryBoard } from '@/hooks/useEnsurePrimaryBoard';
 
 interface BoardManagerPageProps {
@@ -42,6 +43,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<BoardListItem | null>(null);
+  const [insightsBoard, setInsightsBoard] = useState<Board | null>(null);
 
   // Unique admin (lead) names for User dropdown
   const userOptions = useMemo(() => {
@@ -164,20 +166,22 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
     {
       id: '__menu',
       label: '',
-      width: 8,
+      width: 12,
       alwaysVisible: true,
       accessor: () => null,
       cell: ({ row }) => (
         <span onClick={e => e.stopPropagation()}>
           <BoardRowActions
             board={row}
+            isInsightsActive={insightsBoard?.id === row.id}
+            onViewHealth={() => setInsightsBoard(insightsBoard?.id === row.id ? null : row)}
             onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.slug}/settings` : `${boardBasePath}/${row.slug}/settings`)}
             onDelete={() => handleDelete(row)}
           />
         </span>
       ),
     },
-  ], [handleDelete, toggleStar, navigate, boardBasePath, projectKey]);
+  ], [handleDelete, toggleStar, navigate, boardBasePath, projectKey, insightsBoard]);
 
   const projectFilterOptions = useMemo(() => {
     const ids = Array.from(new Set(boards.map(b => b.projectId).filter(Boolean))) as string[];
@@ -222,6 +226,15 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
   const hasBoards = boards.length > 0;
 
   return (
+    <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <div style={{
+        flex: insightsBoard ? '0 0 38%' : '1 1 100%',
+        transition: 'flex 200ms ease',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRight: insightsBoard ? '2px solid var(--ds-border-bold)' : undefined,
+      }}>
     <>
     <CatalystListPageLayout
       chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
@@ -319,22 +332,50 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       )}
 
     </>
+      </div>
+      {insightsBoard && (
+        <div style={{ flex: '0 0 62%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <BoardInsightsPanel
+            board={insightsBoard}
+            projectKey={projectKey}
+            onClose={() => setInsightsBoard(null)}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
-// ─── Board row inline actions (Edit + Delete icon buttons on row hover) ──────
-function BoardRowActions({ board, onEditSettings, onDelete }: {
+// ─── Board row inline actions ─────────────────────────────────────────────────
+function BoardRowActions({ board, isInsightsActive, onViewHealth, onEditSettings, onDelete }: {
   board: BoardListItem;
+  isInsightsActive: boolean;
+  onViewHealth: () => void;
   onEditSettings: () => void;
   onDelete: () => void;
 }) {
   return (
     <span
       className="jira-row-menu-trigger"
-      style={{ display: 'inline-flex', gap: 2, opacity: 0, transition: 'opacity 120ms ease' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0'; }}
+      style={{ display: 'inline-flex', gap: 2 }}
     >
+      <button
+        type="button"
+        aria-label={`Board health for ${board.name}`}
+        onClick={(e) => { e.stopPropagation(); onViewHealth(); }}
+        title="View board health"
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 28, height: 28, padding: 0, border: 'none', borderRadius: 3,
+          background: isInsightsActive ? 'var(--ds-background-selected)' : 'transparent',
+          color: isInsightsActive ? 'var(--ds-link)' : 'var(--ds-icon-subtle)',
+          cursor: 'pointer', transition: 'background 100ms ease',
+        }}
+        onMouseEnter={e => { if (!isInsightsActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+        onMouseLeave={e => { if (!isInsightsActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+      >
+        <Activity size={14} />
+      </button>
       <button
         type="button"
         aria-label={`Edit settings for ${board.name}`}

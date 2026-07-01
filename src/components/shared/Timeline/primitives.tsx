@@ -15,14 +15,13 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Checkbox from '@atlaskit/checkbox';
 import AkCalendar from '@atlaskit/calendar';
 import Tooltip from '@atlaskit/tooltip';
 import { Calendar, GanttChart } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import { ROW_H, BAR_H, type TimelineIssue } from './types';
 import { formatDateCompact } from './utils';
 
@@ -414,7 +413,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
           </div>
           {issue.assigneeDisplayName && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
+              <CatalystAvatar size="xsmall" name={issue.assigneeDisplayName} />
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{issue.assigneeDisplayName}</span>
             </div>
           )}

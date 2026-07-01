@@ -34,7 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import AkPersonAvatarIcon from '@atlaskit/icon/glyph/person';
 import AkSearchIcon from '@atlaskit/icon/core/search';
@@ -65,7 +65,6 @@ import {
   type RowGroup,
   type LozengeAppearance,
 } from '@/components/shared/JiraTable';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import {
   JiraFilterAtlaskit,
   emptyFilterValue,
@@ -1086,7 +1085,7 @@ function TasksInlineCreateRow({
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {currentAssignee ? (
-            <Avatar size="small" src={currentAssignee.src} name={currentAssignee.name} />
+            <CatalystAvatar size="small" src={currentAssignee.src} name={currentAssignee.name} />
           ) : (
             <AkPersonAvatarIcon label="" size="medium" />
           )}
@@ -1178,7 +1177,7 @@ function TasksInlineCreateRow({
                     onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'); }}
                     onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
-                    <Avatar size="xsmall" src={m.src} name={m.name} />
+                    <CatalystAvatar size="xsmall" src={m.src} name={m.name} />
                     <span>{m.name}</span>
                   </button>
                 );
@@ -1634,11 +1633,11 @@ export default function TasksTaskListView() {
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assigneeName;
         const avatarUrl = sample.assigneeName
-          ? (avatarByName.get(sample.assigneeName) ?? resolveAvatarUrl(sample.assigneeName) ?? undefined)
+          ? (avatarByName.get(sample.assigneeName) ?? undefined)
           : undefined;
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <Avatar size="small" name={k} src={avatarUrl} appearance={isUnassigned ? 'square' : 'circle'} />
+            <CatalystAvatar size="small" name={k} src={avatarUrl} appearance={isUnassigned ? 'square' : 'circle'} />
             <span>{k}</span>
           </span>
         );

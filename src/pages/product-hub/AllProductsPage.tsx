@@ -28,7 +28,7 @@ import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
   DropdownItem,
@@ -38,7 +38,7 @@ import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ProductAvatar } from '@/components/icons';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
@@ -322,7 +322,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             aria-label={`Remove ${currentOwner.display_name} as lead`}
           >
-            <Avatar src={currentOwner.avatar_url || undefined} name={currentOwner.display_name || '?'} size="small" />
+            <CatalystAvatar src={currentOwner.avatar_url || undefined} name={currentOwner.display_name || '?'} size="small" />
             <span style={{ fontSize: 'var(--ds-font-size-300)', flex: 1, fontFamily: 'var(--cp-font-body)' }}>
               {currentOwner.display_name}
             </span>
@@ -352,7 +352,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             aria-label={`Set ${p.display_name} as lead`}
           >
-            <Avatar src={p.avatar_url || undefined} name={p.display_name || '?'} size="small" />
+            <CatalystAvatar src={p.avatar_url || undefined} name={p.display_name || '?'} size="small" />
             <span style={{ fontSize: 'var(--ds-font-size-300)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--cp-font-body)' }}>
               {p.display_name}
             </span>
@@ -385,7 +385,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
           outline: 'none',
         }}
       >
-        <Avatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
+        <CatalystAvatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
         {currentOwner ? (
           <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
             {currentOwner.display_name}
@@ -638,38 +638,32 @@ export default function AllProductsPage() {
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1400 }}>
-      {/* Header row: title + Create button */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-        }}
-      >
-        <CatalystPageHeader title="Products" />
-        <button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '8px 14px',
-            fontSize: 'var(--ds-font-size-400)',
-            fontWeight: 500,
-            borderRadius: 3,
-            border: 'none',
-            background: token('color.background.brand.bold'),
-            color: token('color.text.inverse'),
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
-        >
-          <Plus size={16} />
-          Create product line
-        </button>
-      </div>
+      <ProjectPageHeader
+        hubType="product"
+        actions={
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '8px 14px',
+              fontSize: 'var(--ds-font-size-400)',
+              fontWeight: 500,
+              borderRadius: 3,
+              border: 'none',
+              background: token('color.background.brand.bold'),
+              color: token('color.text.inverse'),
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            <Plus size={16} />
+            Create product line
+          </button>
+        }
+      />
 
       {/* Toolbar: search + filter — mirrors Jira /jira/projects toolbar pattern */}
       <div

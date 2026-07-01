@@ -11,7 +11,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Button, { IconButton } from '@atlaskit/button/new';
-import AkAvatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Tooltip from '@atlaskit/tooltip';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -443,7 +443,7 @@ export default function RoadmapsListPage() {
       accessor: r => r.owner_name ?? '',
       cell: ({ row }) => row.owner_name ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <AkAvatar size="xsmall" src={row.owner_avatar ?? undefined} name={row.owner_name} />
+          <CatalystAvatar size="xsmall" src={row.owner_avatar ?? undefined} name={row.owner_name} />
           <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text') }}>{row.owner_name}</span>
         </div>
       ) : (

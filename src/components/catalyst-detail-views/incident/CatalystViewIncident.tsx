@@ -167,9 +167,8 @@ export default function CatalystViewIncident({
       coverItemTable="ph_issues"
       onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
       isLoading={isLoading} isNotFound={!isLoading && issue === null}
-      /* 2026-06-16: incident hub has no project-hub backlog route. The
-         "Open in full page" button must go to /incident-hub/view/{UUID}. */
-      fullPageHrefBuilder={() => issue?.id ? `/incident-hub/view/${issue.id}` : '/incident-hub'}
+      /* Full-page href kept on issue_key (main branch canonical route). */
+      fullPageHrefBuilder={() => issue?.issue_key ? `/incident-hub/view/${issue.issue_key}` : '/incident-hub'}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

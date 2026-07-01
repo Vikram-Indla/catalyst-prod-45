@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTestCycleByKey } from '@/hooks/useTestCycleByKey';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Select from '@atlaskit/select';
 import { portalSelectStyles } from '@/lib/select-portal-styles';
@@ -23,12 +24,15 @@ import Textfield from '@atlaskit/textfield';
 import { Play, CheckCircle, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { TMCycleScope, RunStatus } from '@/types/test-management';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export default function CycleDetailPage() {
-  const { id: cycleId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
+  const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
+  const cycleParam = cycleKey ?? legacyId;
+  const { data: cycleRecord } = useTestCycleByKey(cycleParam, projectKey);
+  // Resolve to UUID for all downstream hooks that query by id
+  const cycleId = cycleRecord?.id ?? (cycleParam && /^[0-9a-f-]{36}$/.test(cycleParam) ? cycleParam : undefined);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: projects = [] } = useProjects();
@@ -151,16 +155,8 @@ export default function CycleDetailPage() {
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
           hubType="test"
+          trail={[{ text: 'Cycles', href: `/testhub/${projectKey}/cycles` }]}
           title={cycle.name}
-          breadcrumbs={
-            <Breadcrumbs items={[
-              { key: 'home', text: 'Home', href: '/for-you' },
-              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
-              { key: 'cycles', text: 'Test Cycles', href: `/testhub/${projectKey}/cycles` },
-              { key: 'detail', text: cycle.name, isCurrent: true },
-            ]} />
-          }
           actions={
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button

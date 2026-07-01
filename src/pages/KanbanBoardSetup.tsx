@@ -10,14 +10,15 @@ import { ManageCardsTab } from '@/components/kanban/setup/ManageCardsTab';
 import { ManageUsersTab } from '@/components/kanban/setup/ManageUsersTab';
 
 export default function KanbanBoardSetup() {
-  const { boardId, teamId, programId } = useParams<{ boardId: string; teamId?: string; programId?: string }>();
+  const { boardId, teamSlug, teamId: legacyTeamId, programId } = useParams<{ boardId: string; teamSlug?: string; teamId?: string; programId?: string }>();
+  const teamParam = teamSlug ?? legacyTeamId;
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('columns');
 
   // Determine base path based on context
-  const basePath = teamId 
-    ? `/team/${teamId}/kanban-boards` 
-    : programId 
+  const basePath = teamParam
+    ? `/team/${teamParam}/kanban-boards`
+    : programId
     ? `/programs/${programId}/kanban-boards` 
     : '/kanban-boards';
 

@@ -26,7 +26,6 @@ import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import SectionMessage from '@atlaskit/section-message';
 import Button from '@atlaskit/button/new';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { RoadmapTimeline } from '@/components/catalyst-roadmap/RoadmapTimeline';
 import { ENABLE_FILTER_TO_ROADMAP } from '@/lib/featureFlags';
@@ -185,18 +184,10 @@ function FilterRoadmapPageInner({ projectKey, viewId, navigate }: InnerProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Page header — mirrors KanbanBoardPage structure */}
-      <ProjectPageHeader projectKey={projectKey} />
-      <CatalystPageHeader
+      <ProjectPageHeader
+        projectKey={projectKey}
+        trail={[{ text: 'Roadmaps', href: `/project-hub/${projectKey}/roadmaps` }]}
         title={title}
-        actions={
-          <Button
-            appearance="subtle"
-            onClick={() => navigate(`/project-hub/${projectKey}/filters`)}
-          >
-            ← Back to filters
-          </Button>
-        }
       />
 
       {/* Truncation banner — displayed BELOW header so it's visible but not blocking */}

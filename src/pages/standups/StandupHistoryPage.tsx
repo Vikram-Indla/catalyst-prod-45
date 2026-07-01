@@ -13,7 +13,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Spinner from '@atlaskit/spinner';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
@@ -85,7 +85,7 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
     >
       {/* Driver row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-        <Avatar size="medium" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
+        <CatalystAvatar size="medium" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>
             {s.driver_name ?? 'Unknown driver'}

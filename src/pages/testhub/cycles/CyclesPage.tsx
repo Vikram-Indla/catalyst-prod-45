@@ -179,7 +179,7 @@ export default function CyclesPage() {
           columns={columns}
           data={cycles}
           getRowId={row => row.id}
-          onRowClick={row => navigate(`/testhub/${projectKey}/cycles/${row.id}`)}
+          onRowClick={row => navigate(`/testhub/${projectKey}/cycles/${(row as any).key ?? row.id}`)}
           selectable
           selection={selectedIds}
           onSelectionChange={next => setSelectedIds(new Set(next))}

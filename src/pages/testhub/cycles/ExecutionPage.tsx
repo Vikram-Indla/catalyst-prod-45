@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, DragEvent, useSyncExternalStore } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useTestCycleByKey } from '@/hooks/useTestCycleByKey';
 import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/standard-button';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
@@ -124,7 +125,10 @@ function computeRunStatus(stepStates: StepState[]): RunStatus {
 }
 
 export default function ExecutionPage() {
-  const { id: cycleId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
+  const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
+  const cycleParam = cycleKey ?? legacyId;
+  const { data: cycleRecord } = useTestCycleByKey(cycleParam, projectKey);
+  const cycleId = cycleRecord?.id ?? (cycleParam && /^[0-9a-f-]{36}$/.test(cycleParam) ? cycleParam : undefined);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();

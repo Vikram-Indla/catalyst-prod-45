@@ -60,17 +60,19 @@ import {
 import { ArrowLeft, Settings, BarChart3, ChevronDown } from '@/lib/atlaskit-icons';
 
 export default function KanbanBoardView() {
-  const { boardId, teamId, programId } = useParams<{
+  const { boardId, teamSlug, teamId: legacyTeamId, programId } = useParams<{
     boardId: string;
+    teamSlug?: string;
     teamId?: string;
     programId?: string;
   }>();
+  const teamParam = teamSlug ?? legacyTeamId;
   const navigate = useNavigate();
   const avatarsByName = useProfileAvatarsByName();
 
   /* ═════ Route scope — drives Back + Setup + Analytics paths. ═════ */
-  const basePath = teamId
-    ? `/team/${teamId}/kanban-boards`
+  const basePath = teamParam
+    ? `/team/${teamParam}/kanban-boards`
     : programId
     ? `/programs/${programId}/kanban-boards`
     : '/kanban-boards';

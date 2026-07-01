@@ -220,6 +220,47 @@ export default function ProjectHubTimelinePage() {
       );
       invalidate();
     },
+    /* Drag-reorder (grip). Same full-resequence as onReorderSibling, but the
+       new index is derived from a target sibling + drop edge instead of a
+       direction. SIBLING-ONLY: bail if targetKey isn't in the dragged row's
+       sibling list (cross-parent drops are rejected — Jira timeline parity). */
+    onReorderToIndex: async (issueKey, targetKey, edge) => {
+      if (issueKey === targetKey) return;
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+      const located = locateSiblings(tree, issueKey);
+      if (!located) return;
+      const { siblings } = located;
+      if (!siblings.some(s => s.issueKey === targetKey)) return; // not a sibling → reject
+      const from = siblings.findIndex(s => s.issueKey === issueKey);
+      if (from === -1 || siblings.length <= 1) return;
+
+      const reordered = [...siblings];
+      const [moved] = reordered.splice(from, 1);
+      let insertIdx = reordered.findIndex(s => s.issueKey === targetKey);
+      if (insertIdx === -1) return;
+      if (edge === 'bottom') insertIdx += 1;
+      reordered.splice(insertIdx, 0, moved);
+      const ranked = reordered.map((s, i) => ({ ...s, displayOrder: (i + 1) * 1024 }));
+
+      queryClient.setQueryData(
+        ['project-hub-timeline', projectKey],
+        (old: TimelineIssue[] | undefined) => {
+          if (!old) return old;
+          const replace = (list: TimelineIssue[]): TimelineIssue[] => {
+            if (list.some(c => c.issueKey === issueKey)) return ranked;
+            return list.map(n => n.children.length ? { ...n, children: replace(n.children) } : n);
+          };
+          return replace(old);
+        },
+      );
+
+      await Promise.all(
+        ranked.map(s =>
+          (supabase as any).from('ph_issues').update({ position: s.displayOrder }).eq('issue_key', s.issueKey),
+        ),
+      );
+      invalidate();
+    },
     onCreateEpic: async (summary, issueType = 'Epic') => {
       if (!projectKey) return null;
     const localKey = await generateIssueKey(projectKey.toUpperCase());
@@ -397,6 +438,7 @@ export default function ProjectHubTimelinePage() {
       detailRouteOwnerKey={projectKey ?? ''}
       mutations={mutations}
       enableCreateEpicRow
+      enableRowDrag
       menuVariant="jira"
       locatedKey={locateKey ?? undefined}
     />

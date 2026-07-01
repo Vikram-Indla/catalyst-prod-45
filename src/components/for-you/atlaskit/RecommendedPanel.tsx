@@ -44,7 +44,7 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import Spinner from '@atlaskit/spinner';
@@ -678,7 +678,6 @@ function FeedCard({
   // alongside (see git blame for the original implementation).
   // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
   // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
-  const avatarSrc = resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
   // G-04 — Absolute timestamp shown as title attribute (Jira parity: "May 17, 2026 at 3:43 PM").
   const absolute = formatAbsoluteTimestamp(row.commentCreatedAt);
@@ -706,7 +705,7 @@ function FeedCard({
           curved-tree line up from the avatar bottom through the body. */}
       <Tooltip content={row.authorName}>
         <span data-fy-avatar style={{ flexShrink: 0, paddingBlockStart: 0 }}>
-          <Avatar size="medium" name={row.authorName} src={avatarSrc} />
+          <CatalystAvatar size="medium" name={row.authorName} />
         </span>
       </Tooltip>
 
@@ -949,8 +948,6 @@ function ReplyComposer({
     }
   };
 
-  const userAvatarSrc =
-    currentUserName ? resolveAvatarUrl(currentUserName) || undefined : undefined;
   const userDisplayName = currentUserName || 'You';
 
   // isIssueUuid guards against Postgres UUID parse errors when issueId is a
@@ -1022,7 +1019,7 @@ function ReplyComposer({
         {/* Viewer avatar — 32px round. */}
         <Tooltip content={userDisplayName}>
           <span style={{ flexShrink: 0, paddingBlockStart: 0 }}>
-            <Avatar size="medium" name={userDisplayName} src={userAvatarSrc} />
+            <CatalystAvatar size="medium" name={userDisplayName} />
           </span>
         </Tooltip>
 

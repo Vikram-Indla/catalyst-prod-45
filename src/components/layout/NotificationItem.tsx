@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Lozenge from '@atlaskit/lozenge';
 import { LinkItem } from '@atlaskit/menu';
 import { Box, Flex, Stack, Text, xcss } from '@atlaskit/primitives';
@@ -31,7 +31,7 @@ export function NotificationItem({ title, body, timestamp, read, href, sourceIco
   return (
     <LinkItem
       href={href ?? '#'}
-      iconBefore={sourceIcon ?? <Avatar size="small" />}
+      iconBefore={sourceIcon ?? <CatalystAvatar size="small" />}
       description={
         <Stack space="space.025">
           <Box xcss={bodyStyles}><Text>{body}</Text></Box>

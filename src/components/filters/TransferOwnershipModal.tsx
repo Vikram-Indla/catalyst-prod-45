@@ -9,10 +9,9 @@ import { token } from '@atlaskit/tokens';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useChangeFilterOwner, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
-import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface ProfileOption {
   label: string;
@@ -71,7 +70,7 @@ export function TransferOwnershipModal({ filter, onClose }: Props) {
           menuPosition="fixed"
           formatOptionLabel={(opt: ProfileOption) => (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Avatar size="small" src={resolveAvatarUrl(opt.label)} name={opt.label} />
+              <CatalystAvatar size="small" name={opt.label} />
               <span>{opt.label}</span>
             </div>
           )}

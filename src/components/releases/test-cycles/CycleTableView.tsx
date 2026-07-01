@@ -111,8 +111,8 @@ export function CycleTableView({ cycles, onEdit, onDuplicate, onDelete }: CycleT
   const navigate = useNavigate();
 
   const handleRowClick = (cycle: TestCycle) => {
-    const id = cycle._originalId || cycle.id;
-    navigate(`/testhub/BAU/cycles/${id}`);
+    const key = (cycle as any).cycleKey || cycle._originalId || cycle.id;
+    navigate(`/testhub/BAU/cycles/${key}`);
   };
 
   return (
@@ -222,7 +222,7 @@ export function CycleTableView({ cycles, onEdit, onDuplicate, onDelete }: CycleT
                       <DropdownMenuItem onClick={() => handleRowClick(cycle)}>
                         <Eye className="w-4 h-4 mr-2" /> View Details
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate(`/testhub/BAU/cycles/${cycle._originalId || cycle.id}/execute`)}>
+                      <DropdownMenuItem onClick={() => navigate(`/testhub/BAU/cycles/${(cycle as any).cycleKey || cycle._originalId || cycle.id}/execute`)}>
                         <Play className="w-4 h-4 mr-2" /> Start Execution
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(cycle)}>

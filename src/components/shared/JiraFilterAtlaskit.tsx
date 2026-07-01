@@ -44,9 +44,8 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Lozenge from '@atlaskit/lozenge';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
@@ -564,7 +563,7 @@ function AvatarGrid({
               justifyContent: 'center',
             }}
           >
-            <Avatar size="medium" name={o.name} src={resolveAvatarUrl(o.name) ?? o.avatarUrl ?? undefined} appearance="circle" />
+            <CatalystAvatar size="medium" name={o.name} src={o.avatarUrl ?? undefined} appearance="circle" />
           </button>
         );
       })}

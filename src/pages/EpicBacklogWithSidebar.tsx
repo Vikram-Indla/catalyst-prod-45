@@ -8,6 +8,7 @@
  * CRITICAL: Epics are scoped by programId from route - NO cross-program data leakage.
  */
 import { useParams, Navigate } from 'react-router-dom';
+import { usePortfolioByKey } from '@/hooks/usePortfolioByKey';
 import { BacklogStateProvider } from '@/modules/backlog/hooks/useBacklogState';
 import { BacklogWorkspace } from '@/modules/backlog/components/BacklogWorkspace';
 import type { BacklogScope } from '@/modules/backlog/types';
@@ -18,10 +19,15 @@ import type { BacklogScope } from '@/modules/backlog/types';
  * PI terminology is hidden; uses date/quarter-based timeframes.
  */
 export default function EpicBacklogWithSidebar() {
-  const params = useParams();
+  const params = useParams<{ programId?: string; portfolioKey?: string; portfolioId?: string; teamSlug?: string; teamId?: string }>();
 
   // CRITICAL: programId from route is the single source of truth
   const programId = params.programId;
+
+  // Portfolio key resolution (new slug-based route uses portfolioKey)
+  const portfolioParam = params.portfolioKey ?? params.portfolioId;
+  const { data: portfolio } = usePortfolioByKey(portfolioParam);
+  const resolvedPortfolioId = portfolio?.id ?? (portfolioParam && /^[0-9a-f-]{36}$/.test(portfolioParam) ? portfolioParam : undefined);
 
   // HARD GUARD: If no programId in route, redirect to home (no cross-program leakage)
   if (!programId) {
@@ -30,16 +36,16 @@ export default function EpicBacklogWithSidebar() {
   }
 
   // Determine scope from route (typically 'program' for Epic Backlog)
-  const scope: BacklogScope = params.portfolioId 
-    ? 'portfolio' 
-    : params.programId 
-    ? 'program' 
-    : params.teamId 
+  const scope: BacklogScope = resolvedPortfolioId
+    ? 'portfolio'
+    : params.programId
+    ? 'program'
+    : (params.teamSlug ?? params.teamId)
     ? 'team'
     : 'program';
 
   // Extract context ID (program ID for filtering Epics)
-  const contextId = params.portfolioId || params.programId || params.teamId;
+  const contextId = resolvedPortfolioId || params.programId || params.teamSlug || params.teamId;
 
   return (
     <BacklogStateProvider 

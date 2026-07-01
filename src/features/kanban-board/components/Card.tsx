@@ -209,8 +209,22 @@ export const Card: React.FC<CardProps> = ({
       {/* Health badge (product mode only) */}
       {healthRequestKey && <HealthBadge requestKey={healthRequestKey} />}
 
+      {/* Epic chip */}
+      {visibleFields.epic && issue.parentSummary && (
+        <div>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 4px', borderRadius: 3,
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+            fontSize: 'var(--ds-font-size-100)', maxWidth: '100%', overflow: 'hidden',
+          }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.parentSummary}</span>
+          </span>
+        </div>
+      )}
+
       {/* Due date chip */}
-      {due && due.label && (
+      {visibleFields.dueDate && due && due.label && (
         <div>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 6px', borderRadius: 3,
@@ -227,19 +241,23 @@ export const Card: React.FC<CardProps> = ({
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: SIZES.AVATAR_CARD, gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0 }}>
-          <Tooltip content={issue.issueType || 'Work item'} delay={SIZES.TOOLTIP_DELAY}>
-            <span style={{ display: 'inline-flex' }}><IssueTypeIcon issueType={issue.issueType} size={SIZES.ICON_CARD} /></span>
-          </Tooltip>
-          <span
-            style={{
-              fontSize: 'var(--ds-font-size-200)', lineHeight: '16px', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              borderBottom: '1px solid transparent', transition: 'border-color 100ms ease',
-              ...(hover ? { borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-icon-subtle)')}` } : {}),
-            }}
-          >
-            {issue.issueKey}
-          </span>
+          {visibleFields.workType && (
+            <Tooltip content={issue.issueType || 'Work item'} delay={SIZES.TOOLTIP_DELAY}>
+              <span style={{ display: 'inline-flex' }}><IssueTypeIcon issueType={issue.issueType} size={SIZES.ICON_CARD} /></span>
+            </Tooltip>
+          )}
+          {visibleFields.workItemKey && (
+            <span
+              style={{
+                fontSize: 'var(--ds-font-size-200)', lineHeight: '16px', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                borderBottom: '1px solid transparent', transition: 'border-color 100ms ease',
+                ...(hover ? { borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-icon-subtle)')}` } : {}),
+              }}
+            >
+              {issue.issueKey}
+            </span>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
