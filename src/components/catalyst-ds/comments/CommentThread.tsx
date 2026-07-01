@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
-import { cn } from '@/lib/utils';
 import { MessageSquare } from '@/lib/atlaskit-icons';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
@@ -252,7 +251,7 @@ function CommentThread({
   );
 
   return (
-    <div className={cn('flex flex-col', className)}>
+    <div style={{ display: 'flex', flexDirection: 'column' }} className={className}>
       <CommentEditor
         key={quotePrefix}
         currentUser={currentUser}
@@ -266,20 +265,20 @@ function CommentThread({
         workItemId={workItemId}
       />
 
-      <div className="mt-4">
+      <div style={{ marginTop: 16 }}>
         {isLoading ? (
-          <div className="text-center py-8">
-            <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">Loading comments...</p>
+          <div style={{ textAlign: 'center', padding: '32px 0' }}>
+            <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest)' }}>Loading comments...</p>
           </div>
         ) : sortedTopLevelComments.length === 0 ? (
-          <div className="text-center py-10">
-            <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border)] dark:text-[var(--ds-border-bold)]" />
-            <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">{emptyMessage}</p>
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <MessageSquare style={{ width: 40, height: 40, margin: '0 auto 12px', color: 'var(--ds-icon-subtle)' }} />
+            <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest)' }}>{emptyMessage}</p>
           </div>
         ) : (
-          <div className="divide-y divide-[var(--ds-border)] dark:divide-[var(--ds-border,var(--cp-ink-1))]">
+          <div>
             {sortedTopLevelComments.map((comment) => (
-              <div key={comment.id}>
+              <div key={comment.id} style={{ borderTop: '1px solid var(--ds-border)' }}>
                 <CommentNode
                   comment={comment}
                   childrenByParentId={childrenByParentId}
