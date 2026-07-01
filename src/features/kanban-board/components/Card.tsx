@@ -21,6 +21,10 @@ interface CardProps {
   issue: BoardIssue;
   isSelected: boolean;
   isDragging?: boolean;
+  /** True while a per-card mutation is in flight (e.g. "Move work item" reorder).
+   *  Renders a small centered spinner over a dimmed card so the user sees that
+   *  the action is running — otherwise Move Up/Down looks silent until refetch. */
+  isBusy?: boolean;
   avatarUrl?: string | null;
   visibleFields: CardVisibleFields;
   onSelect: (id: string) => void;
@@ -50,7 +54,7 @@ function fmtDue(iso: string): { label: string; overdue: boolean } {
 }
 
 export const Card: React.FC<CardProps> = ({
-  issue, isSelected, isDragging, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey,
+  issue, isSelected, isDragging, isBusy, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey,
 }) => {
   const [hover, setHover] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -85,6 +89,7 @@ export const Card: React.FC<CardProps> = ({
     base.background = token('color.background.selected', 'var(--ds-background-selected)');
   }
   if (isDragging) { base.opacity = 0.4; base.background = token('color.background.disabled', '#091E420F'); }
+  if (isBusy) { base.pointerEvents = 'none'; }
 
   const due = issue.dueDate ? fmtDue(issue.dueDate) : null;
 
@@ -102,6 +107,35 @@ export const Card: React.FC<CardProps> = ({
       {menuSlot && (
         <div style={{ position: 'absolute', top: 4, right: 4, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
           {menuSlot}
+        </div>
+      )}
+
+      {isBusy && (
+        <div
+          aria-label="Moving work item"
+          role="status"
+          className="kb-card-skeleton"
+          style={{
+            position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', gap: 6,
+            padding: SIZES.CARD_PADDING,
+            background: token('elevation.surface.raised', 'var(--ds-surface-raised)'),
+            borderRadius: SIZES.CARD_RADIUS,
+            zIndex: 2,
+          }}
+        >
+          {/* Title bars */}
+          <div className="kb-skeleton-bar" style={{ height: 12, width: '82%', borderRadius: 3 }} />
+          <div className="kb-skeleton-bar" style={{ height: 12, width: '54%', borderRadius: 3 }} />
+          {/* Spacer pushes footer to bottom */}
+          <div style={{ flex: 1 }} />
+          {/* Footer: type-icon + key + priority + avatar placeholders */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div className="kb-skeleton-bar" style={{ width: 16, height: 16, borderRadius: 3 }} />
+              <div className="kb-skeleton-bar" style={{ width: 56, height: 10, borderRadius: 3 }} />
+            </div>
+            <div className="kb-skeleton-bar" style={{ width: 22, height: 22, borderRadius: '50%' }} />
+          </div>
         </div>
       )}
 

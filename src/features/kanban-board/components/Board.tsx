@@ -22,6 +22,9 @@ interface BoardProps {
   visibleFields: CardVisibleFields;
   selectedId: string | null;
   groupBy: GroupByMode;
+  /** Set of issue ids currently busy with a per-card mutation (reorder RPC in
+   *  flight). Card renders a spinner overlay for members. */
+  busyIds?: Set<string>;
   onSelect: (id: string) => void;
   onAvatarClick?: (issue: BoardIssue, anchor: HTMLElement) => void;
   renderMenu?: (issue: BoardIssue) => React.ReactNode;
@@ -121,7 +124,7 @@ function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
+  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, busyIds, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
   hideDone = true, onToggleHideDone,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
@@ -183,6 +186,7 @@ export const Board: React.FC<BoardProps> = ({
       issue={issue}
       fromColId={colOf(issue) ?? ''}
       isSelected={selectedId === issue.id}
+      isBusy={busyIds?.has(issue.id)}
       avatarUrl={issue.assigneeName ? avatars.get(issue.assigneeName) : null}
       visibleFields={visibleFields}
       onSelect={onSelect}

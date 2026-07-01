@@ -32,6 +32,8 @@ export interface NewIssueInput {
   dueDate?: string | null;
 }
 
+export type MovePositionDirection = 'up' | 'down' | 'top' | 'bottom';
+
 export interface KanbanMutations {
   updateStatus: (issueId: string, status: string, category?: StatusCategory) => Promise<void>;
   toggleFlag: (issueId: string, isFlagged: boolean) => Promise<void>;
@@ -43,6 +45,9 @@ export interface KanbanMutations {
   deleteIssue: (issueId: string) => Promise<void>;
   setParent: (issueId: string, parentKey: string | null, parentSummary: string | null) => Promise<void>;
   linkIssue: (sourceKey: string, targetKey: string, linkType: string) => Promise<void>;
+  /** Move a card within its column (persistent DB rank via kanban_move_position RPC).
+   *  columnIssueIds must be the FULL current-column ordering as the client sees it. */
+  moveIssuePosition: (issueId: string, direction: MovePositionDirection, columnIssueIds: string[]) => Promise<void>;
 }
 
 function categoryToJira(cat?: StatusCategory): string | undefined {
@@ -539,5 +544,28 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     if (error) throw error;
   }, [isProduct, isTasks, isRelease, isTest]);
 
-  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue };
+  /* ── moveIssuePosition ─────────────────────────────────────────────────
+     Persistent per-column reorder. Dispatch the mode to its underlying
+     table and hand the whole column's current ordering to the RPC so the
+     server can locate the neighbour, seed NULL ranks in one pass, and
+     swap positions atomically. */
+  const moveIssuePosition = useCallback(
+    async (issueId: string, direction: MovePositionDirection, columnIssueIds: string[]) => {
+      const table = isTest    ? 'tm_test_cases'
+                  : isRelease ? 'rh_releases'
+                  : isTasks   ? 'tasks'
+                  : isProduct ? 'business_requests'
+                  :             'ph_issues';
+      const { error } = await (supabase as any).rpc('kanban_move_position', {
+        p_table: table,
+        p_issue_id: issueId,
+        p_direction: direction,
+        p_column_ids: columnIssueIds,
+      });
+      if (error) throw error;
+    },
+    [isProduct, isTasks, isRelease, isTest],
+  );
+
+  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition };
 }

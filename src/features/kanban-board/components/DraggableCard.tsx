@@ -10,6 +10,7 @@ interface Props {
   issue: BoardIssue;
   fromColId: string;
   isSelected: boolean;
+  isBusy?: boolean;
   avatarUrl?: string | null;
   visibleFields: CardVisibleFields;
   onSelect: (id: string) => void;
@@ -41,6 +42,7 @@ export const DraggableCard: React.FC<Props> = (props) => {
         issue={props.issue}
         isSelected={props.isSelected}
         isDragging={dragging}
+        isBusy={props.isBusy}
         avatarUrl={props.avatarUrl}
         visibleFields={props.visibleFields}
         onSelect={props.onSelect}

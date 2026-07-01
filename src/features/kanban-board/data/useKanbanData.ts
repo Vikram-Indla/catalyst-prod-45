@@ -93,6 +93,7 @@ async function fetchIssuePage(key: string, from: number, to: number, jql?: strin
     }
   }
   const { data, error } = await q
+    .order('board_position', { ascending: true, nullsFirst: false })
     .order('jira_updated_at', { ascending: false })
     .range(from, to);
   if (error) throw error;
@@ -280,7 +281,7 @@ export function useKanbanData(
         .from('tasks')
         .select(TASKS_SELECT)
         .is('deleted_at', null)
-        .order('position', { ascending: true, nullsFirst: false })
+        .order('board_position', { ascending: true, nullsFirst: false })
         .order('updated_at', { ascending: false })
         .limit(2000);
       if (error) throw error;
@@ -301,6 +302,7 @@ export function useKanbanData(
         .from('rh_releases')
         .select(RELEASE_SELECT)
         .neq('status', 'cancelled')
+        .order('board_position', { ascending: true, nullsFirst: false })
         .order('updated_at', { ascending: false })
         .limit(2000);
       if (error) throw error;
@@ -350,6 +352,7 @@ export function useKanbanData(
         .from('tm_test_cases')
         .select(TEST_CASE_SELECT)
         .eq('project_id', testProjectId)
+        .order('board_position', { ascending: true, nullsFirst: false })
         .order('updated_at', { ascending: false })
         .limit(2000);
       if (error) throw error;
@@ -585,6 +588,7 @@ export function useKanbanData(
         .eq('issue_type', 'Production Incident')
         .is('deleted_at', null)
         .is('archived_at', null)
+        .order('board_position', { ascending: true, nullsFirst: false })
         .order('jira_updated_at', { ascending: false })
         .limit(2000);
       if (error) throw error;
@@ -604,6 +608,7 @@ export function useKanbanData(
         .select(BR_SELECT)
         .eq('product_id', productId)
         .is('deleted_at', null)
+        .order('board_position', { ascending: true, nullsFirst: false })
         .order('updated_at', { ascending: false });
       return (data ?? []) as any[];
     },

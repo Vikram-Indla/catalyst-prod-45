@@ -9,8 +9,10 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import { PortalMenu, MenuItem } from './PortalMenu';
+import { SubmenuItem } from './SubmenuItem';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import type { BoardIssue, KanbanColumn, StatusCategory } from '../types';
+import type { MovePositionDirection } from '../data/useKanbanMutations';
 
 const PARENT_TYPES = ['epic', 'story', 'feature', 'task'];
 const LINK_TYPES = ['relates to', 'blocks', 'is blocked by', 'duplicates', 'clones'];
@@ -20,7 +22,12 @@ interface Props {
   issues: BoardIssue[];
   columns: KanbanColumn[];
   colPrimaryStatus: Record<string, string>;
+  /** In-column ordering (position asc nullsLast, then updated_at desc) that the
+   *  Move-work-item submenu uses to compute disabled bounds and pass to the
+   *  reorder RPC. First item in the list = top of column, last = bottom. */
+  columnIssueIds: string[];
   onMoveStatus: (issueId: string, status: string, category: StatusCategory) => void;
+  onReorder: (issueId: string, direction: MovePositionDirection, columnIssueIds: string[]) => void;
   onCopyLink: (issue: BoardIssue) => void;
   onCopyKey: (issue: BoardIssue) => void;
   onFlag: (issue: BoardIssue) => void;
@@ -74,12 +81,16 @@ function IssueRow({ issue, onClick }: { issue: BoardIssue; onClick: () => void }
 }
 
 export const CardContextMenu: React.FC<Props> = (p) => {
-  const { issue, issues, columns, colPrimaryStatus } = p;
-  const [view, setView] = useState<'main' | 'status' | 'move' | 'parent' | 'link'>('main');
+  const { issue, issues, columns, colPrimaryStatus, columnIssueIds } = p;
+  const [view, setView] = useState<'main' | 'status' | 'parent' | 'link'>('main');
   const [query, setQuery] = useState('');
   const [linkType, setLinkType] = useState(LINK_TYPES[0]);
 
   const targets = columns.map((c) => ({ id: c.id, name: c.name, status: colPrimaryStatus[c.id] ?? c.statuses[0], category: c.category }));
+
+  const idxInColumn = columnIssueIds.indexOf(issue.id);
+  const isFirst = idxInColumn <= 0;
+  const isLast  = idxInColumn === -1 || idxInColumn === columnIssueIds.length - 1;
 
   const candidates = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -107,7 +118,7 @@ export const CardContextMenu: React.FC<Props> = (p) => {
         )}
       >
         {(close) => {
-          if (view === 'status' || view === 'move') {
+          if (view === 'status') {
             return (<><BackItem onClick={() => setView('main')} /><Divider />
               {targets.map((t) => (
                 <MenuItem key={t.id} variant="plain" onClick={() => { p.onMoveStatus(issue.id, t.status, t.category); reset(); close(); }}>{t.name}</MenuItem>
@@ -132,9 +143,28 @@ export const CardContextMenu: React.FC<Props> = (p) => {
               <input autoFocus placeholder="Search work items…" value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle} />
               {candidates.map((c) => <IssueRow key={c.id} issue={c} onClick={() => { p.onLink(issue, c.issueKey, linkType); reset(); close(); }} />)}</>);
           }
+          const fireMove = (dir: MovePositionDirection) => {
+            p.onReorder(issue.id, dir, columnIssueIds);
+            reset();
+            close();
+          };
           return (
             <>
-              <ParentItem label="Move work item" onClick={() => setView('move')} />
+              <SubmenuItem
+                label="Move work item"
+                ariaLabel="Move work item"
+                onCloseParentMenu={close}
+              >
+                {() => (
+                  <>
+                    <MenuItem variant="plain" disabled={isFirst} onClick={() => fireMove('up')}>Up</MenuItem>
+                    <MenuItem variant="plain" disabled={isLast}  onClick={() => fireMove('down')}>Down</MenuItem>
+                    <Divider />
+                    <MenuItem variant="plain" disabled={isFirst} onClick={() => fireMove('top')}>To the top</MenuItem>
+                    <MenuItem variant="plain" disabled={isLast}  onClick={() => fireMove('bottom')}>To the bottom</MenuItem>
+                  </>
+                )}
+              </SubmenuItem>
               <ParentItem label="Change status" onClick={() => setView('status')} />
               <Divider />
               <MenuItem variant="plain" onClick={() => { p.onCopyLink(issue); close(); }}>Copy link</MenuItem>

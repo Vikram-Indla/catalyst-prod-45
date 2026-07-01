@@ -9,3 +9,21 @@
 
 .kb-toolbar { scrollbar-width: none; }
 .kb-toolbar::-webkit-scrollbar { display: none; }
+
+/* Kanban card skeleton — used during Move work item reorder (Up/Down/Top/Bottom)
+   so the user sees the card is pending server confirmation. Shimmer sweeps
+   left→right on a neutral background using ADS tokens. */
+.kb-skeleton-bar {
+  background: linear-gradient(
+    90deg,
+    var(--ds-background-neutral) 0%,
+    var(--ds-background-neutral-subtle) 50%,
+    var(--ds-background-neutral) 100%
+  );
+  background-size: 200% 100%;
+  animation: kb-skeleton-shimmer 1.2s ease-in-out infinite;
+}
+@keyframes kb-skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

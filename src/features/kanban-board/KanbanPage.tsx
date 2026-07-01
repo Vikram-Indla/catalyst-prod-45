@@ -32,6 +32,7 @@ import { useKanbanMutations } from './data/useKanbanMutations';
 import { useCurrentUser } from './data/useCurrentUser';
 import { captureStandupSession } from './data/standupCapture';
 import { useKanbanFilters } from './hooks/useKanbanFilters';
+import { indexColumns, resolveColumnId } from './data/columnConfig';
 import { DEFAULT_VISIBLE_FIELDS, SIZES, STRINGS } from './constants';
 import type { BoardIssue, CardVisibleFields, StatusCategory, KanbanColumn } from './types';
 import './styles.css';
@@ -113,7 +114,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (key && slug) navigate(`/project-hub/${key}/boards/${slug}/map-statuses`);
   }, [key, resolvedBoard?.slug, boardSlug, navigate]);
   const [hideDone, setHideDone] = useState(true);
-  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
+  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
   const onAssign = useCallback(async (issue: BoardIssue, name: string | null) => {
@@ -153,18 +154,54 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     await linkIssue(issue.issueKey, targetKey, linkType);
   }, [linkIssue]);
 
-  const renderMenu = useCallback((issue: BoardIssue) => (
-    <CardContextMenu
-      issue={issue}
-      issues={issues}
-      columns={boardConfig.columns}
-      colPrimaryStatus={boardConfig.colPrimaryStatus}
-      onMoveStatus={(id, status, category) => onMove(id, status, category)}
-      onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
-      onAddLabel={onAddLabel} onSetParent={onSetParent} onLink={onLink}
-      onArchive={onArchive} onDelete={onDelete}
-    />
-  ), [issues, boardConfig.columns, boardConfig.colPrimaryStatus, onMove, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLink, onArchive, onDelete]);
+  /* Per-column ordered id lists — used by the "Move work item" submenu to
+     compute disabled bounds and to tell the RPC which neighbour to swap with.
+     `issues` is already sorted by the data query (board_position asc nullsLast,
+     then updated_at/jira_updated_at desc), so we just bucket by column. */
+  const columnIdx = useMemo(() => indexColumns(boardConfig.columns), [boardConfig.columns]);
+  const columnIssueIdsByCol = useMemo(() => {
+    const bucket = new Map<string, string[]>();
+    for (const col of boardConfig.columns) bucket.set(col.id, []);
+    for (const i of issues) {
+      const c = resolveColumnId(i, columnIdx);
+      if (c && bucket.has(c)) bucket.get(c)!.push(i.id);
+    }
+    return bucket;
+  }, [issues, boardConfig.columns, columnIdx]);
+
+  const [reorderBusyIds, setReorderBusyIds] = useState<Set<string>>(new Set());
+  const onReorder = useCallback(async (issueId: string, direction: 'up' | 'down' | 'top' | 'bottom', columnIssueIds: string[]) => {
+    // Mark card busy so <Card> shows a spinner overlay while the RPC + refetch
+    // run — otherwise the click looks silent for the 200-500ms round trip.
+    setReorderBusyIds((s) => { const n = new Set(s); n.add(issueId); return n; });
+    try {
+      await moveIssuePosition(issueId, direction, columnIssueIds);
+      await refetch();
+    } catch (err) {
+      console.error('[kanban] moveIssuePosition failed', err);
+    } finally {
+      setReorderBusyIds((s) => { const n = new Set(s); n.delete(issueId); return n; });
+    }
+  }, [moveIssuePosition, refetch]);
+
+  const renderMenu = useCallback((issue: BoardIssue) => {
+    const colId = resolveColumnId(issue, columnIdx);
+    const columnIssueIds = colId ? (columnIssueIdsByCol.get(colId) ?? []) : [];
+    return (
+      <CardContextMenu
+        issue={issue}
+        issues={issues}
+        columns={boardConfig.columns}
+        colPrimaryStatus={boardConfig.colPrimaryStatus}
+        columnIssueIds={columnIssueIds}
+        onMoveStatus={(id, status, category) => onMove(id, status, category)}
+        onReorder={onReorder}
+        onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
+        onAddLabel={onAddLabel} onSetParent={onSetParent} onLink={onLink}
+        onArchive={onArchive} onDelete={onDelete}
+      />
+    );
+  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLink, onArchive, onDelete]);
 
   /* 2026-06-15: swapped the project-board's bespoke InlineCreate (broken type
      dropdown + native showPicker date input) for the canonical InlineCreateCard
@@ -233,7 +270,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     );
   }, [boardConfig, key, openCreateCol, refetch]);
 
-  const filterApi = useKanbanFilters(issues, mode === 'project' ? 'epic' : 'none');
+  const filterApi = useKanbanFilters(issues, 'none');
   const { filtered } = filterApi;
 
   const boardIssues = useMemo(() => {
@@ -365,6 +402,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               visibleFields={visibleFields}
               selectedId={selectedId}
               groupBy={filterApi.groupBy}
+              busyIds={reorderBusyIds}
               onSelect={onSelect}
               onMove={onMove}
               onAddColumn={onAddColumn}
