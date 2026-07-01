@@ -638,8 +638,8 @@ export default function FullAppRoutes() {
         <Route path="/programs/:programId/*" element={<S><ProgramsRoutesShell /></S>} />
 
         <Route path="/teams" element={<S><TeamComingSoon /></S>} />
-        <Route path="/teams/:teamId/*" element={<S><TeamsRoutesShell /></S>} />
-        <Route path="/team/:teamId/*" element={<S><TeamRoutesShell /></S>} />
+        <Route path="/teams/:teamSlug/*" element={<S><TeamsRoutesShell /></S>} />
+        <Route path="/team/:teamSlug/*" element={<S><TeamRoutesShell /></S>} />
 
         <Route path="/enterprise/*" element={<S><EnterpriseRoutesShell /></S>} />
 

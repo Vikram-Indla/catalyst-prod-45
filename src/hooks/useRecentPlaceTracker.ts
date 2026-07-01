@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { isValidUUID } from "@/lib/utils/assertUuid";
 import type { Database } from "@/integrations/supabase/types";
 
 type RoomType = Database["public"]["Enums"]["room_type"];
@@ -22,11 +23,13 @@ interface RoomContext {
  */
 export function useRecentPlaceTracker() {
   const location = useLocation();
-  const params = useParams<{ 
-    programId?: string; 
-    portfolioId?: string; 
+  const params = useParams<{
+    programId?: string;
+    portfolioId?: string;
     teamId?: string;
+    teamSlug?: string;
   }>();
+  const teamParam = params.teamSlug ?? params.teamId;
   const lastTrackedRef = useRef<string | null>(null);
 
   // Fetch entity names for the current context
@@ -59,15 +62,16 @@ export function useRecentPlaceTracker() {
   });
 
   const { data: team } = useQuery({
-    queryKey: ["team-name", params.teamId],
+    queryKey: ["team-name", teamParam],
     queryFn: async () => {
-      if (!params.teamId) return null;
-      const { data } = await supabase
+      if (!teamParam) return null;
+      const field = isValidUUID(teamParam) ? "id" : "slug";
+      const { data } = await (supabase as any)
         .from("teams")
-        .select("id, name, project_id")
-        .eq("id", params.teamId)
-        .single();
-      
+        .select("id, name, project_id, slug")
+        .eq(field, teamParam)
+        .maybeSingle();
+
       if (data?.project_id) {
         const { data: programData } = await supabase
           .from("projects")
@@ -76,9 +80,9 @@ export function useRecentPlaceTracker() {
           .single();
         return { ...data, programName: programData?.name || null };
       }
-      return { ...data, programName: null };
+      return data ? { ...data, programName: null } : null;
     },
-    enabled: !!params.teamId,
+    enabled: !!teamParam,
   });
 
   // Single fixed UUID for Product Room (all pages within Product Room share this)
@@ -197,37 +201,38 @@ export function useRecentPlaceTracker() {
     }
 
     // Team Room pages
-    if (params.teamId && team) {
+    if (teamParam && team) {
+      const teamUrlKey = (team as any).slug ?? teamParam;
       const isRoomPage = path.includes("/room");
       if (isRoomPage) {
         return {
           roomType: "team" as RoomType,
-          roomId: params.teamId,
+          roomId: team.id,
           roomName: team.name,
-          roomSubtitle: team.programName || "Team Room",
+          roomSubtitle: (team as any).programName || "Team Room",
           pageKey: "room",
-          targetUrl: `/team/${params.teamId}/room`,
+          targetUrl: `/team/${teamUrlKey}/room`,
         };
       }
       // Other team pages
       if (path.includes("/backlog")) {
         return {
           roomType: "team" as RoomType,
-          roomId: params.teamId,
+          roomId: team.id,
           roomName: team.name,
           roomSubtitle: "Backlog",
           pageKey: "backlog",
-          targetUrl: `/team/${params.teamId}/backlog`,
+          targetUrl: `/team/${teamUrlKey}/backlog`,
         };
       }
       if (path.includes("/stories")) {
         return {
           roomType: "team" as RoomType,
-          roomId: params.teamId,
+          roomId: team.id,
           roomName: team.name,
           roomSubtitle: "Stories",
           pageKey: "stories",
-          targetUrl: `/team/${params.teamId}/stories`,
+          targetUrl: `/team/${teamUrlKey}/stories`,
         };
       }
     }
