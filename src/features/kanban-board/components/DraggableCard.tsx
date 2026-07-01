@@ -14,6 +14,7 @@ import {
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
 import { Card } from './Card';
 import type { BoardIssue, CardVisibleFields } from '../types';
+import type { CardDesignRow } from '../data/useCardDesigns';
 
 interface Props {
   issue: BoardIssue;
@@ -27,6 +28,7 @@ interface Props {
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   menuSlot?: React.ReactNode;
   healthRequestKey?: string | null;
+  designs?: CardDesignRow[];
 }
 
 export const DraggableCard: React.FC<Props> = (props) => {
@@ -99,6 +101,7 @@ export const DraggableCard: React.FC<Props> = (props) => {
         onEditSummary={props.onEditSummary}
         menuSlot={props.menuSlot}
         healthRequestKey={healthRequestKey}
+        designs={props.designs}
       />
       {closestEdge && <DropIndicator edge={closestEdge} gap="8px" type="terminal" />}
     </div>

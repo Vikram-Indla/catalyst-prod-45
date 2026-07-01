@@ -40,6 +40,8 @@ interface BoardProps {
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   /** Returns a health request key for a card (product mode). Null/undefined = no badge. */
   cardHealthKey?: (issue: BoardIssue) => string | null | undefined;
+  /** Map of issue id → ph_designs rows. Card renders a brush icon + popover when non-empty. */
+  designsByIssue?: Map<string, import('../data/useCardDesigns').CardDesignRow[]>;
   /** When true, done-category columns are hidden and replaced with a collapsed "Archived" pill. */
   hideDone?: boolean;
   onToggleHideDone?: () => void;
@@ -130,7 +132,7 @@ function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, busyIds, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onReorderColumn, onAddColumn, onEditSummary, cardHealthKey,
+  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, busyIds, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onReorderColumn, onAddColumn, onEditSummary, cardHealthKey, designsByIssue,
   hideDone = true, onToggleHideDone,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
@@ -252,6 +254,7 @@ export const Board: React.FC<BoardProps> = ({
       onEditSummary={onEditSummary}
       menuSlot={renderMenu?.(issue)}
       healthRequestKey={cardHealthKey?.(issue)}
+      designs={designsByIssue?.get(issue.id)}
     />
   );
 

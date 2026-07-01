@@ -12,6 +12,8 @@ import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/core/edit';
 import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
 import { IssueTypeIcon } from './IssueTypeIcon';
+import { DesignPopover } from './DesignPopover';
+import type { CardDesignRow } from '../data/useCardDesigns';
 import { PriorityIcon } from './PriorityIcon';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardIssue, CardVisibleFields } from '../types';
@@ -34,6 +36,9 @@ interface CardProps {
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   /** When set (product mode), renders a health badge using this BR id/key. */
   healthRequestKey?: string | null;
+  /** Attached ph_designs rows — brush icon + popover appear in the footer
+   *  when this is non-empty. */
+  designs?: CardDesignRow[];
 }
 
 function HealthBadge({ requestKey }: { requestKey: string }) {
@@ -55,7 +60,7 @@ function fmtDue(iso: string): { label: string; overdue: boolean } {
 }
 
 export const Card: React.FC<CardProps> = ({
-  issue, isSelected, isDragging, isBusy, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey,
+  issue, isSelected, isDragging, isBusy, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey, designs,
 }) => {
   const [hover, setHover] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -238,6 +243,14 @@ export const Card: React.FC<CardProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {designs && designs.length > 0 && (
+            <span
+              onClick={(e) => e.stopPropagation()}
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              <DesignPopover designs={designs} size={SIZES.ICON_CARD} />
+            </span>
+          )}
           {issue.isFlagged && (
             <Tooltip content="Flagged" delay={SIZES.TOOLTIP_DELAY}>
               <span aria-label="Flagged" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -34,6 +34,7 @@ import { useCurrentUser } from './data/useCurrentUser';
 import { captureStandupSession } from './data/standupCapture';
 import { useKanbanFilters } from './hooks/useKanbanFilters';
 import { indexColumns, resolveColumnId } from './data/columnConfig';
+import { useCardDesigns } from './data/useCardDesigns';
 import { DEFAULT_VISIBLE_FIELDS, SIZES, STRINGS } from './constants';
 import type { BoardIssue, CardVisibleFields, StatusCategory, KanbanColumn } from './types';
 import './styles.css';
@@ -341,6 +342,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
 
   const avatars = useBoardAvatars(useMemo(() => issues.map((i) => i.assigneeName).filter(Boolean) as string[], [issues]));
 
+  // Bulk-fetch attached designs for every card currently rendered so the
+  // brush icon + popover can appear without one query per card.
+  const boardIssueIds = useMemo(() => boardIssues.map((i) => i.id), [boardIssues]);
+  const { data: designsByIssue } = useCardDesigns(boardIssueIds);
+
   const idToKey = useMemo(() => {
     const m = new Map<string, string>();
     for (const i of issues) m.set(i.id, i.issueKey);
@@ -472,6 +478,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               renderMenu={renderMenu}
               columnFooter={columnFooter}
               cardHealthKey={mode === 'product' ? (issue) => issue.id : undefined}
+              designsByIssue={designsByIssue}
               hideDone={hideDone}
               onToggleHideDone={() => setHideDone((v) => !v)}
             />
