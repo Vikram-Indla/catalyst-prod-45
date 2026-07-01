@@ -17,9 +17,9 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
 import { Toolbar } from './components/Toolbar';
-import { useQueryClient } from '@tanstack/react-query';
 import { CardContextMenu } from './components/CardContextMenu';
 import { AddLabelsModal } from './components/AddLabelsModal';
+import { LinkWorkItemModal } from './components/LinkWorkItemModal';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
 import { AssigneePicker } from './components/AssigneePicker';
@@ -95,6 +95,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   }, [selectedId]);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
   const [flagTarget, setFlagTarget] = useState<BoardIssue | null>(null);
+  const [linkTarget, setLinkTarget] = useState<BoardIssue | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelModalIssue, setLabelModalIssue] = useState<BoardIssue | null>(null);
   /* Tracks which column currently has the inline create form expanded. Only
@@ -181,15 +182,12 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const onSetParent = useCallback(async (issue: BoardIssue, parentKey: string, parentSummary: string) => {
     await setParent(issue.id, parentKey, parentSummary); refetch();
   }, [setParent, refetch]);
-  const queryClient = useQueryClient();
-  const onLink = useCallback(async (issue: BoardIssue, targetKey: string, linkType: string) => {
-    await linkIssue(issue.issueKey, targetKey, linkType);
-    // Detail view (project-work-hub/linked-work-items/hooks.ts) keys links by
-    // ['linkedIssues', issueKey]. Invalidate BOTH sides so the row shows
-    // immediately whether the user opens the source or the target detail.
-    queryClient.invalidateQueries({ queryKey: ['linkedIssues', issue.issueKey] });
-    queryClient.invalidateQueries({ queryKey: ['linkedIssues', targetKey] });
-  }, [linkIssue, queryClient]);
+  const onLinkOpen = useCallback((issue: BoardIssue) => {
+    // 2026-07-01: Link work item opens the Jira-parity LinkWorkItemModal
+    // (link-type select, async search, "+ Create linked work item" +
+    // "Give feedback" entries). Replaces the old side-submenu picker.
+    setLinkTarget(issue);
+  }, []);
 
   /* Per-column ordered id lists — used by the "Move work item" submenu to
      compute disabled bounds and to tell the RPC which neighbour to swap with.
@@ -244,11 +242,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         onMoveStatus={(id, status, category) => onMove(id, status, category)}
         onReorder={onReorder}
         onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
-        onAddLabel={onAddLabel} onSetParent={onSetParent} onLink={onLink}
+        onAddLabel={onAddLabel} onSetParent={onSetParent} onLinkOpen={onLinkOpen}
         onArchive={onArchive} onDelete={onDelete}
       />
     );
-  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLink, onArchive, onDelete]);
+  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLinkOpen, onArchive, onDelete]);
 
   /* 2026-06-15: swapped the project-board's bespoke InlineCreate (broken type
      dropdown + native showPicker date input) for the canonical InlineCreateCard
@@ -526,6 +524,17 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
             refetch();
           }}
           onClose={() => setShowLabelModal(false)}
+        />
+      )}
+
+      {linkTarget && (
+        <LinkWorkItemModal
+          issueKey={linkTarget.issueKey}
+          issueTitle={linkTarget.summary}
+          issueType={linkTarget.issueType}
+          projectId={mode === 'project' ? projectId : null}
+          projectKey={mode === 'project' ? (key ?? null) : null}
+          onClose={() => setLinkTarget(null)}
         />
       )}
     </div>
