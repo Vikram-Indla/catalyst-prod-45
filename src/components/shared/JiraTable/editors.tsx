@@ -1035,16 +1035,19 @@ export function makeAssigneeEditCell<T>({
       : null;
 
     const display = (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, overflow: 'hidden', minWidth: 0, maxWidth: '100%' }}>
         {a ? (
           <>
-            <CatalystAvatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
+            <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+              <CatalystAvatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
+            </span>
             <span
               style={{
                 color: token('color.text', 'var(--ds-text)'),
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                minWidth: 0,
               }}
             >
               {a.name}
@@ -1052,8 +1055,10 @@ export function makeAssigneeEditCell<T>({
           </>
         ) : (
           <>
-            <UnassignedAvatar size={22} />
-            <span data-jira-cell-ghost>Unassigned</span>
+            <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+              <UnassignedAvatar size={22} />
+            </span>
+            <span data-jira-cell-ghost style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>Unassigned</span>
           </>
         )}
       </span>
@@ -1108,6 +1113,17 @@ export function makeAssigneeEditCell<T>({
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 'inherit',
+              // 2026-07-02 (user request): let the trigger shrink to its cell so
+              // the name truncates with an ellipsis instead of the cell hard-
+              // clipping it. flex:1 fills the flex cell; minWidth:0 lets it +
+              // the name span shrink below content (default min-width:auto is
+              // why the ellipsis never triggered).
+              display: 'flex',
+              alignItems: 'center',
+              flex: '1 1 auto',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflow: 'hidden',
             }}
           >
             {display}
