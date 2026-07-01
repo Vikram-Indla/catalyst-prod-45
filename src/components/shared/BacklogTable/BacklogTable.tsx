@@ -453,6 +453,14 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   useEffect(() => {
     if (!resizing) return;
     const onMove = (e: MouseEvent) => {
+      // 2026-07-02 (user report): safety net — if a mousemove arrives with NO
+      // button held (buttons === 0), the mouseup was missed (e.g. released over
+      // an element that swallowed it). End the resize instead of continuing to
+      // follow the cursor forever.
+      if (e.buttons === 0) {
+        onUp();
+        return;
+      }
       const next = Math.max(
         48,
         resizing.startWidth + (e.clientX - resizing.startX)
@@ -3391,7 +3399,17 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
             key={b.id}
             aria-hidden
             className="jira-col-resize-strip"
-            style={{ left: b.left - 4, height: tableHeight }}
+            style={{
+              left: b.left - 4,
+              height: tableHeight,
+              // 2026-07-02 (user report): while a resize drag is active the
+              // strips (full-height overlays under the cursor) must NOT capture
+              // mouse events — otherwise the mouseup/mousemove flow gets caught
+              // by a strip that re-renders every frame, and the drag never ends
+              // (width kept changing after release). Let the document-level
+              // drag listeners own the gesture; re-enable the strips at rest.
+              pointerEvents: resizing ? "none" : undefined,
+            }}
             onMouseEnter={() => {
               if (resizing) return;
               setHoveredResizeColId(b.id);
