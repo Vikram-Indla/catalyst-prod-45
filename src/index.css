@@ -4569,10 +4569,24 @@ input[type="range"]::-moz-range-thumb {
   --shadow: var(--ds-shadow-overlay);
   --stroke-1: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
 
-  /* DECISION 2026-07-01: Blanket override removed — --ds-shadow-raised is a full
-     box-shadow declaration post-ADS, making rgba fallback unreachable and blanket
-     invisible. Atlaskit's default --ds-blanket is correct. If the blue cast in dark
-     mode modals becomes a visible issue, re-add with a documented escape hatch. */
+  /* Jira-parity: neutral black blanket, not Atlaskit's navy-cast default.
+     No ADS token maps to neutral-black overlay — escape hatch required. */
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-07-01) */
+  --ds-blanket: rgba(0, 0, 0, 0.5);
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-07-01) */
+  --ds-blanket-bold: rgba(0, 0, 0, 0.65);
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-07-01) */
+  --ds-blanket-subtle: rgba(0, 0, 0, 0.3);
+}
+
+/* Light mode blanket — same neutral black, matches Jira light modal backdrop. */
+:root {
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-07-01) */
+  --ds-blanket: rgba(0, 0, 0, 0.5);
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-07-01) */
+  --ds-blanket-bold: rgba(0, 0, 0, 0.65);
+  /* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed 2026-07-01) */
+  --ds-blanket-subtle: rgba(0, 0, 0, 0.3);
 }
 
 .dark .border,
