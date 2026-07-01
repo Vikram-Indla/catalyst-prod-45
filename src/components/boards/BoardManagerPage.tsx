@@ -1,18 +1,12 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Star, MoreHorizontal, Kanban } from '@/lib/atlaskit-icons';
-import { token } from '@atlaskit/tokens';
+import { Plus, Star, Settings, Trash2, Kanban } from '@/lib/atlaskit-icons';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import Select from '@atlaskit/select';
-import { portalSelectStyles } from '@/lib/select-portal-styles';
-import Textfield from '@atlaskit/textfield';
 import { useBoards } from '@/hooks/useBoards';
-import { useDeleteBoard, useMoveBoard, useCopyBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
-import { useProjects } from '@/hooks/useProjectHub';
+import { useDeleteBoard, useToggleBoardStar } from '@/hooks/useBoardMutations';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
 import {
@@ -42,23 +36,12 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   useEnsurePrimaryBoard({ projectId, projectKey, boards, isLoading, mode });
 
   const deleteBoard = useDeleteBoard();
-  const moveBoard = useMoveBoard();
-  const copyBoard = useCopyBoard();
   const toggleStar = useToggleBoardStar();
-  const { data: allProjects = [] } = useProjects();
   const [search, setSearch] = useState('');
   const [spaceFilter, setSpaceFilter] = useState<string | null>(null);
   const [userFilter, setUserFilter] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<BoardListItem | null>(null);
-  const [moveTarget, setMoveTarget] = useState<BoardListItem | null>(null);
-  const [copyTarget, setCopyTarget] = useState<BoardListItem | null>(null);
-
-  // Projects that have at least one board on this page — used for Project filter
-  const projectsWithBoards = useMemo(() => {
-    const ids = new Set(boards.map(b => b.projectId).filter(Boolean));
-    return allProjects.filter(p => ids.has(p.id));
-  }, [boards, allProjects]);
 
   // Unique admin (lead) names for User dropdown
   const userOptions = useMemo(() => {
@@ -83,9 +66,8 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
   }, [boards, search, spaceFilter, userFilter]);
 
   const handleDelete = useCallback((board: BoardListItem) => {
-    if (!projectId) return;
     setDeleteTarget(board);
-  }, [projectId]);
+  }, []);
 
 const columns: Column<BoardListItem>[] = useMemo(() => [
     {
@@ -182,29 +164,25 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
     {
       id: '__menu',
       label: '',
-      width: 4,
+      width: 8,
       alwaysVisible: true,
       accessor: () => null,
       cell: ({ row }) => (
         <span onClick={e => e.stopPropagation()}>
-          <BoardRowMenu
+          <BoardRowActions
             board={row}
             onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.id}/settings` : `${boardBasePath}/${row.id}/settings`)}
             onDelete={() => handleDelete(row)}
-            onMove={() => setMoveTarget(row)}
-            onCopy={() => setCopyTarget(row)}
-            onDuplicate={() => {
-              if (!projectId) return;
-              copyBoard.mutate({ boardId: row.id, toProjectId: row.projectId ?? projectId, newName: `Copy of ${row.name}` });
-            }}
           />
         </span>
       ),
     },
-  ], [handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
+  ], [handleDelete, toggleStar, navigate, boardBasePath, projectKey]);
 
-  const projectFilterOptions = useMemo(() =>
-    projectsWithBoards.map(p => ({ label: p.name, value: p.id })), [projectsWithBoards]);
+  const projectFilterOptions = useMemo(() => {
+    const ids = Array.from(new Set(boards.map(b => b.projectId).filter(Boolean))) as string[];
+    return ids.map(id => ({ label: id, value: id }));
+  }, [boards]);
   const userFilterOptions = useMemo(() =>
     userOptions.map(u => ({ label: u, value: u })), [userOptions]);
 
@@ -330,7 +308,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
             <Button
               appearance="danger"
               onClick={() => {
-                if (projectId) deleteBoard.mutate({ boardId: deleteTarget.id, projectId });
+                deleteBoard.mutate({ boardId: deleteTarget.id, projectId: deleteTarget.projectId ?? projectId ?? '' });
                 setDeleteTarget(null);
               }}
             >
@@ -340,272 +318,56 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
         </ModalDialog>
       )}
 
-      {moveTarget && (
-        <MoveBoardDialog
-          board={moveTarget}
-          projects={allProjects}
-          currentProjectId={moveTarget.projectId ?? ''}
-          onConfirm={(toProjectId) => {
-            moveBoard.mutate({ boardId: moveTarget.id, fromProjectId: moveTarget.projectId ?? '', toProjectId });
-            setMoveTarget(null);
-          }}
-          onClose={() => setMoveTarget(null)}
-        />
-      )}
-      {copyTarget && (
-        <CopyBoardDialog
-          board={copyTarget}
-          projects={allProjects}
-          currentProjectId={copyTarget.projectId ?? ''}
-          onConfirm={(toProjectId, newName) => {
-            copyBoard.mutate({ boardId: copyTarget.id, toProjectId, newName });
-            setCopyTarget(null);
-          }}
-          onClose={() => setCopyTarget(null)}
-        />
-      )}
     </>
   );
 }
 
-// ─── Board row kebab menu ────────────────────────────────────────────────────
-// Uses the same portal pattern as cells.tsx makeStatusEditCellAkPopup:
-// position:absolute + window.scrollY offset instead of Popper position:fixed,
-// which avoids the overflow:clip containing-block bug in this page's layout.
-function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDuplicate }: {
+// ─── Board row inline actions (Edit + Delete icon buttons on row hover) ──────
+function BoardRowActions({ board, onEditSettings, onDelete }: {
   board: BoardListItem;
   onEditSettings: () => void;
   onDelete: () => void;
-  onMove: () => void;
-  onCopy: () => void;
-  onDuplicate: () => void;
-  isDefault?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  // Click-outside to close — same pattern as cells.tsx
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (
-        triggerRef.current?.contains(e.target as Node) ||
-        popupRef.current?.contains(e.target as Node)
-      ) return;
-      setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const handleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const rect = triggerRef.current?.getBoundingClientRect();
-    if (rect) {
-      // position:absolute relative to document root — avoids overflow:clip issue
-      setPos({ top: rect.bottom + window.scrollY + 4, left: rect.right + window.scrollX - 180 });
-    }
-    setOpen(o => !o);
-  };
-
-  const handleItem = (cb: () => void) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setOpen(false);
-    cb();
-  };
-
   return (
-    <>
+    <span
+      className="jira-row-menu-trigger"
+      style={{ display: 'inline-flex', gap: 2, opacity: 0, transition: 'opacity 120ms ease' }}
+    >
       <button
-        ref={triggerRef}
         type="button"
-        aria-label={`More actions for ${board.name}`}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="jira-row-menu-trigger"
-        onClick={handleOpen}
+        aria-label={`Edit settings for ${board.name}`}
+        onClick={(e) => { e.stopPropagation(); onEditSettings(); }}
+        title="Edit board settings"
         style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
-          background: 'transparent', color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-          cursor: 'pointer', opacity: 0, transition: 'opacity 120ms ease, background 100ms ease',
+          width: 28, height: 28, padding: 0, border: 'none', borderRadius: 3,
+          background: 'transparent', color: 'var(--ds-icon-subtle)', cursor: 'pointer',
+          transition: 'background 100ms ease',
         }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
-          (e.currentTarget as HTMLElement).style.opacity = '1';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.background = 'transparent';
-          if (!open) (e.currentTarget as HTMLElement).style.opacity = '0';
-        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
-        <MoreHorizontal size={16} />
+        <Settings size={14} />
       </button>
-
-      {open && typeof document !== 'undefined' && ReactDOM.createPortal(
-        <div
-          ref={popupRef}
-          role="menu"
+      {!board.isDefault && (
+        <button
+          type="button"
+          aria-label={`Delete ${board.name}`}
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          title="Delete board"
           style={{
-            position: 'absolute',
-            top: pos.top,
-            left: pos.left,
-            zIndex: 9999,
-            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
-            borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,.25)), 0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.08))'),
-            minWidth: 180,
-            padding: '4px 0',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 28, height: 28, padding: 0, border: 'none', borderRadius: 3,
+            background: 'transparent', color: 'var(--ds-icon-subtle)', cursor: 'pointer',
+            transition: 'background 100ms ease, color 100ms ease',
           }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-subtle)'; }}
         >
-          {/* Standard actions */}
-          {[
-            { label: 'Edit board settings', cb: onEditSettings },
-            { label: 'Duplicate board', cb: onDuplicate },
-            { label: 'Move to project…', cb: onMove },
-            { label: 'Copy board…', cb: onCopy },
-          ].map(({ label, cb }) => (
-            <button
-              key={label}
-              type="button"
-              role="menuitem"
-              onClick={handleItem(cb)}
-              style={{
-                display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
-                border: 'none', background: 'transparent', cursor: 'pointer',
-                textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
-                color: token('color.text', 'var(--ds-text)'),
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'); }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-            >
-              {label}
-            </button>
-          ))}
-          {/* Delete — hidden for system default boards */}
-          {!board.isDefault && (
-            <>
-              <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
-              <button
-                type="button"
-                role="menuitem"
-                onClick={handleItem(onDelete)}
-                style={{
-                  display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
-                  border: 'none', background: 'transparent', cursor: 'pointer',
-                  textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
-                  color: 'var(--ds-text-danger)',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-              >
-                Delete
-              </button>
-            </>
-          )}
-        </div>,
-        document.body
+          <Trash2 size={14} />
+        </button>
       )}
-    </>
+    </span>
   );
 }
 
-// ─── Move board dialog ───────────────────────────────────────────────────────
-type ProjectOption = { label: string; value: string };
-
-function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
-  board: BoardListItem;
-  projects: Array<{ id: string; name: string; project_key: string }>;
-  currentProjectId: string;
-  onConfirm: (toProjectId: string) => void;
-  onClose: () => void;
-}) {
-  const [selected, setSelected] = React.useState<ProjectOption | null>(null);
-  const options: ProjectOption[] = projects
-    .filter(p => p.id !== currentProjectId)
-    .map(p => ({ label: `${p.name} (${p.project_key})`, value: p.id }));
-  return (
-    <ModalDialog onClose={onClose} width="small">
-      <ModalHeader>
-        <ModalTitle>Move board</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 12 }}>
-          Move <strong>{board.name}</strong> to a different project.
-        </p>
-        <Select<ProjectOption>
-          options={options}
-          value={selected}
-          onChange={opt => setSelected(opt as ProjectOption | null)}
-          placeholder="Select destination project…"
-          isSearchable
-          menuPortalTarget={document.body}
-          styles={portalSelectStyles}
-        />
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-        <Button appearance="primary" isDisabled={!selected} onClick={() => selected && onConfirm(selected.value)}>
-          Move
-        </Button>
-      </ModalFooter>
-    </ModalDialog>
-  );
-}
-
-// ─── Copy board dialog ───────────────────────────────────────────────────────
-function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose }: {
-  board: BoardListItem;
-  projects: Array<{ id: string; name: string; project_key: string }>;
-  currentProjectId: string;
-  onConfirm: (toProjectId: string, newName: string) => void;
-  onClose: () => void;
-}) {
-  const [selected, setSelected] = React.useState<ProjectOption | null>(
-    (() => {
-      const cur = projects.find(p => p.id === currentProjectId);
-      return cur ? { label: `${cur.name} (${cur.project_key})`, value: cur.id } : null;
-    })()
-  );
-  const [name, setName] = React.useState(`Copy of ${board.name}`);
-  const options: ProjectOption[] = projects.map(p => ({ label: `${p.name} (${p.project_key})`, value: p.id }));
-  const valid = !!selected && name.trim().length > 0;
-  return (
-    <ModalDialog onClose={onClose} width="small">
-      <ModalHeader>
-        <ModalTitle>Copy board</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 16 }}>
-          Creates a new board with the same configuration. Issues are not copied.
-        </p>
-        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 4 }}>
-          Board name
-        </label>
-        <div style={{ marginBottom: 16 }}>
-          <Textfield value={name} onChange={e => setName((e.target as HTMLInputElement).value)} />
-        </div>
-        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 4 }}>
-          Destination project
-        </label>
-        <Select<ProjectOption>
-          options={options}
-          value={selected}
-          onChange={opt => setSelected(opt as ProjectOption | null)}
-          placeholder="Select project…"
-          isSearchable
-          menuPortalTarget={document.body}
-          styles={portalSelectStyles}
-        />
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-        <Button appearance="primary" isDisabled={!valid} onClick={() => valid && onConfirm(selected!.value, name.trim())}>
-          Copy
-        </Button>
-      </ModalFooter>
-    </ModalDialog>
-  );
-}
