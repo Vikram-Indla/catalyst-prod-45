@@ -42,7 +42,7 @@ interface BoardProps {
   onSelect: (id: string) => void;
   onAvatarClick?: (issue: BoardIssue, anchor: HTMLElement) => void;
   renderMenu?: (issue: BoardIssue) => React.ReactNode;
-  columnFooter?: (columnId: string) => React.ReactNode;
+  columnFooter?: (columnId: string, groupKey: string) => React.ReactNode;
   onMove?: (issueId: string, status: string, category: StatusCategory) => Promise<void>;
   /** Called when a card is dropped between two other cards inside a column.
    *  destColId identifies the column; newColumnIds is the desired final order
@@ -312,9 +312,9 @@ export const Board: React.FC<BoardProps> = ({
                   groupBy === 'epic' && g.key !== '__none__' ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                       <EpicIcon label="" />
-                      {/* ads-scanner:ignore-next-line — epic identity swatch, user-data color, no ADS token (probed 2026-07-01) */}
+                      {/* ads-scanner:ignore-next-line — epic identity swatch, hashed placeholder color (no real epic-color column in ph_issues yet — see CAT-KANBAN-GROUPBY-EPIC-20260701-001 Option B, probed 2026-07-01) */}
                       <span style={{ width: 10, height: 10, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
-                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400 }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400, lineHeight: '20px' }}>
                         {g.key}
                       </span>
                     </span>
@@ -334,6 +334,7 @@ export const Board: React.FC<BoardProps> = ({
                   return (
                     <div
                       key={column.id}
+                      className="kb-column"
                       style={{
                         width: SIZES.COLUMN_WIDTH, minWidth: SIZES.COLUMN_WIDTH, margin: '0 4px', flexShrink: 0,
                         display: 'flex', flexDirection: 'column',
@@ -350,7 +351,7 @@ export const Board: React.FC<BoardProps> = ({
                         fill={!grouped}
                         overKey={overKey}
                         setOver={setOverKey}
-                        footer={columnFooter?.(column.id)}
+                        footer={columnFooter?.(column.id, g.key)}
                         items={colIssues}
                         renderItem={renderCard}
                       />
@@ -413,7 +414,7 @@ export const Board: React.FC<BoardProps> = ({
                           {doneColumns.map((column) => {
                             const colIssues = bucket.get(column.id) ?? [];
                             return (
-                              <div key={column.id} style={{ marginBottom: 8 }}>
+                              <div key={column.id} className="kb-column" style={{ marginBottom: 8 }}>
                                 <ColumnHeader column={column} count={colIssues.length} />
                                 <DroppableBody
                                   colId={column.id}
@@ -422,7 +423,7 @@ export const Board: React.FC<BoardProps> = ({
                                   fill={false}
                                   overKey={overKey}
                                   setOver={setOverKey}
-                                  footer={columnFooter?.(column.id)}
+                                  footer={columnFooter?.(column.id, g.key)}
                                   items={colIssues}
                                   renderItem={renderCard}
                                 />

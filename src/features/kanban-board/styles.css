@@ -10,6 +10,13 @@
 .kb-toolbar { scrollbar-width: none; }
 .kb-toolbar::-webkit-scrollbar { display: none; }
 
+/* "+ Create" trigger only shows on column hover (Jira parity) — the open
+   InlineCreateCard form itself is a sibling, not a .kb-create-trigger, so it
+   stays visible regardless of hover. */
+.kb-create-trigger { opacity: 0; transition: opacity 100ms ease; }
+.kb-column:hover .kb-create-trigger,
+.kb-create-trigger:focus-visible { opacity: 1; }
+
 /* Kanban card skeleton — used during Move work item reorder (Up/Down/Top/Bottom)
    so the user sees the card is pending server confirmation. Shimmer sweeps
    left→right on a neutral background using ADS tokens. */

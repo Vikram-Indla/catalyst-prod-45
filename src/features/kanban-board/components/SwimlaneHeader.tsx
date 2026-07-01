@@ -44,7 +44,7 @@ export const SwimlaneHeader: React.FC<Props> = ({
     </span>
     {labelNode}
     {showAvatar && <CatalystAvatar size="small" src={avatarUrl ?? undefined} name={avatarName || label} />}
-    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--ds-text)'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '20px' }}>
+    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: token('color.text', 'var(--ds-text)'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '20px' }}>
       {label}
     </span>
     <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), flexShrink: 0, lineHeight: '20px' }}>

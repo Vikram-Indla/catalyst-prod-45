@@ -281,13 +281,14 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
      "create mode" lives at the page level so only one form is open at a time.
      The canonical component writes directly to ph_issues; we just refetch on
      success. */
-  const columnFooter = useCallback((colId: string) => {
+  const columnFooter = useCallback((colId: string, groupKey: string = '__all__') => {
     const col = boardConfig.columns.find((c) => c.id === colId);
     if (!col || !key) return null;
     const status = boardConfig.colPrimaryStatus[colId] ?? col.statuses[0];
     if (!status) return null;
+    const footerKey = `${groupKey}:${colId}`;
 
-    if (openCreateCol === colId) {
+    if (openCreateCol === footerKey) {
       return (
         <div style={{ margin: '0px 8px 4px' }}>
           <InlineCreateCard
@@ -326,7 +327,8 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     return (
       <button
         type="button"
-        onClick={() => setOpenCreateCol(colId)}
+        className="kb-create-trigger"
+        onClick={() => setOpenCreateCol(footerKey)}
         style={{
           display: 'flex', alignItems: 'center', gap: 4, width: 'calc(100% - 16px)',
           padding: '4px 8px', margin: '0px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
