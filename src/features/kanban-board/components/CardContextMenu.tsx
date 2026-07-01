@@ -3,11 +3,10 @@
  * Move/Change status (columns), Copy link/key, Add flag, Add label,
  * Link work item (→ ph_issue_links), Add parent (→ parent_key), Archive, Delete.
  */
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import { PortalMenu, MenuItem } from './PortalMenu';
 import { SubmenuItem } from './SubmenuItem';
 import { IssueTypeIcon } from './IssueTypeIcon';
@@ -52,14 +51,6 @@ function ParentItem({ label, onClick }: { label: string; onClick: () => void }) 
   );
 }
 
-function BackItem({ onClick }: { onClick: () => void }) {
-  return (
-    <button role="menuitem" onClick={onClick}
-      style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon)'), fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer' }}>
-      <ChevronLeftIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />Back
-    </button>
-  );
-}
 
 const searchInputStyle: React.CSSProperties = {
   width: 'calc(100% - 16px)', margin: '4px 8px', height: 32, padding: '0 8px',
@@ -80,11 +71,100 @@ function IssueRow({ issue, onClick }: { issue: BoardIssue; onClick: () => void }
   );
 }
 
-export const CardContextMenu: React.FC<Props> = (p) => {
-  const { issue, issues, columns, colPrimaryStatus, columnIssueIds } = p;
-  const [view, setView] = useState<'main' | 'parent' | 'link'>('main');
+/* Add-parent picker — its own state so the query resets each time the
+   submenu opens/closes and doesn't leak into the Link-work-item picker. */
+const AddParentSubmenu: React.FC<{
+  issue: BoardIssue;
+  issues: BoardIssue[];
+  close: () => void;
+  onSetParent: Props['onSetParent'];
+}> = ({ issue, issues, close, onSetParent }) => {
+  const [query, setQuery] = useState('');
+  const candidates = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return issues.filter((i) => {
+      if (i.id === issue.id || i.issueKey === issue.issueKey) return false;
+      if (!PARENT_TYPES.includes((i.issueType ?? '').toLowerCase())) return false;
+      if (q && !`${i.issueKey} ${i.summary}`.toLowerCase().includes(q)) return false;
+      return true;
+    }).slice(0, 25);
+  }, [issues, issue, query]);
+  return (
+    <>
+      <input
+        autoFocus placeholder="Search epics, stories…"
+        value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle}
+      />
+      {candidates.length === 0 && (
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
+          No matches
+        </div>
+      )}
+      {candidates.map((c) => (
+        <IssueRow key={c.id} issue={c} onClick={() => { onSetParent(issue, c.issueKey, c.summary); close(); }} />
+      ))}
+    </>
+  );
+};
+
+/* Link-work-item picker — link-type chip row + search + candidate list.
+   State local so the picker resets each open. */
+const LinkWorkItemSubmenu: React.FC<{
+  issue: BoardIssue;
+  issues: BoardIssue[];
+  close: () => void;
+  onLink: Props['onLink'];
+}> = ({ issue, issues, close, onLink }) => {
   const [query, setQuery] = useState('');
   const [linkType, setLinkType] = useState(LINK_TYPES[0]);
+  const candidates = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return issues.filter((i) => {
+      if (i.id === issue.id || i.issueKey === issue.issueKey) return false;
+      if (q && !`${i.issueKey} ${i.summary}`.toLowerCase().includes(q)) return false;
+      return true;
+    }).slice(0, 25);
+  }, [issues, issue, query]);
+  return (
+    <>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, padding: '4px 8px' }}>
+        {LINK_TYPES.map((lt) => (
+          <button
+            key={lt}
+            onClick={() => setLinkType(lt)}
+            style={{
+              height: 22, padding: '0 8px', borderRadius: 3, border: 'none', cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-100)', fontFamily: 'inherit',
+              background: linkType === lt
+                ? token('color.background.selected', 'var(--ds-background-selected)')
+                : token('color.background.neutral', 'var(--ds-background-neutral)'),
+              color: linkType === lt
+                ? token('color.text.selected', 'var(--ds-link)')
+                : token('color.text', 'var(--ds-text)'),
+            }}
+          >
+            {lt}
+          </button>
+        ))}
+      </div>
+      <input
+        autoFocus placeholder="Search work items…"
+        value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle}
+      />
+      {candidates.length === 0 && (
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
+          No matches
+        </div>
+      )}
+      {candidates.map((c) => (
+        <IssueRow key={c.id} issue={c} onClick={() => { onLink(issue, c.issueKey, linkType); close(); }} />
+      ))}
+    </>
+  );
+};
+
+export const CardContextMenu: React.FC<Props> = (p) => {
+  const { issue, issues, columns, colPrimaryStatus, columnIssueIds } = p;
 
   /* Dynamic status list — columns come from the mode-specific workflow inside
      useKanbanData (project → board_columns, product → BR workflow, incident →
@@ -105,24 +185,12 @@ export const CardContextMenu: React.FC<Props> = (p) => {
   const isFirst = idxInColumn <= 0;
   const isLast  = idxInColumn === -1 || idxInColumn === columnIssueIds.length - 1;
 
-  const candidates = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return issues.filter((i) => {
-      if (i.id === issue.id || i.issueKey === issue.issueKey) return false;
-      if (view === 'parent' && !PARENT_TYPES.includes((i.issueType ?? '').toLowerCase())) return false;
-      if (q && !`${i.issueKey} ${i.summary}`.toLowerCase().includes(q)) return false;
-      return true;
-    }).slice(0, 25);
-  }, [issues, issue, view, query]);
-
-  const reset = () => { setView('main'); setQuery(''); };
 
   return (
     <span onClick={(e) => e.stopPropagation()}>
       <PortalMenu
         align="right" minWidth={240}
         ariaLabel={`Actions for ${issue.issueKey}`}
-        onClose={reset}
         trigger={() => (
           <span role="button" aria-label={`More actions for ${issue.issueKey}`}
             style={{ width: 24, height: 24, borderRadius: 3, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: token('elevation.surface.raised', 'var(--ds-surface)'), boxShadow: token('elevation.shadow.raised', '0 1px 1px #091E4240, 0 0 1px #091E424F'), cursor: 'pointer' }}>
@@ -131,33 +199,12 @@ export const CardContextMenu: React.FC<Props> = (p) => {
         )}
       >
         {(close) => {
-          if (view === 'parent') {
-            return (<><BackItem onClick={reset} /><Divider />
-              <input autoFocus placeholder="Search epics, stories…" value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle} />
-              {candidates.length === 0 && <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>No matches</div>}
-              {candidates.map((c) => <IssueRow key={c.id} issue={c} onClick={() => { p.onSetParent(issue, c.issueKey, c.summary); reset(); close(); }} />)}</>);
-          }
-          if (view === 'link') {
-            return (<><BackItem onClick={reset} /><Divider />
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, padding: '4px 8px' }}>
-                {LINK_TYPES.map((lt) => (
-                  <button key={lt} onClick={() => setLinkType(lt)}
-                    style={{ height: 22, padding: '0 8px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', fontFamily: 'inherit',
-                      background: linkType === lt ? token('color.background.selected', 'var(--ds-background-selected)') : token('color.background.neutral', '#091E420F'),
-                      color: linkType === lt ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))') }}>{lt}</button>
-                ))}
-              </div>
-              <input autoFocus placeholder="Search work items…" value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle} />
-              {candidates.map((c) => <IssueRow key={c.id} issue={c} onClick={() => { p.onLink(issue, c.issueKey, linkType); reset(); close(); }} />)}</>);
-          }
           const fireMove = (dir: MovePositionDirection) => {
             p.onReorder(issue.id, dir, columnIssueIds);
-            reset();
             close();
           };
           const fireStatus = (t: typeof targets[number]) => {
             p.onMoveStatus(issue.id, t.status, t.category);
-            reset();
             close();
           };
           return (
@@ -216,8 +263,36 @@ export const CardContextMenu: React.FC<Props> = (p) => {
               <Divider />
               <MenuItem variant="plain" onClick={() => { p.onFlag(issue); close(); }}>{issue.isFlagged ? 'Remove flag' : 'Add flag'}</MenuItem>
               <MenuItem variant="plain" onClick={() => { p.onAddLabel(issue); close(); }}>Add label</MenuItem>
-              <ParentItem label="Link work item" onClick={() => setView('link')} />
-              <ParentItem label="Add parent" onClick={() => setView('parent')} />
+              <SubmenuItem
+                label="Link work item"
+                ariaLabel="Link work item"
+                onCloseParentMenu={close}
+                minWidth={280}
+              >
+                {(closeSub) => (
+                  <LinkWorkItemSubmenu
+                    issue={issue}
+                    issues={issues}
+                    close={() => { closeSub(); close(); }}
+                    onLink={p.onLink}
+                  />
+                )}
+              </SubmenuItem>
+              <SubmenuItem
+                label="Add parent"
+                ariaLabel="Add parent"
+                onCloseParentMenu={close}
+                minWidth={280}
+              >
+                {(closeSub) => (
+                  <AddParentSubmenu
+                    issue={issue}
+                    issues={issues}
+                    close={() => { closeSub(); close(); }}
+                    onSetParent={p.onSetParent}
+                  />
+                )}
+              </SubmenuItem>
               <Divider />
               <MenuItem variant="plain" onClick={() => { p.onArchive(issue); close(); }}>Archive</MenuItem>
               <button role="menuitem" onClick={() => { p.onDelete(issue); close(); }}

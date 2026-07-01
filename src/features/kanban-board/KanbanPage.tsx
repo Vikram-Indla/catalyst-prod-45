@@ -17,6 +17,7 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
 import { Toolbar } from './components/Toolbar';
+import { useQueryClient } from '@tanstack/react-query';
 import { CardContextMenu } from './components/CardContextMenu';
 import { AddLabelsModal } from './components/AddLabelsModal';
 import AddIcon from '@atlaskit/icon/glyph/add';
@@ -180,9 +181,15 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const onSetParent = useCallback(async (issue: BoardIssue, parentKey: string, parentSummary: string) => {
     await setParent(issue.id, parentKey, parentSummary); refetch();
   }, [setParent, refetch]);
+  const queryClient = useQueryClient();
   const onLink = useCallback(async (issue: BoardIssue, targetKey: string, linkType: string) => {
     await linkIssue(issue.issueKey, targetKey, linkType);
-  }, [linkIssue]);
+    // Detail view (project-work-hub/linked-work-items/hooks.ts) keys links by
+    // ['linkedIssues', issueKey]. Invalidate BOTH sides so the row shows
+    // immediately whether the user opens the source or the target detail.
+    queryClient.invalidateQueries({ queryKey: ['linkedIssues', issue.issueKey] });
+    queryClient.invalidateQueries({ queryKey: ['linkedIssues', targetKey] });
+  }, [linkIssue, queryClient]);
 
   /* Per-column ordered id lists — used by the "Move work item" submenu to
      compute disabled bounds and to tell the RPC which neighbour to swap with.

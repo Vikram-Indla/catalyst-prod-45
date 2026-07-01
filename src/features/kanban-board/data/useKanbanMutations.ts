@@ -538,8 +538,22 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       if (error) throw error;
       return;
     }
-    const { error } = await supabase.from('ph_issue_links').insert({ source_id: sourceKey, target_id: targetKey, link_type: linkType });
-    if (error) throw error;
+    // Match the canonical link mutation (project-work-hub/linked-work-items):
+    // include created_by (RLS-required in some environments) and swallow the
+    // unique-link duplicate error so re-linking the same target no-ops instead
+    // of throwing.
+    const { data: authData } = await supabase.auth.getUser();
+    const createdBy = authData?.user?.id ?? null;
+    const { error } = await supabase.from('ph_issue_links').insert({
+      source_id: sourceKey,
+      target_id: targetKey,
+      link_type: linkType,
+      ...(createdBy ? { created_by: createdBy } : {}),
+    } as any);
+    if (error) {
+      if (error.code === '23505' || error.message?.includes('unique_link')) return;
+      throw error;
+    }
   }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── setLabels ─────────────────────────────────────────────────────────
