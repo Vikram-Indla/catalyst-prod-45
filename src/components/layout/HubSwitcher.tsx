@@ -68,8 +68,8 @@ interface DeprecatedHubEntry extends HubEntry {
 
 const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
-  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3', moduleKey: 'product' },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'gray',    shortcut: '2', moduleKey: 'enterprise', deprecated: true },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'gray',    shortcut: '3', moduleKey: 'product', deprecated: true },
   { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4', moduleKey: 'product' },
   { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5', moduleKey: 'workhub' },
   { key: 'release',  label: 'Release',  href: '/release-hub/overview', section: 'build_ship', tone: 'magenta', shortcut: '6', moduleKey: 'releases' },
@@ -217,7 +217,7 @@ export function HubSwitcher() {
                 border: 'none',
                 borderRadius: 3,
                 background: open
-                  ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
+                  ? 'var(--ds-background-neutral-pressed)'
                   : 'transparent',
                 cursor: 'pointer',
                 color: 'var(--ds-icon)',
@@ -226,11 +226,11 @@ export function HubSwitcher() {
               onMouseEnter={(e) => {
                 if (!open)
                   e.currentTarget.style.background =
-                    'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                    'var(--ds-background-neutral-subtle-hovered)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = open
-                  ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
+                  ? 'var(--ds-background-neutral-pressed)'
                   : 'transparent';
               }}
             >
@@ -250,8 +250,8 @@ export function HubSwitcher() {
         style={{
           width: 343,
           background: 'var(--ds-surface-overlay)',
-          border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
-          boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
+          border: '1px solid var(--ds-border)',
+          boxShadow: 'var(--ds-shadow-overlay)',
           borderRadius: 8,
           padding: 0,
           maxHeight: 'none',
@@ -269,7 +269,7 @@ export function HubSwitcher() {
             alignItems: 'center',
             gap: 8,
             padding: '8px 12px',
-            borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+            borderBottom: '1px solid var(--ds-border)',
           }}
         >
           <span style={{ color: 'var(--ds-text-subtlest)', display: 'inline-flex' }}>
@@ -312,7 +312,7 @@ export function HubSwitcher() {
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          padding: '12px 12px',
+                          padding: '8px 12px',
                           cursor: 'not-allowed',
                           userSelect: 'none',
                         }}
@@ -320,7 +320,7 @@ export function HubSwitcher() {
                         <img
                           src={HUB_ICON_REGISTRY[hub.key]}
                           alt={hub.label}
-                          style={{ width: 32, height: 32, display: 'block' }}
+                          style={{ width: 24, height: 24, display: 'block' }}
                         />
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
                           <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest)' }}>{hub.label}</span>
@@ -341,7 +341,7 @@ export function HubSwitcher() {
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          padding: '12px 12px',
+                          padding: '8px 12px',
                           cursor: 'not-allowed',
                           opacity: 0.55,
                           userSelect: 'none',
@@ -356,7 +356,7 @@ export function HubSwitcher() {
                         <img
                           src={HUB_ICON_REGISTRY[hub.key]}
                           alt={hub.label}
-                          style={{ width: 32, height: 32, display: 'block', filter: 'grayscale(1)' }}
+                          style={{ width: 24, height: 24, display: 'block', filter: 'grayscale(1)' }}
                         />
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
                           <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest)' }}>{hub.label}</span>
@@ -377,8 +377,8 @@ export function HubSwitcher() {
                           src={HUB_ICON_REGISTRY[hub.key]}
                           alt={hub.label}
                           style={{
-                            width: 32,
-                            height: 32,
+                            width: 24,
+                            height: 24,
                             display: 'block',
                           }}
                         />
