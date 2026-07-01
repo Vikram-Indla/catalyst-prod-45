@@ -75,10 +75,21 @@ Advanced Council v3 investigation completed. Global search UX/UI needs 3 × 2-ho
 - ✅ ADS color compliance: 0 hardcoded colors
 - ✅ ADS audit: token baseline improved (27362→27360)
 
-### Next Actions
-- [ ] Slice 2 (Remaining): Hover Card Interactive Features
-  - Add interactive status/priority dropdown to hover card
-- [ ] Phase 2+: Additional UX improvements (hover states, shadows, row gaps)
+### ✅ COMPLETED: Slice 2 (Remaining) — Hover Card Interactive Features
+**Commit**: `459989faa`
+**Changes**:
+- Made status lozenge clickable with interactive dropdown menu
+- Dropdown shows standard statuses (To Do, In Progress, Done)
+- Implemented real-time status updates with Supabase mutations
+- Added queryClient.invalidateQueries to refresh hover card after updates
+- Styled with ADS tokens, hover states, and accessibility markup
+- Toast feedback on success/failure
+- Acceptance: ✅ Hover card has interactive status picker
+
+### Deferred (Out of Scope):
+- [ ] Priority picker (secondary control, can be added in follow-up)
+- [ ] Advanced hover states/shadows (polish-tier improvements)
+- [ ] Row gap adjustments (spacing improvements for readability)
 
 ## Related Files
 - Plan: `/Users/jahanarakhan/.claude/plans/velvety-honking-teacup.md`
