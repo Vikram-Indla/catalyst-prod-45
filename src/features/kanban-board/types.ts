@@ -28,6 +28,8 @@ export interface BoardIssue {
   parentSummary: string | null;
   sprintRelease: string | null;
   isFlagged: boolean;
+  /** Card cover — raw CSS background value (hex, linear-gradient(), url()). */
+  cover: string | null;
   updatedAt: string | null;
   createdAt: string | null;
   statusChangedAt: string | null;

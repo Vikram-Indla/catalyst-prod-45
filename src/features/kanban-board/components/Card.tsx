@@ -10,7 +10,10 @@ import { UnassignedAvatar } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/core/edit';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
 import { IssueTypeIcon } from './IssueTypeIcon';
+import { DesignPopover } from './DesignPopover';
+import type { CardDesignRow } from '../data/useCardDesigns';
 import { PriorityIcon } from './PriorityIcon';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardIssue, CardVisibleFields } from '../types';
@@ -21,6 +24,10 @@ interface CardProps {
   issue: BoardIssue;
   isSelected: boolean;
   isDragging?: boolean;
+  /** True while a per-card mutation is in flight (e.g. "Move work item" reorder).
+   *  Renders a small centered spinner over a dimmed card so the user sees that
+   *  the action is running — otherwise Move Up/Down looks silent until refetch. */
+  isBusy?: boolean;
   avatarUrl?: string | null;
   visibleFields: CardVisibleFields;
   onSelect: (id: string) => void;
@@ -29,6 +36,9 @@ interface CardProps {
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   /** When set (product mode), renders a health badge using this BR id/key. */
   healthRequestKey?: string | null;
+  /** Attached ph_designs rows — brush icon + popover appear in the footer
+   *  when this is non-empty. */
+  designs?: CardDesignRow[];
 }
 
 function HealthBadge({ requestKey }: { requestKey: string }) {
@@ -50,7 +60,7 @@ function fmtDue(iso: string): { label: string; overdue: boolean } {
 }
 
 export const Card: React.FC<CardProps> = ({
-  issue, isSelected, isDragging, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey,
+  issue, isSelected, isDragging, isBusy, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey, designs,
 }) => {
   const [hover, setHover] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -68,15 +78,15 @@ export const Card: React.FC<CardProps> = ({
     cursor: 'pointer', userSelect: 'none', outline: 'none',
     transition: 'background-color 100ms ease',
   };
+  // Jira-parity: flagged cards get the warning cream background — no left
+  // border, no orange bar, no ring. Marker inside the card is the filled
+  // red flag icon in the footer, next to priority.
   if (issue.isFlagged) {
-    base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', 'var(--ds-background-warning-bold)')}`;
-    base.background = token('color.background.warning', '#FFFBF0');
-    base.paddingLeft = SIZES.CARD_PADDING - SIZES.CARD_FLAG_BORDER;
-    base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold)')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    base.background = token('color.background.warning', 'var(--ds-background-warning)');
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
-      ? token('color.background.warning.hovered', '#F8E6A0')
+      ? token('color.background.warning', 'var(--ds-background-warning)')
       : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral)');
   }
   if (isSelected) {
@@ -85,6 +95,7 @@ export const Card: React.FC<CardProps> = ({
     base.background = token('color.background.selected', 'var(--ds-background-selected)');
   }
   if (isDragging) { base.opacity = 0.4; base.background = token('color.background.disabled', '#091E420F'); }
+  if (isBusy) { base.pointerEvents = 'none'; base.opacity = 0.55; }
 
   const due = issue.dueDate ? fmtDue(issue.dueDate) : null;
 
@@ -99,20 +110,57 @@ export const Card: React.FC<CardProps> = ({
       onMouseLeave={() => setHover(false)}
       style={base}
     >
+      {issue.cover && (
+        <div
+          aria-hidden
+          style={{
+            width: `calc(100% + ${SIZES.CARD_PADDING * 2}px)`,
+            // Uploaded image covers get a taller header so the artwork
+            // reads clearly; solid + gradient covers stay a thin strap.
+            height: /url\(/.test(issue.cover) ? 96 : 36,
+            marginTop: -SIZES.CARD_PADDING,
+            marginLeft: -SIZES.CARD_PADDING,
+            marginRight: -SIZES.CARD_PADDING,
+            marginBottom: 8,
+            background: issue.cover,
+            borderTopLeftRadius: SIZES.CARD_RADIUS,
+            borderTopRightRadius: SIZES.CARD_RADIUS,
+            flexShrink: 0,
+          }}
+        />
+      )}
       {menuSlot && (
         <div style={{ position: 'absolute', top: 4, right: 4, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
           {menuSlot}
         </div>
       )}
 
-      {/* Drag handle (left side, hover-only) */}
-      {hover && !isDragging && (
-        <div style={{ position: 'absolute', left: 0, top: '48%', transform: 'translateY(-50%)', opacity: 0.3, transition: 'opacity 100ms ease' }}>
-          <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 0 }}>
-            {[0, 1, 2].map((i) => (
-              <span key={i} style={{ width: 12, height: 1.5, background: token('color.icon.subtle', 'var(--ds-icon-subtle)'), borderRadius: 1 }} />
-            ))}
-          </span>
+      {isBusy && (
+        <div
+          aria-label="Moving work item"
+          role="status"
+          className="kb-card-skeleton"
+          style={{
+            position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', gap: 6,
+            padding: SIZES.CARD_PADDING,
+            background: token('elevation.surface.raised', 'var(--ds-surface-raised)'),
+            borderRadius: SIZES.CARD_RADIUS,
+            zIndex: 2,
+          }}
+        >
+          {/* Title bars */}
+          <div className="kb-skeleton-bar" style={{ height: 12, width: '82%', borderRadius: 3 }} />
+          <div className="kb-skeleton-bar" style={{ height: 12, width: '54%', borderRadius: 3 }} />
+          {/* Spacer pushes footer to bottom */}
+          <div style={{ flex: 1 }} />
+          {/* Footer: type-icon + key + priority + avatar placeholders */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div className="kb-skeleton-bar" style={{ width: 16, height: 16, borderRadius: 3 }} />
+              <div className="kb-skeleton-bar" style={{ width: 56, height: 10, borderRadius: 3 }} />
+            </div>
+            <div className="kb-skeleton-bar" style={{ width: 22, height: 22, borderRadius: '50%' }} />
+          </div>
         </div>
       )}
 
@@ -213,6 +261,26 @@ export const Card: React.FC<CardProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {designs && designs.length > 0 && (
+            <span
+              onClick={(e) => e.stopPropagation()}
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              <DesignPopover designs={designs} size={SIZES.ICON_CARD} />
+            </span>
+          )}
+          {issue.isFlagged && (
+            <Tooltip content="Flagged" delay={SIZES.TOOLTIP_DELAY}>
+              <span aria-label="Flagged" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Canonical Atlaskit filled flag glyph — same one Jira ships.
+                    Jira-parity accent red for the fill (token). */}
+                <FlagFilledIcon
+                  label=""
+                  color={token('color.icon.accent.red', 'var(--ds-icon-accent-red)')}
+                />
+              </span>
+            </Tooltip>
+          )}
           {visibleFields.priority && issue.priority && (
             <Tooltip content={`${issue.priority} priority`} delay={SIZES.TOOLTIP_DELAY}>
               <span style={{ display: 'inline-flex' }}><PriorityIcon priority={issue.priority} size={SIZES.ICON_CARD} /></span>

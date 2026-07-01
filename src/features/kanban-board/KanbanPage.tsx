@@ -7,7 +7,6 @@ import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/C
 import { AddFlagModal } from '@/components/workhub/issue-view/IssueActionDialogs';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import Textfield from '@atlaskit/textfield';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useBoardBySlug } from '@/hooks/useBoardBySlug';
 import { token } from '@atlaskit/tokens';
@@ -18,6 +17,8 @@ import EmptyState from '@atlaskit/empty-state';
 import { Board, buildGroups } from './components/Board';
 import { Toolbar } from './components/Toolbar';
 import { CardContextMenu } from './components/CardContextMenu';
+import { AddLabelsModal } from './components/AddLabelsModal';
+import { LinkWorkItemModal } from './components/LinkWorkItemModal';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
 import { AssigneePicker } from './components/AssigneePicker';
@@ -31,6 +32,9 @@ import { useKanbanMutations } from './data/useKanbanMutations';
 import { useCurrentUser } from './data/useCurrentUser';
 import { captureStandupSession } from './data/standupCapture';
 import { useKanbanFilters } from './hooks/useKanbanFilters';
+import { catalystFlag } from '@/lib/catalystFlag';
+import { indexColumns, resolveColumnId } from './data/columnConfig';
+import { useCardDesigns } from './data/useCardDesigns';
 import { DEFAULT_VISIBLE_FIELDS, SIZES, STRINGS } from './constants';
 import type { BoardIssue, CardVisibleFields, StatusCategory, KanbanColumn } from './types';
 import './styles.css';
@@ -71,11 +75,30 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
      navigates to /:hub/:key/standups (mode-aware) instead of opening an
      in-board panel. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  /* Deselect a card when the user clicks anywhere outside a card OR its
+     related menu portals (⋯ context menu, Move/Change submenus). Without
+     this the blue selection border sticks forever after clicking a card
+     even when the user has moved on to another surface. */
+  React.useEffect(() => {
+    if (!selectedId) return;
+    const onDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest('[data-issue-id]')) return;         // clicked another card / same card body
+      if (target.closest('[role="menu"]')) return;           // ⋯ menu OR any submenu portal
+      if (target.closest('[data-kanban-submenu="true"]')) return;
+      if (target.closest('[role="dialog"]')) return;         // modal / drawer clicks
+      setSelectedId(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [selectedId]);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; issueKey: string } | null>(null);
   const [flagTarget, setFlagTarget] = useState<BoardIssue | null>(null);
+  const [linkTarget, setLinkTarget] = useState<BoardIssue | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelModalIssue, setLabelModalIssue] = useState<BoardIssue | null>(null);
-  const [labelInput, setLabelInput] = useState('');
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
   const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
@@ -103,7 +126,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     navigator.clipboard?.writeText(window.location.href);
   }, []);
 
-  const { projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId, mode);
+  const { projectId, projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId, mode);
   const [extraColumns, setExtraColumns] = useState<KanbanColumn[]>([]);
   const boardConfig = useMemo(() =>
     extraColumns.length ? { ...baseBoardConfig, columns: [...baseBoardConfig.columns, ...extraColumns] } : baseBoardConfig,
@@ -117,16 +140,35 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (key && slug) navigate(`/project-hub/${key}/boards/${slug}/map-statuses`);
   }, [key, resolvedBoard?.slug, boardSlug, navigate]);
   const [hideDone, setHideDone] = useState(true);
-  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
+  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn, setCover } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
+  /* Cards currently mid-mutation (menu Move Up/Down, ⋯ Change status click,
+     or drag-drop reorder). Board renders the skeleton overlay for each id. */
+  const [reorderBusyIds, setReorderBusyIds] = useState<Set<string>>(new Set());
   const onAssign = useCallback(async (issue: BoardIssue, name: string | null) => {
     await updateAssignee(issue.id, name, null); refetch();
   }, [updateAssignee, refetch]);
 
   const onMove = useCallback(async (issueId: string, status: string, category: StatusCategory) => {
-    await updateStatus(issueId, status, category);
-    refetch();
+    // Mark card busy so <Card> shows the skeleton overlay while the status
+    // write + refetch run. Covers both the ⋯ → Change status click AND the
+    // cross-column drag-drop path (Board monitor onDrop calls onMove).
+    setReorderBusyIds((s) => { const n = new Set(s); n.add(issueId); return n; });
+    try {
+      await updateStatus(issueId, status, category);
+      await refetch();
+    } catch (err) {
+      // Rethrow so Board's onDrop cancels the follow-up reorder RPC. Toast
+      // surfaces the canonical workflow / RLS message to the user (silent
+      // failures left cards stuck in the source column looking reordered).
+      const msg = err instanceof Error ? err.message : 'Move blocked';
+      console.error('[kanban] updateStatus failed', err);
+      catalystFlag.error(msg);
+      throw err;
+    } finally {
+      setReorderBusyIds((s) => { const n = new Set(s); n.delete(issueId); return n; });
+    }
   }, [updateStatus, refetch]);
 
   const onFlag = useCallback((issue: BoardIssue) => {
@@ -139,7 +181,6 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     navigator.clipboard?.writeText(issue.issueKey);
   }, []);
   const onAddLabel = useCallback((issue: BoardIssue) => {
-    setLabelInput('');
     setLabelModalIssue(issue);
     setShowLabelModal(true);
   }, []);
@@ -153,22 +194,86 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const onSetParent = useCallback(async (issue: BoardIssue, parentKey: string, parentSummary: string) => {
     await setParent(issue.id, parentKey, parentSummary); refetch();
   }, [setParent, refetch]);
-  const onLink = useCallback(async (issue: BoardIssue, targetKey: string, linkType: string) => {
-    await linkIssue(issue.issueKey, targetKey, linkType);
-  }, [linkIssue]);
+  const onSetCover = useCallback(async (issue: BoardIssue, cover: string | null) => {
+    try {
+      await setCover(issue.id, cover);
+    } catch (err) {
+      console.error('[kanban] setCover failed', err);
+    } finally {
+      refetch();
+    }
+  }, [setCover, refetch]);
+  const onLinkOpen = useCallback((issue: BoardIssue) => {
+    // 2026-07-01: Link work item opens the Jira-parity LinkWorkItemModal
+    // (link-type select, async search, "+ Create linked work item" +
+    // "Give feedback" entries). Replaces the old side-submenu picker.
+    setLinkTarget(issue);
+  }, []);
 
-  const renderMenu = useCallback((issue: BoardIssue) => (
-    <CardContextMenu
-      issue={issue}
-      issues={issues}
-      columns={boardConfig.columns}
-      colPrimaryStatus={boardConfig.colPrimaryStatus}
-      onMoveStatus={(id, status, category) => onMove(id, status, category)}
-      onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
-      onAddLabel={onAddLabel} onSetParent={onSetParent} onLink={onLink}
-      onArchive={onArchive} onDelete={onDelete}
-    />
-  ), [issues, boardConfig.columns, boardConfig.colPrimaryStatus, onMove, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLink, onArchive, onDelete]);
+  /* Per-column ordered id lists — used by the "Move work item" submenu to
+     compute disabled bounds and to tell the RPC which neighbour to swap with.
+     `issues` is already sorted by the data query (board_position asc nullsLast,
+     then updated_at/jira_updated_at desc), so we just bucket by column. */
+  const columnIdx = useMemo(() => indexColumns(boardConfig.columns), [boardConfig.columns]);
+  const columnIssueIdsByCol = useMemo(() => {
+    const bucket = new Map<string, string[]>();
+    for (const col of boardConfig.columns) bucket.set(col.id, []);
+    for (const i of issues) {
+      const c = resolveColumnId(i, columnIdx);
+      if (c && bucket.has(c)) bucket.get(c)!.push(i.id);
+    }
+    return bucket;
+  }, [issues, boardConfig.columns, columnIdx]);
+
+  const onReorderColumn = useCallback(async (_destColId: string, newColumnIds: string[], movedIssueId: string) => {
+    setReorderBusyIds((s) => { const n = new Set(s); n.add(movedIssueId); return n; });
+    try {
+      await reorderColumn(newColumnIds);
+      await refetch();
+    } catch (err) {
+      console.error('[kanban] reorderColumn failed', err);
+    } finally {
+      setReorderBusyIds((s) => { const n = new Set(s); n.delete(movedIssueId); return n; });
+    }
+  }, [reorderColumn, refetch]);
+  const onReorder = useCallback(async (issueId: string, direction: 'up' | 'down' | 'top' | 'bottom', columnIssueIds: string[]) => {
+    // Mark card busy so <Card> shows a spinner overlay while the RPC + refetch
+    // run — otherwise the click looks silent for the 200-500ms round trip.
+    setReorderBusyIds((s) => { const n = new Set(s); n.add(issueId); return n; });
+    try {
+      await moveIssuePosition(issueId, direction, columnIssueIds);
+      await refetch();
+    } catch (err) {
+      console.error('[kanban] moveIssuePosition failed', err);
+    } finally {
+      setReorderBusyIds((s) => { const n = new Set(s); n.delete(issueId); return n; });
+    }
+  }, [moveIssuePosition, refetch]);
+
+  const renderMenu = useCallback((issue: BoardIssue) => {
+    const colId = resolveColumnId(issue, columnIdx);
+    const columnIssueIds = colId ? (columnIssueIdsByCol.get(colId) ?? []) : [];
+    return (
+      <CardContextMenu
+        issue={issue}
+        issues={issues}
+        columns={boardConfig.columns}
+        colPrimaryStatus={boardConfig.colPrimaryStatus}
+        columnIssueIds={columnIssueIds}
+        onMoveStatus={(id, status, category) => onMove(id, status, category)}
+        onReorder={onReorder}
+        onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
+        onAddLabel={onAddLabel} onSetParent={onSetParent} onLinkOpen={onLinkOpen}
+        onSetCover={onSetCover}
+        coverTable={mode === 'product' ? 'business_requests'
+                  : mode === 'tasks'   ? 'tasks'
+                  : mode === 'release' ? 'rh_releases'
+                  : mode === 'test'    ? 'tm_test_cases'
+                  :                      'ph_issues'}
+        onArchive={onArchive} onDelete={onDelete}
+      />
+    );
+  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLinkOpen, onSetCover, onArchive, onDelete]);
 
   /* 2026-06-15: swapped the project-board's bespoke InlineCreate (broken type
      dropdown + native showPicker date input) for the canonical InlineCreateCard
@@ -237,7 +342,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     );
   }, [boardConfig, key, openCreateCol, refetch]);
 
-  const filterApi = useKanbanFilters(issues, mode === 'project' ? 'epic' : 'none');
+  const filterApi = useKanbanFilters(issues, 'none');
   const { filtered } = filterApi;
 
   const boardIssues = useMemo(() => {
@@ -247,6 +352,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   }, [standupActive, standupPerson, filtered]);
 
   const avatars = useBoardAvatars(useMemo(() => issues.map((i) => i.assigneeName).filter(Boolean) as string[], [issues]));
+
+  // Bulk-fetch attached designs for every card currently rendered so the
+  // brush icon + popover can appear without one query per card.
+  const boardIssueIds = useMemo(() => boardIssues.map((i) => i.id), [boardIssues]);
+  const { data: designsByIssue } = useCardDesigns(boardIssueIds);
 
   const boardGroups = useMemo(() => buildGroups(boardIssues, filterApi.groupBy), [boardIssues, filterApi.groupBy]);
   const onExpandAll = useCallback(() => setCollapsed(new Set()), []);
@@ -364,16 +474,19 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               visibleFields={visibleFields}
               selectedId={selectedId}
               groupBy={filterApi.groupBy}
+              busyIds={reorderBusyIds}
               collapsed={collapsed}
               onToggleGroup={onToggleGroup}
               onSelect={onSelect}
               onMove={onMove}
+              onReorderColumn={onReorderColumn}
               onAddColumn={onAddColumn}
               onEditSummary={onEditSummary}
               onAvatarClick={(issue, anchor) => setAssigneeTarget({ issue, anchor })}
               renderMenu={renderMenu}
               columnFooter={columnFooter}
               cardHealthKey={mode === 'product' ? (issue) => issue.id : undefined}
+              designsByIssue={designsByIssue}
               hideDone={hideDone}
               onToggleHideDone={() => setHideDone((v) => !v)}
             />
@@ -417,63 +530,42 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           issueTitle={flagTarget.summary}
           issueType={flagTarget.issueType}
           flagged={flagTarget.isFlagged}
-          tableName={mode === 'product' ? 'business_requests' : 'ph_issues'}
+          tableName={
+            mode === 'product' ? 'business_requests'
+            : mode === 'tasks'   ? 'tasks'
+            : mode === 'release' ? 'rh_releases'
+            : mode === 'test'    ? 'tm_test_cases'
+            :                      'ph_issues'
+          }
           onClose={() => { setFlagTarget(null); refetch(); }}
         />
       )}
 
-      {showLabelModal && (
-        <ModalDialog onClose={() => setShowLabelModal(false)} width="small">
-          <ModalHeader hasCloseButton>
-            <ModalTitle>Add label</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div>
-              <label style={{
-                display: 'block',
-                marginBottom: 4,
-                fontSize: 'var(--ds-font-size-300)',
-                fontWeight: 600,
-                color: 'var(--ds-text)',
-              }}>
-                Label
-              </label>
-              <Textfield
-                value={labelInput}
-                onChange={(e) => setLabelInput((e.target as HTMLInputElement).value)}
-                placeholder="Enter label"
-                autoFocus
-                onKeyDown={async (e) => {
-                  if (e.key === 'Enter') {
-                    const trimmed = labelInput.trim();
-                    if (trimmed && labelModalIssue) {
-                      await addLabel(labelModalIssue.id, labelModalIssue.labels, trimmed);
-                      refetch();
-                    }
-                    setShowLabelModal(false);
-                  }
-                }}
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={() => setShowLabelModal(false)}>Cancel</Button>
-            <Button
-              appearance="primary"
-              isDisabled={!labelInput.trim()}
-              onClick={async () => {
-                const trimmed = labelInput.trim();
-                if (trimmed && labelModalIssue) {
-                  await addLabel(labelModalIssue.id, labelModalIssue.labels, trimmed);
-                  refetch();
-                }
-                setShowLabelModal(false);
-              }}
-            >
-              Add
-            </Button>
-          </ModalFooter>
-        </ModalDialog>
+      {showLabelModal && labelModalIssue && (
+        <AddLabelsModal
+          issueId={labelModalIssue.id}
+          issueKey={labelModalIssue.issueKey}
+          currentLabels={labelModalIssue.labels}
+          mode={mode}
+          projectKey={mode === 'project' ? key : null}
+          productId={mode === 'product' ? projectId : null}
+          onSave={async (labels) => {
+            await setLabels(labelModalIssue.id, labels);
+            refetch();
+          }}
+          onClose={() => setShowLabelModal(false)}
+        />
+      )}
+
+      {linkTarget && (
+        <LinkWorkItemModal
+          issueKey={linkTarget.issueKey}
+          issueTitle={linkTarget.summary}
+          issueType={linkTarget.issueType}
+          projectId={mode === 'project' ? projectId : null}
+          projectKey={mode === 'project' ? (key ?? null) : null}
+          onClose={() => setLinkTarget(null)}
+        />
       )}
     </div>
   );

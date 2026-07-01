@@ -51,7 +51,18 @@ export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node) && !triggerRef.current?.contains(e.target as Node)) close();
+      const target = e.target as HTMLElement | null;
+      // Nested submenus (SubmenuItem) render in their own portal on document.body,
+      // so the click target is NOT inside our menuRef. Tag those portals with
+      // data-kanban-submenu="true" and treat them as inside the menu — otherwise
+      // clicking an Up/Down/Top/Bottom item closes us before its onClick fires.
+      if (
+        !menuRef.current?.contains(target as Node) &&
+        !triggerRef.current?.contains(target as Node) &&
+        !target?.closest('[data-kanban-submenu="true"]')
+      ) {
+        close();
+      }
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
     document.addEventListener('mousedown', onDown);
@@ -161,21 +172,27 @@ export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align
 export const MenuItem: React.FC<{
   selected?: boolean;
   variant?: 'check' | 'radio' | 'plain';
+  disabled?: boolean;
   onClick: () => void;
   children: React.ReactNode;
-}> = ({ selected, variant = 'check', onClick, children }) => (
+}> = ({ selected, variant = 'check', disabled = false, onClick, children }) => (
   <button
     role={variant === 'radio' ? 'menuitemradio' : variant === 'check' ? 'menuitemcheckbox' : 'menuitem'}
     aria-checked={variant !== 'plain' ? !!selected : undefined}
-    onClick={onClick}
+    aria-disabled={disabled || undefined}
+    disabled={disabled}
+    onClick={disabled ? undefined : onClick}
     style={{
       width: '100%', height: SIZES.MENU_ITEM_HEIGHT, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
       border: 'none', background: selected ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
-      color: selected ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
-      fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left',
+      color: disabled
+        ? token('color.text.disabled', 'var(--ds-text-disabled)')
+        : selected ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
+      fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', fontFamily: 'inherit',
+      cursor: disabled ? 'not-allowed' : 'pointer', textAlign: 'left',
     }}
-    onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
-    onMouseLeave={(e) => { if (!selected) e.currentTarget.style.background = 'transparent'; }}
+    onMouseEnter={(e) => { if (!selected && !disabled) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
+    onMouseLeave={(e) => { if (!selected && !disabled) e.currentTarget.style.background = 'transparent'; }}
   >
     {variant !== 'plain' && (
       <span style={{ width: 16, display: 'inline-flex', flexShrink: 0 }}>

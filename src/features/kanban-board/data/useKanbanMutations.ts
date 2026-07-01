@@ -32,6 +32,8 @@ export interface NewIssueInput {
   dueDate?: string | null;
 }
 
+export type MovePositionDirection = 'up' | 'down' | 'top' | 'bottom';
+
 export interface KanbanMutations {
   updateStatus: (issueId: string, status: string, category?: StatusCategory) => Promise<void>;
   toggleFlag: (issueId: string, isFlagged: boolean) => Promise<void>;
@@ -39,10 +41,21 @@ export interface KanbanMutations {
   createIssue: (input: NewIssueInput) => Promise<void>;
   updateSummary: (issueId: string, summary: string) => Promise<void>;
   addLabel: (issueId: string, current: string[], label: string) => Promise<void>;
+  /** Replace the entire labels array (multi-select Add labels modal). */
+  setLabels: (issueId: string, labels: string[]) => Promise<void>;
   archiveIssue: (issueId: string) => Promise<void>;
   deleteIssue: (issueId: string) => Promise<void>;
   setParent: (issueId: string, parentKey: string | null, parentSummary: string | null) => Promise<void>;
   linkIssue: (sourceKey: string, targetKey: string, linkType: string) => Promise<void>;
+  /** Move a card within its column (persistent DB rank via kanban_move_position RPC).
+   *  columnIssueIds must be the FULL current-column ordering as the client sees it. */
+  moveIssuePosition: (issueId: string, direction: MovePositionDirection, columnIssueIds: string[]) => Promise<void>;
+  /** Re-rank a column to an arbitrary order (drop-between-cards drag).
+   *  newColumnIds is the FINAL desired order — server assigns 1024-step positions. */
+  reorderColumn: (newColumnIds: string[]) => Promise<void>;
+  /** Set (or clear) the card cover strap. Value is a raw CSS background
+   *  string — hex, linear-gradient(), or url(...). null removes the cover. */
+  setCover: (issueId: string, cover: string | null) => Promise<void>;
 }
 
 function categoryToJira(cat?: StatusCategory): string | undefined {
@@ -171,24 +184,13 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
   }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── toggleFlag ────────────────────────────────────────────────────── */
+  /* 2026-07-01: all 5 mode tables have is_flagged. Same write across modes. */
   const toggleFlag = useCallback(async (issueId: string, isFlagged: boolean) => {
-    if (isTest) {
-      void isFlagged; void issueId;
-      return;
-    }
-    if (isRelease) {
-      /* rh_releases has no is_flagged column — silent no-op. Health is the
-         canonical "needs attention" signal for releases (set elsewhere). */
-      void isFlagged; void issueId;
-      return;
-    }
-    if (isTasks) {
-      /* tasks table has no is_flagged column — no-op so the card menu's
-         flag toggle silently does nothing instead of erroring. */
-      void isFlagged; void issueId;
-      return;
-    }
-    const table = isProduct ? 'business_requests' : 'ph_issues';
+    const table = isTest    ? 'tm_test_cases'
+                : isRelease ? 'rh_releases'
+                : isTasks   ? 'tasks'
+                : isProduct ? 'business_requests'
+                :             'ph_issues';
     const { error } = await (supabase as any).from(table).update({ is_flagged: isFlagged }).eq('id', issueId);
     if (error) throw error;
   }, [isProduct, isTasks, isRelease, isTest]);
@@ -535,9 +537,93 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       if (error) throw error;
       return;
     }
-    const { error } = await supabase.from('ph_issue_links').insert({ source_id: sourceKey, target_id: targetKey, link_type: linkType });
+    // Match the canonical link mutation (project-work-hub/linked-work-items):
+    // include created_by (RLS-required in some environments) and swallow the
+    // unique-link duplicate error so re-linking the same target no-ops instead
+    // of throwing.
+    const { data: authData } = await supabase.auth.getUser();
+    const createdBy = authData?.user?.id ?? null;
+    const { error } = await supabase.from('ph_issue_links').insert({
+      source_id: sourceKey,
+      target_id: targetKey,
+      link_type: linkType,
+      ...(createdBy ? { created_by: createdBy } : {}),
+    } as any);
+    if (error) {
+      if (error.code === '23505' || error.message?.includes('unique_link')) return;
+      throw error;
+    }
+  }, [isProduct, isTasks, isRelease, isTest]);
+
+  /* ── setLabels ─────────────────────────────────────────────────────────
+     Replace the whole labels array. Every mode table now has a labels text[]
+     column (migration 20260701133437_labels_columns_all_modes). */
+  const setLabels = useCallback(async (issueId: string, labels: string[]) => {
+    const table = isTest    ? 'tm_test_cases'
+                : isRelease ? 'rh_releases'
+                : isTasks   ? 'tasks'
+                : isProduct ? 'business_requests'
+                :             'ph_issues';
+    const clean = Array.from(new Set(labels.map((l) => l.trim()).filter(Boolean)));
+    const { error } = await (supabase as any).from(table).update({ labels: clean }).eq('id', issueId);
     if (error) throw error;
   }, [isProduct, isTasks, isRelease, isTest]);
 
-  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue };
+  /* ── moveIssuePosition ─────────────────────────────────────────────────
+     Persistent per-column reorder. Dispatch the mode to its underlying
+     table and hand the whole column's current ordering to the RPC so the
+     server can locate the neighbour, seed NULL ranks in one pass, and
+     swap positions atomically. */
+  const moveIssuePosition = useCallback(
+    async (issueId: string, direction: MovePositionDirection, columnIssueIds: string[]) => {
+      const table = isTest    ? 'tm_test_cases'
+                  : isRelease ? 'rh_releases'
+                  : isTasks   ? 'tasks'
+                  : isProduct ? 'business_requests'
+                  :             'ph_issues';
+      const { error } = await (supabase as any).rpc('kanban_move_position', {
+        p_table: table,
+        p_issue_id: issueId,
+        p_direction: direction,
+        p_column_ids: columnIssueIds,
+      });
+      if (error) throw error;
+    },
+    [isProduct, isTasks, isRelease, isTest],
+  );
+
+  /* ── reorderColumn ─────────────────────────────────────────────────────
+     Called after a drag-drop within a single column. newColumnIds is the
+     desired new order; the RPC rewrites board_position for every id. */
+  const reorderColumn = useCallback(
+    async (newColumnIds: string[]) => {
+      if (!newColumnIds.length) return;
+      const table = isTest    ? 'tm_test_cases'
+                  : isRelease ? 'rh_releases'
+                  : isTasks   ? 'tasks'
+                  : isProduct ? 'business_requests'
+                  :             'ph_issues';
+      const { error } = await (supabase as any).rpc('kanban_reorder_column', {
+        p_table: table,
+        p_column_ids: newColumnIds,
+      });
+      if (error) throw error;
+    },
+    [isProduct, isTasks, isRelease, isTest],
+  );
+
+  /* ── setCover ──────────────────────────────────────────────────────────
+     Persists the SelectCoverPanel choice for the card. Every mode table has
+     the same `cover text` column (migration 20260701154519_card_cover_column). */
+  const setCover = useCallback(async (issueId: string, cover: string | null) => {
+    const table = isTest    ? 'tm_test_cases'
+                : isRelease ? 'rh_releases'
+                : isTasks   ? 'tasks'
+                : isProduct ? 'business_requests'
+                :             'ph_issues';
+    const { error } = await (supabase as any).from(table).update({ cover }).eq('id', issueId);
+    if (error) throw error;
+  }, [isProduct, isTasks, isRelease, isTest]);
+
+  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn, setCover };
 }

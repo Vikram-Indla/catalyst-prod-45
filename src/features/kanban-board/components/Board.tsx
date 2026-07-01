@@ -8,6 +8,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import EpicIcon from '@atlaskit/icon-object/glyph/epic/16';
 import { ColumnHeader, ColumnBody } from './Column';
 import { DraggableCard } from './DraggableCard';
@@ -33,6 +34,9 @@ interface BoardProps {
   visibleFields: CardVisibleFields;
   selectedId: string | null;
   groupBy: GroupByMode;
+  /** Set of issue ids currently busy with a per-card mutation (reorder RPC in
+   *  flight). Card renders a spinner overlay for members. */
+  busyIds?: Set<string>;
   collapsed: Set<string>;
   onToggleGroup: (key: string) => void;
   onSelect: (id: string) => void;
@@ -40,10 +44,17 @@ interface BoardProps {
   renderMenu?: (issue: BoardIssue) => React.ReactNode;
   columnFooter?: (columnId: string) => React.ReactNode;
   onMove?: (issueId: string, status: string, category: StatusCategory) => Promise<void>;
+  /** Called when a card is dropped between two other cards inside a column.
+   *  destColId identifies the column; newColumnIds is the desired final order
+   *  (used by kanban_reorder_column RPC to rewrite board_position).
+   *  movedIssueId lets the host track per-card busy state during the RPC. */
+  onReorderColumn?: (destColId: string, newColumnIds: string[], movedIssueId: string) => Promise<void>;
   onAddColumn?: (name: string) => void;
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   /** Returns a health request key for a card (product mode). Null/undefined = no badge. */
   cardHealthKey?: (issue: BoardIssue) => string | null | undefined;
+  /** Map of issue id → ph_designs rows. Card renders a brush icon + popover when non-empty. */
+  designsByIssue?: Map<string, import('../data/useCardDesigns').CardDesignRow[]>;
   /** When true, done-category columns are hidden and replaced with a collapsed "Archived" pill. */
   hideDone?: boolean;
   onToggleHideDone?: () => void;
@@ -114,7 +125,7 @@ const DroppableBody: React.FC<{
       onDrop: () => setOver(null),
     });
   }, [colId, groupKey, myKey, setOver]);
-  return <ColumnBody ref={ref} ariaLabel={ariaLabel} fill={fill} isDragOver={overKey === myKey} footer={footer} items={items} renderItem={renderItem} />;
+  return <ColumnBody ref={ref} ariaLabel={ariaLabel} fill={fill} isDragOver={overKey === myKey} footer={footer} items={items} renderItem={renderItem} colId={colId} groupKey={groupKey} />;
 };
 
 export function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
@@ -135,7 +146,8 @@ export function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[]
 }
 
 export const Board: React.FC<BoardProps> = ({
-  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, collapsed, onToggleGroup, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
+  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, busyIds, collapsed, onToggleGroup,
+  onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onReorderColumn, onAddColumn, onEditSummary, cardHealthKey, designsByIssue,
   hideDone = true, onToggleHideDone,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
@@ -170,23 +182,75 @@ export const Board: React.FC<BoardProps> = ({
     canMonitor: ({ source }) => source.data?.type === 'card',
     onDrop: ({ source, location }) => {
       const dest = location.current.dropTargets[0];
-      const destColId = dest?.data?.colId as string | undefined;
       const issueId = source.data?.issueId as string | undefined;
       const fromColId = source.data?.fromColId as string | undefined;
-      if (!destColId || !issueId || destColId === fromColId) return;
-      const col = boardConfig.columns.find((c) => c.id === destColId);
-      const status = idx.colPrimaryStatus[destColId];
-      if (!col || !status) return;
+      if (!issueId || !dest) return;
+
       /* 2026-06-21 (Vikram canonical): freeze done items. If the card's
-         CURRENT column maps to category 'done', reject the move silently —
+         CURRENT column maps to category 'done', reject any move silently —
          the drop preview already snapped; we restore the original column. */
       const fromCol = fromColId ? boardConfig.columns.find((c) => c.id === fromColId) : undefined;
       if (fromCol?.category === 'done') return;
-      setOverrides((m) => new Map(m).set(issueId, destColId));
-      onMove?.(issueId, status, col.category).catch(() =>
-        setOverrides((m) => { const n = new Map(m); n.delete(issueId); return n; }));
+
+      /* Two shapes of drop target:
+           - column body        → { type: undefined, colId }
+           - per-card drop slot → { type: 'card-slot', targetIssueId, colId, [closestEdge] } */
+      const destColId = dest.data?.colId as string | undefined;
+      if (!destColId) return;
+      const col = boardConfig.columns.find((c) => c.id === destColId);
+      const status = idx.colPrimaryStatus[destColId];
+      if (!col || !status) return;
+
+      const destType = dest.data?.type as string | undefined;
+      const isCardSlot = destType === 'card-slot';
+      const isEndSlot  = destType === 'end-slot';
+      const targetIssueId = isCardSlot ? (dest.data?.targetIssueId as string | undefined) : undefined;
+      const edge = isCardSlot ? extractClosestEdge(dest.data) : null;
+
+      const columnIssueIds: string[] = [];
+      for (const i of issues) {
+        const c = colOf(i);
+        if (c === destColId) columnIssueIds.push(i.id);
+      }
+
+      const sameColumn = destColId === fromColId;
+      const willStatusChange = !sameColumn;
+
+      // Compute new order for the destination column when we have a slot target.
+      let newColumnIds: string[] | null = null;
+      if (isCardSlot && targetIssueId) {
+        const withoutMoved = columnIssueIds.filter((id) => id !== issueId);
+        const tIdx = withoutMoved.indexOf(targetIssueId);
+        if (tIdx === -1) {
+          newColumnIds = null;
+        } else {
+          const insertAt = edge === 'bottom' ? tIdx + 1 : tIdx;
+          newColumnIds = [...withoutMoved.slice(0, insertAt), issueId, ...withoutMoved.slice(insertAt)];
+        }
+      } else if (isEndSlot) {
+        const withoutMoved = columnIssueIds.filter((id) => id !== issueId);
+        newColumnIds = [...withoutMoved, issueId];
+      }
+
+      if (willStatusChange) {
+        setOverrides((m) => new Map(m).set(issueId, destColId));
+        const p = onMove?.(issueId, status, col.category);
+        p?.catch(() => setOverrides((m) => { const n = new Map(m); n.delete(issueId); return n; }));
+        // After status change is queued, if there's a specific slot the user
+        // dropped into, also rewrite the destination column order. Refetch
+        // downstream will apply both.
+        if (newColumnIds && onReorderColumn) {
+          Promise.resolve(p).then(() => onReorderColumn(destColId, newColumnIds!, issueId)).catch(() => {});
+        }
+        return;
+      }
+
+      // Same column reorder — only fires when the user dropped on a card-slot.
+      if (sameColumn && newColumnIds && onReorderColumn) {
+        onReorderColumn(destColId, newColumnIds, issueId).catch(() => {});
+      }
     },
-  }), [boardConfig.columns, idx, onMove]);
+  }), [boardConfig.columns, idx, issues, onMove, onReorderColumn]);
 
   const grouped = groupBy !== 'none';
 
@@ -196,6 +260,7 @@ export const Board: React.FC<BoardProps> = ({
       issue={issue}
       fromColId={colOf(issue) ?? ''}
       isSelected={selectedId === issue.id}
+      isBusy={busyIds?.has(issue.id)}
       avatarUrl={issue.assigneeName ? avatars.get(issue.assigneeName) : null}
       visibleFields={visibleFields}
       onSelect={onSelect}
@@ -203,6 +268,7 @@ export const Board: React.FC<BoardProps> = ({
       onEditSummary={onEditSummary}
       menuSlot={renderMenu?.(issue)}
       healthRequestKey={cardHealthKey?.(issue)}
+      designs={designsByIssue?.get(issue.id)}
     />
   );
 

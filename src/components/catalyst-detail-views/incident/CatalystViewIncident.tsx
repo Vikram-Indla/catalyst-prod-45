@@ -161,7 +161,13 @@ export default function CatalystViewIncident({
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
-      leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      leftContent={leftContent} rightContent={rightContent}
+      cover={(issue as any)?.cover ?? null}
+      coverItemId={(issue as any)?.id ?? null}
+      coverItemTable="ph_issues"
+      onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
+      isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      /* Full-page href kept on issue_key (main branch canonical route). */
       fullPageHrefBuilder={() => issue?.issue_key ? `/incident-hub/view/${issue.issue_key}` : '/incident-hub'}
     />
       <ConfirmCloneDialog
