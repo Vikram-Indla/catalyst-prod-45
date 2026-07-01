@@ -15,7 +15,7 @@ import { ForecastColumnsDialog } from '@/components/forecast/ForecastColumnsDial
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function Forecast() {
-  const { portfolioId } = useParams();
+  const { portfolioKey: portfolioId } = useParams();
   const [searchParams] = useSearchParams();
   const piParam = searchParams.get('pi');
   

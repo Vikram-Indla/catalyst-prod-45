@@ -629,7 +629,7 @@ export default function FullAppRoutes() {
         <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
         <Route path="/strategyhub/risks" element={<S><EnterpriseComingSoon /></S>} />
 
-        <Route path="/portfolio/:portfolioId/*" element={<S><PortfolioRoutesShell /></S>} />
+        <Route path="/portfolio/:portfolioKey/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
         <Route path="/program/:programId/*" element={<S><ProgramRoutesShell /></S>} />
         <Route path="/programs" element={<S><ProgramDirectory /></S>} />
