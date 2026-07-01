@@ -9,18 +9,18 @@
   --bg-sunken: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
   --bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   --bg-float: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  --bg-overlay: var(--ds-shadow-raised, rgba(0,0,0,0.5));
+  --bg-overlay: var(--ds-blanket);
   --text-1: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)));
   --text-2: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
   --text-3: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)));
   --text-4: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)));
   --text-inv: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   --text-link: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  --bd-subtle: var(--ds-shadow-overlay, rgba(15,23,42,0.06));
-  --bd-default: var(--ds-shadow-overlay, rgba(15,23,42,0.12));
-  --bd-strong: var(--ds-shadow-overlay, rgba(15,23,42,0.20));
-  --hover: var(--ds-shadow-overlay, rgba(15,23,42,0.04));
-  --press: var(--ds-shadow-overlay, rgba(15,23,42,0.08));
+  --bd-subtle: var(--ds-border);
+  --bd-default: var(--ds-border);
+  --bd-strong: var(--ds-border-bold);
+  --hover: var(--ds-background-neutral-subtle);
+  --press: var(--ds-background-neutral);
   --sel: var(--ds-background-information, rgba(37,99,235,0.08));
   --sel-hover: var(--ds-background-information, rgba(37,99,235,0.12));
   --p60: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -38,7 +38,7 @@
   --pop-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   --pop-border: var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
   --pop-hover: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
-  --shadow-pop: 0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.2));
+  --shadow-pop: var(--ds-shadow-overlay);
 }
 
 .dark , [data-theme="dark"] {
@@ -47,7 +47,7 @@
   --bg-sunken: var(--ds-surface);
   --bg-elevated: var(--ds-surface-raised, var(--cp-ink-1));
   --bg-float: var(--ds-surface-raised, var(--cp-ink-1));
-  --bg-overlay: var(--ds-shadow-raised, rgba(0,0,0,0.65));
+  --bg-overlay: var(--ds-blanket);
   --text-1: var(--ds-text, var(--cp-bg-neutral));
   --text-2: var(--ds-text-subtlest);
   --text-3: var(--ds-text-subtlest, var(--cp-text-secondary));
@@ -76,5 +76,5 @@
   --pop-bg: var(--ds-surface-raised, var(--cp-ink-1));
   --pop-border: var(--ds-border, var(--cp-ink-1));
   --pop-hover: var(--ds-surface-overlay);
-  --shadow-pop: 0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5));
+  --shadow-pop: var(--ds-shadow-overlay);
 }

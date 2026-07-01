@@ -25,6 +25,7 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
@@ -103,11 +104,12 @@ interface ReleaseContext {
 }
 
 async function loadReleaseContext(releaseId: string, table: string): Promise<ReleaseContext | null> {
+  const field = isValidUUID(releaseId) ? 'id' : 'slug';
   const { data: rel } = await (supabase as any)
     .from(table)
     .select('id, name, title, project_id')
-    .eq('id', releaseId)
-    .single();
+    .eq(field, releaseId)
+    .maybeSingle();
   if (!rel) return null;
   const { data: phProj } = await supabase
     .from('ph_projects')
@@ -153,8 +155,8 @@ export function ReleaseWorkNavigatorPage({
   config = RELEASE_CONFIG,
   entityIdOverride,
 }: ReleaseWorkNavigatorPageProps = {}) {
-  const params = useParams<{ releaseId?: string; sprintId?: string }>();
-  const releaseId = entityIdOverride ?? params.releaseId ?? params.sprintId;
+  const params = useParams<{ releaseSlug?: string; sprintSlug?: string }>();
+  const releaseId = entityIdOverride ?? params.releaseSlug ?? params.sprintSlug;
   const [searchParams, setSearchParams] = useSearchParams();
   // Chip state lives in React. URL is a downstream projection only —
   // this kills the race between "pre-fill fix from release" and

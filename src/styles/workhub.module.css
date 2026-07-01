@@ -67,10 +67,10 @@
   --wh-radius-full: 9999px;
 
   /* ── SHADOWS ── */
-  --wh-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
-  --wh-shadow-md: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
-  --wh-shadow-lg: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-  --wh-shadow-xl: 0 8px 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  --wh-shadow-sm: var(--ds-shadow-raised);
+  --wh-shadow-md: var(--ds-shadow-overlay);
+  --wh-shadow-lg: var(--ds-shadow-overlay);
+  --wh-shadow-xl: var(--ds-shadow-overlay);
   --wh-shadow-focus: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.15));
 
   /* ── LAYOUT ── */

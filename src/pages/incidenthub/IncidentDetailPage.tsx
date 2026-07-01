@@ -20,6 +20,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import { useIssueDocumentTitle } from '@/hooks/useIssueDocumentTitle';
 import { useDynamicFavicon } from '@/hooks/useDynamicFavicon';
 import { Loader2 } from '@/lib/atlaskit-icons';
@@ -36,7 +37,8 @@ interface ResolvedIncident {
 }
 
 export default function IncidentDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { incidentKey } = useParams<{ incidentKey: string }>();
+  const id = incidentKey;
   const navigate = useNavigate();
 
   const [incident, setIncident] = useState<ResolvedIncident | null>(null);
@@ -63,10 +65,11 @@ export default function IncidentDetailPage() {
     setLoading(true);
     setNotFound(false);
     (async () => {
+      const field = isValidUUID(id) ? 'id' : 'issue_key';
       const { data, error } = await (supabase as any)
         .from('ph_issues')
         .select('id, issue_key, issue_type, project_key, summary')
-        .eq('id', id)
+        .eq(field, id)
         .maybeSingle();
       if (cancelled) return;
       if (error || !data) {

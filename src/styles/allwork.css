@@ -280,7 +280,7 @@
   background: var(--ds-surface, #fff);
   border: 1px solid var(--aw-border);
   border-radius: 6px;
-  box-shadow: var(--ds-shadow-overlay, 0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31)));
+  box-shadow: var(--ds-shadow-overlay);
   z-index: 20;
   min-width: 200px;
   padding: 8px 0;
@@ -976,7 +976,7 @@
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }
-.awToolbarBtn:hover { background: var(--ds-shadow-raised, rgba(0,0,0,0.06)); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
+.awToolbarBtn:hover { background: var(--ds-background-neutral-subtle); color: var(--ds-text); }
 .awToolbarDivider {
   width: 1px;
   height: 16px;
@@ -1468,8 +1468,8 @@
 
 .sp-status-dropdown {
   position: absolute; top: calc(100% + 4px); right: 0; min-width: 160px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); border: 1px solid var(--ds-shadow-raised, rgba(9, 30, 66, 0.24));
-  border-radius: 6px; box-shadow: 0 6px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.15));
+  background: var(--ds-surface); border: 1px solid var(--ds-border);
+  border-radius: 6px; box-shadow: var(--ds-shadow-raised);
   z-index: 60; overflow: hidden; padding: 4px;
 }
 .sp-status-dropdown-item {
@@ -1483,8 +1483,8 @@
 /* ── Column picker ── */
 .sp-colpicker-dropdown {
   position: absolute; top: calc(100% + 4px); right: 0; width: 220px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); border: 1px solid var(--ds-shadow-raised, rgba(9, 30, 66, 0.24));
-  border-radius: 6px; box-shadow: 0 6px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.15));
+  background: var(--ds-surface); border: 1px solid var(--ds-border);
+  border-radius: 6px; box-shadow: var(--ds-shadow-raised);
   z-index: 60; overflow: hidden; padding-bottom: 4px;
 }
 .sp-colpicker-title {
@@ -1500,7 +1500,7 @@
 .sp-colpicker-item:hover { background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)); }
 .sp-colpicker-check {
   width: 16px; height: 16px; border-radius: 3px;
-  border: 1.5px solid var(--ds-shadow-raised, rgba(9, 30, 66, 0.24));
+  border: 1.5px solid var(--ds-border);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: background 0.12s, border-color 0.12s;
 }
@@ -1524,8 +1524,8 @@
 .sp-row-action:hover { background: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 .sp-row-menu {
   position: absolute; right: 0; top: 24px; background: var(--ds-surface, #fff);
-  border: 1px solid var(--ds-shadow-raised, rgba(9, 30, 66, 0.24)); border-radius: 6px;
-  box-shadow: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.12)); z-index: 20;
+  border: 1px solid var(--ds-border); border-radius: 6px;
+  box-shadow: var(--ds-shadow-overlay); z-index: 20;
   min-width: 120px; padding: 4px;
 }
 .sp-row-menu-item {

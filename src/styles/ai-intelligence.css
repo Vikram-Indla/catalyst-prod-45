@@ -40,7 +40,7 @@
 .rai-backdrop {
   position: fixed;
   top: 48px; left: 0; right: 0; bottom: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  background: var(--ds-blanket);
   z-index: 50;
 }
 
@@ -57,7 +57,7 @@
   z-index: 60;
   display: flex;
   flex-direction: column;
-  box-shadow: -8px 0 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  box-shadow: var(--ds-shadow-overlay);
   animation: raiSlideIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -762,7 +762,7 @@
 .rai-lang-btn.rai-lang-active {
   background: var(--rai-surface);
   color: var(--rai-ink);
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  box-shadow: var(--ds-shadow-raised);
 }
 
 .rai-lang-btn-ar {
@@ -876,7 +876,7 @@
   border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.25));
   border-radius: 9999px;
   padding: 8px 16px;
-  box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)), 0 1px 4px var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  box-shadow: var(--ds-shadow-overlay);
   cursor: pointer;
   pointer-events: auto;
   transition: all 200ms;

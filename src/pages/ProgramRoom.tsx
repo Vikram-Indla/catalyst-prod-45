@@ -1,54 +1,42 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProgramRoom() {
   const { programId } = useParams<{ programId: string }>();
+  const isUuid = isValidUUID(programId ?? '');
 
   const { data: program, isLoading } = useQuery({
     queryKey: ['program', programId],
     queryFn: async () => {
-      // First try to find as a project
-      const { data: projectData } = await supabase
-        .from('projects')
-        .select(`
-          id,
-          name,
-          key,
-          program_id,
-          programs (
-            id,
-            name,
-            key
-          )
-        `)
-        .eq('id', programId)
-        .maybeSingle();
-      
-      if (projectData) {
-        return { 
-          ...projectData, 
-          type: 'project' as const,
-          parentProgram: projectData.programs
-        };
+      if (isUuid) {
+        // Legacy UUID path — try project by id, then program by id
+        const { data: projectData } = await supabase
+          .from('projects')
+          .select(`id, name, key, program_id, programs ( id, name, key )`)
+          .eq('id', programId)
+          .maybeSingle();
+        if (projectData) {
+          return { ...projectData, type: 'project' as const, parentProgram: projectData.programs };
+        }
+        const { data: programData } = await supabase
+          .from('programs')
+          .select('id, name, key')
+          .eq('id', programId)
+          .maybeSingle();
+        if (programData) return { ...programData, type: 'program' as const };
+        return null;
       }
 
-      // If not found as project, try as a program
+      // Named key path — look up program by key
       const { data: programData } = await supabase
         .from('programs')
-        .select(`
-          id,
-          name,
-          key
-        `)
-        .eq('id', programId)
+        .select('id, name, key')
+        .eq('key', programId)
         .maybeSingle();
-      
-      if (programData) {
-        return { ...programData, type: 'program' as const };
-      }
-
+      if (programData) return { ...programData, type: 'program' as const };
       return null;
     },
     enabled: !!programId,

@@ -128,6 +128,7 @@ export function SprintsPage() {
     return (rawSprints ?? [])
       .map((r: any) => ({
         id: r.id,
+        slug: r.slug,
         project_id: r.project_id,
         name: r.name,
         description: r.description ?? undefined,
@@ -213,7 +214,8 @@ export function SprintsPage() {
   };
 
   const handleOpenDetail = (sprintId: string) => {
-    navigate(SPRINT_CONFIG.buildDetailHref(sprintId, { projectKey }));
+    const sprint = sprints.find((s: any) => s.id === sprintId);
+    navigate(SPRINT_CONFIG.buildDetailHref((sprint as any)?.slug ?? sprintId, { projectKey }));
   };
 
   const groupIdsKey = useMemo(() => (grouped ?? []).map((g) => g.id).join('|'), [grouped]);

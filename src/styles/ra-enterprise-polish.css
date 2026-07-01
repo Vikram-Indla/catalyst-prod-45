@@ -36,8 +36,8 @@
   --ra-text-percent-size-polish: 14px;
   
   /* Shadows */
-  --ra-card-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
-  --ra-card-shadow-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  --ra-card-shadow: var(--ds-shadow-raised);
+  --ra-card-shadow-hover: var(--ds-shadow-raised);
   
   /* Transitions */
   --ra-transition-fast: 150ms ease;
@@ -212,7 +212,7 @@
    ───────────────────────────────────────────────────────────── */
 .ra-polish [class*="avatar"],
 .ra-polish .avatar {
-  box-shadow: 0 2px 6px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12)) !important;
+  box-shadow: var(--ds-shadow-raised) !important;
   transition: transform var(--ra-transition-fast) !important;
 }
 
@@ -245,7 +245,7 @@
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 6px !important;
-  box-shadow: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)) !important;
+  box-shadow: var(--ds-shadow-raised) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -316,7 +316,7 @@
 .dark .ra-polish , [data-theme="dark"] .ra-polish {
   /* Shadows — suppressed in dark */
   --ra-card-shadow: none;
-  --ra-card-shadow-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3));
+  --ra-card-shadow-hover: var(--ds-shadow-raised);
 
   /* END Cell — dark pattern */
   --ra-end-pattern-polish: repeating-linear-gradient(

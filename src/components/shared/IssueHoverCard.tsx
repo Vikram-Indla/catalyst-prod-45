@@ -13,7 +13,7 @@
  * Data: ph_issues by issue_key (text PK). Hover-only fetch (enabled
  * gate on isOpen).
  *
- * 3 actions: Copy link · Summarize with CATY · View related links.
+ * 2 actions: Copy link · View related links.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { acquire as acquireHoverSlot, release as releaseHoverSlot } from '@/lib/hover-card-singleton';
@@ -28,7 +28,6 @@ import CopyIcon from '@atlaskit/icon/glyph/copy';
 import LinkIcon from '@atlaskit/icon/glyph/link';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
-import AiChatIcon from '@atlaskit/icon/core/ai-chat';
 import QuestionIcon from '@atlaskit/icon/glyph/question-circle';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
@@ -36,6 +35,8 @@ import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { useLinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items/hooks';
+import type { LinkedWorkItem } from '@/modules/project-work-hub/components/linked-work-items/types';
 
 const CARD_WIDTH = 360;
 const ENTER_DELAY = 300;
@@ -128,8 +129,8 @@ function statusCategoryToAppearance(cat: string | null | undefined): LozengeAppe
 
 function priorityColor(p: string | null | undefined): string {
   const v = (p || '').toLowerCase();
-  if (v.includes('highest') || v.includes('blocker')) return 'var(--ds-background-danger-bold, var(--ds-background-danger-bold))';
-  if (v.includes('high')) return 'var(--ds-background-danger-bold, var(--ds-background-danger-bold))';
+  if (v.includes('highest') || v.includes('blocker')) return 'var(--ds-background-danger-bold)';
+  if (v.includes('high')) return 'var(--ds-background-danger-bold)';
   if (v.includes('medium')) return 'var(--ds-text-warning)';
   if (v.includes('low')) return 'var(--ds-text-success)';
   if (v.includes('lowest')) return 'var(--ds-text-success)';
@@ -147,6 +148,144 @@ function PriorityGlyph({ priority }: { priority: string | null | undefined }) {
   );
 }
 
+// ─── Related Links Modal ──────────────────────────────────────────────────────
+
+interface RelatedLinksModalProps {
+  issueKey: string;
+  onClose: () => void;
+}
+
+function RelatedLinksModal({ issueKey, onClose }: RelatedLinksModalProps) {
+  const navigate = useNavigate();
+  const { data: links, isLoading } = useLinkedWorkItems(issueKey);
+
+  const handleItemClick = (item: LinkedWorkItem) => {
+    const targetKey = item.source_id === issueKey ? item.target_id : item.source_id;
+    const projectKey = item.target?.project_key;
+    const route = projectKey
+      ? `/project-hub/${projectKey}/allwork/${encodeURIComponent(targetKey)}`
+      : `/browse/${encodeURIComponent(targetKey)}`;
+    navigate(route);
+    onClose();
+  };
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 16px' }}>
+        <Spinner size="medium" />
+      </div>
+    );
+  }
+
+  if (!links?.length) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        padding: '40px 16px', gap: 16, textAlign: 'center',
+      }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: '50%',
+          background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
+        }}>
+          <QuestionIcon label="" size="xlarge" />
+        </div>
+        <div>
+          <div style={{
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+            color: token('color.text', 'var(--ds-text)'),
+            marginBottom: 6,
+          }}>
+            No related links found
+          </div>
+          <div style={{
+            fontSize: 'var(--ds-font-size-100)',
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+            maxWidth: 320,
+          }}>
+            This issue has no linked issues in Catalyst.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const groups: Record<string, LinkedWorkItem[]> = {};
+  for (const item of links) {
+    const label = item.link_type || 'relates to';
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(item);
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {Object.entries(groups).map(([label, items]) => (
+        <div key={label} style={{ marginBottom: 16 }}>
+          <div style={{
+            fontSize: 'var(--ds-font-size-075)', fontWeight: 600,
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
+            textTransform: 'uppercase', letterSpacing: '0.04em',
+            marginBottom: 6,
+          }}>
+            {label}
+          </div>
+          {items.map((item) => {
+            const targetKey = item.source_id === issueKey ? item.target_id : item.source_id;
+            const t = item.target;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleItemClick(item)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  width: '100%', padding: '6px 8px',
+                  background: 'transparent', border: 'none', borderRadius: 3,
+                  cursor: 'pointer', textAlign: 'left',
+                }}
+              >
+                {t?.issue_type && (
+                  <span style={{ flexShrink: 0 }}>
+                    <JiraIssueTypeIcon issueType={t.issue_type} size={16} />
+                  </span>
+                )}
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+                    color: token('color.link', 'var(--ds-link)'),
+                  }}>
+                    {targetKey}
+                  </span>
+                  {t?.summary && (
+                    <span style={{
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 400,
+                      color: token('color.text', 'var(--ds-text)'),
+                      marginLeft: 4,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      display: 'inline-block', maxWidth: 280, verticalAlign: 'bottom',
+                    }}>
+                      {t.summary}
+                    </span>
+                  )}
+                </span>
+                {t?.status && (
+                  <span style={{ flexShrink: 0 }}>
+                    <Lozenge appearance={statusCategoryToAppearance(t.status_category)}>
+                      {t.status}
+                    </Lozenge>
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Hover Card Content ───────────────────────────────────────────────────────
+
 interface HoverCardContentProps {
   issueKey: string;
   rect: DOMRect;
@@ -160,8 +299,6 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
   const navigate = useNavigate();
   const { data, isLoading } = useHoverIssue(issueKey, true);
   const [copied, setCopied] = useState(false);
-  const [summaryState, setSummaryState] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
-  const [summaryText, setSummaryText] = useState<string | null>(null);
 
   // Placement: pick the side with more room. Anchor by bottom when above so the
   // card grows upward; anchor by top when below so it grows downward. Constrain
@@ -232,33 +369,6 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
     ? `/project-hub/${data.project_key}/allwork/${encodeURIComponent(issueKey)}`
     : `/browse/${encodeURIComponent(issueKey)}`;
 
-  // CATY summary — inline expansion within hover card.
-  // Edge fn 'summarize_for_hover' mode not yet deployed → uses description text
-  // as preview. When edge fn ships, swap path here. No toast — inline only.
-  const handleSummarize = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (summaryState === 'loaded' || summaryState === 'error') {
-      // Collapse on second click
-      setSummaryState('idle');
-      setSummaryText(null);
-      return;
-    }
-    if (summaryState === 'loading') return;
-    setSummaryState('loading');
-    // Brief delay so spinner is visible (UX polish).
-    await new Promise((r) => window.setTimeout(r, 200));
-    const desc = (data?.description_text || adfToText(data?.description_adf) || '').trim();
-    if (desc) {
-      setSummaryText(desc.slice(0, 500) + (desc.length > 500 ? '…' : ''));
-      setSummaryState('loaded');
-    } else {
-      // Inline empty state — no toast.
-      setSummaryText(null);
-      setSummaryState('error');
-    }
-  };
-
   const handleViewLinks = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -302,7 +412,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
         boxShadow: 'var(--ds-shadow-overlay)',
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         padding: 16,
-        fontFamily: token('font.family.body', '-apple-system, BlinkMacSystemFont, "Atlassian Sans", "Segoe UI", Roboto, sans-serif'),
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Atlassian Sans", "Segoe UI", Roboto, sans-serif',
         animation: 'jcHoverFade 150ms ease-out',
       }}
     >
@@ -324,20 +434,20 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                     width: 28, height: 28, borderRadius: 4, flexShrink: 0,
                     background: token('color.background.neutral', 'var(--ds-background-neutral)'),
                     color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
-                    fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                   }}
                 >
                   ?
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{
-                    fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                     color: token('color.text', 'var(--ds-text)'),
                   }}>
                     {issueKey}
                   </span>
                   <span style={{
-                    fontSize: 'var(--ds-font-size-200)',
+                    fontSize: 'var(--ds-font-size-075)',
                     color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
                   }}>
                     Not synced to Catalyst{projectPrefix ? ` · ${projectPrefix} project` : ''}
@@ -354,7 +464,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                   rel="noopener noreferrer"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    fontSize: 'var(--ds-font-size-400)',
+                    fontSize: 'var(--ds-font-size-100)',
                     color: token('color.link', 'var(--ds-link)'),
                     textDecoration: 'none',
                   }}
@@ -381,10 +491,10 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               style={{
                 flex: 1,
                 minWidth: 0,
-                fontSize: token('font.size.100', '14px'),
-                fontWeight: parseInt(token('font.weight.semibold', '600'), 10) || 600,
-                lineHeight: token('font.lineHeight.100', '20px'),
-                fontFamily: token('font.family.body', 'inherit'),
+                fontSize: 'var(--ds-font-size-100)',
+                fontWeight: 600,
+                lineHeight: 'var(--ds-font-line-height-100)',
+                fontFamily: 'inherit',
                 color: token('color.link', 'var(--ds-link)'),
                 textDecoration: 'none',
                 display: '-webkit-box',
@@ -417,8 +527,8 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
                 <PriorityGlyph priority={data.priority} />
                 <span style={{
-                  fontSize: token('font.size.100', '14px'),
-                  fontWeight: parseInt(token('font.weight.regular', '400'), 10) || 400,
+                  fontSize: 'var(--ds-font-size-100)',
+                  fontWeight: 400,
                   color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
                 }}>
                   {data.priority}
@@ -427,54 +537,15 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
             )}
           </div>
 
-          {/* Body slot — Jira parity: shows description by default; CATY summary
-              REPLACES it in-place when activated. Single content region, no
-              stacked panels. */}
-          {summaryState === 'loading' ? (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              fontSize: token('font.size.100', '14px'),
-              color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
-            }}>
-              <Spinner size="small" />
-              <span>CATY is summarizing…</span>
-            </div>
-          ) : summaryState === 'loaded' && summaryText ? (
+          {/* Description */}
+          {description ? (
             <p
               style={{
                 margin: 0,
-                fontSize: token('font.size.100', '14px'),
-                fontWeight: parseInt(token('font.weight.regular', '400'), 10) || 400,
-                lineHeight: token('font.lineHeight.100', '20px'),
-                fontFamily: token('font.family.body', 'inherit'),
-                color: token('color.text', 'var(--ds-text)'),
-                display: '-webkit-box',
-                WebkitLineClamp: 6,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                wordBreak: 'break-word',
-              }}
-            >
-              {summaryText}
-            </p>
-          ) : summaryState === 'error' ? (
-            <p style={{
-              margin: 0,
-              fontSize: token('font.size.100', '14px'),
-              color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
-              fontStyle: 'italic',
-            }}>
-              No description content to summarize.
-            </p>
-          ) : description ? (
-            <p
-              style={{
-                margin: 0,
-                fontSize: token('font.size.100', '14px'),
-                fontWeight: parseInt(token('font.weight.regular', '400'), 10) || 400,
-                lineHeight: token('font.lineHeight.100', '20px'),
-                fontFamily: token('font.family.body', 'inherit'),
+                fontSize: 'var(--ds-font-size-100)',
+                fontWeight: 400,
+                lineHeight: 'var(--ds-font-line-height-100)',
+                fontFamily: 'inherit',
                 color: token('color.text', 'var(--ds-text)'),
                 display: '-webkit-box',
                 WebkitLineClamp: 3,
@@ -494,12 +565,6 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               <CopyIcon label="" size="medium" />
               <span>{copied ? 'Copied!' : 'Copy link'}</span>
             </button>
-            <button onClick={handleSummarize} style={actionBtnStyle} aria-label="Summarize with CATY" disabled={summaryState === 'loading'}>
-              {summaryState === 'loading' ? <Spinner size="small" /> : <AiChatIcon label="" />}
-              <span>{summaryState === 'loading' ? 'Summarizing…' : summaryState === 'loaded' ? 'Hide summary' : 'Summarize with CATY'}</span>
-            </button>
-
-
             <button onClick={handleViewLinks} style={actionBtnStyle} aria-label="View related links">
               <LinkIcon label="" size="medium" />
               <span>View related links</span>
@@ -514,7 +579,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            fontSize: 'var(--ds-font-size-200)',
+            fontSize: 'var(--ds-font-size-075)',
             color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
           }}>
             <svg width="16" height="16" viewBox="0 0 512 512" aria-hidden style={{ flexShrink: 0 }}>
@@ -543,12 +608,12 @@ const actionBtnStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: 3,
   cursor: 'pointer',
-  fontSize: 'var(--ds-font-size-100, 14px)',
-  fontWeight: 500,
-  lineHeight: 'var(--ds-font-line-height-100, 20px)',
+  fontSize: 'var(--ds-font-size-100)',
+  fontWeight: 400,
+  lineHeight: 'var(--ds-font-line-height-100)',
   color: 'var(--ds-text)',
   textAlign: 'left',
-  fontFamily: 'var(--ds-font-family-body, inherit)',
+  fontFamily: 'inherit',
 };
 
 interface IssueHoverCardProps {
@@ -582,7 +647,7 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
     if (!triggerRef.current) return;
     // `display:contents` span has no box. Walk to firstElementChild with a
     // measurable rect. If none found, use the trigger ref's own (probably
-    // 0×0) so the card stays off-screen instead of clamping to top-left.
+    // 0x0) so the card stays off-screen instead of clamping to top-left.
     let el: Element | null = triggerRef.current;
     let r = el.getBoundingClientRect();
     while (r.width === 0 && r.height === 0 && el && el.firstElementChild) {
@@ -627,18 +692,6 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Safety net: while the card is open, listen at the document level for the
-  // cursor leaving both the trigger AND the portaled card. Required because
-  // (a) the trigger can unmount under the cursor when its kanban card is
-  // virtualized out, so no `mouseleave` ever fires; (b) the browser can drop
-  // `mouseleave`/`mouseenter` pairs when the cursor crosses the 8px gap
-  // between trigger and card too fast. Without this listener the portal can
-  // be left open until page refresh.
-  //
-  // The watchdog arms only on the first cursor transition after open — that
-  // first event records the cursor's location but cannot trigger a close on
-  // its own. Only subsequent transitions can schedule the close. This avoids
-  // false dismissals if the very first mouseover after open lands outside.
   useEffect(() => {
     if (!isOpen) return;
     let armed = false;
@@ -667,11 +720,6 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
     return () => document.removeEventListener('mouseover', handler);
   }, [isOpen, close]);
 
-  // Second safety net: if the trigger element gets removed from the DOM
-  // (e.g. virtualizer scrolls its parent card out, or the underlying data
-  // changes and the chip unmounts) AND the cursor doesn't move, no mouseover
-  // event will ever fire and the document-level watchdog above can't see it.
-  // Poll every 500ms while open and force-close if the trigger is gone.
   useEffect(() => {
     if (!isOpen) return;
     const id = window.setInterval(() => {
@@ -715,35 +763,7 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
               <ModalTitle>Related links</ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                padding: '40px 16px', gap: 16, textAlign: 'center',
-              }}>
-                <div style={{
-                  width: 80, height: 80, borderRadius: '50%',
-                  background: token('color.background.neutral', 'var(--ds-background-neutral)'),
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
-                }}>
-                  <QuestionIcon label="" size="xlarge" />
-                </div>
-                <div>
-                  <div style={{
-                    fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
-                    color: token('color.text', 'var(--ds-text)'),
-                    marginBottom: 8,
-                  }}>
-                    We couldn't find any related links
-                  </div>
-                  <div style={{
-                    fontSize: 'var(--ds-font-size-400)',
-                    color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
-                    maxWidth: 360,
-                  }}>
-                    We continuously review and add related links for updated pages or other content types
-                  </div>
-                </div>
-              </div>
+              <RelatedLinksModal issueKey={issueKey} onClose={() => setLinksOpen(false)} />
             </ModalBody>
             <ModalFooter>
               <Button appearance="primary" onClick={() => setLinksOpen(false)}>

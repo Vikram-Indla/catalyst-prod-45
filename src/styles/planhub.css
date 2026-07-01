@@ -97,10 +97,10 @@
   --ph-radius-full: 9999px;
 
   /* Shadows */
-  --ph-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-  --ph-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
-  --ph-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
-  --ph-shadow-modal: 0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25));
+  --ph-shadow-sm: var(--ds-shadow-raised);
+  --ph-shadow-md: var(--ds-shadow-overlay);
+  --ph-shadow-lg: var(--ds-shadow-overlay);
+  --ph-shadow-modal: var(--ds-shadow-overlay);
 
   /* Transitions */
   --ph-transition-fast: 0.1s ease;
@@ -999,7 +999,7 @@
 .planhub-module .ph-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-blanket);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1052,7 +1052,7 @@
 .planhub-module .ph-modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-blanket);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1479,10 +1479,10 @@
   --ph-gray-900: var(--ds-text, var(--cp-bg-neutral));
 
   /* Shadows (darker for dark mode) */
-  --ph-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
-  --ph-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
-  --ph-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
-  --ph-shadow-modal: 0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.6));
+  --ph-shadow-sm: var(--ds-shadow-raised);
+  --ph-shadow-md: var(--ds-shadow-overlay);
+  --ph-shadow-lg: var(--ds-shadow-overlay);
+  --ph-shadow-modal: var(--ds-shadow-overlay);
 
   /* Semantic colors (slightly adjusted for dark bg contrast) */
   --ph-success-light: var(--ds-background-success-bold, rgba(16, 185, 129, 0.15));
@@ -1502,7 +1502,7 @@
 .dark .planhub-module .ph-modal-backdrop,
 [data-theme="dark"] .planhub-module .ph-modal-overlay,
 .dark .planhub-module .ph-modal-overlay {
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.7));
+  background: var(--ds-blanket);
 }
 
 /* Dark mode: AI chat bubble adjustments */

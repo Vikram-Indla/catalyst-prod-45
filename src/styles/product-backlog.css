@@ -31,24 +31,24 @@
   --cp-danger-10: var(--ds-background-danger);
   --cp-purple-60: var(--cp-purple-60, var(--ds-background-discovery-bold));
 
-  --cp-border-subtle: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.06));
-  --cp-border-default: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.12));
-  --cp-border-strong: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.20));
+  --cp-border-subtle: var(--ds-border);
+  --cp-border-default: var(--ds-border);
+  --cp-border-strong: var(--ds-border-bold);
   --cp-border-interactive: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 
-  --cp-interact-hover: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.04));
-  --cp-interact-press: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.08));
+  --cp-interact-hover: var(--ds-background-neutral-subtle);
+  --cp-interact-press: var(--ds-background-neutral);
   --cp-interact-selected: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   --cp-interact-selected-hover: var(--ds-background-information, rgba(37, 99, 235, 0.12));
 
-  --cp-toolbar-bg: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.05));
-  --cp-toolbar-bg-hover: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.10));
-  --cp-toolbar-bg-press: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.16));
+  --cp-toolbar-bg: var(--ds-background-neutral-subtle);
+  --cp-toolbar-bg-hover: var(--ds-background-neutral-subtle);
+  --cp-toolbar-bg-press: var(--ds-background-neutral);
   --cp-toolbar-bg-active: var(--ds-background-information, rgba(37, 99, 235, 0.10));
 
   --cp-input-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  --cp-input-border: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.14));
-  --cp-input-border-hover: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.22));
+  --cp-input-border: var(--ds-border);
+  --cp-input-border-hover: var(--ds-border-bold);
   --cp-input-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 
 
@@ -59,7 +59,7 @@
   --cp-radius-xl: 12px;
   --cp-radius-full: 9999px;
 
-  --cp-shadow-xs: 0 1px 2px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  --cp-shadow-xs: var(--ds-shadow-raised);
   --cp-shadow-focus: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.18));
 
   --cp-lozenge-grey-bg: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
@@ -812,7 +812,7 @@
 .pb-panel-backdrop {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  background: var(--ds-blanket);
   z-index: 500;
 }
 .pb-panel {

@@ -72,7 +72,7 @@
 .di-backdrop {
   position: fixed;
   top: 48px; left: 0; right: 0; bottom: 0;
-  background: var(--ds-shadow-raised, rgba(0,0,0,0.3));
+  background: var(--ds-blanket);
   z-index: 50;
 }
 
@@ -89,7 +89,7 @@
   min-width: 600px;
   background: var(--di-surface);
   border-left: 0px solid var(--di-border);
-  box-shadow: -8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.08));
+  box-shadow: var(--ds-shadow-overlay);
   z-index: 60;
   display: flex;
   flex-direction: column;
@@ -511,7 +511,7 @@
   transition: box-shadow 0.15s;
 }
 .di-prj-card:last-child { margin-bottom: 0; }
-.di-prj-card:hover { box-shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04)); }
+.di-prj-card:hover { box-shadow: var(--ds-shadow-raised); }
 
 /* Card Header */
 .di-prj-hdr {

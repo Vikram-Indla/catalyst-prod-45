@@ -93,9 +93,9 @@
      SHADOWS — CRITICAL FOR DRAGGABILITY
      ======================================== */
   
-  --boards-shadow-card: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
-  --boards-shadow-card-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-  --boards-shadow-card-dragging: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  --boards-shadow-card: var(--ds-shadow-raised);
+  --boards-shadow-card-hover: var(--ds-shadow-raised);
+  --boards-shadow-card-dragging: var(--ds-shadow-overlay);
   
   /* ========================================
      SPACING
@@ -142,9 +142,9 @@
   --boards-border-card-hover: var(--ds-border-bold);
   --boards-border-empty: var(--ds-border, var(--cp-ink-1));
 
-  --boards-shadow-card: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
-  --boards-shadow-card-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
-  --boards-shadow-card-dragging: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  --boards-shadow-card: var(--ds-shadow-raised);
+  --boards-shadow-card-hover: var(--ds-shadow-raised);
+  --boards-shadow-card-dragging: var(--ds-shadow-overlay);
 
   --boards-date-color-upcoming: var(--ds-text-subtlest, var(--cp-text-secondary));
 }
@@ -154,7 +154,7 @@
 .dark .boards-card , [data-theme="dark"] .boards-card {
   background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface))) !important;
   border-color: var(--ds-border, var(--cp-ink-1)) !important;
-  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2)) !important;
+  box-shadow: var(--ds-shadow-raised) !important;
   color: var(--ds-text, var(--cp-bg-neutral)) !important;
 }
 

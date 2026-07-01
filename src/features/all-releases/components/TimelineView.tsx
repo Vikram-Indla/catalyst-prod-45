@@ -284,11 +284,13 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                     {/* Text overlay */}
                     <div className="relative z-[2] flex items-center justify-between w-full px-2">
                       {showName && (
-                        <span className="text-[10px] font-medium text-white truncate" style={{ textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
+                        /* ads-scanner:ignore-next-line — textShadow has no ADS token equivalent */
+                        <span className="text-[10px] font-medium text-white truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
                           {release.name}
                         </span>
                       )}
-                      <span className="text-[10px] font-bold text-white ml-auto shrink-0" style={{ textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
+                      {/* ads-scanner:ignore-next-line — textShadow has no ADS token equivalent */}
+                      <span className="text-[10px] font-bold text-white ml-auto shrink-0" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
                         {progress}%
                       </span>
                     </div>

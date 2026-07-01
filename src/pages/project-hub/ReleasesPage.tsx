@@ -154,6 +154,7 @@ export function ReleasesPage() {
     return (rawReleases ?? [])
       .map((r: any) => ({
         id: r.id,
+        slug: r.slug,
         project_id: r.project_id,
         name: r.name,
         description: r.description ?? undefined,
@@ -274,7 +275,8 @@ export function ReleasesPage() {
 
   const navigate = useNavigate();
   const handleOpenDetail = (releaseId: string) => {
-    navigate(`/release-hub/releases-management/${releaseId}`);
+    const rel = releases.find((r: any) => r.id === releaseId || r.slug === releaseId);
+    navigate(`/release-hub/releases-management/${(rel as any)?.slug ?? releaseId}`);
   };
 
   const groupIdsKey = useMemo(() => (grouped ?? []).map((g) => g.id).join('|'), [grouped]);

@@ -65,10 +65,10 @@
   --ct-font-mono: var(--cp-font-mono);
 
   /* Shadows */
-  --ct-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-  --ct-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
-  --ct-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 4px 6px -4px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
-  --ct-shadow-xl: 0 20px 25px -5px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 8px 10px -6px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+  --ct-shadow-sm: var(--ds-shadow-raised);
+  --ct-shadow-md: var(--ds-shadow-overlay);
+  --ct-shadow-lg: var(--ds-shadow-overlay);
+  --ct-shadow-xl: var(--ds-shadow-overlay);
 
   /* Radii */
   --ct-radius-sm: 6px;

@@ -800,7 +800,7 @@
 .ws-drawer-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
+  background: var(--ds-blanket);
   z-index: 200;
   opacity: 0;
   visibility: hidden;
@@ -886,7 +886,7 @@
 .ws-modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-blanket);
   z-index: 300;
   display: flex;
   align-items: center;

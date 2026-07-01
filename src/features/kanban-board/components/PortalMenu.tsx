@@ -142,7 +142,7 @@ export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align
             background: token('elevation.surface.overlay', 'var(--ds-surface)'),
             border: `1px solid ${token('color.border', '#091E4224')}`,
             borderRadius: SIZES.DROPDOWN_RADIUS,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
+            boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
             padding: '4px 0',
             minWidth,
             maxHeight: SIZES.DROPDOWN_MAX_HEIGHT,

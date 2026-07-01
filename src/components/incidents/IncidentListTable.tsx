@@ -289,10 +289,10 @@ export function IncidentListTable({
     navigate(`/incident-hub/view/${incidentId}`);
   };
 
-  const handleCopyLink = (incidentId: string, incidentKey: string) => {
-    const url = `${window.location.origin}/incident-hub/view/${incidentId}`;
+  const handleCopyLink = (incidentKey: string, displayKey: string) => {
+    const url = `${window.location.origin}/incident-hub/view/${incidentKey}`;
     navigator.clipboard.writeText(url);
-    toast.success(`Link copied`, `${incidentKey} link copied to clipboard`);
+    toast.success(`Link copied`, `${displayKey} link copied to clipboard`);
   };
 
   const handleInlineUpdate = async (incidentId: string, field: string, value: string | boolean) => {
@@ -428,18 +428,18 @@ export function IncidentListTable({
                           ? 'hsl(var(--catalyst-champagne) / 0.14)'
                           : undefined,
                       }}
-                      onClick={(e) => handleRowClick(incident.id, e)}
+                      onClick={(e) => handleRowClick(incident.incident_key, e)}
                       onMouseEnter={() => setHoveredId(incident.id)}
                       onMouseLeave={() => setHoveredId(null)}
                       tabIndex={0}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && incident.id) navigate(`/incident-hub/view/${incident.id}`);
+                        if (e.key === 'Enter' && incident.incident_key) navigate(`/incident-hub/view/${incident.incident_key}`);
                       }}
                     >
                       {/* Key - left aligned */}
                       <div className={cn(GRID_CELL_BASE, "pl-4 pr-2 flex items-center gap-2.5")}>
                         <Link 
-                          to={`/incident-hub/view/${incident.id}`} 
+                          to={`/incident-hub/view/${incident.incident_key}`}
                           className="font-mono text-[13px] font-medium text-brand-primary hover:underline truncate"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -560,28 +560,28 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/incident-hub/view/${incident.id}`);
+                                navigate(`/incident-hub/view/${incident.incident_key}`);
                               }}
                             >
                               <Eye className="h-3.5 w-3.5 mr-2" />
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/incident-hub/view/${incident.id}?mode=edit`);
+                                navigate(`/incident-hub/view/${incident.incident_key}?mode=edit`);
                               }}
                               disabled={isConverted}
                             >
                               <Pencil className="h-3.5 w-3.5 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleCopyLink(incident.id, incident.incident_key);
+                                handleCopyLink(incident.incident_key, incident.incident_key);
                               }}
                             >
                               <Copy className="h-3.5 w-3.5 mr-2" />

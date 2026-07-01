@@ -366,7 +366,7 @@ function ReleaseRow({
       <td style={td}>
         <a
           href="#"
-          onClick={(e) => { e.preventDefault(); onOpenDetail(r.id); }}
+          onClick={(e) => { e.preventDefault(); onOpenDetail((r as any).slug ?? r.id); }}
           className="releases-table-title-link"
           style={{ color: 'var(--ds-link)', fontWeight: 500, textDecoration: 'none' }}
         >

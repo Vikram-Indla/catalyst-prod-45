@@ -25,7 +25,7 @@ export function ProgramRedirect() {
       : programs[0];
 
     if (targetProgram) {
-      navigate(`/program/${targetProgram.id}/epic-backlog`, { replace: true });
+      navigate(`/program/${targetProgram.key ?? targetProgram.id}/epic-backlog`, { replace: true });
     }
   }, [programs, isLoading, navigate]);
 

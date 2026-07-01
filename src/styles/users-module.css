@@ -64,10 +64,10 @@
   /* ═══════════════════════════════════════════════════════════
      SHADOWS (V8 4-LEVEL SCALE)
      ═══════════════════════════════════════════════════════════ */
-  --ct-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
-  --ct-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
-  --ct-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
-  --ct-shadow-xl: 0 12px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16));
+  --ct-shadow-sm: var(--ds-shadow-raised);
+  --ct-shadow-md: var(--ds-shadow-overlay);
+  --ct-shadow-lg: var(--ds-shadow-overlay);
+  --ct-shadow-xl: var(--ds-shadow-overlay);
 
   /* ═══════════════════════════════════════════════════════════
      TRANSITIONS (V8)
@@ -1092,7 +1092,7 @@
 .ct-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
+  background: var(--ds-blanket);
   z-index: 100;
   opacity: 0;
   visibility: hidden;

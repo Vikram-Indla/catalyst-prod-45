@@ -18,6 +18,7 @@ import CheckIcon from '@atlaskit/icon/glyph/check';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
 import { EditableSectionName } from '@/components/releases/detail/EditableSectionName';
@@ -70,8 +71,8 @@ export function ReleaseDetailPage({
   entityIdOverride,
   listHrefOverride,
 }: ReleaseDetailPageProps = {}) {
-  const params = useParams<{ releaseId?: string; sprintId?: string }>();
-  const releaseId = entityIdOverride ?? params.releaseId ?? params.sprintId;
+  const params = useParams<{ releaseSlug?: string; sprintSlug?: string }>();
+  const releaseId = entityIdOverride ?? params.releaseSlug ?? params.sprintSlug;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -99,10 +100,11 @@ export function ReleaseDetailPage({
   const { data: release, isLoading } = useQuery<ReleaseRow>({
     queryKey: [config.queryKeyPrefix, 'one', releaseId],
     queryFn: async () => {
+      const field = isValidUUID(releaseId ?? '') ? 'id' : 'slug';
       const { data, error } = await (supabase as any)
         .from(config.table)
         .select(selectString)
-        .eq('id', releaseId!)
+        .eq(field, releaseId!)
         .single();
       if (error) throw new Error(error.message);
       return data as unknown as ReleaseRow;
