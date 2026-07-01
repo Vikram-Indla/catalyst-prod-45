@@ -687,15 +687,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover [data-jira-cell-ghost] {
         color: var(--ds-text-subtle);
       }
-      /* Group header + button: hidden by default, visible on row hover.
-         Jira only shows the + on hover (parity confirmed 2026-05-08 DOM probe). */
+      /* Group header + button: ALWAYS visible (Jira DOM probe 2026-06-30:
+         the "Create work item" button is opacity:1, not hover-gated). */
       .jira-group-header-row .jira-group-add-btn {
-        opacity: 0;
-        transition: opacity 120ms ease;
-      }
-      .jira-group-header-row:hover .jira-group-add-btn,
-      .jira-group-header-row:focus-within .jira-group-add-btn {
         opacity: 1;
+        transition: opacity 120ms ease;
       }
       /* Drag handle: hidden by default, visible on row hover.
          Jira shows 6-dot affordance only when there is no active sort
@@ -1012,20 +1008,22 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody td:nth-child(3) {
         box-shadow: none;
       }
-      /* Group rows (collapsed/group headers) need to keep their
-         lighter bg even on sticky cells — override the default white. */
+      /* Leftover from the removed frozen-left-prefix: these nth-child rules
+         have higher specificity than the base group-row rule below, so a
+         transparent value here beat the opaque ds-surface and let body rows
+         BLEED THROUGH the now-working sticky group header on scroll. The
+         group header (incl. its colSpan content cell = nth-child(2)) must be
+         opaque so rows scrolling underneath are covered. */
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: transparent !important;
+        background: var(--ds-surface) !important;
       }
-      /* 2026-05-10 Jira-parity: group header rows stick below the thead
-         while their child rows scroll past. top:40px = thead height.
-         z-index 1 keeps them below the thead (z:2) but above body rows. */
+      /* 2026-06-30 Jira parity: group headers are NOT sticky — they scroll
+         away with their rows (matches Jira's grouped list). Opaque surface +
+         top border give the clean per-group separator. (Sticky was removed
+         per user: headers should simply scroll, not pin.) */
       .jira-table-grid tbody tr.jira-table-group-row > td {
-        position: sticky;
-        top: 40px;
-        z-index: 1;
         background: var(--ds-surface) !important;
         border-top: 1px solid var(--ds-border) !important;
       }
@@ -1616,9 +1614,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     flexShrink: 0,
                   }}
                 >
-                  {/* 2026-05-08 DOM probe: Jira group header chevron = 24×24px (size="medium").
-                      Catalyst was using size="small" (16px) — visually too thin/small vs Jira. */}
-                  <ChevronDownIcon label="" size="medium" />
+                  {/* 2026-06-30 Jira DOM probe: group-header chevron GLYPH is 12px
+                      inside a 24px button (color rgb(80,82,88) = --ds-text-subtle).
+                      size="medium" (24px glyph) was way too big; size="small" (16px,
+                      nearest ADS step) matches Jira's clean thin chevron. */}
+                  <ChevronDownIcon label="" size="small" />
                 </span>
               )}
               {/* 2026-05-08 Jira parity: label BEFORE + button.
@@ -1822,15 +1822,105 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const useVirtual = enableVirtualization;
-  const virtualizer = useVirtual
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useVirtualizer({
-        count: rows.length,
-        getScrollElement: () => viewportRef.current,
-        estimateSize: () => d.rowHeight,
-        overscan: 10,
-      })
-    : null;
+  // Rules of Hooks: call useVirtualizer UNCONDITIONALLY. `enableVirtualization`
+  // is `!groupedRows` at the call site, so it flips true→false the moment the
+  // user turns on "Group by" — calling the hook conditionally dropped a hook
+  // between renders → "Rendered fewer hooks than expected" → white-screen crash
+  // on the product/project backlog. When virtualization is off we pass count:0
+  // (the virtualizer becomes inert) and null the reference so the existing
+  // `!virtualizer` / `virtualizer && …` render branches behave exactly as before.
+  const _virtualizer = useVirtualizer({
+    count: useVirtual ? rows.length : 0,
+    getScrollElement: () => viewportRef.current,
+    estimateSize: () => d.rowHeight,
+    overscan: 10,
+  });
+  const virtualizer = useVirtual ? _virtualizer : null;
+
+  // Shared <tr> renderer for the non-virtual (incl. grouped) body. Extracted
+  // so the grouped path can wrap each group's rows in its OWN <tbody> without
+  // duplicating this markup. Per-group <tbody> is what makes the sticky group
+  // headers replace each other on scroll (the tbody's bottom edge pushes its
+  // header out) instead of all pinning at top:40px and stacking.
+  const renderBodyRow = (r: any) => {
+    const isGroup = typeof r.key === 'string' && r.key.startsWith('__group-');
+    return (
+      <tr
+        key={r.key}
+        className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
+        onClick={r.onClick}
+        onContextMenu={r.onContextMenu}
+        style={{ minHeight: d.rowHeight }}
+      >
+        {r.cells.map((c: any) => {
+          const isDropTarget = c.colId && dragOverId === c.colId && dragId && dragId !== c.colId;
+          const isResizeHoverCol = c.colId && hoveredResizeColId === c.colId;
+          const cellMeta = c.colId ? colWidthEntries.find((e) => e.id === c.colId) : undefined;
+          const cellResizable = !!cellMeta?.resizable && !isGroup;
+          return (
+            <td
+              key={c.key}
+              colSpan={c.colSpan}
+              data-col-id={c.colId}
+              data-jt-drag-over={isDropTarget ? 'true' : undefined}
+              data-jt-drag-source={c.colId && dragId === c.colId ? 'true' : undefined}
+              data-resize-state={
+                c.colId && resizing?.id === c.colId
+                  ? 'active'
+                  : isResizeHoverCol
+                    ? 'hover'
+                    : undefined
+              }
+              style={{
+                overflow: 'hidden',
+                position: 'relative',
+                ...(c.colId === '__actions' ? {
+                  position: 'sticky',
+                  right: 0,
+                  zIndex: 2,
+                  background: 'var(--cp-bg-elevated, var(--ds-surface))',
+                } : {}),
+                ...(isDropTarget ? {
+                  background: 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))',
+                  boxShadow: 'inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected)',
+                } : {}),
+              }}>
+              {c.content}
+              {cellResizable && cellMeta && (
+                <span
+                  className="jira-resize-handle"
+                  data-active={resizing?.id === cellMeta.id ? 'true' : 'false'}
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize column"
+                  draggable={false}
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseEnter={() => setHoveredResizeColId(cellMeta.id)}
+                  onMouseLeave={() => {
+                    if (resizing?.id !== cellMeta.id) setHoveredResizeColId(null);
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setResizing({ id: cellMeta.id, startX: e.clientX, startWidth: cellMeta.width });
+                    setHoveredResizeColId(cellMeta.id);
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    setColumnWidths((prev) => {
+                      const next = { ...prev };
+                      delete next[cellMeta.id];
+                      return next;
+                    });
+                  }}
+                />
+              )}
+            </td>
+          );
+        })}
+      </tr>
+    );
+  };
 
   const handleHeaderClick = (colId: string, sortableLocal: boolean) => {
     if (!sortableLocal) return;
@@ -2236,6 +2326,31 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               })}
             </tr>
           </thead>
+          {(!isLoading && !virtualizer && groups && groups.length) ? (
+            // GROUPED: render one <tbody> per group. A sticky group header is
+            // constrained to its own <tbody>, so as the next group scrolls up
+            // its tbody's top edge pushes the previous header out — only the
+            // current group's header stays pinned (no stacking). Each tbody
+            // also clips its header's coverage to its own rows.
+            (() => {
+              const segments: any[][] = [];
+              for (const r of rows) {
+                // Start a new tbody only on a true group HEADER row. The
+                // inline-create row shares the `__group-` prefix but ends with
+                // `-inline-create` and must stay inside its group's tbody.
+                const isHeader = typeof r.key === 'string'
+                  && r.key.startsWith('__group-')
+                  && !r.key.endsWith('-inline-create');
+                if (isHeader || segments.length === 0) segments.push([]);
+                segments[segments.length - 1].push(r);
+              }
+              return segments.map((seg, i) => (
+                <tbody key={seg[0]?.key ?? ('seg-' + i)}>
+                  {seg.map(renderBodyRow)}
+                </tbody>
+              ));
+            })()
+          ) : (
           <tbody>
             {isLoading && (
               <tr>
@@ -2251,85 +2366,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 </td>
               </tr>
             )}
-            {!isLoading && !virtualizer && rows.map((r: any) => {
-              const isGroup = typeof r.key === 'string' && r.key.startsWith('__group-');
-              return (
-                <tr
-                  key={r.key}
-                  className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
-                  onClick={r.onClick}
-                  onContextMenu={r.onContextMenu}
-                  style={{ minHeight: d.rowHeight }}
-                >
-                  {r.cells.map((c: any) => {
-                    const isDropTarget = c.colId && dragOverId === c.colId && dragId && dragId !== c.colId;
-                    const isResizeHoverCol = c.colId && hoveredResizeColId === c.colId;
-                    const cellMeta = c.colId ? colWidthEntries.find((e) => e.id === c.colId) : undefined;
-                    const cellResizable = !!cellMeta?.resizable && !isGroup;
-                    return (
-                      <td
-                        key={c.key}
-                        colSpan={c.colSpan}
-                        data-col-id={c.colId}
-                        data-jt-drag-over={isDropTarget ? 'true' : undefined}
-                        data-jt-drag-source={c.colId && dragId === c.colId ? 'true' : undefined}
-                        data-resize-state={
-                          c.colId && resizing?.id === c.colId
-                            ? 'active'
-                            : isResizeHoverCol
-                              ? 'hover'
-                              : undefined
-                        }
-                        style={{
-                        overflow: 'hidden',
-                        position: 'relative',
-                        ...(c.colId === '__actions' ? {
-                          position: 'sticky',
-                          right: 0,
-                          zIndex: 2,
-                          background: 'var(--cp-bg-elevated, var(--ds-surface))',
-                        } : {}),
-                        ...(isDropTarget ? {
-                          background: 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))',
-                          boxShadow: 'inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected)',
-                        } : {}),
-                      }}>
-                        {c.content}
-                        {cellResizable && cellMeta && (
-                          <span
-                            className="jira-resize-handle"
-                            data-active={resizing?.id === cellMeta.id ? 'true' : 'false'}
-                            role="separator"
-                            aria-orientation="vertical"
-                            aria-label="Resize column"
-                            draggable={false}
-                            onClick={(e) => e.stopPropagation()}
-                            onMouseEnter={() => setHoveredResizeColId(cellMeta.id)}
-                            onMouseLeave={() => {
-                              if (resizing?.id !== cellMeta.id) setHoveredResizeColId(null);
-                            }}
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setResizing({ id: cellMeta.id, startX: e.clientX, startWidth: cellMeta.width });
-                              setHoveredResizeColId(cellMeta.id);
-                            }}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              setColumnWidths((prev) => {
-                                const next = { ...prev };
-                                delete next[cellMeta.id];
-                                return next;
-                              });
-                            }}
-                          />
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            {!isLoading && !virtualizer && rows.map(renderBodyRow)}
             {!isLoading && virtualizer && (() => {
               const vItems = virtualizer.getVirtualItems();
               const totalSize = virtualizer.getTotalSize();
@@ -2429,6 +2466,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               );
             })()}
           </tbody>
+          )}
         </table>
         {/* Apr 27, 2026 (L70): bottomSlot renders INSIDE the viewport
             so the horizontal scrollbar appears BELOW it, not between

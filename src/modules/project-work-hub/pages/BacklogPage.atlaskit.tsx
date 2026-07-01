@@ -82,8 +82,10 @@ import Select from '@atlaskit/select';
 import { portalSelectStyles } from '@/lib/select-portal-styles';
 import { Fieldset, Label } from '@atlaskit/form';
 
+// Backlog surfaces use the backlog-tuned fork of JiraTable (same props/API).
+// Cell factories + helpers still come from the canonical JiraTable barrel below.
+import { BacklogTable } from '@/components/shared/BacklogTable';
 import {
-  JiraTable,
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
@@ -174,8 +176,11 @@ import type {
 
 // Drag-and-drop — migrated from @dnd-kit → Pragmatic (BAU-backlog-drag-01)
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+// 2026-07-01 (user request img47): compact drag preview (type icon + title).
+import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
+import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview';
+import { createRoot } from 'react-dom/client';
 
 // ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
 const AkChevronsLeftIcon = () => (
@@ -257,68 +262,144 @@ function HealthCell({ row }: { row: BacklogItem }) {
  * indicator is rendered via createPortal to document.body at fixed coords
  * derived from the TR's bounding rect — this escapes the clipping context.
  */
-function DragHandleCell({ row }: { row: BacklogItem }) {
-  const handleRef = useRef<HTMLSpanElement>(null);
+/**
+ * 2026-07-01 (user request): the drag grip must render like the "+" — a
+ * floating box ON the table's left border, vertically centred, never clipped.
+ * That means portaling it to <body>. A portaled grip is OUTSIDE the <tr>, so
+ * the old approach (draggable on the TR with this grip as dragHandle) can't
+ * work — pdnd needs the drag origin inside the draggable element.
+ *
+ * Fix: the grip IS its OWN pdnd draggable (element = the grip box). It only
+ * carries the rowId; the global monitorForElements + per-row RowDropAnchor
+ * drop targets do the actual reorder. So drag starts straight from the visible
+ * box (exactly like clicking the "+" button works from its own element).
+ */
+function DragHandleGrip({ row }: { row: BacklogItem }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Source row lookup by data attribute (the grip is portaled, so it has no
+    // DOM link to its <tr>). Used only to tint/dim the source row while dragging.
+    const findTr = () =>
+      document.querySelector(
+        `[data-drag-row-id="${(window as any).CSS?.escape ? CSS.escape(String(row.id)) : String(row.id)}"]`,
+      ) as HTMLElement | null;
+    const setSourceDragging = (on: boolean) => {
+      const tr = findTr();
+      if (!tr) return;
+      tr.style.background = on ? token('color.background.selected', 'var(--ds-background-selected)') : '';
+      tr.querySelectorAll('td').forEach((td) => {
+        (td as HTMLElement).style.opacity = on ? '0.4' : '';
+      });
+    };
+    return draggable({
+      element: el,
+      getInitialData: () => ({ rowId: row.id }),
+      onGenerateDragPreview: ({ nativeSetDragImage }) => {
+        setCustomNativeDragPreview({
+          nativeSetDragImage,
+          getOffset: pointerOutsideOfPreview({ x: '12px', y: '8px' }),
+          render: ({ container }) => {
+            const root = createRoot(container);
+            root.render(
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  maxWidth: 320,
+                  padding: '6px 10px',
+                  background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                  borderRadius: 4,
+                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-overlay)'),
+                  font: 'var(--ds-font-body, 14px/20px inherit)',
+                  color: token('color.text', 'var(--ds-text)'),
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <JiraIssueTypeIcon type={row.type as any} size={16} />
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
+              </div>,
+            );
+            return () => root.unmount();
+          },
+        });
+      },
+      onDragStart: () => setSourceDragging(true),
+      onDrop: () => setSourceDragging(false),
+    });
+  }, [row.id]);
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      style={{
+        width: 18,
+        height: 18,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: token('elevation.surface', 'var(--ds-surface)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+        borderRadius: 4,
+        boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
+        color: token('color.icon.subtle', 'var(--ds-icon-subtle)'),
+        cursor: 'grab',
+      }}
+    >
+      <span style={{ display: 'inline-flex', transform: 'scale(0.72)' }}>
+        {/* 6-dot grip — no ADS equivalent; inline SVG */}
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+          <circle cx="2" cy="2" r="1.5" />
+          <circle cx="8" cy="2" r="1.5" />
+          <circle cx="2" cy="8" r="1.5" />
+          <circle cx="8" cy="8" r="1.5" />
+          <circle cx="2" cy="14" r="1.5" />
+          <circle cx="8" cy="14" r="1.5" />
+        </svg>
+      </span>
+    </div>
+  );
+}
+
+/**
+ * RowDropAnchor — invisible in-cell element that registers its <tr> as a pdnd
+ * drop target (via closest('tr'), which works because it renders inside the
+ * row). Rendered once per data row. Draws the full-width blue insert line on
+ * the row's top/bottom edge while a drag hovers it. The drag SOURCE is the
+ * portaled DragHandleGrip; the global monitor matches source.rowId → this
+ * target's rowId + edge to reorder.
+ */
+function RowDropAnchor({ row }: { row: BacklogItem }) {
+  const ref = useRef<HTMLSpanElement>(null);
   const [dropEdge, setDropEdge] = useState<Edge | null>(null);
   const [trRect, setTrRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
-    const handle = handleRef.current;
-    if (!handle) return;
-    const tr = handle.closest('tr') as HTMLElement | null;
+    const anchor = ref.current;
+    if (!anchor) return;
+    const tr = anchor.closest('tr') as HTMLElement | null;
     if (!tr) return;
-
-    return combine(
-      draggable({
-        element: tr,
-        dragHandle: handle,
-        getInitialData: () => ({ rowId: row.id }),
-      }),
-      dropTargetForElements({
-        element: tr,
-        getData: ({ input, element }) =>
-          attachClosestEdge({ rowId: row.id }, { input, element, allowedEdges: ['top', 'bottom'] }),
-        onDrag: ({ self }) => {
-          setDropEdge(extractClosestEdge(self.data));
-          setTrRect(tr.getBoundingClientRect());
-        },
-        onDragLeave: () => setDropEdge(null),
-        onDrop: () => setDropEdge(null),
-      }),
-    );
+    return dropTargetForElements({
+      element: tr,
+      getData: ({ input, element }) =>
+        attachClosestEdge({ rowId: row.id }, { input, element, allowedEdges: ['top', 'bottom'] }),
+      onDrag: ({ self }) => {
+        setDropEdge(extractClosestEdge(self.data));
+        setTrRect(tr.getBoundingClientRect());
+      },
+      onDragLeave: () => setDropEdge(null),
+      onDrop: () => setDropEdge(null),
+    });
   }, [row.id]);
 
   return (
     <>
-      <span
-        ref={handleRef}
-        className="jira-drag-handle"
-        aria-hidden
-      >
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 16,
-            height: 20,
-            borderRadius: 3,
-            background: token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'),
-            cursor: 'grab',
-            color: token('color.icon.subtle', 'var(--ds-icon-subtle)'),
-          }}
-        >
-          {/* 6-dot grip — no ADS equivalent; inline SVG */}
-          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
-            <circle cx="2" cy="2" r="1.5"/>
-            <circle cx="8" cy="2" r="1.5"/>
-            <circle cx="2" cy="8" r="1.5"/>
-            <circle cx="8" cy="8" r="1.5"/>
-            <circle cx="2" cy="14" r="1.5"/>
-            <circle cx="8" cy="14" r="1.5"/>
-          </svg>
-        </span>
-      </span>
+      <span ref={ref} aria-hidden style={{ width: 0, height: 0, overflow: 'hidden' }} />
       {dropEdge && trRect && ReactDOM.createPortal(
         <div
           aria-hidden
@@ -1212,6 +1293,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // row immediately below that group's header via JiraTable's
   // renderGroupInlineRow prop. On submit / cancel / Esc → set back to null.
   const [inlineCreateGroup, setInlineCreateGroup] = useState<string | null>(null);
+  // 2026-07-01 (user request): row insert-above "+" opens the create form
+  // directly ABOVE the clicked row (keyed by row id), not at the group top.
+  const [insertAboveRowId, setInsertAboveRowId] = useState<string | null>(null);
   const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
   // Jira-parity: sticky tfoot create row. When true, the footer placeholder
   // switches to an InlineGroupCreateRow (creates into the first/default group).
@@ -2121,10 +2205,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
     const groupLabelFor = (it: BacklogItem): string => {
       switch (groupBy) {
-        case 'status':   return it.status || 'No status';
-        case 'parent':   return it.parent_label || (it.type === 'epic' ? it.title : 'No parent');
-        case 'assignee': return it.assignee_name || 'Unassigned';
-        case 'priority': return it.priority ? it.priority[0].toUpperCase() + it.priority.slice(1) : 'No priority';
+        case 'status':   return it.status || 'None';
+        case 'parent':   return it.parent_label || (it.type === 'epic' ? it.title : 'None');
+        case 'assignee': return it.assignee_name || 'None';
+        case 'priority': return it.priority ? it.priority[0].toUpperCase() + it.priority.slice(1) : 'None';
         case 'type': {
           const t = it.type || '';
           if (t === 'epic') return 'Epic';
@@ -2132,7 +2216,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           if (t === 'story') return 'Story';
           if (t === 'bug') return 'QA Bug';
           if (t === 'incident') return 'Production Incident';
-          return t ? t[0].toUpperCase() + t.slice(1) : 'No type';
+          return t ? t[0].toUpperCase() + t.slice(1) : 'None';
         }
         default: return '—';
       }
@@ -2143,11 +2227,42 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (!buckets.has(k)) buckets.set(k, []);
       buckets.get(k)!.push(it);
     }
-    // Stable group order — alpha, with "No X" / "Unassigned" at the end.
+    // Jira-parity group order: SEMANTIC per axis, not alphabetical.
+    //   priority → Highest…Lowest (PRIORITY_ORDER)
+    //   status   → workflow category (To Do → In Progress → Done) via lozenge appearance
+    //   type     → hierarchy (Epic → Feature → Story → Task → Bug → …)
+    //   assignee / parent → A–Z. The "None" bucket always sorts last.
+    const STATUS_CAT_RANK: Record<string, number> = {
+      new: 0, default: 0, inprogress: 1, moved: 1, success: 2, removed: 3,
+    };
+    const TYPE_RANK: Record<string, number> = {
+      epic: 0, feature: 1, story: 2, task: 3, bug: 4, incident: 5, subtask: 6,
+    };
+    const orphanRe = /^(None|No |Unassigned)/i;
+    const semanticRank = (k: string): number | null => {
+      const s = buckets.get(k)![0];
+      switch (groupBy) {
+        case 'priority': {
+          const i = PRIORITY_ORDER.indexOf((s.priority || '').toLowerCase());
+          return i < 0 ? 999 : i;
+        }
+        case 'status': {
+          const app = s.status ? String(statusAppearance(s.status)) : 'default';
+          return STATUS_CAT_RANK[app] ?? 5;
+        }
+        case 'type':
+          return TYPE_RANK[(s.type || '').toLowerCase()] ?? 50;
+        default:
+          return null; // assignee / parent → alphabetical
+      }
+    };
     const keys = Array.from(buckets.keys()).sort((a, b) => {
-      const aOrphan = /^(No |Unassigned)/i.test(a);
-      const bOrphan = /^(No |Unassigned)/i.test(b);
+      const aOrphan = orphanRe.test(a);
+      const bOrphan = orphanRe.test(b);
       if (aOrphan !== bOrphan) return aOrphan ? 1 : -1;
+      const ra = semanticRank(a);
+      const rb = semanticRank(b);
+      if (ra !== null && rb !== null && ra !== rb) return ra - rb;
       return a.localeCompare(b);
     });
     // Apr 27, 2026 (audit pass 10): build a rich labelNode per groupBy
@@ -2276,10 +2391,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         label: k,
         labelNode: labelNode ?? undefined,
         rows: buckets.get(k)!,
-        meta: `${rowCount} ${rowCount === 1 ? 'work item' : 'work items'}`,
+        // Jira parity: bare number count after the lozenge.
+        meta: String(rowCount),
       };
     });
-  }, [groupBy, items, search, typeFilter, filterValue, hideDoneItems, sortKey, sortDir, avatarsByName]);
+  }, [groupBy, items, search, typeFilter, filterValue, hideDoneItems, sortKey, sortDir, avatarsByName, statusAppearance]);
 
   useEffect(() => { setPage(1); }, [typeFilter, search, filterValue, sortKey, sortDir]);
 
@@ -2805,9 +2921,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         );
         const summaryCellRenderer = makeSummaryInlineEditCell<BacklogItem>({
           getSummary: (r) => r.title,
-          // 2026-06-22: 2-line wrap so long titles don't clamp aggressively
-          // behind the row-hover open-in-side-panel icon.
-          wrapLines: 2,
+          // 2026-06-30 Jira parity: Jira's summary cell clamps to a SINGLE
+          // line (-webkit-line-clamp:1) so every row is exactly 40px and the
+          // list reads clean. 2-line wrap made rows variable-height and
+          // cluttered (esp. long Arabic + English titles).
+          wrapLines: 1,
           // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
           onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
           // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
@@ -4147,7 +4265,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <JiraTable<BacklogItem>
+          <BacklogTable<BacklogItem>
             columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
             groups={groupedRows ?? undefined}
@@ -4156,6 +4274,151 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             onToggleGroup={toggleGroup}
             enableGroupCreateButton
             onAddToGroup={(groupId) => setInlineCreateGroup(groupId)}
+            /* 2026-06-30 (user request): row "+" (insert above) — opens the
+               inline-create in the SAME group the hovered row belongs to.
+               groupedRows keys === the group label produced here, so passing
+               the row's group label opens create in the right bucket. Cast
+               because onInsertAbove is not part of the shared JiraTableProps. */
+            {...({
+              onInsertAbove: (row: BacklogItem) => {
+                // Open the inline create directly above this row (not group top).
+                setInlineCreateGroup(null);
+                setInsertAboveRowId(row.id);
+              },
+              renderInsertAboveRow: (row: BacklogItem) =>
+                insertAboveRowId === row.id ? (
+                  <InlineGroupCreateRow
+                    groupLabel=""
+                    isSubmitting={inlineCreateSubmitting}
+                    members={assigneePickerMembers}
+                    defaultIssueType={rowTypeToCreatable(row.type)}
+                    onCancel={() => setInsertAboveRowId(null)}
+                    creatableTypes={
+                      dataSource?.creatableTypes
+                        ? (dataSource.creatableTypes as CreatableIssueType[])
+                        : undefined
+                    }
+                    onSubmit={async (summaryText, issueType, assignee, dueDate) => {
+                      const trimmed = summaryText.trim();
+                      if (!trimmed || !projectKey) return;
+                      if (trimmed.length > 255) { flag.error('Summary must be 255 characters or fewer'); return; }
+                      setInlineCreateSubmitting(true);
+                      try {
+                        if (dataSource) {
+                          await dataSource.onCreate({ title: trimmed });
+                          flag.success(`Created — ${trimmed}`);
+                          dataSource.invalidationKeys.forEach((k) =>
+                            queryClient.invalidateQueries({ queryKey: k as any }),
+                          );
+                          setInsertAboveRowId(null);
+                          setInlineCreateSubmitting(false);
+                          return;
+                        }
+                        const issueKey = await generateIssueKey(projectKey);
+                        const nowIso = new Date().toISOString();
+                        // New item lands in the SAME group as the clicked row:
+                        // when grouped by status, inherit that row's status.
+                        const defaultStatus = groupBy === 'status' && row.status
+                          ? row.status
+                          : (groupedRows[0]?.id ?? 'To Do');
+                        const { error } = await supabase.from('ph_issues').insert({
+                          issue_key: issueKey,
+                          project_key: projectKey,
+                          summary: trimmed,
+                          issue_type: issueType,
+                          status: defaultStatus,
+                          priority: 'medium',
+                          source: 'catalyst',
+                          assignee_account_id: assignee?.id ?? null,
+                          assignee_display_name: assignee?.name ?? null,
+                          due_date: dueDate,
+                          jira_created_at: nowIso,
+                          jira_updated_at: nowIso,
+                        } as any);
+                        if (error) throw error;
+                        flag.success(`Created ${issueKey} — ${trimmed}`);
+                        queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                        queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                        setInsertAboveRowId(null);
+                      } catch {
+                        flag.error('Failed to create');
+                      } finally {
+                        setInlineCreateSubmitting(false);
+                      }
+                    }}
+                  />
+                ) : null,
+            } as any)}
+            /* 2026-07-01 (user request img39-43): clicking the per-group "+"
+               or the row insert-above "+" opens the SAME inline-create form
+               Jira shows — type dropdown, due-date picker, assignee picker,
+               Create button. InlineGroupCreateRow already renders all of that;
+               it just needed wiring to the table's renderGroupInlineRow slot.
+               Rendered inside the matching group's tbody when its id === the
+               active inlineCreateGroup. */
+            renderGroupInlineRow={(gid: string) =>
+              inlineCreateGroup === gid ? (
+                <InlineGroupCreateRow
+                  groupLabel=""
+                  isSubmitting={inlineCreateSubmitting}
+                  members={assigneePickerMembers}
+                  onCancel={() => setInlineCreateGroup(null)}
+                  creatableTypes={
+                    dataSource?.creatableTypes
+                      ? (dataSource.creatableTypes as CreatableIssueType[])
+                      : undefined
+                  }
+                  onSubmit={async (summaryText, issueType, assignee, dueDate) => {
+                    const trimmed = summaryText.trim();
+                    if (!trimmed || !projectKey) return;
+                    if (trimmed.length > 255) { flag.error('Summary must be 255 characters or fewer'); return; }
+                    setInlineCreateSubmitting(true);
+                    try {
+                      if (dataSource) {
+                        await dataSource.onCreate({ title: trimmed });
+                        flag.success(`Created — ${trimmed}`);
+                        dataSource.invalidationKeys.forEach((k) =>
+                          queryClient.invalidateQueries({ queryKey: k as any }),
+                        );
+                        setInlineCreateGroup(null);
+                        setInlineCreateSubmitting(false);
+                        return;
+                      }
+                      const issueKey = await generateIssueKey(projectKey);
+                      const nowIso = new Date().toISOString();
+                      // Insert into the group the "+" belongs to: when grouped
+                      // by status the group id IS the status; otherwise default.
+                      const defaultStatus = groupBy === 'status' && gid !== 'None'
+                        ? gid
+                        : (groupedRows[0]?.id ?? 'To Do');
+                      const { error } = await supabase.from('ph_issues').insert({
+                        issue_key: issueKey,
+                        project_key: projectKey,
+                        summary: trimmed,
+                        issue_type: issueType,
+                        status: defaultStatus,
+                        priority: 'medium',
+                        source: 'catalyst',
+                        assignee_account_id: assignee?.id ?? null,
+                        assignee_display_name: assignee?.name ?? null,
+                        due_date: dueDate,
+                        jira_created_at: nowIso,
+                        jira_updated_at: nowIso,
+                      } as any);
+                      if (error) throw error;
+                      flag.success(`Created ${issueKey} — ${trimmed}`);
+                      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                      queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                      setInlineCreateGroup(null);
+                    } catch {
+                      flag.error('Failed to create');
+                    } finally {
+                      setInlineCreateSubmitting(false);
+                    }
+                  }}
+                />
+              ) : null
+            }
             enableStickyCreateFooter={true}
             // Apr 28 2026 (carryover #13 — chevron discoverability):
             // expandedRowIds passes through expandedIds directly. Removed
@@ -4310,11 +4573,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
-            renderRowDragHandle={(row) => <DragHandleCell row={row} />}
+            renderRowDragHandle={(row) => <DragHandleGrip row={row} />}
+            {...({ renderRowDropAnchor: (row: BacklogItem) => <RowDropAnchor row={row} /> } as any)}
+            /* 2026-06-30 (user request): show the drag handle on hover even
+               when grouped (Jira shows it for within-group rank). Still hidden
+               when a custom sort is active — a sorted list can't be reordered. */
             rowDragHandleHidden={
               sortKey !== DEFAULT_SORT_KEY ||
-              sortDir !== DEFAULT_SORT_DIR ||
-              (groupBy !== null && groupBy !== 'none')
+              sortDir !== DEFAULT_SORT_DIR
             }
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
@@ -4343,7 +4609,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             page={1}
             onPageChange={undefined as any}
             density={density}
-            enableVirtualization={!groupedRows}
+            /* 2026-06-30 perf: virtualize ALWAYS, including grouped view.
+               Group headers are no longer sticky, so the flat virtualizer
+               (which already tags `__group-` rows) handles headers + data in
+               one virtualized list — previously grouped rendered ALL rows
+               (hundreds) un-virtualized, causing the jank. */
+            enableVirtualization
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
             onColumnOrderChange={(next) => setColumnOrder(next)}
@@ -6326,6 +6597,28 @@ const CREATABLE_TYPES: CreatableIssueType[] = [
 ];
 
 /**
+ * 2026-07-01 (user request): map a backlog row's `type` to the creatable issue
+ * type so the inline-create form pre-selects the right type for where the "+"
+ * was clicked — above an Epic → Epic; between Stories → Story; etc.
+ */
+function rowTypeToCreatable(t: string | null | undefined): CreatableIssueType {
+  switch ((t || '').toLowerCase()) {
+    case 'epic': return 'Epic';
+    case 'feature': return 'Feature';
+    case 'story': return 'Story';
+    case 'bug':
+    case 'qa bug': return 'QA Bug';
+    case 'incident':
+    case 'production incident': return 'Production Incident';
+    case 'task': return 'Task';
+    case 'business gap': return 'Business Gap';
+    case 'change request': return 'Change Request';
+    case 'api requirement': return 'API Requirement';
+    default: return 'Story';
+  }
+}
+
+/**
  * InlineGroupCreateRow — Apr 27 2026 (jira-compare regression F-NEW-2
  * functional fill). Inline create form rendered as an extra row inside
  * a group when the user clicks the per-group "+" button. Mirrors Jira's
@@ -6611,8 +6904,13 @@ function InlineGroupCreateRow({
         display: 'flex',
         alignItems: 'center',
         gap: 4,
-        padding: '4px 8px',
-        background: 'transparent',
+        // 2026-07-01 (user request img45): active inline-create row reads as a
+        // focused input box — blue border + surface bg + rounded corners.
+        padding: '3px 8px',
+        background: token('elevation.surface', 'var(--ds-surface)'),
+        border: `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
+        borderRadius: 4,
+        boxSizing: 'border-box',
       }}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
@@ -6641,17 +6939,23 @@ function InlineGroupCreateRow({
             gap: 0,
             height: 26,
             padding: '0 4px',
-            border: 'none',
+            // 2026-07-01 (user request img46): when the type menu is open the
+            // trigger gets a blue border + light-blue selected bg.
+            border: typeMenuOpen
+              ? `1px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`
+              : '1px solid transparent',
             borderRadius: 3,
-            background: 'transparent',
+            background: typeMenuOpen
+              ? token('color.background.selected', 'var(--ds-background-selected)')
+              : 'transparent',
             color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'inherit',
             cursor: 'pointer',
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          onMouseEnter={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
+          onMouseLeave={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = 'transparent'; }}
         >
           <JiraIssueTypeIcon type={issueType} size={20} />
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
