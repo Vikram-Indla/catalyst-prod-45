@@ -458,11 +458,20 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         resizing.startWidth + (e.clientX - resizing.startX)
       );
       setColumnWidths((prev) => ({ ...prev, [resizing.id]: next }));
-      // Keep the group-row marker glued to the moving column edge (measured
-      // live after the width state commits + lays out).
-      requestAnimationFrame(() =>
-        measureResizeBoundary(activeHandleElRef.current)
-      );
+      // Keep the line glued to the moving column edge — measure the resizing
+      // column's live data-cell right edge after the width commits + lays out.
+      requestAnimationFrame(() => {
+        const t = tableRef.current;
+        const vp = viewportRef.current;
+        if (!t || !vp) return;
+        const td = t.querySelector(
+          `tbody td[data-col-id="${resizing.id}"]`
+        ) as HTMLElement | null;
+        if (!td) return;
+        const r = td.getBoundingClientRect();
+        const vr = vp.getBoundingClientRect();
+        setResizeBoundaryX(r.right - vr.left + vp.scrollLeft);
+      });
     };
     const onUp = () => {
       setResizing(null);
@@ -519,7 +528,10 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   );
   // Cell focus (mouse click) — { rowId, colId }. Drives the blue cell box +
   // light row background (Jira cell-select, img #89-#91).
-  const [focusedCell, setFocusedCell] = useState<{ rowId: string; colId: string } | null>(null);
+  const [focusedCell, setFocusedCell] = useState<{
+    rowId: string;
+    colId: string;
+  } | null>(null);
   // Capture-phase so it runs BEFORE inner editors/links stopPropagation.
   const onCellFocusCapture = useCallback(
     (row: any, colId: string | undefined, e: React.MouseEvent) => {
@@ -530,11 +542,16 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       // editor (img #91).
       if (colId === "key") {
         const t = e.target as HTMLElement;
-        if (t.closest("[data-jira-table-row-open], [data-jira-summary-slot], a, button")) return;
+        if (
+          t.closest(
+            "[data-jira-table-row-open], [data-jira-summary-slot], a, button"
+          )
+        )
+          return;
       }
       setFocusedCell({ rowId: String(getRowId(row)), colId });
     },
-    [getRowId],
+    [getRowId]
   );
 
   // Page-sliced data. When grouping is active we don't paginate — groups
@@ -1148,6 +1165,31 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-th-menu-trigger:hover {
         background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important;
       }
+      /* 2026-07-02 (user request): Jira-parity ellipsis in EVERY column. Cells
+         were hard-clipping (no "…") because the content sits in nested flex
+         containers whose items default to min-width:auto and therefore never
+         shrink — so the text runs full-width and the td's overflow:hidden cuts
+         it mid-glyph. Letting every cell descendant shrink (min-width:0) allows
+         the text spans (which already carry overflow/ellipsis/nowrap) to
+         truncate with an ellipsis. Fixed-size media (avatars, type/priority
+         icons) are pinned with flex-shrink:0 so they don't squish. */
+      .jira-table-grid tbody td > div,
+      .jira-table-grid tbody td > div * {
+        min-width: 0;
+      }
+      .jira-table-grid tbody td > div img,
+      .jira-table-grid tbody td > div svg,
+      .jira-table-grid tbody td > div [role="img"] {
+        flex-shrink: 0;
+      }
+      /* Any text-bearing span truncates with an ellipsis rather than clipping
+         mid-glyph. overflow+nowrap are required alongside text-overflow for the
+         "…" to render; white-space already inherits nowrap from the wrapper. */
+      .jira-table-grid tbody td > div span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
@@ -1206,6 +1248,14 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         width: 2px;
         z-index: 6;
         pointer-events: none;
+      }
+      /* Full-height hover/drag hit-strips at each resizable column boundary. */
+      .jira-col-resize-strip {
+        position: absolute;
+        top: 0;
+        width: 9px;
+        z-index: 5;
+        cursor: col-resize;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
         background: transparent !important;
@@ -1575,7 +1625,13 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       out.push({
         key: `__insert-above-${rid}`,
         className: "jira-table-group-inline-create-row",
-        cells: [{ key: `__insert-above-${rid}-content`, colSpan: totalCols, content: node }],
+        cells: [
+          {
+            key: `__insert-above-${rid}-content`,
+            colSpan: totalCols,
+            content: node,
+          },
+        ],
       } as any);
     };
 
@@ -1757,7 +1813,11 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                           strokeLinejoin="round"
                           aria-hidden="true"
                         >
-                          {isExpanded ? <path d="M6 9l6 6 6-6" /> : <path d="M9 6l6 6-6 6" />}
+                          {isExpanded ? (
+                            <path d="M6 9l6 6 6-6" />
+                          ) : (
+                            <path d="M9 6l6 6-6 6" />
+                          )}
                         </svg>
                       </button>
                     );
@@ -1906,34 +1966,38 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           content: (
             <div
               className="jira-group-header-row"
-              role={onToggleGroup ? "button" : undefined}
-              tabIndex={onToggleGroup ? 0 : undefined}
-              aria-expanded={onToggleGroup ? !collapsed : undefined}
-              onClick={onToggleGroup ? () => onToggleGroup(g.id) : undefined}
-              onKeyDown={
-                onToggleGroup
-                  ? (e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        onToggleGroup(g.id);
-                      }
-                    }
-                  : undefined
-              }
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
                 padding: "4px 12px",
                 margin: "-4px -12px", // bleed into the cell padding
-                cursor: onToggleGroup ? "pointer" : "default",
+                // 2026-07-02 (user request): toggle moved to the chevron ONLY.
+                // Whole-row pointer/click swallowed the column-boundary resize
+                // hover on the group row — the row now reads as default so the
+                // resize line can surface at the divider.
+                cursor: "default",
                 userSelect: "none",
                 whiteSpace: "nowrap",
               }}
             >
               {onToggleGroup && (
                 <span
-                  aria-hidden="true"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={collapsed ? "Expand group" : "Collapse group"}
+                  aria-expanded={!collapsed}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleGroup(g.id);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onToggleGroup(g.id);
+                    }
+                  }}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -1946,6 +2010,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                     transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
                     transition: "transform 200ms ease",
                     flexShrink: 0,
+                    cursor: "pointer",
                   }}
                 >
                   {/* Inline stroke chevron (thin 1.5, larger) — the collapsed
@@ -2039,7 +2104,12 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                     }}
                   >
                     {/* Scaled down — the group "+" read too large next to the label. */}
-                    <span style={{ display: "inline-flex", transform: "scale(0.72)" }}>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        transform: "scale(0.72)",
+                      }}
+                    >
                       <PlusIcon label="" size="small" />
                     </span>
                   </button>
@@ -2082,10 +2152,17 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           }
         }
 
-        if (!collapsed) for (const row of g.rows) { pushInsertAboveRow(row); out.push(renderDataRow(row)); }
+        if (!collapsed)
+          for (const row of g.rows) {
+            pushInsertAboveRow(row);
+            out.push(renderDataRow(row));
+          }
       }
     } else {
-      for (const row of pagedData) { pushInsertAboveRow(row); out.push(renderDataRow(row)); }
+      for (const row of pagedData) {
+        pushInsertAboveRow(row);
+        out.push(renderDataRow(row));
+      }
     }
 
     return out;
@@ -2215,6 +2292,49 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   });
   const virtualizer = useVirtual ? _virtualizer : null;
 
+  // 2026-07-02 (user request): full-height invisible resize strips. One per
+  // resizable column, positioned at the column's right boundary, spanning the
+  // WHOLE table height (header + group rows + data rows). Hovering any point
+  // along a boundary — including the "> Epic" group row band that has no
+  // per-cell handle — surfaces the resize line; mousedown drags. Measured from
+  // the live rendered data cells so flex columns are exact.
+  const [colBoundaries, setColBoundaries] = useState<
+    Array<{ id: string; left: number; width: number }>
+  >([]);
+  const [tableHeight, setTableHeight] = useState(0);
+  useLayoutEffect(() => {
+    const t = tableRef.current;
+    const vp = viewportRef.current;
+    if (!t || !vp) {
+      setColBoundaries([]);
+      return;
+    }
+    const vr = vp.getBoundingClientRect();
+    const seen = new Set<string>();
+    const out: Array<{ id: string; left: number; width: number }> = [];
+    t.querySelectorAll("tbody td[data-col-id]").forEach((td) => {
+      const colId = td.getAttribute("data-col-id");
+      if (!colId || seen.has(colId)) return;
+      const entry = colWidthEntries.find((en) => en.id === colId);
+      if (!entry?.resizable) return;
+      const r = (td as HTMLElement).getBoundingClientRect();
+      if (r.width === 0) return;
+      seen.add(colId);
+      out.push({
+        id: colId,
+        left: r.right - vr.left + vp.scrollLeft,
+        width: r.width,
+      });
+    });
+    setColBoundaries(out);
+    setTableHeight(t.offsetHeight);
+    // NOTE: colWidthEntries is intentionally OMITTED — it is rebuilt as a NEW
+    // array every render, so including it would run this effect + setState on
+    // every render → infinite re-render loop. columnWidths + rows cover the
+    // real inputs that change the layout.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnWidths, rows]);
+
   // Shared <tr> renderer for the non-virtual (incl. grouped) body. Extracted
   // so the grouped path can wrap each group's rows in its OWN <tbody> without
   // duplicating this markup. Per-group <tbody> is what makes the sticky group
@@ -2224,9 +2344,17 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   // to document.body so they are NEVER clipped by the table's scroll viewport
   // or rounded container — the box sits ON the table's left border, fully
   // visible. Top ~8px of the row → insert-above "+"; rest → drag handle.
-  const [floatAfford, setFloatAfford] = useState<
-    { id: string; row: TRow; left: number; top: number; width: number; height: number; zone: 'top' | 'center'; viewLeft: number; viewRight: number } | null
-  >(null);
+  const [floatAfford, setFloatAfford] = useState<{
+    id: string;
+    row: TRow;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    zone: "top" | "center";
+    viewLeft: number;
+    viewRight: number;
+  } | null>(null);
   /* Id of the row currently being drag-reordered (null when idle). Driven by a
      pdnd monitor so it survives re-renders and covers BOTH the plain and the
      virtualized <tr> paths. Used to (a) paint the source row blue and (b)
@@ -2274,16 +2402,22 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   }, []);
   const floatHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cancelFloatHide = () => {
-    if (floatHideTimer.current) { clearTimeout(floatHideTimer.current); floatHideTimer.current = null; }
+    if (floatHideTimer.current) {
+      clearTimeout(floatHideTimer.current);
+      floatHideTimer.current = null;
+    }
   };
-  const onRowZoneMove = (e: React.MouseEvent<HTMLTableRowElement>, row: TRow) => {
+  const onRowZoneMove = (
+    e: React.MouseEvent<HTMLTableRowElement>,
+    row: TRow
+  ) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const zone: 'top' | 'center' = (e.clientY - rect.top) <= 8 ? 'top' : 'center';
+    const zone: "top" | "center" = e.clientY - rect.top <= 8 ? "top" : "center";
     const id = String(getRowId(row));
     // data-hz drives the IN-CELL drag affordance (.jira-row-drag-affordance,
     // absolute on the table's left border, INSIDE the <tr> so pdnd works).
     // The insert-above "+" is the only PORTALED affordance (top zone).
-    e.currentTarget.setAttribute('data-hz', zone);
+    e.currentTarget.setAttribute("data-hz", zone);
     cancelFloatHide();
     // Visible viewport bounds — the insert "+" line is clamped to these so it
     // never runs off the right edge on a horizontally-scrolled/wide table.
@@ -2293,11 +2427,21 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
     setFloatAfford((prev) =>
       prev && prev.id === id && prev.zone === zone
         ? prev
-        : { id, row, left: rect.left, top: rect.top, width: rect.width, height: rect.height, zone, viewLeft, viewRight },
+        : {
+            id,
+            row,
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height,
+            zone,
+            viewLeft,
+            viewRight,
+          }
     );
   };
   const onRowZoneLeave = (e?: React.MouseEvent<HTMLTableRowElement>) => {
-    e?.currentTarget?.removeAttribute('data-hz');
+    e?.currentTarget?.removeAttribute("data-hz");
     // Don't dismiss the grip while dragging — it must stay pinned to the
     // source row for the whole drag (Jira img #60).
     if (draggingRowId) return;
@@ -2315,9 +2459,21 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         className={[r.className, isGroup ? "jira-table-group-row" : ""]
           .filter(Boolean)
           .join(" ")}
-        data-drag-row-id={!isGroup && r.row != null ? String(getRowId(r.row)) : undefined}
-        data-drag-source={!isGroup && r.row != null && draggingRowId === String(getRowId(r.row)) ? "true" : undefined}
-        data-row-focused-cell={!isGroup && r.row != null && focusedCell?.rowId === String(getRowId(r.row)) ? "true" : undefined}
+        data-drag-row-id={
+          !isGroup && r.row != null ? String(getRowId(r.row)) : undefined
+        }
+        data-drag-source={
+          !isGroup && r.row != null && draggingRowId === String(getRowId(r.row))
+            ? "true"
+            : undefined
+        }
+        data-row-focused-cell={
+          !isGroup &&
+          r.row != null &&
+          focusedCell?.rowId === String(getRowId(r.row))
+            ? "true"
+            : undefined
+        }
         onClick={r.onClick}
         onContextMenu={r.onContextMenu}
         onMouseMove={isGroup ? undefined : (e) => onRowZoneMove(e, r.row)}
@@ -2337,8 +2493,20 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
               key={c.key}
               colSpan={c.colSpan}
               data-col-id={c.colId}
-              data-cell-focused={!isGroup && r.row != null && c.colId && focusedCell?.rowId === String(getRowId(r.row)) && focusedCell?.colId === c.colId ? "true" : undefined}
-              onClickCapture={isGroup ? undefined : (e) => onCellFocusCapture(r.row, c.colId, e)}
+              data-cell-focused={
+                !isGroup &&
+                r.row != null &&
+                c.colId &&
+                focusedCell?.rowId === String(getRowId(r.row)) &&
+                focusedCell?.colId === c.colId
+                  ? "true"
+                  : undefined
+              }
+              onClickCapture={
+                isGroup
+                  ? undefined
+                  : (e) => onCellFocusCapture(r.row, c.colId, e)
+              }
               data-jt-drag-over={isDropTarget ? "true" : undefined}
               data-jt-drag-source={
                 c.colId && dragId === c.colId ? "true" : undefined
@@ -3064,9 +3232,25 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                           <tr
                             key={r.key}
                             data-index={vRow.index}
-                            data-drag-row-id={!isGroup && r.row != null ? String(getRowId(r.row)) : undefined}
-                            data-drag-source={!isGroup && r.row != null && draggingRowId === String(getRowId(r.row)) ? "true" : undefined}
-                            data-row-focused-cell={!isGroup && r.row != null && focusedCell?.rowId === String(getRowId(r.row)) ? "true" : undefined}
+                            data-drag-row-id={
+                              !isGroup && r.row != null
+                                ? String(getRowId(r.row))
+                                : undefined
+                            }
+                            data-drag-source={
+                              !isGroup &&
+                              r.row != null &&
+                              draggingRowId === String(getRowId(r.row))
+                                ? "true"
+                                : undefined
+                            }
+                            data-row-focused-cell={
+                              !isGroup &&
+                              r.row != null &&
+                              focusedCell?.rowId === String(getRowId(r.row))
+                                ? "true"
+                                : undefined
+                            }
                             ref={virtualizer?.measureElement as any}
                             className={[
                               r.className,
@@ -3076,7 +3260,11 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                               .join(" ")}
                             onClick={r.onClick}
                             onContextMenu={r.onContextMenu}
-                            onMouseMove={isGroup ? undefined : (e) => onRowZoneMove(e, r.row)}
+                            onMouseMove={
+                              isGroup
+                                ? undefined
+                                : (e) => onRowZoneMove(e, r.row)
+                            }
                             onMouseLeave={isGroup ? undefined : onRowZoneLeave}
                             style={{ minHeight: d.rowHeight }}
                           >
@@ -3093,8 +3281,22 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                                   key={c.key}
                                   colSpan={c.colSpan}
                                   data-col-id={c.colId}
-                                  data-cell-focused={!isGroup && r.row != null && c.colId && focusedCell?.rowId === String(getRowId(r.row)) && focusedCell?.colId === c.colId ? "true" : undefined}
-                                  onClickCapture={isGroup ? undefined : (e) => onCellFocusCapture(r.row, c.colId, e)}
+                                  data-cell-focused={
+                                    !isGroup &&
+                                    r.row != null &&
+                                    c.colId &&
+                                    focusedCell?.rowId ===
+                                      String(getRowId(r.row)) &&
+                                    focusedCell?.colId === c.colId
+                                      ? "true"
+                                      : undefined
+                                  }
+                                  onClickCapture={
+                                    isGroup
+                                      ? undefined
+                                      : (e) =>
+                                          onCellFocusCapture(r.row, c.colId, e)
+                                  }
                                   data-resize-state={
                                     c.colId && resizing?.id === c.colId
                                       ? "active"
@@ -3143,7 +3345,8 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                                       onMouseDown={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        activeHandleElRef.current = e.currentTarget;
+                                        activeHandleElRef.current =
+                                          e.currentTarget;
                                         measureResizeBoundary(e.currentTarget);
                                         setResizing({
                                           id: cellMeta.id,
@@ -3179,6 +3382,46 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
             </tbody>
           )}
         </table>
+        {/* 2026-07-02 — full-height invisible resize strips: real hoverable
+            elements at every resizable column boundary, spanning the whole
+            table so hovering ANYWHERE along a boundary (incl. the group-header
+            row band) shows the line and can start a drag. */}
+        {colBoundaries.map((b) => (
+          <div
+            key={b.id}
+            aria-hidden
+            className="jira-col-resize-strip"
+            style={{ left: b.left - 4, height: tableHeight }}
+            onMouseEnter={() => {
+              if (resizing) return;
+              setHoveredResizeColId(b.id);
+              setResizeBoundaryX(b.left);
+              setResizeLineHeight(tableHeight);
+            }}
+            onMouseLeave={() => {
+              if (!resizing) {
+                setHoveredResizeColId(null);
+                setResizeBoundaryX(null);
+              }
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setResizing({ id: b.id, startX: e.clientX, startWidth: b.width });
+              setHoveredResizeColId(b.id);
+              setResizeBoundaryX(b.left);
+              setResizeLineHeight(tableHeight);
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              setColumnWidths((prev) => {
+                const n = { ...prev };
+                delete n[b.id];
+                return n;
+              });
+            }}
+          />
+        ))}
         {/* 2026-07-02 — Jira-style single continuous resize line. Spans the
             whole table (header + rows + group rows) at the hovered/dragged
             column boundary. Neutral-bold on hover, blue on active drag. */}
@@ -3713,29 +3956,40 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           like the "+", but centred VERTICALLY on the row (center-hover). It is
           its OWN pdnd draggable (see DragHandleGrip), so dragging works from the
           portal; per-row RowDropAnchor supplies the drop targets. */}
-      {floatAfford && !draggingRowId && !isScrolling && !resizing && floatAfford.zone === 'center' && renderRowDragHandle && !rowDragHandleHidden
-        && createPortal(
+      {floatAfford &&
+        !draggingRowId &&
+        !isScrolling &&
+        !resizing &&
+        floatAfford.zone === "center" &&
+        renderRowDragHandle &&
+        !rowDragHandleHidden &&
+        createPortal(
           <div
             onMouseEnter={cancelFloatHide}
             onMouseLeave={onRowZoneLeave}
             style={{
-              position: 'fixed',
+              position: "fixed",
               left: floatAfford.left,
               top: floatAfford.top + floatAfford.height / 2,
-              transform: 'translate(-50%, -50%)',
+              transform: "translate(-50%, -50%)",
               zIndex: 1000,
-              display: 'inline-flex',
+              display: "inline-flex",
             }}
           >
             {renderRowDragHandle(floatAfford.row)}
           </div>,
-          document.body,
+          document.body
         )}
       {/* The INSERT "+" stays portaled too (top-border affordance): centred on
           the TOP-LEFT CORNER where the row's top divider meets the left border
           (top-hover) and shows a full-width blue insert line. */}
-      {floatAfford && !draggingRowId && !isScrolling && !resizing && floatAfford.zone === 'top' && onInsertAbove
-        && createPortal(
+      {floatAfford &&
+        !draggingRowId &&
+        !isScrolling &&
+        !resizing &&
+        floatAfford.zone === "top" &&
+        onInsertAbove &&
+        createPortal(
           <>
             {/* Blue insert line on the row's TOP border — same pattern as the
                 drag drop-line, marks where the new item lands. Clamped to the
@@ -3743,40 +3997,42 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
             <div
               aria-hidden
               style={{
-                position: 'fixed',
+                position: "fixed",
                 left: Math.max(floatAfford.left, floatAfford.viewLeft),
                 top: floatAfford.top - 1,
                 width: Math.max(
                   0,
-                  Math.min(floatAfford.left + floatAfford.width, floatAfford.viewRight) -
-                    Math.max(floatAfford.left, floatAfford.viewLeft),
+                  Math.min(
+                    floatAfford.left + floatAfford.width,
+                    floatAfford.viewRight
+                  ) - Math.max(floatAfford.left, floatAfford.viewLeft)
                 ),
                 height: 2,
-                background: 'var(--ds-border-brand)',
+                background: "var(--ds-border-brand)",
                 borderRadius: 1,
                 zIndex: 999,
-                pointerEvents: 'none',
+                pointerEvents: "none",
               }}
             />
             {/* "Create" tooltip pinned just left of the "+" box. */}
             <span
               aria-hidden
               style={{
-                position: 'fixed',
+                position: "fixed",
                 left: floatAfford.left - 16,
                 top: floatAfford.top,
-                transform: 'translate(-100%, -50%)',
+                transform: "translate(-100%, -50%)",
                 zIndex: 1000,
-                padding: '2px 6px',
-                background: 'var(--ds-surface-overlay)',
-                border: '1px solid var(--ds-border)',
+                padding: "2px 6px",
+                background: "var(--ds-surface-overlay)",
+                border: "1px solid var(--ds-border)",
                 borderRadius: 4,
-                boxShadow: 'var(--ds-shadow-overlay)',
-                color: 'var(--ds-text)',
+                boxShadow: "var(--ds-shadow-overlay)",
+                color: "var(--ds-text)",
                 fontSize: 12,
-                lineHeight: '16px',
-                whiteSpace: 'nowrap',
-                pointerEvents: 'none',
+                lineHeight: "16px",
+                whiteSpace: "nowrap",
+                pointerEvents: "none",
               }}
             >
               Create
@@ -3786,24 +4042,35 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
               aria-label="Add work item above"
               onMouseEnter={cancelFloatHide}
               onMouseLeave={onRowZoneLeave}
-              onClick={(e) => { e.stopPropagation(); onInsertAbove(floatAfford.row); setFloatAfford(null); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onInsertAbove(floatAfford.row);
+                setFloatAfford(null);
+              }}
               style={{
-                position: 'fixed',
+                position: "fixed",
                 left: floatAfford.left,
                 top: floatAfford.top,
-                transform: 'translate(-50%, -50%)',
+                transform: "translate(-50%, -50%)",
                 zIndex: 1000,
-                width: 22, height: 22, padding: 0,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                background: 'var(--ds-surface)', border: '1px solid var(--ds-border)',
-                borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay)',
-                color: 'var(--ds-icon-subtle)', cursor: 'pointer',
+                width: 22,
+                height: 22,
+                padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "var(--ds-surface)",
+                border: "1px solid var(--ds-border)",
+                borderRadius: 4,
+                boxShadow: "var(--ds-shadow-overlay)",
+                color: "var(--ds-icon-subtle)",
+                cursor: "pointer",
               }}
             >
               <PlusIcon label="" size="small" />
             </button>
           </>,
-          document.body,
+          document.body
         )}
     </div>
   );
