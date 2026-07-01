@@ -546,7 +546,7 @@
   overflow-x: visible !important;
   background: var(--ds-surface) !important;
   border-radius: 12px !important;
-  border: 1px solid var(--ds-border) !important;
+  border: 1px solid var(--ds-border-bold) !important;
   overflow: visible !important;
   padding-right: 48px !important; /* D-R1: clearance for completed badge */
 }
@@ -589,7 +589,7 @@
   width: 228px !important;
   height: 145px !important;
   background: var(--ds-surface) !important;
-  border: 1px solid var(--ds-border) !important;
+  border: 1px solid var(--ds-border-bold) !important;
   border-radius: 6px !important;
   padding: 8px 10px !important;
   cursor: pointer !important;

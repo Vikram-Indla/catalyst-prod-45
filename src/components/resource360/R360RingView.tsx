@@ -152,7 +152,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         position: 'relative', width: '100%', height: '720px', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--bg-1) 55%, var(--bg-3) 100%)',
-        borderRadius: 12, border: '1px solid var(--ds-border)',
+        borderRadius: 12, border: '1px solid var(--ds-border-bold)',
       }}>
         <div style={{ textAlign: 'center', color: 'var(--fg-3)' }}>
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>

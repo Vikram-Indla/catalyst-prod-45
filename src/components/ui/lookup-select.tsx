@@ -83,7 +83,7 @@ export function LookupSelect({
           ) : undefined}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="bg-popover border shadow-lg z-[400]">
+      <SelectContent className="bg-popover border z-[400]">
         {/* If there's an inactive value that needs to be shown */}
         {includeInactiveValue && !options.some(o => o.value_key === includeInactiveValue) && (
           <SelectItem 

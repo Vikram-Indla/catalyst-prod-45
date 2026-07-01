@@ -79,7 +79,7 @@ export default function CatalystViewSubtask({
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', borderRadius: 6, marginBottom: 16, cursor: 'pointer', transition: 'background 0.12s' }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-border)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}>
           <IssueIcon type={parentIssue.issue_type} size={14} />
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{parentIssue.issue_key}</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{parentIssue.issue_key}</span>
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
           <StatusLozenge status={parentIssue.status} statusCategory={parentIssue.status_category ?? undefined} />
         </div>
