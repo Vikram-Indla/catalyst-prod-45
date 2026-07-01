@@ -28,10 +28,6 @@ export interface BoardIssue {
   parentSummary: string | null;
   sprintRelease: string | null;
   isFlagged: boolean;
-  /** True once the item has ever been flagged. Sticky — stays true after
-   *  the current flag is removed. Card renders a subtle blue "was flagged"
-   *  background when isFlagged=false && wasFlagged=true. */
-  wasFlagged: boolean;
   /** Card cover — raw CSS background value (hex, linear-gradient(), url()). */
   cover: string | null;
   updatedAt: string | null;

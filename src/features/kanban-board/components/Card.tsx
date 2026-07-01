@@ -76,19 +76,13 @@ export const Card: React.FC<CardProps> = ({
   // Jira-parity: flagged cards get the warning cream background — no left
   // border, no orange bar, no ring. Marker inside the card is the filled
   // red flag icon in the footer, next to priority.
-  // Sticky history: an item currently UNflagged but previously flagged
-  // gets a subtle blue "information" tint so users see it was flagged before.
   if (issue.isFlagged) {
     base.background = token('color.background.warning', 'var(--ds-background-warning)');
-  } else if (issue.wasFlagged) {
-    base.background = token('color.background.information', 'var(--ds-background-information)');
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
       ? token('color.background.warning', 'var(--ds-background-warning)')
-      : issue.wasFlagged
-        ? token('color.background.information', 'var(--ds-background-information)')
-        : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral)');
+      : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral)');
   }
   if (isSelected) {
     base.outline = `2px solid ${token('color.border.selected', 'var(--ds-link)')}`;

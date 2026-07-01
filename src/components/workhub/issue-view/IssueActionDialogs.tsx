@@ -295,15 +295,12 @@ export function AddFlagModal({
       const noteText = tiptapPlainText(tipDoc);
       const nextFlagReason = newFlagged ? (noteText.trim() || FLAG_VALUE) : null;
 
-      // 2026-07-01: every mode table now has is_flagged + flag_reason + was_flagged
-      // (migration 20260701131032_flag_columns_all_modes). Write all three uniformly.
+      // 2026-07-01: every mode table now has is_flagged + flag_reason
+      // (migration 20260701131032_flag_columns_all_modes). Write both uniformly.
       const updatePayload: Record<string, unknown> = {
         is_flagged: newFlagged,
         flag_reason: nextFlagReason,
       };
-      // Sticky "was flagged at least once" marker. Only set to true; never
-      // reset — even after unflag, the card keeps its blue history tint.
-      if (newFlagged) updatePayload.was_flagged = true;
 
       const { error } = await (supabase.from(tableName) as any)
         .update(updatePayload)
