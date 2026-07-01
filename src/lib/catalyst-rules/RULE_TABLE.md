@@ -104,6 +104,70 @@ Each module may only create the types it owns, plus subtask family.
 
 ---
 
+## GRID E — UI Pattern Rules
+
+Hub navigation patterns enforced on all route surfaces.
+
+### E1 — L1 Hub List Pages
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| E1 | L1 list route MUST use `CatalystListPageLayout chromeBand={<ProjectPageHeader hubType projectKey />}` — NO `trail`, NO `title` props. `deriveRouteWord()` auto-fills section name from URL. | Ban `CatalystPageHeader` on L1; ban explicit `title` prop on L1 `ProjectPageHeader` |
+
+Canonical: `src/pages/project-hub/filters/FiltersListPage.tsx`
+
+```tsx
+// L1 — CORRECT
+<CatalystListPageLayout chromeBand={<ProjectPageHeader projectKey={key} hubType="project" />}>
+  <JiraTable ... />
+</CatalystListPageLayout>
+```
+
+### E2 — L2 Hub Detail Pages
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| E2 | L2 detail route MUST use `AtlaskitPageShell flush chromeBand={<ProjectPageHeader trail={[{text,href}]} title={name} />}`. `trail` adds clickable L1 crumb; `title` becomes bold current crumb. | Ban missing `trail` on detail pages; ban `breadcrumbs` prop (unsupported by ProjectPageHeader, silently dropped) |
+
+Canonical: `src/pages/project-hub/filters/FilterDetailPage.tsx`
+
+```tsx
+// L2 — CORRECT
+<AtlaskitPageShell flush chromeBand={
+  <ProjectPageHeader
+    projectKey={key}
+    hubType="project"
+    trail={[{ text: 'Filters', href: `/project-hub/${key}/filters` }]}
+    title={filter.name}
+  />
+}>
+```
+
+### E3 — CatalystPageHeader Ban on Hub Routes
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| E3 | `CatalystPageHeader` BANNED on all hub routes — no breadcrumb support. Any hub route using it MUST migrate to `ProjectPageHeader`. | `grep -r "CatalystPageHeader" src/pages/` → zero results on hub routes |
+
+### E4 — Global Hub Pages (no `:key` in URL)
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| E4 | Global hub pages (incident-hub, testhub, release-hub, tasks, all-projects, all-products) MUST use `ProjectPageHeader hubType={…}` without `projectKey`. Same L1/L2 pattern applies. | `projectKey` omitted; `hubType` drives root crumb |
+
+```tsx
+// Global L1 — CORRECT
+<ProjectPageHeader hubType="project" actions={<Button>Create</Button>} />
+```
+
+### E5 — Hand-rolled Breadcrumbs Ban
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| E5 | Hand-rolled `<nav>` breadcrumbs, standalone `<Breadcrumbs>` in hub chrome, and skip-level breadcrumbs (L2 without L1 crumb in `trail`) BANNED. `ProjectPageHeader trail` is sole sanctioned mechanism. | Reject any PR adding `<nav>` / `<Breadcrumbs>` to hub chrome layer |
+
+---
+
 ## Change Log
 
 | Date       | Row  | Change                          | Confirmed by |
@@ -112,6 +176,7 @@ Each module may only create the types it owns, plus subtask family.
 | 2026-07-01 | A5   | Production Incident: TEAM → INCIDENT | Vikram  |
 | 2026-07-01 | C2   | Business Request ↔ Production Incident: ALLOW (was proposed BAN) | Vikram |
 | 2026-07-01 | C10  | Same-type linking: BAN          | Vikram       |
+| 2026-07-01 | E1–E5 | Grid E added: Hub L1/L2 breadcrumb pattern, CatalystPageHeader ban, global hub rule, hand-rolled breadcrumb ban | Vikram |
 
 ---
 
