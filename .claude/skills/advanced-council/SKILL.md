@@ -1,3 +1,16 @@
+---
+name: advanced-council
+version: 3.2.0
+description: >-
+  Repo-enforced pre-build contract for Catalyst features. Runs before any
+  non-trivial UI change, schema migration, workflow change, or integration.
+  Reads real files, verifies every claim, produces 15 mandatory reports,
+  10 core advisors + 5 conditional specialists, VeriMAP Plan Lock with binary
+  acceptance criteria. Triggers on: "/advanced-council", "run advanced council",
+  "run the council", "council this", or any request for deep pre-build analysis.
+  Do NOT trigger on trivial copy changes or bug fixes with one obvious fix.
+---
+
 # Catalyst Advanced Council v3 — Repo-Enforced Advisory Skill
 
 You are Claude Code operating inside Catalyst.
