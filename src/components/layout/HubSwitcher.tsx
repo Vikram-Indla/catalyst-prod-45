@@ -34,6 +34,7 @@ import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
+import Lozenge from '@atlaskit/lozenge';
 import { useHubShortcuts } from '@/hooks/useHubShortcuts';
 import { useModuleAccess } from '@/hooks/useModuleAccess';
 
@@ -96,7 +97,7 @@ function LockGlyph() {
   );
 }
 
-function HubRowLabel({ hub }: { hub: HubEntry }) {
+function HubRowLabel({ hub, deprecated }: { hub: HubEntry; deprecated?: boolean }) {
   return (
     <span
       style={{
@@ -110,19 +111,23 @@ function HubRowLabel({ hub }: { hub: HubEntry }) {
       {/* Explicit readable color: Atlaskit LinkItem was rendering the label at
           ~7% alpha (rgba(206,206,217,0.07)) in dark mode → invisible. Force the
           theme-aware text token so labels are readable in light AND dark. */}
-      <span data-hub-label={hub.key} style={{ color: 'var(--ds-text)' }}>{hub.label}</span>
-      <span
-        data-hub-shortcut={hub.key}
-        style={{
-          fontSize: 'var(--ds-font-size-100)',
-          color: 'var(--ds-text-subtlest)',
-          fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
-          fontWeight: 500,
-          letterSpacing: '0.02em',
-        }}
-      >
-        ⌘{hub.shortcut}
-      </span>
+      <span data-hub-label={hub.key} style={{ color: deprecated ? 'var(--ds-text-disabled)' : 'var(--ds-text)' }}>{hub.label}</span>
+      {deprecated ? (
+        <Lozenge appearance="default">Soon</Lozenge>
+      ) : (
+        <span
+          data-hub-shortcut={hub.key}
+          style={{
+            fontSize: 'var(--ds-font-size-100)',
+            color: 'var(--ds-text-subtlest)',
+            fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
+            fontWeight: 500,
+            letterSpacing: '0.02em',
+          }}
+        >
+          ⌘{hub.shortcut}
+        </span>
+      )}
     </span>
   );
 }
@@ -300,32 +305,23 @@ export function HubSwitcher() {
             return (
               <Section key={key} title={title}>
                 {rows.map((hub) => {
-                  // Deprecated hub: visually enabled but non-navigable (dead).
+                  // Deprecated hub: coming soon — uniform LinkItem height/alignment, disabled navigation.
                   if (hub.deprecated) {
                     return (
-                      <div
+                      <LinkItem
                         key={hub.key}
-                        role="menuitem"
-                        aria-disabled="true"
-                        data-hub-deprecated={hub.key}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                          padding: '8px 12px',
-                          cursor: 'not-allowed',
-                          userSelect: 'none',
-                        }}
+                        href={hub.href}
+                        isDisabled
+                        iconBefore={
+                          <img
+                            src={HUB_ICON_REGISTRY[hub.key]}
+                            alt={hub.label}
+                            style={{ width: 24, height: 24, display: 'block', opacity: 0.55 }}
+                          />
+                        }
                       >
-                        <img
-                          src={HUB_ICON_REGISTRY[hub.key]}
-                          alt={hub.label}
-                          style={{ width: 24, height: 24, display: 'block' }}
-                        />
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
-                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest)' }}>{hub.label}</span>
-                        </span>
-                      </div>
+                        <HubRowLabel hub={hub} deprecated />
+                      </LinkItem>
                     );
                   }
                   // Inaccessible hub: shown but grayed-out, non-navigable, locked.
