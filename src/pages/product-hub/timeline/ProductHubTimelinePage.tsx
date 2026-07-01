@@ -501,6 +501,61 @@ export default function ProductHubTimelinePage() {
       }
       invalidate();
     },
+
+    /* Drag-reorder (grip). Full-resequence to a target sibling + drop edge.
+       SIBLING-ONLY: rejects cross-parent drops. Top-level rows write
+       business_requests.display_order; nested rows write ph_issues.position. */
+    onReorderToIndex: async (issueKey, targetKey, edge) => {
+      if (issueKey === targetKey) return;
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['product-hub-timeline', productCode]) ?? [];
+      let siblings: TimelineIssue[] = [];
+      let isTopLevel = false;
+      if (tree.some(t => t.issueKey === issueKey)) {
+        siblings = tree;
+        isTopLevel = true;
+      } else {
+        const parent = tree.find(t => t.children.some(c => c.issueKey === issueKey));
+        if (!parent) return;
+        siblings = parent.children;
+      }
+      if (!siblings.some(s => s.issueKey === targetKey)) return; // not a sibling → reject
+      const from = siblings.findIndex(s => s.issueKey === issueKey);
+      if (from === -1 || siblings.length <= 1) return;
+
+      const reordered = [...siblings];
+      const [moved] = reordered.splice(from, 1);
+      let insertIdx = reordered.findIndex(s => s.issueKey === targetKey);
+      if (insertIdx === -1) return;
+      if (edge === 'bottom') insertIdx += 1;
+      reordered.splice(insertIdx, 0, moved);
+      const ranked = reordered.map((s, i) => ({ ...s, displayOrder: (i + 1) * 1024 }));
+
+      patchTopLevel((tree) => {
+        if (isTopLevel) return ranked;
+        return tree.map(br =>
+          br.children.some(c => c.issueKey === issueKey)
+            ? { ...br, children: ranked }
+            : br);
+      });
+
+      if (isTopLevel) {
+        await Promise.all(
+          ranked.map(s =>
+            (supabase as any)
+              .from('business_requests')
+              .update({ display_order: s.displayOrder, updated_at: new Date().toISOString() })
+              .eq('request_key', s.issueKey),
+          ),
+        );
+      } else {
+        await Promise.all(
+          ranked.map(s =>
+            (supabase as any).from('ph_issues').update({ position: s.displayOrder }).eq('issue_key', s.issueKey),
+          ),
+        );
+      }
+      invalidate();
+    },
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [productCode, productId, queryClient, initialStep, user?.id]);
 
@@ -522,6 +577,7 @@ export default function ProductHubTimelinePage() {
       detailRouteOwnerKey={productCode ?? ''}
       mutations={mutations}
       enableBarDrag={false}
+      enableRowDrag
       createTopLevelConfig={{ label: 'Create business request', iconType: 'Business Request' }}
       childTypesOverride={[...BUSINESS_REQUEST_SUBTASK_TYPES]}
       childrenOnlyOnTopLevel

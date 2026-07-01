@@ -110,6 +110,8 @@ import {
 } from "./primitives";
 import { EditDatesModal } from "./EditDatesModal";
 import { SidebarRow } from "./SidebarRow";
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import { TimelineBottomBar } from "./TimelineBottomBar";
 import {
   DependencyColumnHeaders,
@@ -148,6 +150,7 @@ export default function TimelineView(props: TimelineViewProps) {
     enableInlineCreate = true,
     enableRowMenu = true,
     enableBarDrag = true,
+    enableRowDrag = false,
     enableCreateEpicRow = true,
     enableEmptyRowAdd = true,
     enableDetailPanel = true,
@@ -860,6 +863,27 @@ export default function TimelineView(props: TimelineViewProps) {
       document.body.style.userSelect = "";
     };
   }, [dragging]);
+
+  /* Row drag-reorder monitor — Jira timeline parity (img #53). Fires for
+     every SidebarRow grip (the draggable) in this tree. The source carries
+     { rowId, parentKey }; the drop target carries { rowId } + closest edge.
+     Sibling-only enforcement lives in both the drop target's canDrop AND
+     mutations.onReorderToIndex (which no-ops on a cross-parent target). */
+  useEffect(() => {
+    if (!enableRowDrag || !mutations?.onReorderToIndex) return;
+    return monitorForElements({
+      onDrop: ({ source, location }) => {
+        const target = location.current.dropTargets[0];
+        if (!target) return;
+        const draggedKey = source.data.rowId as string;
+        const targetKey = target.data.rowId as string;
+        const edge = extractClosestEdge(target.data);
+        if (!draggedKey || !targetKey || draggedKey === targetKey) return;
+        if (edge !== "top" && edge !== "bottom") return;
+        void mutations.onReorderToIndex!(draggedKey, targetKey, edge);
+      },
+    });
+  }, [enableRowDrag, mutations]);
 
   /* move-arming */
   useEffect(() => {
@@ -2543,6 +2567,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         enableCheckbox={enableRowCheckbox}
                         enableInlineCreate={enableInlineCreate}
                         enableMenu={enableRowMenu}
+                        enableRowDrag={enableRowDrag}
                         mutations={mutations}
                         childTypesOverride={childTypesOverride}
                         childrenOnlyOnGroupRows={childrenOnlyOnGroupRows}

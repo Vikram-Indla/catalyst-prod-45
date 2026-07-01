@@ -8,7 +8,19 @@
  */
 
 import React, { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
+import {
+  draggable,
+  dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview";
+import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview";
+import {
+  attachClosestEdge,
+  extractClosestEdge,
+  type Edge,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import Avatar from "@atlaskit/avatar";
 import Tooltip from "@atlaskit/tooltip";
 import Button from "@atlaskit/button";
@@ -39,6 +51,128 @@ import { EditDatesModal } from "./EditDatesModal";
 import { ProductEditDatesModal } from "./ProductEditDatesModal";
 import { ProductTimelineRowMenu } from "./ProductTimelineRowMenu";
 
+/**
+ * RowDragPreviewChip — the compact "ghost" that follows the cursor while a row
+ * is dragged (Jira timeline parity, img #53): type icon + truncated summary in
+ * an elevated overlay chip. Rendered into a native drag-preview container.
+ */
+function RowDragPreviewChip({ issue }: { issue: TimelineIssue }) {
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        maxWidth: 320,
+        padding: "6px 10px",
+        background: "var(--ds-surface-overlay)",
+        border: "1px solid var(--ds-border)",
+        borderRadius: 4,
+        boxShadow: "var(--ds-shadow-overlay)",
+        fontSize: "var(--ds-font-size-200)",
+        color: "var(--ds-text)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <JiraIssueTypeIcon type={issue.issueType} size={16} />
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+        {issue.summary}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * RowDragGrip — the 6-dot drag handle. The sidebar scroll container clips on
+ * its left edge (`overflowX:hidden`), so the grip is PORTALED to <body> at
+ * fixed coords derived from the row rect — same escape-the-clip pattern the
+ * backlog table uses. Because a body-portal grip is OUTSIDE the row, it can't
+ * be a `dragHandle` on a row-level draggable; instead the grip IS its own pdnd
+ * draggable carrying `{ rowId, parentKey }`. The per-row drop targets + the
+ * global monitor (in TimelineView) do the actual reorder.
+ */
+function RowDragGrip({
+  issue,
+  rect,
+  onDragStateChange,
+}: {
+  issue: TimelineIssue;
+  rect: DOMRect;
+  onDragStateChange: (on: boolean) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    return draggable({
+      element: el,
+      getInitialData: () => ({ rowId: issue.issueKey, parentKey: issue.parentKey ?? null }),
+      onGenerateDragPreview: ({ nativeSetDragImage }) => {
+        setCustomNativeDragPreview({
+          nativeSetDragImage,
+          getOffset: pointerOutsideOfPreview({ x: "12px", y: "8px" }),
+          render: ({ container }) => {
+            const root = createRoot(container);
+            /* flushSync forces the chip DOM to commit SYNCHRONOUSLY. pdnd hands
+               the container to the browser's native drag-image snapshot
+               immediately after this render callback returns — a plain async
+               root.render() leaves the container empty at snapshot time, so the
+               drag image comes out blank (no type icon, no title). */
+            flushSync(() => {
+              root.render(<RowDragPreviewChip issue={issue} />);
+            });
+            return () => root.unmount();
+          },
+        });
+      },
+      /* Signal drag start/stop UP to the row so it can (a) keep this grip
+         MOUNTED for the whole drag — otherwise the row loses hover as the
+         pointer moves onto other rows, this portal unmounts, and the drag
+         aborts before drop — and (b) dim the source row like Jira. */
+      onDragStart: () => onDragStateChange(true),
+      onDrop: () => onDragStateChange(false),
+    });
+  }, [issue.issueKey, issue.parentKey, issue.issueType, issue.summary, onDragStateChange]);
+
+  return createPortal(
+    <div
+      ref={ref}
+      aria-hidden
+      style={{
+        position: "fixed",
+        left: rect.left + 2,
+        top: rect.top + rect.height / 2 - 9,
+        width: 18,
+        height: 18,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "var(--ds-surface-overlay)",
+        border: "1px solid var(--ds-border)",
+        borderRadius: 4,
+        boxShadow: "var(--ds-shadow-overlay)",
+        color: "var(--ds-icon-subtle)",
+        cursor: "grab",
+        zIndex: 9998,
+      }}
+    >
+      <span style={{ display: "inline-flex", transform: "scale(0.72)" }}>
+        {/* 6-dot grip — no ADS icon equivalent; inline SVG (currentColor). */}
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+          <circle cx="2" cy="2" r="1.5" />
+          <circle cx="8" cy="2" r="1.5" />
+          <circle cx="2" cy="8" r="1.5" />
+          <circle cx="8" cy="8" r="1.5" />
+          <circle cx="2" cy="14" r="1.5" />
+          <circle cx="8" cy="14" r="1.5" />
+        </svg>
+      </span>
+    </div>,
+    document.body,
+  );
+}
+
 export interface SidebarRowProps {
   issue: TimelineIssue;
   depth: number;
@@ -54,6 +188,9 @@ export interface SidebarRowProps {
   enableCheckbox?: boolean;
   enableInlineCreate?: boolean;
   enableMenu?: boolean;
+  /** Enables the Jira-parity drag-handle grip + drag-reorder. Only effective
+   *  when `mutations.onReorderToIndex` is provided. */
+  enableRowDrag?: boolean;
   /* mutations (used by menu / inline create / edit dates) */
   mutations?: TimelineMutations;
   /** Override the inline-create type picker options. Default is derived from
@@ -116,6 +253,7 @@ export function SidebarRow({
   enableCheckbox = true,
   enableInlineCreate = true,
   enableMenu = true,
+  enableRowDrag = false,
   mutations,
   childTypesOverride,
   childrenOnlyOnGroupRows = false,
@@ -135,6 +273,55 @@ export function SidebarRow({
   const hasChildren = issue.children.length > 0;
   const [rowHovered, setRowHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  /* ── Drag-reorder (grip) — Jira timeline parity (img #55) ─────────────── */
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [gripRect, setGripRect] = useState<DOMRect | null>(null);
+  const [dropEdge, setDropEdge] = useState<Edge | null>(null);
+  const [dropRect, setDropRect] = useState<DOMRect | null>(null);
+  /* True while THIS row is the drag source. Keeps the portaled grip mounted
+     for the whole drag (the pointer leaves the row → hover flips false → the
+     grip would otherwise unmount and abort the drag) AND highlights the source
+     row blue at full opacity — Jira does NOT fade the source (img #55). */
+  const [isDragging, setIsDragging] = useState(false);
+  const handleDragState = React.useCallback((on: boolean) => {
+    setIsDragging(on);
+    if (on) setRowHovered(true);
+  }, []);
+  /* Draggable rows: real (non-group, persisted) rows on a hub that provides
+     the index reorder mutation. Temp/local keys can't persist a position. */
+  const canDragRow =
+    enableRowDrag &&
+    !!mutations?.onReorderToIndex &&
+    !issue.isGroup &&
+    !issue.issueKey.includes("-LOCAL-") &&
+    !issue.issueKey.includes("-NEW-");
+
+  /* Register the row element as a pdnd drop target. SIBLING-ONLY: canDrop
+     rejects a source whose parent differs (cross-parent drops are not allowed
+     — Jira timeline reorders within a parent only). Draws the blue insert
+     line on the closest edge via a body portal (row has overflow:hidden). */
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el || !canDragRow) return;
+    return dropTargetForElements({
+      element: el,
+      canDrop: ({ source }) =>
+        source.data.rowId !== issue.issueKey &&
+        source.data.parentKey === (issue.parentKey ?? null),
+      getData: ({ input, element }) =>
+        attachClosestEdge(
+          { rowId: issue.issueKey },
+          { input, element, allowedEdges: ["top", "bottom"] },
+        ),
+      onDrag: ({ self }) => {
+        setDropEdge(extractClosestEdge(self.data));
+        setDropRect(el.getBoundingClientRect());
+      },
+      onDragLeave: () => setDropEdge(null),
+      onDrop: () => setDropEdge(null),
+    });
+  }, [canDragRow, issue.issueKey, issue.parentKey]);
   const [editDatesOpen, setEditDatesOpen] = useState(false);
   const [inlineCreateOpen, setInlineCreateOpen] = useState(false);
   const [inlineCreateType, setInlineCreateType] = useState("Story");
@@ -547,6 +734,7 @@ export function SidebarRow({
       <div
         role="rowheader"
         data-row-key={issue.issueKey}
+        ref={rowRef}
         style={{
           height: ROW_H,
           display: "flex",
@@ -559,13 +747,16 @@ export function SidebarRow({
             : "1px solid var(--ds-border)",
           overflow: "hidden",
           cursor: "pointer",
-          background: isSelected
+          /* Source-of-drag row: solid blue selected bg at FULL opacity — Jira
+             highlights, never fades the row being dragged (img #55). */
+          background: isSelected || isDragging
             ? "var(--ds-background-selected)"
             : (onSharedHover ? sharedHoveredKey === issue.issueKey : rowHovered)
             ? "var(--cat-dep-row-hover)"
             : tinted
             ? "var(--cat-dep-row-bg)"
             : "transparent",
+          opacity: 1,
           transition: "background 80ms ease",
           position: "relative",
         }}
@@ -587,15 +778,60 @@ export function SidebarRow({
           navigate(buildIssueDetailRoute(issue.issueKey));
         }}
         aria-expanded={hasChildren ? !collapsed : undefined}
-        onMouseEnter={() => {
+        onMouseEnter={(e) => {
           setRowHovered(true);
+          if (canDragRow) setGripRect(e.currentTarget.getBoundingClientRect());
           onSharedHover?.(issue.issueKey);
         }}
         onMouseLeave={() => {
-          if (!menuOpen) setRowHovered(false);
+          /* Keep hover/grip alive while THIS row is being dragged — the pointer
+             leaves the source row the moment the drag starts moving. */
+          if (!menuOpen && !isDragging) setRowHovered(false);
+          if (!isDragging) setGripRect(null);
           onSharedHover?.(null);
         }}
       >
+        {/* Drag-handle grip (portaled — sidebar clips its left edge) + the
+            blue insert line while a drag hovers this row. Both escape the
+            row's overflow:hidden via body portals. The grip stays mounted for
+            the whole drag (rowHovered || isDragging) so the drag never aborts. */}
+        {canDragRow && (rowHovered || isDragging) && gripRect && (
+          <RowDragGrip issue={issue} rect={gripRect} onDragStateChange={handleDragState} />
+        )}
+        {canDragRow && dropEdge && dropRect && createPortal(
+          <div aria-hidden style={{ pointerEvents: "none" }}>
+            {/* Full-width blue insert line + hollow circle node on its left
+                end — exact Jira drop indicator (img #55). */}
+            <div
+              style={{
+                position: "fixed",
+                left: dropRect.left,
+                width: dropRect.width,
+                top: dropEdge === "top" ? dropRect.top - 1 : dropRect.bottom - 1,
+                height: 2,
+                background: "var(--ds-border-brand)",
+                zIndex: 9999,
+                borderRadius: 1,
+              }}
+            />
+            <div
+              style={{
+                position: "fixed",
+                left: dropRect.left - 3,
+                top: (dropEdge === "top" ? dropRect.top - 1 : dropRect.bottom - 1) - 3,
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: "var(--ds-surface)",
+                border: "2px solid var(--ds-border-brand)",
+                boxSizing: "border-box",
+                zIndex: 9999,
+              }}
+            />
+          </div>,
+          document.body,
+        )}
+
         {/* Orange left rail — marks the located row AND its ancestor rows
           (Vikram 2026-06-25). No parent → only the located row carries it. */}
         {(isLocated || isLocatedAncestor) && (

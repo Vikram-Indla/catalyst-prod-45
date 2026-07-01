@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sketch — Jira-style grouped backlog</title>
+<style>
+  /* ROUGH MOCKUP ONLY — hardcoded colors here are intentional (Jira-parity
+     sketch, not production code). Production uses ADS tokens. */
+  :root{
+    --surface:#ffffff; --sunken:#f7f8f9; --border:#dfe1e6;
+    --text:#172b4d; --subtle:#626f86; --subtlest:#8993a4; --link:#0c66e4;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--sunken);color:var(--text);
+       font:14px/20px "Atlassian Sans",-apple-system,system-ui,sans-serif;}
+  .wrap{max-width:1100px;margin:24px auto;background:var(--surface);
+        border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .toolbar{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);}
+  .pill{height:32px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;
+        border:1px solid var(--border);border-radius:3px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;}
+  .pill.active{border-color:var(--link);background:#e9f2fe;color:var(--link);}
+  .scroll{max-height:520px;overflow:auto;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{position:sticky;top:0;z-index:3;background:var(--sunken);
+           text-align:left;font-size:12px;font-weight:600;color:var(--subtle);
+           text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;height:40px;
+           border-bottom:1px solid var(--border);white-space:nowrap;}
+  tbody td{padding:0 12px;height:40px;border-bottom:1px solid var(--border);
+           font-size:14px;color:var(--text);background:var(--surface);}
+  .colsel{width:40px;} .coltype{width:36px;} .colkey{width:96px;}
+  .colparent{width:120px;} .colstatus{width:150px;} .colassignee{width:170px;}
+
+  /* ── GROUP HEADER ROW — Jira parity ── */
+  tbody tr.group > td{
+    position:sticky; top:40px; z-index:1;          /* sticks under the 40px thead */
+    background:var(--surface);                      /* SOLID — no bleed */
+    border-bottom:1px solid var(--border);
+    border-top:1px solid var(--border);
+    height:40px;
+  }
+  .ghead{display:flex;align-items:center;gap:8px;white-space:nowrap;}
+  .chev{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;
+        color:var(--subtle);cursor:pointer;transition:transform .15s;}
+  .ghead .label{font-size:14px;font-weight:500;color:var(--text);}  /* ~14px, NOT 16 */
+  .ghead .count{font-size:14px;font-weight:400;color:var(--subtlest);} /* number ONLY */
+  .ghead .add{margin-left:2px;width:20px;height:20px;border:0;background:transparent;
+              color:var(--subtle);border-radius:3px;cursor:pointer;opacity:0;font-size:16px;line-height:1;}
+  tbody tr.group:hover .add{opacity:1;}
+
+  /* lozenges (component-owned color in prod) */
+  .loz{display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:3px;
+       font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;}
+  .loz.todo{background:#dcdfe4;color:#44546f;}
+  .loz.prog{background:#e9f2fe;color:#0055cc;}
+  .loz.done{background:#dcfff1;color:#216e4e;}
+  .ico{width:16px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;
+       font-size:11px;color:#fff;}
+  .ico.story{background:#22a06b;} .ico.task{background:#1868db;} .ico.bug{background:#e2483d;}
+  .key{color:var(--link);text-decoration:none;font-weight:500;}
+  .key:hover{text-decoration:underline;}
+  .muted{color:var(--subtle);}
+  .avatar{width:24px;height:24px;border-radius:50%;background:#dcdfe4;color:#44546f;
+          display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;}
+  .arow td{cursor:pointer;}
+  .arow:hover td{background:#f7f8f9;}
+  .note{max-width:1100px;margin:8px auto 0;color:#626f86;font-size:12px;}
+  .cellflex{display:flex;align-items:center;gap:8px;min-width:0;}
+  .summary{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="toolbar">
+      <span class="pill active">Group: Status ▾</span>
+      <span class="pill">Filter</span>
+      <span style="margin-left:auto;color:#626f86;font-size:13px;">181 of 181</span>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="colsel"><input type="checkbox"/></th>
+            <th class="coltype"></th>
+            <th>Work</th>
+            <th class="colparent">Parent</th>
+            <th class="colstatus">Status</th>
+            <th class="colassignee">Assignee</th>
+          </tr>
+        </thead>
+
+        <!-- GROUP 1 — workflow order: To Do FIRST (not alphabetical) -->
+        <tbody>
+          <tr class="group">
+            <td><input type="checkbox"/></td>
+            <td colspan="5">
+              <div class="ghead">
+                <span class="chev">▾</span>
+                <span class="loz todo">To Do</span>
+                <span class="count">3</span>
+                <button class="add" title="Add">+</button>
+              </div>
+            </td>
+          </tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico story">◆</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00031</a><span class="summary">Demand intake — new licence platform</span></div></td>
+            <td class="muted">None</td><td><span class="loz todo">Demand Intake</span></td><td><span class="muted">Unassigned</span></td></tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico task">▣</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00010</a><span class="summary">In requirements — gather BRD</span></div></td>
+            <td class="muted">None</td><td><span class="loz todo">In Requirements</span></td><td><span class="muted">Unassigned</span></td></tr>
+        </tbody>
+
+        <!-- GROUP 2 — In Progress -->
+        <tbody>
+          <tr class="group">
+            <td><input type="checkbox"/></td>
+            <td colspan="5">
+              <div class="ghead">
+                <span class="chev">▾</span>
+                <span class="loz prog">In Progress</span>
+                <span class="count">5</span>
+                <button class="add" title="Add">+</button>
+              </div>
+            </td>
+          </tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico story">◆</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00007</a><span class="summary">Validate activity licence (SFDA)</span></div></td>
+            <td class="muted">None</td><td><span class="loz prog">Implementation</span></td><td><span class="avatar">AK</span></td></tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico task">▣</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00011</a><span class="summary">In development — invoices page</span></div></td>
+            <td class="muted">None</td><td><span class="loz prog">In Development</span></td><td><span class="muted">Unassigned</span></td></tr>
+        </tbody>
+
+        <!-- GROUP 3 — Done LAST -->
+        <tbody>
+          <tr class="group">
+            <td><input type="checkbox"/></td>
+            <td colspan="5">
+              <div class="ghead">
+                <span class="chev">▾</span>
+                <span class="loz done">Done</span>
+                <span class="count">173</span>
+                <button class="add" title="Add">+</button>
+              </div>
+            </td>
+          </tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico story">◆</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00001</a><span class="summary">Hosting Professional Licenses Services on Saudi Business Center Platform</span></div></td>
+            <td class="muted">None</td><td><span class="loz done">Done</span></td><td><span class="muted">Unassigned</span></td></tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico bug">●</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00003</a><span class="summary">Establishment Violations / مخالفات المنشأة</span></div></td>
+            <td class="muted">None</td><td><span class="loz done">Done</span></td><td><span class="muted">Unassigned</span></td></tr>
+          <tr class="arow"><td><input type="checkbox"/></td><td><span class="ico task">▣</span></td>
+            <td><div class="cellflex"><a class="key" href="#">MDT-00004</a><span class="summary">الزيارات / رصد التحديات</span></div></td>
+            <td class="muted">None</td><td><span class="loz done">Done</span></td><td><span class="muted">Unassigned</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="note">
+    Sketch of the Jira-correct target. Key differences from current Catalyst:
+    groups in <b>workflow order</b> (To&nbsp;Do → In&nbsp;Progress → Done, not A–Z) ·
+    count is a <b>plain number</b> (not "181 work items") ·
+    group label ~<b>14px medium</b> (not 16px) ·
+    sticky header is <b>solid</b> and only the current group's header pins (scroll to see).
+  </p>
+</body>
+</html>

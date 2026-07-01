@@ -140,6 +140,12 @@ export interface TimelineMutations {
    *  Top-level rows reorder within their product; nested rows reorder
    *  within their parent BR. */
   onReorderSibling?: (issueKey: string, direction: 'first' | 'up' | 'down' | 'last') => Promise<void>;
+  /** Drag-reorder a row to a precise position relative to a target sibling.
+   *  `edge` is which side of `targetKey` the row drops onto ('top' = above,
+   *  'bottom' = below). SIBLING-ONLY (Jira timeline parity): if `targetKey`
+   *  is not a same-parent peer of `issueKey`, the impl no-ops. Powers the
+   *  drag-handle grip; the menu's onReorderSibling stays as the fallback. */
+  onReorderToIndex?: (issueKey: string, targetKey: string, edge: 'top' | 'bottom') => Promise<void>;
   /** Remove only one half of the date range. Used by the product-jira
    *  menu's "Remove dates" submenu. */
   onRemoveStartDate?: (issueKey: string) => Promise<void>;
@@ -182,6 +188,9 @@ export interface TimelineViewProps {
   enableInlineCreate?: boolean;
   enableRowMenu?: boolean;
   enableBarDrag?: boolean;
+  /** Enables the Jira-parity drag-handle grip + drag-reorder of sidebar rows.
+   *  Only effective when `mutations.onReorderToIndex` is also provided. */
+  enableRowDrag?: boolean;
   enableCreateEpicRow?: boolean;
   enableEmptyRowAdd?: boolean;
   enableDetailPanel?: boolean;
