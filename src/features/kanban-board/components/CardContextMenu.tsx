@@ -82,11 +82,24 @@ function IssueRow({ issue, onClick }: { issue: BoardIssue; onClick: () => void }
 
 export const CardContextMenu: React.FC<Props> = (p) => {
   const { issue, issues, columns, colPrimaryStatus, columnIssueIds } = p;
-  const [view, setView] = useState<'main' | 'status' | 'parent' | 'link'>('main');
+  const [view, setView] = useState<'main' | 'parent' | 'link'>('main');
   const [query, setQuery] = useState('');
   const [linkType, setLinkType] = useState(LINK_TYPES[0]);
 
-  const targets = columns.map((c) => ({ id: c.id, name: c.name, status: colPrimaryStatus[c.id] ?? c.statuses[0], category: c.category }));
+  /* Dynamic status list — columns come from the mode-specific workflow inside
+     useKanbanData (project → board_columns, product → BR workflow, incident →
+     piWorkflow, tasks → task_statuses, release → RELEASE_BOARD_COLUMNS, test →
+     TEST_BOARD_COLUMNS). We surface one row per column here so the "Change
+     status" submenu matches whatever workflow the surface actually uses. */
+  const targets = columns.map((c) => ({
+    id: c.id,
+    name: c.name,
+    status: colPrimaryStatus[c.id] ?? c.statuses[0],
+    category: c.category,
+    statusLower: (colPrimaryStatus[c.id] ?? c.statuses[0] ?? '').toLowerCase(),
+    matchers: (c.statuses ?? []).map((s) => (s ?? '').toLowerCase()),
+  }));
+  const currentStatusLower = (issue.status ?? '').toLowerCase();
 
   const idxInColumn = columnIssueIds.indexOf(issue.id);
   const isFirst = idxInColumn <= 0;
@@ -118,12 +131,6 @@ export const CardContextMenu: React.FC<Props> = (p) => {
         )}
       >
         {(close) => {
-          if (view === 'status') {
-            return (<><BackItem onClick={() => setView('main')} /><Divider />
-              {targets.map((t) => (
-                <MenuItem key={t.id} variant="plain" onClick={() => { p.onMoveStatus(issue.id, t.status, t.category); reset(); close(); }}>{t.name}</MenuItem>
-              ))}</>);
-          }
           if (view === 'parent') {
             return (<><BackItem onClick={reset} /><Divider />
               <input autoFocus placeholder="Search epics, stories…" value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle} />
@@ -148,6 +155,11 @@ export const CardContextMenu: React.FC<Props> = (p) => {
             reset();
             close();
           };
+          const fireStatus = (t: typeof targets[number]) => {
+            p.onMoveStatus(issue.id, t.status, t.category);
+            reset();
+            close();
+          };
           return (
             <>
               <SubmenuItem
@@ -165,7 +177,39 @@ export const CardContextMenu: React.FC<Props> = (p) => {
                   </>
                 )}
               </SubmenuItem>
-              <ParentItem label="Change status" onClick={() => setView('status')} />
+              <SubmenuItem
+                label="Change status"
+                ariaLabel="Change status"
+                onCloseParentMenu={close}
+                minWidth={220}
+              >
+                {() => targets.length === 0
+                  ? <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>No statuses available</div>
+                  : (
+                    <>
+                      {targets.map((t) => {
+                        // A status is "current" if the issue's status matches the
+                        // column primary OR any of the column's mapped statuses.
+                        // Second half handles multi-status columns (project/product)
+                        // where the primary != the issue's exact status.
+                        const isCurrent = t.statusLower === currentStatusLower
+                          || t.matchers.includes(currentStatusLower);
+                        return (
+                          <MenuItem
+                            key={t.id}
+                            variant="check"
+                            selected={isCurrent}
+                            disabled={isCurrent}
+                            onClick={() => fireStatus(t)}
+                          >
+                            {t.name}
+                          </MenuItem>
+                        );
+                      })}
+                    </>
+                  )
+                }
+              </SubmenuItem>
               <Divider />
               <MenuItem variant="plain" onClick={() => { p.onCopyLink(issue); close(); }}>Copy link</MenuItem>
               <MenuItem variant="plain" onClick={() => { p.onCopyKey(issue); close(); }}>Copy key</MenuItem>
