@@ -427,6 +427,23 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   const [hoveredResizeColId, setHoveredResizeColId] = useState<string | null>(
     null
   );
+  // 2026-07-02 (user request): Jira-style single continuous resize line — one
+  // overlay spanning the whole table (header + all rows + group-header rows),
+  // measured from the hovered/dragged handle. x is viewport-content-relative
+  // (survives horizontal scroll); height is the <table>'s own height so the
+  // line stops at the last row, not the "+ Create" footer.
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [resizeBoundaryX, setResizeBoundaryX] = useState<number | null>(null);
+  const [resizeLineHeight, setResizeLineHeight] = useState(0);
+  const activeHandleElRef = useRef<HTMLElement | null>(null);
+  const measureResizeBoundary = useCallback((handleEl: HTMLElement | null) => {
+    const vp = viewportRef.current;
+    if (!vp || !handleEl) return;
+    const hr = handleEl.getBoundingClientRect();
+    const vr = vp.getBoundingClientRect();
+    setResizeBoundaryX(hr.right - vr.left + vp.scrollLeft);
+    setResizeLineHeight(tableRef.current?.offsetHeight ?? vp.scrollHeight);
+  }, []);
 
   const onColumnWidthsChangeRef = useRef(onColumnWidthsChange);
   useEffect(() => {
@@ -441,10 +458,17 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         resizing.startWidth + (e.clientX - resizing.startX)
       );
       setColumnWidths((prev) => ({ ...prev, [resizing.id]: next }));
+      // Keep the group-row marker glued to the moving column edge (measured
+      // live after the width state commits + lays out).
+      requestAnimationFrame(() =>
+        measureResizeBoundary(activeHandleElRef.current)
+      );
     };
     const onUp = () => {
       setResizing(null);
       setHoveredResizeColId(null);
+      setResizeBoundaryX(null);
+      activeHandleElRef.current = null;
       // Notify parent after drag completes so it can persist to localStorage.
       setColumnWidths((prev) => {
         onColumnWidthsChangeRef.current?.(prev);
@@ -689,7 +713,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
            token via --ds-surface-sunken CSS variable. Phase 11 unblocked
            dark theme — token flips natively. Removed Catalyst-specific
            [data-theme="dark"] override block; ADS owns the band colour. */
-        box-shadow: inset 0 -2px 0 0 var(--ds-border, var(--ds-border)) !important;
+        box-shadow: inset 0 -1px 0 0 var(--ds-border, var(--ds-border)) !important;
         background: var(--ds-surface-sunken) !important;
       }
       /* 2026-06-09 Sticky __actions header: white bg (so scrolled content
@@ -701,7 +725,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         background: var(--cp-bg-elevated, var(--ds-surface)) !important;
         box-shadow:
           inset 1px 0 0 0 var(--ds-border),
-          inset 0 -2px 0 0 var(--ds-border) !important;
+          inset 0 -1px 0 0 var(--ds-border) !important;
       }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
@@ -1170,43 +1194,17 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         user-select: none;
         z-index: 4;
       }
-      /* 2026-06-23 — full-column resize line. Painted via ::after on every
-         td/th carrying data-resize-hover="true" (set when hoveredResizeColId
-         matches the column). Spans top to bottom across header + all body rows.
-         Strip border-right entirely (not just color) so pseudo right:0 aligns
-         to outer edge consistently — right:0 on absolute child positions to
-         PADDING edge of containing block, so a 1px border would offset the
-         line by 1px vs a borderless td. Removing the border keeps header +
-         body pseudos at the same x. */
-      /* Hover state — muted grey signals draggable affordance. */
-      .jira-table-grid td[data-resize-state="hover"],
-      .jira-table-grid th[data-resize-state="hover"],
-      .jira-table-grid td[data-resize-state="active"],
-      .jira-table-grid th[data-resize-state="active"] {
-        border-right: none !important;
-      }
-      .jira-table-grid td[data-resize-state="hover"]::after,
-      .jira-table-grid th[data-resize-state="hover"]::after {
-        content: '';
+      /* 2026-07-02 (user request): Jira-style single continuous resize line.
+         One overlay inside the positioned .jira-table-viewport, spanning the
+         whole table so it threads header + rows + group-header rows as one
+         straight line (no per-cell segments, no group-row jog). z-index above
+         the sticky header. Neutral-bold on hover, ADS selected/brand on drag —
+         colour set inline on the element. */
+      .jira-table-resize-line {
         position: absolute;
         top: 0;
-        right: 0;
-        bottom: 0;
         width: 2px;
-        background: var(--cp-resize-handle-hover, var(--ds-text-subtlest));
-        z-index: 3;
-        pointer-events: none;
-      }
-      .jira-table-grid td[data-resize-state="active"]::after,
-      .jira-table-grid th[data-resize-state="active"]::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 2px;
-        background: var(--ds-border-selected);
-        z-index: 3;
+        z-index: 6;
         pointer-events: none;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
@@ -1329,10 +1327,11 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         margin: 0;
         cursor: pointer;
       }
-      /* Strengthen grid lines to match the legacy renderer + critique-fix tone. */
-      .jira-table-grid table tbody > tr > td {
-        box-shadow: inset 0 -1px 0 0 var(--ds-border) !important;
-      }
+      /* 2026-07-01 (user report): row dividers looked ~2px thick. Cause: this
+         box-shadow (inset 0 -1px) stacked on top of the real 1px border-bottom
+         added above (2026-06-30 Jira-parity rule), painting two 1px lines. The
+         border-bottom is the crisp, non-clippable divider we keep; drop the
+         redundant box-shadow so rows read as a single 1px line like Jira. */
       /* Row hover tint matches Jira's list view. */
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)) !important;
@@ -1454,23 +1453,20 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
     }> = [];
 
     if (selectable) {
-      // 2026-05-17 jira-compare cycle 2: when row-level drag handle is wired,
-      // reserve a same-width spacer in the header so the master checkbox
-      // aligns with body row checkboxes (the body has [handle-spacer][cb]).
-      const headerHandleSpacer =
-        renderRowDragHandle && !rowDragHandleHidden ? (
-          <span
-            style={{ width: 16, height: 16, display: "inline-block" }}
-            aria-hidden
-          />
-        ) : null;
+      // 2026-07-01 (user report): the header select-all checkbox sat ~10px
+      // right of the body checkboxes. Cause: a stale 16px + gap:4 spacer was
+      // rendered left of the master checkbox to reserve room for an in-cell
+      // drag handle. But the body no longer renders that handle in-cell (the
+      // grip is portaled to the border now — see `{void dragHandleNode}` in
+      // renderDataRow), so the body checkbox has no leading spacer. The header
+      // group [spacer + checkbox] centered as a unit, pushing the checkbox
+      // right of the body ones. Spacer removed so both center identically.
       cells.push({
         key: "__select",
         content: (
           <span
             style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
           >
-            {headerHandleSpacer}
             <AkCheckbox
               isChecked={allSelected}
               onChange={(e) => toggleAll(e.target.checked)}
@@ -2238,6 +2234,32 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
      affordances are mouse-hover driven and would otherwise render a second,
      stray grip on whatever row the cursor passes over mid-drag. */
   const [draggingRowId, setDraggingRowId] = useState<string | null>(null);
+  // 2026-07-02 (user request): while the viewport is scrolling, hide the row
+  // drag grip, the insert "+" affordance and the resize highlight — they read
+  // as stray floating chrome mid-scroll. Cleared to false shortly after scroll
+  // settles.
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollIdleRef = useRef<number | null>(null);
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const onScroll = () => {
+      setIsScrolling(true);
+      setFloatAfford(null);
+      setHoveredResizeColId(null);
+      setResizeBoundaryX(null);
+      if (scrollIdleRef.current) window.clearTimeout(scrollIdleRef.current);
+      scrollIdleRef.current = window.setTimeout(
+        () => setIsScrolling(false),
+        150
+      );
+    };
+    vp.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      vp.removeEventListener("scroll", onScroll);
+      if (scrollIdleRef.current) window.clearTimeout(scrollIdleRef.current);
+    };
+  }, []);
   useEffect(() => {
     return monitorForElements({
       onDragStart: ({ source }) => {
@@ -2359,14 +2381,21 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                   aria-label="Resize column"
                   draggable={false}
                   onClick={(e) => e.stopPropagation()}
-                  onMouseEnter={() => setHoveredResizeColId(cellMeta.id)}
+                  onMouseEnter={(e) => {
+                    setHoveredResizeColId(cellMeta.id);
+                    measureResizeBoundary(e.currentTarget);
+                  }}
                   onMouseLeave={() => {
-                    if (resizing?.id !== cellMeta.id)
+                    if (resizing?.id !== cellMeta.id) {
                       setHoveredResizeColId(null);
+                      setResizeBoundaryX(null);
+                    }
                   }}
                   onMouseDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    activeHandleElRef.current = e.currentTarget;
+                    measureResizeBoundary(e.currentTarget);
                     setResizing({
                       id: cellMeta.id,
                       startX: e.clientX,
@@ -2447,6 +2476,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
         }
       >
         <table
+          ref={tableRef}
           role="grid"
           // 2026-06-09 Jira parity: table width is the SUM of each column's
           // sumWidth (flex columns floor at 480px so adding new columns
@@ -2663,11 +2693,15 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                       // sticky cell visually separates from the scrolling
                       // content sliding underneath it. Combined with the
                       // bottom border that all headers share.
+                      // 2026-07-01 (user report): header bottom border was 2px
+                      // (inset 0 -2px), body dividers are 1px — the header read
+                      // visibly heavier. Dropped to 1px to match the body rows
+                      // and Jira's 1px header rule.
                       boxShadow: isDragOverThis
-                        ? "inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected), inset 0 -2px 0 0 var(--ds-border)"
+                        ? "inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected), inset 0 -1px 0 0 var(--ds-border)"
                         : meta?.id === "__actions"
-                        ? "inset 1px 0 0 0 var(--ds-border), inset 0 -2px 0 0 var(--ds-border)"
-                        : "inset 0 -2px 0 0 var(--ds-border)",
+                        ? "inset 1px 0 0 0 var(--ds-border), inset 0 -1px 0 0 var(--ds-border)"
+                        : "inset 0 -1px 0 0 var(--ds-border)",
                       // 2026-05-10 Jira-parity: sort affordance wins over reorder
                       // affordance for cursor. Sortable headers always show pointer
                       // so click-to-sort is discoverable. Active drag shows grabbing.
@@ -2913,15 +2947,22 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                         // Don't initiate column reorder from the resize handle.
                         draggable={false}
                         onClick={(e) => e.stopPropagation()}
-                        onMouseEnter={() => setHoveredResizeColId(meta.id)}
+                        onMouseEnter={(e) => {
+                          setHoveredResizeColId(meta.id);
+                          measureResizeBoundary(e.currentTarget);
+                        }}
                         onMouseLeave={() => {
                           // Keep visible while actively resizing this col.
-                          if (resizing?.id !== meta.id)
+                          if (resizing?.id !== meta.id) {
                             setHoveredResizeColId(null);
+                            setResizeBoundaryX(null);
+                          }
                         }}
                         onMouseDown={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          activeHandleElRef.current = e.currentTarget;
+                          measureResizeBoundary(e.currentTarget);
                           setResizing({
                             id: meta.id,
                             startX: e.clientX,
@@ -3089,16 +3130,21 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                                       aria-label="Resize column"
                                       draggable={false}
                                       onClick={(e) => e.stopPropagation()}
-                                      onMouseEnter={() =>
-                                        setHoveredResizeColId(cellMeta.id)
-                                      }
+                                      onMouseEnter={(e) => {
+                                        setHoveredResizeColId(cellMeta.id);
+                                        measureResizeBoundary(e.currentTarget);
+                                      }}
                                       onMouseLeave={() => {
-                                        if (resizing?.id !== cellMeta.id)
+                                        if (resizing?.id !== cellMeta.id) {
                                           setHoveredResizeColId(null);
+                                          setResizeBoundaryX(null);
+                                        }
                                       }}
                                       onMouseDown={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
+                                        activeHandleElRef.current = e.currentTarget;
+                                        measureResizeBoundary(e.currentTarget);
                                         setResizing({
                                           id: cellMeta.id,
                                           startX: e.clientX,
@@ -3133,6 +3179,22 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
             </tbody>
           )}
         </table>
+        {/* 2026-07-02 — Jira-style single continuous resize line. Spans the
+            whole table (header + rows + group rows) at the hovered/dragged
+            column boundary. Neutral-bold on hover, blue on active drag. */}
+        {(hoveredResizeColId || resizing) && resizeBoundaryX != null && (
+          <div
+            aria-hidden
+            className="jira-table-resize-line"
+            style={{
+              left: resizeBoundaryX - 1,
+              height: resizeLineHeight,
+              background: resizing
+                ? "var(--ds-border-selected)"
+                : "var(--ds-border-bold)",
+            }}
+          />
+        )}
         {/* Apr 27, 2026 (L70): bottomSlot renders INSIDE the viewport
             so the horizontal scrollbar appears BELOW it, not between
             it and the table content. Lets a "+ Create" row sit flush
@@ -3651,7 +3713,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           like the "+", but centred VERTICALLY on the row (center-hover). It is
           its OWN pdnd draggable (see DragHandleGrip), so dragging works from the
           portal; per-row RowDropAnchor supplies the drop targets. */}
-      {floatAfford && (!draggingRowId || floatAfford.id === draggingRowId) && floatAfford.zone === 'center' && renderRowDragHandle && !rowDragHandleHidden
+      {floatAfford && !draggingRowId && !isScrolling && !resizing && floatAfford.zone === 'center' && renderRowDragHandle && !rowDragHandleHidden
         && createPortal(
           <div
             onMouseEnter={cancelFloatHide}
@@ -3672,7 +3734,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       {/* The INSERT "+" stays portaled too (top-border affordance): centred on
           the TOP-LEFT CORNER where the row's top divider meets the left border
           (top-hover) and shows a full-width blue insert line. */}
-      {floatAfford && !draggingRowId && floatAfford.zone === 'top' && onInsertAbove
+      {floatAfford && !draggingRowId && !isScrolling && !resizing && floatAfford.zone === 'top' && onInsertAbove
         && createPortal(
           <>
             {/* Blue insert line on the row's TOP border — same pattern as the

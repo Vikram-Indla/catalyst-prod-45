@@ -70,6 +70,7 @@ import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
 import AkLinkIcon from '@atlaskit/icon/core/link';
 import Lozenge from '@atlaskit/lozenge';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import PriorityIcon from '@/components/shared/PriorityIcon';
 import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
@@ -2390,7 +2391,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         case 'status':   return it.status || 'None';
         case 'parent':   return it.parent_label || (it.type === 'epic' ? it.title : 'None');
         case 'assignee': return it.assignee_name || 'None';
-        case 'priority': return it.priority ? it.priority[0].toUpperCase() + it.priority.slice(1) : 'None';
+        // 2026-07-01 (user request): the empty-priority group reads "No
+        // Priority" instead of a bare "None". Still matches the orphan regex
+        // (/^No /) so it sorts last like the other empty buckets.
+        case 'priority': return it.priority ? it.priority[0].toUpperCase() + it.priority.slice(1) : 'No Priority';
         case 'type': {
           const t = it.type || '';
           if (t === 'epic') return 'Epic';
@@ -2491,23 +2495,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </span>
         );
       } else if (groupBy === 'priority') {
-        // Compact bars + label, matching the Priority cell renderer
-        const p = (sample.priority || '').toLowerCase();
-        const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
-          highest:  { level: 4, color: 'var(--ds-icon-accent-red)' }, critical: { level: 4, color: 'var(--ds-icon-accent-red)' },
-          high:     { level: 3, color: 'var(--ds-text-warning)' },
-          medium:   { level: 2, color: 'var(--ds-text-success)' },
-          low:      { level: 1, color: 'var(--ds-text-success)' },
-          lowest:   { level: 0, color: 'var(--ds-border)' },
-        };
-        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border)' };
+        // 2026-07-01 (user request): use the canonical PriorityIcon (the
+        // Jira-style chevron/bars used everywhere else in the app) instead of
+        // the bespoke 4-bar swatch, which diverged from the rest of the UI.
+        // PriorityIcon renders nothing for an unknown level (zero-assumption).
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} title={k}>
-            <span style={{ display: 'inline-flex', gap: 0 }}>
-              {[1, 2, 3, 4].map((i) => (
-                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border)' }} />
-              ))}
-            </span>
+            <PriorityIcon level={sample.priority} size={16} />
             <span>{k}</span>
           </span>
         );
@@ -4400,6 +4394,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           }))}
         />
 
+        {/* 2026-07-01 (user request): Group dropdown sits next to the
+            assignee avatars. Portal-mounted menu pattern documented on the
+            GroupByControl definition. */}
+        <GroupByControl
+          value={groupBy}
+          onChange={(opt) => { setGroupBy(opt); setCollapsedGroups(new Set()); }}
+        />
+
         {/* Apr 27, 2026 — jira-compare audit P0 #2 / P1 #3:
             Two-flex-cluster toolbar. LEFT cluster (above this spacer)
             holds Search + Filter + Avatar group. RIGHT cluster (below this
@@ -4420,22 +4422,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
         <div style={{ flex: 1 }} />
 
-        {/* RIGHT cluster begins — Group control + view-options + more-actions */}
-        {/* Group by — Apr 27, 2026 (Vikram audit pass 4): @atlaskit/dropdown-menu
-            was rendering an empty/invisible portal on this surface (same
-            documented bug as the cell editors at line 1003: `@atlaskit/popup
-            portal mounts on this surface but renders empty content`). Click
-            fired but no menu appeared, leaving the CTA dead. Replaced with
-            the same proven portal pattern used by Status/Priority cell
-            editors — manual createPortal + position computed from trigger
-            rect. Visual still uses @atlaskit/button + the Atlaskit chevron
-            glyph; menu rows use ADS tokens for the selected/hover states.
-            Atlaskit-only mandate from CLAUDE.md §7 still satisfied — the
-            primitives that work on this surface are still all ADS. */}
-        <GroupByControl
-          value={groupBy}
-          onChange={(opt) => { setGroupBy(opt); setCollapsedGroups(new Set()); }}
-        />
+        {/* RIGHT cluster begins — view-options + more-actions.
+            2026-07-01 (user request): GroupByControl relocated to the LEFT
+            cluster, immediately right of the assignee avatars (see
+            MemberFilterAvatars above). Prior audit anchored it to the
+            toolbar-end for Jira parity; user override supersedes. */}
         {toolbarMoreActionsButton}
 
         {/* 2026-05-12 — Pagination counter: "X of Y" format. Shows total visible
@@ -6520,7 +6511,10 @@ function GroupByControl({
   // Apr 28, 2026 (jira-compare cycle 2): order matches Jira /list:
   // Status / Assignee / Priority / Story Points, with 'type' first as
   // the primary axis users actually want for per-type comparison.
-  const OPTIONS: GroupByOption[] = ['none', 'type', 'status', 'parent', 'assignee', 'priority'];
+  // 2026-07-01 (user request): 'none' removed from the scrollable list; it
+  // is now the sticky "Clear selection" footer row (rendered below the map),
+  // mirroring Jira's group dropdown.
+  const OPTIONS: GroupByOption[] = ['type', 'status', 'parent', 'assignee', 'priority'];
 
   const triggerText = value === 'none' ? 'Group' : `Group: ${GROUP_BY_LABELS[value]}`;
 
@@ -6646,12 +6640,14 @@ function GroupByControl({
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
-            padding: '8px 0',
+            padding: 0,
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 'var(--ds-font-size-400)',
+            overflow: 'hidden',
           }}
         >
+          <div style={{ padding: '8px 0', maxHeight: 320, overflowY: 'auto' }}>
           {OPTIONS.map((opt, i) => {
             const active = value === opt;
             const focused = focusedIdx === i;
@@ -6689,6 +6685,38 @@ function GroupByControl({
               </button>
             );
           })}
+          </div>
+          {/* 2026-07-01 (user request): sticky "Clear selection" footer,
+              always visible below the scrollable option list. Resets grouping
+              to 'none'. Disabled-look when nothing is grouped. */}
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => { onChange('none'); setIsOpen(false); triggerRef.current?.focus(); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              padding: '10px 16px',
+              border: 'none',
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))')}`,
+              outline: 'none',
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+              color: value === 'none'
+                ? token('color.text.disabled', 'var(--ds-text-disabled)')
+                : token('color.text.subtle', 'var(--ds-text-subtle)'),
+              fontWeight: 400,
+              fontSize: 'var(--ds-font-size-400)',
+              fontFamily: 'inherit',
+              textAlign: 'left',
+              cursor: value === 'none' ? 'default' : 'pointer',
+            }}
+            disabled={value === 'none'}
+            onMouseEnter={(e) => { if (value !== 'none') e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = token('elevation.surface.overlay', 'var(--ds-surface)'); }}
+          >
+            Clear selection
+          </button>
         </div>,
         document.body
       )}
