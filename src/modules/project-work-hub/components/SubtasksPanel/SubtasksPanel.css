@@ -21,7 +21,7 @@
 .sp-panel {
   padding: 0;
   font-family: var(--cp-font-body);
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
 }
 
 /* ══════════════════════════════════════════════
@@ -50,7 +50,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtle, #505258);
+  color: var(--ds-text-subtle);
   border-radius: 3px;
   padding: 0;
 }
@@ -65,7 +65,7 @@
 .sp-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
   padding: 0 4px;
   line-height: 20px;
 }
@@ -76,7 +76,7 @@
   display: inline;
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text-subtlest, #626F86);
+  color: var(--ds-text-subtlest);
   margin-left: 4px;
 }
 
@@ -89,14 +89,14 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   border-radius: 3px;
   padding: 0;
   transition: background 0.12s, color 0.12s;
 }
 .sp-icon-btn:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
 }
 .sp-icon-btn--add:hover {
   background: var(--ds-background-selected-subtle, #E9F2FF);
@@ -170,7 +170,7 @@
    (border-right on th: 1px solid --ds-border var(--ds-border, #DFE1E6)). */
 .sp-ak-table .jira-table-grid table thead > tr > th {
   padding: 0 12px !important;
-  color: var(--ds-text-subtle, #505258) !important;
+  color: var(--ds-text-subtle) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   box-shadow: inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
@@ -346,7 +346,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -360,7 +360,7 @@
 }
 .sp-panel .sp-desc-trigger:hover {
   background: var(--ds-border, #DFE1E6);
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
 }
 .sp-panel .sp-desc-trigger:focus-visible {
   outline: 1px solid var(--ds-border-focused);
@@ -393,7 +393,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -444,7 +444,7 @@
   border-radius: 3px;
   outline: none;
   font-size: 14px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   font-family: inherit;
   box-sizing: border-box;
@@ -572,7 +572,7 @@
 .sp-status-chevron-ak {
   display: inline-flex;
   align-items: center;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
 }
 
 /* Row actions trigger (appears on row hover + when popup is open) */
@@ -584,7 +584,7 @@
   height: 24px;
   border: none;
   background: transparent;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   border-radius: 3px;
   cursor: pointer;
   padding: 0;
@@ -602,7 +602,7 @@
 .sp-row-actions-btn:hover,
 .sp-row-actions-btn[aria-expanded="true"] {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   opacity: 1;
 }
 
@@ -635,7 +635,7 @@
 }
 .sp-fixv-more {
   font-size: 11px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   padding: 0 4px;
   white-space: nowrap;
 }
@@ -693,11 +693,11 @@
    Popover (@atlaskit/popup content)
    ══════════════════════════════════════════════ */
 .sp-pop {
-  border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
+  border: 1px solid var(--ds-border);
   border-radius: 6px;
-  box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  box-shadow: var(--ds-shadow-overlay);
+  background: var(--ds-surface);
+  color: var(--ds-text);
   font-family: var(--cp-font-body);
 }
 
@@ -706,7 +706,7 @@
   align-items: center;
   gap: 4px;
   padding: 8px 10px;
-  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.1));
+  border-bottom: none;
 }
 .sp-pop-search-input {
   flex: 1;
@@ -714,11 +714,11 @@
   border: none;
   outline: none;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   background: transparent;
   font-family: inherit;
 }
-.sp-pop-search-input::placeholder { color: var(--ds-text-subtlest, #7A869A); }
+.sp-pop-search-input::placeholder { color: var(--ds-text-subtlest); }
 
 .sp-pop-list {
   max-height: 280px;
@@ -727,13 +727,13 @@
 }
 
 .sp-pop-group + .sp-pop-group {
-  border-top: 0px solid var(--ds-border, rgba(9,30,66,0.08));
+  border-top: none;
 }
 
 .sp-pop-group-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 8px 12px 4px;
@@ -752,7 +752,7 @@
   font-family: inherit;
   text-align: left;
   transition: background 0.1s;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
 }
 .sp-pop-row:hover:not(:disabled) {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
@@ -766,7 +766,7 @@
 }
 .sp-pop-hint {
   font-size: 11px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   padding: 4px 10px 6px;
   line-height: 1.35;
 }
@@ -790,11 +790,11 @@
 .sp-colpicker-title {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 8px 12px;
-  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.1));
+  border-bottom: none;
 }
 .sp-colpicker-item {
   display: flex;
@@ -804,7 +804,7 @@
   cursor: pointer;
   transition: background 0.12s;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
 }
 .sp-colpicker-item:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04));
@@ -865,13 +865,13 @@
   padding: 0 12px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
 }
 .sp-type-selector-item:hover {
   background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-item.is-active {
-  background: var(--ds-background-selected, #DEEBFF);
+  background: var(--ds-background-selected);
 }
 
 /* ══════════════════════════════════════════════
@@ -958,7 +958,7 @@
   align-items: center;
   gap: 4px;
   padding: 0 4px 0 8px;
-  border-left: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  border-left: none;
 }
 .sp-create-submit {
   display: inline-flex;
@@ -969,19 +969,19 @@
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
   background: var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7));
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   cursor: pointer;
 }
 .sp-create-cancel {
   background: none;
   border: none;
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   cursor: pointer;
   font-family: inherit;
 }
 .sp-create-cancel:hover {
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   text-decoration: underline;
 }
 
@@ -1006,7 +1006,7 @@
   padding: 4px 10px 4px;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1021,15 +1021,15 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   text-align: left;
   border-radius: 3px;
   transition: background 0.1s;
 }
 .sp-create-option:hover,
 .sp-create-option.is-active {
-  background: var(--ds-background-selected, #DEEBFF);
-  color: var(--ds-text-selected, #0747A6);
+  background: var(--ds-background-selected);
+  color: var(--ds-text-selected);
 }
 
 /* ══════════════════════════════════════════════
@@ -1047,12 +1047,12 @@
 .sp-empty-heading {
   font-size: 14px;
   font-weight: 600;
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
 }
 .sp-empty-sub {
   font-size: 13px;
-  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → var(--ds-text-subtlest, #626F86) (ADS current). */
-  color: var(--ds-text-subtlest, #626F86);
+  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → var(--ds-text-subtlest) (ADS current). */
+  color: var(--ds-text-subtlest);
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
    neutral background (not outlined). Matched to @atlaskit/button default style.
@@ -1069,7 +1069,7 @@
   background: var(--ds-background-neutral, #F1F2F4);
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
   cursor: pointer;
   font-family: inherit;
   transition: background 0.12s;
@@ -1127,7 +1127,7 @@
 .sp-board-count {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  color: var(--ds-text-subtlest);
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   padding: 0px 8px;
   border-radius: 9px;
@@ -1158,7 +1158,7 @@
 }
 .sp-board-card-summary {
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  color: var(--ds-text);
   line-height: 1.35;
   margin-bottom: 8px;
   display: -webkit-box;
@@ -1203,7 +1203,7 @@
   font-size: 13px;
   font-weight: 600;
   padding: 4px 8px 4px 0;
-  border-right: 0px solid var(--ds-surface, rgba(255,255,255,0.2));
+  border-right: none;
   margin-right: 4px;
 }
 .sp-bulkbar-btn {
@@ -1269,7 +1269,7 @@
 }
 .adf-editor-content table th {
   background: var(--ds-surface-hovered, #F0F1F2);
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
   font-size: 14px;
   font-weight: 400;
   padding: 8px;
@@ -1280,7 +1280,7 @@
 }
 .adf-editor-content table td {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  color: var(--ds-text, #292A2E);
+  color: var(--ds-text);
   font-size: 14px;
   font-weight: 400;
   padding: 8px;
