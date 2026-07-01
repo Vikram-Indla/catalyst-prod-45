@@ -97,7 +97,7 @@ export function ReleaseDetailPage({
     return cols.join(', ');
   }, [config]);
 
-  const { data: release, isLoading } = useQuery<ReleaseRow>({
+  const { data: release, isLoading, error: releaseError } = useQuery<ReleaseRow>({
     queryKey: [config.queryKeyPrefix, 'one', releaseId],
     queryFn: async () => {
       const field = isValidUUID(releaseId ?? '') ? 'id' : 'slug';
@@ -276,6 +276,14 @@ export function ReleaseDetailPage({
     !!releaseId &&
     summaryPayload?.releaseId === releaseId &&
     summaryStatus !== 'idle';
+
+  if (releaseError) {
+    return (
+      <div style={{ padding: 24, color: 'var(--ds-text-danger)' }}>
+        Failed to load {config.label.lowerSingular}: {releaseError.message}
+      </div>
+    );
+  }
 
   if (isLoading || !release) {
     return <div style={{ padding: 24 }}>Loading {config.label.lowerSingular}…</div>;

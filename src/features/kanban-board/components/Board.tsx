@@ -313,8 +313,8 @@ export const Board: React.FC<BoardProps> = ({
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                       <EpicIcon label="" />
                       {/* ads-scanner:ignore-next-line — epic identity swatch, hashed placeholder color (no real epic-color column in ph_issues yet — see CAT-KANBAN-GROUPBY-EPIC-20260701-001 Option B, probed 2026-07-01) */}
-                      <span style={{ width: 10, height: 10, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
-                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontWeight: 400, lineHeight: '20px' }}>
+                      <span style={{ width: 20, height: 20, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), fontWeight: 500, lineHeight: '16px' }}>
                         {g.key}
                       </span>
                     </span>
@@ -330,7 +330,7 @@ export const Board: React.FC<BoardProps> = ({
                 {visibleColumns.map((column: KanbanColumn) => {
                   const colIssues = bucket.get(column.id) ?? [];
                   // Every column is a grey box with header inside (flat + grouped),
-                  // matching Jira (probed rgba(5,21,36,0.06) r6, no separate strip).
+                  // matching Jira (probed rgb(248,248,248), no separate strip).
                   return (
                     <div
                       key={column.id}
@@ -338,7 +338,7 @@ export const Board: React.FC<BoardProps> = ({
                       style={{
                         width: SIZES.COLUMN_WIDTH, minWidth: SIZES.COLUMN_WIDTH, margin: '0 4px', flexShrink: 0,
                         display: 'flex', flexDirection: 'column',
-                        background: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
+                        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
                         borderRadius: 6, paddingBottom: 4,
                         ...(grouped ? {} : { height: '100%', minHeight: 0 }),
                       }}
@@ -368,7 +368,7 @@ export const Board: React.FC<BoardProps> = ({
                         minWidth: hideDone ? 48 : SIZES.COLUMN_WIDTH,
                         margin: '0 4px', flexShrink: 0,
                         display: 'flex', flexDirection: 'column',
-                        background: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
+                        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
                         borderRadius: 6, overflow: 'hidden',
                         transition: 'width 200ms ease, min-width 200ms ease',
                         ...(grouped ? {} : { height: '100%', minHeight: 0 }),

@@ -37,17 +37,19 @@ export const SwimlaneHeader: React.FC<Props> = ({
     onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered)'); }}
     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
   >
-    <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-      {collapsed
-        ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />
-        : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />}
+    <span style={{ display: 'inline-flex', flexShrink: 0, width: 12, height: 12, overflow: 'hidden' }}>
+      <span style={{ display: 'inline-flex', transform: 'scale(0.75)', transformOrigin: 'top left' }}>
+        {collapsed
+          ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />
+          : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />}
+      </span>
     </span>
     {labelNode}
     {showAvatar && <CatalystAvatar size="small" src={avatarUrl ?? undefined} name={avatarName || label} />}
     <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: token('color.text', 'var(--ds-text)'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '20px' }}>
       {label}
     </span>
-    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), flexShrink: 0, lineHeight: '20px' }}>
+    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: token('color.text', 'var(--ds-text)'), flexShrink: 0, lineHeight: '16px' }}>
       ({count} work item{count === 1 ? '' : 's'})
     </span>
     {trailingNode}

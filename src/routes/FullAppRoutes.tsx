@@ -1060,8 +1060,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/dependencies" element={<S><DependenciesPageLazy /></S>} />
         {/* 2026-06-26: Sprints (project-hub clone of release-hub releases-management). */}
         <Route path="/project-hub/:key/sprints" element={<S><SprintsPageLazy /></S>} />
-        <Route path="/project-hub/:key/sprints/:sprintId" element={<S><SprintDetailPageLazy /></S>} />
-        <Route path="/project-hub/:key/sprints/:sprintId/work" element={<S><SprintWorkNavigatorPageLazy /></S>} />
+        <Route path="/project-hub/:key/sprints/:sprintSlug" element={<S><SprintDetailPageLazy /></S>} />
+        <Route path="/project-hub/:key/sprints/:sprintSlug/work" element={<S><SprintWorkNavigatorPageLazy /></S>} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />

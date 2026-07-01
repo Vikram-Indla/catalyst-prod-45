@@ -57,7 +57,7 @@ function fmtDue(iso: string): { label: string; overdue: boolean } {
   if (isNaN(d.getTime())) return { label: '', overdue: false };
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const overdue = d.getTime() < today.getTime();
-  return { label: `${MONTHS[d.getMonth()]} ${d.getDate()}`, overdue };
+  return { label: `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`, overdue };
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -221,10 +221,10 @@ export const Card: React.FC<CardProps> = ({
       {visibleFields.dueDate && due && due.label && (
         <div>
           <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 6px', borderRadius: 3,
+            display: 'inline-flex', alignItems: 'center', gap: 4, height: 22, padding: '0 6px', borderRadius: 3,
             border: `1px solid ${due.overdue ? token('color.border.danger', '#E2483D') : token('color.border', '#091E4224')}`,
             color: due.overdue ? token('color.text.danger', 'var(--ds-text-danger)') : token('color.text.subtle', 'var(--ds-icon, var(--ds-icon))'),
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
           }}>
             {due.overdue ? '⚠ ' : ''}{due.label}
           </span>
