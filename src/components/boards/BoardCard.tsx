@@ -142,7 +142,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 borderRadius: 6, boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
                 zIndex: 50, padding: '4px 0',
               }}>
-                <MenuItem onClick={() => { navigator.clipboard.writeText(window.location.origin + `/projects/${projectId}/boards/${board.id}`); setMenuOpen(false); }}>
+                <MenuItem onClick={() => { navigator.clipboard.writeText(window.location.origin + `/projects/${projectId}/boards/${board.slug}`); setMenuOpen(false); }}>
                   <CopyIcon label="" size="small" /> Copy link
                 </MenuItem>
                 <MenuItem onClick={() => setMenuOpen(false)}>

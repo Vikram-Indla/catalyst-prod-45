@@ -171,7 +171,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
         <span onClick={e => e.stopPropagation()}>
           <BoardRowActions
             board={row}
-            onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.id}/settings` : `${boardBasePath}/${row.id}/settings`)}
+            onEditSettings={() => navigate(projectKey ? `/project-hub/${projectKey}/boards/${row.slug}/settings` : `${boardBasePath}/${row.slug}/settings`)}
             onDelete={() => handleDelete(row)}
           />
         </span>
@@ -271,7 +271,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
           data={filtered}
           columns={columns}
           getRowId={(b) => b.id}
-          onRowClick={(b) => navigate(`${boardBasePath}/${b.id}`)}
+          onRowClick={(b) => navigate(`${boardBasePath}/${b.slug}`)}
           isLoading={isLoading}
           density="comfortable"
           ariaLabel="Boards directory"

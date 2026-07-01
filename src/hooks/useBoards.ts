@@ -49,6 +49,7 @@ export function useBoards(projectId: string | undefined, projectKey?: string) {
 
       return (data ?? []).map((b: any) => ({
         id: b.id,
+        slug: b.slug ?? b.id,
         name: b.name,
         description: b.description,
         icon: b.icon,

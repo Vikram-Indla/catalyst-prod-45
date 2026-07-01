@@ -7,19 +7,21 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import BoardSettingsPage from './BoardSettingsPage';
 import type { BoardListItem } from '@/types/board';
 
 export default function ProjectBoardSettingsPage() {
-  const { key, boardId } = useParams<{ key: string; boardId: string }>();
+  const { key, boardSlug } = useParams<{ key: string; boardSlug: string }>();
 
   const { data: board, isLoading } = useQuery<BoardListItem | null>({
-    queryKey: ['board-for-settings', boardId],
+    queryKey: ['board-for-settings', boardSlug],
     queryFn: async () => {
-      if (!boardId) return null;
+      if (!boardSlug) return null;
+      const field = isValidUUID(boardSlug) ? 'id' : 'slug';
       const { data, error } = await (typedQuery as any)('boards')
         .select([
-          'id, name, description, color, visibility, swimlane_type, board_query, filter_id',
+          'id, slug, name, description, color, visibility, swimlane_type, board_query, filter_id',
           'card_layout, card_colors, card_color_method, card_extra_fields, project_id',
           'sub_filter_query, completed_issues_cutoff, working_days_config',
           'timeline_enabled, timeline_include_children',
@@ -28,11 +30,12 @@ export default function ProjectBoardSettingsPage() {
           'show_swimlanes, filter_project_ids, filter_config, board_type',
           'is_personal, is_starred, sort_order, last_viewed_at, created_by, created_at, updated_at',
         ].join(', '))
-        .eq('id', boardId)
+        .eq(field, boardSlug)
         .maybeSingle();
       if (error || !data) return null;
       return {
         id: data.id,
+        slug: data.slug ?? boardSlug,
         name: data.name,
         description: data.description ?? null,
         icon: data.icon ?? '',
@@ -79,7 +82,7 @@ export default function ProjectBoardSettingsPage() {
         leadAvatarUrl: null,
       } as BoardListItem;
     },
-    enabled: !!boardId,
+    enabled: !!boardSlug,
   });
 
   if (isLoading) {

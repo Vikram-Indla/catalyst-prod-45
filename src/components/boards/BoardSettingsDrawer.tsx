@@ -477,7 +477,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     Map workflow statuses to columns to control which issues appear in each column.
                   </p>
                   <button
-                    onClick={() => { onClose(); navigate(`/project-hub/${projectKey}/boards/${board.id}/map-statuses`); }}
+                    onClick={() => { onClose(); navigate(`/project-hub/${projectKey}/boards/${board.slug}/map-statuses`); }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
                       background: 'var(--ds-background-neutral)', border: '2px solid transparent',

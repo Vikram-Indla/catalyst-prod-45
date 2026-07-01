@@ -6,6 +6,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { UnsavedChangesModal } from '@/components/shared/UnsavedChangesModal';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useBoardBySlug } from '@/hooks/useBoardBySlug';
 import { useTheme } from '@/hooks/useTheme';
 import { KANBAN_TOKENS } from '@/components/kanban/kanban-tokens';
 import { useMapStatuses, DraftColumn, DraftMapping } from '@/hooks/useMapStatuses';
@@ -403,7 +404,8 @@ function DeleteConfirm({
 
 /* ═══ MAIN PAGE ═══ */
 export default function MapStatusesPage() {
-  const { key, boardId } = useParams<{ key: string; boardId: string }>();
+  const { key, boardSlug } = useParams<{ key: string; boardSlug: string }>();
+  const { data: board } = useBoardBySlug(boardSlug);
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
@@ -412,7 +414,7 @@ export default function MapStatusesPage() {
     draft, countsMap, loading, saving, saveError, hasChanges,
     moveStatus, reorderColumns, addColumn, renameColumn, deleteColumn,
     save, cancel,
-  } = useMapStatuses(key, boardId);
+  } = useMapStatuses(key, board?.id);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const [dragStatusId, setDragStatusId] = useState<string | null>(null);
@@ -429,12 +431,13 @@ export default function MapStatusesPage() {
   }, [hasChanges]);
 
   const handleBack = useCallback(() => {
+    const slug = board?.slug ?? boardSlug;
     if (hasChanges) {
-      setPendingDiscard(() => () => navigate(boardId ? `/project-hub/${key}/boards/${boardId}` : `/project-hub/${key}/boards`));
+      setPendingDiscard(() => () => navigate(slug ? `/project-hub/${key}/boards/${slug}` : `/project-hub/${key}/boards`));
       return;
     }
-    navigate(boardId ? `/project-hub/${key}/boards/${boardId}` : `/project-hub/${key}/boards`);
-  }, [hasChanges, navigate, key]);
+    navigate(slug ? `/project-hub/${key}/boards/${slug}` : `/project-hub/${key}/boards`);
+  }, [hasChanges, navigate, key, board?.slug, boardSlug]);
 
   // DnD handlers
   const findDropTarget = useCallback((overId: string | null): { bucket: 'column' | 'backlog' | 'unmapped'; columnId: string | null } | null => {

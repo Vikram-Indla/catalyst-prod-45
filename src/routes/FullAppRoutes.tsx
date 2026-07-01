@@ -520,7 +520,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/backlog/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogPage /></S></MG>} />
         <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductBoardManagerPage /></S></MG>} />
-        <Route path="/product-hub/:key/boards/:boardId" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
+        <Route path="/product-hub/:key/boards/:boardSlug" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
 
@@ -1050,11 +1050,11 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
         <Route path="/project-hub/:key/board" element={<S><KanbanFeaturePageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
-        {/* Board view: /project-hub/:key/boards/:boardId renders kanban for the specified board. */}
-        <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanFeaturePageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardSlug/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardSlug/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardSlug/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
+        {/* Board view: /project-hub/:key/boards/:boardSlug renders kanban for the specified board. */}
+        <Route path="/project-hub/:key/boards/:boardSlug" element={<S><KanbanFeaturePageLazy /></S>} />
         {/* Deprecated: legacy /kanban route → board manager. */}
         <Route path="/project-hub/:key/kanban" element={<LegacyKanbanRedirect />} />
         <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />

@@ -9,6 +9,7 @@ import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@a
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useBoardBySlug } from '@/hooks/useBoardBySlug';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import Heading from '@atlaskit/heading';
@@ -51,14 +52,18 @@ interface KanbanPageProps {
 }
 
 export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPageProps = {}) {
-  const params = useParams<{ key: string; boardId?: string }>();
+  const params = useParams<{ key: string; boardSlug?: string }>();
   const key = keyOverride ?? params.key;
   const kanbanFilterContext = mode === 'test' ? 'testhub' : mode === 'incident' ? 'incident' : mode === 'tasks' ? 'tasks' : mode === 'product' ? 'product' : 'project';
-  const boardId = params.boardId;
+  const boardSlug = params.boardSlug;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  // boardId from route param takes precedence; fallback to ?board=<id> query param for legacy redirects.
-  const [activeBoardId, setActiveBoardId] = useState<string | null>(() => boardId || searchParams.get('board'));
+  // Resolve boardSlug (or legacy UUID) → board.id for internal data hooks.
+  const { data: resolvedBoard } = useBoardBySlug(boardSlug ?? searchParams.get('board') ?? undefined);
+  const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
+  React.useEffect(() => {
+    if (resolvedBoard?.id) setActiveBoardId(resolvedBoard.id);
+  }, [resolvedBoard?.id]);
   const [standupActive, setStandupActive] = useState(false);
   const [standupPerson, setStandupPerson] = useState<string | null>(null);
   const standupStartedAt = useRef<Date | null>(null);
@@ -102,11 +107,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const onAddColumn = useCallback((name: string) =>
     setExtraColumns((c) => [...c, { id: `local-col-${c.length}-${name}`, name, statuses: [name], category: 'in_progress', max: null }]),
     []);
-  // Map statuses → columns: reuse the existing MapStatusesPage for the active board.
+  // Map statuses → columns: use slug for navigation (resolvedBoard.slug from URL resolution).
   const onMapStatuses = useCallback(() => {
-    const boardId = boardConfig.boardId;
-    if (key && boardId) navigate(`/project-hub/${key}/boards/${boardId}/map-statuses`);
-  }, [key, boardConfig.boardId, navigate]);
+    const slug = resolvedBoard?.slug ?? boardSlug;
+    if (key && slug) navigate(`/project-hub/${key}/boards/${slug}/map-statuses`);
+  }, [key, resolvedBoard?.slug, boardSlug, navigate]);
   const [hideDone, setHideDone] = useState(true);
   const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();

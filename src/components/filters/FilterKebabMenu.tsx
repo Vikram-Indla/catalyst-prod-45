@@ -363,7 +363,9 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 // Use filter.used_by_board_ids[0] as primary signal — it's on the filter
                 // object already (no async fetch). Fall back to existingBoard.data.id
                 // (the dedup query) once it resolves.
+                // Prefer slug for navigation; fall back to UUID (dual-mode useBoardBySlug handles it).
                 const linkedBoardId =
+                  existingBoard.data?.slug ??
                   existingBoard.data?.id ??
                   (filter.used_by_board_ids?.length ? filter.used_by_board_ids[0] : null);
                 return menuItem(
@@ -570,7 +572,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                         jira_project_key: projectKey?.toUpperCase() ?? null,
                         created_by: user?.id ?? null,
                       })
-                      .select('id')
+                      .select('id, slug')
                       .single();
                     if (error) throw error;
                     const nextBoardIds = [...filter.used_by_board_ids, board.id];
@@ -579,8 +581,8 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                       .update({ used_by_board_ids: nextBoardIds })
                       .eq('id', filter.id);
                     setCreateBoardOpen(false);
-                    if (projectKey && board?.id) {
-                      navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${board.id}`);
+                    if (projectKey && (board?.slug ?? board?.id)) {
+                      navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${board?.slug ?? board?.id}`);
                     }
                   } catch (e: any) {
                     console.error('Failed to create board:', e);
