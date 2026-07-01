@@ -18,6 +18,23 @@ import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import AtlaskitEditor, { type ADFEntity } from '@/components/shared/AtlaskitEditor';
+import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
+import type { TiptapDoc } from '@/components/catalyst-detail-views/shared/sections/Description';
+
+/** Extract plain text from a Tiptap doc — the modal's Add Flag input uses
+ *  the canonical RichTextEditor (which emits Tiptap JSON on change), but
+ *  ph_issues.flag_reason still stores a text string. Walks the node tree
+ *  and collects every leaf text node. */
+function tiptapPlainText(doc: TiptapDoc | null): string {
+  if (!doc) return '';
+  const out: string[] = [];
+  const walk = (n: any) => {
+    if (typeof n?.text === 'string') out.push(n.text);
+    if (Array.isArray(n?.content)) n.content.forEach(walk);
+  };
+  walk(doc);
+  return out.join(' ').replace(/\s+/g, ' ').trim();
+}
 
 /* ═══ Shared styles ═══ */
 const overlayStyle: React.CSSProperties = {
@@ -265,13 +282,17 @@ export function AddFlagModal({
   tableName?: 'ph_issues' | 'business_requests';
   onClose: () => void;
 }) {
-  const [adf, setAdf] = useState<ADFEntity | null>(null);
+  // 2026-07-01: replaced AtlaskitEditor with the canonical RichTextEditor
+  // that powers the issue Description surface (see
+  // src/components/catalyst-detail-views/shared/sections/Description). Tracks
+  // the live Tiptap doc via onChange; footer Confirm reads the plain text.
+  const [tipDoc, setTipDoc] = useState<TiptapDoc | null>(null);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async () => {
       const newFlagged = !flagged;
-      const noteText = adf ? extractPlainText(adf) : '';
+      const noteText = tiptapPlainText(tipDoc);
       const nextFlagReason = newFlagged ? (noteText.trim() || FLAG_VALUE) : null;
 
       const updatePayload: Record<string, unknown> = { is_flagged: newFlagged };
@@ -319,7 +340,7 @@ export function AddFlagModal({
   });
 
   return (
-    <ModalDialog onClose={onClose} width="medium">
+    <ModalDialog onClose={onClose} width={867}>
       <ModalHeader hasCloseButton>
         <ModalTitle>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -334,21 +355,27 @@ export function AddFlagModal({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, overflow: 'hidden' }}>
             <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', whiteSpace: 'nowrap' }}>Work item</span>
             {issueType && <JiraIssueTypeIcon type={issueType} size={16} />}
-            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {/* Jira-parity: key + title rendered in subtle text so the
+                heading "Work item" reads as the label and the id/title
+                as secondary metadata (matches the reference screenshot). */}
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {issueKey}{issueTitle ? ` ${issueTitle}` : ''}
             </span>
           </div>
         )}
 
-        <AtlaskitEditor
-          appearance="comment"
+        <RichTextEditor
+          initialAdf={null}
+          onChange={setTipDoc}
+          onSave={() => { /* not used: modal owns Confirm */ }}
+          onCancel={onClose}
+          hideActionButtons
           placeholder={
             flagged
               ? 'Optional: let your team know why the flag was removed'
               : 'Optional: Let your team know why this work item has been flagged'
           }
-          onChange={(value) => setAdf(value)}
-          minHeight={120}
+          minHeight={200}
         />
       </ModalBody>
 
