@@ -950,8 +950,8 @@ export function makeSummaryInlineEditCell<T>({
                     display: 'none',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: 24,
-                    height: 24,
+                    width: 20,
+                    height: 20,
                     padding: 0,
                     border: '1px solid transparent',
                     background: 'transparent',
@@ -968,7 +968,10 @@ export function makeSummaryInlineEditCell<T>({
                     (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
                   }}
                 >
-                  <AkAddIcon label="" />
+                  {/* scaled down so the + matches the smaller open-panel glyph */}
+                  <span style={{ display: 'inline-flex', transform: 'scale(0.62)' }}>
+                    <AkAddIcon label="" />
+                  </span>
                 </button>
               </Tooltip>
             )}

@@ -1474,6 +1474,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // 2026-07-01 (user request): row insert-above "+" opens the create form
   // directly ABOVE the clicked row (keyed by row id), not at the group top.
   const [insertAboveRowId, setInsertAboveRowId] = useState<string | null>(null);
+  // When the inline-create form was opened by a row's "+" (create CHILD), this
+  // holds the parent's key so the submit links the new row to it. null = the
+  // form was opened as a plain insert-above (no parent).
+  const [childCreateParentKey, setChildCreateParentKey] = useState<string | null>(null);
   const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
   // Jira-parity: sticky tfoot create row. When true, the footer placeholder
   // switches to an InlineGroupCreateRow (creates into the first/default group).
@@ -3163,14 +3167,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           onOpenWorkItem: (row) => openDetail(row),
           // 2026-05-12 Jira parity: row hover → + "Create child item".
           onCreateChild: (row) => {
-            const groupId = groupBy === 'parent'
-              ? (row.parent_key || row.id)
-              : row.parent_key || row.id;
-            setInlineCreateGroup(groupId);
+            // Match the timeline: OPEN THE INLINE FIELD (don't silently insert).
+            // Reuse the proven insert-above form (InlineGroupCreateRow); record
+            // the parent key so the submit links the new row as a child.
+            setInlineCreateGroup(null);
+            setChildCreateParentKey(row.key ?? null);
+            setInsertAboveRowId(row.id);
           },
           canCreateChild: (row) => {
-            const t = row.type || '';
-            return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
+            // BacklogItem.type is LOWERCASE ('epic' | 'feature' | 'story' |
+            // 'task' | 'initiative' | …). Comparing against capitalized names
+            // made this always false, so the "+" create-child hover action
+            // never rendered. Normalise + match the parent-capable types.
+            const t = (row.type || '').toLowerCase();
+            return t === 'epic' || t === 'feature' || t === 'story' || t === 'task' || t === 'initiative';
           },
         });
         return function WorkCell(props: any) {
@@ -4523,10 +4533,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     groupLabel=""
                     isSubmitting={inlineCreateSubmitting}
                     members={assigneePickerMembers}
-                    defaultIssueType={rowTypeToCreatable(row.type)}
-                    onCancel={() => setInsertAboveRowId(null)}
+                    // Child mode (opened via a row's "+"): the parent is `row`,
+                    // so the type options + default follow the parent's type
+                    // (Story → sub-task family, Sub-task default — img #84), and
+                    // the left content shifts in a little.
+                    childMode={childCreateParentKey != null}
+                    defaultIssueType={
+                      childCreateParentKey != null
+                        ? defaultChildTypeFor(row.type)
+                        : rowTypeToCreatable(row.type)
+                    }
+                    onCancel={() => { setInsertAboveRowId(null); setChildCreateParentKey(null); }}
                     creatableTypes={
-                      dataSource?.creatableTypes
+                      childCreateParentKey != null
+                        ? childTypesFor(row.type)
+                        : dataSource?.creatableTypes
                         ? (dataSource.creatableTypes as CreatableIssueType[])
                         : undefined
                     }
@@ -4561,6 +4582,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                           status: defaultStatus,
                           priority: 'medium',
                           source: 'catalyst',
+                          // Link as a CHILD when the form was opened via a row's
+                          // "+" (create child); plain insert-above leaves it null.
+                          parent_key: childCreateParentKey ?? null,
                           assignee_account_id: assignee?.id ?? null,
                           assignee_display_name: assignee?.name ?? null,
                           due_date: dueDate,
@@ -4568,10 +4592,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                           jira_updated_at: nowIso,
                         } as any);
                         if (error) throw error;
-                        flag.success(`Created ${issueKey} — ${trimmed}`);
+                        flag.success(
+                          childCreateParentKey ? `Child created under ${childCreateParentKey}` : `Created ${issueKey} — ${trimmed}`,
+                        );
                         queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                         queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
                         setInsertAboveRowId(null);
+                        setChildCreateParentKey(null);
                       } catch {
                         flag.error('Failed to create');
                       } finally {
@@ -6724,9 +6751,36 @@ type CreatableIssueType =
   | 'BRD Task'
   | 'UAT Finding'
   | 'Figma'
+  /* Story sub-task family (2026-07-01) — offered when creating a CHILD under a
+     Story (Jira parity, img #84). */
+  | 'Sub-task'
+  | 'Frontend'
+  | 'Backend'
+  | 'Integration'
   /* TestHub creatable types (2026-06-21) — selectable via adapter
      `creatableTypes` override on /testhub/my-work + /testhub/defects. */
   | 'Test Case';
+
+/* Child creatable types by PARENT type (Jira parity). A Story's children are
+   the sub-task family with Sub-task pre-selected (img #84). */
+function childTypesFor(parentType: string | null | undefined): CreatableIssueType[] {
+  switch ((parentType || '').toLowerCase()) {
+    case 'story':   return ['Sub-task', 'Figma', 'Frontend', 'Backend', 'Integration'];
+    case 'epic':    return ['Story', 'Task', 'Feature'];
+    case 'feature': return ['Story', 'Task'];
+    case 'initiative': return ['Epic'];
+    default:        return ['Sub-task', 'Task'];
+  }
+}
+function defaultChildTypeFor(parentType: string | null | undefined): CreatableIssueType {
+  switch ((parentType || '').toLowerCase()) {
+    case 'story':   return 'Sub-task';
+    case 'epic':    return 'Story';
+    case 'feature': return 'Story';
+    case 'initiative': return 'Epic';
+    default:        return 'Sub-task';
+  }
+}
 
 /**
  * 2026-05-10 Per-column filter popup body — minimal multi-select.
@@ -6880,9 +6934,13 @@ function InlineGroupCreateRow({
   onCancel,
   creatableTypes,
   defaultIssueType = 'Story',
+  childMode = false,
 }: {
   groupLabel: string;
   isSubmitting: boolean;
+  /** Child-create variant (opened via a row's "+"): nudges the left content
+   *  (type picker) a little to the left. */
+  childMode?: boolean;
   /**
    * Apr 27 2026 (jira-compare regression F-NEW-2 layer 3 — assignee
    * picker): project members from useQuery on project_members. The
@@ -7145,7 +7203,12 @@ function InlineGroupCreateRow({
         gap: 4,
         // 2026-07-01 (user request img45): active inline-create row reads as a
         // focused input box — blue border + surface bg + rounded corners.
-        padding: '3px 8px',
+        paddingTop: 3,
+        paddingRight: 8,
+        paddingBottom: 3,
+        // Child-create: extra LEFT padding INSIDE so the content (type picker)
+        // is indented like a child. Normal create keeps the 8px left pad.
+        paddingLeft: childMode ? 28 : 8,
         background: token('elevation.surface', 'var(--ds-surface)'),
         border: `2px solid ${token('color.border.focused', 'var(--ds-border-focused)')}`,
         borderRadius: 4,
