@@ -15,7 +15,6 @@ import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
 import AddIcon from '@atlaskit/icon/core/add';
 import Tooltip from '@atlaskit/tooltip';
-import Heading from '@atlaskit/heading';
 
 export interface LinkedWorkItemsHeaderProps {
   count: number;
@@ -52,12 +51,12 @@ export function LinkedWorkItemsHeader({
             }
           </button>
         </Tooltip>
-        <span
-          style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', padding: '0 4px' }}
+        <h2
           onClick={onToggle}
+          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text)', cursor: 'pointer' }}
         >
-          <Heading size="small">Linked work items</Heading>
-        </span>
+          Linked work items
+        </h2>
         {count > 0 && (
           <span className="lwi-header__count" aria-label={`${count} linked`}>
             {count}

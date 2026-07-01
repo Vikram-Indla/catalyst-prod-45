@@ -194,7 +194,7 @@ function SwitcherPanel({
         position: 'fixed',
         top: rect.bottom + 4,
         left: rect.left,
-        width: 320,
+        width: 272,
         maxHeight: 440,
         overflowY: 'auto',
         background: 'var(--ds-surface-overlay)',
@@ -430,7 +430,7 @@ function ItemRow({ item, isCurrent, onNavigate }: {
           {item.name}
         </div>
         <div style={{
-          fontSize: 'var(--ds-font-size-075)',
+          fontSize: 'var(--ds-font-size-100)',
           color: 'var(--ds-text-subtlest)',
           marginTop: 1,
         }}>

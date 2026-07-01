@@ -15,7 +15,6 @@ import { useQuery } from '@tanstack/react-query';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
-import Heading from '@atlaskit/heading';
 import Tooltip from '@atlaskit/tooltip';
 import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
@@ -169,12 +168,12 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
               }
             </button>
           </Tooltip>
-          <span
-            style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', padding: '0 4px' }}
+          <h2
             onClick={onToggle}
+            style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text)', cursor: 'pointer' }}
           >
-            <Heading size="small">{heading}</Heading>
-          </span>
+            {heading}
+          </h2>
           {count > 0 && (
             <span
               aria-label={`${count} test case${count === 1 ? '' : 's'}`}
