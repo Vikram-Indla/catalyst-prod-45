@@ -1,29 +1,40 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
 
 export interface CommentActionProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
 }
 
 const CommentAction = React.forwardRef<HTMLButtonElement, CommentActionProps>(
-  ({ className, icon, children, ...props }, ref) => (
-    <button
-      ref={ref}
-      type="button"
-      className={cn(
-        'inline-flex items-center gap-1 text-[12px] font-medium',
-        'text-[var(--ds-text-subtlest,var(--cp-text-secondary))] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse)))] hover:underline',
-        'dark:text-[var(--ds-text-subtlest)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral))]',
-        'transition-colors duration-150 cursor-pointer',
-        'disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline',
-        className
-      )}
-      {...props}
-    >
-      {icon && <span className="shrink-0 [&_svg]:h-3.5 [&_svg]:w-3.5">{icon}</span>}
-      {children}
-    </button>
-  )
+  ({ style, icon, children, onMouseEnter, onMouseLeave, ...props }, ref) => {
+    const [hovered, setHovered] = React.useState(false);
+    return (
+      <button
+        ref={ref}
+        type="button"
+        onMouseEnter={(e) => { setHovered(true); onMouseEnter?.(e); }}
+        onMouseLeave={(e) => { setHovered(false); onMouseLeave?.(e); }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          fontSize: 12,
+          fontWeight: 500,
+          color: hovered ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
+          textDecoration: hovered ? 'underline' : 'none',
+          transition: 'color 150ms',
+          cursor: 'pointer',
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          ...style,
+        }}
+        {...props}
+      >
+        {icon && <span style={{ flexShrink: 0, lineHeight: 0 }}>{icon}</span>}
+        {children}
+      </button>
+    );
+  }
 );
 CommentAction.displayName = 'CommentAction';
 

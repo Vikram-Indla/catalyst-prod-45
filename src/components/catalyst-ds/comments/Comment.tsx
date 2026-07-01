@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';
 import type { CdsComment, CdsReaction, CdsUser } from '../types';
 import { CommentAction } from './CommentAction';
@@ -73,7 +72,7 @@ function injectCommentDirectionStyles() {
     }
     .cds-comment-body blockquote[dir="rtl"],
     .cds-comment-body blockquote[dir="ltr"] {
-      border-inline-start: 2px solid var(--ds-border, rgba(11,18,14,0.14)) !important;
+      border-inline-start: 2px solid var(--ds-border) !important;
       border-left: none !important;
       border-right: none !important;
     }
@@ -274,7 +273,8 @@ function CommentBody({ content }: { content: string }) {
   return (
     <div
       ref={ref}
-      className="cds-comment-body text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse)))] dark:text-[var(--ds-text,var(--cp-bg-neutral))] whitespace-pre-wrap leading-relaxed"
+      className="cds-comment-body"
+      style={{ fontSize: 13, color: 'var(--ds-text)', whiteSpace: 'pre-wrap', lineHeight: 1.625 }}
     >
       {renderContent(content, { roster, currentUserId })}
     </div>
@@ -300,13 +300,20 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          'flex gap-3 py-3',
-          isHighlighted && 'bg-[var(--ds-background-information)]/30 dark:bg-[var(--ds-background-information)]/20 -mx-3 px-3 rounded',
-          className
-        )}
+        className={className}
+        style={{
+          display: 'flex',
+          gap: 12,
+          padding: '12px 0',
+          ...(isHighlighted && {
+            background: 'var(--ds-background-information)',
+            marginInline: -12,
+            paddingInline: 12,
+            borderRadius: 4,
+          }),
+        }}
       >
-        <span className="shrink-0">
+        <span style={{ flexShrink: 0 }}>
           <Avatar
             src={author.avatarUrl}
             name={isSystem ? 'System' : author.name}
@@ -314,23 +321,16 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
           />
         </span>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span
-              className={cn(
-                'text-[14px] font-semibold',
-                isSystem
-                  ? 'text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]'
-                  : 'text-[var(--ds-text)] dark:text-[var(--ds-text)]'
-              )}
-            >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: isSystem ? 'var(--ds-text-subtlest)' : 'var(--ds-text)' }}>
               {author.name}
             </span>
           </div>
-          <div className="text-[12px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] mb-2">
+          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', marginBottom: 8 }}>
             {formatAbsoluteDate(createdAt)}
             {isEdited && (
-              <span className="italic ml-2">edited</span>
+              <span style={{ fontStyle: 'italic', marginLeft: 8 }}>edited</span>
             )}
           </div>
 
@@ -339,7 +339,7 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
           {extras}
 
           {actions && (
-            <div className="flex items-center gap-3 mt-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
               {actions}
             </div>
           )}
