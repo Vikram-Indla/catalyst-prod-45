@@ -1,4 +1,12 @@
 /**
+ * Title-case helper for issue type breadcrumb (story → Story, epic → Epic)
+ */
+const toTitleCase = (str: string): string => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+/**
  * ForYouRow — shared row primitive for every For You tab.
  *
  * Matches Jira's For You row spec (April 2026):
@@ -200,6 +208,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           {isJiraAssigned && item.issueType && (
             // Jira's /jira/for-you Assigned tab renders the issuetype NAME as
             // the leading meta token: "Epic · MWR-754 · MIM Website Revamp".
+            // Now rendering in title case: "Epic" instead of "epic".
             <span
               style={{
                 font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
@@ -207,10 +216,32 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
                 letterSpacing: 0,
               }}
             >
-              {item.issueType}
+              {toTitleCase(item.issueType)}
             </span>
           )}
           {isJiraAssigned && item.issueType && (
+            <span
+              aria-hidden="true"
+              style={{
+                font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
+              }}
+            >
+              ·
+            </span>
+          )}
+          {isJiraAssigned && item.moduleName && (
+            <span
+              style={{
+                font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
+                letterSpacing: 0,
+              }}
+            >
+              {item.moduleName}
+            </span>
+          )}
+          {isJiraAssigned && item.moduleName && (
             <span
               aria-hidden="true"
               style={{
@@ -232,8 +263,8 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           >
             {item.key}
           </span>
-          {!hideProject && (
-            <Tooltip content={item.project}>
+          {!hideProject && item.projectName && (
+            <Tooltip content={item.projectName}>
               <span
                 style={{
                   font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
@@ -244,7 +275,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
                   whiteSpace: 'nowrap',
                 }}
               >
-                {item.project}
+                {item.projectName}
               </span>
             </Tooltip>
           )}

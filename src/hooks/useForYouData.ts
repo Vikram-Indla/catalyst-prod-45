@@ -69,6 +69,9 @@ export interface WorkItem {
   level: string;
   project: string;
   projectKey: string;
+  projectName?: string;  // Jira project name (for breadcrumb)
+  moduleName?: string;   // Workstream/module name (for breadcrumb)
+  workstreamName?: string; // Alias for moduleName
   hub: HubType;
   hubLabel: string;
   updatedAt: string;
@@ -450,6 +453,9 @@ function mapIssueToWorkItem(
     level: issueType,
     project: row.workstream_name || row.project_name || projectNameMap.get(projectKey) || projectKey,
     projectKey,
+    projectName: row.project_name || projectNameMap.get(projectKey) || projectKey, // Jira project name for breadcrumb
+    moduleName: row.workstream_name || undefined,  // Workstream/module name for breadcrumb
+    workstreamName: row.workstream_name || undefined, // Alias
     hub,
     hubLabel: HUB_LABEL_MAP[hub],
     issueType,
