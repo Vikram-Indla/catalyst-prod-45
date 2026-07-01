@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTestCycleByKey } from '@/hooks/useTestCycleByKey';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Select from '@atlaskit/select';
 import { portalSelectStyles } from '@/lib/select-portal-styles';
@@ -28,7 +29,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export default function CycleDetailPage() {
-  const { id: cycleId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
+  const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
+  const cycleParam = cycleKey ?? legacyId;
+  const { data: cycleRecord } = useTestCycleByKey(cycleParam, projectKey);
+  // Resolve to UUID for all downstream hooks that query by id
+  const cycleId = cycleRecord?.id ?? (cycleParam && /^[0-9a-f-]{36}$/.test(cycleParam) ? cycleParam : undefined);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: projects = [] } = useProjects();

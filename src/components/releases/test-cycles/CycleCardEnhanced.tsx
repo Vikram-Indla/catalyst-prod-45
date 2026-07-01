@@ -101,14 +101,14 @@ export function CycleCardEnhanced({
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
 
   const handleCardClick = () => {
-    navigate(`/testhub/BAU/cycles/${cycle.id}`);
+    navigate(`/testhub/BAU/cycles/${cycle.key ?? cycle.id}`);
   };
 
   const handleAction = (e: React.MouseEvent, action: string) => {
     e.stopPropagation();
     switch (action) {
       case 'view':
-        navigate(`/testhub/BAU/cycles/${cycle.id}`);
+        navigate(`/testhub/BAU/cycles/${cycle.key ?? cycle.id}`);
         break;
       case 'execute':
         navigate(`/testhub/BAU/cycles/${cycle.id}/execute`);

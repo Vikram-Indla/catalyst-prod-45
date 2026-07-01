@@ -50,17 +50,17 @@ export function CycleCard({ cycle, onEdit, onDuplicate, onDelete }: CycleCardPro
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/testhub/BAU/cycles/${cycle.id}`);
+    navigate(`/testhub/BAU/cycles/${cycle.cycleKey ?? cycle.id}`);
   };
 
   const handleAction = (e: React.MouseEvent, action: string) => {
     e.stopPropagation();
     switch (action) {
       case 'view':
-        navigate(`/testhub/BAU/cycles/${cycle.id}`);
+        navigate(`/testhub/BAU/cycles/${cycle.cycleKey ?? cycle.id}`);
         break;
       case 'execute':
-        navigate(`/testhub/BAU/cycles/${cycle.id}/execute`);
+        navigate(`/testhub/BAU/cycles/${cycle.cycleKey ?? cycle.id}/execute`);
         break;
       case 'edit':
         onEdit(cycle);

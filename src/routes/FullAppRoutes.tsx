@@ -688,8 +688,11 @@ export default function FullAppRoutes() {
         <Route path="/testhub/board" element={<S><TestHubBoardPage /></S>} />
         <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
         <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
-        <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
-        <Route path="/testhub/cycles/:id/execute" element={<S><TestHubExecutionPage /></S>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<S><TestHubCycleDetailPage /></S>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<S><TestHubExecutionPage /></S>} />
+        {/* Legacy routes without projectKey — backward compat */}
+        <Route path="/testhub/cycles/:cycleKey" element={<S><TestHubCycleDetailPage /></S>} />
+        <Route path="/testhub/cycles/:cycleKey/execute" element={<S><TestHubExecutionPage /></S>} />
         <Route path="/testhub/timeline" element={<S><TestHubTimelinePage /></S>} />
         <Route path="/testhub/dependencies" element={<S><TestHubDependenciesPage /></S>} />
         <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />

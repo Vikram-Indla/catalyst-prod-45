@@ -138,7 +138,7 @@ export function CycleCalendarView({ cycles, onCycleClick }: CycleCalendarViewPro
 
   const handleCycleClick = (e: React.MouseEvent, cycle: TestCycle) => {
     e.stopPropagation();
-    navigate(`/testhub/BAU/cycles/${cycle.id}`);
+    navigate(`/testhub/BAU/cycles/${cycle.cycleKey ?? cycle.id}`);
   };
 
   const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
