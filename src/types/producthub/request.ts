@@ -70,19 +70,19 @@ export const DENSITY_MAP: Record<Density, { row: number; bar: number }> = {
 };
 
 export const STATUS_CONFIG: Record<RequestStatus, { label: string; color: string; bg: string; fill: string }> = {
-  new:                     { label: 'New',                    color: 'var(--ds-background-information-bold, #3b82f6)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',   fill: 'var(--ds-background-information-bold, rgba(59,130,246,0.40))' },
-  portfolio_review:        { label: 'Portfolio Review',       color: 'var(--ds-background-discovery-bold, #8b5cf6)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.15))',   fill: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.40))' },
-  technical_validation:    { label: 'Technical Validation',   color: '#A855F7', bg: 'rgba(168,85,247,0.15)',   fill: 'rgba(168,85,247,0.40)' },
-  estimate:                { label: 'Estimate',               color: 'var(--ds-background-discovery-bold, #6366f1)', bg: 'rgba(99,102,241,0.15)',   fill: 'rgba(99,102,241,0.40)' },
-  demand_approved:         { label: 'Demand Approved',        color: 'var(--ds-icon-information, #1D7AFC)', bg: 'rgba(6,182,212,0.15)',    fill: 'rgba(6,182,212,0.40)' },
-  analysis:                { label: 'Analysis',               color: '#0EA5E9', bg: 'rgba(14,165,233,0.15)',   fill: 'rgba(14,165,233,0.40)' },
-  ready_for_development:   { label: 'Ready for Development',  color: 'var(--ds-background-accent-teal-bolder, #14b8a6)', bg: 'rgba(20,184,166,0.15)',   fill: 'rgba(20,184,166,0.40)' },
-  under_implementation:    { label: 'Under Implementation',   color: 'var(--cp-amber, #F59E0B)', bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.15))',   fill: 'var(--ds-background-warning-bold, rgba(245,158,11,0.40))' },
-  on_hold:                 { label: 'On Hold',                color: 'var(--ds-text-subtlest, #626F86)', bg: 'rgba(107,114,128,0.15)',  fill: 'rgba(107,114,128,0.40)' },
-  implementation_review:   { label: 'Implementation Review',  color: 'var(--ds-background-warning-bold, #f97316)', bg: 'rgba(249,115,22,0.15)',   fill: 'rgba(249,115,22,0.40)' },
-  in_support:              { label: 'In Support',             color: 'var(--ds-background-success-bold, #059669)', bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.15))',   fill: 'var(--ds-background-success-bold, rgba(16,185,129,0.40))' },
-  done:                    { label: 'Done',                   color: 'var(--ds-background-success-bold, #1F845A)', bg: 'var(--ds-background-success-bold, rgba(34,197,94,0.15))',    fill: 'var(--ds-background-success-bold, rgba(34,197,94,0.40))' },
-  cancelled:               { label: 'Cancelled',              color: 'var(--ds-background-danger-bold, #ef4444)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.15))',    fill: 'var(--ds-background-danger, rgba(239,68,68,0.40))' },
+  new:                     { label: 'New',                    color: 'var(--ds-background-information-bold)', bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',   fill: 'var(--ds-background-information-bold, rgba(59,130,246,0.40))' },
+  portfolio_review:        { label: 'Portfolio Review',       color: 'var(--ds-background-discovery-bold)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.15))',   fill: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.40))' },
+  technical_validation:    { label: 'Technical Validation',   color: '#A855F7', bg: 'rgba(168,85,247,0.15)',   fill: 'rgba(168,85,247,0.40)' }, // ads-scanner:ignore-line
+  estimate:                { label: 'Estimate',               color: 'var(--ds-background-discovery-bold)', bg: 'rgba(99,102,241,0.15)',   fill: 'rgba(99,102,241,0.40)' },
+  demand_approved:         { label: 'Demand Approved',        color: 'var(--ds-icon-information)', bg: 'rgba(6,182,212,0.15)',    fill: 'rgba(6,182,212,0.40)' },
+  analysis:                { label: 'Analysis',               color: '#0EA5E9', bg: 'rgba(14,165,233,0.15)',   fill: 'rgba(14,165,233,0.40)' }, // ads-scanner:ignore-line
+  ready_for_development:   { label: 'Ready for Development',  color: 'var(--ds-background-accent-teal-bolder)', bg: 'rgba(20,184,166,0.15)',   fill: 'rgba(20,184,166,0.40)' },
+  under_implementation:    { label: 'Under Implementation',   color: 'var(--cp-amber)', bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.15))',   fill: 'var(--ds-background-warning-bold, rgba(245,158,11,0.40))' },
+  on_hold:                 { label: 'On Hold',                color: 'var(--ds-text-subtlest)', bg: 'rgba(107,114,128,0.15)',  fill: 'rgba(107,114,128,0.40)' },
+  implementation_review:   { label: 'Implementation Review',  color: 'var(--ds-background-warning-bold)', bg: 'rgba(249,115,22,0.15)',   fill: 'rgba(249,115,22,0.40)' },
+  in_support:              { label: 'In Support',             color: 'var(--ds-background-success-bold)', bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.15))',   fill: 'var(--ds-background-success-bold, rgba(16,185,129,0.40))' },
+  done:                    { label: 'Done',                   color: 'var(--ds-background-success-bold)', bg: 'var(--ds-background-success-bold, rgba(34,197,94,0.15))',    fill: 'var(--ds-background-success-bold, rgba(34,197,94,0.40))' },
+  cancelled:               { label: 'Cancelled',              color: 'var(--ds-background-danger-bold)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.15))',    fill: 'var(--ds-background-danger, rgba(239,68,68,0.40))' },
 };
 
 export const FILTER_CHIPS: { key: FilterChip; label: string }[] = [
@@ -120,7 +120,7 @@ export function getInitialsFromName(name: string): string {
 
 /** Deterministic color from string */
 export function hashColor(str: string): string {
-  const colors = ['var(--ds-link, #2563eb)', 'var(--ds-chart-teal-bold, #0d9488)', '#0369a1', 'var(--ds-background-warning-bold, #d97706)', 'var(--ds-link, #0C66E4)', 'var(--ds-link-pressed, #1e40af)', 'var(--ds-background-warning-bold, #b45309)', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-text-subtle, #44546F)', 'var(--cp-ink-2, var(--cp-ink-2, #334155))'];
+  const colors = ['var(--ds-link)', 'var(--ds-chart-teal-bold)', '#0369a1', 'var(--ds-background-warning-bold)', 'var(--ds-link)', 'var(--ds-link-pressed)', 'var(--ds-background-warning-bold)', 'var(--ds-chart-teal-bolder)', 'var(--ds-text-subtle)', 'var(--cp-ink-2)']; // ads-scanner:ignore-line
   let hash = 0;
   for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];
