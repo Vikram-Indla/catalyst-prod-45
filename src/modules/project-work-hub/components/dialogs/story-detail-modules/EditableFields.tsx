@@ -1035,6 +1035,7 @@ export function EditableLabels({
         appearance="subtle"
         spacing="compact"
         classNamePrefix="cv-labels-select"
+        closeMenuOnSelect={false}
         placeholder="None"
         options={options}
         value={selected}
@@ -1098,8 +1099,7 @@ export function EditableLabels({
           multiValue: (base, state) => ({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
-            background:
-              "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
+            background: 'var(--ds-surface)',
             borderRadius: 3,
             padding: '0px 6px',
             whiteSpace: 'nowrap',
@@ -1109,8 +1109,7 @@ export function EditableLabels({
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color:
-              "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
+            color: 'var(--ds-text)',
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             whiteSpace: 'nowrap',
