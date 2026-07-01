@@ -107,7 +107,7 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   // the kebab and the inline row star button always agree on the same value.
   const starFilter = useStarFilter();
   const hubPrefix = hubType === 'product' ? 'product-hub' : 'project-hub';
-  const filterRoute = projectKey ? `/${hubPrefix}/${projectKey}/filters/${filter.id}` : undefined;
+  const filterRoute = projectKey ? `/${hubPrefix}/${projectKey}/filters/${filter.slug ?? filter.id}` : undefined;
   const isStarred = currentUserId ? (filter.starred_by_user_ids ?? []).includes(currentUserId) : false;
   function handleToggleStar() {
     if (!currentUserId) return;
