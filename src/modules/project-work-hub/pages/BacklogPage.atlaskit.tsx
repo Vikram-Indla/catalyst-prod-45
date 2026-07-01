@@ -280,20 +280,10 @@ function DragHandleGrip({ row }: { row: BacklogItem }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Source row lookup by data attribute (the grip is portaled, so it has no
-    // DOM link to its <tr>). Used only to tint/dim the source row while dragging.
-    const findTr = () =>
-      document.querySelector(
-        `[data-drag-row-id="${(window as any).CSS?.escape ? CSS.escape(String(row.id)) : String(row.id)}"]`,
-      ) as HTMLElement | null;
-    const setSourceDragging = (on: boolean) => {
-      const tr = findTr();
-      if (!tr) return;
-      tr.style.background = on ? token('color.background.selected', 'var(--ds-background-selected)') : '';
-      tr.querySelectorAll('td').forEach((td) => {
-        (td as HTMLElement).style.opacity = on ? '0.4' : '';
-      });
-    };
+    /* The source-row blue highlight is now owned by BacklogTable (React state
+       `draggingRowId` → tr[data-drag-source] CSS), so it survives re-renders
+       and covers the virtualized row path. The grip only supplies the drag
+       payload + the cursor chip. */
     return draggable({
       element: el,
       getInitialData: () => ({ rowId: row.id }),
@@ -301,37 +291,56 @@ function DragHandleGrip({ row }: { row: BacklogItem }) {
         setCustomNativeDragPreview({
           nativeSetDragImage,
           getOffset: pointerOutsideOfPreview({ x: '12px', y: '8px' }),
+          /* Build the chip with PLAIN DOM, synchronously. A React createRoot
+             render (even inside flushSync) proved unreliable for the native
+             drag-image snapshot — the container read back empty, so the chip
+             showed no icon/title. Plain DOM guarantees the content exists the
+             instant pdnd snapshots it. */
           render: ({ container }) => {
-            const root = createRoot(container);
-            root.render(
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  maxWidth: 320,
-                  padding: '6px 10px',
-                  background: token('elevation.surface.overlay', 'var(--ds-surface-overlay)'),
-                  border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
-                  borderRadius: 4,
-                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-overlay)'),
-                  font: 'var(--ds-font-body, 14px/20px inherit)',
-                  color: token('color.text', 'var(--ds-text)'),
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <JiraIssueTypeIcon type={row.type as any} size={16} />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
-              </div>,
-            );
-            return () => root.unmount();
+            /* The pdnd container's OWN background is not painted into the drag
+               image (only an inner element's is), and Chrome draws a 1px dark
+               border on the drag image's outer edge (top/left). So: make the
+               container a TRANSPARENT frame with padding — the dark-edge
+               artifact lands on this empty padding — and render the visible
+               white pill as an INNER element inset from that edge. */
+            container.style.cssText = 'padding:4px;background:transparent;border:none;';
+            const chip = document.createElement('div');
+            chip.style.cssText =
+              'display:inline-flex;align-items:center;gap:8px;max-width:320px;' +
+              'padding:6px 10px;background:var(--ds-surface-overlay);' +
+              'border:none;border-radius:8px;color:var(--ds-text);opacity:1;' +
+              'font-size:14px;line-height:20px;white-space:nowrap;';
+            /* Real work-item type icon: clone the <img> already rendered (and
+               cached) in the source row's Work cell, so the chip shows the
+               EXACT type glyph and paints synchronously for the drag snapshot.
+               Falls back to no icon if the row isn't found. */
+            const escaped = (window as any).CSS?.escape
+              ? CSS.escape(String(row.id))
+              : String(row.id);
+            const srcImg = document.querySelector(
+              `[data-drag-row-id="${escaped}"] td[data-col-id="key"] img`,
+            ) as HTMLImageElement | null;
+            if (srcImg?.src) {
+              const icon = document.createElement('img');
+              icon.src = srcImg.src;
+              icon.width = 16;
+              icon.height = 16;
+              icon.style.cssText = 'flex-shrink:0;display:block;';
+              chip.appendChild(icon);
+            }
+            const label = document.createElement('span');
+            label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;';
+            label.textContent = row.title;
+            chip.appendChild(label);
+            container.appendChild(chip);
+            return () => {
+              container.replaceChildren();
+            };
           },
         });
       },
-      onDragStart: () => setSourceDragging(true),
-      onDrop: () => setSourceDragging(false),
     });
-  }, [row.id]);
+  }, [row.id, row.title]);
 
   return (
     <div
@@ -401,20 +410,36 @@ function RowDropAnchor({ row }: { row: BacklogItem }) {
     <>
       <span ref={ref} aria-hidden style={{ width: 0, height: 0, overflow: 'hidden' }} />
       {dropEdge && trRect && ReactDOM.createPortal(
-        <div
-          aria-hidden
-          style={{
-            position: 'fixed',
-            left: trRect.left,
-            width: trRect.width,
-            top: dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1,
-            height: 2,
-            background: token('color.border.brand', 'var(--ds-link)'),
-            zIndex: 9999,
-            pointerEvents: 'none',
-            borderRadius: 1,
-          }}
-        />,
+        <div aria-hidden style={{ pointerEvents: 'none' }}>
+          {/* Full-width blue insert line + hollow circle node on its left end —
+              exact Jira drop indicator (img #55). */}
+          <div
+            style={{
+              position: 'fixed',
+              left: trRect.left,
+              width: trRect.width,
+              top: dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1,
+              height: 2,
+              background: token('color.border.brand', 'var(--ds-link)'),
+              zIndex: 9999,
+              borderRadius: 1,
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              left: trRect.left - 3,
+              top: (dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1) - 3,
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: token('elevation.surface', 'var(--ds-surface)'),
+              border: `2px solid ${token('color.border.brand', 'var(--ds-link)')}`,
+              boxSizing: 'border-box',
+              zIndex: 9999,
+            }}
+          />
+        </div>,
         document.body,
       )}
     </>

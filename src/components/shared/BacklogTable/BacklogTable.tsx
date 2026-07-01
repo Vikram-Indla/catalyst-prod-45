@@ -40,6 +40,7 @@ import React, {
   useLayoutEffect,
 } from "react";
 import { createPortal } from "react-dom";
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Checkbox as AkCheckbox } from "@atlaskit/checkbox";
 import Textfield from "@atlaskit/textfield";
 import Spinner from "@atlaskit/spinner";
@@ -682,6 +683,16 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
          the slightly darker hover; the rest of the row keeps the subtle tint. */
       .jira-table-grid table tbody > tr:not(.jira-table-group-row):hover > td[data-col-id="key"] {
         background-color: var(--ds-background-neutral-hovered) !important;
+      }
+      /* Drag-source row: solid blue at FULL opacity while it is being dragged
+         (Jira img #60 — the row is highlighted, never faded). Painted on every
+         cell (a <tr> background is hidden behind opaque <td>s). The second
+         selector (with :not(.group) + the key-cell attr) matches the
+         high-specificity hover rules above so the selected bg wins on EVERY
+         cell — including the Work/key cell that otherwise keeps its hover bg. */
+      .jira-table-grid table tbody > tr[data-drag-source="true"]:not(.jira-table-group-row) > td,
+      .jira-table-grid table tbody > tr[data-drag-source="true"]:not(.jira-table-group-row) > td[data-col-id="key"] {
+        background-color: var(--ds-background-selected) !important;
       }
       /* 2026-06-30 (user request): per-row hover affordances.
          - Drag handle: floating rounded box at the row's LEFT edge, revealed
@@ -2128,11 +2139,33 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   const [floatAfford, setFloatAfford] = useState<
     { id: string; row: TRow; left: number; top: number; width: number; height: number; zone: 'top' | 'center' } | null
   >(null);
+  /* Id of the row currently being drag-reordered (null when idle). Driven by a
+     pdnd monitor so it survives re-renders and covers BOTH the plain and the
+     virtualized <tr> paths. Used to (a) paint the source row blue and (b)
+     SUPPRESS the hover grip/insert affordances while a drag is in flight — the
+     affordances are mouse-hover driven and would otherwise render a second,
+     stray grip on whatever row the cursor passes over mid-drag. */
+  const [draggingRowId, setDraggingRowId] = useState<string | null>(null);
+  useEffect(() => {
+    return monitorForElements({
+      onDragStart: ({ source }) => {
+        const rid = source.data?.rowId;
+        if (rid != null) setDraggingRowId(String(rid));
+        // Note: floatAfford is intentionally NOT cleared — it holds the SOURCE
+        // row's grip, which Jira keeps visible on the dragged row (img #60).
+        // The center-grip gate below only lets the source row's grip through.
+      },
+      onDrop: () => setDraggingRowId(null),
+    });
+  }, []);
   const floatHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cancelFloatHide = () => {
     if (floatHideTimer.current) { clearTimeout(floatHideTimer.current); floatHideTimer.current = null; }
   };
   const onRowZoneMove = (e: React.MouseEvent<HTMLTableRowElement>, row: TRow) => {
+    // No hover affordances while a drag-reorder is in flight — otherwise a
+    // stray grip renders on whichever row the cursor crosses during the drag.
+    if (draggingRowId) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const zone: 'top' | 'center' = (e.clientY - rect.top) <= 8 ? 'top' : 'center';
     const id = String(getRowId(row));
@@ -2149,6 +2182,9 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
   };
   const onRowZoneLeave = (e?: React.MouseEvent<HTMLTableRowElement>) => {
     e?.currentTarget?.removeAttribute('data-hz');
+    // Don't dismiss the grip while dragging — it must stay pinned to the
+    // source row for the whole drag (Jira img #60).
+    if (draggingRowId) return;
     cancelFloatHide();
     // brief delay so moving the cursor onto the floating box (which sits just
     // off the row) doesn't dismiss it.
@@ -2164,6 +2200,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           .filter(Boolean)
           .join(" ")}
         data-drag-row-id={!isGroup && r.row != null ? String(getRowId(r.row)) : undefined}
+        data-drag-source={!isGroup && r.row != null && draggingRowId === String(getRowId(r.row)) ? "true" : undefined}
         onClick={r.onClick}
         onContextMenu={r.onContextMenu}
         onMouseMove={isGroup ? undefined : (e) => onRowZoneMove(e, r.row)}
@@ -2890,6 +2927,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
                             key={r.key}
                             data-index={vRow.index}
                             data-drag-row-id={!isGroup && r.row != null ? String(getRowId(r.row)) : undefined}
+                            data-drag-source={!isGroup && r.row != null && draggingRowId === String(getRowId(r.row)) ? "true" : undefined}
                             ref={virtualizer?.measureElement as any}
                             className={[
                               r.className,
@@ -3513,7 +3551,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
           like the "+", but centred VERTICALLY on the row (center-hover). It is
           its OWN pdnd draggable (see DragHandleGrip), so dragging works from the
           portal; per-row RowDropAnchor supplies the drop targets. */}
-      {floatAfford && floatAfford.zone === 'center' && renderRowDragHandle && !rowDragHandleHidden
+      {floatAfford && (!draggingRowId || floatAfford.id === draggingRowId) && floatAfford.zone === 'center' && renderRowDragHandle && !rowDragHandleHidden
         && createPortal(
           <div
             onMouseEnter={cancelFloatHide}
@@ -3534,7 +3572,7 @@ export function BacklogTable<TRow>(props: JiraTableProps<TRow>) {
       {/* The INSERT "+" stays portaled too (top-border affordance): centred on
           the TOP-LEFT CORNER where the row's top divider meets the left border
           (top-hover) and shows a full-width blue insert line. */}
-      {floatAfford && floatAfford.zone === 'top' && onInsertAbove
+      {floatAfford && !draggingRowId && floatAfford.zone === 'top' && onInsertAbove
         && createPortal(
           <>
             {/* Full-width blue insert line on the row's TOP border — same
