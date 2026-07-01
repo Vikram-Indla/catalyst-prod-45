@@ -333,7 +333,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         borderRadius: 8,
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
-        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16)), 0 2px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',

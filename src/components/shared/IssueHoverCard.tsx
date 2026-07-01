@@ -163,14 +163,20 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
   const [summaryState, setSummaryState] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
   const [summaryText, setSummaryText] = useState<string | null>(null);
 
-  // Placement: prefer below trigger (bottom-start). Flip to top-start if no room.
+  // Placement: pick the side with more room. Anchor by bottom when above so the
+  // card grows upward; anchor by top when below so it grows downward. Constrain
+  // maxHeight to available space so the card never spills past the viewport.
   const viewportH = window.innerHeight;
   const viewportW = window.innerWidth;
-  const estimatedHeight = 280;
-  const placeAbove = rect.bottom + POPUP_OFFSET + estimatedHeight > viewportH;
-  const top = placeAbove
-    ? Math.max(8, rect.top - POPUP_OFFSET - estimatedHeight)
-    : rect.bottom + POPUP_OFFSET;
+  const spaceBelow = viewportH - rect.bottom - POPUP_OFFSET - 8;
+  const spaceAbove = rect.top - POPUP_OFFSET - 8;
+  const placeAbove = spaceAbove > spaceBelow;
+  const cardMaxH = Math.min(560, placeAbove ? spaceAbove : spaceBelow);
+  // When above: bottom edge anchors at trigger top; card grows upward.
+  // When below: top edge anchors at trigger bottom; card grows downward.
+  const posStyle: React.CSSProperties = placeAbove
+    ? { bottom: viewportH - rect.top + POPUP_OFFSET, top: 'auto' as const }
+    : { top: rect.bottom + POPUP_OFFSET };
   // Align left edge of card with left edge of trigger, but keep on-screen.
   const left = Math.min(Math.max(8, rect.left), viewportW - CARD_WIDTH - 8);
 
@@ -285,15 +291,15 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
       aria-label={`${issueKey} preview`}
       style={{
         position: 'fixed',
-        top,
+        ...posStyle,
         left,
         width: CARD_WIDTH,
-        maxHeight: 'min(560px, calc(100vh - 32px))',
+        maxHeight: cardMaxH,
         overflowY: 'auto',
         zIndex: 100000,
         background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         borderRadius: 8,
-        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16)), 0 2px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         padding: 16,
         fontFamily: token('font.family.body', '-apple-system, BlinkMacSystemFont, "Atlassian Sans", "Segoe UI", Roboto, sans-serif'),
