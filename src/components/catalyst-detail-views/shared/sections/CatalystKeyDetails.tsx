@@ -221,7 +221,7 @@ export function CatalystKeyDetails({
         </Tooltip>
         <h2
           onClick={() => setCollapsed(!collapsed)}
-          style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text)', cursor: 'pointer' }}
+          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text)', cursor: 'pointer' }}
         >
           Key details
         </h2>

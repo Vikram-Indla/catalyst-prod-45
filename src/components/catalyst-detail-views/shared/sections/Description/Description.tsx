@@ -435,9 +435,9 @@ export function Description({
             padding: 0,
             flex: 1,
             fontSize: 'var(--ds-font-size-400)',
-            fontWeight: 500,
+            fontWeight: 600,
             lineHeight: '20px',
-            color: 'var(--ds-text-subtle)',
+            color: 'var(--ds-text)',
             fontFamily:
               '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}
