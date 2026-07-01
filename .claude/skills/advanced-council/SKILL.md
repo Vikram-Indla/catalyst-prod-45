@@ -73,6 +73,10 @@ Before the council speaks, classify every non-negotiable rule into one of these 
 | Enforceable by review only | checklist/manual signoff | reason automation is not possible |
 | Not enforceable yet | gap | proposed enforcement path |
 
+Before classifying rules, load these two files — they are authoritative for ADS and design review and are NOT loaded automatically:
+* `design-governance/CLAUDE_PROMPT.md` — ADS primer: 5 absolute rules, 3 CI gates, banned alternatives (react-select, sonner direct import, TipTap/contenteditable in new files)
+* `design-governance/DESIGN_REVIEW_CHECKLIST.md` — Vikram's actual PR checklist: JiraTable mandatory, @atlaskit/editor-core mandatory, @atlaskit/flag mandatory, Figma link required
+
 Important:
 * CLAUDE.md is context, not enforcement.
 * If a rule must block behavior, propose a hook/gate.
@@ -188,6 +192,14 @@ Ratchet commands (exact):
 * `npm run lint:colors:gate` — hex/rgb ratchet (decrease-only)
 * `npm run audit:ads:gate` — typography, spacing, fontImports ratchet (decrease-only)
 * `npm run audit:contrast` — contrast gate
+* `npm run lint:accessibility` — accessibility audit
+* `npm run test:a11y` — Playwright a11y tests (primary a11y gate)
+* `npm run test:visual` — Playwright visual regression
+* `npm run scan:ads-violations` — ADS violation scanner (Tailwind color utils + tokens)
+
+**Tiptap rule:** `@tiptap` is BANNED in new files (`eslint.config.js:88-95` warns). Existing usage in 20+ files (ComposerEditor.tsx, CatalystDescriptionSection.tsx) is grandfathered tech debt — do NOT flag existing files. Only check: `grep -r 'from .@tiptap' [NEWLY ADDED FILES]`. New files must use `@atlaskit/editor-core` instead.
+
+**Sonner rule:** `sonner` is aliased via `vite.config.ts` to `src/components/ui/sonner.tsx` (ADS shim). Direct `import from 'sonner'` routes to `@atlaskit/flag` at runtime — NOT a violation. Do not flag sonner imports.
 
 **Tokens category is noisy (27,432 baseline, increases ALLOWED)** — not a meaningful enforcement gate. Use typography ratchet (1,662 violations, decrease-only) as the real ADS gate: `npm run audit:ads:gate` must not increase typography count.
 
@@ -316,9 +328,11 @@ DOM/a11y tests must not be used as proof of:
 * dark-mode visual correctness
 * imported CSS class correctness
 
+**Storybook a11y status (verified 2026-07-01):** `.storybook/preview.tsx:72` — `a11y addon test: 'todo'` (INACTIVE). Do NOT use Storybook a11y results as evidence. Primary a11y gate: `npm run test:a11y` (Playwright). 146 stories exist, 22 audit-grade in `src/stories/audit-grade/` — check if a story covers this component before assuming a11y is untested.
+
 Output:
 ```
-A11Y ITEM | Evidence | Pass/Fail | Test/Manual verification
+A11Y ITEM | Evidence | Pass/Fail | Test command (npm run test:a11y / manual)
 ```
 
 ---
@@ -503,6 +517,11 @@ Must answer:
 * What existing usage proves the pattern?
 * Is extension better than new build?
 * Is JiraTable/CanonicalTable mandatory?
+* Does an audit-grade Storybook story exist for the component being modified?
+  `grep -r '[ComponentName].stories' src/stories/audit-grade/`
+  If yes — does the story cover the state being added? If no — flag as DEFER: add story.
+* Status badges: use `StatusLozenge` (confirmed in src/). Never `<span>` with inline bg color.
+  `grep -r 'CatalystStatusPill' src/` — if no export found, use StatusLozenge.
 
 Veto: Hand-rolled component when canonical component exists.
 
@@ -610,6 +629,8 @@ Must answer:
 * What is the rollback path?
 * What is the one non-negotiable first action?
 
+**VeriMAP timebox:** Council timebox (discovery + reports + synthesis) is SEPARATE FROM and PRECEDES the 2-hour implementation slice (CLAUDE.md). Total budget = council time + implementation time. Never count council time against the 2-hour implementation limit.
+
 Veto: Plan without executable acceptance criteria.
 
 ---
@@ -652,6 +673,13 @@ Must answer:
 * Are transitions guarded?
 * Is audit written?
 * Is UI using canonical status source?
+
+**gateTransition black-box protocol (verified 2026-07-01):** `src/lib/workflow/canonical/runtime.ts` source is not directly readable — generated or compiled. Cannot verify gateTransition behavior by code read alone.
+Verification steps (mandatory when workflow transitions touched):
+1. Query `ph_wf_enforcement_config` — confirm `enforcement_mode` for this project (advisory vs blocking)
+2. Test a known-invalid transition manually and confirm it is blocked
+3. Confirm audit log written to `ph_wf_transition_log` (or equivalent)
+Do NOT assume gateTransition enforces what its name implies.
 
 ---
 
