@@ -151,3 +151,86 @@ ADS tokens only in any styled output. No hand-rolled UI. Explicit file staging
 only. Surgical changes — touch only `RULE_TABLE.md` and `CatalystRules.ts`
 unless the rule requires wiring a new chokepoint (requires separate
 `activate feature` slice).
+
+---
+
+## HUB NAVIGATION PATTERN — CANONICAL L1/L2
+
+**Ground truth:** `FiltersListPage.tsx` (L1) + `FilterDetailPage.tsx` (L2) + `ProjectPageHeader.tsx` (API).
+
+Every hub section (`/filters`, `/sprints`, `/milestones`, etc.) MUST follow this two-level pattern.
+
+### L1 — Section list page
+
+Route: `/:hub/:key/:section` (e.g. `/project-hub/BAU/filters`)
+
+```tsx
+// Layout
+<CatalystListPageLayout
+  chromeBand={
+    hubType === 'tasks'
+      ? undefined  // global hubs with no :key skip the chromeBand
+      : <ProjectPageHeader projectKey={projectKey} hubType={hubType} />
+    //  ↑ NO trail prop, NO title prop — deriveRouteWord() auto-fills the crumb
+  }
+>
+  <JiraTable ... />
+</CatalystListPageLayout>
+```
+
+Breadcrumb renders: `[ProjectIcon] Senaei BAU / Filters`
+
+### L2 — Detail page
+
+Route: `/:hub/:key/:section/:slug` (e.g. `/project-hub/BAU/filters/my-bau-tickets`)
+
+```tsx
+// Layout
+<AtlaskitPageShell
+  flush
+  chromeBand={
+    projectKey
+      ? <ProjectPageHeader
+          projectKey={projectKey}
+          hubType={hubType}
+          trail={[{ text: 'Filters', href: backHref }]}
+          //        ↑ L1 section label   ↑ href back to the list page
+          title={entity.name}
+          //     ↑ current page name — rendered as Heading, becomes last bold crumb
+        />
+      : null
+  }
+>
+```
+
+Breadcrumb renders: `[ProjectIcon] Senaei BAU / Filters / My BAU tickets`
+
+### Rules
+
+| Rule | Detail |
+|---|---|
+| L1 uses `CatalystListPageLayout` | Never `AtlaskitPageShell` on a list page |
+| L2 uses `AtlaskitPageShell flush` | Never `CatalystListPageLayout` on a detail page |
+| `trail` only on L2 | L1 MUST NOT pass `trail` — `deriveRouteWord()` auto-fills the section crumb |
+| `title` only on L2 | L1 MUST NOT pass `title` — it would override the auto-derived section word |
+| No skip-level | L2 `trail` MUST include the L1 section crumb — never jump straight to entity root |
+| Max 4 crumbs | Entity-scoped: Root → Entity → Section → Page. Global hubs (no `:key`): Root → Section → Page |
+| No hand-rolled breadcrumbs | `<Breadcrumbs>` from `@/components/ads` only — never a raw `<nav>` |
+| No bare `<h1>` strings | Title is `<Heading>` (Atlaskit) rendered inside `ProjectPageHeader` |
+
+### Hub-global routes (no `:key`)
+
+Incidents, Tasks, TestHub, Release-Hub use sentinel `projectKey` values and pass
+`hubType` so `ProjectPageHeader` derives the correct root crumb:
+
+```tsx
+// hubType drives root crumb, no entity-name DB lookup
+<ProjectPageHeader hubType="incident" />  // → "Incidents / Filters"
+
+// L2 on a global hub
+<ProjectPageHeader
+  hubType="incident"
+  trail={[{ text: 'Filters', href: '/incident-hub/filters' }]}
+  title={filter.name}
+/>  // → "Incidents / Filters / My filter"
+```

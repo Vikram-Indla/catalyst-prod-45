@@ -38,7 +38,7 @@ import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ProductAvatar } from '@/components/icons';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
@@ -638,38 +638,32 @@ export default function AllProductsPage() {
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1400 }}>
-      {/* Header row: title + Create button */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-        }}
-      >
-        <CatalystPageHeader title="Products" />
-        <button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '8px 14px',
-            fontSize: 'var(--ds-font-size-400)',
-            fontWeight: 500,
-            borderRadius: 3,
-            border: 'none',
-            background: token('color.background.brand.bold'),
-            color: token('color.text.inverse'),
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
-        >
-          <Plus size={16} />
-          Create product line
-        </button>
-      </div>
+      <ProjectPageHeader
+        hubType="product"
+        actions={
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '8px 14px',
+              fontSize: 'var(--ds-font-size-400)',
+              fontWeight: 500,
+              borderRadius: 3,
+              border: 'none',
+              background: token('color.background.brand.bold'),
+              color: token('color.text.inverse'),
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            <Plus size={16} />
+            Create product line
+          </button>
+        }
+      />
 
       {/* Toolbar: search + filter — mirrors Jira /jira/projects toolbar pattern */}
       <div

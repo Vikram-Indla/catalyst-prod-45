@@ -475,6 +475,7 @@ export default function SetDetailPage() {
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
           hubType="test"
+          trail={[{ text: 'Sets', href: '/testhub/sets' }]}
           title={set.name}
           actions={
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

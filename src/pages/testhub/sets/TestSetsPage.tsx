@@ -11,6 +11,7 @@ import TextArea from '@atlaskit/textarea';
 import Select from '@atlaskit/select';
 import { catalystToast } from '@/lib/catalystToast';
 import { MoreHorizontal } from '@/lib/atlaskit-icons';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 type SetType = 'smoke' | 'regression' | 'sanity' | 'integration' | 'e2e' | 'performance' | 'security' | 'accessibility' | 'custom';
 type MembershipType = 'static' | 'dynamic';
@@ -308,13 +309,10 @@ export default function TestSetsPage() {
 
   return (
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
-      {/* Header */}
-      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)' }}>Test Sets</h2>
-        <Button appearance="primary" onClick={() => setShowCreate(true)}>
-          + New Test Set
-        </Button>
-      </div>
+      <ProjectPageHeader
+        hubType="test"
+        actions={<Button appearance="primary" onClick={() => setShowCreate(true)}>+ New Test Set</Button>}
+      />
       <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', margin: '4px 0' }}>
           {sets.length} set{sets.length !== 1 ? 's' : ''}
         </p>
