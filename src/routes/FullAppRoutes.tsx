@@ -381,30 +381,13 @@ function MG({ k, t, children }: { k: string; t: string; children: React.ReactNod
   return <ModuleGate moduleKey={k} fallbackTitle={t}>{inner}</ModuleGate>;
 }
 
-/* 2026-06-16: /incident-hub/backlog/:key alias. BacklogPage's default
-   "open in full page" URL pattern is {baseUrl}/backlog/{key}, but for
-   incidents the real detail route is /incident-hub/view/{UUID}. This
-   redirect resolves key → UUID via ph_issues and Navigate's there. */
+/* /incident-hub/backlog/:key alias — BacklogPage "open in full page" for
+   incidents uses this pattern. Redirect to detail page which resolves
+   issue_key directly (no DB lookup needed since detail page is dual-mode). */
 function IncidentBacklogKeyRedirect() {
   const { key: incidentKey } = useParams<{ key: string }>();
-  const [uuid, setUuid] = React.useState<string | null | undefined>(undefined);
-  React.useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!incidentKey) { setUuid(null); return; }
-      const { supabase } = await import('@/integrations/supabase/client');
-      const { data } = await supabase
-        .from('ph_issues')
-        .select('id')
-        .eq('issue_key', incidentKey)
-        .maybeSingle();
-      if (!cancelled) setUuid((data as { id: string } | null)?.id ?? null);
-    })();
-    return () => { cancelled = true; };
-  }, [incidentKey]);
-  if (uuid === undefined) return null;
-  if (!uuid) return <Navigate to="/incident-hub" replace />;
-  return <Navigate to={`/incident-hub/view/${uuid}`} replace />;
+  if (!incidentKey) return <Navigate to="/incident-hub" replace />;
+  return <Navigate to={`/incident-hub/view/${incidentKey}`} replace />;
 }
 
 function Resource360Redirect() {
@@ -752,7 +735,7 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
         {/* /incident-hub/reports and /incident-hub/committee-queue deprecated — routes removed */}
-        <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
+        <Route path="/incident-hub/view/:incidentKey" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
         {/* 2026-06-16: redirect alias — the BacklogPage's default
             "open in full page" pattern was {baseUrl}/backlog/{key} which
             for incidents doesn't exist as a route. We resolve key → UUID
