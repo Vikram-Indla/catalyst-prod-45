@@ -34,7 +34,6 @@ import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
-import Lozenge from '@atlaskit/lozenge';
 import { useHubShortcuts } from '@/hooks/useHubShortcuts';
 import { useModuleAccess } from '@/hooks/useModuleAccess';
 
@@ -97,7 +96,7 @@ function LockGlyph() {
   );
 }
 
-function HubRowLabel({ hub, deprecated }: { hub: HubEntry; deprecated?: boolean }) {
+function HubRowLabel({ hub }: { hub: HubEntry }) {
   return (
     <span
       style={{
@@ -111,23 +110,19 @@ function HubRowLabel({ hub, deprecated }: { hub: HubEntry; deprecated?: boolean 
       {/* Explicit readable color: Atlaskit LinkItem was rendering the label at
           ~7% alpha (rgba(206,206,217,0.07)) in dark mode → invisible. Force the
           theme-aware text token so labels are readable in light AND dark. */}
-      <span data-hub-label={hub.key} style={{ color: deprecated ? 'var(--ds-text-disabled)' : 'var(--ds-text)' }}>{hub.label}</span>
-      {deprecated ? (
-        <Lozenge appearance="default">Soon</Lozenge>
-      ) : (
-        <span
-          data-hub-shortcut={hub.key}
-          style={{
-            fontSize: 'var(--ds-font-size-100)',
-            color: 'var(--ds-text-subtlest)',
-            fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
-            fontWeight: 500,
-            letterSpacing: '0.02em',
-          }}
-        >
-          ⌘{hub.shortcut}
-        </span>
-      )}
+      <span data-hub-label={hub.key} style={{ color: 'var(--ds-text)' }}>{hub.label}</span>
+      <span
+        data-hub-shortcut={hub.key}
+        style={{
+          fontSize: 'var(--ds-font-size-100)',
+          color: 'var(--ds-text-subtlest)',
+          fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
+          fontWeight: 500,
+          letterSpacing: '0.02em',
+        }}
+      >
+        ⌘{hub.shortcut}
+      </span>
     </span>
   );
 }
@@ -305,7 +300,7 @@ export function HubSwitcher() {
             return (
               <Section key={key} title={title}>
                 {rows.map((hub) => {
-                  // Deprecated hub: coming soon — uniform LinkItem height/alignment, disabled navigation.
+                  // Deprecated hub: visually identical to active rows — dead CTA, ships within 1 week.
                   if (hub.deprecated) {
                     return (
                       <LinkItem
@@ -316,11 +311,11 @@ export function HubSwitcher() {
                           <img
                             src={HUB_ICON_REGISTRY[hub.key]}
                             alt={hub.label}
-                            style={{ width: 24, height: 24, display: 'block', opacity: 0.55 }}
+                            style={{ width: 24, height: 24, display: 'block' }}
                           />
                         }
                       >
-                        <HubRowLabel hub={hub} deprecated />
+                        <HubRowLabel hub={hub} />
                       </LinkItem>
                     );
                   }
