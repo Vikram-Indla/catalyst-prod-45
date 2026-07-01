@@ -292,7 +292,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
                 color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
               }}
             >
-              · {item.updatedAt}
+              · {item.viewedAt ? `You viewed ${item.viewedAt}` : item.updatedAt}
             </span>
           )}
           {suggestion && (

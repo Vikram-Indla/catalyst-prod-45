@@ -76,6 +76,7 @@ export interface WorkItem {
   hubLabel: string;
   updatedAt: string;
   createdAt: string;
+  viewedAt?: string;  // "You viewed X hours ago" for recent items tab
   assignee: WorkItemAssignee;
   reporter?: string;
   reporterAvatarUrl?: string;
@@ -477,6 +478,7 @@ function mapIssueToWorkItem(
     createdAt: row.jira_created_at
       ? new Date(row.jira_created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       : '-',
+    viewedAt: row._last_viewed_at ? formatRelativeTime(row._last_viewed_at) : undefined,
     assignee: {
       id: row.assignee_account_id || 'none',
       name: assigneeName,
