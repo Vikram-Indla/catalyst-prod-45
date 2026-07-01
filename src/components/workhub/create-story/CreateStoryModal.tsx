@@ -50,7 +50,7 @@ import Textfield from '@atlaskit/textfield';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
 import { Checkbox } from '@atlaskit/checkbox';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
@@ -76,7 +76,7 @@ import { useAuth } from '@/hooks/useAuth';
 // WorkItemTypeIcon is the canonical Catalyst icon — backed by useIconOverrides
 // so /admin/icons overrides are honoured automatically (Bucket C, 2026-05-09).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
-import { resolveAvatarUrl } from '@/lib/avatars';
+
 import ProjectIcon from '@/components/shared/ProjectIcon';
 // Canonical priority icon — respects admin overrides + bundled registry.
 // Replaces inline custom SVG that bypassed the override system.
@@ -422,10 +422,10 @@ function MoreActionsButton() {
 // MiniAvatar — canonical @atlaskit/avatar xsmall (24px, ADS-compliant).
 function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
   return (
-    <Avatar
+    <CatalystAvatar
       size="small"
       name={name}
-      src={avatarUrl ?? resolveAvatarUrl(name) ?? undefined}
+      src={avatarUrl ?? undefined}
     />
   );
 }

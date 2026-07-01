@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Textfield from '@atlaskit/textfield';
 import { IconButton } from '@atlaskit/button/new';
 import SearchIcon from '@atlaskit/icon/glyph/search';
@@ -53,7 +53,7 @@ function AvatarFilter({ api, avatars }: { api: FilterApi; avatars: Map<string, s
                 filter: dim ? 'grayscale(1) opacity(0.5)' : 'none', transition: 'filter 150ms ease',
               }}
             >
-              <Avatar size="small" src={avatars.get(name) ?? undefined} name={name} />
+              <CatalystAvatar size="small" src={avatars.get(name) ?? undefined} name={name} />
             </button>
           </span>
         );

@@ -30,7 +30,7 @@ import RefreshIcon from '@atlaskit/icon/glyph/refresh';
 import Spinner from '@atlaskit/spinner';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import type { WorkItem } from '@/types/workItem.types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
@@ -419,7 +419,7 @@ export function WorkListPanel({
             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
               {disableAssigneePicker ? (
                 item.assignee ? (
-                  <Avatar
+                  <CatalystAvatar
                     size="small"
                     name={item.assignee.name}
                     src={item.assignee.avatarUrl ?? undefined}

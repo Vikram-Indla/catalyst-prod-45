@@ -12,8 +12,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useBoardBySlug } from '@/hooks/useBoardBySlug';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import Heading from '@atlaskit/heading';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
@@ -271,47 +270,30 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', 'var(--ds-surface)') }}>
-      {/* Header */}
-      <div style={{ height: SIZES.HEADER_HEIGHT, padding: `0 ${SIZES.PAGE_PADDING_X}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0, flexShrink: 0 }}>
-        <Breadcrumbs>
-          {/* Home root — every hub breadcrumb roots at Home (2026-06-18 nav
-              mental-model, matches ProjectPageHeader). */}
-          <BreadcrumbsItem text="Home" href="/for-you" />
-          {mode === 'product' ? (
-            <BreadcrumbsItem text="Products" href="/product-hub/products" />
-          ) : mode === 'incident' ? (
-            <BreadcrumbsItem text="Incidents" href="/incident-hub" />
-          ) : mode === 'tasks' ? (
-            <BreadcrumbsItem text="Tasks" href="/tasks/overview" />
-          ) : mode === 'release' ? (
-            <BreadcrumbsItem text="Releases" href="/release-hub/overview" />
-          ) : mode === 'test' ? (
-            <BreadcrumbsItem text="Test Hub" href="/testhub/dashboard" />
-          ) : (
-            <BreadcrumbsItem text={STRINGS.PROJECTS} href="/project-hub/projects" />
-          )}
-          {mode !== 'incident' && mode !== 'tasks' && mode !== 'release' && mode !== 'test' && (
-            <BreadcrumbsItem
-              text={projectName}
-              href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}
-            />
-          )}
-        </Breadcrumbs>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Heading size="large">{boardConfig.boardName === 'Board' ? 'Kanban' : boardConfig.boardName}</Heading>
-          {boards.length > 0 && (
-            <PortalMenu ariaLabel="Switch board" minWidth={220} trigger={({ open }) => (
-              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: '1px solid var(--ds-border)', background: open ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit', color: 'var(--ds-text-subtle)' }}>
-                Switch board ▾
-              </button>
-            )}>
-              {(close) => boards.map((b) => (
-                <MenuItem key={b.id} variant="radio" selected={b.id === (activeBoardId ?? boards[0]?.id)} onClick={() => { setActiveBoardId(b.id); close(); }}>{b.name}</MenuItem>
-              ))}
-            </PortalMenu>
-          )}
-        </div>
-      </div>
+      {/* Header — canonical ProjectPageHeader (mirrors FilterPreviewPage pattern) */}
+      <ProjectPageHeader
+        projectKey={key ?? ''}
+        hubType={mode === 'product' ? 'product' : mode === 'incident' ? 'incident' : mode === 'release' ? 'release' : mode === 'test' ? 'test' : 'project'}
+        trail={[
+          {
+            text: 'Boards',
+            href: mode === 'product' ? `/product-hub/${key}/boards` : mode === 'incident' ? '/incident-hub/board' : mode === 'tasks' ? '/tasks/board' : mode === 'release' ? '/release-hub/overview' : mode === 'test' ? '/testhub/board' : `/project-hub/${key}/boards`,
+            onClick: () => navigate(mode === 'product' ? `/product-hub/${key}/boards` : mode === 'incident' ? '/incident-hub/board' : mode === 'tasks' ? '/tasks/board' : mode === 'release' ? '/release-hub/overview' : mode === 'test' ? '/testhub/board' : `/project-hub/${key}/boards`),
+          },
+        ]}
+        title={boardConfig.boardName === 'Board' ? 'Kanban' : boardConfig.boardName}
+        actions={boards.length > 0 ? (
+          <PortalMenu ariaLabel="Switch board" minWidth={220} trigger={({ open }) => (
+            <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: '1px solid var(--ds-border)', background: open ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit', color: 'var(--ds-text-subtle)' }}>
+              Switch board ▾
+            </button>
+          )}>
+            {(close) => boards.map((b) => (
+              <MenuItem key={b.id} variant="radio" selected={b.id === (activeBoardId ?? boards[0]?.id)} onClick={() => { setActiveBoardId(b.id); close(); }}>{b.name}</MenuItem>
+            ))}
+          </PortalMenu>
+        ) : undefined}
+      />
 
       <Toolbar
         api={filterApi}

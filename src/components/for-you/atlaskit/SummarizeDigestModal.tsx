@@ -21,7 +21,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { token } from '@atlaskit/tokens';
 import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 
@@ -287,7 +287,7 @@ function DigestRow({
         transition: 'background-color 120ms ease',
       }}
     >
-      <Avatar size="medium" name={mention.mentionerName} src={mention.mentionerAvatarUrl} />
+      <CatalystAvatar size="medium" name={mention.mentionerName} src={mention.mentionerAvatarUrl} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* Header line: author + ticket */}

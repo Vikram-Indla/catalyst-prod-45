@@ -10,10 +10,9 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Button from '@atlaskit/button/new';
 import { supabase } from '@/integrations/supabase/client';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { openConversationInDock } from '@/lib/chat-dock-bridge';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) / var(--ds-*) tokens
@@ -124,8 +123,7 @@ export function ProfileHoverCard({
   );
 
   const displayName = profile?.full_name ?? name;
-  const resolvedSrc =
-    profile?.avatar_url ?? avatarUrl ?? resolveAvatarUrl(displayName) ?? undefined;
+  const resolvedSrc = profile?.avatar_url ?? avatarUrl ?? undefined;
   const email = profile?.email ?? null;
 
   return createPortal(
@@ -137,7 +135,7 @@ export function ProfileHoverCard({
       aria-label={`Profile: ${displayName}`}
     >
       <div className="c-profile-card__head">
-        <Avatar
+        <CatalystAvatar
           name={displayName}
           src={resolvedSrc}
           size="large"

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useMyBookmarks, useToggleBookmark } from '@/hooks/chat/usePinsBookmarks';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
@@ -185,7 +185,7 @@ export function LaterSurface({ onOpenConversation, isActive = false }: Props) {
                 aria-label={`Saved message from ${item.authorName} in ${item.conversationTitle}`}
               >
                 <div className="c-later-item__avatar">
-                  <Avatar
+                  <CatalystAvatar
                     name={item.authorName}
                     src={item.authorAvatarUrl ?? undefined}
                     size="medium"

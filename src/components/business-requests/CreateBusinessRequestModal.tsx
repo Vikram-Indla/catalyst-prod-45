@@ -62,7 +62,7 @@ import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -91,7 +91,6 @@ import {
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 // Canonical product icon — user-picked icon_key, else Saudi-landmark default by code.
 import { ProductAvatar } from '@/components/icons/ProductAvatar';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons/PriorityIcon';
 import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
 
@@ -119,10 +118,9 @@ interface IconOption {
 
 function MiniAvatar({ name }: { name: string; avatarUrl?: string | null }) {
   return (
-    <Avatar
+    <CatalystAvatar
       size="small"
       name={name}
-      src={resolveAvatarUrl(name) ?? undefined}
     />
   );
 }

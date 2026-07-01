@@ -28,7 +28,7 @@ import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
   DropdownItem,
@@ -322,7 +322,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             aria-label={`Remove ${currentOwner.display_name} as lead`}
           >
-            <Avatar src={currentOwner.avatar_url || undefined} name={currentOwner.display_name || '?'} size="small" />
+            <CatalystAvatar src={currentOwner.avatar_url || undefined} name={currentOwner.display_name || '?'} size="small" />
             <span style={{ fontSize: 'var(--ds-font-size-300)', flex: 1, fontFamily: 'var(--cp-font-body)' }}>
               {currentOwner.display_name}
             </span>
@@ -352,7 +352,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             aria-label={`Set ${p.display_name} as lead`}
           >
-            <Avatar src={p.avatar_url || undefined} name={p.display_name || '?'} size="small" />
+            <CatalystAvatar src={p.avatar_url || undefined} name={p.display_name || '?'} size="small" />
             <span style={{ fontSize: 'var(--ds-font-size-300)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--cp-font-body)' }}>
               {p.display_name}
             </span>
@@ -385,7 +385,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
           outline: 'none',
         }}
       >
-        <Avatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
+        <CatalystAvatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
         {currentOwner ? (
           <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
             {currentOwner.display_name}

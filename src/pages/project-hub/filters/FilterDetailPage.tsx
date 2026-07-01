@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
-import AkAvatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
@@ -12,7 +12,6 @@ import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline'
 import { FilterResultsPanel } from '@/components/filters/FilterResultsPanel';
 import { type SavedFilterFull, useDeleteSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { Edit, Clock, Trash2 as Trash } from '@/lib/atlaskit-icons';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import { AtlaskitPageShell } from '@/components/ads';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
@@ -311,7 +310,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             <MetaField label="Owner">
               {filter.owner ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <AkAvatar src={resolveAvatarUrl(filter.owner.full_name)} name={filter.owner.full_name ?? 'Unknown'} size="xsmall" />
+                  <CatalystAvatar name={filter.owner.full_name ?? 'Unknown'} size="xsmall" />
                   <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{filter.owner.full_name ?? 'Unknown'}</span>
                 </div>
               ) : (

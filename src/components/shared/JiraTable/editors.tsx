@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { UnassignedAvatar, ProfilePicker, toStatusCategory, isTerminalStatus, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
@@ -825,7 +825,7 @@ export function makeAssigneeEditCell<T>({
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
         {a ? (
           <>
-            <Avatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
+            <CatalystAvatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
             <span
               style={{
                 color: token('color.text', 'var(--ds-text)'),

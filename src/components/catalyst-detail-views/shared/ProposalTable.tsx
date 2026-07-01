@@ -8,7 +8,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Button from '@atlaskit/button/new';
 import {
   JiraTable,
@@ -189,7 +189,7 @@ export function ProposalTable({
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
-                  <Avatar size="xsmall" appearance="circle" />
+                  <CatalystAvatar size="xsmall" appearance="circle" />
                   Unassigned
                 </button>
                 {filteredBulkOptions.map((opt) => (
@@ -206,7 +206,7 @@ export function ProposalTable({
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
-                    <Avatar size="xsmall" name={opt.name} src={opt.avatarUrl ?? undefined} appearance="circle" />
+                    <CatalystAvatar size="xsmall" name={opt.name} src={opt.avatarUrl ?? undefined} appearance="circle" />
                     {opt.name}
                   </button>
                 ))}

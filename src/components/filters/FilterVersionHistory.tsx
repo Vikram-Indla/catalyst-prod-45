@@ -6,8 +6,7 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
-import { resolveAvatarUrl } from '@/lib/avatars';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import ModalDialog, { ModalBody, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { useFilterVersions, type FilterVersion } from '@/hooks/workhub/useSavedFilters';
 
@@ -30,7 +29,6 @@ function relativeTime(iso: string): string {
 
 function VersionRow({ v }: { v: FilterVersion }) {
   const name = v.changer?.full_name ?? 'Unknown';
-  const avatar = resolveAvatarUrl(name);
 
   return (
     <div style={{
@@ -41,7 +39,7 @@ function VersionRow({ v }: { v: FilterVersion }) {
       alignItems: 'flex-start',
     }}>
       <div style={{ flexShrink: 0, marginTop: 4 }}>
-        <Avatar src={avatar} name={name} size="small" />
+        <CatalystAvatar name={name} size="small" />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{

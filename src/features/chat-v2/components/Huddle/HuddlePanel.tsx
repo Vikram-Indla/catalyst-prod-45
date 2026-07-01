@@ -1,6 +1,6 @@
 // src/features/chat-v2/components/Huddle/HuddlePanel.tsx
 import React from 'react';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Spinner from '@atlaskit/spinner';
 import { useActiveHuddle, useHuddleActions } from '@/hooks/chat/useHuddleData';
 import { useHuddleStore } from '@/store/huddleStore';
@@ -45,7 +45,7 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {huddle.participants.map((p) => (
           <span key={p.userId} style={{ marginLeft: -4 }} title={p.name || undefined}>
-            <Avatar size="small" name={p.name || undefined} src={p.avatarUrl || undefined} />
+            <CatalystAvatar size="small" name={p.name || undefined} src={p.avatarUrl || undefined} />
           </span>
         ))}
       </div>

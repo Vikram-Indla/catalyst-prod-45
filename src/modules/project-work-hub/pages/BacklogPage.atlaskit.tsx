@@ -69,7 +69,7 @@ import AkArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
 import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
 import AkLinkIcon from '@atlaskit/icon/core/link';
 import Lozenge from '@atlaskit/lozenge';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
@@ -2189,7 +2189,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const avatarUrl = sample.assignee_name ? (resolveAvatarUrl(sample.assignee_name) ?? avatarsByName?.get(sample.assignee_name)) : null;
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <Avatar size="small" name={k} src={avatarUrl || undefined} appearance={isUnassigned ? 'square' : 'circle'} />
+            <CatalystAvatar size="small" name={k} src={avatarUrl || undefined} appearance={isUnassigned ? 'square' : 'circle'} />
             <span>{k}</span>
           </span>
         );
@@ -5829,7 +5829,7 @@ function MemberFilterAvatars({ assignees, selected, onToggle }: MemberFilterAvat
                 position: 'relative',
               }}
             >
-              <Avatar
+              <CatalystAvatar
                 size="small"
                 name={a.name}
                 src={a.avatarUrl ?? undefined}
@@ -5938,7 +5938,7 @@ function MemberFilterAvatars({ assignees, selected, onToggle }: MemberFilterAvat
                       fontFamily: 'inherit',
                     }}
                   >
-                    <Avatar size="xsmall" name={a.name} src={a.avatarUrl ?? undefined} appearance="circle" />
+                    <CatalystAvatar size="xsmall" name={a.name} src={a.avatarUrl ?? undefined} appearance="circle" />
                     <span>{a.name}</span>
                   </button>
                 );
@@ -6967,7 +6967,7 @@ function InlineGroupCreateRow({
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               {currentAssignee ? (
-                <Avatar size="small" src={currentAssignee.src} name={currentAssignee.name} />
+                <CatalystAvatar size="small" src={currentAssignee.src} name={currentAssignee.name} />
               ) : (
                 <AkPersonAvatarIcon label="" size="medium" />
               )}
@@ -7056,7 +7056,7 @@ function InlineGroupCreateRow({
                         onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'); }}
                         onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                       >
-                        <Avatar size="xsmall" src={m.src} name={m.name} />
+                        <CatalystAvatar size="xsmall" src={m.src} name={m.name} />
                         <span>{m.name}</span>
                       </button>
                     );

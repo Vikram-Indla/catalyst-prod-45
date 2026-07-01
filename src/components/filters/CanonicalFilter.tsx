@@ -2816,11 +2816,11 @@ function JqlTabBody({
   const textPrimary = token('color.text', 'var(--ds-text)');
   const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
 
-  const editorHeight = expanded ? 320 : 140;
+  const editorHeight = expanded ? 320 : 96;
   const spans = tokenizeForHighlight(text);
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 12, minHeight: 320 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 12 }}>
       <div
         style={{
           position: 'relative',

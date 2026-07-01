@@ -13,13 +13,12 @@
 import React from 'react';
 import DynamicTable from '@atlaskit/dynamic-table';
 import Lozenge from '@atlaskit/lozenge';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import CloseIcon from '@atlaskit/icon/core/close';
 import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import { PriorityIcon } from '@/components/icons/PriorityIcon';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import type { LinkedWorkItem } from './types';
 
 type AllowedAppearance = 'default' | 'inprogress' | 'success';
@@ -127,10 +126,9 @@ export function LinkTypeGroup({
           content: (
             <span className="lwi-row__assignee">
               {target.assignee_display_name ? (
-                <Avatar
+                <CatalystAvatar
                   size="small"
                   name={target.assignee_display_name}
-                  src={resolveAvatarUrl(target.assignee_display_name) ?? undefined}
                   borderColor="transparent"
                 />
               ) : (

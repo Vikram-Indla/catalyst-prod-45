@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import PreferencesIcon from '@atlaskit/icon/glyph/preferences';
@@ -242,7 +242,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
               }}
             >
               <div style={{ position: 'relative', flexShrink: 0, lineHeight: 0 }}>
-                <Avatar size={avatarSize} src={b.name === UNASSIGNED ? undefined : b.avatarUrl ?? undefined} name={b.name} />
+                <CatalystAvatar size={avatarSize} src={b.name === UNASSIGNED ? undefined : b.avatarUrl ?? undefined} name={b.name} />
                 {wasVisited && (
                   <span aria-label="Standup done" title="Done" style={{
                     position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: '50%',

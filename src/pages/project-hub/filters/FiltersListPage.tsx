@@ -19,7 +19,7 @@ import { token } from '@atlaskit/tokens';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Button, { IconButton } from '@atlaskit/button/new';
-import AkAvatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import SectionMessage from '@atlaskit/section-message';
 import Tooltip from '@atlaskit/tooltip';
 import LockIcon from '@atlaskit/icon/core/lock-locked';
@@ -49,7 +49,6 @@ import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { Star, StarOff, Plus } from '@/lib/atlaskit-icons';
 import { relativeFromIso } from '@/components/shared/RelativeTime';
 import { supabase } from '@/integrations/supabase/client';
-import { resolveAvatarUrl } from '@/lib/avatars';
 import Select from '@atlaskit/select';
 
 /* 2026-06-17: 'tasks' added — same chrome, /tasks/filters links, no :key in
@@ -93,7 +92,7 @@ function sharePermissionEntries(perms: JiraSharePermission[] | undefined): Permi
     if (p.type === 'project' || p.type === 'project-unknown') {
       const name = p.project?.name ?? p.project?.key ?? 'Project';
       return {
-        icon: <AkAvatar appearance="square" size="xsmall" name={name} src={(p.project as any)?.avatarUrls?.['16x16'] ?? undefined} />,
+        icon: <CatalystAvatar appearance="square" size="xsmall" name={name} src={(p.project as any)?.avatarUrls?.['16x16'] ?? undefined} />,
         label: `${name}, ${p.role?.name ?? 'All roles'}`,
       };
     }
@@ -102,7 +101,7 @@ function sharePermissionEntries(perms: JiraSharePermission[] | undefined): Permi
     }
     const userName = p.user?.displayName ?? 'User';
     return {
-      icon: <AkAvatar size="xsmall" name={userName} src={resolveAvatarUrl(userName)} />,
+      icon: <CatalystAvatar size="xsmall" name={userName} />,
       label: userName,
     };
   });
@@ -596,7 +595,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       onChange: v => setOwnerFilter(v),
       formatOptionLabel: (opt) => (
         <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <AkAvatar
+          <CatalystAvatar
             src={opt.avatarUrl}
             name={opt.label}
             size="xsmall"

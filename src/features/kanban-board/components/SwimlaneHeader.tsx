@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { SIZES } from '../constants';
@@ -36,7 +36,7 @@ export const SwimlaneHeader: React.FC<Props> = ({ label, count, collapsed, avata
         ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />
         : <ChevronDownIcon label="" size="medium" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />}
     </span>
-    {showAvatar && <Avatar size="small" src={avatarUrl ?? undefined} name={avatarName || label} />}
+    {showAvatar && <CatalystAvatar size="small" src={avatarUrl ?? undefined} name={avatarName || label} />}
     <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
       {label}
     </span>
