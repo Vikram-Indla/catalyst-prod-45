@@ -134,7 +134,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (key && slug) navigate(`/project-hub/${key}/boards/${slug}/map-statuses`);
   }, [key, resolvedBoard?.slug, boardSlug, navigate]);
   const [hideDone, setHideDone] = useState(true);
-  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn } = useKanbanMutations(mode);
+  const { updateStatus, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn, setCover } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
   /* Cards currently mid-mutation (menu Move Up/Down, ⋯ Change status click,
@@ -182,6 +182,15 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   const onSetParent = useCallback(async (issue: BoardIssue, parentKey: string, parentSummary: string) => {
     await setParent(issue.id, parentKey, parentSummary); refetch();
   }, [setParent, refetch]);
+  const onSetCover = useCallback(async (issue: BoardIssue, cover: string | null) => {
+    try {
+      await setCover(issue.id, cover);
+    } catch (err) {
+      console.error('[kanban] setCover failed', err);
+    } finally {
+      refetch();
+    }
+  }, [setCover, refetch]);
   const onLinkOpen = useCallback((issue: BoardIssue) => {
     // 2026-07-01: Link work item opens the Jira-parity LinkWorkItemModal
     // (link-type select, async search, "+ Create linked work item" +
@@ -243,10 +252,11 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         onReorder={onReorder}
         onCopyLink={onCopyLink} onCopyKey={onCopyKey} onFlag={onFlag}
         onAddLabel={onAddLabel} onSetParent={onSetParent} onLinkOpen={onLinkOpen}
+        onSetCover={onSetCover}
         onArchive={onArchive} onDelete={onDelete}
       />
     );
-  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLinkOpen, onArchive, onDelete]);
+  }, [issues, boardConfig.columns, boardConfig.colPrimaryStatus, columnIdx, columnIssueIdsByCol, onMove, onReorder, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLinkOpen, onSetCover, onArchive, onDelete]);
 
   /* 2026-06-15: swapped the project-board's bespoke InlineCreate (broken type
      dropdown + native showPicker date input) for the canonical InlineCreateCard

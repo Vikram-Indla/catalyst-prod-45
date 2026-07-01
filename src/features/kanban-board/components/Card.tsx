@@ -111,6 +111,23 @@ export const Card: React.FC<CardProps> = ({
       onMouseLeave={() => setHover(false)}
       style={base}
     >
+      {issue.cover && (
+        <div
+          aria-hidden
+          style={{
+            width: `calc(100% + ${SIZES.CARD_PADDING * 2}px)`,
+            height: 36,
+            marginTop: -SIZES.CARD_PADDING,
+            marginLeft: -SIZES.CARD_PADDING,
+            marginRight: -SIZES.CARD_PADDING,
+            marginBottom: 4,
+            background: issue.cover,
+            borderTopLeftRadius: SIZES.CARD_RADIUS,
+            borderTopRightRadius: SIZES.CARD_RADIUS,
+            flexShrink: 0,
+          }}
+        />
+      )}
       {menuSlot && (
         <div style={{ position: 'absolute', top: 4, right: 4, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
           {menuSlot}

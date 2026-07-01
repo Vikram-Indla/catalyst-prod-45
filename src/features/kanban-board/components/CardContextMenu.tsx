@@ -9,6 +9,7 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { PortalMenu, MenuItem } from './PortalMenu';
 import { SubmenuItem } from './SubmenuItem';
+import { SelectCoverPanel } from './SelectCoverPanel';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import type { BoardIssue, KanbanColumn, StatusCategory } from '../types';
 import type { MovePositionDirection } from '../data/useKanbanMutations';
@@ -33,6 +34,7 @@ interface Props {
   onAddLabel: (issue: BoardIssue) => void;
   onSetParent: (issue: BoardIssue, parentKey: string, parentSummary: string) => void;
   onLinkOpen: (issue: BoardIssue) => void;
+  onSetCover: (issue: BoardIssue, cover: string | null) => void;
   onArchive: (issue: BoardIssue) => void;
   onDelete: (issue: BoardIssue) => void;
 }
@@ -220,6 +222,21 @@ export const CardContextMenu: React.FC<Props> = (p) => {
                     issues={issues}
                     close={() => { closeSub(); close(); }}
                     onSetParent={p.onSetParent}
+                  />
+                )}
+              </SubmenuItem>
+              <SubmenuItem
+                label="Select cover"
+                ariaLabel="Select cover"
+                onCloseParentMenu={close}
+                minWidth={380}
+              >
+                {(closeSub) => (
+                  <SelectCoverPanel
+                    currentCover={issue.cover}
+                    onSelect={(cover) => p.onSetCover(issue, cover)}
+                    onRemove={() => p.onSetCover(issue, null)}
+                    onClose={() => { closeSub(); close(); }}
                   />
                 )}
               </SubmenuItem>

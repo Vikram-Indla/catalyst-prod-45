@@ -27,6 +27,7 @@ import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { WorkItemTraceabilityPanel } from '@/components/releasehub/WorkItemTraceabilityPanel';
+import { CoverStrap } from './CoverStrap';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useStartTicketThread } from '@/hooks/chat/useStartTicketThread';
 import { openConversationInDock } from '@/lib/chat-dock-bridge';
@@ -137,6 +138,14 @@ export interface CatalystViewBaseLayoutProps {
   leftContent: React.ReactNode;
   rightContent: React.ReactNode;
 
+  /* Card cover strap (Jira parity). Injected at the top of the left panel
+   *  AND the right sidebar. Hover reveals an "Edit cover" button that opens
+   *  the shared SelectCoverPanel; onCoverChange handles the write and null
+   *  clears the cover. Type-specific views (CatalystViewStory, etc.) source
+   *  the value from ph_issues.cover and forward setState here. */
+  cover?: string | null;
+  onCoverChange?: (cover: string | null) => void | Promise<void>;
+
   /* Loading */
   isLoading?: boolean;
   /* True when the query finished but returned no record (deleted/invalid issue key) */
@@ -160,6 +169,7 @@ export function CatalystViewBase({
   moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
+  cover, onCoverChange,
   isLoading, isNotFound, hideSidebar, fullPageHrefBuilder,
 }: CatalystViewBaseLayoutProps) {
 
@@ -659,6 +669,18 @@ export function CatalystViewBase({
             )}
           </div>
         </div>
+
+        {/* ── B.0. FULL-WIDTH COVER STRAP — sits above the two-column body so
+             it spans BOTH the left panel and the sidebar as a single strip
+             (matches Jira's continuous cover). Only rendered when the caller
+             provides onCoverChange AND a cover exists. */}
+        {onCoverChange && !isLoading && !isNotFound && (
+          <CoverStrap
+            cover={cover ?? null}
+            onSelect={(bg) => onCoverChange(bg)}
+            onRemove={() => onCoverChange(null)}
+          />
+        )}
 
         {/* ── B. BODY — two-column (restacks to single column under 680px via @container) ──
             2026-05-12: fullPageMode — body IS the scroll container (overflowY:auto).

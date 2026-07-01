@@ -252,6 +252,12 @@ export default function CatalystViewStory({
         onNavigate={onNavigate}
         leftContent={leftContent}
         rightContent={rightContent}
+        cover={(issue as any)?.cover ?? null}
+        onCoverChange={(next) =>
+          mutations.updateField.mutate({
+            field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null,
+          })
+        }
         isLoading={isLoading}
         isNotFound={!isLoading && issue === null}
       />

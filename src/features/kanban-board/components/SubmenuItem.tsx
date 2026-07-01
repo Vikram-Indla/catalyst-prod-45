@@ -100,6 +100,7 @@ export const SubmenuItem: React.FC<{
       const parent = pEl.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
+      // Horizontal side by larger room.
       const spaceRight = vw - parent.right - VIEWPORT_MARGIN;
       const spaceLeft  = parent.left - VIEWPORT_MARGIN;
       const placeRight = minWidth <= spaceRight || spaceRight >= spaceLeft;
@@ -108,6 +109,9 @@ export const SubmenuItem: React.FC<{
         : parent.left - minWidth - SIDE_GAP;
       if (left + minWidth > vw - VIEWPORT_MARGIN) left = vw - minWidth - VIEWPORT_MARGIN;
       if (left < VIEWPORT_MARGIN) left = VIEWPORT_MARGIN;
+      // Vertical seed — anchor to the parent's top edge. Real height isn't
+      // known yet, so useLayoutEffect will shift up later if the actual
+      // menu doesn't fit below. Never float away from the parent trigger.
       let top = parent.top;
       if (top < VIEWPORT_MARGIN) top = VIEWPORT_MARGIN;
       if (top > vh - VIEWPORT_MARGIN) top = vh - VIEWPORT_MARGIN;
@@ -162,9 +166,9 @@ export const SubmenuItem: React.FC<{
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
+    // HORIZONTAL — pick the side (left / right of parent row) with more room.
     const spaceRight = vw - parent.right - VIEWPORT_MARGIN;
     const spaceLeft  = parent.left - VIEWPORT_MARGIN;
-    // Prefer right; flip left only when it fits there and right can't fit while left has more room.
     const placeRight = menu.width <= spaceRight || spaceRight >= spaceLeft;
     let left = placeRight
       ? parent.right + SIDE_GAP
@@ -172,8 +176,14 @@ export const SubmenuItem: React.FC<{
     if (left + menu.width > vw - VIEWPORT_MARGIN) left = vw - menu.width - VIEWPORT_MARGIN;
     if (left < VIEWPORT_MARGIN) left = VIEWPORT_MARGIN;
 
+    // VERTICAL — always anchor near the parent trigger. Start with the top
+    // edge aligned to the parent row; if the submenu would overflow the
+    // bottom edge of the viewport, slide it UP just enough to fit (so its
+    // bottom edge sits at `vh - margin`). Never float away from the parent.
     let top = parent.top;
-    if (top + menu.height > vh - VIEWPORT_MARGIN) top = vh - menu.height - VIEWPORT_MARGIN;
+    if (top + menu.height > vh - VIEWPORT_MARGIN) {
+      top = Math.max(VIEWPORT_MARGIN, vh - menu.height - VIEWPORT_MARGIN);
+    }
     if (top < VIEWPORT_MARGIN) top = VIEWPORT_MARGIN;
 
     setPos({ top, left });

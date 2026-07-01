@@ -161,7 +161,10 @@ export default function CatalystViewIncident({
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
-      leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      leftContent={leftContent} rightContent={rightContent}
+      cover={(issue as any)?.cover ?? null}
+      onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
+      isLoading={isLoading} isNotFound={!isLoading && issue === null}
       /* 2026-06-16: incident hub has no project-hub backlog route. The
          "Open in full page" button must go to /incident-hub/view/{UUID}. */
       fullPageHrefBuilder={() => issue?.id ? `/incident-hub/view/${issue.id}` : '/incident-hub'}

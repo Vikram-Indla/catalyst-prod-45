@@ -32,6 +32,8 @@ export interface BoardIssue {
    *  the current flag is removed. Card renders a subtle blue "was flagged"
    *  background when isFlagged=false && wasFlagged=true. */
   wasFlagged: boolean;
+  /** Card cover — raw CSS background value (hex, linear-gradient(), url()). */
+  cover: string | null;
   updatedAt: string | null;
   createdAt: string | null;
   statusChangedAt: string | null;

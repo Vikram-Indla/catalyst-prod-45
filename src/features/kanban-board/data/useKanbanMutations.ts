@@ -53,6 +53,9 @@ export interface KanbanMutations {
   /** Re-rank a column to an arbitrary order (drop-between-cards drag).
    *  newColumnIds is the FINAL desired order — server assigns 1024-step positions. */
   reorderColumn: (newColumnIds: string[]) => Promise<void>;
+  /** Set (or clear) the card cover strap. Value is a raw CSS background
+   *  string — hex, linear-gradient(), or url(...). null removes the cover. */
+  setCover: (issueId: string, cover: string | null) => Promise<void>;
 }
 
 function categoryToJira(cat?: StatusCategory): string | undefined {
@@ -613,5 +616,18 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     [isProduct, isTasks, isRelease, isTest],
   );
 
-  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn };
+  /* ── setCover ──────────────────────────────────────────────────────────
+     Persists the SelectCoverPanel choice for the card. Every mode table has
+     the same `cover text` column (migration 20260701154519_card_cover_column). */
+  const setCover = useCallback(async (issueId: string, cover: string | null) => {
+    const table = isTest    ? 'tm_test_cases'
+                : isRelease ? 'rh_releases'
+                : isTasks   ? 'tasks'
+                : isProduct ? 'business_requests'
+                :             'ph_issues';
+    const { error } = await (supabase as any).from(table).update({ cover }).eq('id', issueId);
+    if (error) throw error;
+  }, [isProduct, isTasks, isRelease, isTest]);
+
+  return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, setLabels, archiveIssue, deleteIssue, setParent, linkIssue, moveIssuePosition, reorderColumn, setCover };
 }
