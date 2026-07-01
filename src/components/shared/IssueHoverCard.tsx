@@ -23,9 +23,9 @@ import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
-import LinkIcon from '@atlaskit/icon/glyph/link';
+import RecentIcon from '@atlaskit/icon/glyph/recent';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 import QuestionIcon from '@atlaskit/icon/glyph/question-circle';
@@ -34,7 +34,7 @@ import Button from '@atlaskit/button/new';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useLinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items/hooks';
 import type { LinkedWorkItem } from '@/modules/project-work-hub/components/linked-work-items/types';
 
@@ -412,7 +412,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
         boxShadow: 'var(--ds-shadow-overlay)',
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         padding: 16,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Atlassian Sans", "Segoe UI", Roboto, sans-serif',
+        fontFamily: 'var(--ds-font-family-body, inherit)',
         animation: 'jcHoverFade 150ms ease-out',
       }}
     >
@@ -491,9 +491,9 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               style={{
                 flex: 1,
                 minWidth: 0,
-                fontSize: 'var(--ds-font-size-100)',
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
-                lineHeight: 'var(--ds-font-line-height-100)',
+                lineHeight: 'var(--ds-font-line-height-200)',
                 fontFamily: 'inherit',
                 color: token('color.link', 'var(--ds-link)'),
                 textDecoration: 'none',
@@ -511,7 +511,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
           {/* Metadata row — avatar · status (with chevron) · priority */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             {assigneeName && (
-              <Avatar size="small" name={assigneeName} />
+              <CatalystAvatar size="small" name={assigneeName} />
             )}
             {data.status && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 0 }}>
@@ -566,7 +566,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               <span>{copied ? 'Copied!' : 'Copy link'}</span>
             </button>
             <button onClick={handleViewLinks} style={actionBtnStyle} aria-label="View related links">
-              <LinkIcon label="" size="medium" />
+              <RecentIcon label="" size="medium" />
               <span>View related links</span>
             </button>
           </div>
@@ -586,7 +586,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               <rect width="512" height="512" rx="129.62" fill="var(--ds-link)" />
               <path
                 d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
-                fill="white"
+                fill="var(--ds-icon-inverse)"
               />
             </svg>
             <span>Catalyst{data.project_key ? ` · ${data.project_key}` : ''}</span>
@@ -611,7 +611,7 @@ const actionBtnStyle: React.CSSProperties = {
   fontSize: 'var(--ds-font-size-100)',
   fontWeight: 400,
   lineHeight: 'var(--ds-font-line-height-100)',
-  color: 'var(--ds-text)',
+  color: token('color.text', 'var(--ds-text)'),
   textAlign: 'left',
   fontFamily: 'inherit',
 };
