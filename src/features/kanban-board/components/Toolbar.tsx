@@ -12,9 +12,7 @@ import { IconButton } from '@atlaskit/button/new';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import GraphLineIcon from '@atlaskit/icon/glyph/graph-line';
 import { PortalMenu, MenuItem, TriggerChevron } from './PortalMenu';
-import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { SIZES, STRINGS, QUICK_FILTERS } from '../constants';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import type { FilterApi } from '../hooks/useKanbanFilters';
@@ -25,43 +23,10 @@ import {
   type CanonicalWorkTypeOption,
 } from '@/components/filters/CanonicalFilter';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import type { GroupByMode, CardVisibleFields, BoardIssue } from '../types';
+import type { GroupByMode, CardVisibleFields } from '../types';
 
-function InsightsBars({ issues }: { issues: BoardIssue[] }) {
-  const cat = { 'To Do': 0, 'In Progress': 0, Done: 0 } as Record<string, number>;
-  const byType: Record<string, number> = {};
-  for (const i of issues) {
-    const c = (i.statusCategory || '').toLowerCase();
-    if (c.includes('done')) cat.Done++; else if (c.includes('progress')) cat['In Progress']++; else cat['To Do']++;
-    if (i.issueType) byType[i.issueType] = (byType[i.issueType] || 0) + 1;
-  }
-  const max = Math.max(1, ...Object.values(cat));
-  const colors: Record<string, string> = { 'To Do': token('color.background.neutral.bold', 'var(--ds-icon)'), 'In Progress': token('color.background.information.bold', 'var(--ds-link, var(--ds-link))'), Done: token('color.background.success.bold', 'var(--ds-background-success-bold, var(--ds-background-success-bold))') };
-  const topTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return (
-    <div style={{ padding: '8px 12px', width: 260 }}>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 4 }}>Status</div>
-      {Object.entries(cat).map(([k, v]) => (
-        <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <span style={{ width: 84, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon)') }}>{k}</span>
-          <div style={{ flex: 1, height: 8, background: token('color.background.neutral', '#091E420F'), borderRadius: 4, overflow: 'hidden' }}>
-            <div style={{ width: `${(v / max) * 100}%`, height: '100%', background: colors[k] }} />
-          </div>
-          <span style={{ width: 28, textAlign: 'right', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>{v}</span>
-        </div>
-      ))}
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), margin: '8px 0 6px' }}>Top types</div>
-      {topTypes.map(([k, v]) => (
-        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--ds-font-size-200)', color: token('color.text', 'var(--ds-text)'), marginBottom: 0 }}>
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{k}</span><span style={{ fontWeight: 600 }}>{v}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 const FIELD_LABELS: { key: keyof CardVisibleFields; label: string }[] = [
-  { key: 'labels', label: 'Epic / labels' },
   { key: 'priority', label: 'Priority' },
   { key: 'estimate', label: 'Estimate' },
   { key: 'assignee', label: 'Assignee' },
@@ -110,9 +75,7 @@ function triggerStyle(active: boolean): React.CSSProperties {
 
 interface ToolbarProps {
   api: FilterApi;
-  total: number;
   avatars: Map<string, string | null>;
-  issues: BoardIssue[];
   visibleFields: CardVisibleFields;
   onToggleField: (f: keyof CardVisibleFields) => void;
   onCopyBoardLink: () => void;
@@ -122,15 +85,10 @@ interface ToolbarProps {
   onOpenHistory: () => void;
   onMapStatuses: () => void;
   projectKey?: string;
-  /* 2026-06-15: DOM element that the Board Health result panel portals
-     to when expanded. Allows the trigger button to live in this toolbar
-     (right cluster) while the result panel renders in a full-width slot
-     below the toolbar without being clipped by the toolbar's fixed height. */
-  boardInsightPanelTarget?: HTMLElement | null;
   filterContext?: 'business-request' | 'product' | 'project' | 'testhub' | 'incident' | 'tasks';
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, boardInsightPanelTarget, filterContext = 'project' }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, filterContext = 'project' }) => {
   const groupLabels: Record<GroupByMode, string> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
     subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
@@ -216,14 +174,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
             background: token('color.background.selected', 'var(--ds-background-selected)'), color: token('color.text.selected', 'var(--ds-link, var(--ds-link))') }}>End standup</button>
       )}
 
-      <PortalMenu ariaLabel="Board insights" align="right" minWidth={260} trigger={() => (
-        <span role="button" aria-label="Board insights" style={{ display: 'inline-flex' }}>
-          <IconButton icon={GraphLineIcon} label="Board insights" appearance="subtle" />
-        </span>
-      )}>
-        {() => <InsightsBars issues={issues} />}
-      </PortalMenu>
-
       <PortalMenu ariaLabel="View settings" align="right" minWidth={200} trigger={() => (
         <span role="button" aria-label="View settings" style={{ display: 'inline-flex' }}>
           <IconButton icon={SettingsIcon} label="View settings" appearance="subtle" />
@@ -238,21 +188,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
           </>
         )}
       </PortalMenu>
-
-      {/* 2026-06-15 (revised): Board Health trigger restored to the toolbar
-          right cluster. The result panel portals out to
-          `boardInsightPanelTarget` (a full-width slot in KanbanPage below
-          the toolbar) so the panel is never clipped by the toolbar's
-          fixed 52px height + overflowX:auto. */}
-      {projectKey && (
-        <span style={{ flexShrink: 0, display: 'inline-flex' }}>
-          <CatyBoardInsight
-            projectKey={projectKey}
-            resourceId={projectKey}
-            panelPortalTarget={boardInsightPanelTarget}
-          />
-        </span>
-      )}
 
       <PortalMenu ariaLabel="More actions" align="right" minWidth={200} trigger={() => (
         <span role="button" aria-label="More actions" style={{ display: 'inline-flex' }}>

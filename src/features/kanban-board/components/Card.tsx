@@ -12,7 +12,7 @@ import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/core/edit';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import { PriorityIcon } from './PriorityIcon';
-import { SIZES, STRINGS, LABEL_COLORS } from '../constants';
+import { SIZES, STRINGS } from '../constants';
 import type { BoardIssue, CardVisibleFields } from '../types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
@@ -175,31 +175,6 @@ export const Card: React.FC<CardProps> = ({
         </div>
       )}
 
-      {/* Labels */}
-      {visibleFields.labels && issue.labels.length > 0 && (
-        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          {issue.labels.slice(0, SIZES.MAX_LABELS).map((label, i) => (
-            <span key={label} style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4, height: SIZES.LABEL_HEIGHT,
-              padding: '0 4px', borderRadius: 2,
-              background: LABEL_COLORS[i % LABEL_COLORS.length],
-              color: 'var(--ds-text-inverse)', fontSize: 'var(--ds-font-size-50)', fontWeight: 500,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%',
-            }} title={label}>
-              <span style={{ display: 'inline-block', width: SIZES.LABEL_WIDTH, height: 2, background: 'var(--ds-surface, rgba(255,255,255,0.5))' }} />
-              {label}
-            </span>
-          ))}
-          {issue.labels.length > SIZES.MAX_LABELS && (
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', height: SIZES.LABEL_HEIGHT,
-              padding: '0 4px', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), fontSize: 'var(--ds-font-size-50)',
-            }}>
-              +{issue.labels.length - SIZES.MAX_LABELS}
-            </span>
-          )}
-        </div>
-      )}
 
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: SIZES.AVATAR_CARD, gap: 8 }}>

@@ -36,14 +36,14 @@ function toggle(set: Set<string>, v: string): Set<string> {
   return next;
 }
 
-export function useKanbanFilters(issues: BoardIssue[]): FilterApi {
+export function useKanbanFilters(issues: BoardIssue[], initialGroupBy: GroupByMode = 'none'): FilterApi {
   const [search, setSearch] = useState('');
   const [assignees, setAssignees] = useState<Set<string>>(new Set());
   const [epics, setEpics] = useState<Set<string>>(new Set());
   const [types, setTypes] = useState<Set<string>>(new Set());
   const [priorities, setPriorities] = useState<Set<string>>(new Set());
   const [quickFilters, setQuickFilters] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByMode>('none');
+  const [groupBy, setGroupBy] = useState<GroupByMode>(initialGroupBy);
 
   const { allAssignees, allTypes, allPriorities, allEpics } = useMemo(() => {
     const a = new Set<string>(), t = new Set<string>(), p = new Set<string>();

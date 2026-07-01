@@ -75,10 +75,6 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
   const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
-  /* Portal target element for the Board Health result panel. Lives in a
-     full-width slot below the toolbar so the panel never clips. The
-     CatyBoardInsight trigger button stays in the toolbar (right cluster). */
-  const [boardInsightPanelEl, setBoardInsightPanelEl] = useState<HTMLDivElement | null>(null);
   const [visibleFields, setVisibleFields] = useState<CardVisibleFields>(() => {
     try {
       const saved = localStorage.getItem('kanban-visible-fields');
@@ -223,16 +219,16 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon)'),
           fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer',
         }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
-        <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} />
+        <AddIcon label="" size="small" primaryColor="var(--ds-icon-subtle)" />
         {STRINGS.CREATE_ISSUE}
       </button>
     );
   }, [boardConfig, key, openCreateCol, refetch]);
 
-  const filterApi = useKanbanFilters(issues);
+  const filterApi = useKanbanFilters(issues, (mode === 'project' || mode === 'product') ? 'epic' : 'none');
   const { filtered } = filterApi;
 
   const boardIssues = useMemo(() => {
@@ -295,13 +291,12 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}
             />
           )}
-          <BreadcrumbsItem text="Board" />
         </Breadcrumbs>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Heading size="large">{boardConfig.boardName === 'Board' ? 'Kanban' : boardConfig.boardName}</Heading>
           {boards.length > 0 && (
             <PortalMenu ariaLabel="Switch board" minWidth={220} trigger={({ open }) => (
-              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: `1px solid ${token('color.border', '#091E4224')}`, background: open ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit', color: token('color.text.subtle', 'var(--ds-icon, var(--ds-icon))') }}>
+              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: '1px solid var(--ds-border)', background: open ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit', color: 'var(--ds-text-subtle)' }}>
                 Switch board ▾
               </button>
             )}>
@@ -315,9 +310,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
 
       <Toolbar
         api={filterApi}
-        total={filtered.length}
         avatars={avatars}
-        issues={filtered}
         visibleFields={visibleFields}
         onToggleField={toggleField}
         onCopyBoardLink={onCopyBoardLink}
@@ -337,23 +330,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         onOpenHistory={() => navigate(`/${mode === 'product' ? 'product-hub' : 'project-hub'}/${key}/standups`)}
         onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
-        boardInsightPanelTarget={boardInsightPanelEl}
         filterContext={kanbanFilterContext}
       />
 
-      {/* 2026-06-15: Portal target for the Board Health result panel.
-          The trigger button lives in the toolbar (right cluster); when
-          clicked, CatyBoardInsight portals its CatyInsightCard into this
-          full-width slot. Padding is constant so a small gap sits below
-          the toolbar at all times (8px), and the panel inherits the page's
-          horizontal padding when it expands. */}
-      <div
-        ref={setBoardInsightPanelEl}
-        style={{
-          padding: `0 ${SIZES.PAGE_PADDING_X}px`,
-          flexShrink: 0,
-        }}
-      />
 
       <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex' }}>
         {standupActive && (

@@ -81,7 +81,8 @@ async function fetchIssuePage(key: string, from: number, to: number, jql?: strin
     .eq('project_key', key)
     .is('deleted_at', null)
     .is('jira_removed_at', null)
-    .is('archived_at', null);
+    .is('archived_at', null)
+    .in('issue_type', ['Epic', 'Story', 'Feature', 'Improvement', 'New Feature']);
   if (jql) {
     // Defensive: a malformed/unsupported saved filter must never break the board —
     // fall back to the project-scoped view if the JQL can't be translated.

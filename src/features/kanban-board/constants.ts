@@ -82,11 +82,6 @@ export const SIZES = {
   RECENTLY_UPDATED_DAYS: 7,
 } as const;
 
-/** Jira label bar palette (cosmetic; labels carry no color in data). */
-export const LABEL_COLORS = [
-  'var(--ds-background-information-bold)', '#00C7E6', 'var(--ds-background-success-bold)', '#FFC400', 'var(--ds-background-danger-bold)',
-  'var(--ds-background-discovery-bold)', 'var(--ds-background-success-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-text)',
-] as const;
 
 /**
  * Map a work item type string to an @atlaskit/icon-object glyph key.
@@ -135,7 +130,7 @@ export const PRIORITY_CONFIG: Record<string, PriorityConfig> = {
 };
 
 export const DEFAULT_VISIBLE_FIELDS = {
-  labels: true,
+  labels: false,
   priority: true,
   estimate: true,
   assignee: true,
