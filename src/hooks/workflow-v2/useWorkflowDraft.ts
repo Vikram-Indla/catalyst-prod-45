@@ -142,19 +142,27 @@ export function useDeleteDraftTransition(versionId: string) {
 
 export function useSetTransitionRoles(versionId: string) {
   const invalidate = useInvalidateVersion();
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: { transitionId: string; roles: TransitionRoleInput[] }) =>
       rpc<number>('ph_wf_set_transition_roles', { p_transition_id: input.transitionId, p_roles: input.roles }),
-    onSuccess: () => invalidate(versionId),
+    onSuccess: (_n, input) => {
+      invalidate(versionId);
+      qc.invalidateQueries({ queryKey: [...KEY, 'transition-detail', input.transitionId] });
+    },
   });
 }
 
 export function useSetTransitionGuards(versionId: string) {
   const invalidate = useInvalidateVersion();
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: { transitionId: string; guards: TransitionGuardInput[] }) =>
       rpc<number>('ph_wf_set_transition_guards', { p_transition_id: input.transitionId, p_guards: input.guards }),
-    onSuccess: () => invalidate(versionId),
+    onSuccess: (_n, input) => {
+      invalidate(versionId);
+      qc.invalidateQueries({ queryKey: [...KEY, 'transition-detail', input.transitionId] });
+    },
   });
 }
 
@@ -220,6 +228,52 @@ export function useReassignStatuses() {
         p_to_status_key: input.toStatusKey,
         p_project_id: input.projectId ?? null,
       }),
+  });
+}
+
+export interface TransitionRoleRow {
+  id: string;
+  transition_id: string;
+  role_group: string;
+  allow_assignee: boolean;
+  allow_reporter: boolean;
+  allow_super_admin_bypass: boolean;
+  bypass_requires_reason: boolean;
+}
+export interface TransitionGuardRow {
+  id: string;
+  transition_id: string;
+  guard_type: string;
+  params: Record<string, unknown>;
+  is_blocking: boolean;
+  waiver_allowed: boolean;
+  sort_order: number;
+}
+
+/** Full roles + guards for one transition (property panel). */
+export function useTransitionDetail(transitionId: string | null) {
+  return useQuery({
+    queryKey: [...KEY, 'transition-detail', transitionId],
+    enabled: !!transitionId,
+    queryFn: async (): Promise<{ roles: TransitionRoleRow[]; guards: TransitionGuardRow[] }> => {
+      const [rolesRes, guardsRes] = await Promise.all([
+        supabase
+          .from('ph_wf_transition_roles')
+          .select('*')
+          .eq('transition_id', transitionId as string),
+        supabase
+          .from('ph_wf_transition_guards')
+          .select('*')
+          .eq('transition_id', transitionId as string)
+          .order('sort_order'),
+      ]);
+      if (rolesRes.error) throw rolesRes.error;
+      if (guardsRes.error) throw guardsRes.error;
+      return {
+        roles: (rolesRes.data ?? []) as TransitionRoleRow[],
+        guards: (guardsRes.data ?? []) as TransitionGuardRow[],
+      };
+    },
   });
 }
 
