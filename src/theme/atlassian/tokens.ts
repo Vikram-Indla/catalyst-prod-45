@@ -99,6 +99,15 @@ export const adsTokens = {
     // Light kept at the original Catalyst tint per existing UI specs.
     selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, var(--ds-text))', atlaskit: 'color.background.selected' } satisfies AdsToken,
     pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: '#38414A', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
+    // 2026-07-02 — RCA fix for muddy warning/danger/success card backgrounds
+    // in dark mode (flagged BAU-6083 card, board view). These three keys were
+    // absent from the bridge, so atlaskitCustomColors('dark') never overrode
+    // Atlaskit's own setGlobalTheme defaults (Orange1000/Red1000/Lime1000) —
+    // Atlaskit's muddy defaults won the cascade over the correct values already
+    // sitting unused in catalyst-ads-parity.css's html.dark block.
+    warning:  { cp: '--cp-bg-warning', light: 'var(--ds-background-warning)', dark: 'var(--ds-background-warning)', atlaskit: 'color.background.warning' } satisfies AdsToken,
+    danger:   { cp: '--cp-bg-danger',  light: 'var(--ds-background-danger)',  dark: 'var(--ds-background-danger)',  atlaskit: 'color.background.danger' } satisfies AdsToken,
+    success:  { cp: '--cp-bg-success', light: 'var(--ds-background-success)', dark: 'var(--ds-background-success)', atlaskit: 'color.background.success' } satisfies AdsToken,
   },
   text: {
     primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, var(--cp-ink-1))', dark: 'var(--ds-background-neutral)', atlaskit: 'color.text' } satisfies AdsToken,
