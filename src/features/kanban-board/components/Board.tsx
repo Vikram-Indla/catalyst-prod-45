@@ -313,8 +313,8 @@ export const Board: React.FC<BoardProps> = ({
                   groupBy === 'epic' && g.key !== '__none__' ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                       <EpicIcon label="" />
-                      {/* ads-scanner:ignore-next-line — epic identity swatch, hashed placeholder color (no real epic-color column in ph_issues yet — see CAT-KANBAN-GROUPBY-EPIC-20260701-001 Option B, probed 2026-07-01) */}
-                      <span style={{ width: 20, height: 20, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
+                      {/* ads-scanner:ignore-next-line — epic identity swatch; real Jira epic color when synced (epic_color on ph_issues), hashed placeholder otherwise — see CAT-KANBAN-EPIC-COLOR-20260702-001 */}
+                      <span style={{ width: 20, height: 20, borderRadius: 2, background: g.issues[0]?.parentColor || epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
                       <span
                         role="link"
                         tabIndex={0}
@@ -329,6 +329,11 @@ export const Board: React.FC<BoardProps> = ({
                     </span>
                   ) : groupBy === 'priority' && g.key !== '__none__' ? (
                     <PriorityIcon priority={g.key} size={16} />
+                  ) : undefined
+                }
+                trailingNode={
+                  groupBy === 'epic' && g.key !== '__none__' && g.issues[0]?.parentStatus ? (
+                    <Lozenge appearance="default" isBold>{g.issues[0].parentStatus}</Lozenge>
                   ) : undefined
                 }
                 onToggle={() => onToggleGroup(g.key)}
