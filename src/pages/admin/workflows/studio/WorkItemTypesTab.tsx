@@ -26,6 +26,7 @@ import {
   useHierarchyLevels,
   useParentRules,
   useSetParentRules,
+  useUpsertHierarchyLevel,
   useUpsertWorkItemType,
   useWorkItemTypes,
   type WorkItemTypeRow,
@@ -130,26 +131,8 @@ export function WorkItemTypesTab() {
           </SectionMessage>
         )}
 
-        {/* Hierarchy levels */}
-        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>
-            Hierarchy{' '}
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', fontWeight: 400 }}>
-              — up to 10 levels; types attach to a level
-            </span>
-          </div>
-          {levels.isLoading ? (
-            <Spinner size="small" />
-          ) : (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {(levels.data ?? []).map((l) => (
-                <Lozenge key={l.id} appearance={l.is_enabled ? 'inprogress' : 'default'}>
-                  {`L${l.level_rank + 1} ${l.name}`}
-                </Lozenge>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Hierarchy levels (P6: CRUD up to 10) */}
+        <HierarchyLevelsCard onError={onError} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600 }}>All types</span>
@@ -204,6 +187,118 @@ export function WorkItemTypesTab() {
           }
           saving={upsert.isPending || setRules.isPending}
         />
+      )}
+    </div>
+  );
+}
+
+// ── Hierarchy levels card (P6: add/rename/toggle, hard cap 10) ───────────────
+function HierarchyLevelsCard({ onError }: { onError: (e: unknown) => void }) {
+  const levels = useHierarchyLevels();
+  const upsertLevel = useUpsertHierarchyLevel();
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+
+  const rows = levels.data ?? [];
+  const nextRank = rows.length ? Math.max(...rows.map((l) => l.level_rank)) + 1 : 0;
+  const atCap = nextRank > 9;
+
+  return (
+    <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <span style={{ fontWeight: 600 }}>Hierarchy</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flex: 1 }}>
+          up to 10 levels; types attach to a level · click a level to rename
+        </span>
+        {!adding ? (
+          <Button spacing="compact" isDisabled={atCap} onClick={() => setAdding(true)}>
+            {atCap ? 'Max 10 levels' : '+ Add level'}
+          </Button>
+        ) : (
+          <span style={{ display: 'inline-flex', gap: 8 }}>
+            <Textfield
+              value={newName}
+              onChange={(e) => setNewName((e.target as HTMLInputElement).value)}
+              placeholder={`L${nextRank + 1} name…`}
+              autoFocus
+            />
+            <Button
+              appearance="primary"
+              spacing="compact"
+              isDisabled={!newName.trim() || upsertLevel.isPending}
+              onClick={() =>
+                upsertLevel.mutate(
+                  { level_rank: nextRank, name: newName.trim() },
+                  { onSuccess: () => { setNewName(''); setAdding(false); }, onError }
+                )
+              }
+            >
+              Add
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setAdding(false)}>
+              Cancel
+            </Button>
+          </span>
+        )}
+      </div>
+      {levels.isLoading ? (
+        <Spinner size="small" />
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+          {rows.map((l) =>
+            editingId === l.id ? (
+              <span key={l.id} style={{ display: 'inline-flex', gap: 4 }}>
+                <Textfield
+                  value={editName}
+                  onChange={(e) => setEditName((e.target as HTMLInputElement).value)}
+                  autoFocus
+                />
+                <Button
+                  appearance="primary"
+                  spacing="compact"
+                  isDisabled={!editName.trim()}
+                  onClick={() =>
+                    upsertLevel.mutate(
+                      { id: l.id, name: editName.trim() },
+                      { onSuccess: () => setEditingId(null), onError }
+                    )
+                  }
+                >
+                  Save
+                </Button>
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={() =>
+                    upsertLevel.mutate(
+                      { id: l.id, is_enabled: !l.is_enabled },
+                      { onSuccess: () => setEditingId(null), onError }
+                    )
+                  }
+                >
+                  {l.is_enabled ? 'Disable' : 'Enable'}
+                </Button>
+                <Button appearance="subtle" spacing="compact" onClick={() => setEditingId(null)}>
+                  ✕
+                </Button>
+              </span>
+            ) : (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => { setEditingId(l.id); setEditName(l.name); }}
+                style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}
+                aria-label={`Edit level ${l.name}`}
+              >
+                <Lozenge appearance={l.is_enabled ? 'inprogress' : 'default'}>
+                  {`L${l.level_rank + 1} ${l.name}`}
+                </Lozenge>
+              </button>
+            )
+          )}
+        </div>
       )}
     </div>
   );

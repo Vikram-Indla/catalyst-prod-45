@@ -34,6 +34,7 @@ import { ENTITY_GROUPS, LIFECYCLE_APPEARANCE, fmtDate } from './entities';
 import { PublishModal } from './PublishModal';
 import { AuditTab, EnforcementTab, SchemesTab, StatusesTab } from './StudioTabs';
 import { WorkItemTypesTab } from './WorkItemTypesTab';
+import { GenerateWorkflowModal } from './GenerateWorkflowModal';
 
 type VersionRow = WfVersion & { template_name: string | null };
 
@@ -377,6 +378,7 @@ const STUDIO_TABS = [
 ] as const;
 
 export default function WorkflowStudioPage() {
+  const [generateOpen, setGenerateOpen] = useState(false);
   return (
     <AdminGuard>
       <AtlaskitPageShell
@@ -384,12 +386,9 @@ export default function WorkflowStudioPage() {
         title="Workflow Studio"
         actions={
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Link
-              to="/admin/workflows/classic"
-              style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}
-            >
-              Classic builder →
-            </Link>
+            <Button appearance="primary" spacing="compact" onClick={() => setGenerateOpen(true)}>
+              ⚡ Generate with Caty
+            </Button>
             <Link
               to="/admin/workflows/versions"
               style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}
@@ -427,6 +426,7 @@ export default function WorkflowStudioPage() {
             </TabPanel>
           </Tabs>
         </div>
+        {generateOpen && <GenerateWorkflowModal onClose={() => setGenerateOpen(false)} />}
       </AtlaskitPageShell>
     </AdminGuard>
   );

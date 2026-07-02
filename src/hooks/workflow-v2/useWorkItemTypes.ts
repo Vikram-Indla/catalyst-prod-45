@@ -105,6 +105,15 @@ export interface WorkItemTypeInput {
   sort_order?: number;
 }
 
+export function useUpsertHierarchyLevel() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (level: { id?: string; level_rank?: number; name?: string; is_enabled?: boolean }) =>
+      rpc<string>('hi_upsert_level', { p_level: level }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'levels'] }),
+  });
+}
+
 export function useUpsertWorkItemType() {
   const qc = useQueryClient();
   return useMutation({
