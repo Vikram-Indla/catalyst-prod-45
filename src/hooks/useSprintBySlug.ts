@@ -5,24 +5,25 @@ import { isValidUUID } from '@/lib/utils/assertUuid';
 export function useSprintBySlug(projectKey: string | undefined, slugOrId: string | undefined | null) {
   return useQuery({
     queryKey: ['sprint-by-slug', projectKey, slugOrId],
-    enabled: !!slugOrId,
+    enabled: !!slugOrId && !!projectKey,
     queryFn: async () => {
-      if (!slugOrId) return null;
+      if (!slugOrId || !projectKey) return null;
       const isUuid = isValidUUID(slugOrId);
+
+      const { data: project } = await (supabase as any)
+        .from('ph_projects')
+        .select('id')
+        .eq('key', projectKey)
+        .maybeSingle();
+      if (!project) return null;
+
       let query = (supabase as any)
         .from('ph_jira_sprints')
-        .select('id, slug, name, project_id')
-        .is('deleted_at', null);
-      if (isUuid) {
-        query = query.eq('id', slugOrId);
-      } else {
-        query = query.eq('slug', slugOrId);
-        if (projectKey) {
-          // narrow by project when we have the key; ph_jira_sprints.project_id links to projects.id
-          // but we have the project key — join via projects table
-          // Fallback: just match slug globally (unique per project, usually unique globally)
-        }
-      }
+        .select('id, slug, name, project_id, deleted_at, name_mode, length_weeks, approval_policy, end_date')
+        .is('deleted_at', null)
+        .eq('project_id', project.id);
+      query = isUuid ? query.eq('id', slugOrId) : query.eq('slug', slugOrId);
+
       const { data } = await query.maybeSingle();
       return data ?? null;
     },

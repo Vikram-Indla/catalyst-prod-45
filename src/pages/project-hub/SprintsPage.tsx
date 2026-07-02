@@ -213,9 +213,8 @@ export function SprintsPage() {
     };
   };
 
-  const handleOpenDetail = (sprintId: string) => {
-    const sprint = sprints.find((s: any) => s.id === sprintId);
-    navigate(SPRINT_CONFIG.buildDetailHref((sprint as any)?.slug ?? sprintId, { projectKey }));
+  const handleOpenDetail = (sprintSlug: string) => {
+    navigate(SPRINT_CONFIG.buildDetailHref(sprintSlug, { projectKey }));
   };
 
   const groupIdsKey = useMemo(() => (grouped ?? []).map((g) => g.id).join('|'), [grouped]);
