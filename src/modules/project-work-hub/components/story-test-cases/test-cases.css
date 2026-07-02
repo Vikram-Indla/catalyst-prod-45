@@ -1,0 +1,285 @@
+/* TestCasesSection — story-scoped test-case list. Mirrors linked-work-items
+   spacing/rhythm so the two sections read as siblings on the story detail
+   view. */
+
+.tcs-root {
+  margin-top: 16px;
+}
+
+/* Header row: chevron + title + optional count + trailing "Add test cases" */
+.tcs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  margin-bottom: 4px;
+}
+
+.tcs-header__left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tcs-header__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: -4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--ds-text-subtle);
+  border-radius: 3px;
+  transition: background-color 150ms ease;
+}
+
+.tcs-header__toggle:hover {
+  background-color: var(--ds-background-neutral-subtle-hovered);
+}
+
+.tcs-header__toggle:focus-visible {
+  outline: 2px solid var(--ds-text-brand);
+  outline-offset: 2px;
+}
+
+.tcs-header__title {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--ds-text);
+  cursor: pointer;
+}
+
+.tcs-header__count {
+  display: inline;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ds-text-subtlest);
+  margin-left: 4px;
+}
+
+.tcs-header__coverage {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.tcs-header__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--ds-text-subtle);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.tcs-header__add:hover:not(:disabled) {
+  background-color: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+
+.tcs-header__add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Empty-state inline CTA — same treatment as .lwi-add-link. Aligned with
+   the title text (chevron 24px + toggle margin -4px + title padding 4px
+   = 24px inset). */
+.tcs-add-link {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 24px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-family: 'Atlassian Sans', ui-sans-serif, -apple-system, 'system-ui', sans-serif;
+  font-size: 14px;
+  color: var(--ds-text-subtle);
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease;
+}
+
+.tcs-add-link:hover:not(:disabled) {
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+
+.tcs-add-link:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.tcs-add-link:focus-visible {
+  outline: 1px solid var(--ds-border-focused);
+  outline-offset: 1px;
+}
+
+/* Body wraps rows so future footer (Add another manually, filters) can slot
+   in without shifting the group card. Left inset matches title text
+   (same 24px as .lwi-body). */
+.tcs-body {
+  padding: 0 0 0 24px;
+}
+
+/* Loading frame — inherits rotating-rainbow border from .als-loading-frame.
+   Just tunes padding + inner background so the ring stays visible and the
+   typewriter text sits comfortably inside. */
+.tcs-loading-frame {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin: 4px 0 4px;
+  background: var(--ds-surface);
+}
+
+.tcs-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tcs-skeleton__row {
+  height: 32px;
+  border-radius: 3px;
+  background: var(--ds-background-neutral-subtle);
+  animation: tcs-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes tcs-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Rows sit inside a rounded card with edge-to-edge dividers. Same visual
+   language as .lwi-group__rows. */
+.tcs-group__rows {
+  border: 1px solid var(--ds-border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--ds-surface);
+}
+
+.tcs-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto 28px;
+  align-items: center;
+  gap: 12px;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--ds-surface);
+  transition: background-color 120ms ease;
+}
+
+.tcs-row + .tcs-row {
+  border-top: 1px solid var(--ds-border);
+}
+
+.tcs-row:hover,
+.tcs-row:focus-within {
+  background-color: var(--ds-background-neutral-subtle-hovered);
+}
+
+.tcs-row__key {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ds-text-brand);
+  background: transparent;
+  border: none;
+  padding: 0 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 3px;
+}
+
+.tcs-row__key:hover {
+  text-decoration: underline;
+}
+
+.tcs-row__key:focus-visible {
+  outline: 2px solid var(--ds-text-brand);
+  outline-offset: 2px;
+}
+
+.tcs-row__title {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ds-text);
+  background: transparent;
+  border: none;
+  padding: 0 2px;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+.tcs-row__title:hover {
+  text-decoration: underline;
+}
+
+.tcs-row__status {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tcs-row__actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.tcs-row:hover .tcs-row__actions,
+.tcs-row:focus-within .tcs-row__actions {
+  opacity: 1;
+}
+
+.tcs-row__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  color: var(--ds-text-subtlest);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.tcs-row__action-btn:hover:not(:disabled) {
+  background-color: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
+}
+
+.tcs-row__action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

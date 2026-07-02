@@ -218,7 +218,10 @@ export const SUBTASK_FAMILY_CANONICAL_TYPES = [
   'Frontend',
   'Figma',
   'Integration',
-  'API Requirement',
+  // API Requirement removed from subtask create picker per Vikram
+  // 2026-07-03. Kept in SUBTASK_FAMILY_TYPES + ALLOWED_CHILD_TYPES map
+  // below for read-side compat (existing rows render, but new rows
+  // can no longer be created as API Requirement).
 ] as const;
 
 /**
@@ -240,6 +243,9 @@ export const SUBTASK_FAMILY_CANONICAL_TYPES = [
 export const ALLOWED_CHILD_TYPES: Record<string, string[]> = {
   'Business Request': ['Epic'],
 
+  // Grandparent — Epic spawns child work items only (Story, Task, Bug,
+  // etc.), never subtasks directly. Subtasks live under fathers
+  // (Story/Task/QA Bug/…), NOT under grandparents. Vikram 2026-07-02.
   'Epic': [
     'Feature',
     'Story',
@@ -248,7 +254,6 @@ export const ALLOWED_CHILD_TYPES: Record<string, string[]> = {
     'Change Request',
     'Production Incident',
     'Business Gap',
-    ...SUBTASK_FAMILY_CANONICAL_TYPES,
   ],
 
   // Feature is a mini-Epic; its children are Stories only.

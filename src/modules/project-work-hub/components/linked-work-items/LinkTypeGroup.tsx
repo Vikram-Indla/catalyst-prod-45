@@ -12,22 +12,19 @@
  */
 import React from 'react';
 import DynamicTable from '@atlaskit/dynamic-table';
-import Lozenge from '@atlaskit/lozenge';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import CloseIcon from '@atlaskit/icon/core/close';
-import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import PersonIcon from '@atlaskit/icon/glyph/person';
-import { PriorityIcon } from '@/components/icons/PriorityIcon';
-import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
+import { EditablePriority } from '../dialogs/story-detail-modules/EditableFields';
 import type { LinkedWorkItem } from './types';
 
-type AllowedAppearance = 'default' | 'inprogress' | 'success';
-
-function categoryToAppearance(category: string): AllowedAppearance {
-  const c = (category ?? '').toLowerCase();
-  if (c === 'done') return 'success';
-  if (c === 'in_progress' || c === 'inprogress') return 'inprogress';
-  return 'default';
+function isDone(category: string | null | undefined): boolean {
+  return (category ?? '').toLowerCase() === 'done';
 }
 
 const HEAD = {
@@ -50,6 +47,10 @@ export interface LinkTypeGroupProps {
   onUnlink: (link: LinkedWorkItem) => void;
   pendingUnlinkIds?: Set<string>;
   readOnly?: boolean;
+  /** Source issue key — used to invalidate the linked-issues query after
+   *  a row-level status / priority edit. When omitted (rare), edits are
+   *  fire-and-forget and the parent query refetches on its own cadence. */
+  sourceIssueKey?: string;
 }
 
 export function LinkTypeGroup({
@@ -60,15 +61,31 @@ export function LinkTypeGroup({
   onUnlink,
   pendingUnlinkIds,
   readOnly,
+  sourceIssueKey,
 }: LinkTypeGroupProps) {
+  const queryClient = useQueryClient();
+  const invalidate = React.useCallback(() => {
+    if (sourceIssueKey) {
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', sourceIssueKey] });
+    }
+  }, [queryClient, sourceIssueKey]);
+
+  const statusMutation = useMutation({
+    mutationFn: async ({ issueKey, status }: { issueKey: string; status: string }) => {
+      const { error } = await supabase
+        .from('ph_issues')
+        .update({ status } as any)
+        .eq('issue_key', issueKey);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+    onError: (err: any) => catalystToast.error('Failed to update status', err?.message),
+  });
+
   const rows = links.map((link) => {
     const { target } = link;
     const isPending = pendingUnlinkIds?.has(link.id);
-    const typeIcon =
-      WORK_ITEM_ICONS[target.issue_type] ??
-      WORK_ITEM_ICONS[target.issue_type?.toLowerCase?.() ?? ''] ??
-      WORK_ITEM_ICONS.Task;
-    const appearance = categoryToAppearance(target.status_category);
+    const done = isDone(target.status_category);
 
     return {
       key: link.id,
@@ -76,11 +93,9 @@ export function LinkTypeGroup({
         {
           key: 'type',
           content: (
-            <span
-              className="lwi-row__icon"
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: typeIcon }}
-            />
+            <span className="lwi-row__icon" aria-hidden>
+              <JiraIssueTypeIcon type={target.issue_type} size={16} />
+            </span>
           ),
         },
         {
@@ -89,7 +104,7 @@ export function LinkTypeGroup({
             <button
               type="button"
               className="lwi-row__key"
-              data-done={appearance === 'success' ? 'true' : undefined}
+              data-done={done ? 'true' : undefined}
               onClick={() => onOpen(link)}
               aria-label={`Open ${target.issue_key} — ${target.summary}`}
             >
@@ -113,11 +128,16 @@ export function LinkTypeGroup({
         {
           key: 'status',
           content: (
-            <span className="lwi-row__status">
-              <Lozenge appearance={appearance}>{target.status}</Lozenge>
-              <span className="lwi-row__status-caret" aria-hidden>
-                <ChevronDownIcon label="" color="currentColor" />
-              </span>
+            <span className="lwi-row__status" onClick={(e) => e.stopPropagation()}>
+              <StatusLozengeDropdown
+                status={target.status}
+                statusCategory={target.status_category}
+                issueType={target.issue_type}
+                interactive={!readOnly}
+                size="sm"
+                lockWhenDone
+                onStatusChange={(next) => statusMutation.mutate({ issueKey: target.issue_key, status: next })}
+              />
             </span>
           ),
         },
@@ -145,8 +165,18 @@ export function LinkTypeGroup({
             <span
               className="lwi-row__priority"
               aria-label={`Priority: ${target.priority ?? 'None'}`}
+              onClick={(e) => e.stopPropagation()}
             >
-              <PriorityIcon level={target.priority} size={16} label="" />
+              {readOnly ? (
+                <span aria-hidden style={{ opacity: 0.9 }}>{target.priority ?? '—'}</span>
+              ) : (
+                <EditablePriority
+                  issueKey={target.issue_key}
+                  currentPriority={target.priority ?? ''}
+                  onUpdate={invalidate}
+                  hideClear
+                />
+              )}
             </span>
           ),
         },

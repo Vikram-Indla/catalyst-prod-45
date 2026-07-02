@@ -21,6 +21,7 @@ import AkEyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrou
 import AkExpandVerticalIcon from '@atlaskit/icon/core/expand-vertical';
 import AkCollapseVerticalIcon from '@atlaskit/icon/core/collapse-vertical';
 import { ToolbarMenuButton } from '@/components/shared/JiraTable';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { useQuery } from '@tanstack/react-query';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { supabase } from '@/integrations/supabase/client';
@@ -63,7 +64,12 @@ export function SprintsPage() {
   const { data: sprintProgressRows } = useEntityProgress(SPRINT_CONFIG);
 
   // project_id for the Create modal
-  const { data: projectRow } = useQuery({
+  const {
+    data: projectRow,
+    isError: projectRowIsError,
+    error: projectRowError,
+    refetch: refetchProjectRow,
+  } = useQuery({
     queryKey: ['ph-project-id', projectKey],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -88,7 +94,12 @@ export function SprintsPage() {
   // belongs to a project, never a product). Filter = ph_projects MINUS
   // any row whose key matches an active products.code, MINUS the
   // hardcoded admin keys (TH-DEFAULT, MDT) per useProjectHub.ts:37.
-  const { data: projectsRaw } = useQuery({
+  const {
+    data: projectsRaw,
+    isError: projectsRawIsError,
+    error: projectsRawError,
+    refetch: refetchProjectsRaw,
+  } = useQuery({
     queryKey: ['ph-projects-only-for-sprint-filter'],
     queryFn: async () => {
       const [{ data: projects, error: pErr }, { data: prods, error: prErr }] = await Promise.all([
@@ -328,6 +339,31 @@ export function SprintsPage() {
       }
       footer={`This space has ${sprints.length} sprint${sprints.length === 1 ? '' : 's'}`}
     >
+      {/* Secondary-query failures — main sprints list is gated above, but a
+          failed projectRow query silently breaks the Create modal's project_id
+          and a failed projectsRaw query silently empties the Project filter.
+          isError alone misses the persisted-cache case where only `error` is
+          set on a failed background refetch. */}
+      {(projectRowIsError || projectRowError || projectsRawIsError || projectsRawError) && (
+        <div style={{ padding: '8px 0', maxWidth: 720 }}>
+          <SectionMessage
+            appearance="error"
+            title="Couldn't load project data"
+            actions={[{
+              key: 'retry',
+              text: 'Retry',
+              onClick: () => {
+                if (projectRowIsError || projectRowError) void refetchProjectRow();
+                if (projectsRawIsError || projectsRawError) void refetchProjectsRaw();
+              },
+            }]}
+          >
+            {((projectRowError ?? projectsRawError) as Error)?.message
+              ?? 'Unknown error loading project data.'}{' '}
+            The project filter and sprint creation may not work until this is resolved.
+          </SectionMessage>
+        </div>
+      )}
       {filtered.length > 0 ? (
         <SprintsTable
           rows={grouped ? undefined : filtered}

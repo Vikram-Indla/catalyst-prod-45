@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { SectionMessage } from '@/components/ads';
 import { useDefaultProject } from '@/hooks/useProjects';
 import { WorkflowTypePanel } from '@/components/admin/WorkflowTypePanel';
 import { cn } from '@/lib/utils';
@@ -23,6 +25,16 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
   const projectKey = defaultProject?.key ?? '';
 
   return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    {/* This mini-editor writes the legacy board tables only; the runtime-enforced
+        workflows (statuses, transitions, roles, guards) live in the Studio. */}
+    <SectionMessage appearance="information" title="Workflows moved to the Workflow Studio">
+      Runtime-enforced workflows are versioned and edited centrally in the{' '}
+      <Link to="/admin/workflows" style={{ color: 'var(--ds-text-brand)' }}>
+        Workflow Studio →
+      </Link>
+      . This panel only adjusts this project's legacy board columns.
+    </SectionMessage>
     <div
       style={{
         background: 'var(--ds-surface)',
@@ -59,6 +71,7 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
           </TabsContent>
         ))}
       </Tabs>
+    </div>
     </div>
   );
 }

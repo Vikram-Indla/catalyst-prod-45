@@ -21,6 +21,16 @@ interface CreateWorkItemModalProps {
   projectId: string;
   projectKey: string;
   onCreated?: (itemKey: string) => void;
+  /** Prefill title on open. Used when opened from the AI-suggest Edit
+   *  action so the user can tweak the suggestion before submitting
+   *  (2026-07-02). */
+  initialTitle?: string;
+  /** Prefill work-type NAME on open (e.g. "Sub-task", "Backend").
+   *  Resolved against workTypes at open time. */
+  initialTypeName?: string;
+  /** Prefill parent by parent work item id (ph_work_items.id). Read-only
+   *  in the parent picker when set. */
+  initialParentId?: string | null;
 }
 
 // ─── Hierarchy Icons ──────────────────────────────────────
@@ -41,7 +51,7 @@ const PRIORITIES = [
 ];
 
 // ─── Component ────────────────────────────────────────────
-export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCreated }: CreateWorkItemModalProps) {
+export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCreated, initialTitle, initialTypeName, initialParentId }: CreateWorkItemModalProps) {
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -153,14 +163,24 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
   // ─── Defaults ────────────────────────────────────────────
   useEffect(() => {
     if (open && workTypes.length > 0 && !selectedType) {
+      // Prefer explicit prefill work type (from AI-suggest Edit action)
+      // over the generic "Story" default. Match case-insensitive.
+      const prefill = initialTypeName
+        ? workTypes.find(t => t.name.toLowerCase() === initialTypeName.toLowerCase())
+        : null;
       const story = workTypes.find(t => t.name === 'Story');
-      setSelectedType(story?.id || workTypes[0].id);
+      setSelectedType(prefill?.id || story?.id || workTypes[0].id);
     }
-  }, [open, workTypes, selectedType]);
+  }, [open, workTypes, selectedType, initialTypeName]);
 
+  // Apply title / parent prefill on each open. Reset happens in the
+  // reset-on-close effect below.
   useEffect(() => {
-    if (open) setTimeout(() => titleRef.current?.focus(), 100);
-  }, [open]);
+    if (!open) return;
+    if (initialTitle) setTitle(initialTitle);
+    if (initialParentId !== undefined) setParentId(initialParentId ?? null);
+    setTimeout(() => titleRef.current?.focus(), 100);
+  }, [open, initialTitle, initialParentId]);
 
   // ─── Filtered lists ─────────────────────────────────────
   const filteredProfiles = useMemo(() => {

@@ -279,7 +279,7 @@ export function useKanbanData(
   });
 
   /* ── TASKS rows (mode='tasks'): tasks table cross-workstream ──────────── */
-  const { data: tasksRows = [], isLoading: tasksLoading, refetch: refetchTasks } = useQuery({
+  const { data: tasksRows = [], isLoading: tasksLoading, refetch: refetchTasks, error: tasksError } = useQuery({
     queryKey: ['kb-tasks-rows'],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
@@ -300,7 +300,7 @@ export function useKanbanData(
      Mirrors the data adapter for /release-hub/release-kanban so the canonical
      board mounts releases without going through useReleasesList (which is
      wired to JiraTable on the legacy surface). Manager resolved via profiles. */
-  const { data: releaseRows = [], isLoading: releaseLoading, refetch: refetchReleases } = useQuery({
+  const { data: releaseRows = [], isLoading: releaseLoading, refetch: refetchReleases, error: releaseError } = useQuery({
     queryKey: ['kb-release-rows'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -349,7 +349,7 @@ export function useKanbanData(
   });
   const testProjectId = (testProjectsRow as any[])[0]?.id ?? null;
 
-  const { data: testRows = [], isLoading: testLoading, refetch: refetchTest } = useQuery({
+  const { data: testRows = [], isLoading: testLoading, refetch: refetchTest, error: testError } = useQuery({
     queryKey: ['kb-test-rows', testProjectId],
     queryFn: async () => {
       if (!testProjectId) return [] as any[];
@@ -559,14 +559,14 @@ export function useKanbanData(
   }, [columns, resolvedBoardId, boards, isProduct, isIncident, isTasks, isRelease, isTest, productMeta]);
 
   /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
-  const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
+  const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst, error: projectFirstError } = useQuery({
     queryKey: ['kb-issues-p1', key, resolvedBoardQuery],
     queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1, resolvedBoardQuery) : Promise.resolve([] as any[])),
     enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && !isTest,
     staleTime: 5 * 60_000,
   });
   const hasMore = firstPage.length >= PAGE;
-  const { data: restPages = [], refetch: refetchRest } = useQuery({
+  const { data: restPages = [], refetch: refetchRest, error: projectRestError } = useQuery({
     queryKey: ['kb-issues-rest', key, resolvedBoardQuery],
     queryFn: async () => {
       if (!key) return [] as any[];
@@ -590,7 +590,7 @@ export function useKanbanData(
      Mirrors the productRows pattern. Incident rows are ph_issues, so
      useKanbanMutations does NOT need an incident branch — its existing
      project (ph_issues) writes apply unchanged. */
-  const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents } = useQuery({
+  const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents, error: incidentError } = useQuery({
     queryKey: ['kb-incident-issues'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -610,7 +610,7 @@ export function useKanbanData(
   });
 
   /* ── PRODUCT issues (business_requests filtered by product_id) ──────── */
-  const { data: productRows = [], isLoading: productLoading, refetch: refetchProduct } = useQuery({
+  const { data: productRows = [], isLoading: productLoading, refetch: refetchProduct, error: productError } = useQuery({
     queryKey: ['kb-product-issues', productId],
     queryFn: async () => {
       if (!productId) return [] as any[];
@@ -776,6 +776,21 @@ export function useKanbanData(
             : isTest
               ? testLoading
               : projectLoading,
+    /* Primary issues-query failure for the active mode. Surfaced so the page
+       can render a real error state instead of an empty board — a failed
+       query with `?? []` defaults is otherwise indistinguishable from a
+       board with no issues. */
+    error: (isProduct
+      ? productError
+      : isIncident
+        ? incidentError
+        : isTasks
+          ? tasksError
+          : isRelease
+            ? releaseError
+            : isTest
+              ? testError
+              : (projectFirstError ?? projectRestError)) ?? null,
     refetch,
   };
 }

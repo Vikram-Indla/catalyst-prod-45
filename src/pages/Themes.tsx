@@ -4,6 +4,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
@@ -34,7 +35,7 @@ export default function Themes() {
   // Realtime subscription for automatic UI refresh
   useThemeRealtime();
 
-  const { data: themes, isLoading } = useQuery({
+  const { data: themes, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['strategic_themes', searchQuery],
     queryFn: async () => {
       let query = typedQuery('strategic_themes')
@@ -182,7 +183,24 @@ export default function Themes() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
+              {/* isError alone misses the persisted-cache case: hydrated data
+                  keeps status 'success' while the background refetch fails and
+                  only `error` is set. */}
+              {isError || error ? (
+                <TableRow>
+                  <TableCell colSpan={7} style={{ padding: '16px 24px' }}>
+                    <div style={{ maxWidth: 720 }}>
+                      <SectionMessage
+                        appearance="error"
+                        title="Couldn't load themes"
+                        actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+                      >
+                        {(error as Error)?.message ?? 'Unknown error loading themes.'}
+                      </SectionMessage>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : isLoading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     Loading...

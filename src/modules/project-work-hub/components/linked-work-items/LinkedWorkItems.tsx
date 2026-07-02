@@ -272,13 +272,15 @@ export function LinkedWorkItems({
             link a known issue by typing its key.
           */}
           {showToolbar && (
-            <AiLinkSimilarPanel
-              issueKey={issueKey}
-              existingLinkedKeys={Array.from(existingLinkedKeys)}
-              onLinked={() => {
-                queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
-              }}
-            />
+            <div className="lwi-ai-panel">
+              <AiLinkSimilarPanel
+                issueKey={issueKey}
+                existingLinkedKeys={Array.from(existingLinkedKeys)}
+                onLinked={() => {
+                  queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
+                }}
+              />
+            </div>
           )}
           <LinkedWorkItemsBody
             id={bodyId}
@@ -289,6 +291,7 @@ export function LinkedWorkItems({
             onCopyKey={handleCopyKey}
             onUnlink={handleUnlink}
             pendingUnlinkIds={pendingUnlinkIds}
+            sourceIssueKey={issueKey}
             footer={
               showToolbar ? (
                 <LinkToolbar

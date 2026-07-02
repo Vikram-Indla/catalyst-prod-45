@@ -58,6 +58,18 @@ export function useBacklogHealthAdapter(projectKey: string | null) {
     staleTime: 2 * 60 * 1000,
     queryFn: async () => {
       if (!projectKey) return [];
+      // Custom main types from the Studio registry count as backlog scope too.
+      const { data: customTypes } = await supabase
+        .from('ph_work_item_types')
+        .select('display_name')
+        .eq('is_system', false)
+        .eq('kind', 'standard')
+        .eq('is_enabled', true)
+        .is('archived_at', null);
+      const typeScope = [
+        ...BACKLOG_ISSUE_TYPES,
+        ...((customTypes ?? []) as { display_name: string }[]).map((t) => t.display_name),
+      ];
       const PAGE = 1000;
       const rows: RawIssue[] = [];
       for (let from = 0; from < 20000; from += PAGE) {
@@ -65,7 +77,7 @@ export function useBacklogHealthAdapter(projectKey: string | null) {
           .from('ph_issues')
           .select(INSIGHTS_SELECT)
           .eq('project_key', projectKey)
-          .in('issue_type', BACKLOG_ISSUE_TYPES)
+          .in('issue_type', typeScope)
           .is('jira_removed_at', null)
           .is('archived_at', null)
           .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)

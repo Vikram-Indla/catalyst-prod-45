@@ -280,6 +280,10 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
 
   if (parent.source === 'jira') {
     // Jira-parent children stay in ph_issues (Phase 5 Q2 contract).
+    // 2026-07-02: `position` column does not exist on ph_issues (real
+    // column is `sort_order`). Passing an undefined field triggers a
+    // PostgREST 400. Remap to sort_order when a value is provided,
+    // otherwise omit it.
     const { data, error } = await supabase
       .from('ph_issues')
       .insert({
@@ -291,7 +295,7 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
         status,
         status_category: statusCategory,
         priority,
-        position,
+        ...(position != null ? { sort_order: position } : {}),
         reporter_account_id: reporterId,
         ...(assigneeId ? { assignee_account_id: assigneeId } : {}),
         source: 'catalyst',

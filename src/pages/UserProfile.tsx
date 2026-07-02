@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { token } from '@atlaskit/tokens';
 import Textfield from '@atlaskit/textfield';
 import InlineEdit from '@atlaskit/inline-edit';
@@ -113,7 +114,12 @@ export default function UserProfile() {
   const { role: userAppRole } = useUserRole();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: user } = useQuery({
+  const {
+    data: user,
+    isError: userIsError,
+    error: userError,
+    refetch: refetchUser,
+  } = useQuery({
     queryKey: ['current-user'],
     queryFn: async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -122,7 +128,13 @@ export default function UserProfile() {
     },
   });
 
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileIsError,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -137,7 +149,12 @@ export default function UserProfile() {
     enabled: !!user?.id,
   });
 
-  const { data: resourceInfo } = useQuery({
+  const {
+    data: resourceInfo,
+    isError: resourceIsError,
+    error: resourceError,
+    refetch: refetchResource,
+  } = useQuery({
     queryKey: ['resource-info', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -146,13 +163,20 @@ export default function UserProfile() {
         .select('name, role_name, department_name, vendor_name, rid, resource_type, contract_start_date, contract_end_date, is_active')
         .eq('profile_id', user.id)
         .maybeSingle();
-      if (error) return null;
+      // Throw so React Query records the failure — returning null here would
+      // swallow the error before the error state can ever surface.
+      if (error) throw error;
       return data;
     },
     enabled: !!user?.id,
   });
 
-  const { data: leaveHistory } = useQuery({
+  const {
+    data: leaveHistory,
+    isError: leaveIsError,
+    error: leaveError,
+    refetch: refetchLeave,
+  } = useQuery({
     queryKey: ['leave-history', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -183,7 +207,12 @@ export default function UserProfile() {
     enabled: !!user?.id,
   });
 
-  const { data: roleHistory } = useQuery({
+  const {
+    data: roleHistory,
+    isError: roleHistoryIsError,
+    error: roleHistoryError,
+    refetch: refetchRoleHistory,
+  } = useQuery({
     queryKey: ['user-role-history', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -271,6 +300,31 @@ export default function UserProfile() {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
         <Spinner size="large" />
+      </div>
+    );
+  }
+
+  /* isError alone misses the persisted-cache case: hydrated data keeps status
+     'success' while the background refetch fails and only `error` is set.
+     Without this gate a failed user/profile query renders a hollow page of
+     em-dashes — indistinguishable from an empty profile. */
+  const identityError =
+    userIsError || userError
+      ? { err: userError as Error, retry: refetchUser }
+      : profileIsError || profileError
+        ? { err: profileError as Error, retry: refetchProfile }
+        : null;
+
+  if (identityError) {
+    return (
+      <div style={{ padding: 32, maxWidth: 720, margin: '0 auto' }}>
+        <SectionMessage
+          appearance="error"
+          title="Couldn't load your profile"
+          actions={[{ key: 'retry', text: 'Retry', onClick: () => void identityError.retry() }]}
+        >
+          {identityError.err?.message ?? 'Unknown error loading profile.'}
+        </SectionMessage>
       </div>
     );
   }
@@ -529,6 +583,17 @@ export default function UserProfile() {
             {/* Organization (read-only from resource_inventory) */}
             <div style={cardStyle}>
               <div style={sectionTitle}>Organization</div>
+              {(resourceIsError || resourceError) && (
+                <div style={{ marginBottom: 16 }}>
+                  <SectionMessage
+                    appearance="error"
+                    title="Couldn't load organization details"
+                    actions={[{ key: 'retry', text: 'Retry', onClick: () => void refetchResource() }]}
+                  >
+                    {(resourceError as Error)?.message ?? 'Unknown error loading organization details.'}
+                  </SectionMessage>
+                </div>
+              )}
               <FieldRow label="Designation">{designation ?? '—'}</FieldRow>
               <FieldRow label="Department">{department ?? '—'}</FieldRow>
               <FieldRow label="Vendor">{vendor ?? '—'}</FieldRow>
@@ -574,7 +639,15 @@ export default function UserProfile() {
                   <History style={{ width: 14, height: 14 }} />
                   Role history
                 </div>
-                {roleHistory && roleHistory.length > 0 ? (
+                {roleHistoryIsError || roleHistoryError ? (
+                  <SectionMessage
+                    appearance="error"
+                    title="Couldn't load role history"
+                    actions={[{ key: 'retry', text: 'Retry', onClick: () => void refetchRoleHistory() }]}
+                  >
+                    {(roleHistoryError as Error)?.message ?? 'Unknown error loading role history.'}
+                  </SectionMessage>
+                ) : roleHistory && roleHistory.length > 0 ? (
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
@@ -645,7 +718,15 @@ export default function UserProfile() {
                 <Calendar style={{ width: 14, height: 14 }} />
                 Leave history
               </div>
-              {leaveHistory && leaveHistory.length > 0 ? (
+              {leaveIsError || leaveError ? (
+                <SectionMessage
+                  appearance="error"
+                  title="Couldn't load leave history"
+                  actions={[{ key: 'retry', text: 'Retry', onClick: () => void refetchLeave() }]}
+                >
+                  {(leaveError as Error)?.message ?? 'Unknown error loading leave history.'}
+                </SectionMessage>
+              ) : leaveHistory && leaveHistory.length > 0 ? (
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>

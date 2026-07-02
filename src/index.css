@@ -7590,6 +7590,65 @@ table th[class*="css-"] {
   ) !important;
 }
 
+/* ─── Deterministic label palette (Jira parity) ────────────────────────────
+   Every label pill and dropdown option gets the same accent for the same
+   text via `labelAccent(name)` in src/lib/labelPalette.ts. Border, text,
+   and subtle background all pull from the same ADS accent token trio so
+   the pill reads as one unit. No hex, no HSL — CLAUDE.md §5 hard rule.
+   ────────────────────────────────────────────────────────────────────── */
+.cat-label {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: var(--ds-border-radius);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  border-color: var(--ds-border);
+}
+/* Labels select chip — Jira parity: remove-X only appears on hover,
+   larger neutral cross, no red hover fill. Applies to the CreatableSelect
+   inside EditableLabels (classNamePrefix="cv-labels-select"). */
+.cv-labels-select__multi-value {
+  align-items: center;
+}
+.cv-labels-select__multi-value__label {
+  font-size: var(--ds-font-size-200) !important;
+  line-height: var(--ds-font-lineHeight-200) !important;
+  padding: var(--ds-space-025) var(--ds-space-075) !important;
+}
+/* Remove-X — hidden until chip hover. NEVER any background (rest, hover,
+   active). MultiValueRemove is overridden in JSX to render a thin stroked
+   × so the react-select default filled cross doesn't ship. */
+.cv-labels-select__multi-value__remove {
+  visibility: hidden;
+  background: transparent !important;
+  color: var(--ds-text-subtle) !important;
+  padding: 0 var(--ds-space-025) !important;
+}
+.cv-labels-select__multi-value:hover .cv-labels-select__multi-value__remove,
+.cv-labels-select__multi-value:focus-within .cv-labels-select__multi-value__remove {
+  visibility: visible;
+}
+.cv-labels-select__multi-value__remove:hover,
+.cv-labels-select__multi-value__remove:active,
+.cv-labels-select__multi-value__remove:focus {
+  background: transparent !important;
+  color: var(--ds-text) !important;
+}
+
+/* Only the border is colored. Text stays neutral, bg stays surface —
+   Jira parity. `data-accent` value is picked deterministically by
+   `labelAccent(name)` in src/lib/labelPalette.ts. */
+.cat-label[data-accent="blue"]    { border-color: var(--ds-border-accent-blue); }
+.cat-label[data-accent="green"]   { border-color: var(--ds-border-accent-green); }
+.cat-label[data-accent="red"]     { border-color: var(--ds-border-accent-red); }
+.cat-label[data-accent="purple"]  { border-color: var(--ds-border-accent-purple); }
+.cat-label[data-accent="orange"]  { border-color: var(--ds-border-accent-orange); }
+.cat-label[data-accent="teal"]    { border-color: var(--ds-border-accent-teal); }
+.cat-label[data-accent="yellow"]  { border-color: var(--ds-border-accent-yellow); }
+.cat-label[data-accent="magenta"] { border-color: var(--ds-border-accent-magenta); }
+.cat-label[data-accent="lime"]    { border-color: var(--ds-border-accent-lime); }
+.cat-label[data-accent="gray"]    { border-color: var(--ds-border); }
+
 /* ─── Sprint/Iteration pill styling (right rail) ────────────────────────────────
    Jira renders sprint/releases as bordered secondary pills with 1px border,
    subtle background, and text padding. Applied to @atlaskit/select MultiValue
@@ -7602,25 +7661,58 @@ table th[class*="css-"] {
     --cp-jira-fixver-bg,
     var(--ds-background-neutral, #f1f2f4)
   );
-  padding: 0px 4px;
-  margin: 0px;
+  padding: 0 var(--ds-space-050);
+  /* Vertical gap between wrapping chips + a small horizontal gap when
+     two chips fit on the same line. Applies to both edit and read-only
+     modes since react-select renders the same MultiValue in either
+     state (Vikram 2026-07-02). */
+  margin: var(--ds-space-025) var(--ds-space-050) var(--ds-space-025) 0 !important;
+}
+/* Wrapping container — enables row-gap for browsers that respect it and
+   drops the trailing margin ambiguity around the last chip so the
+   overall column stays aligned with the label. */
+.cv-sprintreleases-select__value-container {
+  row-gap: var(--ds-space-050);
 }
 
 .cv-sprintreleases-select__multi-value__label {
   color: var(--cp-jira-fixver-fg, var(--ds-text, #172b4d));
-  padding: 0px 4px;
-  font-size: 13px;
+  padding: var(--ds-space-050) var(--ds-space-075);
+  font-size: var(--ds-font-size-200);
+  line-height: var(--ds-font-lineHeight-200);
   font-weight: 400;
 }
 
 .cv-sprintreleases-select__multi-value__remove {
-  color: var(--cp-jira-fixver-fg, var(--ds-text, #172b4d));
+  /* Jira-parity thin gray X — react-select's default cross renders bold
+     because its SVG uses a fill path. Muted foreground + slight scale
+     down gives the same optical weight as Jira's remove affordance
+     without swapping the SVG (Vikram 2026-07-02). */
+  color: var(--ds-text-subtlest);
   padding: 0 2px;
+  opacity: 0.7;
+}
+
+.cv-sprintreleases-select__multi-value__remove svg {
+  width: var(--ds-space-200);
+  height: var(--ds-space-200);
+}
+
+/* Dropdown option size — match the selected chip label so the menu and
+   the value chips share one type ramp. Applies to grouped Unreleased /
+   Released rows. */
+.cv-sprintreleases-select__option,
+.cv-sprintreleases-select__group-heading,
+.cv-sprintreleases-select__menu-notice {
+  font-size: var(--ds-font-size-200);
+  line-height: var(--ds-font-lineHeight-300);
 }
 
 .cv-sprintreleases-select__multi-value__remove:hover {
   background-color: var(--ds-background-neutral);
   border-radius: 2px;
+  color: var(--ds-text);
+  opacity: 1;
 }
 
 /* ─── Catalyst AI Suggest-Reply — gradient border animation ─────────────────

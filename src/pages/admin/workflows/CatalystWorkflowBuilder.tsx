@@ -72,7 +72,7 @@ const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> 
 };
 
 // ── Status node ─────────────────────────────────────────────────────────────
-function StatusNode({ data, selected }: NodeProps) {
+export function StatusNode({ data, selected }: NodeProps) {
   const d = data as { name: string; category: string; isInitial: boolean; isCurrent?: boolean; readonly?: boolean };
   const colors = NODE_COLORS[d.category] ?? NODE_COLORS.todo;
 
@@ -204,7 +204,7 @@ function StatusNode({ data, selected }: NodeProps) {
 }
 
 // ── Start node ───────────────────────────────────────────────────────────────
-function StartNode(_: NodeProps) {
+export function StartNode(_: NodeProps) {
   return (
     <div style={{
       width: 48,
@@ -237,7 +237,7 @@ function StartNode(_: NodeProps) {
 }
 
 // ── Deletable edge ───────────────────────────────────────────────────────────
-function DeletableEdge({
+export function DeletableEdge({
   id,
   sourceX,
   sourceY,
@@ -320,12 +320,12 @@ function DeletableEdge({
   );
 }
 
-const NODE_TYPES = { status: StatusNode, start: StartNode };
-const EDGE_TYPES = { deletable: DeletableEdge };
+export const NODE_TYPES = { status: StatusNode, start: StartNode };
+export const EDGE_TYPES = { deletable: DeletableEdge };
 
 // ── Layout helper ─────────────────────────────────────────────────────────────
-function autoLayout(
-  statuses: TypeStatus[],
+export function autoLayout(
+  statuses: Array<{ id: string }>,
   transitions: Array<{ from_status_id: string | null; to_status_id: string }>,
   initialStatusId: string | null,
 ): Map<string, { x: number; y: number }> {

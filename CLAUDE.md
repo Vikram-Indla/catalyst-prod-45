@@ -345,6 +345,47 @@ See template: [`docs/ways-of-working/CATALYST_CONTEXT_HANDOVER_TEMPLATE.md`](doc
 
 ---
 
+## CONCURRENT SESSIONS & DB TARGETING — HARD STOP ⛔
+
+> Added 2026-07-03 after a session's key commit landed on another session's branch, a deleted
+> worktree silently flipped prod DDL onto staging, and live edits were nearly swept into a
+> foreign commit. Every rule below maps to a real incident.
+
+**One session = one worktree.**
+- Multiple Claude/agent sessions must never share a checkout. Start every parallel session in
+  its own git worktree (`git worktree add`). The origin checkout belongs to whichever session
+  got there first — everyone else isolates.
+- Never `git checkout <branch>` / `git switch` in a checkout you did not create this session.
+  If you need another branch, make a detached worktree from it.
+- Before committing, confirm every staged file is yours: files you did not author this session
+  do not go in your commit. `git add -A` / `git add .` remain banned (see COMMIT GATE).
+- To land work while the shared checkout sits on someone else's branch: detached worktree from
+  `origin/main` → cherry-pick/commit → push → remove worktree. Never rebase or push someone
+  else's unpushed commits.
+
+**Supabase `--linked` follows the CWD, not your session.**
+- `supabase db query --linked` resolves the target from `<cwd>/supabase/.temp/project-ref`.
+  A `cd`, a deleted worktree, or a recovered shell can silently retarget you between
+  staging and prod.
+- Before EVERY linked DDL/data batch: `cat supabase/.temp/project-ref` and assert it is the
+  project you intend (prod `lmqwtldpfacrrlvdnmld`, staging `cyijbdeuehohvhnsywig`). One check
+  per batch minimum; re-check after any cwd change or error.
+- Prod work: link a disposable directory (copy `supabase/config.toml` into a scratch dir,
+  `supabase link` there), never the shared checkout — its link belongs to other sessions.
+  Unlink when done.
+- Any "working directory was deleted / cwd recovered" error → STOP. Re-verify cwd, git
+  worktree, and project-ref before the next git or db command. Assume nothing survived.
+
+**Migration ledger discipline.**
+- `supabase_migrations.schema_migrations` rows must correspond 1:1 with committed files in
+  `supabase/migrations/`. Never record a version whose file is not committed; never leave an
+  applied file unrecorded. One-off data repairs still get a committed file (no-op placeholder
+  if environment-specific).
+- Version timestamps are unique. Two files sharing a version prefix = broken ledger (version
+  is the primary key). Check before naming a new migration.
+
+---
+
 ## COMMIT GATE
 
 No commit without:

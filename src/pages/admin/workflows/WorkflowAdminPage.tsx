@@ -1163,6 +1163,18 @@ export default function WorkflowAdminPage() {
           background: 'var(--ds-surface)',
         }}
       >
+        {/* P5 deprecation: this editor writes the LEGACY ph_workflow_* tables,
+            which the runtime does not enforce. It stays only for board-column
+            grooming until MapStatuses absorbs that; the Studio is canonical. */}
+        <div style={{ padding: '12px 24px 0' }}>
+          <SectionMessage appearance="warning" title="Deprecated — edits here are not runtime-enforced">
+            This classic builder writes the legacy board tables only. Statuses, transitions,
+            roles and guards that the runtime actually enforces are managed in the{' '}
+            <Link to="/admin/workflows" style={{ color: 'var(--ds-text-brand)' }}>
+              Workflow Studio →
+            </Link>
+          </SectionMessage>
+        </div>
         <div
           style={{
             padding: '16px 24px 0',
