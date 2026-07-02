@@ -10,6 +10,8 @@
  * /release-hub/releases-management.
  */
 
+import { Routes } from '@/lib/routes';
+
 export type EntityKind = 'release' | 'sprint' | 'milestone';
 
 export interface EntityScopePickerOption {
@@ -141,10 +143,8 @@ export const SPRINT_CONFIG: EntityConfig = {
   matchIssueByField: 'sprint_name',
   scopePickerSource: 'ph_projects_all',
   baseUrl: '/project-hub',
-  buildDetailHref: (id, ctx) =>
-    `/project-hub/${ctx?.projectKey ?? 'BAU'}/sprints/${id}`,
-  buildWorkHref: (id, ctx) =>
-    `/project-hub/${ctx?.projectKey ?? 'BAU'}/sprints/${id}/work`,
+  buildDetailHref: (id, ctx) => Routes.projectHub.sprint(ctx?.projectKey ?? '', id),
+  buildWorkHref: (id, ctx) => Routes.projectHub.sprintWork(ctx?.projectKey ?? '', id),
   queryKeyPrefix: 'projecthub-sprints',
   approvers: {
     table: 'ph_sprint_approvers',
