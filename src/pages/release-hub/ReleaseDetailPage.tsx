@@ -32,6 +32,8 @@ import { useReleaseSummaryStream } from '@/components/releases/detail/summarize/
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
+import HealthPanel from '@/features/health/components/HealthPanel';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 
 const BORDER = 'var(--ds-border)';
 const TEXT = 'var(--ds-text)';
@@ -80,6 +82,9 @@ export function ReleaseDetailPage({
   const [collapsedNote, setCollapsedNote] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ issueKey: string; issueType: string | null } | null>(null);
+  // Health panel — CAT-HEALTH-ENGINE-20260702-001 Phase 3/4 (Sprint + Timeline
+  // share this detail page via EntityConfig, so one flag covers both).
+  const [healthOpen, setHealthOpen] = useState(false);
 
   // 2026-06-30: select string is config-aware so milestone (product_milestones)
   // can alias title→name, product_id→project_id, target_date→release_date and
@@ -321,15 +326,12 @@ export function ReleaseDetailPage({
           trail={
             config.kind === 'sprint'    ? [
               { text: 'Sprints', href: listHrefOverride ?? `/project-hub/${project.key}/sprints` },
-              { text: title },
             ]
           : config.kind === 'milestone' ? [
               { text: 'Milestones', href: listHrefOverride ?? `/product-hub/${project.key}/milestones` },
-              { text: title },
             ]
           : [
               { text: 'Releases', href: listHrefOverride ?? '/release-hub/releases-management' },
-              { text: title },
             ]
           }
           title={
@@ -409,6 +411,24 @@ export function ReleaseDetailPage({
           }
           actions={
             <>
+              {config.kind !== 'milestone' && (
+                <button
+                  type="button"
+                  aria-label={`View ${config.label.lowerSingular} health`}
+                  title={`View ${config.label.lowerSingular} health`}
+                  onClick={() => { setSelectedItem(null); setHealthOpen((o) => !o); }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
+                    background: healthOpen ? 'var(--ds-background-selected)' : 'transparent',
+                    cursor: 'pointer', transition: 'background 100ms ease',
+                  }}
+                  onMouseEnter={(e) => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+                  onMouseLeave={(e) => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                >
+                  <CatyPulseIcon size={16} title={`View ${config.label.lowerSingular} health`} />
+                </button>
+              )}
               <Button
                 appearance="subtle"
                 iconBefore={(p) => <FeedbackIcon {...p} label="" />}
@@ -471,7 +491,7 @@ export function ReleaseDetailPage({
         releaseName={(release.name || release.title || '')}
         projectId={release.project_id}
         projectKey={project?.key ?? null}
-        onOpenItem={(it) => setSelectedItem(it)}
+        onOpenItem={(it) => { setHealthOpen(false); setSelectedItem(it); }}
         config={config}
       />
 
@@ -533,6 +553,26 @@ export function ReleaseDetailPage({
               projectKey={project?.key ?? ''}
               entityKind="ph_issue"
               onClose={() => setSelectedItem(null)}
+            />
+          </div>
+        ) : healthOpen ? (
+          <div style={{ width: 440, flexShrink: 0, height: '100%', overflowY: 'auto' }}>
+            <HealthPanel
+              scope={
+                config.kind === 'sprint'
+                  ? { moduleKey: 'sprint', sprintId: release.id }
+                  : { moduleKey: 'timeline', releaseId: release.id }
+              }
+              entityConfig={config}
+              entityName={release.name || release.title || null}
+              title={release.name || release.title || config.label.singular}
+              subtitle={config.label.lowerSingular}
+              onOpenItem={(item) => {
+                if (!item.itemKey) return;
+                setHealthOpen(false);
+                setSelectedItem({ issueKey: item.itemKey, issueType: item.type ?? null });
+              }}
+              onClose={() => setHealthOpen(false)}
             />
           </div>
         ) : (

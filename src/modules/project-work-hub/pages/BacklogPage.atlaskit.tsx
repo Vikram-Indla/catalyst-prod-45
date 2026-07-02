@@ -141,6 +141,8 @@ import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { CatalystSideDrawer } from '@/components/catalyst-detail-views';
+import HealthPanel from '@/features/health/components/HealthPanel';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import type { RequestRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCellIconType, flattenTree } from '../utils/backlog.utils';
@@ -2598,6 +2600,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
 
+  // Backlog Health panel — mutually exclusive with the detail panel (same
+  // right-hand slot). CAT-HEALTH-ENGINE-20260702-001 Phase 1.
+  const [healthOpen, setHealthOpen] = useState(false);
+
   // Key-cell click target: floating modal (CatalystSideDrawer without panelMode).
   // Sidebar-icon click target stays on openDetail (right-side panel).
   const [modalItem, setModalItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
@@ -2679,6 +2685,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       itemType = override || 'business_request';
     } else if (rawType === 'bug') itemType = 'defect';
     else if (rawType === 'initiative') itemType = 'business_request';
+    setHealthOpen(false);
     setPanelItem({
       id: (it as any).issue_key || it.id,
       itemType,
@@ -3366,9 +3373,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // — that only contained already-assigned people, missing project members
         // who haven't been assigned anything yet).
         options: assigneePickerMembers.map<AssigneeChoice>((m) => ({ id: m.key, name: m.name, avatarUrl: m.src ?? null })),
-        // Vikram canonical rule: once assigned, locked. Handled inside
-        // ProfilePicker via `lockWhenAssigned` default true on
-        // makeAssigneeEditCell — no per-row canEdit needed here.
+        // Grid G5: locks only when status is terminal (CLOSED/CANCELED/etc),
+        // not merely because an assignee is set.
+        getStatus: (r) => r.status,
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
           // 2026-06-21: Canonical ph_issues columns are `assignee_account_id`
@@ -3471,15 +3478,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.reporter_name || '',
       /* 2026-06-21 (Vikram): Reporter is now editable via the canonical
-         ProfilePicker (via makeAssigneeEditCell). Vikram's "lock once
-         assigned" rule applies to assignee ONLY — reporter remains
-         re-assignable so canEdit defaults to true. */
+         ProfilePicker (via makeAssigneeEditCell). Grid G5 lock applies to
+         assignee ONLY — reporter never locks (no getStatus passed), so it
+         remains re-assignable and canEdit defaults to true. */
       cell: makeAssigneeEditCell<BacklogItem>({
         getAssignee: (r) => r.reporter_name
           ? { id: r.reporter_name, name: r.reporter_name, avatarUrl: resolveAvatarUrl(r.reporter_name) ?? avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
           : null,
         options: assigneePickerMembers.map<AssigneeChoice>((m) => ({ id: m.key, name: m.name, avatarUrl: m.src ?? null })),
-        lockWhenAssigned: false,
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
           patch: { reporter_account_id: next?.id ?? null, reporter_display_name: next?.name ?? null },
@@ -3711,7 +3717,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           ? { id: r.delivery_manager_id ?? r.delivery_manager_name, name: r.delivery_manager_name, avatarUrl: resolveAvatarUrl(r.delivery_manager_name) ?? avatarsByName.get(r.delivery_manager_name.toLowerCase()) ?? null }
           : null,
         options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
-        lockWhenAssigned: false,
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
           patch: { delivery_manager_id: next?.id ?? null, delivery_manager_name: next?.name ?? null },
@@ -3730,7 +3735,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           ? { id: r.product_owner_id ?? r.product_owner_name, name: r.product_owner_name, avatarUrl: resolveAvatarUrl(r.product_owner_name) ?? avatarsByName.get(r.product_owner_name.toLowerCase()) ?? null }
           : null,
         options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
-        lockWhenAssigned: false,
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
           patch: { product_owner_id: next?.id ?? null, product_owner_name: next?.name ?? null },
@@ -4447,6 +4451,24 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         />
         {toolbarMoreActionsButton}
 
+        {/* Backlog Health trigger — CAT-HEALTH-ENGINE-20260702-001 Phase 1. */}
+        <button
+          type="button"
+          aria-label="View backlog health"
+          title="View backlog health"
+          onClick={() => { setPanelItem(null); setHealthOpen(o => !o); }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
+            background: healthOpen ? 'var(--ds-background-selected)' : 'transparent',
+            cursor: 'pointer', transition: 'background 100ms ease',
+          }}
+          onMouseEnter={e => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+          onMouseLeave={e => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+        >
+          <CatyPulseIcon size={16} title="View backlog health" />
+        </button>
+
         {/* 2026-05-12 — Pagination counter: "X of Y" format. Shows total visible
             items in current filter scope. Jira parity: BAU list shows "50 of 810"
             style counter on the right side of the toolbar. */}
@@ -4494,7 +4516,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             // panel is open keeps the table's right edge visible.
             flex: 1,
             minWidth: 0,
-            paddingRight: panelItem ? panelWidth : 24,
+            paddingRight: (panelItem || healthOpen) ? panelWidth : 24,
             transition: 'padding-right 180ms ease, width 150ms ease, flex-basis 150ms ease',
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +
@@ -5039,6 +5061,30 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             />
           );
         })()}
+        {/* Backlog Health panel — CAT-HEALTH-ENGINE-20260702-001 Phase 1.
+            Mutually exclusive with the detail panel (same right-hand slot). */}
+        {!panelItem && healthOpen && (
+          <div style={{
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: panelWidth,
+            borderLeft: '1px solid var(--ds-border)',
+            background: 'var(--ds-surface)',
+            zIndex: 2,
+          }}>
+            <HealthPanel
+              scope={{ moduleKey: 'backlog', projectKey: projectKey ?? '' }}
+              title={projectDisplayName ?? projectKey ?? 'Backlog'}
+              subtitle="backlog"
+              onOpenItem={(item) => {
+                if (!item.itemKey) return;
+                const pk = projectKey ?? item.projectKey;
+                if (!pk) return;
+                setHealthOpen(false);
+                navigate(`${resolvedBaseUrl}/backlog/${item.itemKey}`);
+              }}
+              onClose={() => setHealthOpen(false)}
+            />
+          </div>
+        )}
         {/* Key-click → floating modal. Same router, no panelMode → modal chrome. */}
         {modalItem && (
           <CatalystSideDrawer

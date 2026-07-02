@@ -37,7 +37,9 @@ import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useLinkedEntities } from '@/hooks/workhub/useLinkedEntities';
 import { jqlToFilterState, hasActiveFacets } from '@/lib/jql/jqlToFilterState';
-import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useJqlResults, JQL_RESULTS_LIMIT, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import HealthPanel from '@/features/health/components/HealthPanel';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -622,6 +624,9 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const isTasks = mode === 'tasks';
   const isRelease = mode === 'release';
   const isTest = mode === 'test';
+  // Filters Health panel — CAT-HEALTH-ENGINE-20260702-001 Phase 2.
+  const [healthOpen, setHealthOpen] = useState(false);
+  const healthPanelWidth = 480;
   const { key: routeKey, filterId: routeFilterId } = useParams<{ key: string; filterId: string }>();
   /* `projectKey` keeps its original name through the file so we don't have to
      touch hundreds of references. In project mode it's the project key (e.g.
@@ -1278,6 +1283,24 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
           </div>
 
+          {/* Filters Health trigger — CAT-HEALTH-ENGINE-20260702-001 Phase 2. */}
+          <button
+            type="button"
+            aria-label="View filter health"
+            title="View filter health"
+            onClick={() => setHealthOpen(o => !o)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
+              background: healthOpen ? 'var(--ds-background-selected)' : 'transparent',
+              cursor: 'pointer', transition: 'background 100ms ease', flexShrink: 0,
+            }}
+            onMouseEnter={e => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+            onMouseLeave={e => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+          >
+            <CatyPulseIcon size={16} title="View filter health" />
+          </button>
+
           {/* Kebab menu — only shown when a saved filter is loaded (has an id) */}
           {savedFilterId && loadedFilter && (
             <FilterKebabMenu
@@ -1307,8 +1330,8 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
       </div>
 
       {/* Table — same container pattern as BacklogPage (padding:24px on wrapper) */}
-      <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
-        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, padding: '24px' }}>
+      <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, padding: '24px', paddingRight: healthOpen ? healthPanelWidth : 24 }}>
           <JiraTable<JqlResultRow>
             columns={columns}
             data={items}
@@ -1345,6 +1368,29 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             }
           />
         </div>
+        {/* Filters Health panel — CAT-HEALTH-ENGINE-20260702-001 Phase 2. */}
+        {healthOpen && (
+          <div style={{
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: healthPanelWidth,
+            borderLeft: '1px solid var(--ds-border)',
+            background: 'var(--ds-surface)',
+            zIndex: 2,
+          }}>
+            <HealthPanel
+              scope={{ moduleKey: 'filters', filterId: savedFilterId ?? 'unsaved' }}
+              rows={items}
+              resultCap={isProduct || isTasks ? 500 : JQL_RESULTS_LIMIT}
+              title={savedFilterName ?? 'Filter results'}
+              subtitle="filter"
+              onOpenItem={(item) => {
+                if (!item.itemKey) return;
+                setHealthOpen(false);
+                openDetail(item.itemKey);
+              }}
+              onClose={() => setHealthOpen(false)}
+            />
+          </div>
+        )}
       </div>
 
       {/* New filter save modal — only shown when no existing filter is loaded */}

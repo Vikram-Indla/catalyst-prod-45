@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Star, Settings, Trash2, Kanban, Activity } from '@/lib/atlaskit-icons';
-import BoardInsightsPanel from './BoardInsightsPanel';
+import { Plus, Star, Settings, Trash2, Kanban } from '@/lib/atlaskit-icons';
+import HealthPanel from '@/features/health/components/HealthPanel';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/new';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
@@ -335,9 +336,17 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       </div>
       {insightsBoard && (
         <div style={{ flex: '0 0 62%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <BoardInsightsPanel
+          <HealthPanel
+            scope={{ moduleKey: 'board', boardId: insightsBoard.id, projectKey }}
             board={insightsBoard}
-            projectKey={projectKey}
+            title={insightsBoard.name}
+            subtitle="board"
+            onOpenItem={(item) => {
+              if (!item.itemKey) return;
+              const pk = projectKey ?? item.projectKey;
+              if (!pk) return;
+              navigate(`/project-hub/${pk}/issues/${item.itemKey}`);
+            }}
             onClose={() => setInsightsBoard(null)}
           />
         </div>
@@ -368,13 +377,12 @@ function BoardRowActions({ board, isInsightsActive, onViewHealth, onEditSettings
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 28, height: 28, padding: 0, border: 'none', borderRadius: 3,
           background: isInsightsActive ? 'var(--ds-background-selected)' : 'transparent',
-          color: isInsightsActive ? 'var(--ds-link)' : 'var(--ds-icon-subtle)',
           cursor: 'pointer', transition: 'background 100ms ease',
         }}
         onMouseEnter={e => { if (!isInsightsActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
         onMouseLeave={e => { if (!isInsightsActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
-        <Activity size={14} />
+        <CatyPulseIcon size={14} title="View board health" />
       </button>
       <button
         type="button"

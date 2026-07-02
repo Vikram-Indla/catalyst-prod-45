@@ -20,7 +20,7 @@ import type { Board } from '@/types/board';
 
 // ── Raw issue shape from ph_issues ──────────────────────────────────────────
 
-interface RawIssue {
+export interface RawIssue {
   id: string;
   issue_key: string | null;
   summary: string | null;
@@ -39,7 +39,7 @@ interface RawIssue {
   parent_key: string | null;
 }
 
-const INSIGHTS_SELECT =
+export const INSIGHTS_SELECT =
   'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, assignee_account_id, sprint_name, is_flagged, jira_updated_at, jira_created_at, due_date, project_key, parent_key';
 
 // ── Scored output types ──────────────────────────────────────────────────────
@@ -248,7 +248,7 @@ function scoreIssue(
   };
 }
 
-function computeInsights(issues: RawIssue[]): BoardInsightsResult {
+export function computeInsights(issues: RawIssue[]): BoardInsightsResult {
   const cfg = BOARD_INSIGHTS_CONFIG;
 
   // Compute board median stale days (exclude done items)

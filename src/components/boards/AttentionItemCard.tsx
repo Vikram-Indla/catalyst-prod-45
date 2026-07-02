@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Lozenge from '@atlaskit/lozenge';
-import { AlertTriangle, Clock, ExternalLink, ChevronDown, ChevronRight, User } from '@/lib/atlaskit-icons';
-import type { AttentionItem } from '@/hooks/useBoardInsights';
+import { AlertTriangle, Clock, ExternalLink, ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { Tooltip } from '@/components/ads/Tooltip';
+import type { HealthAttentionItem } from '@/features/health/types';
 
 interface AttentionItemCardProps {
-  item: AttentionItem;
-  onOpen: (item: AttentionItem) => void;
+  item: HealthAttentionItem;
+  onOpen: (item: HealthAttentionItem) => void;
 }
 
 function priorityAppearance(priority: string | null): 'removed' | 'inprogress' | 'moved' | 'new' | 'default' | 'success' {
@@ -39,7 +41,7 @@ export default function AttentionItemCard({ item, onOpen }: AttentionItemCardPro
   const borderColor = item.riskBand === 'Critical'
     ? 'var(--ds-border-danger)'
     : item.riskBand === 'High'
-    ? 'var(--ds-text-warning)'
+    ? 'var(--ds-border-warning)'
     : 'var(--ds-border)';
 
   return (
@@ -53,6 +55,7 @@ export default function AttentionItemCard({ item, onOpen }: AttentionItemCardPro
         display: 'flex',
         flexDirection: 'column',
         gap: 7,
+        boxShadow: 'var(--ds-shadow-raised)',
       }}
     >
       {/* Top row: key + title + open link */}
@@ -106,14 +109,16 @@ export default function AttentionItemCard({ item, onOpen }: AttentionItemCardPro
         {item.type && <Lozenge appearance="default">{item.type}</Lozenge>}
 
         {/* Assignee */}
-        <span style={{
-          marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4,
-          fontSize: 'var(--ds-font-size-100)',
-          color: item.assignee ? 'var(--ds-text-subtle)' : 'var(--ds-text-danger)',
-        }}>
-          <User size={12} />
-          {item.assignee ?? 'Unassigned'}
-        </span>
+        <Tooltip content={item.assignee?.name ?? 'Unassigned'}>
+          <span style={{
+            marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4,
+            fontSize: 'var(--ds-font-size-100)',
+            color: item.assignee?.name ? 'var(--ds-text-subtle)' : 'var(--ds-text-danger)',
+          }}>
+            <CatalystAvatar name={item.assignee?.name ?? null} size="xsmall" />
+            {item.assignee?.name ?? 'Unassigned'}
+          </span>
+        </Tooltip>
       </div>
 
       {/* Primary reason */}

@@ -15,6 +15,8 @@ import { catalystToast } from '@/lib/catalystToast';
 import DependenciesEmptyState from './DependenciesEmptyState';
 import DependenciesDiagram from './DependenciesDiagram';
 import AddDependencyModal from './AddDependencyModal';
+import HealthPanel from '@/features/health/components/HealthPanel';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import type { DependencyData, DependencyCandidate, DependencyType, HubType } from './types';
 
 const T = { surface: 'var(--ds-surface)' };
@@ -48,6 +50,8 @@ export default function DependenciesView({
   focusKey,
 }: DependenciesViewProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Dependencies Health panel — CAT-HEALTH-ENGINE-20260702-001 Phase 5.
+  const [healthOpen, setHealthOpen] = useState(false);
   const { dependencies, issueMeta, hierarchy, projects, isLoading, error, refetch } = data;
   const isEmpty = !dependencies || dependencies.length === 0;
 
@@ -59,11 +63,32 @@ export default function DependenciesView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, background: T.surface }}>
-      <ProjectPageHeader projectKey={scopeKey} hubType={hubType} />
+      <ProjectPageHeader
+        projectKey={scopeKey}
+        hubType={hubType}
+        actions={
+          <button
+            type="button"
+            aria-label="View dependencies health"
+            title="View dependencies health"
+            onClick={() => setHealthOpen((o) => !o)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
+              background: healthOpen ? 'var(--ds-background-selected)' : 'transparent',
+              cursor: 'pointer', transition: 'background 100ms ease',
+            }}
+            onMouseEnter={(e) => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'; }}
+            onMouseLeave={(e) => { if (!healthOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+          >
+            <CatyPulseIcon size={16} title="View dependencies health" />
+          </button>
+        }
+      />
 
       {/* Explicit responsive height: the hub shell does not bound height:100%
           to the viewport, so a flex:1 canvas collapses. 150px ≈ top nav + header. */}
-      <div style={{ height: 'calc(100dvh - 150px)', minHeight: 420, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ height: 'calc(100dvh - 150px)', minHeight: 420, display: 'flex', flexDirection: 'column', position: 'relative' }}>
         {isLoading ? (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Spinner size="large" />
@@ -89,6 +114,29 @@ export default function DependenciesView({
             onDeleteDependency={onDelete}
             getTimelineHref={getTimelineHref}
           />
+        )}
+        {/* Dependencies Health panel — CAT-HEALTH-ENGINE-20260702-001 Phase 5. */}
+        {healthOpen && (
+          <div style={{
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: 440,
+            borderLeft: '1px solid var(--ds-border)',
+            background: 'var(--ds-surface)',
+            zIndex: 2,
+          }}>
+            <HealthPanel
+              scope={{ moduleKey: 'dependencies', projectKey: scopeKey }}
+              dependencies={dependencies}
+              issueMeta={issueMeta}
+              title={scopeName ?? scopeKey}
+              subtitle="dependencies"
+              onOpenItem={(item) => {
+                if (!item.itemKey) return;
+                setHealthOpen(false);
+                window.location.href = getTimelineHref(item.itemKey);
+              }}
+              onClose={() => setHealthOpen(false)}
+            />
+          </div>
         )}
       </div>
 
