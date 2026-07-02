@@ -153,6 +153,10 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
         query = (query as any)
           .is('jira_removed_at', null)
           .is('archived_at', null)
+          // CAT-DETAIL-MODAL-404-20260702-001: the detail view (useCatalystIssue)
+          // excludes soft-deleted rows via deleted_at — this list must match, or
+          // a deleted row keeps showing here as a dead link that 404s on open.
+          .is('deleted_at', null)
           .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
       }
       if (isAllItems) {
@@ -286,6 +290,9 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
             .in('issue_type', issueTypeFilter)
             .is('jira_removed_at', null)
             .is('archived_at', null)
+            // CAT-DETAIL-MODAL-404-20260702-001: match the detail view's
+            // deleted_at exclusion — see the epic query above for rationale.
+            .is('deleted_at', null)
             .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
         }
         if (isAllItems) {

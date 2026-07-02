@@ -31,6 +31,7 @@ import { CoverStrap } from './CoverStrap';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useStartTicketThread } from '@/hooks/chat/useStartTicketThread';
 import { openConversationInDock } from '@/lib/chat-dock-bridge';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -155,6 +156,13 @@ export interface CatalystViewBaseLayoutProps {
   isLoading?: boolean;
   /* True when the query finished but returned no record (deleted/invalid issue key) */
   isNotFound?: boolean;
+  /* CAT-DETAIL-MODAL-404-20260702-001: true when the fetch itself failed
+   * (RLS, network, schema drift) — distinct from isNotFound, which means
+   * the query succeeded but found nothing. Checked before isNotFound so a
+   * real failure never gets misreported as "issue not found". */
+  isError?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
   /** Force-hide the right sidebar regardless of @container query.
    *  Used when the parent layout is in medium mode and the detail container
    *  is too narrow to host both body and sidebar comfortably. */
@@ -175,7 +183,7 @@ export function CatalystViewBase({
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
   cover, onCoverChange, coverItemId, coverItemTable,
-  isLoading, isNotFound, hideSidebar, fullPageHrefBuilder,
+  isLoading, isNotFound, isError, error, onRetry, hideSidebar, fullPageHrefBuilder,
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
@@ -679,7 +687,7 @@ export function CatalystViewBase({
              it spans BOTH the left panel and the sidebar as a single strip
              (matches Jira's continuous cover). Only rendered when the caller
              provides onCoverChange AND a cover exists. */}
-        {onCoverChange && !isLoading && !isNotFound && (
+        {onCoverChange && !isLoading && !isNotFound && !isError && (
           <CoverStrap
             cover={cover ?? null}
             workItemId={coverItemId ?? null}
@@ -716,6 +724,16 @@ export function CatalystViewBase({
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <Skel w={120} /><Skel w="80%" h={24} /><Skel w="60%" h={16} />
                 <div style={{ height: 20 }} /><Skel w="100%" h={200} />
+              </div>
+            ) : isError ? (
+              <div style={{ padding: '16px 0' }}>
+                <SectionMessage
+                  appearance="error"
+                  title="Couldn't load this issue"
+                  actions={onRetry ? [{ key: 'retry', text: 'Retry', onClick: onRetry }] : undefined}
+                >
+                  {(error as Error)?.message ?? 'Unknown error loading this issue.'}
+                </SectionMessage>
               </div>
             ) : isNotFound ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textAlign: 'center' }}>
@@ -756,7 +774,7 @@ export function CatalystViewBase({
                 <Skel w={60} h={12} /><Skel w="100%" h={16} />
                 <Skel w={60} h={12} /><Skel w="100%" h={16} />
               </div>
-            ) : isNotFound ? null : rightContent}
+            ) : isError || isNotFound ? null : rightContent}
           </div>
         </div>
     </>

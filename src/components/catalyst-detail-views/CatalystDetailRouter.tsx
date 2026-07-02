@@ -85,12 +85,15 @@ export default function CatalystDetailRouter({
     queryKey: ['cv-item-type-lookup', itemId],
     enabled: !!itemId && isOpen && !itemType && !entityKind,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_issues')
         .select('issue_type')
         .eq('issue_key', itemId)
         .is('deleted_at', null)
         .maybeSingle();
+      // CAT-DETAIL-MODAL-404-20260702-001: don't let a swallowed error
+      // masquerade as "no such issue" — see useCatalystIssue.ts.
+      if (error) throw error;
       return data?.issue_type ?? null;
     },
     staleTime: 120000,

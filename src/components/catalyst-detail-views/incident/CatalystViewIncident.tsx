@@ -29,7 +29,7 @@ export default function CatalystViewIncident({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -167,6 +167,7 @@ export default function CatalystViewIncident({
       coverItemTable="ph_issues"
       onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
       isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      isError={isError} error={error} onRetry={refetch}
       /* Full-page href kept on issue_key (main branch canonical route). */
       fullPageHrefBuilder={() => issue?.issue_key ? `/incident-hub/view/${issue.issue_key}` : '/incident-hub'}
     />

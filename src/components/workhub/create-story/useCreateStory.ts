@@ -204,33 +204,68 @@ export interface WorkflowStatusOption {
   sort_order: number;
 }
 
-export function useWorkflowStatuses(workType: string, _projectId?: string) {
+export function useWorkflowStatuses(workType: string, projectId?: string) {
   return useQuery({
-    queryKey: ['workflow-statuses-ph', workType],
+    queryKey: ['workflow-statuses-ph', workType, projectId],
     queryFn: async (): Promise<WorkflowStatusOption[]> => {
       if (!workType) return [];
 
-      // Load statuses for this work item type from ph_workflow_* tables
-      // 2026-06-26: ph_workflow_statuses has no `archived_at` column —
-      // dropped the filter + selection of that field.
-      const { data: typeStatuses, error } = await supabase
+      // CAT-DETAIL-MODAL-404-20260702-001: the PostgREST embed
+      // (`ph_workflow_statuses!inner(...)`) requires a live FK between
+      // ph_workflow_type_statuses and ph_workflow_statuses that only
+      // landed today (20260702120000_workflow_wiring_repair.sql) — same
+      // schema-drift class already fixed for useTypeWorkflow.ts. Mirror
+      // that hook's flat-query + JS-join pattern instead of depending on
+      // PostgREST's schema cache, and actually filter by project_id
+      // (previously accepted but ignored, so this over-fetched every
+      // project's statuses for a given work type).
+      let typeQuery = supabase
         .from('ph_workflow_type_statuses')
-        .select('position, is_initial, ph_workflow_statuses!inner(name, category)')
+        .select('position, is_initial, status_id')
         .eq('work_item_type', workType)
         .order('position');
+      if (projectId) {
+        typeQuery = typeQuery.eq('project_id', projectId);
+      }
+      const { data: typeStatuses, error: tsErr } = await typeQuery;
 
-      if (error) {
-        console.error('[useWorkflowStatuses] lookup error:', error.message);
+      if (tsErr) {
+        console.error('[useWorkflowStatuses] lookup error:', tsErr.message);
         return [];
       }
 
-      return (typeStatuses ?? []).map((ts: any) => ({
-        value: ts.ph_workflow_statuses.name,
-        label: ts.ph_workflow_statuses.name,
-        color_category: ts.ph_workflow_statuses.category,
-        is_initial: !!ts.is_initial,
-        sort_order: ts.position ?? 0,
-      }));
+      const typeStatusRows = (typeStatuses ?? []) as {
+        position: number; is_initial: boolean; status_id: string;
+      }[];
+      const statusIds = typeStatusRows.map((r) => r.status_id);
+      if (statusIds.length === 0) return [];
+
+      const { data: statusRows, error: sErr } = await supabase
+        .from('ph_workflow_statuses')
+        .select('id, name, category')
+        .in('id', statusIds);
+
+      if (sErr) {
+        console.error('[useWorkflowStatuses] status lookup error:', sErr.message);
+        return [];
+      }
+
+      const statusMap = new Map(
+        ((statusRows ?? []) as { id: string; name: string; category: string }[]).map((s) => [s.id, s])
+      );
+
+      return typeStatusRows
+        .filter((ts) => statusMap.has(ts.status_id))
+        .map((ts) => {
+          const s = statusMap.get(ts.status_id)!;
+          return {
+            value: s.name,
+            label: s.name,
+            color_category: s.category,
+            is_initial: !!ts.is_initial,
+            sort_order: ts.position ?? 0,
+          };
+        });
     },
     enabled: !!workType,
     staleTime: 5 * 60 * 1000,
