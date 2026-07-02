@@ -195,13 +195,14 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
       currentUser,
       onSubmit,
       onCancel,
-      placeholder = 'Add a comment...',
+      placeholder = 'Type /ai to Ask Caty or @ to mention and notify someone',
       defaultValue = '',
       className,
       workItemId,
       shortcutHint,
       autoFocus,
       improveContext,
+      quickReplies,
     },
     ref,
   ) => {
@@ -384,20 +385,71 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
               />
             </span>
           )}
-          <button
-            type="button"
+          {/* Single card holds the placeholder text + quick-reply buttons
+              (Vikram 2026-07-02). Clicking anywhere on the empty area
+              expands the editor; clicking a quick-reply button seeds the
+              editor with the reply text before expanding. */}
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => setEditing(true)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setEditing(true);
+              }
+            }}
             className={cn(
-              'flex-1 min-w-0 text-left rounded-md border px-3 py-2.5',
+              'flex-1 min-w-0 flex flex-col gap-3',
+              'rounded-md border px-3 py-3',
               'border-[var(--ds-border)] bg-[var(--ds-surface-sunken)]',
-              'text-[14px] text-[var(--ds-text-subtlest)]',
               'hover:bg-[var(--ds-background-neutral-subtle-hovered)]',
               'transition-colors duration-100',
               'cursor-text',
             )}
           >
-            {placeholder}
-          </button>
+            <span className="text-[14px] text-[var(--ds-text-subtlest)]">
+              {placeholder}
+            </span>
+            {quickReplies && quickReplies.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {quickReplies.map((qr, i) => (
+                  <button
+                    key={`${qr.label}-${i}`}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditing(true);
+                      try {
+                        setCurrentAdfJson(JSON.stringify(markdownToAdf(qr.template ?? '')));
+                      } catch { /* ignore */ }
+                      if (commentSessionKey && improveContext) {
+                        startCatyImprove({
+                          issueKey: commentSessionKey,
+                          issueType: improveContext.issueType ?? null,
+                          issueSummary: improveContext.issueSummary ?? null,
+                          currentDescription: qr.template ?? '',
+                          currentAcceptanceCriteria: null,
+                          attachmentUrls: [],
+                          improveSubType: 'improve_clarify',
+                          improveType: 'improve_comment_v1',
+                        });
+                      }
+                    }}
+                    className={cn(
+                      'inline-flex items-center rounded-md border px-3 py-1',
+                      'border-[var(--ds-border)] bg-[var(--ds-surface)]',
+                      'text-[13px] font-medium text-[var(--ds-text)]',
+                      'hover:bg-[var(--ds-background-neutral-hovered)]',
+                      'transition-colors duration-100',
+                    )}
+                  >
+                    {qr.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       );
     }
@@ -413,7 +465,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             />
           </span>
         )}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0" data-cc-compact>
           <RichTextEditor
             initialAdf={(initialContent as AdfDoc | null) ?? null}
             onSave={handleSave}
@@ -425,11 +477,11 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 /* shouldn't happen — JSON.stringify on a PM JSON */
               }
             }}
-            // Intentionally NOT passing `placeholder` here so the editor
-            // falls back to its canonical default
-            // ("Type /ai to Ask Caty or @ to mention and notify someone").
-            // The `placeholder` prop on CommentEditor controls the
-            // COLLAPSED-state button label only.
+            // Explicitly pass the canonical comment placeholder — the
+            // editor's default fallback is DEFAULT_PLACEHOLDER
+            // ("Add a description…") which is for the description
+            // surface, not comments. Vikram 2026-07-03.
+            placeholder="Type /ai to Ask Caty or @ to mention and notify someone"
             // Compact: auto-grows from 40px as user types.
             minHeight={40}
             onImproveClick={improveContext ? handleImproveClick : undefined}

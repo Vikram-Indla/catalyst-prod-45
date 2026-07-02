@@ -120,6 +120,8 @@ function TypeSelector({
 }: { value: string; onChange: (v: string) => void; allowed: string[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [rect, setRect] = useState<{ top: number; left: number } | null>(null);
   const allowedSet = React.useMemo(() => new Set(allowed), [allowed]);
   const options = React.useMemo(
     () => CANONICAL_WORK_ITEM_OPTIONS.filter(o => allowedSet.has(o.key)),
@@ -127,10 +129,35 @@ function TypeSelector({
   );
   const current = options.find(t => t.key === value) ?? options[0];
 
+  // Portal-based dropdown positioning — Vikram 2026-07-03. The panel's
+  // scroll container has `overflow-x: auto; overflow-y: hidden` for
+  // horizontal row scroll, which was clipping the dropdown. Portal +
+  // fixed positioning bypasses every ancestor's overflow.
+  useLayoutEffect(() => {
+    if (!open) { setRect(null); return; }
+    const update = () => {
+      const el = btnRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.bottom + 2, left: r.left });
+    };
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (ref.current && ref.current.contains(target)) return;
+      const menu = document.getElementById('sp-type-selector-menu');
+      if (menu && menu.contains(target)) return;
+      setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -140,13 +167,32 @@ function TypeSelector({
 
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
-      <button type="button" onClick={() => setOpen(o => !o)} className="sp-type-selector-btn">
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="sp-type-selector-btn"
+      >
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
         <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
       </button>
-      {open && (
-        <div className="sp-type-selector-dropdown">
+      {open && rect && createPortal(
+        <div
+          id="sp-type-selector-menu"
+          style={{
+            position: 'fixed',
+            top: rect.top,
+            left: rect.left,
+            zIndex: 10000,
+            minWidth: 180,
+            background: 'var(--ds-surface)',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 4,
+            boxShadow: 'var(--ds-shadow-overlay)',
+            overflow: 'hidden',
+          }}
+        >
           {options.map(opt => (
             <div
               key={opt.key}
@@ -158,7 +204,8 @@ function TypeSelector({
               {opt.key === value && <Check size={12} color="var(--cp-primary-60)" style={{ marginLeft: 'auto' }} />}
             </div>
           ))}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -917,7 +964,7 @@ export function SubtasksPanel({
           sits at x=24 to match, same as Linked work items / Attachments
           / Key details do on their surfaces. */}
       {expanded && (
-        <div style={{ paddingLeft: 24 }}>
+        <div style={{ paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {/* Legacy single-bar progress removed 2026-07-02 — replaced
               by the canonical WorkItemsProgressBar mounted below. */}
 
@@ -1005,20 +1052,44 @@ export function SubtasksPanel({
             </div>
           )}
 
+          {/* AI suggest panel sits ABOVE the progress bar per Vikram
+              2026-07-03. Non-empty (visibleRows > 0) branch — the
+              empty-state mount lives higher up at line ~996. */}
+          {!isLoading && children.length > 0 && creating && canCreate && (
+            <AiSuggestChildrenPanel
+              parentSummary={parentSummary ?? ''}
+              parentType={parentIssueType ?? ''}
+              allowedChildTypes={allowedTypes}
+              siblingSummaries={siblingSummaries}
+              defaultDraftType={defaultDraftType}
+              isCreatingAny={createMutation.isPending}
+              onCreate={(s) => {
+                setDraftType(s.type as typeof draftType);
+                createMutation.mutate(s.title);
+              }}
+              onCreateAll={(list) => {
+                list.forEach((s) => {
+                  setDraftType(s.type as typeof draftType);
+                  createMutation.mutate(s.title);
+                });
+              }}
+              onEditRequest={(s) => setSubtaskModal({ title: s.title, type: s.type })}
+              autoFetch={autoFetchAi}
+            />
+          )}
+
           {/* ═══ Status progress bar — Jira parity (Vikram 2026-07-02) ═══
               Reuses the canonical WorkItemsProgressBar extracted from
               the release detail Work items section, so the visual is
               identical to what shows on /release-hub/releases-management. */}
           {!isLoading && children.length > 0 && (
-            <div style={{ marginBottom: 8 }}>
-              <WorkItemsProgressBar
-                items={children.map(c => ({ status_category: (c as any).status_category ?? null }))}
-                label={effectiveTitle}
-                compact
-                hideHeader
-                showPercentSuffix
-              />
-            </div>
+            <WorkItemsProgressBar
+              items={children.map(c => ({ status_category: (c as any).status_category ?? null }))}
+              label={effectiveTitle}
+              compact
+              hideHeader
+              showPercentSuffix
+            />
           )}
 
           {/* ═══ List view — canonical JiraTable (Jira parity: list-only) ═══ */}
@@ -1186,10 +1257,14 @@ export function SubtasksPanel({
             };
 
             return (
-              <div className="sp-ak-table" onClick={(e) => e.stopPropagation()}>
-                {/* sp-table-body: shared border/radius container for table rows
-                    + inline create row so the "+ Create" row appears visually
-                    inside the same bordered card as the data rows (Jira parity). */}
+              <div
+                className="sp-ak-table"
+                onClick={(e) => e.stopPropagation()}
+                style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+              >
+                {/* sp-table-body wraps the canonical JiraTable rows only.
+                    Both AI suggest (above) and manual create row (below)
+                    live OUTSIDE this container — Vikram 2026-07-03. */}
                 <div className="sp-table-body">
                   <JiraTable<typeof visibleRows[number]>
                     columns={schema}
@@ -1226,30 +1301,34 @@ export function SubtasksPanel({
                     enableGroupCreateButton={false}
                     enableStickyCreateFooter={false}
                   />
-                  {creating && canCreate && (
-                    <InlineCreateWithAI
-                      allowedTypes={allowedTypes}
-                      draftType={draftType}
-                      onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
-                      typeSelectorSlot={
-                        <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
-                      }
-                      parentSummary={parentSummary ?? ''}
-                      parentType={parentIssueType ?? ''}
-                      siblingSummaries={siblingSummaries}
-                      excludedIds={siblingIds}
-                      projectKey={projectKey}
-                      isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
-                      onCreate={(summary) => createMutation.mutate(summary)}
-                      onLinkExisting={(id) => {
-                        linkExistingMutation.mutate(id);
-                        setCreating(false);
-                      }}
-                      onCancel={() => setCreating(false)}
-                      disableSuggestions={isSubtaskContext}
-                    />
-                  )}
                 </div>
+                {/* Manual create row sits BELOW the table container per
+                    Vikram 2026-07-03 — outside sp-table-body so the
+                    type-selector dropdown isn't clipped by the table's
+                    overflow. */}
+                {creating && canCreate && (
+                  <InlineCreateWithAI
+                    allowedTypes={allowedTypes}
+                    draftType={draftType}
+                    onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
+                    typeSelectorSlot={
+                      <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
+                    }
+                    parentSummary={parentSummary ?? ''}
+                    parentType={parentIssueType ?? ''}
+                    siblingSummaries={siblingSummaries}
+                    excludedIds={siblingIds}
+                    projectKey={projectKey}
+                    isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
+                    onCreate={(summary) => createMutation.mutate(summary)}
+                    onLinkExisting={(id) => {
+                      linkExistingMutation.mutate(id);
+                      setCreating(false);
+                    }}
+                    onCancel={() => setCreating(false)}
+                    disableSuggestions={isSubtaskContext}
+                  />
+                )}
               </div>
             );
             // NOTE: DnD row-reorder via handleRankEnd is not wired here. The

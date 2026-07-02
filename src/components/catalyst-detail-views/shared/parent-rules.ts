@@ -218,7 +218,10 @@ export const SUBTASK_FAMILY_CANONICAL_TYPES = [
   'Frontend',
   'Figma',
   'Integration',
-  'API Requirement',
+  // API Requirement removed from subtask create picker per Vikram
+  // 2026-07-03. Kept in SUBTASK_FAMILY_TYPES + ALLOWED_CHILD_TYPES map
+  // below for read-side compat (existing rows render, but new rows
+  // can no longer be created as API Requirement).
 ] as const;
 
 /**
