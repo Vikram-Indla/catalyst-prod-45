@@ -1346,7 +1346,6 @@ export default function ReportDetailPage() {
         title={reportLabel}
         trail={[
           { text: 'Reports', href: '/testhub/reports' },
-          { text: reportLabel },
         ]}
         actions={actions}
       />

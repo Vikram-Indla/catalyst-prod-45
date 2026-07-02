@@ -8,6 +8,7 @@ import { ArrowUp, ArrowDown, ArrowRight, ChevronsUp, Check, Search, Calendar as 
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 
 // ─── Utility: Fixed portal dropdown ─────────────────────────
 function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
@@ -151,12 +152,14 @@ export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: 
  * its `anchorRef` body-only mode. Public API unchanged so call sites need
  * no edits.
  */
-export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect, onClose }: {
+export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect, onClose, currentStatus }: {
   currentId: string | null;
   profiles: { id: string; name: string }[];
   anchorRef: React.RefObject<HTMLElement | null>;
   onSelect: (id: string | null) => void;
   onClose: () => void;
+  /** Grid G5: work item's raw status — locks only when terminal. */
+  currentStatus?: string | null;
 }) {
   const members: ProfilePickerMember[] = useMemo(
     () => profiles.map(p => ({ userId: p.id, name: p.name, avatarUrl: null })),
@@ -177,7 +180,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
       fieldLabel="Assignee"
       anchorRef={anchorRef}
       onClose={onClose}
-      lockWhenAssigned
+      locked={isAssigneeLocked(currentStatus)}
     />
   );
 }

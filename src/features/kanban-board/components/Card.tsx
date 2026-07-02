@@ -99,6 +99,7 @@ export const Card: React.FC<CardProps> = ({
   if (isBusy) { base.pointerEvents = 'none'; base.opacity = 0.55; }
 
   const due = issue.dueDate ? fmtDue(issue.dueDate) : null;
+  const menuSlotRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
@@ -109,6 +110,14 @@ export const Card: React.FC<CardProps> = ({
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(issue.id); } }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onContextMenu={(e) => {
+        // Jira parity: right-click anywhere on the card opens the same "..."
+        // context menu, instead of requiring the hover-revealed button.
+        if (!menuSlotRef.current) return;
+        e.preventDefault();
+        const trigger = menuSlotRef.current.querySelector<HTMLElement>('[role="button"]');
+        trigger?.click();
+      }}
       style={base}
     >
       {issue.cover && (
@@ -131,7 +140,7 @@ export const Card: React.FC<CardProps> = ({
         />
       )}
       {menuSlot && (
-        <div style={{ position: 'absolute', top: 4, right: 4, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
+        <div ref={menuSlotRef} style={{ position: 'absolute', top: 4, right: 4, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
           {menuSlot}
         </div>
       )}
@@ -243,7 +252,7 @@ export const Card: React.FC<CardProps> = ({
           {visibleFields.workItemKey && (
             <span
               style={{
-                fontSize: 'var(--ds-font-size-200)', lineHeight: '16px', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
+                fontSize: 'var(--ds-font-size-300)', lineHeight: '20px', color: token('color.text', 'var(--ds-text)'),
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 borderBottom: '1px solid transparent', transition: 'border-color 100ms ease',
                 ...(hover ? { borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-icon-subtle)')}` } : {}),

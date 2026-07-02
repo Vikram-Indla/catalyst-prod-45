@@ -47,7 +47,7 @@ const Divider = () => <div style={{ height: 1, background: token('color.border',
 function ParentItem({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button role="menuitem" onClick={onClick}
-      style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', background: 'transparent', color: token('color.text', 'var(--ds-text)'), fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+      style={{ width: '100%', height: 32, padding: '8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', background: 'transparent', color: token('color.text', 'var(--ds-text)'), fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}
       onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
       <span>{label}</span>
@@ -248,7 +248,7 @@ export const CardContextMenu: React.FC<Props> = (p) => {
               <Divider />
               <MenuItem variant="plain" onClick={() => { p.onArchive(issue); close(); }}>Archive</MenuItem>
               <button role="menuitem" onClick={() => { p.onDelete(issue); close(); }}
-                style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', border: 'none', background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger)'), fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+                style={{ width: '100%', height: 32, padding: '8px 20px', display: 'flex', alignItems: 'center', border: 'none', background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger)'), fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger))'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>Delete</button>
             </>

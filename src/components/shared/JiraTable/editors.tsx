@@ -21,6 +21,7 @@ import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { UnassignedAvatar, ProfilePicker, toStatusCategory, isTerminalStatus, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
@@ -998,26 +999,29 @@ export interface AssigneeChoice {
  * keyboard nav). Read-only rows (canEdit=false) return the display node
  * directly, no picker mounted.
  *
- * `lockWhenAssigned` (default `true`) — Vikram's canonical rule: once an
- * assignee is set on a work item, the field is locked. Pass `false` for
- * non-work-item columns (e.g. reporter, delivery manager, product owner).
+ * 2026-07-02 (CRE Grid G5): `getStatus` (optional) supplies the row's raw
+ * status string; the picker locks only when `isAssigneeLocked(status)` is
+ * true (status is CLOSED/CANCELED), never merely because an assignee is
+ * set. Omit `getStatus` for non-work-item columns (reporter, delivery
+ * manager, product owner) — they never lock.
  */
 export function makeAssigneeEditCell<T>({
   getAssignee,
+  getStatus,
   options,
   canEdit,
   onChange,
-  lockWhenAssigned = true,
 }: {
   getAssignee: (row: T) => AssigneeChoice | null;
+  getStatus?: (row: T) => string | null | undefined;
   options: AssigneeChoice[];
   canEdit?: (row: T) => boolean;
   onChange: (row: T, next: AssigneeChoice | null) => void;
-  lockWhenAssigned?: boolean;
 }) {
   return function AssigneeEditCell({ row }: CellProps<T>) {
     const a = getAssignee(row);
     const editable = canEdit ? canEdit(row) : true;
+    const locked = getStatus ? isAssigneeLocked(getStatus(row)) : false;
 
     const members: ProfilePickerMember[] = useMemo(
       () => options.map((o) => ({
@@ -1091,7 +1095,7 @@ export function makeAssigneeEditCell<T>({
         }}
         members={members}
         fieldLabel="Assignee"
-        lockWhenAssigned={lockWhenAssigned}
+        locked={locked}
         renderTrigger={({ onClick, ref, disabled }) => (
           <button
             ref={ref}

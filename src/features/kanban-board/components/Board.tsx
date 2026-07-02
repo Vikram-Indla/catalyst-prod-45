@@ -14,6 +14,7 @@ import { ColumnHeader, ColumnBody } from './Column';
 import { DraggableCard } from './DraggableCard';
 import { SwimlaneHeader } from './SwimlaneHeader';
 import { PriorityIcon } from './PriorityIcon';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { indexColumns, resolveColumnId } from '../data/columnConfig';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardConfig, BoardIssue, CardVisibleFields, GroupByMode, KanbanColumn, StatusCategory } from '../types';
@@ -314,7 +315,15 @@ export const Board: React.FC<BoardProps> = ({
                       <EpicIcon label="" />
                       {/* ads-scanner:ignore-next-line — epic identity swatch, hashed placeholder color (no real epic-color column in ph_issues yet — see CAT-KANBAN-GROUPBY-EPIC-20260701-001 Option B, probed 2026-07-01) */}
                       <span style={{ width: 20, height: 20, borderRadius: 2, background: epicSwatchColor(g.key), flexShrink: 0, display: 'inline-block' }} />
-                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), fontWeight: 500, lineHeight: '16px' }}>
+                      <span
+                        role="link"
+                        tabIndex={0}
+                        onClick={(e) => { e.stopPropagation(); useGlobalSearchStore.getState().openDetail({ id: g.key }); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); useGlobalSearchStore.getState().openDetail({ id: g.key }); } }}
+                        style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), fontWeight: 500, lineHeight: '16px', cursor: 'pointer' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                      >
                         {g.key}
                       </span>
                     </span>

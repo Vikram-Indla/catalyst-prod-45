@@ -13,6 +13,7 @@
  */
 import { useRef, useMemo } from 'react';
 import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 
 export interface AssigneeOption {
   displayName: string;
@@ -25,9 +26,11 @@ interface AssigneeDropdownProps {
   availableAssignees: AssigneeOption[];
   onSelect: (assignee: AssigneeOption | null) => void;
   onClose: () => void;
+  /** Grid G5: work item's raw status — locks only when terminal. Omit for bulk-edit (never locks). */
+  currentStatus?: string | null;
 }
 
-export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect, onClose }: AssigneeDropdownProps) {
+export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect, onClose, currentStatus }: AssigneeDropdownProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
 
   const members: ProfilePickerMember[] = useMemo(
@@ -70,7 +73,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
         fieldLabel="Assignee"
         anchorRef={anchorRef}
         onClose={onClose}
-        lockWhenAssigned
+        locked={isAssigneeLocked(currentStatus)}
       />
     </div>
   );

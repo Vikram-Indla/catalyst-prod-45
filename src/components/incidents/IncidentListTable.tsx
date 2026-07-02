@@ -523,6 +523,7 @@ export function IncidentListTable({
                           value={incident.assignee}
                           onSave={(userId) => handleInlineUpdate(incident.id, 'assignee_id', userId || '')}
                           disabled={isConverted}
+                          currentStatus={incident.status}
                           textSize="text-[12px]"
                         />
                       </div>

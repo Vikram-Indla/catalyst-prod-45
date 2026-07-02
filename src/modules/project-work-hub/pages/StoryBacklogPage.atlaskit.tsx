@@ -582,6 +582,8 @@ export default function AtlaskitStoryBacklogPage({
             id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null,
           })),
           canEdit: () => true,
+          // Grid G5: locks only when status is terminal.
+          getStatus: (r) => r.status,
           onChange: (row, next) => updateField.mutate({
             id: row.id,
             source: row.source,

@@ -318,6 +318,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 <AssigneeDropdown
                   currentAssignee={item.assignee?.displayName}
                   availableAssignees={allAssignees}
+                  currentStatus={item.status.name}
                   onSelect={handleAssigneeChange}
                   onClose={() => setActiveDropdown(null)}
                 />

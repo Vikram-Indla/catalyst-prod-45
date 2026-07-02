@@ -14,6 +14,7 @@ import CrossCircleIcon from "@atlaskit/icon/glyph/cross-circle";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { ProjectMember, ParentIssue } from "./types";
 import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from "@/components/ads";
+import { isAssigneeLocked } from "@/lib/catalyst-rules";
 import { PRIORITY_LIST } from "./constants";
 import { getAvatarColor, getInitials } from "./helpers";
 import { resolveAvatarUrl } from "@/lib/avatars";
@@ -254,24 +255,22 @@ export function EditableAssignee({
   projectId,
   currentAssigneeId,
   currentAssigneeName,
+  currentStatus,
   onUpdate,
   onChange,
-  allowReassign,
 }: {
   issueId: string;
   issueKey?: string;
   projectId: string;
   currentAssigneeId: string | null;
   currentAssigneeName: string | null;
+  /** Grid G5: work item's raw status — locks the picker only when terminal. */
+  currentStatus?: string | null;
   onUpdate: () => void;
   /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation.
    *  Receives (userId, displayName). Enables non-ph_issues data sources (tasks, business_requests)
    *  to reuse this canonical picker — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
-  /** Override the "read-only once set" rule. Defaults to false (read-only when
-   *  currentAssigneeId is non-null). Subtasks table opts in (2026-06-23) so
-   *  rows can be re-assigned inline without first clearing. */
-  allowReassign?: boolean;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   /* 2026-06-21: scope members to the project. Pulls project_members for
@@ -395,9 +394,9 @@ export function EditableAssignee({
   }, [currentAssigneeId, currentAssigneeName, options]);
 
   /* 2026-06-21 Phase 3 migration: bespoke Atlaskit-Select swapped for the
-     canonical <ProfilePicker />. Vikram rule — assignee is read-only once
-     set on a work item. Reporter is NOT affected (see EditableReporter
-     below). */
+     canonical <ProfilePicker />. Grid G5 (2026-07-02): assignee locks ONLY
+     when currentStatus is terminal — no longer merely because a value is
+     set. Reporter is NOT affected (see EditableReporter below). */
   const pickerMembers: ProfilePickerMember[] = useMemo(
     () => members.map((m) => ({
       userId: m.user_id,
@@ -427,7 +426,7 @@ export function EditableAssignee({
         }}
         members={pickerMembers}
         fieldLabel="Assignee"
-        disabled={!allowReassign && !!currentAssigneeId}
+        disabled={isAssigneeLocked(currentStatus)}
         size={24}
       />
     </div>

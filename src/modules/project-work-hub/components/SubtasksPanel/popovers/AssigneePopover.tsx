@@ -7,8 +7,8 @@
  * id), `onChange({ accountId, displayName })` fires when a member is
  * picked or cleared.
  *
- * Lock rule: subtasks are work-items — canonical lock applies via
- * `lockWhenAssigned`.
+ * Grid G5: subtasks are work-items — canonical lock applies via
+ * `isAssigneeLocked(status)`, only when status is terminal.
  *
  * Data source: jira_identity_map (active in Catalyst OR active in Jira).
  */
@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 
 export interface AssigneeOption {
   jira_account_id: string | null;
@@ -31,9 +32,11 @@ interface AssigneePopoverProps {
   children: React.ReactNode;
   /** When false, no "current value" check mark is rendered — use in bulk-edit contexts. */
   showActive?: boolean;
+  /** Grid G5: subtask's raw status — locks only when terminal. Omit for bulk-edit (never locks). */
+  status?: string | null;
 }
 
-export function AssigneePopover({ currentAccountId, onChange, children, showActive = true }: AssigneePopoverProps) {
+export function AssigneePopover({ currentAccountId, onChange, children, showActive = true, status }: AssigneePopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
 
@@ -107,9 +110,8 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
           anchorRef={stableAnchor}
           onClose={() => setIsOpen(false)}
           /* Bulk-edit context (showActive=false) intentionally opts out of
-             the lock — bulk reassignment must work even when targets
-             already have an assignee. */
-          lockWhenAssigned={showActive}
+             the lock — bulk reassignment must work regardless of status. */
+          locked={showActive ? isAssigneeLocked(status) : false}
         />
       )}
     </>

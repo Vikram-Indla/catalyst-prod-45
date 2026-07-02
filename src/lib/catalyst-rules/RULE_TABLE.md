@@ -304,6 +304,12 @@ Every surface that renders a user identity (assignee, reporter, member, owner) M
 |----|------|-------------|
 | G4 | Avatar stacks / groups MUST wrap `CatalystAvatar` instances, never raw `@atlaskit/avatar-group`. Overflow count (`+N`) must use `<Badge>` from `@atlaskit/badge` — never a custom colored div. | `grep -rn "from '@atlaskit/avatar-group'" src/ | grep -v "CatalystAvatar.tsx\|Avatar.tsx"` → zero results |
 
+### G5 — Assignee Lock Contract
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| G5 | Assignee/people pickers lock (become non-editable) ONLY when the work item's status is terminal (per canonical `isTerminalStatus` — done-category statuses plus rejected/declined/cancelled/won't-fix/duplicate outcomes). Setting an assignee does NOT lock the field — supersedes the prior "lock once assigned, forever" rule. | `isAssigneeLocked(status)` in `CatalystRules.ts` (delegates to `isTerminalStatus` from `@/components/ads`) is the sole authority; `ProfilePicker` must derive its `locked` state from it, never from `!!value` |
+
 ---
 
 ## GRID H — Row Typography Contract
@@ -350,6 +356,7 @@ Every Jira/work-item row surface (Board, Backlog, All Work, Sprint, and any futu
 | 2026-07-01 | F1–F6 | Grid F added: Slug & URL Contract — no UUIDs in route params, slug columns on navigable tables, Routes.* builders only, dual-mode hooks, frozen slugs, redirect mounting outside CatalystShell | Vikram |
 | 2026-07-01 | G1–G4 | Grid G added: Avatar & People Picker Contract — CatalystAvatar/UserAvatar mandatory, CDN ban, ADS-palette fallback chain, ProfilePicker for people pickers, AvatarGroup via wrapped CatalystAvatar | Vikram |
 | 2026-07-02 | H1–H3 | Grid H added: Row Typography Contract — canonical key/title token pair (`--ds-font-size-300`/`-400` + new `--ds-line-height-body` token), ban on hardcoded lineHeight literals, cells.tsx/editors.tsx as canonical reference. Codifies the CAT-TYPOGRAPHY-ROWSYNC-20260702-001 fix. | Vikram |
+| 2026-07-02 | G5   | Assignee lock: "once assigned, forever" → "only when status CLOSED or CANCELED" | Vikram |
 
 ---
 

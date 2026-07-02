@@ -21,6 +21,9 @@ interface PortalMenuProps {
   children: (close: () => void) => React.ReactNode;
   align?: 'left' | 'right';
   minWidth?: number;
+  /** Overrides SIZES.DROPDOWN_MAX_HEIGHT for menus with fixed, finite content
+   *  (e.g. a settings panel) that should never need an internal scrollbar. */
+  maxHeight?: number;
   ariaLabel: string;
   onClose?: () => void;
 }
@@ -36,7 +39,7 @@ import { useLayoutEffect } from 'react';
 const VIEWPORT_MARGIN = 8;
 const TRIGGER_GAP = 4;
 
-export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align = 'left', minWidth = SIZES.DROPDOWN_MIN_WIDTH, ariaLabel, onClose }) => {
+export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align = 'left', minWidth = SIZES.DROPDOWN_MIN_WIDTH, maxHeight = SIZES.DROPDOWN_MAX_HEIGHT, ariaLabel, onClose }) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -156,7 +159,7 @@ export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align
             boxShadow: token('elevation.shadow.overlay', 'var(--ds-shadow-overlay)'),
             padding: '4px 0',
             minWidth,
-            maxHeight: SIZES.DROPDOWN_MAX_HEIGHT,
+            maxHeight,
             overflowY: 'auto',
             zIndex: SIZES.Z_DROPDOWN,
           }}

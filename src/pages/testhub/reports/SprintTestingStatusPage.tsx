@@ -71,7 +71,7 @@ export default function SprintTestingStatusPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Sprint Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }, { text: 'Sprint Testing Status' }]} />
+      <ProjectPageHeader hubType="test" title="Sprint Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
 
       <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '26rem', marginBottom: 'var(--ds-space-250)' }}>

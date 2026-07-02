@@ -18,6 +18,8 @@ interface AssigneeCellProps {
   readOnly?: boolean;
   /** When true, suppresses the name text — shows avatar only (Jira subtasks 40px icon column). */
   iconOnly?: boolean;
+  /** Grid G5: subtask's raw status — locks the picker only when terminal. */
+  status?: string | null;
 }
 
 // Inline SVG user-plus — replaces lucide-react UserPlus.
@@ -29,7 +31,7 @@ const UserPlusIcon = () => (
 );
 
 export const AssigneeCell = React.memo(function AssigneeCell({
-  displayName, accountId, avatarUrl, onChange, readOnly, iconOnly,
+  displayName, accountId, avatarUrl, onChange, readOnly, iconOnly, status,
 }: AssigneeCellProps) {
   const truncated = displayName
     ? displayName.length > 12 ? displayName.slice(0, 11) + '…' : displayName
@@ -63,7 +65,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
   if (readOnly || !onChange) return trigger;
 
   return (
-    <AssigneePopover currentAccountId={accountId} onChange={onChange}>
+    <AssigneePopover currentAccountId={accountId} onChange={onChange} status={status}>
       {trigger}
     </AssigneePopover>
   );

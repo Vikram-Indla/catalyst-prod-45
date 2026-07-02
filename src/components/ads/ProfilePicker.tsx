@@ -104,18 +104,17 @@ export interface ProfilePickerProps {
   /** Required when `anchorRef` is set. Called when the popover dismisses. */
   onClose?: () => void;
   /**
-   * 2026-06-21 (Vikram canonical rule): once `value` is set, lock the
-   * picker. Reverting an assignee requires a backend admin. Default `false`
-   * so non-work-item pickers (tasks form, test-cycles workload, chat
-   * recipients) keep their normal re-assignment UX. Work-item assignee
-   * pickers (sidebar, kanban, hierarchy, JiraTable inline editor, etc.)
-   * MUST pass `lockWhenAssigned={true}`.
+   * 2026-07-02 (CRE Grid G5): caller-computed lock state, normally
+   * `isAssigneeLocked(status)` from `@/lib/catalyst-rules`. The picker
+   * locks ONLY when this is `true` — it is NOT derived from `!!value`
+   * anymore. (Superseded rule, pre-2026-07-02: locked once any value was
+   * set, regardless of status.)
    *
    * Trigger mode: when locked, the trigger is rendered disabled.
    * Body-only mode: when locked, the popover does not open and `onClose`
    * fires immediately so the parent can unmount.
    */
-  lockWhenAssigned?: boolean;
+  locked?: boolean;
 }
 
 export function ProfilePicker({
@@ -134,15 +133,15 @@ export function ProfilePicker({
   triggerVariant = 'inline',
   anchorRef,
   onClose,
-  lockWhenAssigned,
+  locked,
 }: ProfilePickerProps) {
   const bodyOnly = !!anchorRef;
   const multi = !!selectedIds && !!onChangeMulti;
-  /* Canonical lock: once a value is set AND `lockWhenAssigned` is on,
-     treat the picker as fully disabled. Body-only mode additionally tells
-     the parent to unmount via onClose. Lock does NOT apply in multi mode
-     (filter / recipient pickers have different semantics). */
-  const isLocked = !multi && !!lockWhenAssigned && !!value;
+  /* Grid G5: locked is caller-computed (isAssigneeLocked(status)), never
+     derived from !!value. Body-only mode additionally tells the parent to
+     unmount via onClose. Lock does NOT apply in multi mode (filter /
+     recipient pickers have different semantics). */
+  const isLocked = !multi && !!locked;
   const effectivelyDisabled = !!disabled || isLocked;
   const [open, setOpen] = useState(bodyOnly && !isLocked);
   useEffect(() => {

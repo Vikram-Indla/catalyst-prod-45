@@ -249,6 +249,7 @@ export function WorkItemTableRow({
             </div>
             {editingField === 'assignee' && (
               <InlineAssigneePicker currentId={item.assignee_id} profiles={profiles} anchorRef={assigneeRef}
+                currentStatus={item.status_name}
                 onSelect={id => { onInlineUpdate(item.id, { assignee_id: id }); setEditingField(null); }}
                 onClose={() => setEditingField(null)} />
             )}

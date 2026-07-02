@@ -18,6 +18,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import { type AssigneeOption } from './AssigneePickerPopover';
 import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -516,9 +517,9 @@ export function WorkItemCard({
                 onChange={(next) => onChangeAssignee(issue.id, next?.name ?? null)}
                 members={pickerMembers}
                 fieldLabel="Assignee"
-                /* 2026-06-21 (Vikram canonical): once assigned, locked. Lock
+                /* Grid G5: locks only when status is terminal. Lock
                    applies app-wide including kanban quick-reassign. */
-                lockWhenAssigned
+                locked={isAssigneeLocked(issue.status)}
                 renderTrigger={({ onClick, ref, value, disabled }) => (
                   <button
                     ref={ref}

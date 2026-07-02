@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 
 interface Props {
   /** ph_issues.id (UUID PK). Required — issue_key would silent-400 (CLAUDE.md §L39). */
@@ -27,6 +28,8 @@ interface Props {
   fallbackInitials: string;
   /** Fallback bubble background color (hash-based). */
   fallbackColor: string;
+  /** Grid G5: work item's raw status — locks the picker only when terminal. */
+  currentStatus?: string | null;
 }
 
 interface MemberRow {
@@ -37,7 +40,7 @@ interface MemberRow {
 
 export function WorkCardAssigneePicker({
   dbId, currentAssigneeId, currentAssigneeName, projectId,
-  fallbackInitials, fallbackColor,
+  fallbackInitials, fallbackColor, currentStatus,
 }: Props) {
   const queryClient = useQueryClient();
 
@@ -107,10 +110,9 @@ export function WorkCardAssigneePicker({
       members={pickerMembers}
       fieldLabel="Assignee"
       size={28}
-      /* 2026-06-21 Vikram rule: once an assignee is set on a work item, the
-         field is locked. Reverting requires a backend admin. Reporter is NOT
-         affected by this rule. */
-      disabled={!!currentAssigneeId}
+      /* Grid G5: locks only when status is terminal — not merely because
+         an assignee is set. Reporter is NOT affected by this rule. */
+      disabled={isAssigneeLocked(currentStatus)}
       renderTrigger={({ onClick, ref, disabled }) => (
         <button
           ref={ref}
@@ -123,7 +125,7 @@ export function WorkCardAssigneePicker({
           }}
           title={
             disabled
-              ? `Assignee: ${currentAssigneeName ?? ''} (locked once set)`
+              ? `Assignee: ${currentAssigneeName ?? ''} (locked — item is closed)`
               : currentAssigneeName
                 ? `Assignee: ${currentAssigneeName} — click to change`
                 : 'Assign'

@@ -432,6 +432,7 @@ export function WorkListPanel({
                   dbId={item.dbId || item.id}
                   currentAssigneeId={item.assignee?.id ?? null}
                   currentAssigneeName={item.assignee?.name ?? null}
+                  currentStatus={item.statusName || item.status || null}
                   projectId={projectId}
                   fallbackInitials={item.assignee?.initials || 'NA'}
                   fallbackColor={

@@ -221,7 +221,7 @@ export const SubmenuItem: React.FC<{
           if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); requestOpen(); }
         }}
         style={{
-          width: '100%', height: 36, padding: '0 12px',
+          width: '100%', height: 32, padding: '8px 20px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           border: 'none',
           background: open

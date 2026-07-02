@@ -199,7 +199,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, visibleFields, o
             background: token('color.background.selected', 'var(--ds-background-selected)'), color: token('color.text.selected', 'var(--ds-link, var(--ds-link))') }}>End standup</button>
       )}
 
-      <PortalMenu ariaLabel="View settings" align="right" minWidth={280} trigger={() => (
+      <PortalMenu ariaLabel="View settings" align="right" minWidth={280} maxHeight={520} trigger={() => (
         <span role="button" aria-label="View settings" style={{ display: 'inline-flex' }}>
           <IconButton icon={PreferencesIcon} label="View settings" appearance="subtle" />
         </span>

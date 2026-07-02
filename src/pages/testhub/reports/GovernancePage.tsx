@@ -58,7 +58,7 @@ export default function GovernancePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Governance & Mismatch" trail={[{ text: 'Reports', href: '/testhub/reports' }, { text: 'Governance & Mismatch' }]} />
+      <ProjectPageHeader hubType="test" title="Governance & Mismatch" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
 
       <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>

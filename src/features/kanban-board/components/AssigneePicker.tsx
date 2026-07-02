@@ -13,6 +13,7 @@
 import React, { useMemo, useRef, useEffect } from 'react';
 import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 import type { BoardIssue } from '../types';
 
 interface Props {
@@ -58,7 +59,7 @@ export const AssigneePicker: React.FC<Props> = ({ issue, anchor, members, avatar
       fieldLabel="Assignee"
       anchorRef={anchorRef}
       onClose={onClose}
-      lockWhenAssigned
+      locked={isAssigneeLocked(issue.status)}
     />
   );
 };

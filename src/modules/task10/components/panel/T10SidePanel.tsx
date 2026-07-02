@@ -272,6 +272,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                   currentAssigneeId={item.assignee_id}
                   currentAssigneeName={item.assignee_name}
                   currentAssigneeInitials={item.assignee_initials}
+                  currentStatus={item.status}
                   onSelect={(profile) => {
                     if (profile) {
                       onUpdate({ assignee_id: profile.id });

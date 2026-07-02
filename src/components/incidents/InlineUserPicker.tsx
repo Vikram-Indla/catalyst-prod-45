@@ -5,8 +5,8 @@
  * (single source of truth in the app). This file owns the data fetch
  * (useActiveUsers) + mutation glue (onSave callback) only.
  *
- * Vikram rule (Phase 3): assignee is read-only once set on a work item.
- * Unassigned → can assign. Assigned → locked. Reverting requires backend.
+ * Grid G5 (2026-07-02): assignee locks ONLY when the incident's status is
+ * terminal (isAssigneeLocked) — no longer merely because a value is set.
  * Reporter is NOT affected — only assignee fields opt into the lock.
  */
 import React, { useMemo } from 'react';
@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 import type { IncidentUserProfile } from '@/types/incident';
 import { ProfilePicker, UnassignedAvatar, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 
 interface InlineUserPickerProps {
   value: IncidentUserProfile | null | undefined;
@@ -21,12 +22,14 @@ interface InlineUserPickerProps {
   disabled?: boolean;
   textSize?: string;
   /**
-   * 2026-06-21: opt-in lock — when true, the picker becomes read-only once
-   * `value` is non-null. Defaults to true so any incident assignee field
-   * automatically gets the lock; pass `lockOnceAssigned={false}` for
-   * reporter / other people fields.
+   * 2026-06-21: opt-in lock — when true, the picker becomes read-only when
+   * the incident's status is terminal (Grid G5). Defaults to true so any
+   * incident assignee field automatically gets the lock; pass
+   * `lockOnceAssigned={false}` for reporter / other people fields.
    */
   lockOnceAssigned?: boolean;
+  /** Grid G5: incident's raw status — locks the picker only when terminal. */
+  currentStatus?: string | null;
 }
 
 export function InlineUserPicker({
@@ -35,6 +38,7 @@ export function InlineUserPicker({
   disabled = false,
   textSize = 'text-[12px]',
   lockOnceAssigned = true,
+  currentStatus,
 }: InlineUserPickerProps) {
   const { data: activeUsers = [] } = useActiveUsers();
 
@@ -52,7 +56,7 @@ export function InlineUserPicker({
     ? { userId: value.id, name: value.full_name, avatarUrl: (value as any).avatar_url ?? null }
     : null;
 
-  const isLocked = disabled || (lockOnceAssigned && !!value);
+  const isLocked = disabled || (lockOnceAssigned && isAssigneeLocked(currentStatus));
 
   return (
     <ProfilePicker
@@ -75,7 +79,7 @@ export function InlineUserPicker({
           title={
             triggerDisabled
               ? value
-                ? `Assignee: ${value.full_name} (locked once set)`
+                ? `Assignee: ${value.full_name} (locked — item is closed)`
                 : 'Assignee'
               : value
                 ? `Assignee: ${value.full_name} — click to change`

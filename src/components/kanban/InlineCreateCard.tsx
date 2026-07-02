@@ -24,6 +24,7 @@ import { useState, useRef, useEffect, useMemo, useLayoutEffect, useCallback } fr
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import Calendar from '@atlaskit/calendar';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
@@ -683,13 +684,14 @@ function InlineCreateCardComponent({
             type="button"
             disabled={isSubmitting}
             onClick={() => setShowTypeDropdown(v => !v)}
-            style={iconBtnStyle}
+            style={{ ...iconBtnStyle, width: 'auto', padding: '0 4px', gap: 2 }}
             aria-label={`Type: ${issueName}`}
             title={issueName}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             <JiraIssueTypeIcon type={issueName.toLowerCase()} size={16} />
+            <ChevronDownIcon label="" size="small" primaryColor="var(--ds-icon-subtle)" />
           </button>
           <SmartPopover isOpen={showTypeDropdown} triggerRef={typeTriggerRef} minWidth={200}>
             <div style={{ padding: '4px 0' }}>
@@ -772,7 +774,7 @@ function InlineCreateCardComponent({
             type="button"
             disabled={isSubmitting}
             onClick={() => setShowAssigneeDropdown(v => !v)}
-            style={iconBtnStyle}
+            style={{ ...iconBtnStyle, width: 'auto', padding: '0 8px', gap: 4 }}
             aria-label={assigneeName ? `Assigned to ${assigneeName}` : 'Unassigned'}
             title={assigneeName || 'Unassigned'}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
@@ -814,7 +816,10 @@ function InlineCreateCardComponent({
                 );
               })()
             ) : (
-              <UnassignedAvatar size={18} />
+              <>
+                <UnassignedAvatar size={18} />
+                <span style={{ fontSize: 'var(--ds-font-size-200)' }}>Unassigned</span>
+              </>
             )}
           </button>
           <SmartPopover isOpen={showAssigneeDropdown} triggerRef={assigneeTriggerRef} minWidth={240}>

@@ -6,18 +6,21 @@
  * currentAssigneeName, currentAssigneeInitials, onSelect, anchorRef,
  * isOpen, onClose) so T10SidePanel needs no edits.
  *
- * Lock rule: task10 items are work-item-like; canonical lock applies — once
- * assigned, the picker auto-dismisses (via lockWhenAssigned in body-only
- * mode, which fires onClose immediately when value is set).
+ * Grid G5 (2026-07-02): task10 items are work-item-like; the picker locks
+ * (auto-dismisses in body-only mode) only when currentStatus is terminal —
+ * no longer merely because a value is set.
  */
 import React, { useMemo, useRef, useEffect } from 'react';
 import { useProfiles, T10Profile } from '../../hooks/useProfiles';
 import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { isAssigneeLocked } from '@/lib/catalyst-rules';
 
 interface T10AssigneePickerProps {
   currentAssigneeId?: string;
   currentAssigneeName?: string;
   currentAssigneeInitials?: string;
+  /** Grid G5: task's raw status — locks the picker only when terminal. */
+  currentStatus?: string | null;
   onSelect: (profile: T10Profile | null) => void;
   anchorRef: React.RefObject<HTMLDivElement>;
   isOpen: boolean;
@@ -27,6 +30,7 @@ interface T10AssigneePickerProps {
 export function T10AssigneePicker({
   currentAssigneeId,
   currentAssigneeName,
+  currentStatus,
   onSelect,
   anchorRef,
   isOpen,
@@ -76,7 +80,7 @@ export function T10AssigneePicker({
       fieldLabel="Assignee"
       anchorRef={stableAnchor}
       onClose={onClose}
-      lockWhenAssigned
+      locked={isAssigneeLocked(currentStatus)}
     />
   );
 }

@@ -598,6 +598,7 @@ export function SubtasksPanelV2({
                               displayName={child.assignee_display_name}
                               accountId={child.assignee_account_id}
                               avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                              status={child.status}
                               onChange={handleAssigneeChange(child)}
                             />
                           </td>

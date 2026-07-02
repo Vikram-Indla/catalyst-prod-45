@@ -2046,6 +2046,7 @@ export type Database = {
       }
       boards: {
         Row: {
+          board_query: string | null
           board_type: string
           color: string | null
           created_at: string
@@ -2056,6 +2057,7 @@ export type Database = {
           filter_project_ids: string[]
           icon: string | null
           id: string
+          is_default: boolean
           is_personal: boolean
           is_starred: boolean
           jira_board_id: string | null
@@ -2064,8 +2066,10 @@ export type Database = {
           last_jira_sync: string | null
           last_viewed_at: string | null
           name: string
+          primary_work_item_type: string | null
           project_id: string | null
           show_swimlanes: boolean
+          slug: string
           sort_order: number
           swimlane_type: string
           updated_at: string
@@ -2073,6 +2077,7 @@ export type Database = {
           visibility: string
         }
         Insert: {
+          board_query?: string | null
           board_type?: string
           color?: string | null
           created_at?: string
@@ -2083,6 +2088,7 @@ export type Database = {
           filter_project_ids?: string[]
           icon?: string | null
           id?: string
+          is_default?: boolean
           is_personal?: boolean
           is_starred?: boolean
           jira_board_id?: string | null
@@ -2091,8 +2097,10 @@ export type Database = {
           last_jira_sync?: string | null
           last_viewed_at?: string | null
           name: string
+          primary_work_item_type?: string | null
           project_id?: string | null
           show_swimlanes?: boolean
+          slug: string
           sort_order?: number
           swimlane_type?: string
           updated_at?: string
@@ -2100,6 +2108,7 @@ export type Database = {
           visibility?: string
         }
         Update: {
+          board_query?: string | null
           board_type?: string
           color?: string | null
           created_at?: string
@@ -2110,6 +2119,7 @@ export type Database = {
           filter_project_ids?: string[]
           icon?: string | null
           id?: string
+          is_default?: boolean
           is_personal?: boolean
           is_starred?: boolean
           jira_board_id?: string | null
@@ -2118,8 +2128,10 @@ export type Database = {
           last_jira_sync?: string | null
           last_viewed_at?: string | null
           name?: string
+          primary_work_item_type?: string | null
           project_id?: string | null
           show_swimlanes?: boolean
+          slug?: string
           sort_order?: number
           swimlane_type?: string
           updated_at?: string
@@ -2131,15 +2143,15 @@ export type Database = {
             foreignKeyName: "boards_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "boards_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "wh_sidebar_projects"
-            referencedColumns: ["id"]
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -2847,6 +2859,7 @@ export type Database = {
           approver_name: string | null
           arabic_title: string | null
           assignee: string | null
+          board_position: number | null
           budget_owner_name: string | null
           budget_type: string[] | null
           budget_year: string | null
@@ -2862,6 +2875,7 @@ export type Database = {
           contract_end_date: string | null
           contract_start_date: string | null
           contract_type: string | null
+          cover: string | null
           created_at: string
           created_by: string | null
           current_year_budget_sar: number | null
@@ -2886,6 +2900,7 @@ export type Database = {
           estimation_notes: string | null
           estimation_risk_rating: string | null
           expected_resume_date: string | null
+          flag_reason: string | null
           force_ranked_at: string | null
           force_ranked_by: string | null
           functional_spec_link: string | null
@@ -2903,9 +2918,11 @@ export type Database = {
           integration_systems: string[] | null
           internal_effort_cost_sar: number | null
           internal_effort_pct: number | null
+          is_flagged: boolean
           is_force_ranked: boolean | null
           jira_epic_link: string | null
           key_risks_remarks: string | null
+          labels: string[]
           on_hold_comment: string | null
           on_hold_reason: string | null
           outcome_summary: string | null
@@ -2924,6 +2941,7 @@ export type Database = {
           project_manager_user_id: string | null
           proposed_solution: string | null
           qa_remarks: string | null
+          quarter: string | null
           rank: number | null
           rank_override_justification: string | null
           readiness_checklist: Json | null
@@ -2963,6 +2981,7 @@ export type Database = {
           approver_name?: string | null
           arabic_title?: string | null
           assignee?: string | null
+          board_position?: number | null
           budget_owner_name?: string | null
           budget_type?: string[] | null
           budget_year?: string | null
@@ -2978,6 +2997,7 @@ export type Database = {
           contract_end_date?: string | null
           contract_start_date?: string | null
           contract_type?: string | null
+          cover?: string | null
           created_at?: string
           created_by?: string | null
           current_year_budget_sar?: number | null
@@ -3002,6 +3022,7 @@ export type Database = {
           estimation_notes?: string | null
           estimation_risk_rating?: string | null
           expected_resume_date?: string | null
+          flag_reason?: string | null
           force_ranked_at?: string | null
           force_ranked_by?: string | null
           functional_spec_link?: string | null
@@ -3019,9 +3040,11 @@ export type Database = {
           integration_systems?: string[] | null
           internal_effort_cost_sar?: number | null
           internal_effort_pct?: number | null
+          is_flagged?: boolean
           is_force_ranked?: boolean | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
+          labels?: string[]
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
@@ -3040,6 +3063,7 @@ export type Database = {
           project_manager_user_id?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
+          quarter?: string | null
           rank?: number | null
           rank_override_justification?: string | null
           readiness_checklist?: Json | null
@@ -3079,6 +3103,7 @@ export type Database = {
           approver_name?: string | null
           arabic_title?: string | null
           assignee?: string | null
+          board_position?: number | null
           budget_owner_name?: string | null
           budget_type?: string[] | null
           budget_year?: string | null
@@ -3094,6 +3119,7 @@ export type Database = {
           contract_end_date?: string | null
           contract_start_date?: string | null
           contract_type?: string | null
+          cover?: string | null
           created_at?: string
           created_by?: string | null
           current_year_budget_sar?: number | null
@@ -3118,6 +3144,7 @@ export type Database = {
           estimation_notes?: string | null
           estimation_risk_rating?: string | null
           expected_resume_date?: string | null
+          flag_reason?: string | null
           force_ranked_at?: string | null
           force_ranked_by?: string | null
           functional_spec_link?: string | null
@@ -3135,9 +3162,11 @@ export type Database = {
           integration_systems?: string[] | null
           internal_effort_cost_sar?: number | null
           internal_effort_pct?: number | null
+          is_flagged?: boolean
           is_force_ranked?: boolean | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
+          labels?: string[]
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
@@ -3156,6 +3185,7 @@ export type Database = {
           project_manager_user_id?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
+          quarter?: string | null
           rank?: number | null
           rank_override_justification?: string | null
           readiness_checklist?: Json | null
@@ -3203,6 +3233,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_requests_quarter_fkey"
+            columns: ["quarter"]
+            isOneToOne: false
+            referencedRelation: "fiscal_quarters"
+            referencedColumns: ["label"]
           },
           {
             foreignKeyName: "business_requests_release_id_fkey"
@@ -3438,6 +3475,36 @@ export type Database = {
             referencedColumns: ["profile_id"]
           },
         ]
+      }
+      card_cover_images: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string
+          storage_path: string | null
+          work_item_id: string
+          work_item_table: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url: string
+          storage_path?: string | null
+          work_item_id: string
+          work_item_table: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string
+          storage_path?: string | null
+          work_item_id?: string
+          work_item_table?: string
+        }
+        Relationships: []
       }
       catalyst_feedback: {
         Row: {
@@ -5234,6 +5301,8 @@ export type Database = {
           delivered_at: string | null
           delivery_status: string
           edited_at: string | null
+          event_meta: Json | null
+          event_type: string | null
           id: string
           is_also_in_channel: boolean
           last_reply_at: string | null
@@ -5252,6 +5321,8 @@ export type Database = {
           delivered_at?: string | null
           delivery_status?: string
           edited_at?: string | null
+          event_meta?: Json | null
+          event_type?: string | null
           id?: string
           is_also_in_channel?: boolean
           last_reply_at?: string | null
@@ -5270,6 +5341,8 @@ export type Database = {
           delivered_at?: string | null
           delivery_status?: string
           edited_at?: string | null
+          event_meta?: Json | null
+          event_type?: string | null
           id?: string
           is_also_in_channel?: boolean
           last_reply_at?: string | null
@@ -10130,6 +10203,42 @@ export type Database = {
           type?: string
           updated_at?: string
           visibility?: string
+        }
+        Relationships: []
+      }
+      fiscal_quarters: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          id: string
+          is_active: boolean
+          label: string
+          quarter_num: number
+          sort_order: number
+          start_date: string
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          id?: string
+          is_active?: boolean
+          label: string
+          quarter_num: number
+          sort_order?: number
+          start_date: string
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          quarter_num?: number
+          sort_order?: number
+          start_date?: string
+          year?: number
         }
         Relationships: []
       }
@@ -19210,6 +19319,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_designs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          updated_at: string
+          url: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          updated_at?: string
+          url: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          updated_at?: string
+          url?: string
+          work_item_id?: string
+        }
+        Relationships: []
+      }
       ph_field_config: {
         Row: {
           config_name: string
@@ -21112,15 +21248,20 @@ export type Database = {
           assignee_account_id: string | null
           assignee_display_name: string | null
           baseline_date: string | null
+          board_position: number | null
           changelog: Json | null
           comments: Json | null
           components: Json | null
+          cover: string | null
           deleted_at: string | null
           description_adf: Json | null
           description_text: string | null
           due_date: string | null
           effective_due_date: string | null
           effective_due_source: string | null
+          epic_color: string | null
+          epic_status: string | null
+          epic_status_category: string | null
           first_synced_at: string | null
           fix_versions: Json | null
           flag_reason: string | null
@@ -21150,7 +21291,7 @@ export type Database = {
           sprint_name: string | null
           sprint_release: Json | null
           status: string
-          status_category: string | null
+          status_category: string
           story_points: number | null
           summary: string
           sync_hash: string | null
@@ -21164,15 +21305,20 @@ export type Database = {
           assignee_account_id?: string | null
           assignee_display_name?: string | null
           baseline_date?: string | null
+          board_position?: number | null
           changelog?: Json | null
           comments?: Json | null
           components?: Json | null
+          cover?: string | null
           deleted_at?: string | null
           description_adf?: Json | null
           description_text?: string | null
           due_date?: string | null
           effective_due_date?: string | null
           effective_due_source?: string | null
+          epic_color?: string | null
+          epic_status?: string | null
+          epic_status_category?: string | null
           first_synced_at?: string | null
           fix_versions?: Json | null
           flag_reason?: string | null
@@ -21202,7 +21348,7 @@ export type Database = {
           sprint_name?: string | null
           sprint_release?: Json | null
           status?: string
-          status_category?: string | null
+          status_category?: string
           story_points?: number | null
           summary?: string
           sync_hash?: string | null
@@ -21216,15 +21362,20 @@ export type Database = {
           assignee_account_id?: string | null
           assignee_display_name?: string | null
           baseline_date?: string | null
+          board_position?: number | null
           changelog?: Json | null
           comments?: Json | null
           components?: Json | null
+          cover?: string | null
           deleted_at?: string | null
           description_adf?: Json | null
           description_text?: string | null
           due_date?: string | null
           effective_due_date?: string | null
           effective_due_source?: string | null
+          epic_color?: string | null
+          epic_status?: string | null
+          epic_status_category?: string | null
           first_synced_at?: string | null
           fix_versions?: Json | null
           flag_reason?: string | null
@@ -21254,7 +21405,7 @@ export type Database = {
           sprint_name?: string | null
           sprint_release?: Json | null
           status?: string
-          status_category?: string | null
+          status_category?: string
           story_points?: number | null
           summary?: string
           sync_hash?: string | null
@@ -21411,6 +21562,7 @@ export type Database = {
           release_date: string | null
           section_description_adf: Json | null
           section_name: string | null
+          slug: string
           sort_order: number | null
           start_date: string | null
           status: string
@@ -21431,6 +21583,7 @@ export type Database = {
           release_date?: string | null
           section_description_adf?: Json | null
           section_name?: string | null
+          slug: string
           sort_order?: number | null
           start_date?: string | null
           status?: string
@@ -21451,6 +21604,7 @@ export type Database = {
           release_date?: string | null
           section_description_adf?: Json | null
           section_name?: string | null
+          slug?: string
           sort_order?: number | null
           start_date?: string | null
           status?: string
@@ -22021,6 +22175,7 @@ export type Database = {
           release_date: string | null
           section_description_adf: Json | null
           section_name: string | null
+          slug: string
           sort_order: number | null
           start_date: string | null
           status: string
@@ -22040,6 +22195,7 @@ export type Database = {
           release_date?: string | null
           section_description_adf?: Json | null
           section_name?: string | null
+          slug: string
           sort_order?: number | null
           start_date?: string | null
           status?: string
@@ -22059,6 +22215,7 @@ export type Database = {
           release_date?: string | null
           section_description_adf?: Json | null
           section_name?: string | null
+          slug?: string
           sort_order?: number | null
           start_date?: string | null
           status?: string
@@ -22156,6 +22313,7 @@ export type Database = {
           product_key: string | null
           project_key: string | null
           share_permissions: Json
+          slug: string
           starred_by_user_ids: string[]
           subscriber_ids: string[]
           updated_at: string | null
@@ -22185,6 +22343,7 @@ export type Database = {
           product_key?: string | null
           project_key?: string | null
           share_permissions?: Json
+          slug: string
           starred_by_user_ids?: string[]
           subscriber_ids?: string[]
           updated_at?: string | null
@@ -22214,6 +22373,7 @@ export type Database = {
           product_key?: string | null
           project_key?: string | null
           share_permissions?: Json
+          slug?: string
           starred_by_user_ids?: string[]
           subscriber_ids?: string[]
           updated_at?: string | null
@@ -26999,16 +27159,116 @@ export type Database = {
           },
         ]
       }
+      product_milestone_approvers: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          description: string | null
+          id: string
+          milestone_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          milestone_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          milestone_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_milestone_approvers_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "product_milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "v_business_request_with_milestones"
+            referencedColumns: ["milestone_id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_milestone_approvers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       product_milestones: {
         Row: {
           archived_at: string | null
           created_at: string
           created_by: string | null
+          description: string | null
           end_date: string | null
           id: string
           key: string | null
           product_id: string | null
           quarter: string | null
+          section_description_adf: Json | null
+          section_name: string | null
           sequence: number | null
           start_date: string | null
           status: string | null
@@ -27020,11 +27280,14 @@ export type Database = {
           archived_at?: string | null
           created_at?: string
           created_by?: string | null
+          description?: string | null
           end_date?: string | null
           id?: string
           key?: string | null
           product_id?: string | null
           quarter?: string | null
+          section_description_adf?: Json | null
+          section_name?: string | null
           sequence?: number | null
           start_date?: string | null
           status?: string | null
@@ -27036,11 +27299,14 @@ export type Database = {
           archived_at?: string | null
           created_at?: string
           created_by?: string | null
+          description?: string | null
           end_date?: string | null
           id?: string
           key?: string | null
           product_id?: string | null
           quarter?: string | null
+          section_description_adf?: Json | null
+          section_name?: string | null
           sequence?: number | null
           start_date?: string | null
           status?: string | null
@@ -27284,6 +27550,7 @@ export type Database = {
           color: string | null
           created_at: string | null
           description: string | null
+          icon_key: string | null
           id: string
           is_active: boolean | null
           jira_project_key: string | null
@@ -27297,6 +27564,7 @@ export type Database = {
           color?: string | null
           created_at?: string | null
           description?: string | null
+          icon_key?: string | null
           id?: string
           is_active?: boolean | null
           jira_project_key?: string | null
@@ -27310,6 +27578,7 @@ export type Database = {
           color?: string | null
           created_at?: string | null
           description?: string | null
+          icon_key?: string | null
           id?: string
           is_active?: boolean | null
           jira_project_key?: string | null
@@ -30084,6 +30353,7 @@ export type Database = {
           release_manager_id: string | null
           release_vehicle_id: string
           scope_creep_percent: number | null
+          slug: string
           start_date: string | null
           status: Database["public"]["Enums"]["release_status"] | null
           stories_with_tests: number | null
@@ -30129,6 +30399,7 @@ export type Database = {
           release_manager_id?: string | null
           release_vehicle_id: string
           scope_creep_percent?: number | null
+          slug: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
           stories_with_tests?: number | null
@@ -30174,6 +30445,7 @@ export type Database = {
           release_manager_id?: string | null
           release_vehicle_id?: string
           scope_creep_percent?: number | null
+          slug?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
           stories_with_tests?: number | null
@@ -31853,52 +32125,73 @@ export type Database = {
       }
       rh_releases: {
         Row: {
+          board_position: number | null
           chg_count: number | null
+          cover: string | null
           created_at: string | null
           description: string | null
+          flag_reason: string | null
           id: string
+          is_flagged: boolean
           jira_key: string | null
           key: string | null
+          labels: string[]
           name: string
           owner_id: string | null
           project_id: string | null
+          slug: string
           source: string
           status: string
           target_date: string
           updated_at: string | null
           version: string | null
+          workflow_status_key: string | null
         }
         Insert: {
+          board_position?: number | null
           chg_count?: number | null
+          cover?: string | null
           created_at?: string | null
           description?: string | null
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean
           jira_key?: string | null
           key?: string | null
+          labels?: string[]
           name: string
           owner_id?: string | null
           project_id?: string | null
+          slug: string
           source?: string
           status?: string
           target_date: string
           updated_at?: string | null
           version?: string | null
+          workflow_status_key?: string | null
         }
         Update: {
+          board_position?: number | null
           chg_count?: number | null
+          cover?: string | null
           created_at?: string | null
           description?: string | null
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean
           jira_key?: string | null
           key?: string | null
+          labels?: string[]
           name?: string
           owner_id?: string | null
           project_id?: string | null
+          slug?: string
           source?: string
           status?: string
           target_date?: string
           updated_at?: string | null
           version?: string | null
+          workflow_status_key?: string | null
         }
         Relationships: [
           {
@@ -33374,6 +33667,7 @@ export type Database = {
           id: string
           name: string | null
           project_id: string
+          slug: string
           status: string | null
         }
         Insert: {
@@ -33381,6 +33675,7 @@ export type Database = {
           id?: string
           name?: string | null
           project_id: string
+          slug: string
           status?: string | null
         }
         Update: {
@@ -33388,6 +33683,7 @@ export type Database = {
           id?: string
           name?: string | null
           project_id?: string
+          slug?: string
           status?: string | null
         }
         Relationships: []
@@ -35794,6 +36090,7 @@ export type Database = {
           position: number
           slug: string
           updated_at: string | null
+          workflow_status_key: string | null
         }
         Insert: {
           color?: string
@@ -35807,6 +36104,7 @@ export type Database = {
           position?: number
           slug: string
           updated_at?: string | null
+          workflow_status_key?: string | null
         }
         Update: {
           color?: string
@@ -35820,6 +36118,7 @@ export type Database = {
           position?: number
           slug?: string
           updated_at?: string | null
+          workflow_status_key?: string | null
         }
         Relationships: []
       }
@@ -35966,6 +36265,8 @@ export type Database = {
           assignee_id: string | null
           blocked: boolean | null
           blocked_reason: string | null
+          board_position: number | null
+          cover: string | null
           cover_url: string | null
           created_at: string | null
           created_by: string | null
@@ -35973,7 +36274,9 @@ export type Database = {
           description: string | null
           description_adf: Json | null
           due_date: string | null
+          flag_reason: string | null
           id: string
+          is_flagged: boolean
           is_starred: boolean
           key: string
           labels: string[] | null
@@ -35992,6 +36295,8 @@ export type Database = {
           assignee_id?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
+          board_position?: number | null
+          cover?: string | null
           cover_url?: string | null
           created_at?: string | null
           created_by?: string | null
@@ -35999,7 +36304,9 @@ export type Database = {
           description?: string | null
           description_adf?: Json | null
           due_date?: string | null
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean
           is_starred?: boolean
           key: string
           labels?: string[] | null
@@ -36018,6 +36325,8 @@ export type Database = {
           assignee_id?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
+          board_position?: number | null
+          cover?: string | null
           cover_url?: string | null
           created_at?: string | null
           created_by?: string | null
@@ -36025,7 +36334,9 @@ export type Database = {
           description?: string | null
           description_adf?: Json | null
           due_date?: string | null
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean
           is_starred?: boolean
           key?: string
           labels?: string[] | null
@@ -36389,6 +36700,7 @@ export type Database = {
           program_id: string | null
           region_id: string | null
           short_name: string | null
+          slug: string
           sprint_prefix: string | null
           status: Database["public"]["Enums"]["team_status"] | null
           team_type: Database["public"]["Enums"]["team_type"] | null
@@ -36415,6 +36727,7 @@ export type Database = {
           program_id?: string | null
           region_id?: string | null
           short_name?: string | null
+          slug: string
           sprint_prefix?: string | null
           status?: Database["public"]["Enums"]["team_status"] | null
           team_type?: Database["public"]["Enums"]["team_type"] | null
@@ -36441,6 +36754,7 @@ export type Database = {
           program_id?: string | null
           region_id?: string | null
           short_name?: string | null
+          slug?: string
           sprint_prefix?: string | null
           status?: Database["public"]["Enums"]["team_status"] | null
           team_type?: Database["public"]["Enums"]["team_type"] | null
@@ -45123,9 +45437,11 @@ export type Database = {
           assigned_to: string | null
           automation_id: string | null
           automation_status: string | null
+          board_position: number | null
           case_key: string
           case_type_id: string | null
           cloned_from_id: string | null
+          cover: string | null
           created_at: string | null
           created_by: string | null
           current_version: number | null
@@ -45134,13 +45450,16 @@ export type Database = {
           description_html: string | null
           estimated_time: number | null
           expected_result: string | null
+          flag_reason: string | null
           folder_id: string | null
           gherkin_feature: string | null
           gherkin_scenario: string | null
           id: string
           is_ai_generated: boolean | null
+          is_flagged: boolean
           is_latest_version: boolean | null
           is_template: boolean | null
+          labels: string[]
           parent_case_id: string | null
           postconditions_html: string | null
           preconditions: string | null
@@ -45165,9 +45484,11 @@ export type Database = {
           assigned_to?: string | null
           automation_id?: string | null
           automation_status?: string | null
+          board_position?: number | null
           case_key: string
           case_type_id?: string | null
           cloned_from_id?: string | null
+          cover?: string | null
           created_at?: string | null
           created_by?: string | null
           current_version?: number | null
@@ -45176,13 +45497,16 @@ export type Database = {
           description_html?: string | null
           estimated_time?: number | null
           expected_result?: string | null
+          flag_reason?: string | null
           folder_id?: string | null
           gherkin_feature?: string | null
           gherkin_scenario?: string | null
           id?: string
           is_ai_generated?: boolean | null
+          is_flagged?: boolean
           is_latest_version?: boolean | null
           is_template?: boolean | null
+          labels?: string[]
           parent_case_id?: string | null
           postconditions_html?: string | null
           preconditions?: string | null
@@ -45207,9 +45531,11 @@ export type Database = {
           assigned_to?: string | null
           automation_id?: string | null
           automation_status?: string | null
+          board_position?: number | null
           case_key?: string
           case_type_id?: string | null
           cloned_from_id?: string | null
+          cover?: string | null
           created_at?: string | null
           created_by?: string | null
           current_version?: number | null
@@ -45218,13 +45544,16 @@ export type Database = {
           description_html?: string | null
           estimated_time?: number | null
           expected_result?: string | null
+          flag_reason?: string | null
           folder_id?: string | null
           gherkin_feature?: string | null
           gherkin_scenario?: string | null
           id?: string
           is_ai_generated?: boolean | null
+          is_flagged?: boolean
           is_latest_version?: boolean | null
           is_template?: boolean | null
+          labels?: string[]
           parent_case_id?: string | null
           postconditions_html?: string | null
           preconditions?: string | null
@@ -57406,6 +57735,7 @@ export type Database = {
         Args: { _board_id: string; _user_id: string }
         Returns: boolean
       }
+      catalyst_slugify: { Args: { input_text: string }; Returns: string }
       chat_add_member: {
         Args: { p_conv: string; p_user: string }
         Returns: undefined
@@ -57596,19 +57926,52 @@ export type Database = {
         }
         Returns: Json
       }
-      create_board: {
-        Args: {
-          p_color?: string
-          p_columns?: Json
-          p_is_personal?: boolean
-          p_name: string
-          p_project_id?: string
-          p_swimlane_type?: string
-          p_user_id?: string
-          p_visibility?: string
-        }
-        Returns: string
-      }
+      create_board:
+        | {
+            Args: {
+              p_color?: string
+              p_columns?: Json
+              p_is_personal?: boolean
+              p_name: string
+              p_project_id?: string
+              p_swimlane_type?: string
+              p_user_id?: string
+              p_visibility?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_board_query?: string
+              p_board_type?: string
+              p_color?: string
+              p_columns?: Json
+              p_is_personal?: boolean
+              p_name: string
+              p_project_id?: string
+              p_swimlane_type?: string
+              p_user_id?: string
+              p_visibility?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_board_query?: string
+              p_board_type?: string
+              p_color?: string
+              p_columns?: Json
+              p_is_default?: boolean
+              p_is_personal?: boolean
+              p_name: string
+              p_primary_work_item_type?: string
+              p_project_id?: string
+              p_swimlane_type?: string
+              p_user_id?: string
+              p_visibility?: string
+            }
+            Returns: string
+          }
       create_default_project_roles: {
         Args: { p_project_id: string }
         Returns: undefined
@@ -58684,6 +59047,19 @@ export type Database = {
       is_workstream_member: {
         Args: { _user_id: string; _workstream_id: string }
         Returns: boolean
+      }
+      kanban_move_position: {
+        Args: {
+          p_column_ids: string[]
+          p_direction: string
+          p_issue_id: string
+          p_table: string
+        }
+        Returns: undefined
+      }
+      kanban_reorder_column: {
+        Args: { p_column_ids: string[]; p_table: string }
+        Returns: undefined
       }
       kb_cache_hit: { Args: { p_query_hash: string }; Returns: Json }
       kb_has_product_role: {

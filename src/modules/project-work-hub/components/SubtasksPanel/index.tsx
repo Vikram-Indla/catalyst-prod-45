@@ -1075,7 +1075,7 @@ export function SubtasksPanel({
                       projectId={parentProjectId ?? ''}
                       currentAssigneeId={child.assignee_account_id}
                       currentAssigneeName={child.assignee_display_name}
-                      allowReassign
+                      currentStatus={child.status}
                       onUpdate={() => { /* invalidation flows via mutation */ }}
                       onChange={(userId, displayName) => {
                         handleAssigneeChange(child)({ accountId: userId, displayName });

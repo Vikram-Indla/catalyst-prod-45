@@ -255,6 +255,8 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
         // requires no override.
         getAssignee: (row) => toAssigneeChoice(row, avatarUrlByAssigneeId),
         options: assigneeOptions,
+        // Grid G5: locks only when status is terminal (e.g. 'done').
+        getStatus: (row) => row.status,
         onChange: (row, next) => {
           void onCellEdit(row.id, {
             assigneeId: next?.id ?? undefined,

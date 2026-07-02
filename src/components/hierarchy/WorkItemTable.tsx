@@ -643,6 +643,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             <AssigneeCell assignee={item.assignee} onClick={(e) => { e.stopPropagation(); openDropdown('assignee', item.id); }} />
             {activeDropdown?.type === 'assignee' && activeDropdown.itemId === item.id && (
               <AssigneeDropdown currentAssignee={item.assignee?.displayName} availableAssignees={allAssignees}
+                currentStatus={item.status.name}
                 onSelect={(a) => handleAssigneeChange(item.key, a)} onClose={() => setActiveDropdown(null)} />
             )}
           </div>

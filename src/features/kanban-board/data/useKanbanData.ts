@@ -64,7 +64,7 @@ const RELEASE_SELECT =
 const TASKS_SELECT = '*';
 
 const PAGE = 1000;
-const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, cover, jira_updated_at, jira_created_at, due_date';
+const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, epic_color, epic_status, epic_status_category, sprint_release, is_flagged, cover, jira_updated_at, jira_created_at, due_date';
 
 /* SELECT list for product mode. Mirrors the OLD KanbanBoardPage product
    branch and adds the columns landed by 20260615120000_product_board_parity:
@@ -120,6 +120,9 @@ function mapRow(r: any): BoardIssue {
     storyPoints: r.story_points != null ? Number(r.story_points) : null,
     parentKey: r.parent_key ?? null,
     parentSummary: r.parent_summary ?? null,
+    parentColor: r.epic_color ?? null,
+    parentStatus: r.epic_status ?? null,
+    parentStatusCategory: r.epic_status_category ?? null,
     sprintRelease: fv,
     isFlagged: !!r.is_flagged,
     cover: r.cover ?? null,
