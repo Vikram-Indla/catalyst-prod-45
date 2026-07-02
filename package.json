@@ -17,6 +17,7 @@
     "lint:colors:gate": "node scripts/ads-color-gate.cjs",
     "lint:colors:update-baseline": "node scripts/ads-color-gate.cjs --update",
     "lint:accessibility": "node scripts/audit-accessibility.cjs",
+    "lint:cre": "node scripts/cre-chokepoint-gate.cjs",
     "audit:contrast": "node scripts/ads-contrast-gate.cjs",
     "audit:ads": "node design-governance/rules/audit.js src",
     "audit:ads:gate": "node scripts/ads-audit-gate.cjs",

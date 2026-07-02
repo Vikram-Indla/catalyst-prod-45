@@ -32,17 +32,24 @@ update the code — not the table.
 CRE is a pure TypeScript engine at `@/lib/catalyst-rules`. No DB. No network.
 Import from the barrel; never import `CatalystRules.ts` directly.
 
-Three chokepoints enforce every rule at runtime:
+Four chokepoints enforce every rule at runtime:
 
 | Surface | Choke | API |
 |---|---|---|
-| Create dialog (`CreateStoryModal`) | Type picker filtered before render | `getAllowedTypesForModule(module)` |
-| Subtask panel (`SubtasksPanel`) | `allowedChildTypes` prop | `getAllowedChildTypes(parentType)` |
-| Link picker (`LinkedWorkItemsSection`) | Candidate filter | `canLinkTo(src, tgt)` |
+| Create dialog (`CreateStoryModal`, `creModule` prop) | Type catalogue filtered before render | `filterCreatableTypes(types, module)` |
+| Kanban inline create (`components/kanban/InlineCreateCard`, mode→module map) | Type catalogue filtered before render | `filterCreatableTypes(types, module)` |
+| Subtask panel (`SubtasksPanel` → `hierarchy.ts`) | `allowedChildTypes` prop | `getAllowedChildTypes` / `getAllowedChildTypesWithRegistry` |
+| Link picker (`LinkedWorkItems` → `LinkToolbar`) | Candidate filter | `canLinkTo(src, tgt)` |
+
+Custom Studio-registry types (`ph_work_item_types`, not CRE-governed) pass
+through `filterCreatableTypes` untouched — the registry
+(`ph_hierarchy_parent_rules`, migration 20260703130000) is authoritative for
+them; `getAllowedChildTypesWithRegistry` resolves their children from it.
 
 **Any new surface that creates, links, or parents a work item MUST import from
-`@/lib/catalyst-rules` and call the relevant function.** This is enforced in
-`.husky/pre-commit`.
+`@/lib/catalyst-rules` and call the relevant function.** This is enforced by
+`scripts/cre-chokepoint-gate.cjs` (`npm run lint:cre`), blocking in
+`.husky/pre-commit` and CI.
 
 ---
 

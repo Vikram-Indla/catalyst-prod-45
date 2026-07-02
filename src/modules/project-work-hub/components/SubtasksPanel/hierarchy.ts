@@ -4,7 +4,12 @@
  * CANONICAL SOURCE: all rules derive from parent-rules.ts (confirmed Vikram 2026-06-12).
  * Do NOT add hardcoded type arrays here — extend parent-rules.ts instead.
  */
-import { getAllowedChildTypes } from '@/components/catalyst-detail-views/shared/parent-rules';
+import {
+  getAllowedChildTypes,
+  getAllowedChildTypesWithRegistry,
+  type RegistryWorkItemType,
+  type RegistryParentRule,
+} from '@/lib/catalyst-rules';
 
 export type WorkItemType = string;
 
@@ -25,13 +30,20 @@ export function allowedChildTypes(parentType: string | null | undefined): WorkIt
  * (BRD Task, Business Gap, Change Request, UAT Finding, Figma) WITHOUT
  * changing the canonical hierarchy for any other surface (Q1, 2026-06-15).
  * An empty/absent override falls back to the canonical parent→child rules.
+ *
+ * Registry fallback (CRE + ph_hierarchy_parent_rules, 20260703130000): when
+ * the Studio registry rows are supplied, custom (non-CRE) parent types
+ * resolve their children from the registry, and custom child types appear
+ * under system parents. Grid B stays authoritative for system types.
  */
 export function resolveAllowedChildTypes(
   parentType: string | null | undefined,
   override?: string[] | null,
+  registryTypes?: readonly RegistryWorkItemType[] | null,
+  parentRules?: readonly RegistryParentRule[] | null,
 ): WorkItemType[] {
   if (override && override.length > 0) return override;
-  return getAllowedChildTypes(parentType);
+  return getAllowedChildTypesWithRegistry(parentType, registryTypes, parentRules);
 }
 
 /**

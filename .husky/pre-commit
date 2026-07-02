@@ -20,3 +20,9 @@ node scripts/ads-color-gate.cjs || exit 1
 echo ""
 echo "📐 ADS audit ratchet (blocks on NEW tokens/typography/spacing violations)…"
 node scripts/ads-audit-gate.cjs || exit 1
+
+# CRE chokepoint gate (.claude/skills/cre/SKILL.md): create/link/parent
+# surfaces must keep querying @/lib/catalyst-rules — no hardcoded type lists.
+echo ""
+echo "⚖️  CRE chokepoint gate (create/link/parent surfaces query the rules engine)…"
+node scripts/cre-chokepoint-gate.cjs || exit 1

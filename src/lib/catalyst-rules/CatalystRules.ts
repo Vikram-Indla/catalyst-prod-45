@@ -182,6 +182,35 @@ export function getAllowedTypesForModule(moduleCode: string): string[] {
 }
 
 /**
+ * Returns true if CRE governs this type name (Grid A ownership ∪ subtask
+ * family). Types outside this set are Studio-registry custom types
+ * (ph_work_item_types) — the registry, not CRE, is authoritative for them
+ * (ph_hierarchy_parent_rules mirrors Grid B for system types only,
+ * migration 20260703130000).
+ */
+export function isCREGovernedType(typeName: string): boolean {
+  const canonical = normalizeType(typeName);
+  if (isSubtaskFamily(canonical) || SUBTASK_FAMILY.includes(canonical)) return true;
+  return Object.values(MODULE_OWNED_TYPES).some(types => types.includes(canonical));
+}
+
+/**
+ * Chokepoint filter for create-surface type catalogues (Grids A + D).
+ * Keeps a candidate type when either:
+ *   — CRE governs it and canCreateInModule() allows it in moduleCode, or
+ *   — CRE does not govern it (Studio-registry custom type — the registry
+ *     is authoritative for custom types, so CRE passes them through).
+ * Every type picker on a create surface MUST run its catalogue through
+ * this before render (enforced by scripts/cre-chokepoint-gate.cjs).
+ */
+export function filterCreatableTypes(
+  types: readonly string[],
+  moduleCode: string,
+): string[] {
+  return types.filter(t => !isCREGovernedType(t) || canCreateInModule(t, moduleCode));
+}
+
+/**
  * Returns the owning module for a type, or null if unrecognised.
  * Subtask family returns null (universal — no single owner).
  */
@@ -206,6 +235,66 @@ export function canBeChildOf(childType: string, parentType: string): boolean {
   if (isSubtaskFamily(parent) || SUBTASK_FAMILY.includes(parent)) return false;
   const allowed = getAllowedChildTypes(parent);
   return allowed.some(t => normalizeType(t) === child);
+}
+
+// ─── GRID B + STUDIO REGISTRY — CHILD TYPES WITH CUSTOM-TYPE FALLBACK ───────
+
+/** Structural subset of ph_work_item_types rows (useWorkItemTypes). */
+export interface RegistryWorkItemType {
+  id: string;
+  type_key: string;
+  display_name: string;
+  is_system: boolean;
+  is_enabled: boolean;
+}
+
+/** Structural subset of ph_hierarchy_parent_rules rows (useParentRules). */
+export interface RegistryParentRule {
+  child_type_id: string;
+  parent_type_id: string | null;
+}
+
+/**
+ * getAllowedChildTypes with Studio-registry fallback.
+ *
+ * Authority split (RULE_TABLE.md Grid B + migration 20260703130000):
+ *   — System (CRE-governed) parent: static Grid B list is authoritative.
+ *     Registry rows for system children merely mirror Grid B, so only
+ *     CUSTOM (is_system = false) registry children are appended.
+ *   — Custom (non-CRE) parent: the registry is the only authority — its
+ *     child rows are returned verbatim (static lookup would yield []).
+ *
+ * Pure function — callers pass registry rows in (useWorkItemTypes +
+ * useParentRules); with no registry data it degrades to the static Grid B
+ * lookup, so existing call sites are unaffected.
+ */
+export function getAllowedChildTypesWithRegistry(
+  parentType: string | null | undefined,
+  registryTypes?: readonly RegistryWorkItemType[] | null,
+  parentRules?: readonly RegistryParentRule[] | null,
+): string[] {
+  const base = getAllowedChildTypes(parentType ?? '');
+  if (!parentType || !registryTypes?.length || !parentRules?.length) return base;
+
+  const norm = (s: string) => normalizeType(s).toLowerCase();
+  const parentRow = registryTypes.find(
+    t => norm(t.display_name) === norm(parentType) || t.type_key.toLowerCase() === norm(parentType),
+  );
+  if (!parentRow) return base;
+
+  const childIds = new Set(
+    parentRules.filter(r => r.parent_type_id === parentRow.id).map(r => r.child_type_id),
+  );
+  const registryChildren = registryTypes.filter(t => childIds.has(t.id) && t.is_enabled);
+
+  if (isCREGovernedType(parentType)) {
+    const customChildren = registryChildren
+      .filter(t => !t.is_system)
+      .map(t => t.display_name)
+      .filter(name => !base.some(b => norm(b) === norm(name)));
+    return [...base, ...customChildren];
+  }
+  return registryChildren.map(t => t.display_name);
 }
 
 /**
