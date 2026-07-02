@@ -49,7 +49,6 @@ import { SectionMessage } from '@/components/ads/SectionMessage';
    same toolbar / navigator / detail router as project. Replaces the parallel
    ProductAllWorkView (per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule). */
 import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
-import { SectionMessage } from '@/components/ads/SectionMessage';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
 import type { BusinessRequest } from '@/types/business-request';

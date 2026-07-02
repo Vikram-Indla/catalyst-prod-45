@@ -105,7 +105,7 @@
   all: unset;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-left: 24px;
   padding: 4px 8px;
   border-radius: 3px;
@@ -145,7 +145,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 8px 16px;
   margin: 4px 0 4px;
   background: var(--ds-surface);
 }

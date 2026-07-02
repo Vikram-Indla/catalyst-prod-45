@@ -36,7 +36,7 @@
 .ascp-header__title--loading {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* Subtle italic note appended to the header title on error state —
@@ -45,7 +45,7 @@
   color: var(--ds-text-subtle);
   font-style: italic;
   font-weight: 400;
-  margin-left: 6px;
+  margin-left: 8px;
 }
 
 /* ── Header ───────────────────────────────────────────────── */
@@ -55,7 +55,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 6px 12px;
+  padding: 8px 12px;
   min-height: 36px;
   border-bottom: 0px solid var(--ds-border);
 }
@@ -149,7 +149,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   min-height: 32px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
@@ -183,8 +183,8 @@
 .ascp-row__type-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px 4px;
+  gap: 4px;
+  padding: 4px 4px;
   margin: 0;
   border: none;
   border-radius: 3px;
@@ -275,7 +275,7 @@
 .ascp-row__actions {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   opacity: 0;
   transition: opacity 100ms ease;
 }
@@ -331,14 +331,14 @@
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  margin-top: 1px;
+  margin-top: 0;
 }
 .ascp-warning__body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 .ascp-warning__title {
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
