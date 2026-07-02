@@ -44,10 +44,13 @@ import {
   type ProductOption,
 } from '@/components/releases/ReleaseFilters';
 
+// S0.3 (D-005): DB vocabulary is now planning/active/awaiting_approval/
+// completed/canceled/archived. The shared ReleasesTable cell pipeline is
+// 3-value; bucket-map until S1.1a replaces the table with SprintsTable.
+import { sprintStatusToReleaseBucket } from '@/lib/sprints/sprintStatus';
+
 function toCellStatus(s: string | null | undefined): ReleaseStatus {
-  if (s === 'released') return 'released';
-  if (s === 'archived') return 'archived';
-  return 'unreleased';
+  return sprintStatusToReleaseBucket(s);
 }
 
 type CellSprint = Release;
@@ -377,7 +380,7 @@ export function SprintsPage() {
           release={confirmingSprint as any}
           projectKey={projectKey}
           onClose={() => { setIsConfirmModalOpen(false); setConfirmingSprint(null); }}
-          onSuccess={(sprint: any) => catalystFlag.success(`Sprint "${sprint.name}" released.`)}
+          onSuccess={(sprint: any) => catalystFlag.success(`Sprint "${sprint.name}" completed.`)}
           config={SPRINT_CONFIG}
         />
       )}

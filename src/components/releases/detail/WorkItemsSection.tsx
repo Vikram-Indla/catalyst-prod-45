@@ -1111,13 +1111,16 @@ function WorkItemRow({
   const { data: siblings } = useQuery({
     queryKey: ['siblings-for-move', entityTable, projectId, item.id, releaseName],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      let builder = (supabase as any)
         .from(entityTable)
         .select('id, name, title, status')
-        .eq('project_id', projectId)
-        .neq('status', 'archived')
-        .order('name')
-        .limit(5);
+        .eq('project_id', projectId);
+      // S0.3: sprints exclude all terminal statuses from Move-to targets;
+      // releases keep the legacy archived-only exclusion.
+      builder = config?.kind === 'sprint'
+        ? builder.not('status', 'in', '(archived,completed,canceled)')
+        : builder.neq('status', 'archived');
+      const { data, error } = await builder.order('name').limit(5);
       if (error) throw new Error(error.message);
       return (data ?? [])
         .filter((r: any) => (r.name || r.title) !== releaseName)
