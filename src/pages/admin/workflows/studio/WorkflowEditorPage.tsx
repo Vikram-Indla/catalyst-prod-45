@@ -56,12 +56,19 @@ import {
 } from '@/hooks/workflow-v2/useWorkflowDraft';
 import { ENTITY_LABELS, LIFECYCLE_APPEARANCE, statusKeyFromLabel } from './entities';
 import { PublishModal } from './PublishModal';
+import { StatusPanel, TransitionPanel } from './EditorPanels';
+import { HistoryDrawer } from './HistoryDrawer';
 
 const CATEGORY_OPTIONS = [
   { label: 'To do', value: 'todo' },
   { label: 'In progress', value: 'in_progress' },
   { label: 'Done', value: 'done' },
 ];
+
+type Selection =
+  | { kind: 'status'; statusKey: string }
+  | { kind: 'transition'; transitionId: string }
+  | null;
 
 export default function WorkflowEditorPage() {
   const { versionId } = useParams<{ versionId: string }>();
@@ -85,6 +92,8 @@ export default function WorkflowEditorPage() {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [actionError, setActionError] = useState<string | null>(null);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [selection, setSelection] = useState<Selection>(null);
   const [addingStatus, setAddingStatus] = useState(false);
   const [newStatusName, setNewStatusName] = useState('');
   const [newStatusCat, setNewStatusCat] = useState('todo');
@@ -242,6 +251,16 @@ export default function WorkflowEditorPage() {
 
   const entityLabel = version ? ENTITY_LABELS[version.entity_key] ?? version.entity_key : '';
 
+  // ── Selection → panel data ─────────────────────────────────────────────────
+  const selectedStatus =
+    selection?.kind === 'status'
+      ? statuses.find((s) => s.status_key === selection.statusKey) ?? null
+      : null;
+  const selectedTransition =
+    selection?.kind === 'transition'
+      ? transitions.find((t) => t.id === selection.transitionId) ?? null
+      : null;
+
   return (
     <AdminGuard>
       <AtlaskitPageShell
@@ -294,6 +313,11 @@ export default function WorkflowEditorPage() {
                 {createDraft.isPending ? 'Creating…' : 'Create draft to edit'}
               </Button>
             )}
+            {version && (
+              <Button appearance="subtle" spacing="compact" onClick={() => setHistoryOpen(true)}>
+                History
+              </Button>
+            )}
             <Link
               to="/admin/workflows"
               style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}
@@ -334,8 +358,8 @@ export default function WorkflowEditorPage() {
                   <div style={{ width: 140 }}>
                     <Select
                       options={CATEGORY_OPTIONS}
-                      value={newStatusCat}
-                      onChange={(v) => setNewStatusCat((v as string) ?? 'todo')}
+                      value={CATEGORY_OPTIONS.find((o) => o.value === newStatusCat) ?? null}
+                      onChange={(o) => setNewStatusCat((o?.value as string) ?? 'todo')}
                       ariaLabel="Status category"
                     />
                   </div>
@@ -371,12 +395,21 @@ export default function WorkflowEditorPage() {
             </div>
           )}
 
-          {/* Canvas — explicit min height guards against a broken flex chain
+          {/* Canvas row: diagram + contextual property panel.
+              Explicit min height guards against a broken flex chain
               (ReactFlow renders 0-height silently otherwise). */}
           <div
             style={{
               flex: 1,
               minHeight: 'calc(100vh - 220px)',
+              display: 'flex',
+              alignItems: 'stretch',
+            }}
+          >
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
               background: 'var(--ds-surface-sunken)',
             }}
           >
@@ -427,6 +460,13 @@ export default function WorkflowEditorPage() {
                 onNodesChange={handleNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                onNodeClick={(_e, node) => {
+                  if (node.type === 'status') setSelection({ kind: 'status', statusKey: node.id });
+                }}
+                onEdgeClick={(_e, edge) => {
+                  if (edge.id !== '__start-edge__') setSelection({ kind: 'transition', transitionId: edge.id });
+                }}
+                onPaneClick={() => setSelection(null)}
                 nodesConnectable={isDraft}
                 elementsSelectable
                 fitView
@@ -440,6 +480,28 @@ export default function WorkflowEditorPage() {
               </ReactFlow>
             )}
           </div>
+
+          {/* Contextual property panel */}
+          {selectedTransition && versionId && (
+            <TransitionPanel
+              versionId={versionId}
+              transition={selectedTransition}
+              isDraft={isDraft}
+              onClose={() => setSelection(null)}
+              onError={onError}
+            />
+          )}
+          {selectedStatus && versionId && (
+            <StatusPanel
+              versionId={versionId}
+              status={selectedStatus}
+              allStatuses={statuses}
+              isDraft={isDraft}
+              onClose={() => setSelection(null)}
+              onError={onError}
+            />
+          )}
+          </div>
         </div>
 
         {publishOpen && version && (
@@ -447,6 +509,14 @@ export default function WorkflowEditorPage() {
             version={version}
             onClose={() => setPublishOpen(false)}
             onPublished={() => navigate('/admin/workflows')}
+          />
+        )}
+        {version && (
+          <HistoryDrawer
+            entityKey={version.entity_key}
+            isOpen={historyOpen}
+            onClose={() => setHistoryOpen(false)}
+            onError={onError}
           />
         )}
       </AtlaskitPageShell>
