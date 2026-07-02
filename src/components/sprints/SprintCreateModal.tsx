@@ -38,6 +38,7 @@ interface SprintRow {
   release_date?: string | null;
   name_mode?: string | null;
   length_weeks?: number | null;
+  release_id?: string | null;
 }
 
 interface SprintCreateModalProps {
@@ -77,6 +78,7 @@ interface SprintForm {
   description: string;
   start_date: string;
   project_id: string;
+  release_id: string | null;
 }
 
 function emptyForm(defaultProjectId: string): SprintForm {
@@ -87,6 +89,7 @@ function emptyForm(defaultProjectId: string): SprintForm {
     description: '',
     start_date: todayIso(),
     project_id: defaultProjectId,
+    release_id: null,
   };
 }
 
@@ -104,6 +107,7 @@ function formFromSprint(s: SprintRow): SprintForm {
     description: s.description ?? '',
     start_date: s.start_date ?? '',
     project_id: s.project_id ?? '',
+    release_id: s.release_id ?? null,
   };
 }
 
@@ -145,6 +149,23 @@ export function SprintCreateModal({
       return data ?? { id: user.id, full_name: null, avatar_url: null };
     },
     enabled: isOpen,
+    staleTime: 5 * 60_000,
+  });
+
+  // Release options: scoped to the selected project (S1.4). Optional link,
+  // one release per sprint (no many-to-many — approved 2026-07-02).
+  const { data: releaseOptions } = useQuery({
+    queryKey: ['sprint-modal-release-options', formData.project_id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_releases')
+        .select('id, name')
+        .eq('project_id', formData.project_id)
+        .order('name');
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((r: any) => ({ id: r.id, name: r.name }));
+    },
+    enabled: isOpen && !!formData.project_id,
     staleTime: 5 * 60_000,
   });
 
@@ -203,6 +224,7 @@ export function SprintCreateModal({
       release_date: endDateIso || null,
       target_date: endDateIso || todayIso(),
       description: formData.description.trim() || null,
+      release_id: formData.release_id || null,
     };
 
     if (isEdit && editingSprint) {
@@ -349,7 +371,7 @@ export function SprintCreateModal({
                   options={projectOptions}
                   value={formData.project_id || null}
                   onChange={(id) => {
-                    setFormData((p) => ({ ...p, project_id: id ?? '' }));
+                    setFormData((p) => ({ ...p, project_id: id ?? '', release_id: null }));
                     if (errors.project_id) setErrors((p) => ({ ...p, project_id: '' }));
                   }}
                   placeholder="Select a project"
@@ -359,6 +381,18 @@ export function SprintCreateModal({
                 {submitted && errors.project_id && (
                   <div role="alert" style={errStyle}>{errors.project_id}</div>
                 )}
+              </div>
+
+              <div>
+                <label style={labelStyle}>Release</label>
+                <ProductSelect
+                  options={releaseOptions ?? []}
+                  value={formData.release_id}
+                  onChange={(id) => setFormData((p) => ({ ...p, release_id: id }))}
+                  placeholder={formData.project_id ? 'Select a release (optional)' : 'Select a project first'}
+                  searchPlaceholder="Search releases"
+                  disabled={!formData.project_id}
+                />
               </div>
 
               {!isEdit && (

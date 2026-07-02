@@ -42,7 +42,8 @@ const SUBTLEST = 'var(--ds-text-subtlest)';
 const LINK = 'var(--ds-link)';
 const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered)';
 
-import { sprintStatusToReleaseBucket, isSprintStatus, SPRINT_STATUS_LABEL } from '@/lib/sprints/sprintStatus';
+import { sprintStatusToReleaseBucket, isSprintStatus, SPRINT_STATUS_LABEL, SPRINT_STATUS_TRANSITIONS, type SprintStatus } from '@/lib/sprints/sprintStatus';
+import { DefinitionOfDoneCard } from '@/components/sprints/DefinitionOfDoneCard';
 
 type DBStatus = 'planning' | 'in_progress' | 'released' | 'archived';
 const fromDBStatus = (s: string | null | undefined): ReleaseStatus => {
@@ -267,9 +268,14 @@ export function ReleaseSidePanel(props: Props) {
         />
       </div>
 
+      {/* S2.1b: Definition of Done — sprint-kind only, gated behind real
+          per-type status catalogs (see DefinitionOfDoneCard header comment). */}
+      {config.kind === 'sprint' && <DefinitionOfDoneCard sprintId={releaseId} />}
+
       {/* ApproversCard is config-aware (ph_release_approvers vs
-          ph_sprint_approvers, FK column, profile embed alias). */}
-      <ApproversCard releaseId={releaseId} config={config} />
+          ph_sprint_approvers, FK column, profile embed alias). entityStatus
+          only matters for sprints (S2.2/2.3 approve/reject gating). */}
+      <ApproversCard releaseId={releaseId} config={config} entityStatus={props.status} />
     </div>
   );
 }
@@ -278,6 +284,7 @@ export function ReleaseSidePanel(props: Props) {
 
 type ApproverStatus = 'pending' | 'approved' | 'rejected';
 interface Approver {
+  rowId: string;
   userId: string;
   name: string;
   avatarUrl: string | null;
@@ -301,13 +308,33 @@ interface ApproverRow {
   profile: { id: string; full_name: string | null; avatar_url: string | null } | null;
 }
 
-function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: string; config?: EntityConfig }) {
+function ApproversCard({
+  releaseId,
+  config = RELEASE_CONFIG,
+  entityStatus,
+}: {
+  releaseId: string;
+  config?: EntityConfig;
+  /** Raw ph_jira_sprints.status — only meaningful for config.kind === 'sprint'. */
+  entityStatus?: string | null;
+}) {
   const queryClient = useQueryClient();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerPos, setPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const plusRef = useRef<HTMLButtonElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+
+  // S2.2b/2.3: who's looking at this — approve/reject is a first-person
+  // action, never something you click on someone else's behalf.
+  const { data: currentUserId } = useQuery({
+    queryKey: ['approvers-current-user'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getUser();
+      return data.user?.id ?? null;
+    },
+    staleTime: Infinity,
+  });
 
   const { table: approverTable, fkColumn, profileFkAlias } = config.approvers;
   const queryKey = [`${config.queryKeyPrefix}-approvers`, releaseId];
@@ -327,6 +354,7 @@ function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: stri
   });
 
   const approvers: Approver[] = useMemo(() => rows.map((r) => ({
+    rowId: r.id,
     userId: r.user_id,
     name: r.profile?.full_name || 'Unknown',
     avatarUrl: r.profile?.avatar_url ?? null,
@@ -388,6 +416,27 @@ function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: stri
       catalystFlag.success('Description updated.');
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to update description'),
+  });
+
+  // S2.2b/2.3: approve/reject — decided_at stamps immediately; the DB
+  // trigger (fn_sprint_check_approval) evaluates policy and, on rejection,
+  // reopens the sprint to active. Sprint-only (config.approvers.table is
+  // ph_sprint_approvers only when config.kind === 'sprint').
+  const decideApproval = useMutation({
+    mutationFn: async ({ rowId, decision }: { rowId: string; decision: 'approved' | 'rejected' }) => {
+      const { error } = await (supabase as any)
+        .from(approverTable)
+        .update({ status: decision, decided_at: new Date().toISOString() })
+        .eq('id', rowId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_data, { decision }) => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix, 'one', releaseId] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
+      catalystFlag.success(decision === 'approved' ? 'Approved.' : 'Rejected — sprint reopened to active.');
+    },
+    onError: (e: any) => catalystFlag.error(e?.message || 'Failed to record decision'),
   });
 
   useEffect(() => {
@@ -494,16 +543,26 @@ function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: stri
         <span style={{ fontSize: 'var(--ds-font-size-400)', color: SUBTLE }}>No approvers have been added</span>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {approvers.map((a) => (
-            <ApproverRow
-              key={a.userId}
-              approver={a}
-              expanded={expandedId === a.userId}
-              onToggle={() => setExpandedId((prev) => prev === a.userId ? null : a.userId)}
-              onRemove={() => handleRemove(a.userId)}
-              onDescriptionSave={(next) => handleDescriptionSave(a.userId, next)}
-            />
-          ))}
+          {approvers.map((a) => {
+            const canDecide =
+              config.kind === 'sprint' &&
+              entityStatus === 'awaiting_approval' &&
+              a.status === 'pending' &&
+              !!currentUserId &&
+              a.userId === currentUserId;
+            return (
+              <ApproverRow
+                key={a.userId}
+                approver={a}
+                expanded={expandedId === a.userId}
+                onToggle={() => setExpandedId((prev) => prev === a.userId ? null : a.userId)}
+                onRemove={() => handleRemove(a.userId)}
+                onDescriptionSave={(next) => handleDescriptionSave(a.userId, next)}
+                canDecide={canDecide}
+                onDecide={(decision) => decideApproval.mutate({ rowId: a.rowId, decision })}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -523,13 +582,15 @@ function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: stri
 // ─── Approver row (collapsed pill + expand panel) ─────────────────────────
 
 function ApproverRow({
-  approver, expanded, onToggle, onRemove, onDescriptionSave,
+  approver, expanded, onToggle, onRemove, onDescriptionSave, canDecide, onDecide,
 }: {
   approver: Approver;
   expanded: boolean;
   onToggle: () => void;
   onRemove: () => void;
   onDescriptionSave: (next: string) => void;
+  canDecide?: boolean;
+  onDecide?: (decision: 'approved' | 'rejected') => void;
 }) {
   const { data: approvedProfiles = [] } = useApprovedProfiles();
   const profile = useMemo(
@@ -557,6 +618,36 @@ function ApproverRow({
         <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: LINK, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {approver.name}
         </span>
+        {canDecide && (
+          <span style={{ display: 'inline-flex', gap: 4 }}>
+            <button
+              type="button"
+              aria-label="Approve"
+              onClick={() => onDecide?.('approved')}
+              style={{
+                all: 'unset', cursor: 'pointer', display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center',
+                width: 24, height: 24, borderRadius: 3,
+                color: 'var(--ds-icon-success)', border: `1px solid var(--ds-border-success)`,
+              }}
+            >
+              <CheckIcon label="Approve" size="small" />
+            </button>
+            <button
+              type="button"
+              aria-label="Reject"
+              onClick={() => onDecide?.('rejected')}
+              style={{
+                all: 'unset', cursor: 'pointer', display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center',
+                width: 24, height: 24, borderRadius: 3,
+                color: 'var(--ds-icon-danger)', border: `1px solid var(--ds-border-danger)`,
+              }}
+            >
+              <EditorCloseIcon label="Reject" size="small" />
+            </button>
+          </span>
+        )}
         <StatusPill status={approver.status} />
         <button
           type="button"
@@ -967,10 +1058,46 @@ function StatusDropdown({
     catalystFlag.success(`Status updated to ${next === 'planning' ? 'Unreleased' : next.replace('_', ' ')}.`);
   };
 
-  // Build menu items per current status. Both release + sprint use the
+  // S2.2c: sprint's own native vocabulary — separate from setStatusDirect
+  // above, which writes the release-shaped planning/in_progress/released/
+  // archived set. Never called for awaiting_approval/completed (D-004 —
+  // those are reached only via the DoD trigger / approval decision).
+  const setSprintStatusDirect = async (next: SprintStatus) => {
+    const { error } = await (supabase as any)
+      .from(config.table)
+      .update({ status: next })
+      .eq('id', releaseId);
+    if (error) {
+      catalystFlag.error(error.message);
+      return;
+    }
+    onChanged();
+    catalystFlag.success(`Sprint status updated to ${SPRINT_STATUS_LABEL[next]}.`);
+  };
+
+  // Build menu items per current status. Release/milestone use the
   // confirmation modals — they're config-aware (write to config.table).
+  // Sprint uses its own native vocabulary (S2.2c) — NOT the release bucket.
+  const SPRINT_TRANSITION_LABEL: Record<SprintStatus, string> = {
+    planning: 'Reopen to planning',
+    active: 'Start sprint',
+    awaiting_approval: 'Request approval', // never manually offered — see filter below
+    completed: 'Complete sprint',          // never manually offered — approval gate only (D-004)
+    canceled: 'Cancel sprint',
+    archived: 'Archive',
+  };
   const menuItems: Array<{ key: string; label: string; onSelect: () => void }> = [];
-  if (uiStatus === 'released') {
+  if (config.kind === 'sprint' && isSprintStatus(rawStatus)) {
+    SPRINT_STATUS_TRANSITIONS[rawStatus]
+      .filter((next) => next !== 'awaiting_approval' && next !== 'completed') // D-004: only the DoD trigger / approval decision may reach these
+      .forEach((next) => {
+        if (next === 'archived') {
+          menuItems.push({ key: next, label: SPRINT_TRANSITION_LABEL[next], onSelect: () => { setOpen(false); setShowArchiveModal(true); } });
+        } else {
+          menuItems.push({ key: next, label: SPRINT_TRANSITION_LABEL[next], onSelect: () => { setOpen(false); setSprintStatusDirect(next); } });
+        }
+      });
+  } else if (uiStatus === 'released') {
     menuItems.push({ key: 'archive', label: 'Archive', onSelect: () => { setOpen(false); setShowArchiveModal(true); } });
   } else if (uiStatus === 'unreleased') {
     menuItems.push({ key: 'release', label: 'Release', onSelect: () => { setOpen(false); setShowReleaseModal(true); } });
