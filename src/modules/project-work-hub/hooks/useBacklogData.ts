@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useProject } from '@/hooks/useProjects';
+import { isEligibleForBacklogView } from '@/lib/catalyst-rules';
 import type { BacklogEpic, BacklogFeature, BacklogStory } from '../types/backlog.types';
 
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
@@ -252,9 +253,12 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
   // double-count with useEpicBacklog. Every other type — including
   // custom or unknown types — lands in the table.
   const skipNonEpicTypeFilter = isReleaseScope || isAllItems;
-  const issueTypeFilter = forceProjectKey
+  // CRE Grid I1: QA Bug / Production Incident excluded from standalone
+  // Backlog rows (still valid Epic children — Grid B2 unaffected).
+  const issueTypeFilter = (forceProjectKey
     ? ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident', 'Business Request']
-    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident'];
+    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident']
+  ).filter(isEligibleForBacklogView);
 
   const restrictKeySig = restrictToIssueKeys ? [...restrictToIssueKeys].sort().join('|') : '';
   return useQuery({

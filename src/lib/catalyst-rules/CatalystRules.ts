@@ -12,11 +12,13 @@
  *   5. Route param contract — isValidRouteParam (Grid F)
  *   6. Avatar contract    — validateAvatarImport, validateAvatarSrc (Grid G)
  *   7. Row typography contract — CANONICAL_ROW_TYPOGRAPHY, containsHardcodedLineHeight (Grid H)
+ *   8. Backlog/All-Work view eligibility — isEligibleForBacklogView (Grid I)
  *
  * ALL surfaces that create, link, or parent work items MUST query this engine.
  * No surface may hardcode type lists or module mappings.
  *
  * Confirmed by Vikram: 2026-07-01 (Grids A–G) · 2026-07-02 (Grid H, pending confirmation)
+ * · 2026-07-03 (Grid I)
  * Council session: CRE design + opportunity analysis
  */
 
@@ -596,5 +598,27 @@ export const ROW_TYPOGRAPHY_CONTRACT_CHECKLIST = [
   'No hardcoded lineHeight: 1 / 1.4 / 1.5 or Tailwind leading-[...] in row cell components',
   'Reuse JiraTable/cells.tsx or JiraTable/editors.tsx — do not hand-roll a new row renderer',
 ] as const;
+
+// ─── GRID I — BACKLOG / ALL-WORK VIEW ELIGIBILITY ────────────────────────────
+
+/**
+ * Types banned from appearing as standalone rows in the Backlog and All Work
+ * views. Rules I1–I2. QA Bug moved to TESTHUB and Production Incident moved
+ * to INCIDENT (Grid A4/A5, 2026-07-01) — they no longer belong in the Team
+ * Backlog/All-Work row list, though they remain valid children of an Epic
+ * (Grid B2 unaffected — this only governs standalone row visibility, not
+ * hierarchy) and are still reachable via TestHub / Incident Hub.
+ * Confirmed by Vikram: 2026-07-03.
+ */
+const BACKLOG_VIEW_EXCLUDED_TYPES: readonly string[] = ['QA Bug', 'Production Incident'];
+
+/**
+ * Returns true if typeName may appear as a standalone row in the Backlog
+ * or All Work view. Rules I1 (Backlog), I2 (All Work).
+ */
+export function isEligibleForBacklogView(typeName: string): boolean {
+  const canonical = normalizeType(typeName);
+  return !BACKLOG_VIEW_EXCLUDED_TYPES.includes(canonical);
+}
 
 export type AvatarContractItem = typeof AVATAR_CONTRACT_CHECKLIST[number];
