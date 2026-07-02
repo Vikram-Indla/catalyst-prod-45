@@ -26,10 +26,12 @@ measurement on both apps), fixing confirmed gaps in the single canonical `kanban
 - Migration history on staging (cyij) fully reconciled — see `08_DRIFT_LOG.md`.
 
 ### What is NOT working / incomplete
-1. **Epic-key click-to-open detail panel** — wiring is safe (verified: never breaks swimlane
-   collapse/expand), but whether the detail modal actually **opens** for a given epic key was
-   never confirmed. Quick manual test needed: Group:Epic on any board, click an epic's key
-   text (not the chevron), see if the detail panel opens.
+1. ~~Epic-key click-to-open detail panel~~ — **FIXED 2026-07-02, Round 7.** Real bug wasn't in
+   kanban at all: `CatalystDetailRouter.tsx` silently rendered nothing forever for any
+   `openDetail({id})` target resolving to a soft-deleted `ph_issues` row. Now falls through to
+   the canonical "Issue not found" state. See `04_EXECUTION_LOG.md` Round 6+7 and
+   `08_DRIFT_LOG.md` for the full disprove-then-find chain (original nested-button theory was
+   wrong, caught before any code was written).
 2. **Epic color/status population** — schema + UI ready, but nothing writes real values yet.
    Fully scoped, not started (see Next Exact Prompt below).
 
@@ -61,6 +63,7 @@ State: complete, live-verified, committed.
 | `src/integrations/supabase/types.ts` | complete (regenerated) |
 | `supabase/migrations/20260702180000_add_epic_color_status_columns.sql` | complete, applied |
 | 5 renamed migration files (see `08_DRIFT_LOG.md`) | complete, applied |
+| `src/components/catalyst-detail-views/CatalystDetailRouter.tsx` | complete (Round 7, not committed yet — see below) |
 
 ---
 

@@ -81,7 +81,7 @@ export default function CatalystDetailRouter({
   // itemId here is the row's issue_key (e.g. "BAU-5485"). Phase 6 (2026-05-02):
   // the lookup is skipped for idea entities (ph_ideas uses idea_key) — callers
   // that open an idea must pass itemType="idea" explicitly.
-  const { data: lookedUpType } = useQuery({
+  const { data: lookedUpType, isLoading: isTypeLoading } = useQuery({
     queryKey: ['cv-item-type-lookup', itemId],
     enabled: !!itemId && isOpen && !itemType && !entityKind,
     queryFn: async () => {
@@ -176,8 +176,12 @@ export default function CatalystDetailRouter({
   // and avoids "Rendered more hooks" when Suspense swaps from fallback to loaded component
   if (!isOpen) return null;
 
-  // While we're looking up the type, don't render anything
-  if (!resolved && !itemType) {
+  // While the type lookup is still in flight, don't render anything. Once it
+  // settles with no result (deleted/invalid issue_key), fall through to the
+  // default Story branch below — CatalystViewStory's own useCatalystIssue
+  // lookup will find the same nothing and surface the canonical isNotFound
+  // state, instead of this router silently rendering null forever.
+  if (!resolved && !itemType && isTypeLoading) {
     return null;
   }
 

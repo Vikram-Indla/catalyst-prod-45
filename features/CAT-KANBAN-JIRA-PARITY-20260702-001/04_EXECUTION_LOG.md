@@ -40,6 +40,41 @@
   swimlane never collapses. Live-verified: never breaks collapse. **Whether the detail panel
   actually opens for a given epic key was NOT confirmed** — see Pending below.
 
+## Round 6 — Confirmed regression: epic-key click does not open detail panel
+- Live-verified (2026-07-02, Chrome MCP, BAU project, Group:Epic, BAU-3726): clicking the epic
+  key text fires no Supabase network call and mounts no `[role="dialog"]`. `document.elementFromPoint`
+  confirms the click lands squarely on the `span[role="link"]` itself (not swallowed by a
+  sibling/overlay), so the click event reaches the correct DOM node but its `onClick` never
+  executes `openDetail`.
+- Likely root cause: `SwimlaneHeader.tsx:28-56` renders `labelNode` (our epic-key span) **nested
+  inside a native `<button onClick={onToggle}>`**. Invalid interactive-content nesting
+  (button-in-button semantics apply to any interactive descendant). Needs a real fiber-level
+  trace to confirm definitively — not done this session, out of scope for a manual click-check.
+- Verdict: this is a real, confirmed regression, not just "unconfirmed" as Round 5 left it.
+  Upgrades HANDOVER incomplete-item #1 from "needs testing" to "needs fixing."
+
+## Round 7 — Fixed: shared not-found state for CatalystDetailRouter (supersedes Plan Lock 6a)
+- Real root cause (see `08_DRIFT_LOG.md` for the full disprove-then-find chain): NOT the
+  nested-button theory from Plan Lock 6a — that was disproven live (direct fiber `onClick()`
+  invocation ran clean with zero effect). Real cause: `CatalystDetailRouter.tsx`'s type-lookup
+  query excludes soft-deleted `ph_issues` rows (`.is('deleted_at', null)`), and the
+  still-loading guard couldn't distinguish "in flight" from "settled, found nothing" — so it
+  returned `null` forever with zero user feedback. Affects every `openDetail({id})` caller
+  app-wide (20+ sites), not just kanban. 36 of 416 referenced parent keys are soft-deleted.
+- Fix: `CatalystDetailRouter.tsx` — added `isLoading: isTypeLoading` to the lookup query's
+  destructure, gated the early-return on `isTypeLoading` instead of just `!resolved`. Once the
+  query settles with no result, execution now falls through to the existing
+  `(resolved === 'story' || !resolved) && <CatalystViewStory .../>` branch, and
+  `CatalystViewStory`'s own `useCatalystIssue` hook (same `.is('deleted_at', null)` filter)
+  correctly resolves `isNotFound=true`, surfacing the canonical "Issue not found" state that
+  `CatalystViewBase` already had built (used by `CatalystViewDefect`/`TestCase`/`TestCycle`) —
+  zero new UI, 2-line diff.
+- Files: `src/components/catalyst-detail-views/CatalystDetailRouter.tsx` only.
+  `SwimlaneHeader.tsx`/`Board.tsx` untouched — confirmed already correct.
+- Live-verified: BAU-3726 (deleted) → "Issue not found" state, proper modal chrome, dark-mode
+  clean. BAU-5851 (live epic) → still opens correctly. BAU-6054 (card/story) → still opens
+  correctly. `npx tsc --noEmit`, `lint:colors:gate`, `audit:ads:gate` all clean.
+
 ## Round 5 — Slice A: DB migration + staging reconciliation (see 08_DRIFT_LOG.md for the incident)
 - Added `ph_issues.epic_color`, `epic_status`, `epic_status_category` (nullable, additive).
 - Wired: `useKanbanData.ts` (SELECT + mapping) → `types.ts` (`BoardIssue.parentColor` etc.,

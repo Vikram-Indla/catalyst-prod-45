@@ -1,5 +1,42 @@
 # DRIFT LOG
 
+## Plan Lock 6a superseded — wrong root cause diagnosed pre-approval — 2026-07-02
+
+**What happened:** Plan Lock 6a (epic-key click-to-open fix) was drafted and approved based on a
+hypothesis — `SwimlaneHeader.tsx`'s epic-key `span[role="link"]` nested inside the row's own
+`<button onClick={onToggle}>`, theorized to swallow the click. Before writing code, ran one more
+Karpathy-loop experiment (direct React-fiber `props.onClick()` invocation, bypassing DOM event
+dispatch entirely) — the handler ran with zero errors, still zero dialogs. That disproved the
+nested-button theory outright: the click **does** reach `openDetail()` correctly.
+
+**Real root cause (confirmed via control test + DB query):**
+- Clicked a card on the same board → detail panel opened correctly (proves `CatalystShell` /
+  `CatalystDetailRouter` / `useGlobalSearchStore` all work fine on this route).
+- Clicked epic key BAU-5851 (a live, non-deleted epic) → **panel opened correctly**. The
+  Board.tsx/SwimlaneHeader wiring is 100% functional, no bug there at all.
+- Clicked epic key BAU-3726 (the one from the original manual check) → silent no-op, confirmed
+  via SQL: `ph_issues.deleted_at` is set (soft-deleted 2026-06-24), `issue_type = 'Feature'`.
+- `CatalystDetailRouter.tsx:88-93`'s type-lookup query filters `.is('deleted_at', null)` — a
+  soft-deleted parent returns no row, `lookedUpType` stays `null`, `resolveItemType(null)`
+  returns `null` (line 44), and the "still loading, don't render" guard at line 180-182
+  (`if (!resolved && !itemType) return null`) can't tell "still fetching" apart from "fetched and
+  genuinely found nothing" — so it returns `null` forever, no dialog, no error state, no user
+  feedback.
+- Scale check: `36 of 416` distinct live-referenced parent keys in `ph_issues` are soft-deleted
+  (~9%) — not a one-off edge case, a real class of dead clicks across the app (this bug isn't
+  kanban-specific — every `openDetail({id})` call site with an unresolved `itemType` hits the
+  same silent-null path for any soft-deleted target).
+
+**Resolution:** Plan Lock 6a marked SUPERSEDED (see `03_PLAN_LOCK.md`, not deleted — kept for the
+record). New Plan Lock 6a-revised needed, scoped to `CatalystDetailRouter.tsx`'s loading-vs-empty
+guard, which was explicitly FORBIDDEN in the superseded lock. `SwimlaneHeader.tsx` needs no
+change — removed from files-to-modify.
+
+**Process note:** confirms the value of the "invoke the handler directly" experiment as a cheap
+way to falsify a hypothesis before spending a code-change cycle on it. Should be standard practice
+for any "click does nothing" bug before proposing a fix.
+
+
 ## Staging (cyij / catalyst-staging) migration history drift — 2026-07-02
 
 **What happened:** Attempting to push a small additive migration (3 nullable columns) via
