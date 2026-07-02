@@ -12,6 +12,7 @@ import {
   ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
 } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import ExportWorkItems from '@/components/resources/ExportWorkItems';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useIsDark } from '@/components/strategy/themes/useIsDark';
@@ -133,7 +134,7 @@ export default function ResourceListingPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { data: resources = [], isLoading } = useQuery({
+  const { data: resources = [], isLoading, isPending, isError, error, refetch } = useQuery({
     queryKey: ['resources-listing', 'all-types-v1'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -391,7 +392,24 @@ export default function ResourceListingPage() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {/* isError alone misses the persisted-cache case: hydrated data
+                    keeps status 'success' while the background refetch fails and
+                    only `error` is set. */}
+                {isError || error ? (
+                  <tr>
+                    <td colSpan={6} style={{ padding: '16px 24px' }}>
+                      <div style={{ maxWidth: 720 }}>
+                        <SectionMessage
+                          appearance="error"
+                          title="Couldn't load resources"
+                          actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+                        >
+                          {(error as Error)?.message ?? 'Unknown error loading resources.'}
+                        </SectionMessage>
+                      </div>
+                    </td>
+                  </tr>
+                ) : isLoading || isPending ? (
                   Array.from({ length: 6 }).map((_, i) => (
                     <tr key={i}>
                       {COLUMNS.map(col => (
