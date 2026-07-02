@@ -18,11 +18,13 @@ import { useEffect } from 'react';
 type Handler = () => void;
 
 const createChildSubs = new Set<Handler>();
+const createChildWorkItemSubs = new Set<Handler>();
 const linkWorkItemSubs = new Set<Handler>();
 const addAttachmentSubs = new Set<Handler>();
 const addWebLinkSubs = new Set<Handler>();
 const addDesignSubs = new Set<Handler>();
 
+/** "Create subtask" — subtask-family scope. Wired to SubtasksPanel. */
 export function emitCreateChild(): void {
   createChildSubs.forEach((h) => h());
 }
@@ -32,6 +34,23 @@ export function useCreateChildListener(handler: Handler): void {
     createChildSubs.add(handler);
     return () => {
       createChildSubs.delete(handler);
+    };
+  }, [handler]);
+}
+
+/** "Create child work item" — non-subtask-family scope (Epic → Story/Task
+ *  /Feature/etc.; Feature → Story; BR → Epic). Currently wired to
+ *  SubtasksPanel which handles both flows via its allowedChildTypes prop;
+ *  each listener owns which scope it filters. */
+export function emitCreateChildWorkItem(): void {
+  createChildWorkItemSubs.forEach((h) => h());
+}
+
+export function useCreateChildWorkItemListener(handler: Handler): void {
+  useEffect(() => {
+    createChildWorkItemSubs.add(handler);
+    return () => {
+      createChildWorkItemSubs.delete(handler);
     };
   }, [handler]);
 }

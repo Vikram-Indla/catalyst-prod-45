@@ -271,6 +271,16 @@ export function InlineCreateWithAI({
             style={{
               cursor: draft.trim() ? 'pointer' : 'not-allowed',
               opacity: draft.trim() ? 1 : 0.5,
+              // Vikram 2026-07-02: blue-bold background whenever the
+              // input has content, so the primary action is visually
+              // active. Falls back to neutral when the field is empty.
+              background: draft.trim()
+                ? 'var(--ds-background-brand-bold)'
+                : 'transparent',
+              color: draft.trim()
+                ? 'var(--ds-text-inverse)'
+                : 'var(--ds-text-subtle)',
+              border: draft.trim() ? 'none' : '1px solid var(--ds-border)',
             }}
           >
             {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}

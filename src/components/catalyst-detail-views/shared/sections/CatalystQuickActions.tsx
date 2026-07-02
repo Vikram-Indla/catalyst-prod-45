@@ -13,33 +13,78 @@
  * AI button at this position. Improve functionality lives in the right rail
  * ImproveIssueDropdown only.
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import AddIcon from '@atlaskit/icon/core/add';
-import ChildIssuesIcon from '@atlaskit/icon/core/child-issues';
+import SubtasksIcon from '@atlaskit/icon/core/subtasks';
 import TaskIcon from '@atlaskit/icon/glyph/task';
 import AttachmentIcon from '@atlaskit/icon/glyph/attachment';
 import GlobeIcon from '@atlaskit/icon/core/globe';
 import EditIcon from '@atlaskit/icon/core/edit';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import ChildIssuesIcon from '@atlaskit/icon/core/child-issues';
 import { catalystToast } from '@/lib/catalystToast';
-import { emitCreateChild, emitLinkWorkItem, emitAddAttachment, emitAddWebLink, emitAddDesign } from './quickActionsBus';
+import { emitCreateChild, emitCreateChildWorkItem, emitLinkWorkItem, emitAddAttachment, emitAddWebLink, emitAddDesign } from './quickActionsBus';
+import { getAllowedChildTypes, SUBTASK_FAMILY_CANONICAL_TYPES } from '../parent-rules';
 
 interface CatalystQuickActionsProps {
+  /** Parent issue type — drives which children can be created. When
+   *  omitted (legacy call sites), BOTH create options fall through to
+   *  the bus handlers so no functionality is silently dropped. */
+  itemType?: string | null;
   onCreateChild?: () => void;
+  onCreateChildWorkItem?: () => void;
   onLinkItem?: () => void;
   onAddAttachment?: () => void;
   onAddWebLink?: () => void;
   onAddDesign?: () => void;
 }
 
+// Render a keyboard shortcut such as "shift+c" as inline text segments.
+// Modifier keys render as their Unicode glyph (⇧ = U+21E7, Jira parity —
+// same character Jira's own shortcut hints render); letter keys render
+// uppercase. inline-flex + line-height 1 keeps every segment on one
+// baseline so the ⇧ glyph and the letter align exactly.
+function renderShortcut(combo: string): React.ReactNode {
+  const parts = combo.toLowerCase().split('+').map(p => p.trim());
+  return parts.map((p, i) => (
+    <span
+      key={i}
+      style={{
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        lineHeight: 1, fontSize: 'var(--ds-font-size-300)',
+      }}
+    >
+      {p === 'shift' ? '⇧' : p.toUpperCase()}
+    </span>
+  ));
+}
+
 export function CatalystQuickActions({
+  itemType,
   onCreateChild,
+  onCreateChildWorkItem,
   onLinkItem,
   onAddAttachment,
   onAddWebLink,
   onAddDesign,
 }: CatalystQuickActionsProps) {
+  // Which child-creation flows apply for this parent type. Derived
+  // from the canonical parent-rules map:
+  //   canHaveSubtasks       → allowed list intersects subtask family
+  //   canHaveChildWorkItems → allowed list has any non-subtask-family type
+  // When itemType is omitted (legacy call sites), fall back to showing
+  // the Subtask option so no existing surface loses functionality.
+  const allowedChildren = getAllowedChildTypes(itemType ?? '');
+  const subtaskFamilyLower = new Set(
+    SUBTASK_FAMILY_CANONICAL_TYPES.map((t) => t.toLowerCase()),
+  );
+  const canHaveSubtasks = itemType
+    ? allowedChildren.some((t) => subtaskFamilyLower.has(t.toLowerCase()))
+    : true;
+  const canHaveChildWorkItems = itemType
+    ? allowedChildren.some((t) => !subtaskFamilyLower.has(t.toLowerCase()))
+    : false;
   const [showMenu, setShowMenu] = useState(false);
   const [search, setSearch] = useState('');
   const [isHovered, setIsHovered] = useState(false);
@@ -62,16 +107,60 @@ export function CatalystQuickActions({
   const hoverBg = 'var(--ds-background-neutral-hovered)';
   const borderColor = 'var(--ds-border)';
 
+  // Create-subtask action extracted so both the menu item and the
+  // Shift+C keyboard shortcut share one code path.
+  const triggerCreateChild = useCallback(() => {
+    setShowMenu(false); setSearch('');
+    if (onCreateChild) onCreateChild();
+    else emitCreateChild();
+  }, [onCreateChild]);
+
+  // Create child work item — separate bus channel so a future
+  // ChildIssuesSection can subscribe without conflating with the
+  // subtask-panel handler. Both currently route to SubtasksPanel.
+  const triggerCreateChildWorkItem = useCallback(() => {
+    setShowMenu(false); setSearch('');
+    if (onCreateChildWorkItem) onCreateChildWorkItem();
+    else emitCreateChildWorkItem();
+  }, [onCreateChildWorkItem]);
+
+  // Global Shift+C shortcut → create subtask. Mounted on the document so
+  // it fires from anywhere in the open detail view (modal / side panel /
+  // full page). Gated to avoid firing while the user is typing in an
+  // input / textarea / contenteditable surface.
+  useEffect(() => {
+    const isTypingTarget = (t: EventTarget | null): boolean => {
+      if (!(t instanceof HTMLElement)) return false;
+      const tag = t.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+      if (t.isContentEditable) return true;
+      return false;
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!e.shiftKey) return;
+      const k = e.key.toLowerCase();
+      if (k !== 'c') return;
+      if (isTypingTarget(e.target)) return;
+      // Only fire when this parent supports subtask creation. If not,
+      // let the keystroke fall through so other keybindings can claim
+      // it without a silent no-op.
+      if (!canHaveSubtasks) return;
+      e.preventDefault();
+      triggerCreateChild();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [triggerCreateChild, canHaveSubtasks]);
+
   const menuItems = [
-    { id: 'child', icon: <ChildIssuesIcon label="" color={textColor} />, label: 'Create child work item', section: 'primary', action: () => {
-      setShowMenu(false); setSearch('');
-      // Caller-supplied override wins; otherwise notify any mounted
-      // SubtasksPanel via the quickActionsBus. The panel handles
-      // expanding + entering inline-create mode; the focused input
-      // auto-scrolls itself into view natively.
-      if (onCreateChild) onCreateChild();
-      else emitCreateChild();
-    } },
+    canHaveSubtasks
+      ? { id: 'child', icon: <SubtasksIcon label="" color={textColor} />, label: 'Create subtask', shortcut: 'shift+c', section: 'primary', action: triggerCreateChild }
+      : null,
+    canHaveChildWorkItems
+      ? { id: 'child-work-item', icon: <ChildIssuesIcon label="" color={textColor} />, label: 'Create child work item', section: 'primary', action: triggerCreateChildWorkItem }
+      : null,
     { id: 'link', icon: <TaskIcon size="small" primaryColor={textColor} />, label: 'Link work item', section: 'primary', action: () => {
       setShowMenu(false); setSearch('');
       // Caller-supplied override wins; otherwise notify any mounted
@@ -107,7 +196,10 @@ export function CatalystQuickActions({
   ];
 
   const q = search.toLowerCase();
-  const filtered = q ? menuItems.filter(i => i.label.toLowerCase().includes(q)) : menuItems;
+  // Drop null entries produced by the conditional create-* items above,
+  // then apply the free-text filter.
+  const activeItems = menuItems.filter((i): i is NonNullable<typeof i> => i != null);
+  const filtered = q ? activeItems.filter(i => i.label.toLowerCase().includes(q)) : activeItems;
   const primary = filtered.filter(i => i.section === 'primary');
   const secondary = filtered.filter(i => i.section === 'secondary');
 
@@ -228,6 +320,20 @@ export function CatalystQuickActions({
               >
                 <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{item.icon}</span>
                 <span style={{ flex: 1 }}>{item.label}</span>
+                {item.shortcut && (
+                  <span
+                    aria-label={`Keyboard shortcut ${item.shortcut}`}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      marginLeft: 8, flexShrink: 0,
+                      fontSize: 'var(--ds-font-size-300)',
+                      color: 'var(--ds-text-subtle)',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    {renderShortcut(item.shortcut)}
+                  </span>
+                )}
               </button>
             ))}
 
@@ -244,6 +350,20 @@ export function CatalystQuickActions({
               >
                 <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{item.icon}</span>
                 <span style={{ flex: 1 }}>{item.label}</span>
+                {item.shortcut && (
+                  <span
+                    aria-label={`Keyboard shortcut ${item.shortcut}`}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      marginLeft: 8, flexShrink: 0,
+                      fontSize: 'var(--ds-font-size-300)',
+                      color: 'var(--ds-text-subtle)',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    {renderShortcut(item.shortcut)}
+                  </span>
+                )}
               </button>
             ))}
 

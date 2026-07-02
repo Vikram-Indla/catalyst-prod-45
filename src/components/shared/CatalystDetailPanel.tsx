@@ -383,7 +383,7 @@ function PhIssuePanelBody({
               {issue.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
             </div>
 
-            <CatalystQuickActions />
+            <CatalystQuickActions itemType={effectiveType} />
 
             <CatalystKeyDetails
               issue={issue}

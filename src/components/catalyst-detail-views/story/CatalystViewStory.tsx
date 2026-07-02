@@ -128,7 +128,7 @@ export default function CatalystViewStory({
           Jira renders a 32px status button immediately under the title
           (testid issue-field-status.ui.status-view.status-button). */}
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Story'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare 2026-05-04 (D5 — Vikram approved): Key details section
           re-added to Story left body. DOM-probed Jira BAU-5609 (Story):

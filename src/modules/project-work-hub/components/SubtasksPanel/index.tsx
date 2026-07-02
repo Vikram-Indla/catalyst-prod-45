@@ -910,19 +910,16 @@ export function SubtasksPanel({
         </button>
       )}
 
+      {/* Body wrapper — Jira-parity 2026-07-02: content aligned under
+          the section title. Chevron button (24w, marginLeft -4 → ends
+          at x=20) + title h2 (padding 0 4px → text at x=24). Every
+          body element (progress bar, table, AI panel, manual input)
+          sits at x=24 to match, same as Linked work items / Attachments
+          / Key details do on their surfaces. */}
       {expanded && (
-        <>
-          {/* ═══ Progress bar ═══ */}
-          {totalCount > 0 && (
-            <div className="sp-progress" role="progressbar" aria-valuemax={totalCount} aria-valuenow={doneCount} aria-label="Subtask progress">
-              <div className="sp-progress-track">
-                <div className="sp-progress-fill" style={{ width: `${percentage}%` }} />
-              </div>
-              <span className="sp-progress-label" aria-live="polite" aria-atomic="true">
-                {percentage}% Done
-              </span>
-            </div>
-          )}
+        <div style={{ paddingLeft: 24 }}>
+          {/* Legacy single-bar progress removed 2026-07-02 — replaced
+              by the canonical WorkItemsProgressBar mounted below. */}
 
           {/* ═══ Loading skeleton ═══ */}
           {isLoading && (
@@ -1018,6 +1015,8 @@ export function SubtasksPanel({
                 items={children.map(c => ({ status_category: (c as any).status_category ?? null }))}
                 label={effectiveTitle}
                 compact
+                hideHeader
+                showPercentSuffix
               />
             </div>
           )}
@@ -1332,7 +1331,7 @@ export function SubtasksPanel({
 
           {/* InlineCreateWithAI moved inside sp-table-body (inside the IIFE above)
               so it appears as the last row within the table's visual border — Jira parity. */}
-        </>
+        </div>
       )}
       </div>
 
