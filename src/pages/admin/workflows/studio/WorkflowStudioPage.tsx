@@ -9,7 +9,7 @@
  * stays reachable at /admin/workflows/classic until the P2.2 editor lands.
  */
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { AtlaskitPageShell } from '@/components/ads/AtlaskitPageShell';
@@ -19,11 +19,6 @@ import {
   DropdownItem,
   EmptyState,
   Lozenge,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
   SectionMessage,
   Spinner,
 } from '@/components/ads';
@@ -34,145 +29,11 @@ import {
   useWfVersionStatuses,
   type WfVersion,
 } from '@/hooks/workflow-v2/useWorkflowFoundation';
-import {
-  useCreateDraft,
-  useDiscardDraft,
-  usePublishVersion,
-  useValidateDraft,
-} from '@/hooks/workflow-v2/useWorkflowDraft';
-
-// ── Entity taxonomy (4 groups replace the 17 flat chips) ────────────────────
-interface EntityDef {
-  key: string;
-  label: string;
-  readOnly?: boolean; // date-driven lifecycles render, never edit
-}
-const ENTITY_GROUPS: { label: string; entities: EntityDef[] }[] = [
-  {
-    label: 'Standard',
-    entities: [
-      { key: 'story', label: 'Story' },
-      { key: 'epic', label: 'Epic' },
-      { key: 'feature', label: 'Feature' },
-      { key: 'task', label: 'Task' },
-    ],
-  },
-  {
-    label: 'QA',
-    entities: [
-      { key: 'defect', label: 'Defect' },
-      { key: 'incident', label: 'Incident' },
-    ],
-  },
-  {
-    label: 'Business',
-    entities: [
-      { key: 'business_request', label: 'Business Request' },
-      { key: 'product_milestone', label: 'Milestone' },
-      { key: 'release', label: 'Release' },
-      { key: 'sprint', label: 'Sprint', readOnly: true },
-    ],
-  },
-  {
-    label: 'Subtasks',
-    entities: [{ key: 'subtask', label: 'Sub-task' }],
-  },
-];
-const ENTITY_LABELS: Record<string, string> = Object.fromEntries(
-  ENTITY_GROUPS.flatMap((g) => g.entities.map((e) => [e.key, e.label]))
-);
+import { useCreateDraft, useDiscardDraft } from '@/hooks/workflow-v2/useWorkflowDraft';
+import { ENTITY_GROUPS, LIFECYCLE_APPEARANCE, fmtDate } from './entities';
+import { PublishModal } from './PublishModal';
 
 type VersionRow = WfVersion & { template_name: string | null };
-
-const LIFECYCLE_APPEARANCE: Record<string, 'success' | 'inprogress' | 'default' | 'removed'> = {
-  published: 'success',
-  draft: 'inprogress',
-  superseded: 'default',
-  archived: 'removed',
-};
-
-function fmtDate(iso: string | null): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
-// ── Publish confirmation modal ───────────────────────────────────────────────
-function PublishModal({
-  version,
-  onClose,
-}: {
-  version: VersionRow;
-  onClose: () => void;
-}) {
-  const validation = useValidateDraft(version.id);
-  const publish = usePublishVersion();
-  const [publishError, setPublishError] = useState<string | null>(null);
-
-  const issues = validation.data?.issues ?? [];
-  const canPublish = validation.data?.ok === true && !publish.isPending;
-
-  return (
-    <Modal isOpen onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle>
-          Publish {ENTITY_LABELS[version.entity_key] ?? version.entity_key} v{version.version_no}
-        </ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        {validation.isLoading && <Spinner size="medium" />}
-        {validation.isError && (
-          <SectionMessage appearance="error" title="Couldn't validate this draft">
-            {(validation.error as Error)?.message}
-          </SectionMessage>
-        )}
-        {validation.data?.ok === false && (
-          <SectionMessage appearance="warning" title="Fix these before publishing">
-            <ul style={{ margin: 0, paddingLeft: 16 }}>
-              {issues.map((i, idx) => (
-                <li key={idx}>
-                  <code style={{ fontSize: 'var(--ds-font-size-100)' }}>{i.code}</code> — {i.detail}
-                </li>
-              ))}
-            </ul>
-          </SectionMessage>
-        )}
-        {validation.data?.ok === true && !publishError && (
-          <p style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
-            Publishing makes this version immutable and the runtime starts enforcing it
-            immediately. The current published version is superseded and schemes are
-            re-pointed. If this draft removed statuses that live items still use, the
-            publish is refused with the list of statuses needing a remap.
-          </p>
-        )}
-        {publishError && (
-          <SectionMessage appearance="error" title="Publish refused">
-            {publishError}
-          </SectionMessage>
-        )}
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button
-          appearance="primary"
-          isDisabled={!canPublish}
-          onClick={() =>
-            publish.mutate(
-              { versionId: version.id },
-              {
-                onSuccess: onClose,
-                onError: (e) => setPublishError((e as Error).message),
-              }
-            )
-          }
-        >
-          {publish.isPending ? 'Publishing…' : 'Publish'}
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
 
 // ── Statuses preview panel (read-only; P2.2 replaces with the editor) ───────
 function StatusesPreview({ version }: { version: VersionRow }) {
@@ -220,6 +81,7 @@ function StatusesPreview({ version }: { version: VersionRow }) {
 
 // ── Workflows tab ────────────────────────────────────────────────────────────
 function WorkflowsTab() {
+  const navigate = useNavigate();
   const [entityKey, setEntityKey] = useState('story');
   const [previewVersionId, setPreviewVersionId] = useState<string | null>(null);
   const [publishTarget, setPublishTarget] = useState<VersionRow | null>(null);
@@ -228,6 +90,7 @@ function WorkflowsTab() {
   const versionsQuery = useWfVersions();
   const createDraft = useCreateDraft();
   const discardDraft = useDiscardDraft();
+  const openEditor = (versionId: string) => navigate(`/admin/workflows/${versionId}/edit`);
 
   const entityDef = ENTITY_GROUPS.flatMap((g) => g.entities).find((e) => e.key === entityKey);
   const readOnly = entityDef?.readOnly === true;
@@ -293,6 +156,9 @@ function WorkflowsTab() {
       align: 'end',
       cell: ({ row }) => (
         <DropdownMenu trigger="⋯" ariaLabel={`Actions for v${row.version_no}`}>
+          <DropdownItem onClick={() => openEditor(row.id)}>
+            {row.lifecycle === 'draft' ? 'Edit in diagram' : 'View diagram'}
+          </DropdownItem>
           <DropdownItem onClick={() => setPreviewVersionId(row.id)}>View statuses</DropdownItem>
           {!readOnly && row.lifecycle === 'draft' && (
             <>
@@ -311,7 +177,7 @@ function WorkflowsTab() {
               onClick={() =>
                 createDraft.mutate(
                   { fromVersionId: row.id },
-                  { onSuccess: (id) => setPreviewVersionId(id), onError }
+                  { onSuccess: (id) => openEditor(id), onError }
                 )
               }
             >
@@ -425,7 +291,7 @@ function WorkflowsTab() {
               onClick={() =>
                 createDraft.mutate(
                   published ? { fromVersionId: published.id } : { entityKey },
-                  { onSuccess: (id) => setPreviewVersionId(id), onError }
+                  { onSuccess: (id) => openEditor(id), onError }
                 )
               }
             >

@@ -292,6 +292,7 @@ const VercelConnectionPage = lazy(() => import("../pages/admin/connections/Verce
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const WorkflowVersioningPage = lazy(() => import("../pages/admin/workflows/WorkflowVersioningPage"));
 const WorkflowStudioPage = lazy(() => import("../pages/admin/workflows/studio/WorkflowStudioPage"));
+const WorkflowEditorPage = lazy(() => import("../pages/admin/workflows/studio/WorkflowEditorPage"));
 const TestOpsPage = lazy(() => import("../pages/admin/test-ops/TestOpsPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
@@ -939,6 +940,7 @@ export default function FullAppRoutes() {
           <Route path="workflows" element={<S><WorkflowStudioPage /></S>} />
           <Route path="workflows/classic" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workflows/versions" element={<S><WorkflowVersioningPage /></S>} />
+          <Route path="workflows/:versionId/edit" element={<S><WorkflowEditorPage /></S>} />
           <Route path="test-ops" element={<S><TestOpsPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
           <Route path="quarters" element={<S><QuartersAdminPage /></S>} />
