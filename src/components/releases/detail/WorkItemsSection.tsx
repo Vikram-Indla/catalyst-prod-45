@@ -234,38 +234,24 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
           });
       }
 
-      const target = (releaseName || '').trim();
-      if (!target) return [];
-
       const select = 'id, issue_key, summary, issue_type, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, jira_created_at, sprint_release';
 
       if (entityKind === 'sprint') {
-        // Sprint filter: ph_issues.sprint_release JSONB contains entry
-        // matching the sprint name. We do NOT use ph_issues.sprint_name
-        // (text) — jira-sync overwrites it on every sync, so it's not a
-        // reliable link (proven 2026-06-26: backfill of 710 rows reverted
-        // to 2 within minutes). sprint_release JSONB is the canonical Jira
-        // payload that persists across syncs.
-        const containsResult = await supabase
+        // S0.2b (D-002): sprint membership is the ph_issues.sprint_id FK
+        // (backfilled from sprint_release JSONB in S0.2a). The FK is
+        // Catalyst-owned — jira-sync never writes it, so the 2026-06-26
+        // 710-row sync-revert class of bug cannot recur on this path.
+        const { data, error: qErr } = await supabase
           .from('ph_issues')
           .select(select)
-          .contains('sprint_release', JSON.stringify([{ name: target }]) as any)
+          .eq('sprint_id', releaseId)
           .limit(2000);
-        if ((containsResult.data?.length ?? 0) > 0) {
-          return containsResult.data as Issue[];
-        }
-        // Fallback: scan + filter client-side (handles JSON shape variants).
-        const fb = await supabase
-          .from('ph_issues')
-          .select(select)
-          .not('sprint_release', 'is', null)
-          .limit(5000);
-        if (!fb.data) return [];
-        return fb.data.filter((row: any) => {
-          const arr = row.sprint_release;
-          return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
-        }) as Issue[];
+        if (qErr) throw new Error(qErr.message);
+        return (data ?? []) as Issue[];
       }
+
+      const target = (releaseName || '').trim();
+      if (!target) return [];
 
       // Release filter: ph_issues.sprint_release JSONB contains entry with matching name.
       const containsResult = await supabase
@@ -287,7 +273,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
         return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
       }) as Issue[];
     },
-    enabled: entityKind === 'milestone' ? !!releaseId : !!releaseName,
+    enabled: entityKind === 'milestone' || entityKind === 'sprint' ? !!releaseId : !!releaseName,
   });
 
   // Epic candidates derived from items (unique parent_key)
@@ -424,9 +410,17 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
     return () => document.removeEventListener('mousedown', onDown);
   }, [isMoreMenuOpen]);
 
-  // Remove a work item from this release (clears sprint_release entry matching releaseName)
+  // Remove a work item from this release (clears sprint_release entry matching releaseName).
+  // Sprint branch (S0.2b): clears the sprint_id FK instead — sprint_release JSONB is
+  // legacy display data for sprints, left untouched. The membership changelog row is
+  // written by the DB trigger on sprint_id UPDATE (D-018), not here.
   const removeMutation = useMutation({
     mutationFn: async (issueId: string) => {
+      if (entityKind === 'sprint') {
+        const { error } = await supabase.from('ph_issues').update({ sprint_id: null }).eq('id', issueId);
+        if (error) throw new Error(error.message);
+        return;
+      }
       const { data: row, error: readErr } = await supabase
         .from('ph_issues')
         .select('sprint_release')
@@ -719,6 +713,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
         isOpen={isAddOpen}
         release={{ id: releaseId, name: releaseName, project_id: projectId }}
         onClose={() => setIsAddOpen(false)}
+        config={config}
       />
     </>
   );
@@ -1135,6 +1130,16 @@ function WorkItemRow({
   const queryClient = useQueryClient();
   const moveMutation = useMutation({
     mutationFn: async (target: { id: string; name: string | null; title: string | null }) => {
+      // Sprint branch (S0.2b): membership is the sprint_id FK — point it at the
+      // target sprint. Changelog row comes from the DB trigger (D-018).
+      if (config?.kind === 'sprint') {
+        const { error: upErr } = await supabase
+          .from('ph_issues')
+          .update({ sprint_id: target.id })
+          .eq('id', item.id);
+        if (upErr) throw new Error(upErr.message);
+        return;
+      }
       const { data: row, error: readErr } = await supabase
         .from('ph_issues')
         .select('sprint_release')
