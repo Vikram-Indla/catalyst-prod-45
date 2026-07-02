@@ -382,6 +382,7 @@ export const Edit2 = mkCore(AkEdit);
 export const Edit3 = mkCore(AkEdit);
 export const Equal = mkSvg('<line x1="5" x2="19" y1="9" y2="9"/><line x1="5" x2="19" y1="15" y2="15"/>');
 export const ExternalLink = mkCore(AkLinkExternal);
+export { ExternalLink as LinkExternal };
 export const Eye = mkCore(AkEyeOpen);
 export const EyeOff = mkCore(AkEyeOpenStrikethrough);
 

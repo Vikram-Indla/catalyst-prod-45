@@ -19,7 +19,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { acquire as acquireHoverSlot, release as releaseHoverSlot } from '@/lib/hover-card-singleton';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
@@ -37,6 +37,7 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useLinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items/hooks';
 import type { LinkedWorkItem } from '@/modules/project-work-hub/components/linked-work-items/types';
+import RelatedLinksModal from './RelatedLinksModal';
 
 const CARD_WIDTH = 360;
 const ENTER_DELAY = 300;
@@ -297,8 +298,15 @@ interface HoverCardContentProps {
 
 function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose, onOpenLinks }: HoverCardContentProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useHoverIssue(issueKey, true);
   const [copied, setCopied] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [statusDropdownAnchor, setStatusDropdownAnchor] = useState<{ top: number; left: number } | null>(null);
+  const statusDropdownRef = useRef<HTMLButtonElement | null>(null);
+  const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
+  const [priorityDropdownAnchor, setPriorityDropdownAnchor] = useState<{ top: number; left: number } | null>(null);
+  const priorityDropdownRef = useRef<HTMLButtonElement | null>(null);
 
   // Placement: pick the side with more room. Anchor by bottom when above so the
   // card grows upward; anchor by top when below so it grows downward. Constrain
@@ -381,6 +389,52 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
     e.preventDefault();
     navigate(targetRoute);
     onClose();
+  };
+
+  const handleStatusClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!statusDropdownRef.current) return;
+    const r = statusDropdownRef.current.getBoundingClientRect();
+    setStatusDropdownAnchor({ top: r.bottom + 4, left: r.left });
+    setStatusDropdownOpen(!statusDropdownOpen);
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      await supabase
+        .from('ph_issues')
+        .update({ status: newStatus })
+        .eq('issue_key', issueKey);
+      setStatusDropdownOpen(false);
+      catalystToast.success(`Status updated to ${newStatus}`);
+      queryClient.invalidateQueries({ queryKey: ['issue-hover-card', issueKey] });
+    } catch (error) {
+      catalystToast.error('Failed to update status');
+    }
+  };
+
+  const handlePriorityClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!priorityDropdownRef.current) return;
+    const r = priorityDropdownRef.current.getBoundingClientRect();
+    setPriorityDropdownAnchor({ top: r.bottom + 4, left: r.left });
+    setPriorityDropdownOpen(!priorityDropdownOpen);
+  };
+
+  const handlePriorityChange = async (newPriority: string) => {
+    try {
+      await supabase
+        .from('ph_issues')
+        .update({ priority: newPriority })
+        .eq('issue_key', issueKey);
+      setPriorityDropdownOpen(false);
+      catalystToast.success(`Priority updated to ${newPriority}`);
+      queryClient.invalidateQueries({ queryKey: ['issue-hover-card', issueKey] });
+    } catch (error) {
+      catalystToast.error('Failed to update priority');
+    }
   };
 
   const description = (data?.description_text || adfToText(data?.description_adf) || '').trim();
@@ -514,17 +568,46 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               <CatalystAvatar size="small" name={assigneeName} />
             )}
             {data.status && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 0 }}>
+              <button
+                ref={statusDropdownRef}
+                onClick={handleStatusClick}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0,
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+                title="Click to change status"
+              >
                 <Lozenge appearance={statusAppearance} isBold={lozengeBold}>
                   {data.status}
                 </Lozenge>
-                <span style={{ display: 'inline-flex', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), pointerEvents: 'none' }}>
+                <span style={{ display: 'inline-flex', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
                   <ChevronDownIcon label="" size="small" />
                 </span>
-              </span>
+              </button>
             )}
             {data.priority && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
+              <button
+                ref={priorityDropdownRef}
+                onClick={handlePriorityClick}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  marginLeft: 4,
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+                title="Click to change priority"
+              >
                 <PriorityGlyph priority={data.priority} />
                 <span style={{
                   fontSize: 'var(--ds-font-size-100)',
@@ -533,7 +616,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 }}>
                   {data.priority}
                 </span>
-              </span>
+              </button>
             )}
           </div>
 
@@ -592,6 +675,116 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
             <span>Catalyst{data.project_key ? ` · ${data.project_key}` : ''}</span>
           </div>
         </div>
+      )}
+      {statusDropdownOpen && statusDropdownAnchor && (
+        createPortal(
+          <div
+            role="menu"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              top: statusDropdownAnchor.top,
+              left: statusDropdownAnchor.left,
+              minWidth: 160,
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+              borderRadius: 4,
+              boxShadow: 'var(--ds-shadow-overlay)',
+              zIndex: 100001,
+              padding: 4,
+            }}
+          >
+            {['To Do', 'In Progress', 'Done'].map((status) => (
+              <button
+                key={status}
+                role="menuitem"
+                onClick={() => handleStatusChange(status)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '8px 12px',
+                  background: data?.status === status ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
+                  border: 'none',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  fontSize: 'var(--ds-font-size-100)',
+                  fontWeight: 400,
+                  color: token('color.text', 'var(--ds-text)'),
+                  textAlign: 'left',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={(e) => {
+                  if (data?.status !== status) {
+                    e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)');
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = data?.status === status ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent';
+                }}
+              >
+                {status}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )
+      )}
+      {priorityDropdownOpen && priorityDropdownAnchor && (
+        createPortal(
+          <div
+            role="menu"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              top: priorityDropdownAnchor.top,
+              left: priorityDropdownAnchor.left,
+              minWidth: 160,
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+              borderRadius: 4,
+              boxShadow: 'var(--ds-shadow-overlay)',
+              zIndex: 100001,
+              padding: 4,
+            }}
+          >
+            {['Highest', 'High', 'Medium', 'Low', 'Lowest'].map((priority) => (
+              <button
+                key={priority}
+                role="menuitem"
+                onClick={() => handlePriorityChange(priority)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '8px 12px',
+                  background: data?.priority === priority ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
+                  border: 'none',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  fontSize: 'var(--ds-font-size-100)',
+                  fontWeight: 400,
+                  color: token('color.text', 'var(--ds-text)'),
+                  textAlign: 'left',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={(e) => {
+                  if (data?.priority !== priority) {
+                    e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)');
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = data?.priority === priority ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent';
+                }}
+              >
+                {priority}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )
       )}
     </div>,
     document.body,
