@@ -20,11 +20,38 @@ const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   'Sub-task': 'subtask',
 };
 
+// Any query whose key matches a list/board/sidebar/sprint-panel that renders
+// issue summaries. Predicate-based so we don't have to chase every individual
+// key as new surfaces get added.
+function isIssueListQueryKey(root: unknown): root is string {
+  if (typeof root !== 'string') return false;
+  if (root === 'cv-issue-detail') return true;
+  if (root === 'uwv-data') return true;           // allwork canonical key
+  if (root === 'workhub') return true;            // legacy allwork key
+  if (root === 'global-recent-items') return true;
+  if (root === 'product-hub-per-product-recents') return true;
+  if (root === 'product-hub-recent-brs') return true;
+  if (root === 'ph_entity_items') return true;    // release/sprint detail work-items list
+  if (root.includes('ph_issues')) return true;
+  if (root.includes('allwork-items')) return true;
+  if (root.includes('kanban-issues')) return true;
+  if (root.includes('backlog-data')) return true;
+  if (root.includes('requests-backlog')) return true;
+  if (root.includes('work-items')) return true;
+  if (root.includes('childIssues')) return true;
+  if (root.includes('linkedIssues')) return true;
+  if (root.includes('subtasks')) return true;
+  if (root.includes('cv-subtask')) return true;
+  return false;
+}
+
 export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
   const queryClient = useQueryClient();
 
-  const invalidate = () =>
+  const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
+    queryClient.invalidateQueries({ predicate: (query) => isIssueListQueryKey(query.queryKey?.[0]) });
+  };
 
   const updateStatus = useMutation({
     mutationFn: async (arg: string | { status: string; reasonCode?: string | null; reasonText?: string | null }) => {
@@ -108,33 +135,7 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
         }
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
-      // Any query whose key matches a list/board/sidebar that renders
-      // issue summaries. Predicate-based so we don't have to chase
-      // every individual key as new surfaces get added.
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          const root = query.queryKey?.[0];
-          if (typeof root !== 'string') return false;
-          if (root === 'cv-issue-detail') return true;
-          if (root === 'uwv-data') return true;           // allwork canonical key
-          if (root === 'workhub') return true;            // legacy allwork key
-          if (root === 'global-recent-items') return true;
-          if (root === 'product-hub-per-product-recents') return true;
-          if (root === 'product-hub-recent-brs') return true;
-          if (root.includes('ph_issues')) return true;
-          if (root.includes('allwork-items')) return true;
-          if (root.includes('kanban-issues')) return true;
-          if (root.includes('backlog-data')) return true;
-          if (root.includes('requests-backlog')) return true;
-          if (root.includes('work-items')) return true;
-          if (root.includes('childIssues')) return true;
-          if (root.includes('linkedIssues')) return true;
-          return false;
-        },
-      });
-    },
+    onSuccess: invalidate,
     onError: (err: unknown) => {
       catalystToast.error(err instanceof Error ? err.message : 'Failed to save change.');
     },
@@ -154,26 +155,9 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
     onSuccess: () => {
       catalystToast.success('Issue deleted');
       // Invalidate all list and navigator queries so deleted item disappears
-      // from backlog, allwork (uwv-data), kanban, subtask panels, and nav chevrons.
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          const root = query.queryKey?.[0];
-          if (typeof root !== 'string') return false;
-          if (root === 'cv-issue-detail') return true;
-          if (root === 'uwv-data') return true;           // allwork canonical key
-          if (root === 'workhub') return true;            // legacy allwork key
-          if (root.includes('allwork-items')) return true;
-          if (root.includes('kanban-issues')) return true;
-          if (root.includes('backlog-data')) return true;
-          if (root.includes('work-items')) return true;
-          if (root.includes('childIssues')) return true;
-          if (root.includes('linkedIssues')) return true;
-          if (root.includes('subtasks')) return true;
-          if (root.includes('cv-subtask')) return true;
-          if (root.includes('ph_issues')) return true;
-          return false;
-        },
-      });
+      // from backlog, allwork (uwv-data), kanban, subtask panels, sprint/release
+      // panels, and nav chevrons.
+      invalidate();
       onClose();
     },
   });
