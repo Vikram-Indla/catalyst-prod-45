@@ -997,6 +997,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
               key: r.parentKey,
               label: r.parentSummary ?? r.parentKey,
               icon: pType ? <JiraIssueTypeIcon type={pType} size={16} /> : undefined,
+              isEpic: pType === 'Epic',
             };
           },
           options: [],

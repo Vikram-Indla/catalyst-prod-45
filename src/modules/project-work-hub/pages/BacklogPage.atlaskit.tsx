@@ -3264,6 +3264,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           // icon's size (also 16).
           icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
           statusCategory: r.parent_status_category,
+          isEpic: r.parent_issue_type === 'Epic',
         } : null,
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation

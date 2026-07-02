@@ -586,6 +586,11 @@ export interface ParentCellInput {
   label: string;
   /** Parent's work-item type icon (e.g. Epic / Story). Rendered inline. */
   icon?: React.ReactNode;
+  /** True only when the parent's real issue_type is 'Epic'. Jira's colored
+   *  chip is an Epic-only feature — a Story/QA-Bug parent renders as a
+   *  PLAIN link (no background), probed live 2026-07-03. Defaults to false
+   *  so non-Epic parents don't get a fabricated color. */
+  isEpic?: boolean;
 }
 
 export function makeParentCell(
@@ -600,10 +605,13 @@ export function makeParentCell(
         </span>
       );
     const display = p.key ? `${p.key} — ${p.label}` : p.label;
-    // Canonical parent-identity color (see epicAccentColor.ts) — every
-    // distinct parent gets its own stable accent color, matching Jira's
-    // per-epic chip coloring instead of one flat color for every row.
-    const { bg, text } = accentColorForSeed(p.key || p.label);
+    // Canonical parent-identity color (see epicAccentColor.ts) — only
+    // Epics get a colored chip, matching Jira's per-epic color feature.
+    // Every other parent type is a plain link, same as Jira.
+    const linkColor = token("color.link", "var(--ds-link)");
+    const { bg, text } = p.isEpic
+      ? accentColorForSeed(p.key || p.label)
+      : { bg: "transparent", text: linkColor };
     return (
       <span
         style={{
@@ -611,7 +619,7 @@ export function makeParentCell(
           alignItems: "center",
           gap: 4,
           maxWidth: 260,
-          padding: "0px 6px",
+          padding: p.isEpic ? "0px 6px" : "0px",
           borderRadius: 3,
           background: bg,
           color: text,
@@ -634,7 +642,7 @@ export function makeParentCell(
             {p.icon}
           </span>
         )}
-        {p.key && <strong style={{ fontWeight: 700 }}>{p.key}</strong>}
+        {p.key && <strong style={{ fontWeight: 700, color: text }}>{p.key}</strong>}
         <span
           style={{
             overflow: "hidden",

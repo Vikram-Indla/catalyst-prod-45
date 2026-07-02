@@ -552,7 +552,7 @@ export default function AtlaskitStoryBacklogPage({
           getParent: (r) => {
             const ep = r.feature?.epic;
             if (!ep) return null;
-            return { id: ep.id, key: ep.epic_key, label: ep.name };
+            return { id: ep.id, key: ep.epic_key, label: ep.name, isEpic: true };
           },
           options: parentOptions,
           canEdit: () => true,

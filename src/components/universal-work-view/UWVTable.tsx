@@ -231,6 +231,7 @@ export function UWVTable({
                 key: r.parentKey,
                 label: '',
                 icon: <JiraIssueTypeIcon type="Epic" size={12} />,
+                isEpic: true,
               }
             : null,
         ),
