@@ -1,15 +1,16 @@
 /**
  * AssignedPanel — "Assigned to me" tab.
  *
- * Grouping strategy (2026-06-03 redesign):
- *   Groups by status_category into 2 visible buckets:
- *   - "To do" (statusCategory 'new' or unset)
- *   - "In progress" (statusCategory 'indeterminate')
- *   - Done items hidden by default, toggleable
+ * Grouping strategy (2026-07-02 Jira-parity redesign):
+ *   Groups by SPECIFIC STATUS VALUE (not status_category), matching Jira's
+ *   organization. Each unique status becomes a section header.
  *
- *   Each item still shows its specific status chip (e.g. "In Requirements",
- *   "In Development") so the user can see the exact status — but the section
- *   headers collapse 10+ raw statuses into 2 actionable groups.
+ *   Sections are ordered by status_category progression:
+ *   - Todo (Backlog, To Do, etc.)
+ *   - In Progress (Ready for dev, In Dev, In QA, In UAT, etc.)
+ *   - Done (Done, Closed, In Production, etc.)
+ *
+ *   Done items hidden by default, toggleable via "Show completed" button.
  *
  * Data load fix (2026-06-03):
  *   Shows a loading state during background refetches to prevent the
@@ -33,48 +34,56 @@ interface AssignedPanelProps {
   onAskCatyThemify?: () => void;
 }
 
-function isDone(statusCategory?: string, status?: string): boolean {
-  const cat = (statusCategory || '').toLowerCase().replace(/[\s_-]/g, '');
-  if (cat === 'done' || cat === 'closed') return true;
-  const s = (status || '').toLowerCase();
-  return s.includes('done') || s.includes('closed') || s.includes('complet') || s.includes('approved');
-}
-
-type CategoryBucket = 'in_progress' | 'to_do' | 'done';
-
-function toBucket(statusCategory?: string, status?: string): CategoryBucket {
-  if (isDone(statusCategory, status)) return 'done';
+// Jira parity: determine category for ordering sections (not for buckets)
+function statusCategoryOrder(statusCategory?: string): number {
   const cat = (statusCategory || '').toLowerCase().trim();
-  if (cat === 'in progress' || cat === 'indeterminate') return 'in_progress';
-  return 'to_do';
+  if (cat === 'done' || cat === 'closed') return 3; // done last
+  if (cat === 'in progress' || cat === 'indeterminate') return 2; // in-progress middle
+  return 1; // todo first
 }
 
-const BUCKET_LABELS: Record<CategoryBucket, string> = {
-  in_progress: 'In progress',
-  to_do: 'To do',
-  done: 'Done',
+type StatusGroup = {
+  status: string;
+  statusCategory: string;
+  categoryOrder: number;
+  items: WorkItem[];
 };
-
-const BUCKET_ORDER: CategoryBucket[] = ['in_progress', 'to_do', 'done'];
 
 export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect, onToggleStar, onAskCatyThemify }: AssignedPanelProps) {
   const [showDone, setShowDone] = useState(false);
 
   const { groups, doneCount } = useMemo(() => {
-    const buckets = new Map<CategoryBucket, WorkItem[]>();
+    const statusMap = new Map<string, StatusGroup>();
     let done = 0;
+
     for (const item of items) {
-      const bucket = toBucket(item.statusCategory, item.status);
-      if (bucket === 'done') {
+      const isDoneItem = item.statusCategory?.toLowerCase() === 'done' || item.statusCategory?.toLowerCase() === 'closed';
+      if (isDoneItem) {
         done++;
         if (!showDone) continue;
       }
-      if (!buckets.has(bucket)) buckets.set(bucket, []);
-      buckets.get(bucket)!.push(item);
+
+      const status = item.status || 'Backlog';
+      if (!statusMap.has(status)) {
+        statusMap.set(status, {
+          status,
+          statusCategory: item.statusCategory || 'to_do',
+          categoryOrder: statusCategoryOrder(item.statusCategory),
+          items: [],
+        });
+      }
+      statusMap.get(status)!.items.push(item);
     }
-    const ordered = BUCKET_ORDER
-      .filter(b => buckets.has(b))
-      .map(b => ({ bucket: b, label: BUCKET_LABELS[b], items: buckets.get(b)!, count: buckets.get(b)!.length }));
+
+    // Sort by category order, then by status name within category
+    const ordered = Array.from(statusMap.values())
+      .sort((a, b) => {
+        if (a.categoryOrder !== b.categoryOrder) {
+          return a.categoryOrder - b.categoryOrder;
+        }
+        return a.status.localeCompare(b.status);
+      });
+
     return { groups: ordered, doneCount: done };
   }, [items, showDone]);
 
@@ -107,8 +116,8 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
         <AskCatyThemifyButton onClick={onAskCatyThemify} />
       )}
       {groups.map(group => (
-        <div key={group.bucket}>
-          <SectionHeading label={group.label} count={group.count} />
+        <div key={group.status}>
+          <SectionHeading label={group.status} count={group.items.length} />
           {group.items.map(item => (
             <ForYouRow key={item.id} item={item} variant="jira-assigned" onSelect={onSelect} onToggleStar={onToggleStar} />
           ))}

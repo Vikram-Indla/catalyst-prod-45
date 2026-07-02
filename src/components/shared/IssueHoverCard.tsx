@@ -303,6 +303,9 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [statusDropdownAnchor, setStatusDropdownAnchor] = useState<{ top: number; left: number } | null>(null);
   const statusDropdownRef = useRef<HTMLButtonElement | null>(null);
+  const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
+  const [priorityDropdownAnchor, setPriorityDropdownAnchor] = useState<{ top: number; left: number } | null>(null);
+  const priorityDropdownRef = useRef<HTMLButtonElement | null>(null);
 
   // Placement: pick the side with more room. Anchor by bottom when above so the
   // card grows upward; anchor by top when below so it grows downward. Constrain
@@ -407,6 +410,29 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
       queryClient.invalidateQueries({ queryKey: ['issue-hover-card', issueKey] });
     } catch (error) {
       catalystToast.error('Failed to update status');
+    }
+  };
+
+  const handlePriorityClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!priorityDropdownRef.current) return;
+    const r = priorityDropdownRef.current.getBoundingClientRect();
+    setPriorityDropdownAnchor({ top: r.bottom + 4, left: r.left });
+    setPriorityDropdownOpen(!priorityDropdownOpen);
+  };
+
+  const handlePriorityChange = async (newPriority: string) => {
+    try {
+      await supabase
+        .from('ph_issues')
+        .update({ priority: newPriority })
+        .eq('issue_key', issueKey);
+      setPriorityDropdownOpen(false);
+      catalystToast.success(`Priority updated to ${newPriority}`);
+      queryClient.invalidateQueries({ queryKey: ['issue-hover-card', issueKey] });
+    } catch (error) {
+      catalystToast.error('Failed to update priority');
     }
   };
 
@@ -565,7 +591,22 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               </button>
             )}
             {data.priority && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
+              <button
+                ref={priorityDropdownRef}
+                onClick={handlePriorityClick}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  marginLeft: 4,
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+                title="Click to change priority"
+              >
                 <PriorityGlyph priority={data.priority} />
                 <span style={{
                   fontSize: 'var(--ds-font-size-100)',
@@ -574,7 +615,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 }}>
                   {data.priority}
                 </span>
-              </span>
+              </button>
             )}
           </div>
 
@@ -683,6 +724,61 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 }}
               >
                 {status}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )
+      )}
+      {priorityDropdownOpen && priorityDropdownAnchor && (
+        createPortal(
+          <div
+            role="menu"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              top: priorityDropdownAnchor.top,
+              left: priorityDropdownAnchor.left,
+              minWidth: 160,
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+              borderRadius: 4,
+              boxShadow: 'var(--ds-shadow-overlay)',
+              zIndex: 100001,
+              padding: 4,
+            }}
+          >
+            {['Highest', 'High', 'Medium', 'Low', 'Lowest'].map((priority) => (
+              <button
+                key={priority}
+                role="menuitem"
+                onClick={() => handlePriorityChange(priority)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '8px 12px',
+                  background: data?.priority === priority ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
+                  border: 'none',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  fontSize: 'var(--ds-font-size-100)',
+                  fontWeight: 400,
+                  color: token('color.text', 'var(--ds-text)'),
+                  textAlign: 'left',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={(e) => {
+                  if (data?.priority !== priority) {
+                    e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)');
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = data?.priority === priority ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent';
+                }}
+              >
+                {priority}
               </button>
             ))}
           </div>,
