@@ -19,7 +19,7 @@
  */
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useCreateChildListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
+import { useCreateChildListener, useCreateChildWorkItemListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -49,6 +49,7 @@ import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { resolveAllowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { AiSuggestChildrenPanel } from './AiSuggestChildrenPanel';
+import { CreateStoryModal } from '@/components/workhub/create-story';
 import { subtaskCreateInputSchema } from './schemas';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Modal, {
@@ -68,6 +69,7 @@ import Button from '@atlaskit/button/new';
 // it. For now the DnD flag is suppressed and rows render in `position` order.
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import { WorkItemsProgressBar } from '@/components/shared/WorkItemsProgressBar';
 import { createChildIssue } from '../../lib/workItemRepo';
 import './SubtasksPanel.css';
 
@@ -118,6 +120,8 @@ function TypeSelector({
 }: { value: string; onChange: (v: string) => void; allowed: string[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [rect, setRect] = useState<{ top: number; left: number } | null>(null);
   const allowedSet = React.useMemo(() => new Set(allowed), [allowed]);
   const options = React.useMemo(
     () => CANONICAL_WORK_ITEM_OPTIONS.filter(o => allowedSet.has(o.key)),
@@ -125,10 +129,35 @@ function TypeSelector({
   );
   const current = options.find(t => t.key === value) ?? options[0];
 
+  // Portal-based dropdown positioning — Vikram 2026-07-03. The panel's
+  // scroll container has `overflow-x: auto; overflow-y: hidden` for
+  // horizontal row scroll, which was clipping the dropdown. Portal +
+  // fixed positioning bypasses every ancestor's overflow.
+  useLayoutEffect(() => {
+    if (!open) { setRect(null); return; }
+    const update = () => {
+      const el = btnRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.bottom + 2, left: r.left });
+    };
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (ref.current && ref.current.contains(target)) return;
+      const menu = document.getElementById('sp-type-selector-menu');
+      if (menu && menu.contains(target)) return;
+      setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -138,13 +167,32 @@ function TypeSelector({
 
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
-      <button type="button" onClick={() => setOpen(o => !o)} className="sp-type-selector-btn">
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="sp-type-selector-btn"
+      >
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
         <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
       </button>
-      {open && (
-        <div className="sp-type-selector-dropdown">
+      {open && rect && createPortal(
+        <div
+          id="sp-type-selector-menu"
+          style={{
+            position: 'fixed',
+            top: rect.top,
+            left: rect.left,
+            zIndex: 10000,
+            minWidth: 180,
+            background: 'var(--ds-surface)',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 4,
+            boxShadow: 'var(--ds-shadow-overlay)',
+            overflow: 'hidden',
+          }}
+        >
           {options.map(opt => (
             <div
               key={opt.key}
@@ -156,7 +204,8 @@ function TypeSelector({
               {opt.key === value && <Check size={12} color="var(--cp-primary-60)" style={{ marginLeft: 'auto' }} />}
             </div>
           ))}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -354,6 +403,10 @@ export function SubtasksPanel({
   const canCreate = allowedTypes.length > 0;
   const effectiveTitle = title ?? panelTitleFor(parentIssueType);
   const defaultDraftType = allowedTypes[0] ?? 'Sub-task';
+  // Vikram 2026-07-02: for subtask creation the inline input skips the
+  // AI-predict + Choose-existing dropdown — user just types + submits.
+  // Detect via the panel title ("Subtasks" == father context).
+  const isSubtaskContext = effectiveTitle === 'Subtasks';
 
   const [expanded, setExpanded] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -399,13 +452,22 @@ export function SubtasksPanel({
   // mount, and HTMLElement.focus() natively scrolls the input into
   // view — no manual scrollIntoView needed (it would land on the
   // section title and conflict with the focus scroll).
-  useCreateChildListener(
-    useCallback(() => {
-      if (!canCreate) return;
-      setExpanded(true);
-      setCreating(true);
-    }, [canCreate]),
-  );
+  // Modal state for Edit action (AI-suggest → CreateStoryModal prefilled).
+  const [subtaskModal, setSubtaskModal] = useState<{ title: string; type: string } | null>(null);
+  // Whether the AI-suggest panel should auto-fetch on mount. Set true
+  // when the create was triggered by the quick-actions menu (user
+  // explicitly asked to create), false when triggered by the panel's
+  // own "+ Add subtask" button (user just opened the section — waits
+  // for Suggest click). Vikram 2026-07-02.
+  const [autoFetchAi, setAutoFetchAi] = useState(false);
+  const openCreate = useCallback(() => {
+    if (!canCreate) return;
+    setExpanded(true);
+    setCreating(true);
+    setAutoFetchAi(true); // came from quick actions → auto-fetch
+  }, [canCreate]);
+  useCreateChildListener(openCreate);
+  useCreateChildWorkItemListener(openCreate);
 
   // Jira parity: 4 columns only (Work / Priority / Assignee / Status).
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
@@ -427,13 +489,16 @@ export function SubtasksPanel({
     queryFn: async () => {
       // Phase 5 (Apr 2026): union catalyst_issues alongside ph_issues so
       // Catalyst-native subtasks render in the same list as Jira-synced ones.
+      // 2026-07-02: ph_issues has no `position` column — real column is
+      // `sort_order`. Aliased back to `position` in the SELECT so the
+      // downstream row shape (SubtaskRow) doesn't have to change.
       const [phRes, catRes] = await Promise.all([
         supabase
           .from('ph_issues')
-          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,sprint_release,jira_created_at')
+          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position:sort_order,deleted_at,sprint_release,jira_created_at')
           .eq('parent_key', storyKey)
           .is('deleted_at', null)
-          .order('position', { ascending: true }),
+          .order('sort_order', { ascending: true, nullsFirst: false }),
         supabase
           .from('catalyst_issues')
           .select('id,issue_key,title,status,status_category,issue_type,assignee_id,priority,sprint_release,created_at,parent_key,deleted_at')
@@ -535,7 +600,7 @@ export function SubtasksPanel({
       // Phase 5 (Apr 2026): source-aware insert. Catalyst-parent → catalyst_issues
       // with parent_key set; Jira-parent → ph_issues (legacy write-back path).
       // generateIssueKey queries BOTH tables → no Jira collisions.
-      await createChildIssue({
+      const created = await createChildIssue({
         parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
         summary: parsed.data.summary,
         issueType: parsed.data.issue_type,
@@ -545,11 +610,41 @@ export function SubtasksPanel({
         priority: parsed.data.priority,
         position: nextPos(children),
       });
+      return created;
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
+      // Jira-parity toast (2026-07-02) — "You've created 'KEY'" with
+      // View (opens detail in new tab) + Copy link actions.
+      const key = created?.issue_key;
+      if (key && projectKey) {
+        const url = `${window.location.origin}/project-hub/${projectKey}/issue/${key}`;
+        catalystToast.show({
+          type: 'success',
+          title: `You've created "${key}"`,
+          actions: [
+            { label: 'View', onClick: () => window.open(url, '_blank', 'noopener,noreferrer') },
+            { label: 'Copy link', onClick: () => { void navigator.clipboard.writeText(url); } },
+          ],
+          duration: 6000,
+        });
+      }
     },
-    onError: (err) => catalystToast.error('Failed to create subtask'),
+    onError: (err, summary) => {
+      // Jira-parity error flag (2026-07-02) — mirrors the release success
+      // toast: canonical ADS flag with title + message + action buttons.
+      // Retry re-runs the mutation with the same summary.
+      const msg = err instanceof Error ? err.message : String(err ?? 'Unknown error');
+      catalystToast.show({
+        type: 'error',
+        title: 'Failed to create subtask',
+        message: msg,
+        actions: [
+          { label: 'Retry', onClick: () => createMutation.mutate(summary) },
+        ],
+        duration: 6000,
+      });
+    },
   });
 
   // ─── Link-existing mutation ───────────────────
@@ -730,6 +825,7 @@ export function SubtasksPanel({
         && !creating && !editingId && canCreate
         && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
       e.preventDefault();
+      setAutoFetchAi(false);
       setCreating(true);
       return;
     }
@@ -816,7 +912,7 @@ export function SubtasksPanel({
                 className="sp-icon-btn sp-icon-btn--add"
                 title={`Create ${defaultDraftType.toLowerCase()}`}
                 aria-label={`Create ${defaultDraftType.toLowerCase()}`}
-                onClick={() => setCreating(true)}
+                onClick={() => { setAutoFetchAi(false); setCreating(true); }}
               >
                 <Plus size={16} />
               </button>
@@ -850,6 +946,7 @@ export function SubtasksPanel({
           type="button"
           className="sp-add-link"
           onClick={() => {
+            setAutoFetchAi(false);
             setCreating(true);
             if (!expanded) setExpanded(true);
           }}
@@ -860,19 +957,16 @@ export function SubtasksPanel({
         </button>
       )}
 
+      {/* Body wrapper — Jira-parity 2026-07-02: content aligned under
+          the section title. Chevron button (24w, marginLeft -4 → ends
+          at x=20) + title h2 (padding 0 4px → text at x=24). Every
+          body element (progress bar, table, AI panel, manual input)
+          sits at x=24 to match, same as Linked work items / Attachments
+          / Key details do on their surfaces. */}
       {expanded && (
-        <>
-          {/* ═══ Progress bar ═══ */}
-          {totalCount > 0 && (
-            <div className="sp-progress" role="progressbar" aria-valuemax={totalCount} aria-valuenow={doneCount} aria-label="Subtask progress">
-              <div className="sp-progress-track">
-                <div className="sp-progress-fill" style={{ width: `${percentage}%` }} />
-              </div>
-              <span className="sp-progress-label" aria-live="polite" aria-atomic="true">
-                {percentage}% Done
-              </span>
-            </div>
-          )}
+        <div style={{ paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {/* Legacy single-bar progress removed 2026-07-02 — replaced
+              by the canonical WorkItemsProgressBar mounted below. */}
 
           {/* ═══ Loading skeleton ═══ */}
           {isLoading && (
@@ -917,6 +1011,8 @@ export function SubtasksPanel({
                   createMutation.mutate(s.title);
                 });
               }}
+              onEditRequest={(s) => setSubtaskModal({ title: s.title, type: s.type })}
+              autoFetch={autoFetchAi}
             />
           )}
           {creating && canCreate && children.length === 0 && (
@@ -943,6 +1039,7 @@ export function SubtasksPanel({
                 ? effectiveTitle.toLowerCase().slice(0, -1)
                 : effectiveTitle.toLowerCase())}`}
               inputRef={inlineCreateInputRef}
+              disableSuggestions={isSubtaskContext}
             />
           )}
 
@@ -953,6 +1050,46 @@ export function SubtasksPanel({
               <div className="sp-empty-sub">Turn off "Hide done" to see them.</div>
               <button type="button" className="sp-empty-cta" onClick={() => setHideDone(false)}>Show completed</button>
             </div>
+          )}
+
+          {/* AI suggest panel sits ABOVE the progress bar per Vikram
+              2026-07-03. Non-empty (visibleRows > 0) branch — the
+              empty-state mount lives higher up at line ~996. */}
+          {!isLoading && children.length > 0 && creating && canCreate && (
+            <AiSuggestChildrenPanel
+              parentSummary={parentSummary ?? ''}
+              parentType={parentIssueType ?? ''}
+              allowedChildTypes={allowedTypes}
+              siblingSummaries={siblingSummaries}
+              defaultDraftType={defaultDraftType}
+              isCreatingAny={createMutation.isPending}
+              onCreate={(s) => {
+                setDraftType(s.type as typeof draftType);
+                createMutation.mutate(s.title);
+              }}
+              onCreateAll={(list) => {
+                list.forEach((s) => {
+                  setDraftType(s.type as typeof draftType);
+                  createMutation.mutate(s.title);
+                });
+              }}
+              onEditRequest={(s) => setSubtaskModal({ title: s.title, type: s.type })}
+              autoFetch={autoFetchAi}
+            />
+          )}
+
+          {/* ═══ Status progress bar — Jira parity (Vikram 2026-07-02) ═══
+              Reuses the canonical WorkItemsProgressBar extracted from
+              the release detail Work items section, so the visual is
+              identical to what shows on /release-hub/releases-management. */}
+          {!isLoading && children.length > 0 && (
+            <WorkItemsProgressBar
+              items={children.map(c => ({ status_category: (c as any).status_category ?? null }))}
+              label={effectiveTitle}
+              compact
+              hideHeader
+              showPercentSuffix
+            />
           )}
 
           {/* ═══ List view — canonical JiraTable (Jira parity: list-only) ═══ */}
@@ -1120,10 +1257,14 @@ export function SubtasksPanel({
             };
 
             return (
-              <div className="sp-ak-table" onClick={(e) => e.stopPropagation()}>
-                {/* sp-table-body: shared border/radius container for table rows
-                    + inline create row so the "+ Create" row appears visually
-                    inside the same bordered card as the data rows (Jira parity). */}
+              <div
+                className="sp-ak-table"
+                onClick={(e) => e.stopPropagation()}
+                style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+              >
+                {/* sp-table-body wraps the canonical JiraTable rows only.
+                    Both AI suggest (above) and manual create row (below)
+                    live OUTSIDE this container — Vikram 2026-07-03. */}
                 <div className="sp-table-body">
                   <JiraTable<typeof visibleRows[number]>
                     columns={schema}
@@ -1160,29 +1301,34 @@ export function SubtasksPanel({
                     enableGroupCreateButton={false}
                     enableStickyCreateFooter={false}
                   />
-                  {creating && canCreate && (
-                    <InlineCreateWithAI
-                      allowedTypes={allowedTypes}
-                      draftType={draftType}
-                      onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
-                      typeSelectorSlot={
-                        <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
-                      }
-                      parentSummary={parentSummary ?? ''}
-                      parentType={parentIssueType ?? ''}
-                      siblingSummaries={siblingSummaries}
-                      excludedIds={siblingIds}
-                      projectKey={projectKey}
-                      isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
-                      onCreate={(summary) => createMutation.mutate(summary)}
-                      onLinkExisting={(id) => {
-                        linkExistingMutation.mutate(id);
-                        setCreating(false);
-                      }}
-                      onCancel={() => setCreating(false)}
-                    />
-                  )}
                 </div>
+                {/* Manual create row sits BELOW the table container per
+                    Vikram 2026-07-03 — outside sp-table-body so the
+                    type-selector dropdown isn't clipped by the table's
+                    overflow. */}
+                {creating && canCreate && (
+                  <InlineCreateWithAI
+                    allowedTypes={allowedTypes}
+                    draftType={draftType}
+                    onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
+                    typeSelectorSlot={
+                      <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
+                    }
+                    parentSummary={parentSummary ?? ''}
+                    parentType={parentIssueType ?? ''}
+                    siblingSummaries={siblingSummaries}
+                    excludedIds={siblingIds}
+                    projectKey={projectKey}
+                    isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
+                    onCreate={(summary) => createMutation.mutate(summary)}
+                    onLinkExisting={(id) => {
+                      linkExistingMutation.mutate(id);
+                      setCreating(false);
+                    }}
+                    onCancel={() => setCreating(false)}
+                    disableSuggestions={isSubtaskContext}
+                  />
+                )}
               </div>
             );
             // NOTE: DnD row-reorder via handleRankEnd is not wired here. The
@@ -1264,9 +1410,27 @@ export function SubtasksPanel({
 
           {/* InlineCreateWithAI moved inside sp-table-body (inside the IIFE above)
               so it appears as the last row within the table's visual border — Jira parity. */}
-        </>
+        </div>
       )}
       </div>
+
+      {/* Canonical CreateStoryModal — opened by the AI-suggest Edit
+          action. Prefills the AI's title + work type + parent (current
+          issue). Extended WORK_TYPES / PARENT_TYPE_RULES include the
+          subtask family (2026-07-02). */}
+      <CreateStoryModal
+        open={!!subtaskModal}
+        onClose={() => setSubtaskModal(null)}
+        projectId={parentProjectId ?? ''}
+        projectKey={projectKey}
+        defaultWorkType={subtaskModal?.type ?? 'Sub-task'}
+        initialSummary={subtaskModal?.title}
+        initialParentKey={storyKey}
+        onSuccess={() => {
+          setSubtaskModal(null);
+          queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
+        }}
+      />
     </div>
   );
 }

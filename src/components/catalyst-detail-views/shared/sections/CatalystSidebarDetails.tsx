@@ -644,7 +644,7 @@ export function CatalystSidebarDetails({
             transition: 'background-color 150ms ease',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, minWidth: 0, flex: 1 }}>
             <Tooltip content={detailsCollapsed ? 'Expand' : 'Collapse'} position="bottom">
               <button
                 type="button"
@@ -668,10 +668,47 @@ export function CatalystSidebarDetails({
             {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
                 Key details, Subtasks, LWI, Activity. All section headers share the same spec. */}
             <h2
-              style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text)' }}
+              style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text)', flexShrink: 0 }}
             >
               Details
             </h2>
+            {/* Collapsed preview: single-line comma-separated field labels for
+                the current issue type, ellipsis-truncated. Jira parity — matches
+                right-rail Details card behaviour on collapse (2026-07-02). */}
+            {detailsCollapsed && (() => {
+              const bucket = normalizeIssueTypeBucket(issue?.issue_type);
+              const labels: string[] = [];
+              if (issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request') labels.push('Sprint/Iteration');
+              labels.push('Assignee');
+              if (issue?.issue_type === 'Epic') labels.push('Priority');
+              labels.push('Reporter');
+              if (issue?.issue_type === 'Task' || issue?.issue_type === 'Story') labels.push('Labels');
+              if (
+                issue?.issue_type !== 'Epic' &&
+                (bucket === 'subtask' || issue?.issue_type === 'Production Incident' ||
+                 issue?.issue_type === 'Change Request' || dataSource?.onDueDateChange)
+              ) labels.push('Due date');
+              if (issue?.issue_type === 'Epic') {
+                labels.push('Due date');
+                labels.push('Actual start');
+                labels.push('Actual end');
+              }
+              if (bucket === 'feature') {
+                labels.push('IR Demo Date');
+                labels.push('IR Figma Approved');
+                labels.push('IR Demo Approved');
+              }
+              return (
+                <span style={{
+                  marginLeft: 8, flex: 1, minWidth: 0,
+                  fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
+                  color: 'var(--ds-text-subtle)', lineHeight: '20px',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {labels.join(', ')}
+                </span>
+              );
+            })()}
           </div>
         </div>
 

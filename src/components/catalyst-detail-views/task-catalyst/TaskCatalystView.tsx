@@ -509,7 +509,7 @@ export default function TaskCatalystView({
         />
 
         {/* Canonical + button row (Add child / Add link / ...). */}
-        <CatalystQuickActions />
+        <CatalystQuickActions itemType="Task" />
 
         {/* Canonical Key details — Priority only. Parent suppressed (no
             tasks↔tasks parent picker built today). Priority writes route

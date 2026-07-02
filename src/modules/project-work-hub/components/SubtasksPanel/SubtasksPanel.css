@@ -146,13 +146,33 @@
 .sp-table-body {
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 8px;
-  overflow: hidden;
+  /* Horizontal scroll — Vikram 2026-07-02: narrow containers (right-side
+     panel) were clamping the row and hiding icon/key + summary end +
+     status pill text. Allow the table to overflow so each row keeps its
+     natural min-width and the user can pan sideways. */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
-/* Remove JiraTable's own border/radius since sp-table-body owns the chrome. */
+/* Table minimum width so columns don't collapse into unreadable slivers.
+   JiraTable sets `minWidth: 0` + `overflow: hidden` INLINE on the grid
+   wrapper — inline styles beat plain CSS, so use !important to force
+   both a real minimum width and let the outer .sp-table-body's
+   overflow-x:auto see a wider box (2026-07-02 Vikram). */
 .sp-table-body .jira-table-grid {
   border: none !important;
   border-radius: 0 !important;
+  min-width: 768px !important;
+  overflow: visible !important;
 }
+.sp-table-body .jira-table-viewport {
+  overflow: visible !important;
+}
+.sp-table-body table {
+  min-width: 768px !important;
+}
+/* Inline-create row (input) MUST match the table's scrollable width so
+   Cancel + submit stay visible when the user scrolls the rows. */
+.sp-table-body .sp-create-wrap { min-width: 768px; }
 /* Inline create row sits flush at the bottom of the card. Last data row's
    td box-shadow (inset 0 -1px) already paints the separator — no border-top
    here, otherwise doubles up (2026-06-23). */
@@ -983,6 +1003,34 @@
 .sp-create-cancel:hover {
   color: var(--ds-text);
   text-decoration: underline;
+}
+/* Cancel row inside the dropdown — sits between the AI Suggestions section
+   (top) and the Choose existing section (below). Small vertical rules on
+   each side so it reads as a divider band, not a menu item. */
+.sp-create-cancel-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px 10px;
+  border-top: 1px solid var(--ds-border);
+  border-bottom: 1px solid var(--ds-border);
+  margin: 4px 0;
+}
+.sp-create-cancel-row--fallback {
+  padding: 4px 0 2px;
+  border: none;
+  margin: 0;
+}
+/* Suppress the top/bottom rules when the Cancel row is the first or last
+   child of the dropdown (no adjacent section) — avoids a lone hairline
+   floating in space. */
+.sp-create-panel > .sp-create-cancel-row:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+.sp-create-panel > .sp-create-cancel-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .sp-create-panel {

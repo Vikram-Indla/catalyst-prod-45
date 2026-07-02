@@ -23,6 +23,9 @@ export interface LinkedWorkItemsBodyProps {
   readOnly?: boolean;
   footer?: React.ReactNode;
   emptyCta?: React.ReactNode;
+  /** Passed through to LinkTypeGroup so row-level status / priority edits
+   *  can invalidate this issue's linked-items query. */
+  sourceIssueKey?: string;
 }
 
 export function LinkedWorkItemsBody({
@@ -37,6 +40,7 @@ export function LinkedWorkItemsBody({
   readOnly,
   footer,
   emptyCta,
+  sourceIssueKey,
 }: LinkedWorkItemsBodyProps) {
   const hasGroups = groups.length > 0;
 
@@ -78,6 +82,7 @@ export function LinkedWorkItemsBody({
               onUnlink={onUnlink}
               pendingUnlinkIds={pendingUnlinkIds}
               readOnly={readOnly}
+              sourceIssueKey={sourceIssueKey}
             />
           ))}
         </div>

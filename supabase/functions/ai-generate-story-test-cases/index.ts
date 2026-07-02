@@ -1,0 +1,315 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Max-Age": "86400",
+  "Vary": "Origin",
+};
+
+const AI_GATEWAY_URL =
+  "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const DEFAULT_MODEL = "gemini-2.5-flash";
+
+type TestPriority = "critical" | "high" | "medium" | "low";
+type TestStatus = "DRAFT" | "REVIEW" | "APPROVED";
+
+interface GeneratedStep {
+  step_number: number;
+  action: string;
+  test_data?: string;
+  expected_result: string;
+}
+
+interface GeneratedCase {
+  title: string;
+  objective: string;
+  preconditions: string;
+  priority: TestPriority;
+  status: TestStatus;
+  steps: GeneratedStep[];
+}
+
+async function logGovernance(params: {
+  action: string;
+  payload: Record<string, unknown>;
+  status: "ok" | "error";
+  error_message?: string;
+}) {
+  try {
+    const url = Deno.env.get("SUPABASE_URL");
+    const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !service) return;
+    const sb = createClient(url, service, { auth: { persistSession: false } });
+    await sb.from("ai_governance_audit_log").insert({
+      action: params.action,
+      payload: params.payload,
+      status: params.status,
+      error_message: params.error_message ?? null,
+      source: "ai-generate-story-test-cases",
+    } as never);
+  } catch (_e) {
+    /* audit must never block inference */
+  }
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    const body = await req.json();
+    const storyKey: string =
+      typeof body?.story_key === "string" ? body.story_key : "";
+    const storySummary: string =
+      typeof body?.story_summary === "string" ? body.story_summary : "";
+    const storyDescription: string =
+      typeof body?.story_description === "string" ? body.story_description : "";
+    const acceptanceCriteria: string =
+      typeof body?.acceptance_criteria === "string"
+        ? body.acceptance_criteria
+        : "";
+
+    if (!storySummary.trim() && !storyDescription.trim()) {
+      return new Response(
+        JSON.stringify({
+          error: "invalid_input",
+          message: "story_summary or story_description is required",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: "GEMINI_API_KEY is not configured" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Prompt: enforce max 10 + 100% coverage rules. JSON-only output.
+    const userPrompt = `You are a senior QA engineer designing a compact, high-coverage test suite for a single user story in an enterprise portfolio-management tool.
+
+Story key: ${storyKey || "(unknown)"}
+Story summary: ${storySummary || "(none)"}
+Story description:
+${storyDescription || "(none)"}
+
+Acceptance criteria:
+${acceptanceCriteria || "(none)"}
+
+Rules — read carefully, they are non-negotiable:
+1. Generate AT MOST 10 test cases. Fewer is fine when full coverage needs fewer.
+2. Together, the test cases MUST achieve 100% coverage of the story's stated behavior and every acceptance criterion. Do not omit an acceptance criterion. If a criterion needs multiple tests to be fully covered, split it — but stay within the 10-case ceiling by consolidating overlapping happy-path checks.
+3. Blend: happy path, edge cases, negative / error paths, and permission/auth boundaries when relevant to the story. Prefer breadth over redundancy.
+4. Each title is concise (under 90 chars), imperative, sentence case, no trailing punctuation.
+5. Each test case has: title, objective (one-sentence purpose), preconditions (short paragraph or "None"), priority (one of: critical, high, medium, low), status ("DRAFT"), and 2–6 numbered steps.
+6. Each step has: step_number (1-based), action (imperative), optional test_data (only when a concrete value matters), expected_result (observable outcome).
+
+Return ONLY valid JSON. No markdown, no preamble, no code fences.
+Shape:
+{
+  "test_cases": [
+    {
+      "title": "...",
+      "objective": "...",
+      "preconditions": "...",
+      "priority": "high",
+      "status": "DRAFT",
+      "steps": [
+        { "step_number": 1, "action": "...", "test_data": "...", "expected_result": "..." }
+      ]
+    }
+  ]
+}`;
+
+    const aiResp = await fetch(AI_GATEWAY_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: DEFAULT_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a senior QA engineer. Return ONLY valid JSON. No markdown fences, no preamble.",
+          },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.3,
+        // 10 test cases × ~6 steps × verbose action/expected_result plus JSON
+        // scaffolding easily runs 4–5k tokens. 6000 provides slack without
+        // burning budget.
+        max_tokens: 6000,
+        response_format: { type: "json_object" },
+      }),
+    });
+
+    if (!aiResp.ok) {
+      const status = aiResp.status;
+      const errBody = await aiResp.text().catch(() => "");
+      console.error("ai-generate-story-test-cases gateway error:", status, errBody);
+      await logGovernance({
+        action: "ai_generate_story_test_cases",
+        payload: { story_key: storyKey, summary_len: storySummary.length },
+        status: "error",
+        error_message: `gateway_${status}`,
+      });
+      const code =
+        status === 429
+          ? "rate_limited"
+          : status === 402
+            ? "payment_required"
+            : "gateway_error";
+      return new Response(
+        JSON.stringify({
+          error: code,
+          message:
+            status === 429
+              ? "Rate limits exceeded, please try again later."
+              : status === 402
+                ? "Payment required, please add funds."
+                : `AI gateway error (${status})`,
+          test_cases: [],
+          diagnostic: { gatewayStatus: status, gatewayBody: errBody.slice(0, 2000) },
+        }),
+        {
+          status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const aiData = await aiResp.json();
+    const rawText: string = aiData?.choices?.[0]?.message?.content ?? "{}";
+    let parsed: any = null;
+    let parseError: string | null = null;
+    const clean = rawText.replace(/```json|```/g, "").trim();
+    try {
+      parsed = JSON.parse(clean);
+    } catch (_e1) {
+      const match = clean.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          parsed = JSON.parse(match[0]);
+        } catch (e2) {
+          parseError = e2 instanceof Error ? e2.message : String(e2);
+        }
+      } else {
+        parseError = "no JSON object in response";
+      }
+    }
+
+    if (!parsed || !Array.isArray(parsed.test_cases)) {
+      await logGovernance({
+        action: "ai_generate_story_test_cases",
+        payload: { story_key: storyKey, parse_error: parseError ?? "unknown" },
+        status: "error",
+        error_message: parseError ?? "unparseable",
+      });
+      return new Response(
+        JSON.stringify({
+          error: "parse_error",
+          message: "AI returned unparseable output",
+          test_cases: [],
+        }),
+        {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Sanitize + enforce ceiling.
+    const validPriorities: TestPriority[] = ["critical", "high", "medium", "low"];
+    const validStatuses: TestStatus[] = ["DRAFT", "REVIEW", "APPROVED"];
+    const cleaned: GeneratedCase[] = [];
+    for (const raw of parsed.test_cases as unknown[]) {
+      if (cleaned.length >= 10) break;
+      const c = raw as any;
+      const title = typeof c?.title === "string" ? c.title.trim() : "";
+      if (!title) continue;
+      const priority: TestPriority = validPriorities.includes(c?.priority)
+        ? c.priority
+        : "medium";
+      const status: TestStatus = validStatuses.includes(c?.status)
+        ? c.status
+        : "DRAFT";
+      const stepsRaw = Array.isArray(c?.steps) ? c.steps : [];
+      const steps: GeneratedStep[] = [];
+      for (const s of stepsRaw as unknown[]) {
+        const st = s as any;
+        const action = typeof st?.action === "string" ? st.action.trim() : "";
+        const expected =
+          typeof st?.expected_result === "string" ? st.expected_result.trim() : "";
+        if (!action || !expected) continue;
+        steps.push({
+          step_number: steps.length + 1,
+          action,
+          test_data:
+            typeof st?.test_data === "string" && st.test_data.trim()
+              ? st.test_data.trim()
+              : undefined,
+          expected_result: expected,
+        });
+      }
+      cleaned.push({
+        title: title.slice(0, 240),
+        objective:
+          typeof c?.objective === "string" ? c.objective.trim().slice(0, 500) : "",
+        preconditions:
+          typeof c?.preconditions === "string"
+            ? c.preconditions.trim().slice(0, 500)
+            : "",
+        priority,
+        status,
+        steps,
+      });
+    }
+
+    await logGovernance({
+      action: "ai_generate_story_test_cases",
+      payload: {
+        story_key: storyKey,
+        count: cleaned.length,
+        summary_len: storySummary.length,
+      },
+      status: "ok",
+    });
+
+    return new Response(
+      JSON.stringify({ test_cases: cleaned, model: DEFAULT_MODEL }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  } catch (err) {
+    console.error("ai-generate-story-test-cases unexpected error:", err);
+    return new Response(
+      JSON.stringify({
+        error: "internal_error",
+        message: err instanceof Error ? err.message : "Unknown error",
+        test_cases: [],
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+});

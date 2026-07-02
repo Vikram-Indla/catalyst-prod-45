@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Select, { CreatableSelect } from "@atlaskit/select";
 import CheckIcon from "@atlaskit/icon/glyph/check";
 import CrossCircleIcon from "@atlaskit/icon/glyph/cross-circle";
+import CrossIcon from "@atlaskit/icon/glyph/cross";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { ProjectMember, ParentIssue } from "./types";
 import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from "@/components/ads";
@@ -18,6 +19,7 @@ import { isAssigneeLocked } from "@/lib/catalyst-rules";
 import { PRIORITY_LIST } from "./constants";
 import { getAvatarColor, getInitials } from "./helpers";
 import { resolveAvatarUrl } from "@/lib/avatars";
+import { labelAccent, labelAccentTokens } from "@/lib/labelPalette";
 import { PriorityIcon as CanonicalPriorityIcon } from "@/components/icons";
 
 /* jira-compare 2026-05-10 (P2): Hide dropdown indicator chevron from Priority
@@ -914,26 +916,10 @@ export function EditablePriority({
 
 /* ── EditableLabels — Jira-parity: type + Enter to create, reuse existing ── */
 
-const LABEL_COLORS = [
-  "var(--ds-background-accent-blue-bold)",
-  "var(--ds-background-accent-teal-bold)",
-  "var(--ds-background-accent-green-bold)",
-  "var(--ds-background-accent-yellow-bold)",
-  "var(--ds-background-accent-red-bold)",
-  "var(--ds-background-accent-purple-bold)",
-  "var(--ds-background-accent-orange-bold)",
-  "var(--ds-background-accent-green-bolder)",
-  "var(--ds-background-accent-yellow-bolder)",
-  "var(--ds-background-accent-purple-bolder)",
-  "var(--ds-background-accent-teal-bolder)",
-  "var(--ds-background-accent-red-bolder)",
-];
-function getLabelColor(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++)
-    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
-}
+// Canonical label palette lives in @/lib/labelPalette. Same accent for the
+// same label text across every surface (right-rail chip, dropdown option,
+// kanban card, hover card). No hex / rgb / hsl (CLAUDE.md §5). Only the
+// border varies per label — text and bg stay neutral for Jira parity.
 
 /**
  * Jira parity (2026-04-20, Drawer Phase 5 Atlaskit sweep — §P0-8):
@@ -963,6 +949,11 @@ export function EditableLabels({
   /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation. */
   onChange?: (labels: string[]) => Promise<void> | void;
 }) {
+  // Focus state gates the clear-all X — visible only in edit mode
+  // (focused / menu open), hidden while the picker is idle (read view).
+  const [isFocused, setIsFocused] = useState(false);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const inEditMode = isFocused || menuIsOpen;
   const updateMutation = useMutation({
     mutationFn: async (labels: string[]) => {
       // Custom onChange overrides the ph_issues mutation entirely.
@@ -1029,6 +1020,13 @@ export function EditableLabels({
       <CreatableSelect<LabelOption, true>
         inputId={`labels-${issueKey ?? issueId}`}
         isMulti
+        // Clear-all cross visible only in edit mode. Read view has no
+        // whole-row × so the user can't wipe the labels by accident.
+        isClearable={inEditMode}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
         menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
         menuPosition="fixed"
         appearance="subtle"
@@ -1050,6 +1048,54 @@ export function EditableLabels({
         }}
         formatCreateLabel={(input) => `Create "${input}"`}
         noOptionsMessage={() => "Type to create a label"}
+        // Dropdown option row renders the label text inside a bordered pill
+        // so the menu shows the exact chip you'll get once you pick it.
+        // Selected chips (MultiValue) already carry their border via the
+        // inline `multiValue` style below — we do NOT touch them here or
+        // the pill would nest inside the chip and give a double border
+        // (Vikram 2026-07-03).
+        components={{
+          // Canonical Atlaskit close icon — same × the app uses everywhere
+          // else (rows, modals, chips). No background, ever.
+          MultiValueRemove: ({ innerProps }) => (
+            <div {...innerProps} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+              <CrossIcon label="Remove" size="small" primaryColor="var(--ds-text-subtle)" />
+            </div>
+          ),
+          Option: ({ innerRef, innerProps, isFocused, isSelected, data }) => {
+            const opt = data as LabelOption;
+            return (
+              <div
+                ref={innerRef}
+                {...innerProps}
+                style={{
+                  padding: 'var(--ds-space-050) var(--ds-space-150)',
+                  fontSize: 'var(--ds-font-size-200)',
+                  lineHeight: 'var(--ds-font-lineHeight-200)',
+                  cursor: 'pointer',
+                  background: isFocused
+                    ? 'var(--ds-background-neutral-subtle-hovered)'
+                    : 'transparent',
+                }}
+              >
+                <span
+                  className="cat-label"
+                  data-accent={labelAccent(opt.value)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: 'var(--ds-space-025) var(--ds-space-075)',
+                    fontSize: 'var(--ds-font-size-200)',
+                    lineHeight: 'var(--ds-font-lineHeight-200)',
+                    fontWeight: isSelected ? 600 : 400,
+                  }}
+                >
+                  {opt.label}
+                </span>
+              </div>
+            );
+          },
+        }}
         // Give each chip a per-label border colour (Jira-parity rainbow pill).
         styles={{
           container: (base) => ({
@@ -1095,26 +1141,35 @@ export function EditableLabels({
             ...base,
             fontSize: 'var(--ds-font-size-200)',
           }),
-          multiValue: (base, state) => ({
-            ...base,
-            border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
-            background: 'var(--ds-surface)',
-            borderRadius: 3,
-            padding: '0px 6px',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            overflow: 'hidden',
-            maxWidth: '100%',
-          }),
-          multiValueLabel: (base) => ({
-            ...base,
-            color: 'var(--ds-text)',
-            fontSize: 'var(--ds-font-size-200)',
-            fontWeight: 500,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }),
+          multiValue: (base, state) => {
+            const t = labelAccentTokens((state.data as LabelOption).value);
+            return {
+              ...base,
+              border: `1px solid ${t.border}`,
+              background: t.background,
+              color: t.text,
+              borderRadius: 'var(--ds-border-radius)',
+              padding: 0,
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              maxWidth: '100%',
+            };
+          },
+          multiValueLabel: (base, state) => {
+            const t = labelAccentTokens((state.data as LabelOption).value);
+            return {
+              ...base,
+              color: t.text,
+              fontSize: 'var(--ds-font-size-200)',
+              lineHeight: 'var(--ds-font-lineHeight-200)',
+              padding: 'var(--ds-space-025) var(--ds-space-075)',
+              fontWeight: 400,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            };
+          },
           multiValueRemove: (base) => ({
             ...base,
             marginLeft: '4px',
