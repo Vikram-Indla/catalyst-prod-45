@@ -170,8 +170,6 @@ const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/Executio
 const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
-const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
-const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
 const TestHubReportsCommandCenterPage = lazy(() => import("../pages/testhub/reports/lab/ReportsCommandCenterPage"));
 const TestHubProjectTestingStatusPage = lazy(() => import("../pages/testhub/reports/ProjectTestingStatusPage"));
 const TestHubSprintTestingStatusPage = lazy(() => import("../pages/testhub/reports/SprintTestingStatusPage"));
@@ -685,7 +683,6 @@ export default function FullAppRoutes() {
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
         <Route path="/testhub/reports-lab" element={<S><TestHubReportsCommandCenterPage /></S>} />
-        <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
         <Route path="/testhub/reports/project-status" element={<S><TestHubProjectTestingStatusPage /></S>} />
         <Route path="/testhub/reports/sprint-status" element={<S><TestHubSprintTestingStatusPage /></S>} />
         <Route path="/testhub/reports/tester-status" element={<S><TestHubTesterPerformancePage /></S>} />
@@ -693,7 +690,6 @@ export default function FullAppRoutes() {
         <Route path="/testhub/reports/defects-incidents" element={<S><TestHubDefectsIncidentsPage /></S>} />
         <Route path="/testhub/reports/governance" element={<S><TestHubGovernancePage /></S>} />
         <Route path="/testhub/reports/product-status" element={<S><TestHubProductStatusPage /></S>} />
-        <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
         <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />
