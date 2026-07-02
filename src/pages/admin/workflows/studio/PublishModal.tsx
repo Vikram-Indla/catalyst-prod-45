@@ -132,7 +132,7 @@ export function PublishModal({
                       <Lozenge appearance="removed">{k}</Lozenge>
                       <span aria-hidden>→</span>
                       <div style={{ flex: 1 }}>
-                        <Select
+                        <Select usePortal usePortal
                           options={remapOptions}
                           value={remapOptions.find((o) => o.value === remaps[k]) ?? null}
                           onChange={(o) =>

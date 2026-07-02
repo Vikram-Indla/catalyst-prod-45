@@ -356,7 +356,7 @@ export default function WorkflowEditorPage() {
               {addingStatus ? (
                 <>
                   <div style={{ width: 140 }}>
-                    <Select
+                    <Select usePortal usePortal
                       options={CATEGORY_OPTIONS}
                       value={CATEGORY_OPTIONS.find((o) => o.value === newStatusCat) ?? null}
                       onChange={(o) => setNewStatusCat((o?.value as string) ?? 'todo')}

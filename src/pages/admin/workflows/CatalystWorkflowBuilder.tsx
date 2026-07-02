@@ -158,15 +158,14 @@ export function StatusNode({ data, selected }: NodeProps) {
           left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
+          fontWeight: 600,
           color: DARK.textBrand,
           background: DARK.canvas,
-          padding: '0px 5px',
+          padding: '0px 4px',
           borderRadius: 2,
           whiteSpace: 'nowrap',
         }}>
-          INITIAL
+          Initial
         </div>
       )}
       {d.isCurrent && (
@@ -176,25 +175,22 @@ export function StatusNode({ data, selected }: NodeProps) {
           left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
+          fontWeight: 600,
           color: 'var(--ds-link)',
           background: DARK.canvas,
-          padding: '0px 5px',
+          padding: '0px 4px',
           borderRadius: 2,
           whiteSpace: 'nowrap',
         }}>
-          CURRENT
+          Current
         </div>
       )}
 
       <div style={{
-        fontSize: 'var(--ds-font-size-100)',
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
-        letterSpacing: '0.06em',
         color: colors.text,
         textAlign: 'center',
-        textTransform: 'uppercase',
         lineHeight: 1.2,
       }}>
         {d.name}
@@ -217,10 +213,9 @@ export function StartNode(_: NodeProps) {
       justifyContent: 'center',
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
-      letterSpacing: '0.06em',
       color: 'var(--ds-border)',
     }}>
-      START
+      Start
       <Handle
         type="source"
         position={Position.Bottom}
