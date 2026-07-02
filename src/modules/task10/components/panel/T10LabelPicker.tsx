@@ -1,35 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Plus, X, Search } from '@/lib/atlaskit-icons';
+import { labelAccentTokens } from '@/lib/labelPalette';
 
 // No default labels - user creates their own
 const DEFAULT_LABELS: string[] = [];
 
-// Get consistent color for a label based on its name
+/**
+ * Get the color triple for a label. Delegates to the canonical
+ * `labelAccentTokens` helper so the same label text renders with the same
+ * ADS-accent hue everywhere in Catalyst (right-rail chip, dropdown, kanban
+ * card, hover card, task10 side panel).
+ *
+ * Returns `{ bg, color, border }` for back-compat with existing call sites
+ * that read those keys.
+ */
 export function getLabelColor(label: string): { bg: string; color: string; border: string } {
-  const normalized = label.toUpperCase();
-  switch (normalized) {
-    case 'CRITICAL': return { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', border: 'var(--ds-border)' };
-    case 'HIGH': return { bg: 'var(--ds-surface)', color: 'var(--ds-text)', border: 'var(--ds-border)' };
-    case 'MEDIUM': return { bg: 'var(--ds-surface)', color: 'var(--ds-text-warning)', border: 'var(--ds-border)' };
-    case 'LOW': return { bg: 'var(--ds-surface)', color: 'var(--ds-text-success)', border: 'var(--ds-border)' };
-    case 'BLOCKED': return { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', border: 'var(--ds-border)' };
-    case 'NEEDS-REVIEW': return { bg: 'var(--ds-surface)', color: 'var(--ds-text-discovery)', border: 'var(--ds-border)' };
-    case 'HR': return { bg: 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', border: 'var(--ds-border)' };
-    case 'BUG FIX': return { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', border: 'var(--ds-border)' };
-    case 'FEATURE': return { bg: 'var(--ds-surface)', color: 'var(--quality-high)', border: 'var(--ds-border)' };
-    case 'DOCUMENTATION': return { bg: 'var(--ds-surface)', color: 'var(--ds-link)', border: 'var(--ds-border)' };
-    default: {
-      // Generate consistent color based on label hash
-      const hash = label.split('').reduce((acc, char) => char.charCodeAt(0) + acc, 0);
-      const hue = hash % 360;
-      return { 
-        bg: `hsl(${hue}, 70%, 95%)`, 
-        color: `hsl(${hue}, 70%, 35%)`, 
-        border: `hsl(${hue}, 70%, 85%)` 
-      };
-    }
-  }
+  const t = labelAccentTokens(label);
+  return { bg: t.background, color: t.text, border: t.border };
 }
 
 interface T10LabelPickerProps {
