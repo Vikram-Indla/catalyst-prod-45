@@ -25,6 +25,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import Spinner from '@atlaskit/spinner';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import {
   useTypeWorkflow,
   useAddTransition,
@@ -399,7 +400,7 @@ export function CatalystWorkflowBuilder({
   readonly: isReadonly = false,
   currentStatusId,
 }: CatalystWorkflowBuilderProps) {
-  const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
+  const { data: workflow, isLoading, isError, error, refetch } = useTypeWorkflow(projectKey, workItemType);
   const addTransition = useAddTransition(projectKey, workItemType);
   const deleteTransition = useDeleteTransition(projectKey, workItemType);
   const createStatus = useCreateStatus(projectKey);
@@ -532,6 +533,24 @@ export function CatalystWorkflowBuilder({
       setAddStatusLoading(false);
     }
   };
+
+  // isError alone misses the persisted-cache case (status stays 'success' on
+  // failed background refetch when hydrated data exists; only `error` is set).
+  if (isError || error) {
+    return (
+      <div style={{ flex: 1, padding: '16px 24px', background: DARK.canvas }}>
+        <div style={{ maxWidth: 720 }}>
+          <SectionMessage
+            appearance="error"
+            title="Couldn't load this workflow"
+            actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+          >
+            {(error as Error)?.message ?? 'Unknown error loading workflow statuses.'}
+          </SectionMessage>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
