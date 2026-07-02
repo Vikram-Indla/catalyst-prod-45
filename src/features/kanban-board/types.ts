@@ -26,6 +26,12 @@ export interface BoardIssue {
   storyPoints: number | null;
   parentKey: string | null;
   parentSummary: string | null;
+  /** Epic's real Jira-assigned color/status — populated only for project-mode
+   *  boards once the Jira sync writes them (see CAT-KANBAN-EPIC-COLOR-20260702-001
+   *  Slice A). Undefined/null everywhere else — render nothing, never a fake value. */
+  parentColor?: string | null;
+  parentStatus?: string | null;
+  parentStatusCategory?: string | null;
   sprintRelease: string | null;
   isFlagged: boolean;
   /** Card cover — raw CSS background value (hex, linear-gradient(), url()). */
