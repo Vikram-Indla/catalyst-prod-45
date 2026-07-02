@@ -992,6 +992,12 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
           getParent: (r) => {
             if (!r.parentKey) return null;
             const pType = parentTypeMap.get(r.parentKey);
+            // Jul 3, 2026: unresolved + cross-project = signature of a
+            // parent in an archived Jira space — don't render a dead
+            // reference (see BacklogPage.atlaskit.tsx for the live-probed
+            // rationale, e.g. MIM-15).
+            const parentProjectKey = r.parentKey.split('-')[0];
+            if (!pType && parentProjectKey !== projectKey) return null;
             return {
               id: r.parentKey,
               key: r.parentKey,
