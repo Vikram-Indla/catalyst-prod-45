@@ -51,7 +51,7 @@ export function GenerateWorkflowModal({ onClose }: { onClose: () => void }) {
         {!result ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ maxWidth: 280 }}>
-              <Select
+              <Select usePortal usePortal
                 options={ENTITY_OPTIONS}
                 value={entity}
                 onChange={setEntity}
