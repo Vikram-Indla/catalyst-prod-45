@@ -3265,12 +3265,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
           statusCategory: r.parent_status_category,
           isEpic: r.parent_issue_type === 'Epic',
-          // Parent lives in a different Jira project (e.g. a BAU story's
-          // parent is an MIM epic) — badge it so it doesn't read as a
-          // mismatched/wrong reference.
-          crossProjectKey: r.parent_key && projectKey && r.parent_key.split('-')[0] !== projectKey
-            ? r.parent_key.split('-')[0]
-            : null,
         } : null,
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation
