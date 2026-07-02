@@ -277,6 +277,48 @@ export function useTransitionDetail(transitionId: string | null) {
   });
 }
 
+// ── AI generation (P4) ───────────────────────────────────────────────────────
+export interface GeneratedStatus {
+  status_key: string;
+  display_label: string;
+  category: 'todo' | 'in_progress' | 'done';
+  is_initial: boolean;
+  is_terminal: boolean;
+}
+export interface GeneratedWorkflow {
+  name: string;
+  statuses: GeneratedStatus[];
+  transitions: { from_status_key: string | null; to_status_key: string; transition_type: string }[];
+}
+
+/** Call the ai-generate-workflow edge fn. Output is cached server-side. */
+export function useGenerateWorkflow() {
+  return useMutation({
+    mutationFn: async (input: { entityKey: string; prompt: string; base?: unknown }) => {
+      const { data, error } = await supabase.functions.invoke('ai-generate-workflow', {
+        body: { entity_key: input.entityKey, prompt: input.prompt, base: input.base ?? null },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.issues ? `${data.error}: ${data.issues.join('; ')}` : data.error);
+      return data as { cache_id: string; workflow: GeneratedWorkflow; cached: boolean };
+    },
+  });
+}
+
+/** Materialise a cached generation as a draft. Refuses to overwrite a
+ *  non-empty human draft; never publishes. */
+export function useImportGeneratedWorkflow() {
+  const invalidate = useInvalidateVersion();
+  return useMutation({
+    mutationFn: (input: { cacheId: string; entityKey?: string }) =>
+      rpc<string>('ph_wf_import_generated', {
+        p_cache_id: input.cacheId,
+        p_entity_key: input.entityKey ?? null,
+      }),
+    onSuccess: (draftId) => invalidate(draftId),
+  });
+}
+
 /** Persist diagram node positions on a draft (UI metadata only). */
 export function useSaveDraftLayout() {
   const qc = useQueryClient();
