@@ -486,27 +486,32 @@ function PhIssuePanelBody({
               />
             )}
 
-            {/* Bordered "Details" card — Jira-parity right-side panel grouping
-                (2026-07-02). Sits between Key details and Activity per Vikram
-                directive. Mounts canonical CatalystSidebarDetails inline so
-                every field the sidebar owns (Sprint/Iteration, Assignee,
-                Priority, Reporter, Labels, Due date, Actual start/end, per
-                issue type) appears here — no forked field list.
-                statusPill/improveDropdown NOT passed → top row hides;
-                Status + Improve + Discuss render at line ~384 above. */}
-            <CatalystSidebarDetails
-              issue={issue}
-              itemId={itemId}
-              projectId={projectId}
-              projectKey={projectKey}
-              onStatusChange={(st) => mutations.updateStatus.mutate(st)}
-              onClose={onClose}
-              onDelete={() => mutations.deleteIssue.mutate()}
-              typeLabel={(effectiveType || 'item').toLowerCase()}
-              hideDiscuss={true}
-            />
+            {/* Bordered "Details" card + Created/Updated timestamps + Activity.
+                Left edge (Details card border, Created text, Activity heading)
+                aligns with the chevrons of the collapsible sections above
+                (Attachments / Subtasks / Linked / Tests) — all sit at the
+                scroll container's left inset. Consistent vertical rhythm
+                (`marginTop: 16`) between sections is owned by each section
+                root (`.tcs-root`, `.lwi-root`, etc.); the wrapper here just
+                adds the same 16px gap above the Details card so the sequence
+                stays even (Vikram 2026-07-02). */}
+            <div style={{ marginTop: 16 }}>
+              <CatalystSidebarDetails
+                issue={issue}
+                itemId={itemId}
+                projectId={projectId}
+                projectKey={projectKey}
+                onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+                onClose={onClose}
+                onDelete={() => mutations.deleteIssue.mutate()}
+                typeLabel={(effectiveType || 'item').toLowerCase()}
+                hideDiscuss={true}
+              />
 
-            <CatalystActivitySection itemId={itemId} isOpen={true} />
+              <div style={{ marginTop: 16 }}>
+                <CatalystActivitySection itemId={itemId} isOpen={true} />
+              </div>
+            </div>
           </>
         )}
       </div>
