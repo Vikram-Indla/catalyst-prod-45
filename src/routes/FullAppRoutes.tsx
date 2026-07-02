@@ -291,6 +291,7 @@ const VercelConnectionPage = lazy(() => import("../pages/admin/connections/Verce
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const WorkflowVersioningPage = lazy(() => import("../pages/admin/workflows/WorkflowVersioningPage"));
+const WorkflowStudioPage = lazy(() => import("../pages/admin/workflows/studio/WorkflowStudioPage"));
 const TestOpsPage = lazy(() => import("../pages/admin/test-ops/TestOpsPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
@@ -935,7 +936,8 @@ export default function FullAppRoutes() {
           <Route path="business-owners" element={<Navigate to="/admin/access" replace />} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
-          <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
+          <Route path="workflows" element={<S><WorkflowStudioPage /></S>} />
+          <Route path="workflows/classic" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workflows/versions" element={<S><WorkflowVersioningPage /></S>} />
           <Route path="test-ops" element={<S><TestOpsPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
