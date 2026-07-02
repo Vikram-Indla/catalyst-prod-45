@@ -103,6 +103,7 @@ import type { TaskPriority } from '@/modules/tasks/types';
 // ── Defect (QA Bug) work type → tm_defects (TestHub) ──────────────────────────
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
+import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 import type { DefectSeverity } from '@/types/test-management';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -640,8 +641,19 @@ export function CreateStoryModal({
   );
 
   // Source list — restricted by the caller (e.g. product hub passes
-  // ['Business Request']) or falls back to the full catalogue.
-  const effectiveWorkTypes = workTypes ?? WORK_TYPES;
+  // ['Business Request']) or falls back to the full catalogue plus any
+  // custom main types from the Studio registry (ph_work_item_types). The
+  // curated system list stays in code — Task-handoff and deprecations are
+  // product decisions, not data.
+  const { data: registryTypes } = useWorkItemTypes();
+  const customTypeNames = useMemo(
+    () =>
+      (registryTypes ?? [])
+        .filter((t) => !t.is_system && t.kind === 'standard' && t.is_enabled)
+        .map((t) => t.display_name),
+    [registryTypes]
+  );
+  const effectiveWorkTypes = workTypes ?? [...WORK_TYPES, ...customTypeNames];
   const workTypeOptions: IconOption[] = useMemo(
     () =>
       effectiveWorkTypes.map((t) => ({
