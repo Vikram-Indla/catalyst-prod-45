@@ -20,10 +20,15 @@ export function jqlToCanonicalFilterValue(jql: string): CanonicalFilterValue {
   const filters = translate(jql);
   for (const f of filters) {
     const col = f.column;
-    const op = (f as any).operator as string | undefined;
-    const raw: string[] = Array.isArray((f as any).values)
-      ? (f as any).values
-      : (f as any).value != null ? [(f as any).value] : [];
+    // JqlFilter carries `method`/`value` (see translator.ts) — map back to the
+    // `op`/`raw` shape this function was written against.
+    const op = f.method === 'neq' ? '!='
+      : f.method === 'not_in' ? 'not in'
+      : f.method === 'is' ? 'is'
+      : undefined;
+    const raw: string[] = Array.isArray(f.value)
+      ? f.value
+      : f.value != null ? [f.value] : [];
     if (!col || !raw.length) continue;
 
     const isExclude = op === '!=' || op === 'not in';
