@@ -32,6 +32,7 @@ import {
 import { useCreateDraft, useDiscardDraft } from '@/hooks/workflow-v2/useWorkflowDraft';
 import { ENTITY_GROUPS, LIFECYCLE_APPEARANCE, fmtDate } from './entities';
 import { PublishModal } from './PublishModal';
+import { AuditTab, EnforcementTab, SchemesTab, StatusesTab } from './StudioTabs';
 
 type VersionRow = WfVersion & { template_name: string | null };
 
@@ -365,30 +366,28 @@ function WorkflowsTab() {
   );
 }
 
-// ── Interim tab: hands off to the engine admin page until P2.4 ──────────────
-function InterimTab({ label, targetTab }: { label: string; targetTab: string }) {
+// ── Interim tab: only Work item types remains pending (P3) ──────────────────
+function InterimTab({ label }: { label: string }) {
   return (
     <div style={{ padding: '24px 16px', maxWidth: 720 }}>
-      <SectionMessage appearance="information" title={`${label} moves into the Studio in an upcoming slice`}>
+      <SectionMessage appearance="information" title={`${label} arrives with the custom-types phase`}>
         <p style={{ marginBottom: 8 }}>
-          Until then it is managed on the engine admin page.
+          Custom work item types and configurable hierarchy land here (P3). Until then the
+          type registry is code-defined.
         </p>
-        <Link to={`/admin/workflows/versions?tab=${targetTab}`} style={{ color: 'var(--ds-text-brand)' }}>
-          Open {label} on the engine page →
-        </Link>
       </SectionMessage>
     </div>
   );
 }
 
 const STUDIO_TABS = [
-  { label: 'Workflows' },
-  { label: 'Schemes', target: 'schemes' },
-  { label: 'Statuses', target: 'statuses' },
-  { label: 'Work item types', target: 'statuses' },
-  { label: 'Enforcement', target: 'enforcement' },
-  { label: 'Audit', target: 'audit' },
-];
+  'Workflows',
+  'Schemes',
+  'Statuses',
+  'Work item types',
+  'Enforcement',
+  'Audit',
+] as const;
 
 export default function WorkflowStudioPage() {
   return (
@@ -418,17 +417,27 @@ export default function WorkflowStudioPage() {
           <Tabs id="workflow-studio-tabs">
             <TabList>
               {STUDIO_TABS.map((t) => (
-                <Tab key={t.label}>{t.label}</Tab>
+                <Tab key={t}>{t}</Tab>
               ))}
             </TabList>
             <TabPanel>
               <WorkflowsTab />
             </TabPanel>
-            {STUDIO_TABS.slice(1).map((t) => (
-              <TabPanel key={t.label}>
-                <InterimTab label={t.label} targetTab={t.target as string} />
-              </TabPanel>
-            ))}
+            <TabPanel>
+              <SchemesTab />
+            </TabPanel>
+            <TabPanel>
+              <StatusesTab />
+            </TabPanel>
+            <TabPanel>
+              <InterimTab label="Work item types" />
+            </TabPanel>
+            <TabPanel>
+              <EnforcementTab />
+            </TabPanel>
+            <TabPanel>
+              <AuditTab />
+            </TabPanel>
           </Tabs>
         </div>
       </AtlaskitPageShell>
