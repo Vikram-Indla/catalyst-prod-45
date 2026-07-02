@@ -11,6 +11,7 @@ import { IssueTypeIcon } from './IssueTypeIcon';
 import { PortalMenu, MenuItem } from './PortalMenu';
 import { SIZES, STRINGS } from '../constants';
 import type { StatusCategory } from '../types';
+import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 
 const CREATABLE_TYPES = ['Story', 'Task', 'QA Bug', 'Epic'];
 
@@ -22,6 +23,17 @@ interface Props {
 }
 
 export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
+  // Studio registry custom main types are creatable too (curated list first).
+  const { data: registryTypes } = useWorkItemTypes();
+  const creatableTypes = React.useMemo(
+    () => [
+      ...CREATABLE_TYPES,
+      ...(registryTypes ?? [])
+        .filter((t) => !t.is_system && t.kind === 'standard' && t.is_enabled)
+        .map((t) => t.display_name),
+    ],
+    [registryTypes]
+  );
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState('');
   const [issueType, setIssueType] = useState('Story');
@@ -88,7 +100,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
             <IssueTypeIcon issueType={issueType} size={16} />
           </span>
         )}>
-          {(close) => CREATABLE_TYPES.map((t) => (
+          {(close) => creatableTypes.map((t) => (
             <MenuItem key={t} variant="plain" onClick={() => { setIssueType(t); close(); ref.current?.focus(); }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><IssueTypeIcon issueType={t} size={16} />{t}</span>
             </MenuItem>

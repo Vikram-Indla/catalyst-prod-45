@@ -85,19 +85,19 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
     reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill; deny-before-mutation on JiraTable/kanban',
   },
   subtask: {
-    runtimeReadWired: false, runtimeReadNote: 'no published version seeded — no canonical statuses to resolve',
+    runtimeReadWired: true, runtimeReadNote: 'v1 published (verified on staging 2026-07-03) — CatalystStatusPill resolves',
     runtimeWriteWired: true, runtimeWriteNote: 'useCatalystIssueMutations → gateTransition → advisory noop (no published version); audit row 183e6f7d proven on BAU-4716',
     reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill; deny-before-mutation on JiraTable/kanban',
   },
   defect: {
     runtimeReadWired: true, runtimeReadNote: 'defectsDataSource + useCanonicalIssueWorkflow(Defect)',
     runtimeWriteWired: true, runtimeWriteNote: 'useDefects.ts → recordAdvisoryStatusChange (advisory)',
-    reasonModalWired: false, reasonModalNote: 'advisory only — reason not surfaced on status change UI',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal via StatusLozengeDropdown in CatalystViewDefect (2026-07-03)',
   },
   incident: {
     runtimeReadWired: false, runtimeReadNote: 'no dedicated read hook wired; CatalystStatusPill if issueType=Incident',
     runtimeWriteWired: true, runtimeWriteNote: 'useIncidents.ts → recordAdvisoryStatusChange (advisory)',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal via StatusLozengeDropdown in CatalystViewIncident (2026-07-03)',
   },
   release: {
     runtimeReadWired: true, runtimeReadNote: 'releasesDataSource + useCanonicalIssueWorkflow(Release)',

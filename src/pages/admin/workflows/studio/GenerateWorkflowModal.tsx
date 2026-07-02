@@ -5,6 +5,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TextArea from '@atlaskit/textarea';
 import {
   Button,
   Lozenge,
@@ -58,22 +59,12 @@ export function GenerateWorkflowModal({ onClose }: { onClose: () => void }) {
                 ariaLabel="Entity type"
               />
             </div>
-            <textarea
+            <TextArea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe the workflow… e.g. 'Defects need triage, a fix loop, QA verification, and a reason whenever something is rejected or reopened.'"
-              rows={5}
-              style={{
-                width: '100%',
-                resize: 'vertical',
-                border: '1px solid var(--ds-border)',
-                borderRadius: 4,
-                padding: 8,
-                fontFamily: 'inherit',
-                fontSize: 'var(--ds-font-size-200)',
-                color: 'var(--ds-text)',
-                background: 'var(--ds-surface)',
-              }}
+              minimumRows={5}
+              resize="vertical"
             />
             <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', margin: 0 }}>
               Output lands as a draft for review — Caty never publishes. Requires no open

@@ -268,6 +268,19 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
     queryFn: async (): Promise<BacklogStory[]> => {
       if (!isAllItems && !isReleaseScope && !hasAssigneeOverride && !projectKey) return [];
       if (isReleaseScope && (restrictToIssueKeys?.length ?? 0) === 0) return [];
+      // Custom main types from the Studio registry are backlog scope too —
+      // without this, items of a custom type would be invisible here.
+      const { data: customTypes } = await supabase
+        .from('ph_work_item_types')
+        .select('display_name')
+        .eq('is_system', false)
+        .eq('kind', 'standard')
+        .eq('is_enabled', true)
+        .is('archived_at', null);
+      const effectiveTypeFilter = [
+        ...issueTypeFilter,
+        ...((customTypes ?? []) as { display_name: string }[]).map((t) => t.display_name),
+      ];
       const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, sprint_release, sort_order';
       const buildQuery = () => {
         let q = supabase
@@ -279,7 +292,7 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
           q = (q as any).neq('issue_type', 'Epic');
         } else {
           q = (q as any)
-            .in('issue_type', issueTypeFilter)
+            .in('issue_type', effectiveTypeFilter)
             .is('jira_removed_at', null)
             .is('archived_at', null)
             .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
