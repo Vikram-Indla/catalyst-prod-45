@@ -68,10 +68,11 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
         if (configCat) cat = configCat;
       }
 
-      await supabase
+      const { error } = await supabase
         .from('ph_issues')
         .update({ status: newStatus, status_category: cat })
         .eq('issue_key', itemId) /* F-iter9 PK fix */;
+      if (error) throw error;
     },
     onError: (err: unknown) => {
       catalystToast.error(err instanceof Error ? err.message : 'Status change blocked by workflow.');
@@ -88,7 +89,8 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
       value: string | null;
       oldValue?: string | null;
     }) => {
-      await supabase.from('ph_issues').update({ [field]: value }).eq('issue_key', itemId) /* F-iter9 PK fix */;
+      const { error } = await supabase.from('ph_issues').update({ [field]: value }).eq('issue_key', itemId) /* F-iter9 PK fix */;
+      if (error) throw error;
       // Title is mirrored into user_recent_items.display_summary (a
       // snapshot taken at view time) so the right-rail Recents stays
       // performant. The snapshot is not joined live to ph_issues, so
@@ -133,14 +135,21 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
         },
       });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Failed to save change.');
+    },
   });
 
   const deleteIssue = useMutation({
     mutationFn: async () => {
-      await supabase
+      const { error } = await supabase
         .from('ph_issues')
         .update({ deleted_at: new Date().toISOString() })
         .eq('issue_key', itemId) /* F-iter9 PK fix */;
+      if (error) throw error;
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Failed to delete issue.');
     },
     onSuccess: () => {
       catalystToast.success('Issue deleted');
