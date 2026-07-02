@@ -58,8 +58,11 @@ CREATE TABLE IF NOT EXISTS public.ph_work_item_types (
   CONSTRAINT ph_wit_group_chk CHECK (group_key IN ('standard','qa','business','technical')),
   CONSTRAINT ph_wit_token_chk CHECK (color_token ~ '^(color\.|var\(--ds-)' AND color_token !~ '#')
 );
+-- Key uniqueness only among live rows — archiving a custom type frees its key.
+DROP INDEX IF EXISTS public.ph_wit_key_uq;
 CREATE UNIQUE INDEX IF NOT EXISTS ph_wit_key_uq
-  ON public.ph_work_item_types (COALESCE(org_id, '00000000-0000-0000-0000-000000000000'::uuid), lower(type_key));
+  ON public.ph_work_item_types (COALESCE(org_id, '00000000-0000-0000-0000-000000000000'::uuid), lower(type_key))
+  WHERE archived_at IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS ph_wit_name_uq
   ON public.ph_work_item_types (COALESCE(org_id, '00000000-0000-0000-0000-000000000000'::uuid), lower(display_name))
   WHERE archived_at IS NULL;
