@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
+  CatalystTag,
   EmptyState,
   Lozenge,
   SectionMessage,
@@ -125,15 +126,16 @@ export function SchemesTab() {
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {rows.map((e) => (
-                  <Lozenge key={e.id} appearance="default">
-                    {`${ENTITY_LABELS[e.entity_key] ?? e.entity_key} ${versionNo(e.version_id)}`}
-                  </Lozenge>
+                  <CatalystTag
+                    key={e.id}
+                    text={`${ENTITY_LABELS[e.entity_key] ?? e.entity_key} ${versionNo(e.version_id)}`}
+                  />
                 ))}
               </div>
               {applyTarget?.schemeId === s.id && (
                 <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', maxWidth: 480 }}>
                   <div style={{ flex: 1 }}>
-                    <Select
+                    <Select usePortal usePortal
                       options={projectOptions}
                       value={applyTarget.project}
                       onChange={(o) => setApplyTarget({ schemeId: s.id, project: o })}
@@ -241,7 +243,7 @@ function MigrationPreviewCard() {
         <span style={{ fontWeight: 600 }}>Legacy → canonical migration preview</span>
         <span style={{ flex: 1 }} />
         <div style={{ width: 180 }}>
-          <Select options={entityOptions} value={entity} onChange={setEntity} ariaLabel="Preview entity" />
+          <Select usePortal options={entityOptions} value={entity} onChange={setEntity} ariaLabel="Preview entity" />
         </div>
       </div>
       {preview.error ? (
@@ -433,9 +435,10 @@ function ReasonCodesCard() {
               style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}
               aria-label={`Toggle reason code ${c.code}`}
             >
-              <Lozenge appearance={c.is_active ? 'inprogress' : 'default'}>
-                {`${c.code}${c.transition_type ? ` · ${c.transition_type}` : ''}`}
-              </Lozenge>
+              <CatalystTag
+                color={c.is_active ? 'blue' : 'grey'}
+                text={`${c.code.toLowerCase()}${c.transition_type ? ` · ${c.transition_type}` : ''}`}
+              />
             </button>
           ))}
         </div>
@@ -514,10 +517,10 @@ export function AuditTab() {
     <div style={tabWrap}>
       <div style={{ display: 'flex', gap: 8, maxWidth: 480 }}>
         <div style={{ flex: 1 }}>
-          <Select options={entityOptions} value={entity} onChange={setEntity} placeholder="All entities" ariaLabel="Filter entity" />
+          <Select usePortal options={entityOptions} value={entity} onChange={setEntity} placeholder="All entities" ariaLabel="Filter entity" />
         </div>
         <div style={{ flex: 1 }}>
-          <Select options={MODE_OPTIONS} value={mode} onChange={setMode} placeholder="All modes" ariaLabel="Filter mode" />
+          <Select usePortal options={MODE_OPTIONS} value={mode} onChange={setMode} placeholder="All modes" ariaLabel="Filter mode" />
         </div>
       </div>
       <QueryStates isLoading={audit.isLoading} error={audit.error} refetch={() => audit.refetch()}>

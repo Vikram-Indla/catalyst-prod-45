@@ -15,18 +15,16 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { AtlaskitPageShell } from '@/components/ads/AtlaskitPageShell';
 import {
   Button,
-  DropdownMenu,
-  DropdownItem,
   EmptyState,
+  CatalystTag,
   Lozenge,
   SectionMessage,
   Spinner,
 } from '@/components/ads';
-import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
-import type { Column } from '@/components/shared/JiraTable/types';
 import {
   useWfVersions,
   useWfVersionStatuses,
+  useWfVersionTransitions,
   type WfVersion,
 } from '@/hooks/workflow-v2/useWorkflowFoundation';
 import { useCreateDraft, useDiscardDraft } from '@/hooks/workflow-v2/useWorkflowDraft';
@@ -35,6 +33,7 @@ import { PublishModal } from './PublishModal';
 import { AuditTab, EnforcementTab, SchemesTab, StatusesTab } from './StudioTabs';
 import { WorkItemTypesTab } from './WorkItemTypesTab';
 import { GenerateWorkflowModal } from './GenerateWorkflowModal';
+import { HistoryDrawer } from './HistoryDrawer';
 
 type VersionRow = WfVersion & { template_name: string | null };
 
@@ -82,11 +81,15 @@ function StatusesPreview({ version }: { version: VersionRow }) {
   );
 }
 
-// ── Workflows tab ────────────────────────────────────────────────────────────
+// ── Workflows tab — ONE BASELINE per entity (Vikram directive 2026-07-03) ────
+// Version history is an implementation detail: the main pane shows only the
+// current baseline (published) + at most one open draft. Superseded/archived
+// versions live exclusively in the History drawer. No per-row dropdown menu
+// (the @atlaskit/popup detach bug dies with it).
 function WorkflowsTab() {
   const navigate = useNavigate();
   const [entityKey, setEntityKey] = useState('story');
-  const [previewVersionId, setPreviewVersionId] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [publishTarget, setPublishTarget] = useState<VersionRow | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -109,88 +112,10 @@ function WorkflowsTab() {
   }, [versionsQuery.data]);
 
   const rows = byEntity.get(entityKey) ?? [];
-  const hasDraft = rows.some((r) => r.lifecycle === 'draft');
-  const published = rows.find((r) => r.lifecycle === 'published');
-  const previewVersion = rows.find((r) => r.id === previewVersionId) ?? null;
+  const draft = rows.find((r) => r.lifecycle === 'draft') ?? null;
+  const published = rows.find((r) => r.lifecycle === 'published') ?? null;
 
   const onError = (e: unknown) => setActionError((e as Error).message);
-
-  const columns: Column<VersionRow>[] = [
-    {
-      id: 'version',
-      label: 'Version',
-      width: 10,
-      cell: ({ row }) => <span style={{ fontVariantNumeric: 'tabular-nums' }}>v{row.version_no}</span>,
-    },
-    {
-      id: 'lifecycle',
-      label: 'Lifecycle',
-      width: 14,
-      cell: ({ row }) => (
-        <Lozenge appearance={LIFECYCLE_APPEARANCE[row.lifecycle] ?? 'default'}>
-          {row.lifecycle}
-        </Lozenge>
-      ),
-    },
-    {
-      id: 'notes',
-      label: 'Notes',
-      flex: true,
-      cell: ({ row }) => (
-        <span style={{ color: 'var(--ds-text-subtle)' }}>{row.notes ?? '—'}</span>
-      ),
-    },
-    {
-      id: 'published_at',
-      label: 'Published',
-      width: 12,
-      cell: ({ row }) => <span>{fmtDate(row.published_at)}</span>,
-    },
-    {
-      id: 'created_at',
-      label: 'Created',
-      width: 12,
-      cell: ({ row }) => <span>{fmtDate(row.created_at)}</span>,
-    },
-    {
-      id: 'actions',
-      label: '',
-      width: 8,
-      align: 'end',
-      cell: ({ row }) => (
-        <DropdownMenu trigger="⋯" ariaLabel={`Actions for v${row.version_no}`}>
-          <DropdownItem onClick={() => openEditor(row.id)}>
-            {row.lifecycle === 'draft' ? 'Edit in diagram' : 'View diagram'}
-          </DropdownItem>
-          <DropdownItem onClick={() => setPreviewVersionId(row.id)}>View statuses</DropdownItem>
-          {!readOnly && row.lifecycle === 'draft' && (
-            <>
-              <DropdownItem onClick={() => setPublishTarget(row)}>Publish…</DropdownItem>
-              <DropdownItem
-                onClick={() =>
-                  discardDraft.mutate(row.id, { onError })
-                }
-              >
-                Discard draft
-              </DropdownItem>
-            </>
-          )}
-          {!readOnly && row.lifecycle !== 'draft' && (
-            <DropdownItem
-              onClick={() =>
-                createDraft.mutate(
-                  { fromVersionId: row.id },
-                  { onSuccess: (id) => openEditor(id), onError }
-                )
-              }
-            >
-              {hasDraft ? 'Open existing draft' : 'Create draft from this version'}
-            </DropdownItem>
-          )}
-        </DropdownMenu>
-      ),
-    },
-  ];
 
   return (
     <div style={{ display: 'flex', flex: 1, minHeight: 0, alignItems: 'stretch' }}>
@@ -228,7 +153,6 @@ function WorkflowsTab() {
                   type="button"
                   onClick={() => {
                     setEntityKey(e.key);
-                    setPreviewVersionId(null);
                     setActionError(null);
                   }}
                   style={{
@@ -266,10 +190,10 @@ function WorkflowsTab() {
         ))}
       </nav>
 
-      {/* Version list */}
-      <div style={{ flex: 1, minWidth: 0, padding: '12px 16px', overflowY: 'auto' }}>
+      {/* Baseline pane */}
+      <div style={{ flex: 1, minWidth: 0, padding: 16, overflowY: 'auto' }}>
         {actionError && (
-          <div style={{ marginBottom: 12 }}>
+          <div style={{ marginBottom: 16 }}>
             <SectionMessage
               appearance="error"
               title="Action failed"
@@ -279,29 +203,6 @@ function WorkflowsTab() {
             </SectionMessage>
           </div>
         )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600 }}>
-            {entityDef?.label ?? entityKey}
-          </span>
-          {readOnly ? (
-            <Lozenge appearance="new">system-managed · date-driven</Lozenge>
-          ) : (
-            <Button
-              appearance="primary"
-              spacing="compact"
-              isDisabled={createDraft.isPending}
-              onClick={() =>
-                createDraft.mutate(
-                  published ? { fromVersionId: published.id } : { entityKey },
-                  { onSuccess: (id) => openEditor(id), onError }
-                )
-              }
-            >
-              {hasDraft ? 'Open draft' : createDraft.isPending ? 'Creating…' : 'Create draft'}
-            </Button>
-          )}
-        </div>
 
         {versionsQuery.isError || versionsQuery.error ? (
           <SectionMessage
@@ -315,55 +216,129 @@ function WorkflowsTab() {
           <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
             <Spinner size="medium" />
           </div>
-        ) : rows.length === 0 ? (
-          <EmptyState
-            header={`No workflow versions for ${entityDef?.label ?? entityKey}`}
-            description="Create a draft to start defining statuses and transitions."
-          />
         ) : (
-          <JiraTable<VersionRow>
-            columns={columns}
-            data={rows}
-            getRowId={(r) => r.id}
-            onRowClick={(row) => setPreviewVersionId(row.id)}
-            density="compact"
-            ariaLabel={`${entityDef?.label ?? entityKey} workflow versions`}
-          />
-        )}
-
-        {previewVersion && (
-          <div
-            style={{
-              marginTop: 16,
-              border: '1px solid var(--ds-border)',
-              borderRadius: 6,
-              padding: '12px 16px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>
-                Statuses · v{previewVersion.version_no}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600 }}>
+                {entityDef?.label ?? entityKey} workflow
               </span>
-              <Lozenge appearance={LIFECYCLE_APPEARANCE[previewVersion.lifecycle] ?? 'default'}>
-                {previewVersion.lifecycle}
-              </Lozenge>
+              {readOnly && <Lozenge appearance="new">system-managed · date-driven</Lozenge>}
               <span style={{ flex: 1 }} />
-              <Button appearance="subtle" spacing="compact" onClick={() => setPreviewVersionId(null)}>
-                Close
-              </Button>
+              {!readOnly && (
+                <>
+                  <Button
+                    appearance="primary"
+                    isDisabled={createDraft.isPending}
+                    onClick={() =>
+                      draft
+                        ? openEditor(draft.id)
+                        : createDraft.mutate(
+                            published ? { fromVersionId: published.id } : { entityKey },
+                            { onSuccess: (id) => openEditor(id), onError }
+                          )
+                    }
+                  >
+                    {createDraft.isPending ? 'Opening…' : 'Edit workflow'}
+                  </Button>
+                  {draft && (
+                    <>
+                      <Button appearance="default" onClick={() => setPublishTarget(draft)}>
+                        Publish changes…
+                      </Button>
+                      <Button
+                        appearance="subtle"
+                        isDisabled={discardDraft.isPending}
+                        onClick={() => discardDraft.mutate(draft.id, { onError })}
+                      >
+                        Discard changes
+                      </Button>
+                    </>
+                  )}
+                  <Button appearance="subtle" onClick={() => setHistoryOpen(true)}>
+                    History
+                  </Button>
+                </>
+              )}
             </div>
-            <StatusesPreview version={previewVersion} />
-            {previewVersion.lifecycle === 'draft' && (
-              <p style={{ marginTop: 12, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
-                Full status + transition editing lands with the Studio editor (P2.2). Until
-                then drafts can be shaped via the classic builder or published as-is.
-              </p>
+
+            {/* Baseline card */}
+            {published ? (
+              <BaselineCard
+                baseline={published}
+                draft={draft}
+                readOnly={readOnly}
+                onOpenDiagram={() => openEditor((draft ?? published).id)}
+              />
+            ) : draft ? (
+              <SectionMessage appearance="information" title="No baseline yet — a draft is in progress">
+                Publish the draft to establish this entity's baseline workflow.
+              </SectionMessage>
+            ) : (
+              <EmptyState
+                header={`No workflow for ${entityDef?.label ?? entityKey}`}
+                description="Edit workflow creates the first draft; publish it to set the baseline."
+              />
             )}
           </div>
         )}
       </div>
 
       {publishTarget && <PublishModal version={publishTarget} onClose={() => setPublishTarget(null)} />}
+      <HistoryDrawer
+        entityKey={entityKey}
+        isOpen={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onError={onError}
+      />
+    </div>
+  );
+}
+
+// One card = the baseline. Statuses shown inline; counts + meta quiet.
+function BaselineCard({
+  baseline,
+  draft,
+  readOnly,
+  onOpenDiagram,
+}: {
+  baseline: VersionRow;
+  draft: VersionRow | null;
+  readOnly: boolean;
+  onOpenDiagram: () => void;
+}) {
+  const statuses = useWfVersionStatuses(baseline.id);
+  const transitions = useWfVersionTransitions(baseline.id);
+  const meta = [
+    statuses.data ? `${statuses.data.length} statuses` : null,
+    transitions.data ? `${transitions.data.length} transitions` : null,
+    baseline.published_at ? `baseline since ${fmtDate(baseline.published_at)}` : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+  return (
+    <div
+      style={{
+        border: '1px solid var(--ds-border)',
+        borderRadius: 6,
+        padding: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontWeight: 600 }}>{baseline.template_name ?? 'Baseline workflow'}</span>
+        {draft && !readOnly && <CatalystTag color="blue" text="unpublished changes" />}
+        <span style={{ flex: 1, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+          {meta}
+        </span>
+        <Button appearance="subtle" spacing="compact" onClick={onOpenDiagram}>
+          Open diagram
+        </Button>
+      </div>
+      <StatusesPreview version={baseline} />
     </div>
   );
 }
@@ -399,7 +374,17 @@ export default function WorkflowStudioPage() {
         }
         testId="workflow-studio"
       >
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+        {/* D6/D7/D8: breathing room above the tab strip + align the tablist and
+            every tab panel with the shell title's 24px left inset. */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            minHeight: 0,
+            padding: '12px 24px 0',
+          }}
+        >
           <Tabs id="workflow-studio-tabs">
             <TabList>
               {STUDIO_TABS.map((t) => (

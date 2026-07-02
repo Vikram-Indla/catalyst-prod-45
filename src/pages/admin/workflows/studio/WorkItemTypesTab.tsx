@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
+  CatalystTag,
   Checkbox,
   EmptyState,
   Lozenge,
@@ -82,7 +83,7 @@ export function WorkItemTypesTab() {
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
           <WorkItemTypeIcon type={row.icon} size={16} />
           <span style={{ fontWeight: 600 }}>{row.display_name}</span>
-          {row.is_system ? <Lozenge appearance="default">system</Lozenge> : <Lozenge appearance="new">custom</Lozenge>}
+          {row.is_system ? <CatalystTag text="system" color="grey" /> : <CatalystTag text="custom" color="blue" />}
           {!row.is_enabled && <Lozenge appearance="removed">disabled</Lozenge>}
         </span>
       ),
@@ -292,9 +293,7 @@ function HierarchyLevelsCard({ onError }: { onError: (e: unknown) => void }) {
                 style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}
                 aria-label={`Edit level ${l.name}`}
               >
-                <Lozenge appearance={l.is_enabled ? 'inprogress' : 'default'}>
-                  {`L${l.level_rank + 1} ${l.name}`}
-                </Lozenge>
+                <CatalystTag color={l.is_enabled ? 'blue' : 'grey'} text={`L${l.level_rank + 1} ${l.name}`} />
               </button>
             )
           )}
@@ -372,7 +371,7 @@ function TypeDetailPanel({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <span style={{ fontWeight: 600, flex: 1 }}>{isCreate ? 'Create type' : type!.display_name}</span>
-        {!isCreate && type!.is_system && <Lozenge appearance="default">system</Lozenge>}
+        {!isCreate && type!.is_system && <CatalystTag text="system" color="grey" />}
         <Button appearance="subtle" spacing="compact" onClick={onClose}>✕</Button>
       </div>
 
@@ -389,7 +388,7 @@ function TypeDetailPanel({
 
         <div>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Icon</div>
-          <Select options={ICON_OPTIONS} value={icon} onChange={setIcon} placeholder="Pick icon…" ariaLabel="Icon" />
+          <Select usePortal options={ICON_OPTIONS} value={icon} onChange={setIcon} placeholder="Pick icon…" ariaLabel="Icon" />
         </div>
 
         <div>
@@ -400,18 +399,18 @@ function TypeDetailPanel({
               <Checkbox label="Subtask" isChecked={kind === 'subtask'} onChange={() => setKind('subtask')} />
             </div>
           ) : (
-            <Lozenge appearance="default">{type!.kind}</Lozenge>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{type!.kind}</span>
           )}
         </div>
 
         <div>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Group</div>
-          <Select options={GROUP_OPTIONS} value={group} onChange={setGroup} ariaLabel="Group" />
+          <Select usePortal options={GROUP_OPTIONS} value={group} onChange={setGroup} ariaLabel="Group" />
         </div>
 
         <div>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Hierarchy level</div>
-          <Select
+          <Select usePortal usePortal
             options={levelOptions}
             value={levelId ?? currentLevel}
             onChange={setLevelId}
@@ -443,9 +442,18 @@ function TypeDetailPanel({
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                 Allowed parents
               </div>
+              {/* CRE compliance (C1): system types' hierarchy is governed by the
+                  locked RULE_TABLE.md — these rows mirror Grid B and are
+                  read-only here. Only custom types are editable. */}
+              {type!.is_system && (
+                <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', margin: '0 0 4px' }}>
+                  Governed by the Catalyst Rules Engine (RULE_TABLE.md Grid B) — read-only mirror.
+                </p>
+              )}
               <Checkbox
                 label="May be root (no parent)"
                 isChecked={effectiveParents.has(null)}
+                isDisabled={type!.is_system}
                 onChange={() => toggleParent(null)}
               />
               {parentCandidates.map((p) => (
@@ -453,10 +461,11 @@ function TypeDetailPanel({
                   key={p.id}
                   label={p.display_name}
                   isChecked={effectiveParents.has(p.id)}
+                  isDisabled={type!.is_system}
                   onChange={() => toggleParent(p.id)}
                 />
               ))}
-              {draftParents && (
+              {draftParents && !type!.is_system && (
                 <Button
                   spacing="compact"
                   appearance="primary"
