@@ -12,6 +12,10 @@ import { PortalMenu, MenuItem } from './PortalMenu';
 import { SIZES, STRINGS } from '../constants';
 import type { StatusCategory } from '../types';
 import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
+// CRE chokepoint (Grids A + D): the creatable catalogue is filtered through
+// the Catalyst Rules Engine before render. Custom Studio-registry types pass
+// through (registry is authoritative for them). See RULE_TABLE.md.
+import { filterCreatableTypes, type CREModule } from '@/lib/catalyst-rules';
 
 const CREATABLE_TYPES = ['Story', 'Task', 'QA Bug', 'Epic'];
 
@@ -19,20 +23,27 @@ interface Props {
   projectKey: string;
   status: string;
   category: StatusCategory;
+  /** CRE module scope (Grid A/D). Project boards are TEAM surfaces. */
+  creModule?: CREModule;
   onCreate: (summary: string, issueType: string, dueDate: string | null) => Promise<void>;
 }
 
-export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
+export const InlineCreate: React.FC<Props> = ({ status, creModule = 'TEAM', onCreate }) => {
   // Studio registry custom main types are creatable too (curated list first).
+  // The merged catalogue then passes the CRE chokepoint for this module.
   const { data: registryTypes } = useWorkItemTypes();
   const creatableTypes = React.useMemo(
-    () => [
-      ...CREATABLE_TYPES,
-      ...(registryTypes ?? [])
-        .filter((t) => !t.is_system && t.kind === 'standard' && t.is_enabled)
-        .map((t) => t.display_name),
-    ],
-    [registryTypes]
+    () =>
+      filterCreatableTypes(
+        [
+          ...CREATABLE_TYPES,
+          ...(registryTypes ?? [])
+            .filter((t) => !t.is_system && t.kind === 'standard' && t.is_enabled)
+            .map((t) => t.display_name),
+        ],
+        creModule,
+      ),
+    [registryTypes, creModule]
   );
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState('');

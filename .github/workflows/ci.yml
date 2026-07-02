@@ -74,6 +74,11 @@ jobs:
         # design-governance/audit-baseline.json. CAT-ADS-COMPLIANCE-20260627-001.
         run: npm run audit:ads:gate
 
+      - name: CRE chokepoint gate (create/link/parent surfaces query the rules engine)
+        # Fails when a known chokepoint stops importing @/lib/catalyst-rules —
+        # see .claude/skills/cre/SKILL.md and src/lib/catalyst-rules/RULE_TABLE.md.
+        run: npm run lint:cre
+
       - name: Build
         run: npx vite build
         env:

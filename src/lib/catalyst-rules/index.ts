@@ -33,6 +33,9 @@ export {
   normalizeType,
   canCreateInModule,
   getAllowedTypesForModule,
+  isCREGovernedType,
+  filterCreatableTypes,
+  getAllowedChildTypesWithRegistry,
   getOwningModule,
   canBeChildOf,
   canLinkTo,
@@ -52,4 +55,15 @@ export {
   isEligibleForBacklogView,
 } from './CatalystRules';
 
-export type { CREModule, CRETypeName, CREValidationResult, AvatarContractItem } from './CatalystRules';
+// Grid B canonical child-type lookup (re-exported so chokepoints can import
+// everything CRE-related from this one barrel, per .claude/skills/cre/SKILL.md).
+export { getAllowedChildTypes } from '@/components/catalyst-detail-views/shared/parent-rules';
+
+export type {
+  CREModule,
+  CRETypeName,
+  CREValidationResult,
+  AvatarContractItem,
+  RegistryWorkItemType,
+  RegistryParentRule,
+} from './CatalystRules';

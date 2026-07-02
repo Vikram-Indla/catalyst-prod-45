@@ -42,10 +42,20 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
 
   // Module detection from the URL prefix. Each module's "+ Create" opens its
   // own primary-entity create flow.
+  const isProjectHub = /^\/project-hub(\/|$)/.test(pathname);
   const isProductHub = /^\/product-hub(\/|$)/.test(pathname);
   const isTasksModule = /^\/tasks(\/|$)/.test(pathname);
   const isIncidentHub = /^\/incident-hub(\/|$)/.test(pathname);
   const isTestHub = /^\/testhub(\/|$)/.test(pathname);
+
+  // CRE module scope (Grid A/D) for the unified create modal. Only routes
+  // with an unambiguous module pass one — everywhere else (global create,
+  // product-hub type-switch handoff) the full catalogue stays available.
+  const creModule = isTestHub
+    ? ('TESTHUB' as const)
+    : isProjectHub || isTasksModule
+      ? ('TEAM' as const)
+      : undefined;
 
   // 2026-06-26: derive project context from the URL so the modal auto-selects
   // the current project. Without this, opening Create from
@@ -79,6 +89,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         onClose={() => { setStoryOpen(false); setPendingWorkType(undefined); }}
         onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
         projectKey={projectKeyFromUrl}
+        creModule={creModule}
         defaultWorkType={
           pendingWorkType ??
           (isTasksModule ? 'Task' : 'Story')

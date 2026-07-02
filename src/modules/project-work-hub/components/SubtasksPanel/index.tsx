@@ -47,6 +47,7 @@ import { computeNewPosition, rebalancePositions } from './reorder';
 import { WorkCellPrefix, WorkCellSummary } from './cells/WorkCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { resolveAllowedChildTypes, panelTitleFor } from './hierarchy';
+import { useWorkItemTypes, useParentRules } from '@/hooks/workflow-v2/useWorkItemTypes';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { AiSuggestChildrenPanel } from './AiSuggestChildrenPanel';
 import { CreateStoryModal } from '@/components/workhub/create-story';
@@ -396,9 +397,20 @@ export function SubtasksPanel({
   const { user } = useAuth();
 
   // ─── Hierarchy-driven config ─────────────────────────
+  // Studio registry rows feed the custom-type fallback: custom parents
+  // resolve children from ph_hierarchy_parent_rules; Grid B stays
+  // authoritative for system parents (CRE, 20260703130000).
+  const { data: registryTypes } = useWorkItemTypes();
+  const { data: registryParentRules } = useParentRules();
   const allowedTypes = useMemo(
-    () => resolveAllowedChildTypes(parentIssueType, childTypeOverride),
-    [parentIssueType, childTypeOverride],
+    () =>
+      resolveAllowedChildTypes(
+        parentIssueType,
+        childTypeOverride,
+        registryTypes,
+        registryParentRules,
+      ),
+    [parentIssueType, childTypeOverride, registryTypes, registryParentRules],
   );
   const canCreate = allowedTypes.length > 0;
   const effectiveTitle = title ?? panelTitleFor(parentIssueType);

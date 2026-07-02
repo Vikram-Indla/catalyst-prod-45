@@ -105,6 +105,10 @@ import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
 import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 import type { DefectSeverity } from '@/types/test-management';
+// CRE chokepoint (Grids A + D): module-scoped catalogues are filtered through
+// the Catalyst Rules Engine before render. Custom Studio-registry types pass
+// through (registry is authoritative for them). See RULE_TABLE.md.
+import { filterCreatableTypes, type CREModule } from '@/lib/catalyst-rules';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -144,6 +148,15 @@ export interface CreateStoryModalProps {
    * ['Business Request'] so the dropdown shows only that single option.
    */
   workTypes?: readonly string[];
+  /**
+   * CRE module scope (Grid A/D). When provided, the work-type catalogue —
+   * whether the default WORK_TYPES list or a caller-supplied `workTypes`
+   * restriction — is filtered through the Catalyst Rules Engine
+   * (`filterCreatableTypes`) so only types creatable in this module render.
+   * Omit for module-less surfaces (global top-nav Create) to show the full
+   * catalogue.
+   */
+  creModule?: CREModule;
   /** Initial value for the Work type field. Defaults to 'Story'. */
   defaultWorkType?: string;
   /** Initial value for the Summary field. Set by the AI-suggest Edit
@@ -467,6 +480,7 @@ export function CreateStoryModal({
   onOpenBusinessRequest,
   onOpenTask,
   workTypes,
+  creModule,
   defaultWorkType = 'Story',
   defaultWorkstreamId,
   initialSummary,
@@ -688,7 +702,12 @@ export function CreateStoryModal({
         .map((t) => t.display_name),
     [registryTypes]
   );
-  const effectiveWorkTypes = workTypes ?? [...WORK_TYPES, ...customTypeNames];
+  // CRE chokepoint (Grids A + D): with a module scope, both the default
+  // catalogue and caller-restricted lists must pass filterCreatableTypes.
+  const effectiveWorkTypes = useMemo(() => {
+    const base = workTypes ?? [...WORK_TYPES, ...customTypeNames];
+    return creModule ? filterCreatableTypes(base, creModule) : [...base];
+  }, [workTypes, customTypeNames, creModule]);
   const workTypeOptions: IconOption[] = useMemo(
     () =>
       effectiveWorkTypes.map((t) => ({
