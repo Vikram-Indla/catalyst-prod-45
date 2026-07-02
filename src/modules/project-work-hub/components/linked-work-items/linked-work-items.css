@@ -177,7 +177,12 @@
 .lwi-group__rows {
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
-  overflow: hidden;
+  /* Horizontal scroll — Vikram 2026-07-02: narrow containers (right-side
+     panel) were clamping the summary + status pill + assignee + priority
+     into unreadable slivers. Allow the group to overflow so each row
+     keeps its natural width; user pans horizontally to see the tail. */
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 0;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
@@ -192,6 +197,20 @@
   padding: 0 12px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   transition: background-color 120ms ease;
+}
+
+/* LinkTypeGroup uses @atlaskit/dynamic-table (real <table>), not the
+   .lwi-row grid above. Force the actual <table> to a minimum width and
+   keep the outer .lwi-group__rows scrollable so narrow right-side
+   panels can pan horizontally instead of clamping the summary + status
+   pill into unreadable slivers (Vikram 2026-07-02). */
+.lwi-group__rows table {
+  min-width: 720px;
+  table-layout: fixed;
+}
+.lwi-group__rows table td,
+.lwi-group__rows table th {
+  white-space: nowrap;
 }
 
 /* Divider between rows (Jira parity). 1px hairline runs edge-to-edge

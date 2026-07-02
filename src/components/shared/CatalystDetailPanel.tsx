@@ -50,6 +50,14 @@ import {
 } from '@/components/catalyst-detail-views/shared/sections';
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { AttachmentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
@@ -212,10 +220,31 @@ function PhIssuePanelBody({
   const { data: issue, isLoading } = useCatalystIssue(itemId, true);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const { user } = useAuth();
 
   const issueKeyShown = issue?.issue_key || itemId;
   const projectName = (issue as any)?.project_name || projectKey;
   const effectiveType = issue?.issue_type || itemType || typeIconLabel || 'Story';
+
+  // Attachments — mirror CatalystViewStory's source-aware fetch so
+  // Catalyst-native items route to catalyst_attachments and Jira-synced
+  // items route to ph_attachments (Vikram 2026-07-02).
+  const workItemSource: 'jira' | 'catalyst' =
+    (issue as any)?.__catalyst_source ? 'catalyst' : 'jira';
+  const attachmentsTable =
+    workItemSource === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
+  const { data: attachments = [] } = useQuery({
+    queryKey: ['ph-attachments', issue?.id, workItemSource],
+    enabled: !!issue?.id,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from(attachmentsTable)
+        .select('*')
+        .eq('work_item_id', issue!.id)
+        .order('created_at', { ascending: false });
+      return (data ?? []) as PhAttachment[];
+    },
+  });
 
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -394,6 +423,68 @@ function PhIssuePanelBody({
               showPriority={true}
               afterBody={<Description issue={issue} />}
             />
+
+            {/* Content sections — Jira-parity right-side panel (Vikram
+                2026-07-02). Order: Attachments → Design → SubtasksPanel
+                (renders as "Child work items" for grandparents /
+                "Subtasks" for fathers) → Linked work items. All sit
+                ABOVE the Details card so the user sees the work-related
+                context before the meta fields. */}
+            {issue?.id && user?.id && (
+              <AttachmentsSection
+                attachments={attachments}
+                itemId={issue.id}
+                userId={user.id}
+                projectKey={issue.project_key || projectKey}
+                source={workItemSource}
+              />
+            )}
+
+            {/* Design section removed here — LinkedWorkItemsSection
+                already mounts DesignsSection internally, and double-
+                mounting created conflicting useDesigns hooks (blank
+                screen). LinkedWorkItemsSection renders Design ABOVE
+                its own linked list, so the visible order below is:
+                Attachments → SubtasksPanel → (Design + Linked). */}
+
+            {issue?.issue_key && (
+              <SubtasksPanel
+                storyKey={issue.issue_key}
+                storyId={issue.id}
+                projectKey={issue.project_key || projectKey || ''}
+                parentIssueType={issue.issue_type || effectiveType || 'Story'}
+                parentSummary={issue.summary || ''}
+                parentSource={workItemSource}
+                parentProjectId={projectId ?? null}
+              />
+            )}
+
+            <LinkedWorkItemsSection
+              issueId={itemId}
+              issueKey={issue?.issue_key ?? ''}
+              projectKey={issue?.project_key || projectKey}
+            />
+
+            {/* Story-scoped AI-generated test cases — same section that lives
+                on CatalystViewStory. Sits below Linked work items so the
+                side-panel order (Attachments → Subtasks → Linked → Tests)
+                matches the full detail view (2026-07-02 Vikram). */}
+            {issue?.issue_type === 'Story' && issue?.issue_key && (issue?.project_key || projectKey) && (
+              <TestCasesSection
+                storyKey={issue.issue_key}
+                storySummary={issue.summary ?? ''}
+                storyDescription={
+                  typeof issue.description === 'string'
+                    ? issue.description
+                    : issue.description
+                      ? JSON.stringify(issue.description)
+                      : ''
+                }
+                acceptanceCriteria={(issue as any)?.acceptance_criteria ?? ''}
+                projectKey={issue.project_key || projectKey || ''}
+                projectName={issue.project_name ?? undefined}
+              />
+            )}
 
             {/* Bordered "Details" card — Jira-parity right-side panel grouping
                 (2026-07-02). Sits between Key details and Activity per Vikram
