@@ -33,6 +33,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ChatConversation, ChatPerson, ChatPresence } from '@/types/chat';
 import { AtlaskitAvatar } from '@/components/chat/main/AtlaskitAvatar';
+import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import { NewChannelModal, ChannelCreatedFlag } from './NewChannelModal';
 
 const EXCLUDED_PROJECT_KEYS = new Set(['INV', 'TH-DEFAULT', 'MDT']);
@@ -84,39 +85,6 @@ function loadCollapsed(): Record<string, boolean> {
 
 function saveCollapsed(state: Record<string, boolean>) {
   try { localStorage.setItem(LS_COLLAPSED_KEY, JSON.stringify(state)); } catch { /* ignore */ }
-}
-
-/**
- * Status pill for Caty suggestion rows.
- * Colors sourced from CatalystStatusPill.tsx canonical map (line 131–138).
- * statusToLozenge appearance → rgb values probed from live Jira DOM.
- */
-function CatyStatusPill({ status, statusCategory }: { status: string; statusCategory: string | null }) {
-  // Mirror statusToLozenge category logic (no import to keep this file lean).
-  const cat = (statusCategory ?? '').toLowerCase();
-  let lozengeKey: string;
-  if (cat === 'done') lozengeKey = 'success';
-  else if (cat === 'in_progress' || cat === 'indeterminate') lozengeKey = 'inprogress';
-  else lozengeKey = 'default';
-
-  // Exact rgb values from CatalystStatusPill.tsx — canonical source of truth.
-  const BG: Record<string, string> = {
-    success:    'rgb(148, 199, 72)',   // lime green // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    inprogress: 'var(--ds-background-information, rgb(143, 184, 246))',  // light blue
-    moved:      'rgb(243, 214, 100)',  // yellow // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    removed:    'var(--ds-background-neutral, rgb(221, 222, 225))',  // grey-red
-    new:        'rgb(184, 172, 246)',  // purple // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    default:    'var(--ds-background-neutral, rgb(221, 222, 225))',  // grey
-  };
-
-  return (
-    <span
-      className="cc-dir__caty-status-pill"
-      style={{ background: BG[lozengeKey] ?? BG.default }}
-    >
-      {status}
-    </span>
-  );
 }
 
 function relativeShort(iso: string | null | undefined): string {
@@ -786,7 +754,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                   <span className="cc-dir__caty-text">{s.text}</span>
                   <span className="cc-dir__caty-meta">
                     {s.status && (
-                      <CatyStatusPill status={s.status} statusCategory={s.status_category} />
+                      <StatusLozenge status={s.status} statusCategory={s.status_category ?? undefined} size="sm" />
                     )}
                     {s.signal && (
                       <span className="cc-dir__caty-signal">{s.signal}</span>
