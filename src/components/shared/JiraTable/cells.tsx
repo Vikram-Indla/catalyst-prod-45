@@ -16,6 +16,7 @@ import CommentIcon from "@atlaskit/icon/glyph/comment";
 import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
 import MoreIcon from "@atlaskit/icon/glyph/more";
 import { token } from "@atlaskit/tokens";
+import { accentColorForSeed } from "./epicAccentColor";
 import AkChevronRightIcon from "@atlaskit/icon/glyph/chevron-right";
 import AkChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import DropdownMenu, {
@@ -599,21 +600,11 @@ export function makeParentCell(
         </span>
       );
     const display = p.key ? `${p.key} — ${p.label}` : p.label;
-    // Measured directly from Jira production DOM 2026-04-18:
-    //   bg #227D9B, white text, 2px 4px padding, 3px radius.
+    // Canonical parent-identity color (see epicAccentColor.ts) — every
+    // distinct parent gets its own stable accent color, matching Jira's
+    // per-epic chip coloring instead of one flat color for every row.
+    const { bg, text } = accentColorForSeed(p.key || p.label);
     return (
-      // Re-measured 2026-04-26 (Jira list view, Epic parent ref like
-      // "IRP-81 M4 - Profiles"): Jira renders the parent ref as an
-      // Atlaskit lozenge with appearance="success" — soft mint green bg,
-      // dark text, with the parent's type icon (purple lightning for
-      // Epic) prepended in its native color. NOT the previous teal
-      // (#227D9B/white) which was a Catalyst opinion.
-      //
-      //   bg: #B3DF72 (matches StatusPill 'success' family)
-      //   color: #292A2E (primary text)
-      //   font-size: 12px / weight 500 / line-height 16px
-      //   padding: 0px 6px / radius 3px
-      //   icon retains native color (e.g. Epic = purple)
       <span
         style={{
           display: "inline-flex",
@@ -622,8 +613,8 @@ export function makeParentCell(
           maxWidth: 260,
           padding: "0px 6px",
           borderRadius: 3,
-          background: "var(--cp-jira-epic-chip-bg)",
-          color: "var(--cp-jira-epic-chip-fg)",
+          background: bg,
+          color: text,
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           lineHeight: "16px",
