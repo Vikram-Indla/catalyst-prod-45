@@ -125,9 +125,9 @@ function LinkAsSplitButton({
     return () => document.removeEventListener("mousedown", h);
   }, [open]);
 
-  const height = size === "small" ? 26 : 30;
+  const height = size === "small" ? 24 : 28;
   const fontSize = size === "small" ? 12 : 13;
-  const chevronWidth = size === "small" ? 24 : 28;
+  const chevronWidth = size === "small" ? 22 : 26;
 
   return (
     <div
@@ -149,14 +149,13 @@ function LinkAsSplitButton({
           display: "inline-flex",
           alignItems: "center",
           gap: 4,
-          height: 32,
-          padding: "0 10px 0 12px",
-          border:
-            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
-          borderRadius: 3,
-          background: "var(--ds-surface)",
+          height,
+          padding: size === "small" ? "0 8px" : "0 10px",
+          border: "none",
+          borderRadius: 0,
+          background: "transparent",
           cursor: "pointer",
-          fontSize: 'var(--ds-font-size-300)',
+          fontSize,
           fontFamily: "inherit",
           color:
             "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
@@ -268,10 +267,10 @@ function Checkbox({
         onChange(!checked);
       }}
       style={{
-        width: 18,
-        height: 18,
-        borderRadius: 3,
-        border: checked ? "none" : "2px solid var(--ds-border)",
+        width: 14,
+        height: 14,
+        borderRadius: 2,
+        border: checked ? "none" : "1.5px solid var(--ds-border-bold, var(--ds-border))",
         background: checked
           ? "var(--cp-primary-60)"
           : "var(--ds-surface)",
@@ -286,7 +285,7 @@ function Checkbox({
       role="checkbox"
     >
       {checked && (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
           <path
             d="M5 12l5 5L19 7"
             stroke="var(--ds-surface)"
@@ -673,16 +672,16 @@ export function AiLinkSimilarPanel({
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                padding: "8px 0 6px",
+                padding: "4px 0",
                 borderBottom:
-                  "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
+                  "1px solid var(--ds-border)",
               }}
             >
               <Checkbox checked={allSelected} onChange={toggleAll} />
               <span
                 style={{
-                  fontSize: 'var(--ds-font-size-400)',
-                  fontWeight: 500,
+                  fontSize: 'var(--ds-font-size-300)',
+                  fontWeight: 400,
                   color:
                     "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
                 }}
@@ -704,9 +703,10 @@ export function AiLinkSimilarPanel({
                   display: "flex",
                   alignItems: "center",
                   gap: 8,
-                  padding: "8px 0",
+                  padding: "4px 0",
+                  minHeight: 28,
                   borderBottom:
-                    "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
+                    "1px solid var(--ds-border)",
                   cursor: "pointer",
                 }}
                 onMouseEnter={(e) =>
@@ -721,7 +721,7 @@ export function AiLinkSimilarPanel({
                   checked={selectedKeys.has(s.issue_key)}
                   onChange={() => toggleOne(s.issue_key)}
                 />
-                <IssueIcon type={s.issue_type || "task"} size={16} />
+                <IssueIcon type={s.issue_type || "task"} size={14} />
                 <span
                   style={{
                     flex: 1,
@@ -733,7 +733,7 @@ export function AiLinkSimilarPanel({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  <span style={{ fontWeight: 600 }}>{s.issue_key}:</span>{" "}
+                  <span>{s.issue_key}:</span>{" "}
                   {s.summary}
                 </span>
                 <div

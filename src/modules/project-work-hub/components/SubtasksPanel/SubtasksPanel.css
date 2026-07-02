@@ -984,6 +984,34 @@
   color: var(--ds-text);
   text-decoration: underline;
 }
+/* Cancel row inside the dropdown — sits between the AI Suggestions section
+   (top) and the Choose existing section (below). Small vertical rules on
+   each side so it reads as a divider band, not a menu item. */
+.sp-create-cancel-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px 10px;
+  border-top: 1px solid var(--ds-border);
+  border-bottom: 1px solid var(--ds-border);
+  margin: 4px 0;
+}
+.sp-create-cancel-row--fallback {
+  padding: 4px 0 2px;
+  border: none;
+  margin: 0;
+}
+/* Suppress the top/bottom rules when the Cancel row is the first or last
+   child of the dropdown (no adjacent section) — avoids a lone hairline
+   floating in space. */
+.sp-create-panel > .sp-create-cancel-row:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+.sp-create-panel > .sp-create-cancel-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
 
 .sp-create-panel {
   position: absolute;

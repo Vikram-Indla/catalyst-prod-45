@@ -49,6 +49,14 @@ export interface InlineCreateWithAIProps {
   inputRef?: React.RefObject<HTMLInputElement | null>;
   /** Hide the bottom "Cancel" link (timeline inline-create dismisses via Escape / blur). */
   hideCancel?: boolean;
+  /** Prefill the input on mount / on change. Used when the AI-suggest
+   *  Edit action populates this component with the suggestion title so
+   *  the user can tweak before submitting (2026-07-02). */
+  initialValue?: string;
+  /** When true, the suggestions panel (AI-predicted titles + Choose
+   *  existing fuzzy search) is skipped entirely. Used for subtask
+   *  creation where the user just types + submits (Vikram 2026-07-02). */
+  disableSuggestions?: boolean;
 }
 
 type HighlightKind = 'suggestion' | 'existing';
@@ -68,12 +76,30 @@ export function InlineCreateWithAI({
   placeholder = 'What needs to be done?',
   inputRef: externalInputRef,
   hideCancel = false,
+  initialValue = '',
+  disableSuggestions = false,
 }: InlineCreateWithAIProps) {
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState(initialValue);
   const [showPanel, setShowPanel] = useState(false);
   const [highlight, setHighlight] = useState<{ kind: HighlightKind; index: number } | null>(null);
   const internalInputRef = useRef<HTMLInputElement>(null);
   const inputRef = externalInputRef ?? internalInputRef;
+  // Sync draft when parent forwards a new prefill (e.g. user clicks Edit
+  // on a different AI suggestion). Skips when empty so users typing get
+  // no clobber.
+  const lastAppliedInitial = useRef<string>(initialValue);
+  useEffect(() => {
+    if (initialValue && initialValue !== lastAppliedInitial.current) {
+      lastAppliedInitial.current = initialValue;
+      setDraft(initialValue);
+      // Focus + select so user can immediately edit or overwrite.
+      const el = inputRef.current;
+      if (el) {
+        el.focus();
+        el.select();
+      }
+    }
+  }, [initialValue, inputRef]);
 
   // The dropdown panel is rendered via React portal into document.body
   // so it escapes any ancestor overflow:hidden / overflow:auto clipping
@@ -108,7 +134,7 @@ export function InlineCreateWithAI({
     parentSummary,
     parentType,
     siblingSummaries,
-    disabled: allowedTypes.length === 0,
+    disabled: disableSuggestions || allowedTypes.length === 0,
   });
 
   const { results: existing, isLoading: searchLoading } = useFuzzyChildSearch({
@@ -120,15 +146,16 @@ export function InlineCreateWithAI({
     // could surface another Epic as a linkable child (architectural
     // hierarchy bug Vikram flagged in cycle 2 critique).
     allowedTypes,
-    disabled: allowedTypes.length === 0,
+    disabled: disableSuggestions || allowedTypes.length === 0,
   });
 
   // Show the dropdown whenever there's something to show. We dropped the
   // previous `draft.trim().length >= 2` gate so the "Choose existing"
   // results render the moment the input is focused — `useFuzzyChildSearch`
   // returns the top N recent issues for an empty query.
-  const hasAnyPanelContent = aiLoading || searchLoading
-    || suggestions.length > 0 || existing.length > 0;
+  const hasAnyPanelContent = !disableSuggestions && (
+    aiLoading || searchLoading || suggestions.length > 0 || existing.length > 0
+  );
 
   useEffect(() => {
     // Reset highlight when the two result arrays change — keeps highlight in
@@ -267,7 +294,7 @@ export function InlineCreateWithAI({
             zIndex: 9999,
           }}
         >
-          {/* Suggestions section */}
+          {/* Suggestions section — "AI generating work" */}
           {(suggestions.length > 0 || aiLoading) && (
             <>
               <div className="sp-create-section-label">
@@ -294,10 +321,24 @@ export function InlineCreateWithAI({
             </>
           )}
 
+          {/* Cancel — sits below the AI-generating Suggestions section and
+              above the Choose-existing results. Uses onMouseDown so the click
+              lands before the input's onBlur closes the panel. */}
+          {!hideCancel && (
+            <div className="sp-create-cancel-row">
+              <button
+                type="button"
+                onMouseDown={(e) => { e.preventDefault(); onCancel(); }}
+                className="sp-create-cancel"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
           {/* Choose existing section */}
           {(existing.length > 0 || searchLoading) && (
             <>
-              {(suggestions.length > 0 || aiLoading) && <div className="sp-pop-divider" />}
               <div className="sp-create-section-label">
                 <Search size={11} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
                 <span>Choose existing</span>
@@ -330,11 +371,14 @@ export function InlineCreateWithAI({
         document.body
       )}
 
-      {!hideCancel && (
-        <div style={{ textAlign: 'right', padding: '4px 0 2px' }}>
+      {/* Fallback Cancel — visible when the dropdown is closed (nothing to
+          suggest or search). Same handler; onMouseDown so the input's onBlur
+          doesn't swallow the click. */}
+      {!hideCancel && !panelOpen && (
+        <div className="sp-create-cancel-row sp-create-cancel-row--fallback">
           <button
             type="button"
-            onClick={onCancel}
+            onMouseDown={(e) => { e.preventDefault(); onCancel(); }}
             className="sp-create-cancel"
           >
             Cancel

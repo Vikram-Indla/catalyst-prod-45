@@ -19,7 +19,7 @@
  */
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useCreateChildListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
+import { useCreateChildListener, useCreateChildWorkItemListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -49,6 +49,7 @@ import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { resolveAllowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { AiSuggestChildrenPanel } from './AiSuggestChildrenPanel';
+import { CreateStoryModal } from '@/components/workhub/create-story';
 import { subtaskCreateInputSchema } from './schemas';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Modal, {
@@ -68,6 +69,7 @@ import Button from '@atlaskit/button/new';
 // it. For now the DnD flag is suppressed and rows render in `position` order.
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import { WorkItemsProgressBar } from '@/components/shared/WorkItemsProgressBar';
 import { createChildIssue } from '../../lib/workItemRepo';
 import './SubtasksPanel.css';
 
@@ -354,6 +356,10 @@ export function SubtasksPanel({
   const canCreate = allowedTypes.length > 0;
   const effectiveTitle = title ?? panelTitleFor(parentIssueType);
   const defaultDraftType = allowedTypes[0] ?? 'Sub-task';
+  // Vikram 2026-07-02: for subtask creation the inline input skips the
+  // AI-predict + Choose-existing dropdown — user just types + submits.
+  // Detect via the panel title ("Subtasks" == father context).
+  const isSubtaskContext = effectiveTitle === 'Subtasks';
 
   const [expanded, setExpanded] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -399,13 +405,22 @@ export function SubtasksPanel({
   // mount, and HTMLElement.focus() natively scrolls the input into
   // view — no manual scrollIntoView needed (it would land on the
   // section title and conflict with the focus scroll).
-  useCreateChildListener(
-    useCallback(() => {
-      if (!canCreate) return;
-      setExpanded(true);
-      setCreating(true);
-    }, [canCreate]),
-  );
+  // Modal state for Edit action (AI-suggest → CreateStoryModal prefilled).
+  const [subtaskModal, setSubtaskModal] = useState<{ title: string; type: string } | null>(null);
+  // Whether the AI-suggest panel should auto-fetch on mount. Set true
+  // when the create was triggered by the quick-actions menu (user
+  // explicitly asked to create), false when triggered by the panel's
+  // own "+ Add subtask" button (user just opened the section — waits
+  // for Suggest click). Vikram 2026-07-02.
+  const [autoFetchAi, setAutoFetchAi] = useState(false);
+  const openCreate = useCallback(() => {
+    if (!canCreate) return;
+    setExpanded(true);
+    setCreating(true);
+    setAutoFetchAi(true); // came from quick actions → auto-fetch
+  }, [canCreate]);
+  useCreateChildListener(openCreate);
+  useCreateChildWorkItemListener(openCreate);
 
   // Jira parity: 4 columns only (Work / Priority / Assignee / Status).
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
@@ -427,13 +442,16 @@ export function SubtasksPanel({
     queryFn: async () => {
       // Phase 5 (Apr 2026): union catalyst_issues alongside ph_issues so
       // Catalyst-native subtasks render in the same list as Jira-synced ones.
+      // 2026-07-02: ph_issues has no `position` column — real column is
+      // `sort_order`. Aliased back to `position` in the SELECT so the
+      // downstream row shape (SubtaskRow) doesn't have to change.
       const [phRes, catRes] = await Promise.all([
         supabase
           .from('ph_issues')
-          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,sprint_release,jira_created_at')
+          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position:sort_order,deleted_at,sprint_release,jira_created_at')
           .eq('parent_key', storyKey)
           .is('deleted_at', null)
-          .order('position', { ascending: true }),
+          .order('sort_order', { ascending: true, nullsFirst: false }),
         supabase
           .from('catalyst_issues')
           .select('id,issue_key,title,status,status_category,issue_type,assignee_id,priority,sprint_release,created_at,parent_key,deleted_at')
@@ -535,7 +553,7 @@ export function SubtasksPanel({
       // Phase 5 (Apr 2026): source-aware insert. Catalyst-parent → catalyst_issues
       // with parent_key set; Jira-parent → ph_issues (legacy write-back path).
       // generateIssueKey queries BOTH tables → no Jira collisions.
-      await createChildIssue({
+      const created = await createChildIssue({
         parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
         summary: parsed.data.summary,
         issueType: parsed.data.issue_type,
@@ -545,11 +563,41 @@ export function SubtasksPanel({
         priority: parsed.data.priority,
         position: nextPos(children),
       });
+      return created;
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
+      // Jira-parity toast (2026-07-02) — "You've created 'KEY'" with
+      // View (opens detail in new tab) + Copy link actions.
+      const key = created?.issue_key;
+      if (key && projectKey) {
+        const url = `${window.location.origin}/project-hub/${projectKey}/issue/${key}`;
+        catalystToast.show({
+          type: 'success',
+          title: `You've created "${key}"`,
+          actions: [
+            { label: 'View', onClick: () => window.open(url, '_blank', 'noopener,noreferrer') },
+            { label: 'Copy link', onClick: () => { void navigator.clipboard.writeText(url); } },
+          ],
+          duration: 6000,
+        });
+      }
     },
-    onError: (err) => catalystToast.error('Failed to create subtask'),
+    onError: (err, summary) => {
+      // Jira-parity error flag (2026-07-02) — mirrors the release success
+      // toast: canonical ADS flag with title + message + action buttons.
+      // Retry re-runs the mutation with the same summary.
+      const msg = err instanceof Error ? err.message : String(err ?? 'Unknown error');
+      catalystToast.show({
+        type: 'error',
+        title: 'Failed to create subtask',
+        message: msg,
+        actions: [
+          { label: 'Retry', onClick: () => createMutation.mutate(summary) },
+        ],
+        duration: 6000,
+      });
+    },
   });
 
   // ─── Link-existing mutation ───────────────────
@@ -730,6 +778,7 @@ export function SubtasksPanel({
         && !creating && !editingId && canCreate
         && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
       e.preventDefault();
+      setAutoFetchAi(false);
       setCreating(true);
       return;
     }
@@ -816,7 +865,7 @@ export function SubtasksPanel({
                 className="sp-icon-btn sp-icon-btn--add"
                 title={`Create ${defaultDraftType.toLowerCase()}`}
                 aria-label={`Create ${defaultDraftType.toLowerCase()}`}
-                onClick={() => setCreating(true)}
+                onClick={() => { setAutoFetchAi(false); setCreating(true); }}
               >
                 <Plus size={16} />
               </button>
@@ -850,6 +899,7 @@ export function SubtasksPanel({
           type="button"
           className="sp-add-link"
           onClick={() => {
+            setAutoFetchAi(false);
             setCreating(true);
             if (!expanded) setExpanded(true);
           }}
@@ -917,6 +967,8 @@ export function SubtasksPanel({
                   createMutation.mutate(s.title);
                 });
               }}
+              onEditRequest={(s) => setSubtaskModal({ title: s.title, type: s.type })}
+              autoFetch={autoFetchAi}
             />
           )}
           {creating && canCreate && children.length === 0 && (
@@ -943,6 +995,7 @@ export function SubtasksPanel({
                 ? effectiveTitle.toLowerCase().slice(0, -1)
                 : effectiveTitle.toLowerCase())}`}
               inputRef={inlineCreateInputRef}
+              disableSuggestions={isSubtaskContext}
             />
           )}
 
@@ -952,6 +1005,20 @@ export function SubtasksPanel({
               <div className="sp-empty-heading">All subtasks are done</div>
               <div className="sp-empty-sub">Turn off "Hide done" to see them.</div>
               <button type="button" className="sp-empty-cta" onClick={() => setHideDone(false)}>Show completed</button>
+            </div>
+          )}
+
+          {/* ═══ Status progress bar — Jira parity (Vikram 2026-07-02) ═══
+              Reuses the canonical WorkItemsProgressBar extracted from
+              the release detail Work items section, so the visual is
+              identical to what shows on /release-hub/releases-management. */}
+          {!isLoading && children.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <WorkItemsProgressBar
+                items={children.map(c => ({ status_category: (c as any).status_category ?? null }))}
+                label={effectiveTitle}
+                compact
+              />
             </div>
           )}
 
@@ -1180,6 +1247,7 @@ export function SubtasksPanel({
                         setCreating(false);
                       }}
                       onCancel={() => setCreating(false)}
+                      disableSuggestions={isSubtaskContext}
                     />
                   )}
                 </div>
@@ -1267,6 +1335,24 @@ export function SubtasksPanel({
         </>
       )}
       </div>
+
+      {/* Canonical CreateStoryModal — opened by the AI-suggest Edit
+          action. Prefills the AI's title + work type + parent (current
+          issue). Extended WORK_TYPES / PARENT_TYPE_RULES include the
+          subtask family (2026-07-02). */}
+      <CreateStoryModal
+        open={!!subtaskModal}
+        onClose={() => setSubtaskModal(null)}
+        projectId={parentProjectId ?? ''}
+        projectKey={projectKey}
+        defaultWorkType={subtaskModal?.type ?? 'Sub-task'}
+        initialSummary={subtaskModal?.title}
+        initialParentKey={storyKey}
+        onSuccess={() => {
+          setSubtaskModal(null);
+          queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
+        }}
+      />
     </div>
   );
 }
