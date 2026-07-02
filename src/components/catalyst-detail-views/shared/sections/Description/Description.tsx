@@ -417,13 +417,14 @@ export function Description({
   }, [catyActiveForThisIssue, stopCatyStream, stopCatyImprove]);
 
   return (
-    <div style={{ marginBottom: 24, paddingLeft: 16 }}>
+    <div style={{ marginBottom: 24 }}>
       <div
         className="catalyst-description-header"
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: 4,
+          padding: '4px 0',
           marginBottom: 8,
           userSelect: 'none',
         }}
@@ -435,9 +436,9 @@ export function Description({
             padding: 0,
             flex: 1,
             fontSize: 'var(--ds-font-size-400)',
-            fontWeight: 600,
+            fontWeight: 500,
             lineHeight: '20px',
-            color: 'var(--ds-text)',
+            color: 'var(--ds-text-subtle)',
             fontFamily:
               '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}

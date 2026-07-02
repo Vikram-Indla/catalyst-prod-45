@@ -230,8 +230,13 @@ export function CatalystKeyDetails({
       {/* Collapsible body. maxHeight cap removed 2026-06-21 — Description
           is now rendered via `afterBody` and its content is variable
           height (rich-text, images, code blocks), so a fixed cap would
-          clip. Display toggle replaces the height animation. */}
-      <div style={{ display: collapsed ? 'none' : 'block' }}>
+          clip. Display toggle replaces the height animation.
+          2026-07-02 Jira-parity: paddingLeft 24 aligns every child label
+          (Parent, Priority, Due date, Description, etc.) under the "K"
+          of "Key details" heading text. Header layout: chevron button
+          width 24 with marginLeft -4 → button edge at x=20; h2 padding
+          '0 4px' → "Key details" text starts at x=24. Matches Jira. */}
+      <div style={{ display: collapsed ? 'none' : 'block', paddingLeft: 24 }}>
         <div style={{ padding: 0 }}>
           {showParent && (
             <FieldRow label="Parent" alignBlock="center">
@@ -266,13 +271,13 @@ export function CatalystKeyDetails({
               exact 96px label column used by Parent + Priority. */}
           {extraRows}
         </div>
-        {/* afterBody (Description) renders OUTSIDE the 20px paddingLeft
-            wrapper so it sits flush-left like a top-level section.
-            marginTop separates it from the last Key-details row above
-            (2026-06-21 Vikram). */}
-        {afterBody && (
-          <div style={{ marginTop: 16, marginLeft: -20 }}>{afterBody}</div>
-        )}
+        {/* afterBody (Description) sits inline with the Parent/Priority
+            FieldRows — same left edge (no marginLeft offset) and same
+            vertical rhythm as adjacent rows. Description container owns
+            its own `padding: '4px 0'` to match FieldRow spacing so the
+            gap Priority→Description equals Parent→Priority
+            (2026-07-02 Jira-parity fix). */}
+        {afterBody}
       </div>
     </div>
   );
