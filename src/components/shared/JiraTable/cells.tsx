@@ -16,6 +16,7 @@ import CommentIcon from "@atlaskit/icon/glyph/comment";
 import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
 import MoreIcon from "@atlaskit/icon/glyph/more";
 import { token } from "@atlaskit/tokens";
+import { accentColorForSeed } from "./epicAccentColor";
 import AkChevronRightIcon from "@atlaskit/icon/glyph/chevron-right";
 import AkChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import DropdownMenu, {
@@ -585,6 +586,11 @@ export interface ParentCellInput {
   label: string;
   /** Parent's work-item type icon (e.g. Epic / Story). Rendered inline. */
   icon?: React.ReactNode;
+  /** True only when the parent's real issue_type is 'Epic'. Jira's colored
+   *  chip is an Epic-only feature — a Story/QA-Bug parent renders as a
+   *  PLAIN link (no background), probed live 2026-07-03. Defaults to false
+   *  so non-Epic parents don't get a fabricated color. */
+  isEpic?: boolean;
 }
 
 export function makeParentCell(
@@ -599,31 +605,24 @@ export function makeParentCell(
         </span>
       );
     const display = p.key ? `${p.key} — ${p.label}` : p.label;
-    // Measured directly from Jira production DOM 2026-04-18:
-    //   bg #227D9B, white text, 2px 4px padding, 3px radius.
+    // Canonical parent-identity color (see epicAccentColor.ts) — only
+    // Epics get a colored chip, matching Jira's per-epic color feature.
+    // Every other parent type is a plain link, same as Jira.
+    const linkColor = token("color.link", "var(--ds-link)");
+    const { bg, text } = p.isEpic
+      ? accentColorForSeed(p.key || p.label)
+      : { bg: "transparent", text: linkColor };
     return (
-      // Re-measured 2026-04-26 (Jira list view, Epic parent ref like
-      // "IRP-81 M4 - Profiles"): Jira renders the parent ref as an
-      // Atlaskit lozenge with appearance="success" — soft mint green bg,
-      // dark text, with the parent's type icon (purple lightning for
-      // Epic) prepended in its native color. NOT the previous teal
-      // (#227D9B/white) which was a Catalyst opinion.
-      //
-      //   bg: #B3DF72 (matches StatusPill 'success' family)
-      //   color: #292A2E (primary text)
-      //   font-size: 12px / weight 500 / line-height 16px
-      //   padding: 0px 6px / radius 3px
-      //   icon retains native color (e.g. Epic = purple)
       <span
         style={{
           display: "inline-flex",
           alignItems: "center",
           gap: 4,
           maxWidth: 260,
-          padding: "0px 6px",
+          padding: p.isEpic ? "0px 6px" : "0px",
           borderRadius: 3,
-          background: "var(--cp-jira-epic-chip-bg)",
-          color: "var(--cp-jira-epic-chip-fg)",
+          background: bg,
+          color: text,
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           lineHeight: "16px",
@@ -643,7 +642,7 @@ export function makeParentCell(
             {p.icon}
           </span>
         )}
-        {p.key && <strong style={{ fontWeight: 700 }}>{p.key}</strong>}
+        {p.key && <strong style={{ fontWeight: 700, color: text }}>{p.key}</strong>}
         <span
           style={{
             overflow: "hidden",

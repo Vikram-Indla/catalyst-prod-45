@@ -35,6 +35,7 @@ import {
   type StatusCategory,
 } from '@/constants/statusCategoryColors';
 import { STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { CatalystWorkflowBuilder } from './CatalystWorkflowBuilder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
@@ -678,12 +679,34 @@ function StatusBoard({
   projectKey: string;
   workItemType: WorkItemType;
 }) {
-  const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
+  const {
+    data: workflow,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useTypeWorkflow(projectKey, workItemType);
   const createStatus = useCreateStatus(projectKey);
   const updateStatus = useUpdateStatus(projectKey);
   const archiveStatus = useArchiveStatus(projectKey);
   const setInitial = useSetInitialStatus(projectKey, workItemType);
   const removeType = useRemoveTypeStatus(projectKey, workItemType);
+
+  // isError alone misses the persisted-cache case: hydrated data keeps status
+  // 'success' while the background refetch fails and only `error` is set.
+  if (isError || error) {
+    return (
+      <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+        <SectionMessage
+          appearance="error"
+          title="Couldn't load this workflow"
+          actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+        >
+          {(error as Error)?.message ?? 'Unknown error loading workflow statuses.'}
+        </SectionMessage>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -975,7 +998,13 @@ function TemplatesView({
   projectKey: string;
   activeType: string;
 }) {
-  const { data: templates = [], isLoading } = useWorkflowTemplates();
+  const {
+    data: templates = [],
+    isLoading,
+    isError: templatesError,
+    error: templatesErrorObj,
+    refetch: refetchTemplates,
+  } = useWorkflowTemplates();
 
   // Group by work_item_type; put activeType first
   const grouped = React.useMemo(() => {
@@ -991,6 +1020,20 @@ function TemplatesView({
       return a.localeCompare(b);
     });
   }, [templates, activeType]);
+
+  if (templatesError || templatesErrorObj) {
+    return (
+      <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+        <SectionMessage
+          appearance="error"
+          title="Couldn't load workflow templates"
+          actions={[{ key: 'retry', text: 'Retry', onClick: () => refetchTemplates() }]}
+        >
+          {(templatesErrorObj as Error)?.message ?? 'Unknown error loading templates.'}
+        </SectionMessage>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

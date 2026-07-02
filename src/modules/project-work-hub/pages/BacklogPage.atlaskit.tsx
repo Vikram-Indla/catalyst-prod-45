@@ -3251,20 +3251,34 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
-        getParent: (r) => r.parent_id ? {
-          id: r.parent_id,
-          key: r.parent_key,
-          label: r.parent_label || '',
-          // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
-          // its native designed size (story-16.svg, bug-16.svg, etc.)
-          // — the 0.75× scale at size=12 caused sub-pixel rendering
-          // jitter that made adjacent rows' icons LOOK like different
-          // shapes even when they were the same source SVG. 16×16 is
-          // pixel-perfect at 1× zoom and aligns with the row-1 type
-          // icon's size (also 16).
-          icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
-          statusCategory: r.parent_status_category,
-        } : null,
+        getParent: (r) => {
+          if (!r.parent_id) return null;
+          // Jul 3, 2026: a parent with no resolvable issue_type AND from a
+          // different project is the signature of a parent living in an
+          // archived Jira space (e.g. MIM-15's space "Senaei 1.0" is
+          // archived — Jira itself refuses to open/edit it, confirmed live).
+          // Don't render a reference Catalyst can't do anything useful
+          // with — treat it as no parent rather than a dead link.
+          const parentProjectKey = r.parent_key ? r.parent_key.split('-')[0] : null;
+          if (!r.parent_issue_type && parentProjectKey && projectKey && parentProjectKey !== projectKey) {
+            return null;
+          }
+          return {
+            id: r.parent_id,
+            key: r.parent_key,
+            label: r.parent_label || '',
+            // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
+            // its native designed size (story-16.svg, bug-16.svg, etc.)
+            // — the 0.75× scale at size=12 caused sub-pixel rendering
+            // jitter that made adjacent rows' icons LOOK like different
+            // shapes even when they were the same source SVG. 16×16 is
+            // pixel-perfect at 1× zoom and aligns with the row-1 type
+            // icon's size (also 16).
+            icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
+            statusCategory: r.parent_status_category,
+            isEpic: r.parent_issue_type === 'Epic',
+          };
+        },
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation
         // time with a toast, but the PICKER itself is reachable so users see

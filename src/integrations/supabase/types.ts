@@ -21288,6 +21288,7 @@ export type Database = {
           severity: string | null
           sort_order: number | null
           source: string | null
+          sprint_id: string | null
           sprint_name: string | null
           sprint_release: Json | null
           status: string
@@ -21345,6 +21346,7 @@ export type Database = {
           severity?: string | null
           sort_order?: number | null
           source?: string | null
+          sprint_id?: string | null
           sprint_name?: string | null
           sprint_release?: Json | null
           status?: string
@@ -21402,6 +21404,7 @@ export type Database = {
           severity?: string | null
           sort_order?: number | null
           source?: string | null
+          sprint_id?: string | null
           sprint_name?: string | null
           sprint_release?: Json | null
           status?: string
@@ -21415,6 +21418,27 @@ export type Database = {
           type_icon_url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "ph_issues_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issues_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issues_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
+          },
           {
             foreignKeyName: "wh_issues_theme_id_fkey"
             columns: ["theme_id"]
@@ -21551,12 +21575,18 @@ export type Database = {
       ph_jira_sprints: {
         Row: {
           actual_date: string | null
+          approval_policy: string
           color: string | null
           created_at: string | null
+          created_by: string | null
+          deleted_at: string | null
           description: string | null
+          end_date: string | null
           id: string
           jira_sprint_id: string | null
+          length_weeks: number | null
           name: string
+          name_mode: string
           owner_user_id: string | null
           project_id: string | null
           release_date: string | null
@@ -21572,12 +21602,18 @@ export type Database = {
         }
         Insert: {
           actual_date?: string | null
+          approval_policy?: string
           color?: string | null
           created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           jira_sprint_id?: string | null
+          length_weeks?: number | null
           name: string
+          name_mode?: string
           owner_user_id?: string | null
           project_id?: string | null
           release_date?: string | null
@@ -21593,12 +21629,18 @@ export type Database = {
         }
         Update: {
           actual_date?: string | null
+          approval_policy?: string
           color?: string | null
           created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           jira_sprint_id?: string | null
+          length_weeks?: number | null
           name?: string
+          name_mode?: string
           owner_user_id?: string | null
           project_id?: string | null
           release_date?: string | null

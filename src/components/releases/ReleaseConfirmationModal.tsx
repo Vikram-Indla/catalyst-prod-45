@@ -72,9 +72,20 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
 
   // Unresolved work-item count: ph_issues whose sprint_release.name matches this release
   // AND whose status_category is not 'done'.
+  // Sprint branch (S0.2b/S0.3): membership is the sprint_id FK.
   const { data: unresolvedCount = 0 } = useQuery({
-    queryKey: ['unresolved-items', release.id, release.name],
+    queryKey: ['unresolved-items', release.id, release.name, config.kind],
     queryFn: async () => {
+      if (config.kind === 'sprint') {
+        const { data, error } = await supabase
+          .from('ph_issues')
+          .select('id, status_category')
+          .eq('sprint_id', release.id);
+        if (error) throw new Error(error.message);
+        return (data ?? []).filter(
+          (row: any) => String(row.status_category ?? '').toLowerCase() !== 'done',
+        ).length;
+      }
       const releaseName = release.name;
       if (!releaseName) return 0;
       const { data, error } = await supabase
@@ -101,14 +112,17 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
   const { data: candidates } = useQuery({
     queryKey: [config.queryKeyPrefix, 'release-confirm-candidates', release.project_id, release.id],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      let builder = (supabase as any)
         .from(config.table)
         .select('id, name, title, status, project_id')
         .eq('project_id', release.project_id)
-        .neq('id', release.id)
-        .neq('status', 'archived')
-        .neq('status', 'released')
-        .order('name');
+        .neq('id', release.id);
+      // S0.3: sprint vocabulary has three terminal states; releases keep the
+      // legacy pair. Both mean "exclude targets you can't move items into".
+      builder = config.kind === 'sprint'
+        ? builder.not('status', 'in', '(archived,completed,canceled)')
+        : builder.neq('status', 'archived').neq('status', 'released');
+      const { data, error } = await builder.order('name');
       if (error) throw new Error(error.message);
       return (data ?? []) as Array<{ id: string; name: string | null; title: string | null; status: string }>;
     },
@@ -136,6 +150,38 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
       // JSONB entry from source -> target (idempotent: skip if entry with
       // target name already exists). When "Ignore" is picked, leave items
       // untouched. This is required for both release + sprint surfaces.
+      // Sprint branch (S0.2b/S0.3): move unresolved members via the sprint_id
+      // FK, then complete the sprint with the new vocabulary value. The
+      // membership changelog rows come from the DB trigger (D-018).
+      if (config.kind === 'sprint') {
+        if (hasUnresolved && action === 'move' && targetId) {
+          const { data: rows, error: scanErr } = await supabase
+            .from('ph_issues')
+            .select('id, status_category')
+            .eq('sprint_id', release.id);
+          if (scanErr) throw new Error(scanErr.message);
+          for (const row of rows ?? []) {
+            if (String((row as any).status_category ?? '').toLowerCase() === 'done') continue;
+            const { error: upErr } = await supabase
+              .from('ph_issues')
+              .update({ sprint_id: targetId })
+              .eq('id', (row as any).id);
+            if (upErr) throw new Error(upErr.message);
+          }
+        }
+        const { error } = await (supabase as any)
+          .from(config.table)
+          .update({
+            status: 'completed',
+            actual_date: releaseDate,
+            release_date: releaseDate,
+            target_date: releaseDate,
+          })
+          .eq('id', release.id);
+        if (error) throw new Error(error.message);
+        return;
+      }
+
       if (hasUnresolved && action === 'move' && targetId && sourceName) {
         const target = options.find((o) => o.id === targetId);
         const targetName = target?.name ?? null;

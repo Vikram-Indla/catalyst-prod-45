@@ -758,8 +758,8 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />
-        <Route path="/release-hub/releases-management/:releaseId" element={<S><ReleaseDetailPageLazy /></S>} />
-        <Route path="/release-hub/releases-management/:releaseId/work" element={<S><ReleaseWorkNavigatorPageLazy /></S>} />
+        <Route path="/release-hub/releases-management/:releaseSlug" element={<S><ReleaseDetailPageLazy /></S>} />
+        <Route path="/release-hub/releases-management/:releaseSlug/work" element={<S><ReleaseWorkNavigatorPageLazy /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
         <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />

@@ -10,6 +10,8 @@
  * /release-hub/releases-management.
  */
 
+import { Routes } from '@/lib/routes';
+
 export type EntityKind = 'release' | 'sprint' | 'milestone';
 
 export interface EntityScopePickerOption {
@@ -47,6 +49,15 @@ export interface EntityConfig {
    * WorkItemsSection branches on config.kind before reaching this field.
    */
   matchIssueByField?: 'fix_version_name' | 'sprint_name';
+
+  /**
+   * 2026-07-02 (S0.2b, D-002): FK-based membership. When set, WorkItemsSection /
+   * AddWorkItemsModal / ReleaseWorkNavigatorPage read+write ph_issues.<column>
+   * instead of the sprint_release JSONB name-match. Membership changelog rows
+   * (work_item_changelogs field_name='sprint') are written by a DB trigger on
+   * sprint_id UPDATE — app code never inserts them (D-018).
+   */
+  matchIssueByFk?: 'sprint_id';
 
   /**
    * Column-name map. ReleaseDetailPage + ReleaseSidePanel build SELECTs and
@@ -138,13 +149,13 @@ export const SPRINT_CONFIG: EntityConfig = {
   },
   table: 'ph_jira_sprints',
   progressView: 'vw_sprint_jira_progress',
-  matchIssueByField: 'sprint_name',
+  // S0.2b (D-002): sprint membership is the ph_issues.sprint_id FK — the
+  // sprint_release JSONB / sprint_name matching paths are dead for sprints.
+  matchIssueByFk: 'sprint_id',
   scopePickerSource: 'ph_projects_all',
   baseUrl: '/project-hub',
-  buildDetailHref: (id, ctx) =>
-    `/project-hub/${ctx?.projectKey ?? 'BAU'}/sprints/${id}`,
-  buildWorkHref: (id, ctx) =>
-    `/project-hub/${ctx?.projectKey ?? 'BAU'}/sprints/${id}/work`,
+  buildDetailHref: (id, ctx) => Routes.projectHub.sprint(ctx?.projectKey ?? '', id),
+  buildWorkHref: (id, ctx) => Routes.projectHub.sprintWork(ctx?.projectKey ?? '', id),
   queryKeyPrefix: 'projecthub-sprints',
   approvers: {
     table: 'ph_sprint_approvers',

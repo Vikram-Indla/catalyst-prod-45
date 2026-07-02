@@ -22,9 +22,15 @@ export function useEntities(config: EntityConfig) {
   return useQuery({
     queryKey: [config.queryKeyPrefix, 'list'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      let builder = (supabase as any)
         .from(config.table)
-        .select('*')
+        .select('*');
+      // S0.4: sprints are soft-deleted via deleted_at (26 dead Jira imports
+      // purged 2026-07-02). Only ph_jira_sprints has the column.
+      if (config.kind === 'sprint') {
+        builder = builder.is('deleted_at', null);
+      }
+      const { data, error } = await builder
         .order('sort_order')
         .order('target_date');
       if (error) throw new Error(error.message);

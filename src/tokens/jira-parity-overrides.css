@@ -44,17 +44,6 @@
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS text.subtle=var(--cp-text-secondary, var(--cp-text-secondary)), actual=rgb(41,42,46) */
   --cp-jira-status-fg: var(--ds-text, rgb(41, 42, 46));
 
-  /* ─── Parent / Epic chip — table cell parent lozenge ────────────────────
-   * Measured 2026-04-26 digital-transformation.atlassian.net
-   * Green chip used for parent reference in backlog/all-work table rows.
-   * ─────────────────────────────────────────────────────────────────────── */
-
-  /* JIRA-PARITY: probed 2026-04-26 BAU parent chip — ADS background.success=unresolved, actual=#B3DF72 */
-  --cp-jira-epic-chip-bg: var(--ds-background-success-bold);
-
-  /* JIRA-PARITY: re-probed 2026-05-16 BAU parent chip — text color, jira-compare JC-2 measured rgb(31,132,9) */
-  --cp-jira-epic-chip-fg: rgb(31, 132, 9);
-
   /* ─── Kanban / Backlog column category dots ───────────────────────────────
    * Measured 2026-05-07 from BAU Kanban column headers.
    * Used for small circular status-category indicator dots.

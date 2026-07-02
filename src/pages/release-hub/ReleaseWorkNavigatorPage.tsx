@@ -186,30 +186,15 @@ export function ReleaseWorkNavigatorPage({
       if (!target) return [];
 
       if (config.kind === 'sprint') {
-        // Sprint link: ph_issues.sprint_release JSONB (canonical Jira source).
-        // sprint_name text column is unreliable — jira-sync overwrites it
-        // each cycle (proven 2026-06-26).
-        const containsResult = await supabase
+        // S0.2b (D-002): sprint membership is the ph_issues.sprint_id FK —
+        // same read path as WorkItemsSection (the mirror invariant above).
+        const { data, error } = await supabase
           .from('ph_issues')
           .select('issue_key')
-          .contains('sprint_release', JSON.stringify([{ name: target }]))
+          .eq('sprint_id', releaseId!)
           .limit(2000);
-        if ((containsResult.data?.length ?? 0) > 0) {
-          return (containsResult.data ?? []).map((r: any) => r.issue_key as string).filter(Boolean);
-        }
-        const fb = await supabase
-          .from('ph_issues')
-          .select('issue_key, sprint_release')
-          .not('sprint_release', 'is', null)
-          .limit(5000);
-        if (!fb.data) return [];
-        return fb.data
-          .filter((row: any) => {
-            const arr = row.sprint_release;
-            return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
-          })
-          .map((r: any) => r.issue_key as string)
-          .filter(Boolean);
+        if (error) throw new Error(error.message);
+        return (data ?? []).map((r: any) => r.issue_key as string).filter(Boolean);
       }
 
       // Release link: sprint_release JSONB contains entry with matching name.

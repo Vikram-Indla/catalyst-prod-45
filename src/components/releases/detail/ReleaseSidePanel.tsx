@@ -42,6 +42,8 @@ const SUBTLEST = 'var(--ds-text-subtlest)';
 const LINK = 'var(--ds-link)';
 const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered)';
 
+import { sprintStatusToReleaseBucket, isSprintStatus, SPRINT_STATUS_LABEL } from '@/lib/sprints/sprintStatus';
+
 type DBStatus = 'planning' | 'in_progress' | 'released' | 'archived';
 const fromDBStatus = (s: string | null | undefined): ReleaseStatus => {
   if (s === 'released') return 'released';
@@ -71,7 +73,12 @@ interface Props {
 export function ReleaseSidePanel(props: Props) {
   const { releaseId, releaseName, projectId, projectKey, config = RELEASE_CONFIG } = props;
   const queryClient = useQueryClient();
-  const uiStatus = fromDBStatus(props.status);
+  // S0.3 (D-005): sprint statuses are planning/active/awaiting_approval/
+  // completed/canceled/archived — bucket-map them into the shared 3-value
+  // pill/menu logic; the visible label comes from SPRINT_STATUS_LABEL.
+  const uiStatus = config.kind === 'sprint'
+    ? sprintStatusToReleaseBucket(props.status)
+    : fromDBStatus(props.status);
   const table = config.table;
 
   const refetch = () => {
@@ -91,6 +98,17 @@ export function ReleaseSidePanel(props: Props) {
       // Mirror WorkItemsSection: .contains() first, fallback to fetch+filter.
       // This guarantees identical row set vs the visible work items table.
       const select = 'assignee_account_id, assignee_display_name, sprint_release';
+      // S0.2b/S0.3: sprint membership is the sprint_id FK — same read path
+      // as WorkItemsSection so contributors match the visible item set.
+      if (config.kind === 'sprint') {
+        const { data, error } = await supabase
+          .from('ph_issues')
+          .select(select)
+          .eq('sprint_id', releaseId)
+          .limit(2000);
+        if (error) throw new Error(error.message);
+        return data ?? [];
+      }
       const containsResult = await supabase
         .from('ph_issues')
         .select(select)
@@ -148,6 +166,7 @@ export function ReleaseSidePanel(props: Props) {
           projectId={projectId}
           projectKey={projectKey}
           uiStatus={uiStatus}
+          rawStatus={props.status}
           startDate={props.startDate}
           releaseDate={props.releaseDate}
           description={props.description}
@@ -866,7 +885,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
 // ─── Status dropdown ────────────────────────────────────────────────────────
 
 function StatusDropdown({
-  releaseId, releaseName, projectId, projectKey, uiStatus, startDate, releaseDate, description, onChanged,
+  releaseId, releaseName, projectId, projectKey, uiStatus, rawStatus, startDate, releaseDate, description, onChanged,
   config = RELEASE_CONFIG,
 }: {
   releaseId: string;
@@ -874,6 +893,9 @@ function StatusDropdown({
   projectId: string;
   projectKey: string | null;
   uiStatus: ReleaseStatus;
+  /** S0.3: raw DB status — sprint kind shows the real vocabulary label
+   *  (Active / Completed / …) while uiStatus keeps driving menu logic. */
+  rawStatus?: string | null;
   startDate: string | null | undefined;
   releaseDate: string | null | undefined;
   description: string | null | undefined;
@@ -997,7 +1019,11 @@ function StatusDropdown({
           boxShadow: open ? `0 0 0 1px ${BLUE_BG}` : 'none',
         }}
       >
-        <span style={{ flex: 1, textAlign: 'center' }}>{statusLabel(uiStatus)}</span>
+        <span style={{ flex: 1, textAlign: 'center' }}>
+          {config.kind === 'sprint' && isSprintStatus(rawStatus)
+            ? SPRINT_STATUS_LABEL[rawStatus]
+            : statusLabel(uiStatus)}
+        </span>
         <ChevronDownIcon label="" size="small" />
       </button>
 

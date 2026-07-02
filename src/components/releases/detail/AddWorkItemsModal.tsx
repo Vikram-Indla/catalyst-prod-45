@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import type { EntityConfig } from '@/lib/entity-hub/config';
 
 interface WorkItem {
   id: string;
@@ -32,6 +33,9 @@ interface Props {
   release: { id: string; name: string; project_id: string };
   onClose: () => void;
   onSuccess?: () => void;
+  /** S0.2b: when config.kind === 'sprint', membership writes the ph_issues.sprint_id
+   *  FK instead of appending to the sprint_release JSONB. Defaults to release behavior. */
+  config?: EntityConfig;
 }
 
 const BORDER = 'var(--ds-border)';
@@ -39,7 +43,7 @@ const BLUE = 'var(--ds-border-selected)';
 const TEXT = 'var(--ds-text)';
 const SUBTLE = 'var(--ds-text-subtle)';
 
-export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props) {
+export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess, config }: Props) {
   const [picked, setPicked] = useState<WorkItem[]>([]);
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -149,6 +153,25 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
 
   const mutation = useMutation({
     mutationFn: async () => {
+      // Sprint branch (S0.2b, D-002): membership is the ph_issues.sprint_id FK.
+      // sprint_release JSONB stays untouched (legacy display data for sprints).
+      // The membership changelog row is written by the DB trigger (D-018).
+      if (config?.kind === 'sprint') {
+        let updatedCount = 0;
+        for (const it of picked) {
+          const { data: upRows, error: upErr } = await supabase
+            .from('ph_issues')
+            .update({ sprint_id: release.id })
+            .eq('id', it.id)
+            .select('id');
+          if (upErr) throw new Error(upErr.message);
+          if (!upRows || upRows.length === 0) {
+            throw new Error(`Update returned 0 rows for ${it.issue_key}.`);
+          }
+          updatedCount += 1;
+        }
+        return updatedCount;
+      }
       const newEntry = {
         id: '',
         name: release.name,

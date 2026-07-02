@@ -344,6 +344,23 @@ Every Jira/work-item row surface (Board, Backlog, All Work, Sprint, and any futu
 
 ---
 
+## GRID I — Backlog / All-Work View Eligibility
+
+QA Bug and Production Incident moved from TEAM to TESTHUB/INCIDENT module
+ownership (A4/A5, 2026-07-01). They no longer belong as standalone rows in
+the Team Backlog or All Work views — those views now list only the types
+TEAM/PROGRAM own. This does NOT change Grid B2 (QA Bug and Production
+Incident remain valid children of an Epic, still reachable via the Parent
+column) — it only removes them as independent rows in these two views.
+Still fully visible via TestHub / Incident Hub.
+
+| ID | Rule | Enforcement |
+|----|------|-------------|
+| I1 | QA Bug and Production Incident MUST NOT be queried/rendered as standalone rows in the Backlog view. | `CatalystRules.isEligibleForBacklogView()`; `useStoryBacklog()` `issueTypeFilter` in `useBacklogData.ts` must not include these types |
+| I2 | QA Bug and Production Incident MUST NOT be queried/rendered as standalone rows in the All Work view. | Same function; wired into the live All Work data source |
+
+---
+
 ## Change Log
 
 | Date       | Row  | Change                          | Confirmed by |
@@ -358,6 +375,7 @@ Every Jira/work-item row surface (Board, Backlog, All Work, Sprint, and any futu
 | 2026-07-02 | H1–H3 | Grid H added: Row Typography Contract — canonical key/title token pair (`--ds-font-size-300`/`-400` + new `--ds-line-height-body` token), ban on hardcoded lineHeight literals, cells.tsx/editors.tsx as canonical reference. Codifies the CAT-TYPOGRAPHY-ROWSYNC-20260702-001 fix. | Vikram |
 | 2026-07-02 | G5   | Assignee lock: "once assigned, forever" → "only when status CLOSED or CANCELED" | Vikram |
 | 2026-07-02 | H3   | Kanban card typography resolved: WorkItemCard.tsx keeps its own compact density scale (not folded into H1); fixed its 2 magic-literal line-heights (key `+4` density-derived, subtask chip `calc()`-anchored) per CAT-KANBAN-TYPOGRAPHY-20260702-001 | Vikram |
+| 2026-07-03 | I1–I2 | Grid I added: Backlog/All-Work View Eligibility — QA Bug and Production Incident banned as standalone rows in Backlog and All Work (still valid Epic children per B2, unaffected) | Vikram |
 
 ---
 
