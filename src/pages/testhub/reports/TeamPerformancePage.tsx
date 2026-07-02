@@ -8,15 +8,15 @@ import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
+import EmptyState from '@atlaskit/empty-state';
 import { Heading } from '@/components/ads';
+import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useTeamPerformance, type TeamMemberRow } from './useTeamPerformance';
 import { cardStyle, metricValue, metricLabel, sectionH } from './ReportStatusView';
-
-const SENAEI_BAU_ID = '84f91caf-7511-470a-9a26-3e52e66258bf';
 
 interface ProjectOption {
   label: string;
@@ -36,15 +36,13 @@ function useTmProjects() {
 
 const num: React.CSSProperties = { color: 'var(--ds-text)' };
 
-export default function TeamPerformancePage() {
-  const { data: projects } = useTmProjects();
+/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
+export function TeamPerformanceBody() {
+  const { data: projects, isLoading: projectsLoading } = useTmProjects();
   const [selected, setSelected] = useState<ProjectOption | null>(null);
 
-  const activeOption = useMemo<ProjectOption | null>(() => {
-    if (selected) return selected;
-    if (!projects?.length) return null;
-    return projects.find((p) => p.value === SENAEI_BAU_ID) ?? projects[0];
-  }, [selected, projects]);
+  // S1.5: single project → auto-select; else last-used (validated) or none.
+  const activeOption = useReportPickerDefault(REPORTS_LAST_PROJECT_KEY, projects, selected);
 
   const { data, isLoading } = useTeamPerformance(activeOption?.value);
 
@@ -67,23 +65,32 @@ export default function TeamPerformancePage() {
   }, [data, passRate]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Team Performance" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-
-      <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Project</div>
           <Select<ProjectOption>
             inputId="team-project"
             options={projects ?? []}
             value={activeOption}
-            onChange={(opt) => setSelected(opt as ProjectOption)}
+            onChange={(opt) => {
+              const o = opt as ProjectOption;
+              setSelected(o);
+              rememberReportPick(REPORTS_LAST_PROJECT_KEY, o.value);
+            }}
             isLoading={!projects}
             spacing="default"
           />
         </div>
 
-        {isLoading || !data ? (
+        {!activeOption ? (
+          projectsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
+              <Spinner size="medium" /> Loading projects…
+            </div>
+          ) : (
+            <EmptyState header="Select a project" description="Choose a project to run this report." />
+          )
+        ) : isLoading || !data ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading team performance…
           </div>
@@ -129,7 +136,15 @@ export default function TeamPerformancePage() {
             />
           </>
         )}
-      </div>
+    </div>
+  );
+}
+
+export default function TeamPerformancePage() {
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
+      <ProjectPageHeader hubType="test" title="Team Performance" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
+      <TeamPerformanceBody />
     </div>
   );
 }

@@ -9,13 +9,13 @@ import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
+import EmptyState from '@atlaskit/empty-state';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
+import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_SPRINT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { useSprintTestingStatus } from './useSprintTestingStatus';
 import { ReportStatusView, metricLabel } from './ReportStatusView';
-
-const DEFAULT_SPRINT = 'NDS-Sprint 3.1-29 Jan 25';
 
 interface SprintOption {
   label: string;
@@ -46,16 +46,14 @@ function sprintStatusAppearance(s: string | null): ThemeAppearance {
   }
 }
 
-export default function SprintTestingStatusPage() {
+/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
+export function SprintTestingStatusBody() {
   const navigate = useNavigate();
-  const { data: sprints } = useSprints();
+  const { data: sprints, isLoading: sprintsLoading } = useSprints();
   const [selected, setSelected] = useState<SprintOption | null>(null);
 
-  const activeOption = useMemo<SprintOption | null>(() => {
-    if (selected) return selected;
-    if (!sprints?.length) return null;
-    return sprints.find((s) => s.value === DEFAULT_SPRINT) ?? sprints[0];
-  }, [selected, sprints]);
+  // S1.5: single sprint → auto-select; else last-used (validated) or none.
+  const activeOption = useReportPickerDefault(REPORTS_LAST_SPRINT_KEY, sprints, selected);
 
   const { data, isLoading } = useSprintTestingStatus(activeOption?.value);
 
@@ -70,10 +68,7 @@ export default function SprintTestingStatusPage() {
   }, [data]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Sprint Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-
-      <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '26rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Sprint</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -82,7 +77,11 @@ export default function SprintTestingStatusPage() {
                 inputId="sts-sprint"
                 options={sprints ?? []}
                 value={activeOption}
-                onChange={(opt) => setSelected(opt as SprintOption)}
+                onChange={(opt) => {
+                  const o = opt as SprintOption;
+                  setSelected(o);
+                  rememberReportPick(REPORTS_LAST_SPRINT_KEY, o.value);
+                }}
                 isLoading={!sprints}
                 spacing="default"
               />
@@ -91,14 +90,30 @@ export default function SprintTestingStatusPage() {
           </div>
         </div>
 
-        {isLoading || !data ? (
+      {!activeOption ? (
+        sprintsLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
-            <Spinner size="medium" /> Loading sprint testing status…
+            <Spinner size="medium" /> Loading sprints…
           </div>
         ) : (
-          <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story in this sprint has a test case." />
-        )}
-      </div>
+          <EmptyState header="Select a sprint" description="Choose a sprint to run this report." />
+        )
+      ) : isLoading || !data ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
+          <Spinner size="medium" /> Loading sprint testing status…
+        </div>
+      ) : (
+        <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story in this sprint has a test case." />
+      )}
+    </div>
+  );
+}
+
+export default function SprintTestingStatusPage() {
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
+      <ProjectPageHeader hubType="test" title="Sprint Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
+      <SprintTestingStatusBody />
     </div>
   );
 }

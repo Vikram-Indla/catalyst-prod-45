@@ -170,16 +170,10 @@ const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/Executio
 const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
-const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
-const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
-const TestHubReportsCommandCenterPage = lazy(() => import("../pages/testhub/reports/lab/ReportsCommandCenterPage"));
-const TestHubProjectTestingStatusPage = lazy(() => import("../pages/testhub/reports/ProjectTestingStatusPage"));
-const TestHubSprintTestingStatusPage = lazy(() => import("../pages/testhub/reports/SprintTestingStatusPage"));
-const TestHubTesterPerformancePage = lazy(() => import("../pages/testhub/reports/TesterPerformancePage"));
-const TestHubTeamPerformancePage = lazy(() => import("../pages/testhub/reports/TeamPerformancePage"));
-const TestHubDefectsIncidentsPage = lazy(() => import("../pages/testhub/reports/DefectsIncidentsPage"));
-const TestHubGovernancePage = lazy(() => import("../pages/testhub/reports/GovernancePage"));
-const TestHubProductStatusPage = lazy(() => import("../pages/testhub/reports/ProductStatusPage"));
+// Reports hub — single registry-driven surface (CAT-REPORTS-HUB-20260703-001 S1.2).
+// Old standalone report pages + Lab + ReportDetailPage routes are now redirects;
+// their files remain until Phase 2 completes the ports.
+const TestHubReportsHubPage = lazy(() => import("../pages/testhub/reports/ReportsHubPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
@@ -684,16 +678,18 @@ export default function FullAppRoutes() {
         <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
-        <Route path="/testhub/reports-lab" element={<S><TestHubReportsCommandCenterPage /></S>} />
-        <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
-        <Route path="/testhub/reports/project-status" element={<S><TestHubProjectTestingStatusPage /></S>} />
-        <Route path="/testhub/reports/sprint-status" element={<S><TestHubSprintTestingStatusPage /></S>} />
-        <Route path="/testhub/reports/tester-status" element={<S><TestHubTesterPerformancePage /></S>} />
-        <Route path="/testhub/reports/team-status" element={<S><TestHubTeamPerformancePage /></S>} />
-        <Route path="/testhub/reports/defects-incidents" element={<S><TestHubDefectsIncidentsPage /></S>} />
-        <Route path="/testhub/reports/governance" element={<S><TestHubGovernancePage /></S>} />
-        <Route path="/testhub/reports/product-status" element={<S><TestHubProductStatusPage /></S>} />
-        <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
+        {/* Reports hub (CAT-REPORTS-HUB-20260703-001): one surface, :reportSlug
+            selects a REPORT_REGISTRY entry. Old report URLs redirect to their
+            registry slugs; governance + product-status slugs are unchanged so
+            the :reportSlug route serves them directly. */}
+        <Route path="/testhub/reports-lab" element={<Navigate to="/testhub/reports/execution-overview" replace />} />
+        <Route path="/testhub/reports" element={<S><TestHubReportsHubPage /></S>} />
+        <Route path="/testhub/reports/project-status" element={<Navigate to="/testhub/reports/project-testing-status" replace />} />
+        <Route path="/testhub/reports/sprint-status" element={<Navigate to="/testhub/reports/sprint-testing-status" replace />} />
+        <Route path="/testhub/reports/tester-status" element={<Navigate to="/testhub/reports/tester-performance" replace />} />
+        <Route path="/testhub/reports/team-status" element={<Navigate to="/testhub/reports/team-performance" replace />} />
+        <Route path="/testhub/reports/defects-incidents" element={<Navigate to="/testhub/reports/defect-summary" replace />} />
+        <Route path="/testhub/reports/:reportSlug" element={<S><TestHubReportsHubPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
         <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />

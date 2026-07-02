@@ -9,8 +9,10 @@ import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
+import EmptyState from '@atlaskit/empty-state';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
 import { Heading } from '@/components/ads';
+import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_TESTER_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -52,15 +54,14 @@ function runAppearance(s: string): ThemeAppearance {
   }
 }
 
-export default function TesterPerformancePage() {
+/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
+export function TesterPerformanceBody() {
   const navigate = useNavigate();
-  const { data: testers } = useTesters();
+  const { data: testers, isLoading: testersLoading } = useTesters();
   const [selected, setSelected] = useState<TesterOption | null>(null);
 
-  const activeOption = useMemo<TesterOption | null>(() => {
-    if (selected) return selected;
-    return testers?.[0] ?? null;
-  }, [selected, testers]);
+  // S1.5: single tester → auto-select; else last-used (validated) or none.
+  const activeOption = useReportPickerDefault(REPORTS_LAST_TESTER_KEY, testers, selected);
 
   const { data, isLoading } = useTesterPerformance(activeOption?.value);
 
@@ -79,23 +80,32 @@ export default function TesterPerformancePage() {
   }, [data]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Tester Performance" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-
-      <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Tester</div>
           <Select<TesterOption>
             inputId="tp-tester"
             options={testers ?? []}
             value={activeOption}
-            onChange={(opt) => setSelected(opt as TesterOption)}
+            onChange={(opt) => {
+              const o = opt as TesterOption;
+              setSelected(o);
+              rememberReportPick(REPORTS_LAST_TESTER_KEY, o.value);
+            }}
             isLoading={!testers}
             spacing="default"
           />
         </div>
 
-        {isLoading || !data ? (
+        {!activeOption ? (
+          testersLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
+              <Spinner size="medium" /> Loading testers…
+            </div>
+          ) : (
+            <EmptyState header="Select a tester" description="Choose a tester to run this report." />
+          )
+        ) : isLoading || !data ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading tester performance…
           </div>
@@ -143,7 +153,15 @@ export default function TesterPerformancePage() {
             />
           </>
         )}
-      </div>
+    </div>
+  );
+}
+
+export default function TesterPerformancePage() {
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
+      <ProjectPageHeader hubType="test" title="Tester Performance" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
+      <TesterPerformanceBody />
     </div>
   );
 }

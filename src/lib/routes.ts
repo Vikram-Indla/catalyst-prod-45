@@ -123,7 +123,8 @@ export const testHubRoutes = {
   sets: () => '/testhub/sets',
   set: (setSlug: string) => `/testhub/sets/${setSlug}`,
   reports: () => '/testhub/reports',
-  report: (reportType: string) => `/testhub/reports/${reportType}`,
+  // Reports hub — slug is a REPORT_REGISTRY id (CAT-REPORTS-HUB-20260703-001)
+  report: (slug: string) => `/testhub/reports/${slug}`,
   filters: () => '/testhub/filters',
   filterCreate: () => '/testhub/filters/create',
   filter: (filterSlug: string) => `/testhub/filters/${filterSlug}`,

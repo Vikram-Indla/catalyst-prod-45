@@ -32,7 +32,8 @@ function useEpics() {
   });
 }
 
-export default function ProductStatusPage() {
+/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
+export function ProductStatusBody() {
   const navigate = useNavigate();
   const { data: epics } = useEpics();
   const [selected, setSelected] = useState<EpicOption | null>(null);
@@ -55,10 +56,7 @@ export default function ProductStatusPage() {
   }, [data]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Product / Business Request Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-
-      <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '32rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Epic / Business Request</div>
           <Select<EpicOption> inputId="prod-epic" options={epics ?? []} value={activeOption} onChange={(o) => setSelected(o as EpicOption)} isLoading={!epics} spacing="default" />
@@ -71,7 +69,15 @@ export default function ProductStatusPage() {
         ) : (
           <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story under this epic has a test case." />
         )}
-      </div>
+    </div>
+  );
+}
+
+export default function ProductStatusPage() {
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
+      <ProjectPageHeader hubType="test" title="Product / Business Request Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
+      <ProductStatusBody />
     </div>
   );
 }

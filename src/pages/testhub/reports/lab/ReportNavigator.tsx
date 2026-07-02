@@ -1,9 +1,23 @@
 import React from 'react';
+import Lozenge from '@atlaskit/lozenge';
 import { REPORT_DEFS, REPORT_CATEGORIES, ReportDef, ReportStatus } from './reportDefinitions';
+
+/** Registry-driven entry (Reports hub, CAT-REPORTS-HUB-20260703-001 S1.2). */
+export interface NavigatorEntry {
+  slug: string;
+  label: string;
+  category: string;
+  /** true => small DEMO lozenge; wired entries get no badge */
+  demo?: boolean;
+}
 
 interface Props {
   selected: string;
   onSelect: (slug: string) => void;
+  /** When provided, renders these instead of the Lab REPORT_DEFS. */
+  entries?: NavigatorEntry[];
+  /** Category order for `entries` grouping. */
+  categories?: readonly string[];
 }
 
 const STATUS_COLOR: Record<ReportStatus, { bg: string; text: string }> = {
@@ -39,7 +53,7 @@ function StatusPill({ status }: { status: ReportStatus }) {
   );
 }
 
-function NavItem({ def, selected, onSelect }: { def: ReportDef; selected: boolean; onSelect: () => void }) {
+function NavItem({ label, badge, selected, onSelect }: { label: string; badge: React.ReactNode; selected: boolean; onSelect: () => void }) {
   return (
     <button
       type="button"
@@ -78,14 +92,34 @@ function NavItem({ def, selected, onSelect }: { def: ReportDef; selected: boolea
           whiteSpace: 'nowrap',
         }}
       >
-        {def.label}
+        {label}
       </span>
-      <StatusPill status={def.status} />
+      {badge}
     </button>
   );
 }
 
-export default function ReportNavigator({ selected, onSelect }: Props) {
+export default function ReportNavigator({ selected, onSelect, entries, categories }: Props) {
+  const groups: { category: string; items: { slug: string; label: string; badge: React.ReactNode }[] }[] = entries
+    ? (categories ?? [...new Set(entries.map(e => e.category))]).map(cat => ({
+        category: cat,
+        items: entries
+          .filter(e => e.category === cat)
+          .map(e => ({
+            slug: e.slug,
+            label: e.label,
+            badge: e.demo ? <Lozenge appearance="moved">DEMO</Lozenge> : null,
+          })),
+      }))
+    : REPORT_CATEGORIES.map(cat => ({
+        category: cat,
+        items: REPORT_DEFS.filter(d => d.category === cat).map((def: ReportDef) => ({
+          slug: def.slug,
+          label: def.label,
+          badge: <StatusPill status={def.status} />,
+        })),
+      }));
+
   return (
     <nav
       style={{
@@ -113,33 +147,31 @@ export default function ReportNavigator({ selected, onSelect }: Props) {
         Reports
       </div>
 
-      {REPORT_CATEGORIES.map(cat => {
-        const defs = REPORT_DEFS.filter(d => d.category === cat);
-        return (
-          <div key={cat}>
-            <div
-              style={{
-                padding: '8px 14px 4px',
-                fontSize: 'var(--ds-font-size-50)',
-                fontWeight: 700,
-                color: 'var(--ds-text-subtlest)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {cat}
-            </div>
-            {defs.map(def => (
-              <NavItem
-                key={def.slug}
-                def={def}
-                selected={selected === def.slug}
-                onSelect={() => onSelect(def.slug)}
-              />
-            ))}
+      {groups.filter(g => g.items.length > 0).map(group => (
+        <div key={group.category}>
+          <div
+            style={{
+              padding: '8px 14px 4px',
+              fontSize: 'var(--ds-font-size-50)',
+              fontWeight: 700,
+              color: 'var(--ds-text-subtlest)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {group.category}
           </div>
-        );
-      })}
+          {group.items.map(item => (
+            <NavItem
+              key={item.slug}
+              label={item.label}
+              badge={item.badge}
+              selected={selected === item.slug}
+              onSelect={() => onSelect(item.slug)}
+            />
+          ))}
+        </div>
+      ))}
     </nav>
   );
 }
