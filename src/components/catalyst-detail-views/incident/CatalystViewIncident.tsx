@@ -113,12 +113,12 @@ export default function CatalystViewIncident({
   const rightContent = useMemo(() => (
     <CatalystSidebarDetails
       issue={issue ?? null} itemId={itemId} projectId={projectId}
-      onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+      onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)}
       onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="incident"
       parentSource="incident"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
-      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category ?? undefined} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category ?? undefined} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     >
       {/* Tier 3.4: PI Release field */}

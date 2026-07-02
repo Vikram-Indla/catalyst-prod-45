@@ -18,7 +18,10 @@ import type { Column } from '@/components/shared/JiraTable/types';
 import { usePhProjects } from '@/hooks/useProjects';
 import {
   useEnforcementConfig,
+  useMigrationPreview,
+  useReasonCodes,
   useSetEnforcementMode,
+  useToggleReasonCodeActive,
   useWfAuditFiltered,
   useWfSchemeAssignments,
   useWfSchemeEntries,
@@ -224,6 +227,55 @@ function EntityStatuses({ entityKey }: { entityKey: string }) {
   );
 }
 
+function MigrationPreviewCard() {
+  const [entity, setEntity] = useState<SelectOption | null>({ value: 'story', label: 'Story' });
+  const preview = useMigrationPreview((entity?.value as string) ?? 'story');
+  const entityOptions: SelectOption[] = ENTITY_GROUPS.flatMap((g) => g.entities).map((e) => ({
+    value: e.key,
+    label: e.label,
+  }));
+  const rows = preview.data ?? [];
+  return (
+    <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <span style={{ fontWeight: 600 }}>Legacy → canonical migration preview</span>
+        <span style={{ flex: 1 }} />
+        <div style={{ width: 180 }}>
+          <Select options={entityOptions} value={entity} onChange={setEntity} ariaLabel="Preview entity" />
+        </div>
+      </div>
+      {preview.error ? (
+        <SectionMessage appearance="error" title="Couldn't load preview">
+          {(preview.error as Error).message}
+        </SectionMessage>
+      ) : preview.isLoading ? (
+        <Spinner size="small" />
+      ) : rows.length === 0 ? (
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+          No live items for this entity.
+        </span>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {rows.map((r, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-100)' }}>
+              <span style={{ minWidth: 160 }}>{r.legacy_status}</span>
+              <span aria-hidden>→</span>
+              {r.mapped ? (
+                <Lozenge appearance="success">{r.proposed_key ?? ''}</Lozenge>
+              ) : (
+                <Lozenge appearance="removed">unmapped</Lozenge>
+              )}
+              <span style={{ color: 'var(--ds-text-subtlest)', fontVariantNumeric: 'tabular-nums' }}>
+                {r.item_count} items
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StatusesTab() {
   return (
     <div style={tabWrap}>
@@ -232,6 +284,7 @@ export function StatusesTab() {
         every published workflow's statuses; changes go through draft → publish so live items
         are always remapped safely.
       </SectionMessage>
+      <MigrationPreviewCard />
       {ENTITY_GROUPS.flatMap((g) => g.entities).map((e) => (
         <EntityStatuses key={e.key} entityKey={e.key} />
       ))}
@@ -333,6 +386,60 @@ export function EnforcementTab() {
           />
         )}
       </QueryStates>
+      <ReasonCodesCard />
+    </div>
+  );
+}
+
+function ReasonCodesCard() {
+  const codes = useReasonCodes();
+  const toggle = useToggleReasonCodeActive();
+  const [actionError, setActionError] = useState<string | null>(null);
+  return (
+    <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
+      <div style={{ fontWeight: 600, marginBottom: 8 }}>
+        Reason codes{' '}
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', fontWeight: 400 }}>
+          — picklists shown when a transition requires a reason · click to toggle
+        </span>
+      </div>
+      {actionError && (
+        <SectionMessage
+          appearance="error"
+          title="Toggle failed"
+          actions={[{ key: 'x', text: 'Dismiss', onClick: () => setActionError(null) }]}
+        >
+          {actionError}
+        </SectionMessage>
+      )}
+      {codes.error ? (
+        <SectionMessage appearance="error" title="Couldn't load reason codes">
+          {(codes.error as Error).message}
+        </SectionMessage>
+      ) : codes.isLoading ? (
+        <Spinner size="small" />
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {(codes.data ?? []).map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() =>
+                toggle.mutate(
+                  { id: c.id, currentIsActive: c.is_active },
+                  { onError: (e) => setActionError((e as Error).message) }
+                )
+              }
+              style={{ border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}
+              aria-label={`Toggle reason code ${c.code}`}
+            >
+              <Lozenge appearance={c.is_active ? 'inprogress' : 'default'}>
+                {`${c.code}${c.transition_type ? ` · ${c.transition_type}` : ''}`}
+              </Lozenge>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
