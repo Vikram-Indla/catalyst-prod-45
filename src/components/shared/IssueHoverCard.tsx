@@ -37,6 +37,7 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useLinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items/hooks';
 import type { LinkedWorkItem } from '@/modules/project-work-hub/components/linked-work-items/types';
+import RelatedLinksModal from './RelatedLinksModal';
 
 const CARD_WIDTH = 360;
 const ENTER_DELAY = 300;
