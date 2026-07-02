@@ -28,8 +28,9 @@ import { catalystFlag } from '@/lib/catalystFlag';
 import { supabase } from '@/integrations/supabase/client';
 import { useEntities, useEntityProgress } from '@/hooks/workhub/useEntities';
 import { SPRINT_CONFIG } from '@/lib/entity-hub/config';
-import type { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
-import { ReleasesTable } from '@/components/releases/ReleasesTable';
+import type { ReleaseStatus } from '@/types/phase3-releases';
+import { SprintsTable } from '@/components/sprints/SprintsTable';
+import type { SprintRow, SprintProgress } from '@/components/sprints/cells';
 import { SprintCreateModal } from '@/components/sprints/SprintCreateModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import { ReleaseMergeDialog } from '@/components/releases/ReleaseMergeDialog';
@@ -44,16 +45,16 @@ import {
   type ProductOption,
 } from '@/components/releases/ReleaseFilters';
 
-// S0.3 (D-005): DB vocabulary is now planning/active/awaiting_approval/
-// completed/canceled/archived. The shared ReleasesTable cell pipeline is
-// 3-value; bucket-map until S1.1a replaces the table with SprintsTable.
-import { sprintStatusToReleaseBucket } from '@/lib/sprints/sprintStatus';
+// S1.1a: rows carry the RAW native status vocabulary (SprintsTable renders
+// honest pills). The bucket map survives only for the legacy 3-value
+// StatusFilter / view-option toggles until S1.1b rebuilds the toolbar.
+import { sprintStatusToReleaseBucket, SPRINT_STATUS_LABEL, isSprintStatus } from '@/lib/sprints/sprintStatus';
 
 function toCellStatus(s: string | null | undefined): ReleaseStatus {
   return sprintStatusToReleaseBucket(s);
 }
 
-type CellSprint = Release;
+type CellSprint = SprintRow;
 
 export function SprintsPage() {
   const { key } = useParams<{ key?: string }>();
@@ -129,22 +130,24 @@ export function SprintsPage() {
 
   const sprints = useMemo<CellSprint[]>(() => {
     return (rawSprints ?? [])
-      .map((r: any) => ({
+      .map((r: any): SprintRow => ({
         id: r.id,
-        slug: r.slug,
+        slug: r.slug ?? null,
         project_id: r.project_id,
         name: r.name,
-        description: r.description ?? undefined,
-        start_date: r.start_date ?? undefined,
-        release_date: r.release_date ?? undefined,
-        status: toCellStatus(r.status),
-        sequence: r.sort_order ?? 0,
-        created_at: r.created_at,
-        updated_at: r.updated_at,
+        description: r.description ?? null,
+        start_date: r.start_date ?? null,
+        end_date: r.end_date ?? null,
+        release_date: r.release_date ?? null,
+        status: r.status ?? null,
+        length_weeks: r.length_weeks ?? null,
+        created_by: r.created_by ?? null,
       }))
-      .sort((a: any, b: any) => {
-        const da = a.release_date ? new Date(a.release_date).getTime() : 0;
-        const db = b.release_date ? new Date(b.release_date).getTime() : 0;
+      .sort((a, b) => {
+        const ea = a.end_date ?? a.release_date;
+        const eb = b.end_date ?? b.release_date;
+        const da = ea ? new Date(ea).getTime() : 0;
+        const db = eb ? new Date(eb).getTime() : 0;
         return db - da;
       });
   }, [rawSprints]);
@@ -153,7 +156,8 @@ export function SprintsPage() {
     const q = search.toLowerCase();
     return sprints.filter((r) => {
       const matchesSearch = (r.name ?? '').toLowerCase().includes(q);
-      const matchesStatus = statusFilter.length === 0 || statusFilter.includes(r.status);
+      const matchesStatus =
+        statusFilter.length === 0 || statusFilter.includes(toCellStatus(r.status));
       const matchesProject = projectFilter.length === 0 || projectFilter.includes(r.project_id);
       return matchesSearch && matchesStatus && matchesProject;
     });
@@ -165,7 +169,7 @@ export function SprintsPage() {
     const buckets = new Map<string, CellSprint[]>();
     const keyFor = (r: CellSprint): string => {
       switch (groupBy) {
-        case 'status':       return r.status;
+        case 'status':       return isSprintStatus(r.status) ? SPRINT_STATUS_LABEL[r.status] : '— No status —';
         case 'product':      return projectNameById.get(r.project_id) ?? '— No project —';
         case 'release_date': return r.release_date ? new Date(r.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '— No release date —';
         case 'start_date':   return r.start_date  ? new Date(r.start_date ).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '— No start date —';
@@ -194,7 +198,7 @@ export function SprintsPage() {
     return 0;
   };
 
-  const calculateProgress = (sprint: CellSprint): ReleaseProgress | null => {
+  const calculateProgress = (sprint: CellSprint): SprintProgress | null => {
     const src = progressBySprintId.get(sprint.id);
     if (!src) return null;
     const done = pickNum(src, 'done_items', 'done');
@@ -216,8 +220,9 @@ export function SprintsPage() {
     };
   };
 
-  const handleOpenDetail = (sprintSlug: string) => {
-    navigate(SPRINT_CONFIG.buildDetailHref(sprintSlug, { projectKey }));
+  const handleOpenDetail = (row: CellSprint) => {
+    // Slug contract: slug is guaranteed on ph_jira_sprints (S0.1a trigger).
+    navigate(SPRINT_CONFIG.buildDetailHref(row.slug ?? row.id, { projectKey }));
   };
 
   const groupIdsKey = useMemo(() => (grouped ?? []).map((g) => g.id).join('|'), [grouped]);
@@ -325,21 +330,22 @@ export function SprintsPage() {
       footer={`This space has ${sprints.length} sprint${sprints.length === 1 ? '' : 's'}`}
     >
       {filtered.length > 0 ? (
-        <ReleasesTable
+        <SprintsTable
           rows={grouped ? undefined : filtered}
           groups={grouped ?? undefined}
-          calculateProgress={calculateProgress}
+          getProgress={calculateProgress}
           onOpenDetail={handleOpenDetail}
-          onRelease={(r) => { setConfirmingSprint(r); setIsConfirmModalOpen(true); }}
-          onArchive={(r) => { setArchivingSprint(r); setIsArchiveDialogOpen(true); }}
-          onMerge={(r)   => { setMergingSprint(r); setIsMergeDialogOpen(true); }}
-          onEdit={(r)    => { setEditingSprint(r); setIsCreateModalOpen(true); }}
-          onDelete={(r)  => { setDeletingSprint(r); setIsDeleteDialogOpen(true); }}
+          actions={{
+            onComplete: (r) => { setConfirmingSprint(r); setIsConfirmModalOpen(true); },
+            onArchive:  (r) => { setArchivingSprint(r); setIsArchiveDialogOpen(true); },
+            onMerge:    (r) => { setMergingSprint(r); setIsMergeDialogOpen(true); },
+            onEdit:     (r) => { setEditingSprint(r); setIsCreateModalOpen(true); },
+            onDelete:   (r) => { setDeletingSprint(r); setIsDeleteDialogOpen(true); },
+          }}
           collapsedGroups={collapsedGroups}
           onToggleGroup={toggleGroup}
           density={density}
-          entityLabel="Sprint / Iteration"
-          hideSprintsColumn
+          isLoading={isLoading}
         />
       ) : (
         <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
