@@ -143,7 +143,10 @@ function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThem
               background: 'var(--ds-background-neutral)',
               color: tk.textMuted,
               fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-body)',
-              lineHeight: '16px',
+              /* calc() anchors line-height to the actual font-size token this
+                 chip uses, instead of a bare unrelated literal — same rendered
+                 16px as the epic chip below it. */
+              lineHeight: 'calc(var(--ds-font-size-100) + 5px)',
               cursor: 'default',
               userSelect: 'none',
               transition: 'background 120ms ease',
@@ -476,7 +479,11 @@ export function WorkItemCard({
               style={{
                 fontSize: d.metaSize, fontWeight: 400,
                 color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
-                lineHeight: '14px',
+                /* +4 ratio matches Board's committed kb-column key treatment
+                   (font-size-200 12px / 16px line-height) — kanban keys stay
+                   intentionally more compact than table-row key text, scaled
+                   by this card's own density (CAT-KANBAN-TYPOGRAPHY-20260702-001). */
+                lineHeight: `${d.metaSize + 4}px`,
                 background: 'none', border: 'none', padding: 0,
                 cursor: 'pointer', textDecoration: 'none',
                 transition: 'color 80ms ease, text-decoration 80ms ease',
