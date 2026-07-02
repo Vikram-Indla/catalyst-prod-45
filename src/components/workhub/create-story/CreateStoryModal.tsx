@@ -145,6 +145,14 @@ export interface CreateStoryModalProps {
   workTypes?: readonly string[];
   /** Initial value for the Work type field. Defaults to 'Story'. */
   defaultWorkType?: string;
+  /** Initial value for the Summary field. Set by the AI-suggest Edit
+   *  action so the user can tweak the AI-proposed title before create
+   *  (2026-07-02). Applied on each open. */
+  initialSummary?: string;
+  /** Initial parent issue key (e.g. "BAU-215"). Prefills the parent
+   *  picker with the current issue when creating a subtask from the
+   *  AI-suggest Edit action. */
+  initialParentKey?: string;
   /**
    * Slice 9C — when opening as a Task (defaultWorkType='Task'), pre-selects this
    * workstream. Lets the retired bespoke CreateTaskModal's `defaultWorkstream`
@@ -172,6 +180,14 @@ const WORK_TYPES = [
   // Catalyst-native task (project-less). Selecting it hands off to the Tasks
   // module's CreateTaskModal via onOpenTask — it is NOT created in ph_issues.
   'Task',
+  // Subtask family (Vikram 2026-07-02) — every leaf that lives under a
+  // Story/Task/QA Bug/Change Request/Production Incident. Wired into the
+  // AI-suggest Edit flow so users can tweak the AI title before create.
+  'Sub-task',
+  'Backend',
+  'Frontend',
+  'Figma',
+  'Integration',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
@@ -193,6 +209,12 @@ export const PARENT_TYPE_RULES: Record<string, string[]> = {
   'Production Incident': ['Business Request', 'Story', 'Feature', 'Epic'],
   'Change Request':      ['Epic', 'Business Request', 'Feature'],
   'Task':                [],  // project-less; handed off to CreateTaskModal
+  // Subtask family (2026-07-02) — sit under any "father" type per Vikram.
+  'Sub-task':            ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Backend':             ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Frontend':            ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Figma':               ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Integration':         ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
 };
 
 // Per type → which initial status appears in the read-only Status lozenge.
@@ -446,6 +468,8 @@ export function CreateStoryModal({
   workTypes,
   defaultWorkType = 'Story',
   defaultWorkstreamId,
+  initialSummary,
+  initialParentKey,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -470,6 +494,17 @@ export function CreateStoryModal({
   useEffect(() => {
     if (open) setWorkType(defaultWorkType);
   }, [open, defaultWorkType]);
+
+  // Prefill Summary + Parent on open when the caller supplied them
+  // (AI-suggest Edit action). Uses updateField so the form's existing
+  // change tracking stays consistent. Form uses `parentId` to hold the
+  // parent issue key (parent_key at insert).
+  useEffect(() => {
+    if (!open) return;
+    if (initialSummary != null) updateField('summary', initialSummary);
+    if (initialParentKey != null) updateField('parentId', initialParentKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialSummary, initialParentKey]);
   const [createAnother, setCreateAnother] = useState(false);
   // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
   const [editorKey, setEditorKey] = useState(0);

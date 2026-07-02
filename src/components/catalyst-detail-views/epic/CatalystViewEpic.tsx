@@ -71,7 +71,7 @@ export default function CatalystViewEpic({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Epic'} />
       {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
       {/* jira-compare 2026-05-10 Fix E-1: Priority is EXCLUDED from Epic Key details.
           Per CLAUDE.md 2026-05-06 directive: Epic Priority belongs only in the right rail

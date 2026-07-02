@@ -66,7 +66,7 @@ export default function CatalystViewDefect({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch B (Defect) · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'QA Bug'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
 
       {/* Jira-parity: Parent → Severity → Priority → (any populated

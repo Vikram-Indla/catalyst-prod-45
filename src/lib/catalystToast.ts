@@ -55,7 +55,11 @@ export const catalystToast = {
     // are suppressed platform-wide. Only error / warning render, plus `undo`
     // (which carries a functional Undo action). Call sites are intentionally
     // left intact so feedback can be restored by deleting this guard alone.
-    if (options.type === 'success' || options.type === 'info' || options.type === 'loading') {
+    // 2026-07-02: action-bearing success/info flags bypass the guard — those
+    // are functional notifications (e.g. "You've created 'X'" with View +
+    // Copy link) that require user interaction, not transient badges.
+    const hasActions = !!options.action || (options.actions?.length ?? 0) > 0;
+    if ((options.type === 'success' || options.type === 'info' || options.type === 'loading') && !hasActions) {
       return id;
     }
 

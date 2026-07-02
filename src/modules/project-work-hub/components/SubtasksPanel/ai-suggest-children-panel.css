@@ -1,74 +1,63 @@
+/* AiSuggestChildrenPanel — flat bordered card. Streaming state reuses
+   the canonical animated rainbow border + bouncing dots + typewriter
+   caret from ai-link-similar-panel.css (als-* classes). */
 .ascp-root {
   position: relative;
-  border-radius: 8px;
-  padding: 0.5px;
+  border-radius: 6px;
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
   overflow: hidden;
-  isolation: isolate;
-  background: transparent;
   margin: 0 0 12px;
 }
-
-.ascp-root.ascp-streaming::before {
-  content: "";
-  position: absolute;
-  width: 250%;
-  aspect-ratio: 1 / 1;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(0deg);
-  z-index: -2;
-  background: conic-gradient(
-    from 0deg,
-    var(--ds-link) 0deg,
-    var(--ds-background-discovery-bold) 90deg,
-    var(--ds-background-danger-bold) 180deg,
-    var(--ds-background-warning-bold) 270deg,
-    var(--ds-link) 360deg
-  );
-  animation: ascp-rotate 3s linear infinite;
-  pointer-events: none;
+/* Als-loading-frame owns the border affordance while streaming. Unlike
+   AiLinkSimilarPanel (which uses als-loading-frame on a bare div), our
+   panel nests a `.ascp-surface` child that carries its own opaque
+   background — that background was painting over the outer 1.5px zone
+   where the rotating conic gradient must show. Fix: pad the root by
+   1.5px so the surface sits inside the ring on ALL edges (including
+   the bottom, which was the visible break). Border/background removed
+   for identical z-stacking to the canonical frame. */
+.ascp-root.als-loading-frame {
+  border: none;
+  background: transparent;
+  padding: 1.5px;
+  border-radius: 8px;
 }
-
-.ascp-root.ascp-streaming::after {
-  content: "";
-  position: absolute;
-  inset: 1.5px;
+.ascp-root.als-loading-frame > .ascp-surface {
   border-radius: 6.5px;
-  background: var(--ds-surface);
-  z-index: -1;
-  pointer-events: none;
-}
-
-.ascp-root.ascp-static {
-  border: 1px solid var(--ds-border);
-  padding: 0;
-}
-
-@keyframes ascp-rotate {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(-360deg); }
 }
 
 .ascp-surface {
   background: var(--ds-surface);
-  border-radius: 6.5px;
+  border-radius: 5px;
+}
+
+/* Loading title layout — dots + typewriter text on one baseline. */
+.ascp-header__title--loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Subtle italic note appended to the header title on error state —
+   "Create suggested work items  An error occurred." */
+.ascp-header__title-note {
+  color: var(--ds-text-subtle);
+  font-style: italic;
+  font-weight: 400;
+  margin-left: 6px;
 }
 
 /* ── Header ───────────────────────────────────────────────── */
 .ascp-header {
-  all: unset;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 8px 12px;
-  cursor: pointer;
+  padding: 6px 12px;
+  min-height: 36px;
   border-bottom: 0px solid var(--ds-border);
-}
-.ascp-header:focus-visible {
-  outline: 1px solid var(--ds-border-focused);
-  outline-offset: -2px;
 }
 .ascp-header__left {
   display: inline-flex;
@@ -87,57 +76,97 @@
   gap: 4px;
   color: var(--ds-text-subtle);
 }
-.ascp-refresh,
-.ascp-chevron {
+
+/* "Suggest" / "View n suggestions" pill button — bordered, white bg,
+   neutral hover. Matches Jira right-rail secondary button styling. */
+.ascp-header__cta {
+  all: unset;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 3px;
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 100ms ease, border-color 100ms ease;
+}
+.ascp-header__cta:hover {
+  background: var(--ds-background-neutral-hovered);
+}
+.ascp-header__cta:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -2px;
+}
+.ascp-header__cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ascp-header__spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+/* Collapse chevron (expanded → "Hide suggestions") */
+.ascp-header__chevron {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   border-radius: 3px;
   cursor: pointer;
   color: var(--ds-text-subtle);
+  transition: background 100ms ease, color 100ms ease;
 }
-.ascp-refresh:hover,
-.ascp-chevron:hover {
+.ascp-header__chevron:hover {
   background: var(--ds-background-neutral-subtle-hovered);
   color: var(--ds-text);
+}
+.ascp-header__chevron:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -2px;
 }
 
 /* ── List rows ────────────────────────────────────────────── */
 .ascp-list {
   display: flex;
   flex-direction: column;
-  padding: 4px 0;
+  padding: 0;
 }
 .ascp-row {
-  all: unset;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
+  padding: 6px 12px;
+  min-height: 32px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
   color: var(--ds-text);
-  border-top: 0px solid var(--ds-border);
+  border-top: 1px solid var(--ds-border);
   background: var(--ds-surface);
   transition: background 100ms ease;
 }
 .ascp-row:first-child {
-  border-top-color: transparent;
+  border-top-color: var(--ds-border);
 }
-.ascp-row:hover:not(:disabled) {
+.ascp-row:hover {
   background: var(--ds-background-neutral-subtle-hovered);
 }
-.ascp-row:focus-visible {
-  outline: 1px solid var(--ds-border-focused);
-  outline-offset: -2px;
-}
-.ascp-row:disabled {
-  cursor: not-allowed;
+.ascp-row[aria-disabled="true"] {
   opacity: 0.6;
+  pointer-events: none;
 }
 .ascp-row__icon {
   flex-shrink: 0;
@@ -147,6 +176,80 @@
   width: 20px;
   height: 20px;
 }
+/* Row-level type picker trigger — type icon + chevron, transparent
+   idle, subtle neutral hover. `all: unset` was destroying the button's
+   default block-level box → Popper couldn't measure a bounding rect and
+   dropped the menu at (0,0). Use explicit overrides instead. */
+.ascp-row__type-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  margin: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 100ms ease;
+  flex-shrink: 0;
+}
+.ascp-row__type-trigger:hover {
+  background: var(--ds-background-neutral-hovered);
+}
+.ascp-row__type-trigger:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -1px;
+}
+.ascp-row__type-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-subtle);
+}
+
+/* Popup menu — floats above rows, follows trigger on page scroll
+   (Atlaskit Popup handles the anchor tracking). */
+.ascp-type-menu {
+  min-width: 180px;
+  padding: 4px 0;
+  background: var(--ds-surface-overlay);
+  border-radius: 4px;
+  box-shadow: var(--ds-shadow-overlay);
+}
+.ascp-type-menu__item {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--ds-text);
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.ascp-type-menu__item:hover {
+  background: var(--ds-background-neutral-subtle-hovered);
+}
+.ascp-type-menu__item:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -2px;
+}
+.ascp-type-menu__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.ascp-type-menu__label {
+  flex: 1;
+  min-width: 0;
+}
 .ascp-row__title {
   flex: 1;
   min-width: 0;
@@ -154,56 +257,99 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* ── Loading skeleton rows ────────────────────────────────── */
-.ascp-row--skeleton {
-  cursor: default;
-}
-.ascp-row--skeleton:hover {
-  background: var(--ds-surface);
-}
-.ascp-skel-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--ds-skeleton);
-  animation: ascp-pulse 1.4s ease-in-out infinite;
-}
-.ascp-skel-line {
+.ascp-row__editor {
   flex: 1;
-  height: 12px;
-  border-radius: 6px;
-  background: var(--ds-skeleton);
-  animation: ascp-pulse 1.4s ease-in-out infinite;
-}
-@keyframes ascp-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  min-width: 0;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 3px;
+  border: 1px solid var(--ds-border-focused);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
 }
 
-/* ── Empty + error states ─────────────────────────────────── */
-.ascp-empty,
-.ascp-error {
+/* Row hover actions — check / cross / edit. Hidden until row hover. */
+.ascp-row__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+.ascp-row:hover .ascp-row__actions,
+.ascp-row:focus-within .ascp-row__actions {
+  opacity: 1;
+}
+.ascp-row__action {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--ds-text-subtle);
+  transition: background 100ms ease, color 100ms ease;
+}
+.ascp-row__action:hover {
+  background: var(--ds-background-neutral-hovered);
+  color: var(--ds-text);
+}
+.ascp-row__action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ascp-row__action:focus-visible {
+  outline: 2px solid var(--ds-border-focused);
+  outline-offset: -1px;
+}
+
+/* ── Empty + warning states ───────────────────────────────── */
+.ascp-empty {
   padding: 8px 12px;
   font-size: 13px;
   color: var(--ds-text-subtle);
 }
-.ascp-error {
+/* Jira-parity "We can't make suggestions" banner — warning-token bg,
+   warning triangle icon, bold heading + subtle message body. */
+.ascp-warning {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  background: var(--ds-background-danger-subtle);
-  color: var(--ds-text-danger);
+  padding: 12px 16px;
+  background: var(--ds-background-warning);
+  color: var(--ds-text);
 }
-.ascp-error__retry {
-  all: unset;
-  margin-left: auto;
-  cursor: pointer;
-  font-weight: 500;
-  color: var(--ds-text-danger);
+.ascp-warning__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
 }
-.ascp-error__retry:hover {
-  text-decoration: underline;
+.ascp-warning__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ascp-warning__title {
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ds-text);
+}
+.ascp-warning__message {
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 13px;
+  color: var(--ds-text-subtle);
 }
 
 /* ── Hint input ───────────────────────────────────────────── */
@@ -212,7 +358,7 @@
   align-items: center;
   gap: 4px;
   padding: 8px 8px 8px 12px;
-  border-top: 0px solid var(--ds-border);
+  border-top: 1px solid var(--ds-border);
 }
 .ascp-hint__input {
   flex: 1;
@@ -260,7 +406,7 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  border-top: 0px solid var(--ds-border);
+  border-top: 1px solid var(--ds-border);
   font-size: 12px;
   color: var(--ds-text-subtle);
 }

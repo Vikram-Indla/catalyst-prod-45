@@ -12,6 +12,10 @@ const corsHeaders = {
 
 const AI_GATEWAY_URL =
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+// Canonical model — same as ai-improve-story and every other Catalyst
+// AI edge function. Earlier 503 was transient (Gemini throttling), not
+// a resolution failure. Do NOT diverge from this without a project-wide
+// change (2026-07-02).
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
 async function logGovernance(params: {
@@ -114,7 +118,11 @@ Shape:
           { role: "user", content: userPrompt },
         ],
         temperature: 0.5,
-        max_tokens: 600,
+        // 600 was cutting the JSON mid-array on longer titles → parse
+        // failed with "no JSON object in response". 1500 covers 5 rich
+        // suggestion titles + type strings comfortably.
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -142,8 +150,9 @@ Shape:
               ? "Rate limits exceeded, please try again later."
               : status === 402
                 ? "Payment required, please add funds."
-                : "AI gateway error",
+                : `AI gateway error (${status})`,
           suggestions: [],
+          diagnostic: { gatewayStatus: status, gatewayBody: errBody.slice(0, 2000) },
         }),
         {
           status,
@@ -154,27 +163,67 @@ Shape:
 
     const aiData = await aiResp.json();
     const rawText: string = aiData?.choices?.[0]?.message?.content ?? "{}";
+    // Robust JSON extraction — Gemini sometimes returns markdown fences,
+    // leading commentary, or trailing prose. Grab the first {...} block
+    // that spans the response.
     let parsed: any = null;
+    let parseError: string | null = null;
+    const clean = rawText.replace(/```json|```/g, "").trim();
     try {
-      const clean = rawText.replace(/```json|```/g, "").trim();
       parsed = JSON.parse(clean);
-    } catch {
-      parsed = null;
+    } catch (_e1) {
+      const match = clean.match(/\{[\s\S]*\}/);
+      if (match) {
+        try { parsed = JSON.parse(match[0]); }
+        catch (e2) { parseError = e2 instanceof Error ? e2.message : String(e2); }
+      } else {
+        // Truncation repair — response ran out of tokens mid-array. Pull
+        // every complete {"title": "...", "type": "..."} object we can
+        // find via regex and rebuild the suggestions array manually.
+        const objRe = /\{\s*"title"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"\s*,\s*"type"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"\s*\}/g;
+        const recovered: Array<{ title: string; type: string }> = [];
+        let m: RegExpExecArray | null;
+        while ((m = objRe.exec(clean)) !== null) {
+          try {
+            recovered.push({ title: JSON.parse(`"${m[1]}"`), type: JSON.parse(`"${m[2]}"`) });
+          } catch { /* skip malformed */ }
+        }
+        if (recovered.length > 0) {
+          parsed = { suggestions: recovered };
+        } else {
+          parseError = "no JSON object in response";
+        }
+      }
     }
 
-    const allowedSet = new Set(allowedTypes.length > 0 ? allowedTypes : [defaultType]);
+    // Case-insensitive allowed-type match so AI returning "sub-task" or
+    // "SUB-TASK" still counts as canonical "Sub-task".
+    const allowedLower = new Map(
+      (allowedTypes.length > 0 ? allowedTypes : [defaultType]).map((t) => [
+        t.toLowerCase(),
+        t,
+      ]),
+    );
     const suggestions: Array<{ title: string; type: string }> = [];
     if (parsed && Array.isArray(parsed.suggestions)) {
       for (const s of parsed.suggestions) {
         if (!s || typeof s !== "object") continue;
         const title = typeof s.title === "string" ? s.title.trim() : "";
-        let type = typeof s.type === "string" ? s.type.trim() : "";
+        const rawType = typeof s.type === "string" ? s.type.trim() : "";
         if (!title || title.length > 160) continue;
-        if (!allowedSet.has(type)) type = defaultType;
+        const type = allowedLower.get(rawType.toLowerCase()) ?? defaultType;
         suggestions.push({ title, type });
         if (suggestions.length >= 5) break;
       }
     }
+
+    // Diagnostic — echo the raw AI content back to the client when no
+    // usable suggestions came through, so the browser console can show
+    // exactly what Gemini returned (model 404, refusal, empty payload,
+    // JSON shape mismatch, etc.). Safe to inspect — no secrets.
+    const diagnostic = suggestions.length === 0
+      ? { rawText, parseError, parsedShape: parsed ? Object.keys(parsed) : null }
+      : undefined;
 
     logGovernance({
       action: "ai_suggest_children",
@@ -188,7 +237,7 @@ Shape:
     }).catch(() => {});
 
     return new Response(
-      JSON.stringify({ suggestions, defaultType }),
+      JSON.stringify({ suggestions, defaultType, diagnostic }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },

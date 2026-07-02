@@ -158,7 +158,25 @@ export function CreateReleaseModal({ onClose, release }: Props) {
         status: 'draft',
       },
       {
-        onSuccess: () => { catalystToast.success('Release created'); onClose(); },
+        onSuccess: (created: any) => {
+          const id = created?.id;
+          const label = created?.name || name.trim();
+          if (id) {
+            const url = `${window.location.origin}/release-hub/releases-management/${id}`;
+            catalystToast.show({
+              type: 'success',
+              title: `You've created "${label}"`,
+              actions: [
+                { label: 'View', onClick: () => window.open(url, '_blank', 'noopener,noreferrer') },
+                { label: 'Copy link', onClick: () => { void navigator.clipboard.writeText(url); } },
+              ],
+              duration: 6000,
+            });
+          } else {
+            catalystToast.success('Release created');
+          }
+          onClose();
+        },
         onError: (err: any) => { setFormError(err?.message || 'Failed to create release'); catalystToast.error('Failed to create release'); },
       },
     );

@@ -334,7 +334,7 @@ export default function CatalystViewBusinessRequestV3({
           issue={mapBrToIssueLike(request)}
           onTitleChange={(t) => { void updateField('title', t); }}
         />
-        <CatalystQuickActions />
+        <CatalystQuickActions itemType="Business Request" />
         {/* Canonical Key details — Parent hidden (BR has no parent concept),
             Priority on (mapBrToIssueLike.priority = urgency), urgency write
             via dataSource.onPriorityChange. BR-specific fields (Type,

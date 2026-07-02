@@ -16,22 +16,13 @@
  *     uncluttered (row-actions appear on hover/focus-within only)
  */
 import React from 'react';
-import Lozenge from '@atlaskit/lozenge';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import CloseIcon from '@atlaskit/icon/core/close';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { LinkedWorkItem } from './types';
-
-type AllowedAppearance = 'default' | 'inprogress' | 'success';
-
-function categoryToAppearance(category: string): AllowedAppearance {
-  const c = (category ?? '').toLowerCase();
-  if (c === 'done') return 'success';
-  if (c === 'in_progress' || c === 'inprogress') return 'inprogress';
-  return 'default';
-}
 
 export interface LinkedWorkItemRowProps {
   link: LinkedWorkItem;
@@ -51,11 +42,6 @@ export function LinkedWorkItemRow({
   readOnly,
 }: LinkedWorkItemRowProps) {
   const { target } = link;
-  const typeIcon =
-    WORK_ITEM_ICONS[target.issue_type] ??
-    WORK_ITEM_ICONS[target.issue_type?.toLowerCase?.() ?? ''] ??
-    WORK_ITEM_ICONS.Task;
-  const appearance = categoryToAppearance(target.status_category);
 
   return (
     <div
@@ -64,11 +50,9 @@ export function LinkedWorkItemRow({
       data-state={isPending ? 'pending' : 'rest'}
       aria-busy={isPending || undefined}
     >
-      <span
-        className="lwi-row__icon"
-        aria-hidden
-        dangerouslySetInnerHTML={{ __html: typeIcon }}
-      />
+      <span className="lwi-row__icon" aria-hidden>
+        <JiraIssueTypeIcon type={target.issue_type} size={16} />
+      </span>
       <button
         type="button"
         className="lwi-row__key"
@@ -87,9 +71,13 @@ export function LinkedWorkItemRow({
       </button>
 
       <span className="lwi-row__status">
-        <Lozenge appearance={appearance}>
-          {target.status}
-        </Lozenge>
+        <StatusLozengeDropdown
+          status={target.status}
+          statusCategory={target.status_category}
+          issueType={target.issue_type}
+          interactive={false}
+          size="sm"
+        />
       </span>
 
       <span className="lwi-row__assignee">

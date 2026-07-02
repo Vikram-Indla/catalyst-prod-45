@@ -378,8 +378,15 @@ export function BrActivitySection({
   // for this BR is inserted / updated / deleted on either table.
   useEffect(() => {
     if (!enabled) return;
+    // Unique per subscription — see CatalystActivitySection for the
+    // same fix. Prevents "cannot add postgres_changes callbacks after
+    // subscribe()" when React StrictMode double-mounts.
+    const uniq =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? (crypto as any).randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const channel = supabase
-      .channel(`br-activity-realtime:${requestId}`)
+      .channel(`br-activity-realtime:${requestId}:${uniq}`)
       .on(
         'postgres_changes',
         {
