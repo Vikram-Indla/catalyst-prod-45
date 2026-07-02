@@ -1,0 +1,13 @@
+-- 20260703220000_restore_wrongly_deleted_bau_issues
+--
+-- RECONSTRUCTED PLACEHOLDER (2026-07-03 ledger reconciliation). The original
+-- file was executed and recorded on staging cyij but never committed to the
+-- repo, and exists in no branch or worktree. It was a one-off data restore
+-- that un-soft-deleted BAU ph_issues rows that had been wrongly removed
+-- (staging state after it: 1684 live / 29 removed of 1713 BAU rows).
+--
+-- The restore is environment-specific data repair, already applied where it
+-- mattered. This placeholder exists so supabase_migrations.schema_migrations
+-- rows for this version match a file in the chain; it intentionally does
+-- nothing on replay.
+select 1;
