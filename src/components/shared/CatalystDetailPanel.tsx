@@ -25,7 +25,6 @@
  */
 import React, { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CloseIcon from '@atlaskit/icon/core/close';
@@ -46,15 +45,11 @@ import {
   Description,
   CatalystActivitySection,
   CatalystKeyDetails,
+  CatalystSidebarDetails,
   StatusLozengeDropdown,
 } from '@/components/catalyst-detail-views/shared/sections';
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
-import {
-  EditableAssignee,
-  EditableReporter,
-  EditableSprintReleases as EditableSprintRelease,
-} from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
@@ -214,13 +209,9 @@ function PhIssuePanelBody({
   onClose: () => void;
   onOpenFullPage?: () => void;
 }) {
-  const queryClient = useQueryClient();
   const { data: issue, isLoading } = useCatalystIssue(itemId, true);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
-
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
 
   const issueKeyShown = issue?.issue_key || itemId;
   const projectName = (issue as any)?.project_name || projectKey;
@@ -394,37 +385,6 @@ function PhIssuePanelBody({
 
             <CatalystQuickActions />
 
-            <div style={{ marginBottom: 16 }}>
-              {issue.issue_type !== 'Feature' && (
-                <FieldRow label="Sprint/Iteration">
-                  <EditableSprintRelease
-                    issueId={issue.id}
-                    currentSprintRelease={issue.sprint_release}
-                    projectKey={issue.project_key}
-                    onUpdate={invalidate}
-                  />
-                </FieldRow>
-              )}
-              <FieldRow label="Assignee">
-                <EditableAssignee
-                  issueId={issue.id}
-                  projectId={projectId || ''}
-                  currentAssigneeId={issue.assignee_account_id}
-                  currentAssigneeName={issue.assignee_display_name}
-                  onUpdate={invalidate}
-                />
-              </FieldRow>
-              <FieldRow label="Reporter">
-                <EditableReporter
-                  issueId={issue.id}
-                  projectId={projectId || ''}
-                  currentReporterId={issue.reporter_account_id}
-                  currentReporterName={issue.reporter_display_name}
-                  onUpdate={invalidate}
-                />
-              </FieldRow>
-            </div>
-
             <CatalystKeyDetails
               issue={issue}
               itemId={itemId}
@@ -435,20 +395,27 @@ function PhIssuePanelBody({
               afterBody={<Description issue={issue} />}
             />
 
-            <CatalystActivitySection itemId={itemId} isOpen={true} />
+            {/* Bordered "Details" card — Jira-parity right-side panel grouping
+                (2026-07-02). Sits between Key details and Activity per Vikram
+                directive. Mounts canonical CatalystSidebarDetails inline so
+                every field the sidebar owns (Sprint/Iteration, Assignee,
+                Priority, Reporter, Labels, Due date, Actual start/end, per
+                issue type) appears here — no forked field list.
+                statusPill/improveDropdown NOT passed → top row hides;
+                Status + Improve + Discuss render at line ~384 above. */}
+            <CatalystSidebarDetails
+              issue={issue}
+              itemId={itemId}
+              projectId={projectId}
+              projectKey={projectKey}
+              onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+              onClose={onClose}
+              onDelete={() => mutations.deleteIssue.mutate()}
+              typeLabel={(effectiveType || 'item').toLowerCase()}
+              hideDiscuss={true}
+            />
 
-            <div style={{ marginTop: 24, paddingTop: 12 }}>
-              {issue.jira_created_at && (
-                <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-200)', color: SUBTLE }} title={issue.jira_created_at}>
-                  Created {fmtAbs(issue.jira_created_at)}
-                </div>
-              )}
-              {issue.jira_updated_at && (
-                <div style={{ fontSize: 'var(--ds-font-size-200)', color: SUBTLE }} title={issue.jira_updated_at}>
-                  Updated {fmtRel(issue.jira_updated_at)}
-                </div>
-              )}
-            </div>
+            <CatalystActivitySection itemId={itemId} isOpen={true} />
           </>
         )}
       </div>
