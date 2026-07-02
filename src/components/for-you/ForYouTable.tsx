@@ -280,7 +280,7 @@ export function CatalystTable({
                     <div
                       dir="auto"
                       style={{
-                        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--ds-text)))', lineHeight: 1.3,
+                        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--ds-text)))', lineHeight: 'var(--ds-line-height-body)',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',

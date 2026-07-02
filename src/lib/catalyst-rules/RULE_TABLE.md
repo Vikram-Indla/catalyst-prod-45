@@ -332,6 +332,10 @@ Every Jira/work-item row surface (Board, Backlog, All Work, Sprint, and any futu
 
 **Open follow-up (not yet done):** Board's kanban card still renders through a separate component from the shared `cells.tsx`/`editors.tsx` machinery — H3 states the target, but the actual migration onto one shared component (so drift becomes structurally impossible, not just token-corrected) is a separate, larger Plan Lock, not covered by this rule's initial confirmation.
 
+**2026-07-02 repo-wide sweep:** Audited all ~35 list/table surfaces across Project, Product, Test, Incident, Release, and Tasks hubs. ~80% render through `JiraTable`/`cells.tsx` or `BacklogTable` (which imports `makeKeyCell` directly) — these inherited H1/H2 for free, no edits needed; live DOM-verified clean on Filters, Incident Hub. One additional real violation found and fixed: `src/components/for-you/ForYouTable.tsx` (card summary, `lineHeight: 1.3` → `var(--ds-line-height-body)`).
+
+**Explicitly out of Grid H's current scope — not fixed, not evaluated against H1:** `src/components/kanban/WorkItemCard.tsx`, the kanban card renderer shared by Product/Incident/Tasks/TestHub boards (Project Board uses its own separate, already-compliant `kb-column` implementation). It uses a density-driven font scale (`d.titleSize`/`d.metaSize`) unrelated to the flat token pair in H1, and has its own hardcoded `lineHeight: '14px'` (line 479) and `lineHeight: '16px'` (line 146). Whether kanban cards should match table-row typography at all (real Jira kanban cards are typically more compact than list rows, not identical) is an open design question — deliberately deferred to its own Plan Lock rather than folded into this rule. Non-table surfaces (kanban boards, timelines, DAG dependency graphs, `AllProductsPage.tsx` custom grid, `DefectsPage.tsx` custom list) are likewise out of scope — Grid H governs row/table typography, not card/graph/timeline UI.
+
 ---
 
 ## Change Log
