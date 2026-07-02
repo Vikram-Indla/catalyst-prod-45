@@ -48,6 +48,7 @@ import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
    same toolbar / navigator / detail router as project. Replaces the parallel
    ProductAllWorkView (per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule). */
 import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
 import type { BusinessRequest } from '@/types/business-request';
@@ -618,6 +619,24 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     [items, selectItem],
   );
 
+  /* Primary list-query failure for the active mode. Checking isError alone
+     misses the persisted-cache case: hydrated data keeps status 'success'
+     while the background refetch fails and only `error` is set. Without this
+     a failed query renders as an empty list — indistinguishable from a
+     project with no work items. */
+  const primaryError: Error | null = isTasks
+    ? null
+    : isIncident
+      ? ((incidentItemsQuery.isError || incidentItemsQuery.error) ? (incidentItemsQuery.error as Error) : null)
+      : isProduct
+        ? ((productBrsQuery.isError || productBrsQuery.error) ? (productBrsQuery.error as Error) : null)
+        : projectQuery.error;
+  const retryPrimary = isIncident
+    ? incidentItemsQuery.refetch
+    : isProduct
+      ? productBrsQuery.refetch
+      : projectQuery.refetch;
+
   return (
     // Outer column — height 100% of the route slot, no scroll here. Both
     // the header and the split region live inside; the SPLIT REGION is
@@ -746,6 +765,22 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           left rail's vertical divider. Vikram complaint (image 6):
           "left side padding issue empty space left for the navigator
           railing by the vertical divider". Right + bottom padding kept. */}
+      {primaryError ? (
+        /* Failed list query — show the real error instead of an empty list. */
+        <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+          <SectionMessage
+            appearance="error"
+            title={isIncident
+              ? "Couldn't load incidents"
+              : isProduct
+                ? "Couldn't load business requests"
+                : "Couldn't load work items"}
+            actions={[{ key: 'retry', text: 'Retry', onClick: () => retryPrimary() }]}
+          >
+            {primaryError.message ?? 'Unknown error loading work items.'}
+          </SectionMessage>
+        </div>
+      ) : (
       <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '0 0 8px 0' }}>
           {/* Navigator (left) — always visible; expands to full width when narrow.
               jira-compare 2026-05-02: bg switched from --cp-bg-sunken
@@ -963,6 +998,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
             )
           )}
       </div>
+      )}
 
       {/* ── Narrow-mode overlay — Catalyst detail router (Patch #9, 2026-04-28).
             Previously routed every type through the V15 StoryDetailModal

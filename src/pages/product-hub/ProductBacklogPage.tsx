@@ -18,6 +18,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 
 import { supabase } from '@/integrations/supabase/client';
 import { BacklogPage } from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
@@ -32,29 +33,70 @@ import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 function useProductInfo(key: string | undefined) {
   const [product, setProduct] = useState<ProductInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!key) { setLoading(false); return; }
+    let cancelled = false;
     (async () => {
       setLoading(true);
-      const { data } = await (supabase as any)
-        .from('products')
-        .select('id, name, code')
-        .eq('code', key.toUpperCase())
-        .eq('is_active', true)
-        .maybeSingle();
-      setProduct(data ?? null);
-      setLoading(false);
+      setError(null);
+      try {
+        // Dropping the error here made a failed lookup look like "product
+        // not found" (data undefined), which rendered an infinite spinner.
+        const { data, error: queryError } = await (supabase as any)
+          .from('products')
+          .select('id, name, code')
+          .eq('code', key.toUpperCase())
+          .eq('is_active', true)
+          .maybeSingle();
+        if (cancelled) return;
+        if (queryError) throw queryError;
+        setProduct(data ?? null);
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e : new Error(String(e)));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     })();
-  }, [key]);
-  return { product, loading };
+    return () => { cancelled = true; };
+  }, [key, attempt]);
+  return { product, loading, error, retry: () => setAttempt((a) => a + 1) };
 }
 
 // ─── Page entry ──────────────────────────────────────────────────────────────
 
 export default function ProductBacklogPage() {
   const { key } = useParams<{ key: string }>();
-  const { product, loading: productLoading } = useProductInfo(key);
+  const { product, loading: productLoading, error: productError, retry } = useProductInfo(key);
   const adapter = useBusinessRequestsSource(product);
+
+  if (productError) {
+    return (
+      <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+        <SectionMessage
+          appearance="error"
+          title="Couldn't load this product"
+          actions={[{ key: 'retry', text: 'Retry', onClick: retry }]}
+        >
+          {productError.message ?? 'Unknown error loading product.'}
+        </SectionMessage>
+      </div>
+    );
+  }
+
+  if (!productLoading && !product) {
+    // Loaded cleanly but no matching active product — say so instead of
+    // spinning forever.
+    return (
+      <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+        <SectionMessage appearance="warning" title="Product not found">
+          No active product matches "{key?.toUpperCase()}". Check the URL or the
+          product's status in the products list.
+        </SectionMessage>
+      </div>
+    );
+  }
 
   if (productLoading || !product || !adapter) {
     return (

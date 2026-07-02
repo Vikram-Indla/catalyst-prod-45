@@ -14,6 +14,7 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { Board, buildGroups } from './components/Board';
 import { Toolbar } from './components/Toolbar';
 import { CardContextMenu } from './components/CardContextMenu';
@@ -126,7 +127,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     navigator.clipboard?.writeText(window.location.href);
   }, []);
 
-  const { projectId, projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId, mode);
+  const { projectId, projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, error: boardError, refetch } = useKanbanData(key, activeBoardId, mode);
   const [extraColumns, setExtraColumns] = useState<KanbanColumn[]>([]);
   const boardConfig = useMemo(() =>
     extraColumns.length ? { ...baseBoardConfig, columns: [...baseBoardConfig.columns, ...extraColumns] } : baseBoardConfig,
@@ -460,7 +461,20 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           />
         )}
         <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-          {isLoading ? (
+          {boardError ? (
+            /* Failed issues query — show the real error instead of an empty
+               board (a failed fetch is otherwise indistinguishable from a
+               board with no issues). */
+            <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+              <SectionMessage
+                appearance="error"
+                title="Couldn't load this board"
+                actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+              >
+                {boardError.message ?? 'Unknown error loading board issues.'}
+              </SectionMessage>
+            </div>
+          ) : isLoading ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Spinner size="large" />
             </div>
