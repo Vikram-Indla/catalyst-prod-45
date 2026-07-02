@@ -1,24 +1,33 @@
 /**
  * SprintCreateModal — Create or Edit sprint dialog.
  *
- * 2026-06-26: Phase 1 (MVP) clone of ReleaseCreateModal with Project picker
- * instead of Product picker, writes to ph_jira_sprints via generic entity
- * hooks. Same UI / same form / same validation rules.
+ * 2026-07-02 (CAT-SPRINTS-NATIVE-20260702-002 S1.3b): rebuilt around the
+ * native naming engine (D-003). Auto|Custom name mode, 1W/2W length, live
+ * auto-name preview via src/lib/sprints/autoName.ts, computed read-only end
+ * date, Owner (creator) row writing created_by. The server-side
+ * a10_sprint_autoname_trigger recomputes name/end_date authoritatively and
+ * dedupes with a -2/-3 suffix, so the client preview is a courtesy, not the
+ * source of truth.
  *
- * Per CLAUDE.md "ADOPT CANONICAL — DO NOT REIMPLEMENT": this is a focused
- * adapter, not a parallel reimplementation. Reuses ProductSelect (label
- * agnostic), CatalystDatePicker, ADS modal primitives. Only the data
- * source (table, scope) + labels differ from the release modal.
+ * Per CLAUDE.md "ADOPT CANONICAL — DO NOT REIMPLEMENT": ADS primitives only
+ * (Modal, Textfield, TextArea, Toggle, Radio, CatalystDatePicker,
+ * CatalystAvatar). "Owner", never "Driver" (D-001).
  */
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
+import Toggle from '@atlaskit/toggle';
+import { RadioGroup } from '@atlaskit/radio';
+import { useQuery } from '@tanstack/react-query';
 import { catalystFlag } from '@/lib/catalystFlag';
+import { supabase } from '@/integrations/supabase/client';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { ProductSelect, type ProductOption } from '@/components/releases/ReleaseFilters';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useCreateSprint, useUpdateSprint } from '@/hooks/workhub/useEntities';
+import { sprintAutoName, sprintEndDate, type SprintLengthWeeks } from '@/lib/sprints/autoName';
 
 interface SprintRow {
   id: string;
@@ -27,6 +36,8 @@ interface SprintRow {
   description?: string | null;
   start_date?: string | null;
   release_date?: string | null;
+  name_mode?: string | null;
+  length_weeks?: number | null;
 }
 
 interface SprintCreateModalProps {
@@ -59,12 +70,22 @@ const asterisk = (
 
 const todayIso = () => new Date().toISOString().split('T')[0];
 
-function emptyForm(defaultProjectId: string) {
+interface SprintForm {
+  name: string;
+  nameMode: 'auto' | 'custom';
+  lengthWeeks: SprintLengthWeeks;
+  description: string;
+  start_date: string;
+  project_id: string;
+}
+
+function emptyForm(defaultProjectId: string): SprintForm {
   return {
     name: '',
+    nameMode: 'auto',
+    lengthWeeks: 1,
     description: '',
     start_date: todayIso(),
-    release_date: todayIso(),
     project_id: defaultProjectId,
   };
 }
@@ -75,12 +96,13 @@ function resolveDefaultProjectId(options: ProductOption[]): string {
   return options.length === 1 ? options[0].id : '';
 }
 
-function formFromSprint(s: SprintRow) {
+function formFromSprint(s: SprintRow): SprintForm {
   return {
     name: s.name ?? '',
+    nameMode: s.name_mode === 'custom' ? 'custom' : 'auto',
+    lengthWeeks: s.length_weeks === 2 ? 2 : 1,
     description: s.description ?? '',
     start_date: s.start_date ?? '',
-    release_date: s.release_date ?? '',
     project_id: s.project_id ?? '',
   };
 }
@@ -96,7 +118,7 @@ export function SprintCreateModal({
   const isEdit = !!editingSprint;
   const defaultProjectId = resolveDefaultProjectId(projectOptions);
 
-  const [formData, setFormData] = useState(() =>
+  const [formData, setFormData] = useState<SprintForm>(() =>
     editingSprint ? formFromSprint(editingSprint) : emptyForm(defaultProjectId),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -109,23 +131,55 @@ export function SprintCreateModal({
     setSubmitted(false);
   }, [isOpen, editingSprint, defaultProjectId]);
 
+  // Owner row: the creator. Writes created_by on create (D-001: "Owner").
+  const { data: currentUser } = useQuery({
+    queryKey: ['sprint-modal-current-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', user.id)
+        .maybeSingle();
+      return data ?? { id: user.id, full_name: null, avatar_url: null };
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60_000,
+  });
+
   const createMutation = useCreateSprint();
   const updateMutation = useUpdateSprint();
   const pending = isEdit ? updateMutation.isPending : createMutation.isPending;
 
+  const isAuto = formData.nameMode === 'auto';
+  const selectedProjectTag =
+    projectOptions.find((o) => o.id === formData.project_id)?.tag ?? null;
+
+  // Live preview — recomputes on project/start/length change (D-003). The
+  // server trigger is authoritative; this mirrors it for the read-only field.
+  const autoNamePreview =
+    isAuto && selectedProjectTag && formData.start_date
+      ? sprintAutoName(selectedProjectTag, formData.start_date, formData.lengthWeeks)
+      : '';
+
+  const endDateIso = formData.start_date
+    ? sprintEndDate(formData.start_date, formData.lengthWeeks)
+    : '';
+
+  const effectiveName = isAuto ? autoNamePreview : formData.name.trim();
+
   const validate = (): boolean => {
     const next: Record<string, string> = {};
-    const trimmedName = formData.name.trim();
-
-    if (!trimmedName) next.name = 'Sprint name is required';
-    else if (trimmedName.length > 255) next.name = 'Sprint name must not exceed 255 characters';
 
     if (!formData.project_id) next.project_id = 'Project is required';
 
-    if (formData.start_date && formData.release_date) {
-      const s = new Date(formData.start_date);
-      const r = new Date(formData.release_date);
-      if (s > r) next.release_date = 'Release date must be on or after start date';
+    if (isAuto) {
+      if (!formData.start_date) next.start_date = 'Start date is required for automatic naming';
+    } else {
+      const trimmedName = formData.name.trim();
+      if (!trimmedName) next.name = 'Sprint name is required';
+      else if (trimmedName.length > 255) next.name = 'Sprint name must not exceed 255 characters';
     }
 
     setErrors(next);
@@ -136,14 +190,18 @@ export function SprintCreateModal({
     setSubmitted(true);
     if (!validate()) return;
 
-    const targetDate = formData.release_date || todayIso();
     const basePayload: Record<string, any> = {
-      name: formData.name.trim(),
-      title: formData.name.trim(),
+      name: effectiveName,
+      title: effectiveName,
+      name_mode: formData.nameMode,
+      length_weeks: formData.lengthWeeks,
       project_id: formData.project_id,
-      target_date: targetDate,
       start_date: formData.start_date || null,
-      release_date: formData.release_date || null,
+      // end_date is server-derived (start + 4d/11d); release_date/target_date
+      // mirror it so the legacy list columns keep rendering until S1.1a.
+      end_date: endDateIso || null,
+      release_date: endDateIso || null,
+      target_date: endDateIso || todayIso(),
       description: formData.description.trim() || null,
     };
 
@@ -158,10 +216,13 @@ export function SprintCreateModal({
       return;
     }
 
-    createMutation.mutate(basePayload, {
-      onSuccess: (result: any) => { onSuccess?.(result); handleClose(); },
-      onError: (err: any) => catalystFlag.error(err?.message || 'Failed to create sprint'),
-    });
+    createMutation.mutate(
+      { ...basePayload, status: 'planning', created_by: currentUser?.id ?? null },
+      {
+        onSuccess: (result: any) => { onSuccess?.(result); handleClose(); },
+        onError: (err: any) => catalystFlag.error(err?.message || 'Failed to create sprint'),
+      },
+    );
   };
 
   const handleClose = () => {
@@ -188,22 +249,65 @@ export function SprintCreateModal({
                 <span style={{ color: 'var(--ds-text-danger)', marginLeft: 0 }}>*</span>
               </div>
 
+              <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                  <Toggle
+                    id="sprint-name-mode"
+                    isChecked={isAuto}
+                    onChange={() =>
+                      setFormData((p) => ({
+                        ...p,
+                        nameMode: p.nameMode === 'auto' ? 'custom' : 'auto',
+                      }))
+                    }
+                  />
+                  <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
+                    Automatic name
+                  </span>
+                </label>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
+                    Length
+                  </span>
+                  <RadioGroup
+                    options={[
+                      { name: 'sprint-length', value: '1', label: '1 week' },
+                      { name: 'sprint-length', value: '2', label: '2 weeks' },
+                    ]}
+                    value={String(formData.lengthWeeks)}
+                    onChange={(e) => {
+                      // read before setState — currentTarget is nulled by the
+                      // time the functional updater runs
+                      const weeks = (e.currentTarget.value === '2' ? 2 : 1) as SprintLengthWeeks;
+                      setFormData((p) => ({ ...p, lengthWeeks: weeks }));
+                    }}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label style={labelStyle} htmlFor="sprint-name">
-                  Sprint name{asterisk}
+                  Sprint name{isAuto ? null : asterisk}
                 </label>
                 <Textfield
                   id="sprint-name"
-                  value={formData.name}
+                  value={isAuto ? autoNamePreview : formData.name}
+                  isReadOnly={isAuto}
+                  placeholder={
+                    isAuto
+                      ? 'Select a project and start date to generate the name'
+                      : undefined
+                  }
                   onChange={(e) => {
+                    if (isAuto) return;
                     const v = (e.currentTarget as HTMLInputElement).value;
                     setFormData((p) => ({ ...p, name: v }));
                     if (errors.name) setErrors((p) => ({ ...p, name: '' }));
                   }}
                   maxLength={255}
-                  autoFocus
+                  autoFocus={!isAuto}
                   isInvalid={submitted && !!errors.name}
-                  aria-required="true"
                   aria-invalid={submitted && !!errors.name}
                 />
                 {submitted && errors.name && (
@@ -213,32 +317,29 @@ export function SprintCreateModal({
 
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Start date</label>
+                  <label style={labelStyle}>Start date{isAuto ? asterisk : null}</label>
                   <CatalystDatePicker
                     value={formData.start_date ? new Date(formData.start_date) : null}
-                    onChange={(date) => setFormData((p) => ({
-                      ...p,
-                      start_date: date ? date.toISOString().split('T')[0] : '',
-                    }))}
-                    placeholder="Start date"
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Release date</label>
-                  <CatalystDatePicker
-                    value={formData.release_date ? new Date(formData.release_date) : null}
                     onChange={(date) => {
                       setFormData((p) => ({
                         ...p,
-                        release_date: date ? date.toISOString().split('T')[0] : '',
+                        start_date: date ? date.toISOString().split('T')[0] : '',
                       }));
-                      if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
+                      if (errors.start_date) setErrors((p) => ({ ...p, start_date: '' }));
                     }}
-                    placeholder="Release date"
+                    placeholder="Start date"
                   />
-                  {submitted && errors.release_date && (
-                    <div role="alert" style={errStyle}>{errors.release_date}</div>
+                  {submitted && errors.start_date && (
+                    <div role="alert" style={errStyle}>{errors.start_date}</div>
                   )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={labelStyle}>End date</label>
+                  <Textfield
+                    value={endDateIso ? new Date(`${endDateIso}T00:00:00`).toLocaleDateString() : ''}
+                    isReadOnly
+                    placeholder="Derived from start date and length"
+                  />
                 </div>
               </div>
 
@@ -259,6 +360,22 @@ export function SprintCreateModal({
                   <div role="alert" style={errStyle}>{errors.project_id}</div>
                 )}
               </div>
+
+              {!isEdit && (
+                <div>
+                  <label style={labelStyle}>Owner</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <CatalystAvatar
+                      size="small"
+                      name={currentUser?.full_name || undefined}
+                      src={currentUser?.avatar_url || undefined}
+                    />
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
+                      {currentUser?.full_name ?? '—'}
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label style={labelStyle} htmlFor="sprint-description">Description</label>
