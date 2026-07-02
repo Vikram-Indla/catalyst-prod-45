@@ -1,11 +1,12 @@
 /**
  * REPORT_REGISTRY — single source of truth for the TestHub Reports hub.
- * Feature: CAT-REPORTS-HUB-20260703-001 (S1.1).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (S1.1 · Phase 2 Lane B).
  *
  * 23 entries from the Phase 0 disposition matrix (PHASE0_DATA_CONTRACT_PROOF.md §S0.3).
- * - status 'wired'  → real-data Body under ./bodies (Phase 2 Lane A; legacy standalone pages deleted).
- * - status 'demo'   → Lab-derived report rendered through LabReportBody (seeded data,
- *                     DEMO banner shown by ReportRenderer). Real wiring lands in Phase 2 Lane B.
+ * ALL entries are status 'wired' as of Lane B:
+ * - dedicated Bodies under ./bodies (Phase 2 Lane A; legacy standalone pages deleted)
+ * - Lab-derived reports render through WiredReportBody → useRealTestReportData
+ *   (live tm_* / ph_* Supabase data; the seeded generator is deleted).
  */
 import React, { lazy } from 'react';
 import type { ReportCategory, ReportDefinition } from './report-registry-types';
@@ -23,24 +24,25 @@ export const REPORT_CATEGORY_ORDER: ReportCategory[] = [
   'Traceability',
 ];
 
-/** Lazy adapter: renders the existing Lab ReportCanvas for one slug (seeded data). */
-const labBody = (slug: string): ReportDefinition['component'] =>
+/** Lazy adapter: renders the Lab ReportCanvas for one slug with LIVE Supabase data. */
+const wiredBody = (slug: string): ReportDefinition['component'] =>
   lazy(async () => {
-    const mod = await import('./LabReportBody');
-    const LabBody = mod.default;
-    const Body: React.ComponentType = () => React.createElement(LabBody, { slug });
+    const mod = await import('./WiredReportBody');
+    const WiredBody = mod.default;
+    const Body: React.ComponentType = () => React.createElement(WiredBody, { slug });
     return { default: Body };
   });
 
 export const REPORT_REGISTRY: ReportDefinition[] = [
-  // ─── Execution (Lab-derived, demo until Phase 2 Lane B) ────────────────
+  // ─── Execution (Lab-derived, wired — Phase 2 Lane B) ──────────────────
   {
     id: 'execution-overview',
     label: 'Execution Overview',
     description: 'Status breakdown and overall progress across all runs.',
     category: 'Execution',
-    component: labBody('execution-overview'),
-    status: 'demo',
+    component: wiredBody('execution-overview'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
   {
@@ -48,8 +50,9 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Execution Summary',
     description: 'Per-cycle summary: total, passed, failed, blocked, pass rate.',
     category: 'Execution',
-    component: labBody('execution-summary'),
-    status: 'demo',
+    component: wiredBody('execution-summary'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
   {
@@ -57,8 +60,9 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Execution Burndown',
     description: 'Remaining unexecuted tests over time vs ideal line.',
     category: 'Execution',
-    component: labBody('execution-burndown'),
-    status: 'demo',
+    component: wiredBody('execution-burndown'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
   {
@@ -66,8 +70,9 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Execution Burnup',
     description: 'Cumulative executed and cumulative passed over time.',
     category: 'Execution',
-    component: labBody('execution-burnup'),
-    status: 'demo',
+    component: wiredBody('execution-burnup'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
   {
@@ -75,8 +80,9 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Execution Distribution',
     description: 'Run count broken down by status.',
     category: 'Execution',
-    component: labBody('execution-distribution'),
-    status: 'demo',
+    component: wiredBody('execution-distribution'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
   {
@@ -84,35 +90,37 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Execution History',
     description: 'Full history of runs with case, executor, result, timestamp.',
     category: 'Execution',
-    component: labBody('execution-history'),
-    status: 'demo',
+    component: wiredBody('execution-history'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
 
-  // ─── Cases (Lab-derived, demo) ─────────────────────────────────────────
+  // ─── Cases (Lab-derived, wired) ───────────────────────────────────────
   {
     id: 'case-distribution',
     label: 'Case Distribution',
     description: 'Test cases grouped by status, priority, and type.',
     category: 'Cases',
-    component: labBody('case-distribution'),
-    status: 'demo',
+    component: wiredBody('case-distribution'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
   {
     id: 'case-usage',
     label: 'Case Usage',
     description: 'How often each test case appears in cycles and executions.',
     category: 'Cases',
-    component: labBody('case-usage'),
-    status: 'demo',
+    component: wiredBody('case-usage'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
 
   // ─── Defects ───────────────────────────────────────────────────────────
   {
     id: 'defect-summary',
-    // LANE-C: incident half moves to /incident-hub/reports; title stays "Defects & Incidents" until then.
-    label: 'Defects & Incidents',
-    description: 'Defects and production incidents — open counts, test linkage, regression gaps.',
+    label: 'Defect Summary',
+    description: 'QA defects — open counts, severity, test linkage. Incident reporting lives in Incident Hub → Reports.',
     category: 'Defects',
     component: lazy(() => import('./bodies/DefectSummaryBody')),
     status: 'wired',
@@ -123,51 +131,57 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Defect Impact',
     description: 'Defects linked to test cases — severity and impact.',
     category: 'Defects',
-    component: labBody('defect-impact'),
-    status: 'demo',
+    component: wiredBody('defect-impact'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
   {
     id: 'defect-trend',
     label: 'Defect Trend',
     description: 'Defect creation trend over time.',
     category: 'Defects',
-    component: labBody('defect-trend'),
-    status: 'demo',
+    component: wiredBody('defect-trend'),
+    status: 'wired',
+    usesProjectPicker: true,
     usesDateRange: true,
   },
 
-  // ─── Multi-Cycle (Lab-derived, demo) ───────────────────────────────────
+  // ─── Multi-Cycle (Lab-derived, wired) ─────────────────────────────────
   {
     id: 'multi-cycle-comparison',
     label: 'Multi-Cycle Comparison',
     description: 'Side-by-side pass rate comparison across cycles.',
     category: 'Multi-Cycle',
-    component: labBody('multi-cycle-comparison'),
-    status: 'demo',
+    component: wiredBody('multi-cycle-comparison'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
   {
     id: 'multi-cycle-summary',
     label: 'Multi-Cycle Summary',
     description: 'One row per cycle — aggregated metrics.',
     category: 'Multi-Cycle',
-    component: labBody('multi-cycle-summary'),
-    status: 'demo',
+    component: wiredBody('multi-cycle-summary'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
   {
     id: 'multi-cycle-detail',
     label: 'Multi-Cycle Detail',
     description: 'Per-case results across every selected cycle.',
     category: 'Multi-Cycle',
-    component: labBody('multi-cycle-detail'),
-    status: 'demo',
+    component: wiredBody('multi-cycle-detail'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
   {
     id: 'multi-cycle-distribution',
     label: 'Multi-Cycle Distribution',
     description: 'Status distribution pivot: status × cycle.',
     category: 'Multi-Cycle',
-    component: labBody('multi-cycle-distribution'),
-    status: 'demo',
+    component: wiredBody('multi-cycle-distribution'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
 
   // ─── Project (wired standalone reports) ────────────────────────────────
@@ -229,22 +243,24 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     usesProjectPicker: true,
   },
 
-  // ─── Traceability (Lab-derived, demo) ──────────────────────────────────
+  // ─── Traceability (Lab-derived, wired) ────────────────────────────────
   {
     id: 'traceability-summary',
     label: 'Traceability Summary',
     description: 'Requirement coverage: linked issues with case count and pass rate.',
     category: 'Traceability',
-    component: labBody('traceability-summary'),
-    status: 'demo',
+    component: wiredBody('traceability-summary'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
   {
     id: 'traceability-detail',
     label: 'Traceability Detail',
     description: 'Requirement → test case → execution → defect chain.',
     category: 'Traceability',
-    component: labBody('traceability-detail'),
-    status: 'demo',
+    component: wiredBody('traceability-detail'),
+    status: 'wired',
+    usesProjectPicker: true,
   },
 ];
 

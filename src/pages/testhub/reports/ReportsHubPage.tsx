@@ -1,19 +1,16 @@
 /**
  * ReportsHubPage — single Reports hub at /testhub/reports (S1.2).
- * Feature: CAT-REPORTS-HUB-20260703-001.
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane B: all reports wired).
  *
  * Uses the Reports Lab shell as chassis: left ReportNavigator lists the
  * REPORT_REGISTRY grouped by category; selection is the :reportSlug URL param.
- * Wired reports render their real-data Body; demo reports render the Lab
- * canvas behind a seeded-data banner (ReportRenderer owns the banner).
- * The KPI metric ribbon is seeded-demo-driven, so it only shows on demo reports.
+ * Every report renders a real-data Body (the seeded generator and its
+ * demo-only KPI ribbon were removed in Lane B).
  */
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import EmptyState from '@atlaskit/empty-state';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ReportNavigator from './lab/ReportNavigator';
-import ReportMetricRibbon from './lab/ReportMetricRibbon';
-import { useSeededTestReportData, computeKpiRibbon } from './lab/useSeededTestReportData';
 import {
   REPORT_REGISTRY,
   REPORT_CATEGORY_ORDER,
@@ -27,26 +24,11 @@ export default function ReportsHubPage() {
   const navigate = useNavigate();
   const { reportSlug } = useParams<{ reportSlug: string }>();
 
-  // Seeded data drives the demo-only KPI ribbon (hook must run unconditionally).
-  const seeded = useSeededTestReportData();
-
   if (!reportSlug) {
     return <Navigate to={Routes.testHub.report(DEFAULT_REPORT_ID)} replace />;
   }
 
   const def = getReportDefinition(reportSlug);
-  const kpi = computeKpiRibbon(seeded);
-
-  const kpiMetrics = [
-    { label: 'Total Cases', value: kpi.totalCases, highlight: 'neutral' as const },
-    { label: 'Total Cycles', value: kpi.totalCycles, highlight: 'neutral' as const },
-    { label: 'Total Runs', value: kpi.totalRuns, highlight: 'neutral' as const },
-    { label: 'Pass Rate', value: `${kpi.passRate}%`, highlight: (kpi.passRate >= 80 ? 'success' : kpi.passRate >= 60 ? 'warning' : 'danger') as 'success' | 'warning' | 'danger', sub: 'of executed runs' },
-    { label: 'Failed', value: kpi.failed, highlight: 'danger' as const },
-    { label: 'Blocked', value: kpi.blocked, highlight: 'warning' as const },
-    { label: 'Open Defects', value: kpi.defects, highlight: (kpi.defects > 5 ? 'danger' : 'warning') as 'danger' | 'warning' },
-    { label: 'Coverage', value: `${kpi.coverage}%`, highlight: (kpi.coverage >= 80 ? 'success' : 'warning') as 'success' | 'warning', sub: 'req. traceability' },
-  ];
 
   return (
     <div
@@ -66,9 +48,6 @@ export default function ReportsHubPage() {
           { text: 'Reports' },
         ]}
       />
-
-      {/* KPI ribbon — seeded-demo-driven, so only shown on demo reports */}
-      {def?.status === 'demo' && <ReportMetricRibbon metrics={kpiMetrics} />}
 
       {/* main body */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>

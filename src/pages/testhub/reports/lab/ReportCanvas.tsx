@@ -9,14 +9,14 @@ import { REPORT_DEFS } from './reportDefinitions';
 import ReportEmptyState from './ReportEmptyState';
 import { passRateStr, sharePercent, cycleDeltaStr, coveragePercent } from './reportCalculations';
 import {
-  SeededData,
+  ReportData,
   computeExecutionOverview, computeExecutionSummary,
   computeBurndown, computeBurnup, computeDistribution, computeExecutionHistory,
   computeCaseDistribution, computeCaseUsage,
   computeDefectSummary, computeDefectImpact, computeDefectTrend,
-  computeMultiCycleComparison, computeMultiCycleDetail,
-  computeProjectMetrics, computeTraceabilitySummary, computeTraceabilityDetail,
-} from './useSeededTestReportData';
+  computeMultiCycleComparison, computeMultiCycleDetail, computeMultiCycleDistribution,
+  computeTraceabilitySummary, computeTraceabilityDetail,
+} from './reportData';
 import { FilterState } from './ReportFilterBar';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -34,6 +34,7 @@ const STATUS_CHART_COLOR: Record<string, string> = {
   passed: ADS_CHART.success,
   failed: ADS_CHART.danger,
   blocked: ADS_CHART.warning,
+  in_progress: ADS_CHART.information,
   not_run: ADS_CHART.neutral,
   skipped: ADS_CHART.neutral,
 };
@@ -52,6 +53,8 @@ const STATUS_APPEARANCE: Record<string, 'success' | 'removed' | 'moved' | 'defau
   open: 'removed',
   fixed: 'success',
   verified: 'success',
+  resolved: 'success',
+  reopened: 'removed',
   closed: 'default',
   active: 'inprogress',
   completed: 'success',
@@ -182,14 +185,17 @@ function PassRateBar({ rate }: { rate: number }) {
   );
 }
 
-function formatDate(iso: string) {
+/** Zero-assumption date cell: unknown date renders a dash, never a fake date. */
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return '—';
   return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
 // ── report renderers ───────────────────────────────────────────────────────────
 
-function ExecutionOverview({ data }: { data: SeededData }) {
+function ExecutionOverview({ data }: { data: ReportData }) {
   const { byStatus, total, passed } = useMemo(() => computeExecutionOverview(data), [data]);
+  if (total === 0) return <ReportEmptyState message="No test runs recorded" hint="Execute tests in a cycle to populate this report." />;
   const pieData = Object.entries(byStatus).map(([name, value]) => ({ name, value }));
   const tableRows = Object.entries(byStatus)
     .sort((a, b) => b[1] - a[1])
@@ -220,7 +226,7 @@ function ExecutionOverview({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionSummary({ data }: { data: SeededData }) {
+function ExecutionSummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeExecutionSummary(data), [data]);
   const chartData = rows.map(r => ({ name: r.cycleName.split(' — ')[0], passed: r.passed, failed: r.failed, blocked: r.blocked }));
 
@@ -263,38 +269,49 @@ function ExecutionSummary({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionBurndown({ data }: { data: SeededData }) {
-  const chartData = useMemo(() => computeBurndown(data), [data]);
+function ExecutionBurndown({ data }: { data: ReportData }) {
+  const { cycleName, points } = useMemo(() => computeBurndown(data), [data]);
+  if (points.length === 0) {
+    return <ReportEmptyState message="No dated executions" hint="Burndown needs runs with a recorded execution date." />;
+  }
+  const hasIdeal = points.some((p) => p.ideal !== null);
   return (
     <>
       <Section>
-        <ChartWrap title="Remaining vs Ideal (Sprint 16 — Release Candidate)">
+        <ChartWrap title={cycleName ? `Remaining vs Ideal (${cycleName}) — count-based` : 'Remaining vs Ideal — count-based'}>
           <div style={{ height: 260 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={chartData}>
+              <ComposedChart data={points}>
                 <CartesianGrid strokeDasharray="3 3" stroke={ADS_CHART.grid} />
                 <XAxis dataKey="date" tickFormatter={formatDate} tick={ADS_AXIS_TICK} />
                 <YAxis tick={ADS_AXIS_TICK} />
                 <RechartTooltip labelFormatter={formatDate} contentStyle={ADS_TOOLTIP_CONTENT_STYLE} />
                 <Legend />
-                <Line type="monotone" dataKey="ideal" stroke={ADS_SERIES[0]} strokeDasharray="6 3" name="Ideal remaining" dot={false} />
+                {hasIdeal && (
+                  <Line type="monotone" dataKey="ideal" stroke={ADS_SERIES[0]} strokeDasharray="6 3" name="Ideal remaining" dot={false} />
+                )}
                 <Area type="monotone" dataKey="remaining" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Actual remaining" />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
         </ChartWrap>
+        {!hasIdeal && (
+          <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
+            Ideal line omitted — this cycle has no recorded start/end dates.
+          </p>
+        )}
       </Section>
       <Section>
         <DataTable
           headers={[{ label: 'Date' }, { label: 'Executed', align: 'right' }, { label: 'Remaining', align: 'right' }, { label: 'Ideal', align: 'right' }]}
-          rows={chartData.map(d => [formatDate(d.date), d.executed, d.remaining, d.ideal])}
+          rows={points.map(d => [formatDate(d.date), d.executed, d.remaining, d.ideal ?? '—'])}
         />
       </Section>
     </>
   );
 }
 
-function ExecutionBurnup({ data }: { data: SeededData }) {
+function ExecutionBurnup({ data }: { data: ReportData }) {
   const chartData = useMemo(() => computeBurnup(data), [data]);
   return (
     <>
@@ -326,7 +343,7 @@ function ExecutionBurnup({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionDistribution({ data }: { data: SeededData }) {
+function ExecutionDistribution({ data }: { data: ReportData }) {
   const dist = useMemo(() => computeDistribution(data), [data]);
   return (
     <>
@@ -356,7 +373,7 @@ function ExecutionDistribution({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionHistory({ data }: { data: SeededData }) {
+function ExecutionHistory({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeExecutionHistory(data), [data]);
   return (
     <Section>
@@ -382,7 +399,7 @@ function ExecutionHistory({ data }: { data: SeededData }) {
   );
 }
 
-function CaseDistribution({ data }: { data: SeededData }) {
+function CaseDistribution({ data }: { data: ReportData }) {
   const { byStatus, byPriority, byType, total } = useMemo(() => computeCaseDistribution(data), [data]);
   const statusData = Object.entries(byStatus).map(([name, value]) => ({ name, value }));
   const priorityData = Object.entries(byPriority).map(([name, value]) => ({ name, value }));
@@ -419,7 +436,7 @@ function CaseDistribution({ data }: { data: SeededData }) {
   );
 }
 
-function CaseUsage({ data }: { data: SeededData }) {
+function CaseUsage({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeCaseUsage(data), [data]);
   return (
     <Section>
@@ -435,7 +452,7 @@ function CaseUsage({ data }: { data: SeededData }) {
         rows={rows.map(r => [
           <KeyText key={r.caseKey}>{r.caseKey}</KeyText>,
           <TitleText key={r.title}>{r.title}</TitleText>,
-          r.folder,
+          r.folder ?? <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           r.cycleCount,
           r.lastExecuted ? formatDate(r.lastExecuted) : <span style={{ color: 'var(--ds-text-subtlest)' }}>Never</span>,
           r.isStale
@@ -449,7 +466,7 @@ function CaseUsage({ data }: { data: SeededData }) {
   );
 }
 
-function DefectSummary({ data }: { data: SeededData }) {
+function DefectSummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeDefectSummary(data), [data]);
   const chartData = rows.map(r => ({ name: r.severity, total: r.total }));
 
@@ -473,7 +490,7 @@ function DefectSummary({ data }: { data: SeededData }) {
             <Lozenge key={r.severity} appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>,
             r.total,
             Object.entries(r.statuses).map(([s, c]) => `${s}: ${c}`).join(' · '),
-            `${r.agingDays}d`,
+            r.agingDays !== null ? `${r.agingDays}d` : '—',
           ])}
         />
       </Section>
@@ -481,35 +498,52 @@ function DefectSummary({ data }: { data: SeededData }) {
   );
 }
 
-function DefectImpact({ data }: { data: SeededData }) {
+function DefectImpact({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeDefectImpact(data), [data]);
   return (
     <Section>
       <DataTable
         headers={[
-          { label: 'Key', width: '10%' },
-          { label: 'Defect Title', width: '35%' },
-          { label: 'Severity', width: '10%' },
-          { label: 'Status', width: '10%' },
-          { label: 'Impact', align: 'right', width: '8%' },
-          { label: 'Age', align: 'right', width: '8%' },
-          { label: 'Linked Cases', width: '19%' },
+          { label: 'Key', width: '9%' },
+          { label: 'Defect Title', width: '26%' },
+          { label: 'Severity', width: '9%' },
+          { label: 'Status', width: '9%' },
+          { label: 'Impact', align: 'right', width: '7%' },
+          { label: 'Age', align: 'right', width: '7%' },
+          { label: 'Linked Cases', width: '13%' },
+          { label: 'Parent Issue', width: '20%' },
         ]}
         rows={rows.map(r => [
           <KeyText key={r.defectKey}>{r.defectKey}</KeyText>,
           <TitleText key={r.title}>{r.title}</TitleText>,
-          <Lozenge key={r.severity} appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>,
-          <Lozenge key={r.status} appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status}</Lozenge>,
+          r.severity
+            ? <Lozenge key="sev" appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>
+            : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          r.status
+            ? <Lozenge key="st" appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status}</Lozenge>
+            : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           <strong key="score">{r.impactScore}</strong>,
-          `${r.agingDays}d`,
+          r.agingDays !== null ? `${r.agingDays}d` : '—',
           r.linkedCases.join(', ') || '—',
+          r.parentKey ? (
+            <span key="parent" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+              <KeyText>{r.parentKey}</KeyText>
+              {r.parentSummary && (
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {r.parentSummary}
+                </span>
+              )}
+            </span>
+          ) : (
+            <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>
+          ),
         ])}
       />
     </Section>
   );
 }
 
-function DefectTrend({ data }: { data: SeededData }) {
+function DefectTrend({ data }: { data: ReportData }) {
   const chartData = useMemo(() => computeDefectTrend(data), [data]);
   return (
     <>
@@ -525,7 +559,7 @@ function DefectTrend({ data }: { data: SeededData }) {
           />
         </ChartWrap>
         <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
-          Closure trend available after resolved_at field confirmation (Phase 8).
+          Created series only — no closure series is shown because no reliable closure date exists in the data.
         </p>
       </Section>
       <Section>
@@ -538,7 +572,7 @@ function DefectTrend({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleComparison({ data }: { data: SeededData }) {
+function MultiCycleComparison({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeMultiCycleComparison(data), [data]);
   const chartData = rows.map(r => ({ name: r.cycleName.split(' — ')[0], passRate: r.passRate }));
 
@@ -585,7 +619,7 @@ function MultiCycleComparison({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleSummary({ data }: { data: SeededData }) {
+function MultiCycleSummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeMultiCycleComparison(data), [data]);
   return (
     <Section>
@@ -601,7 +635,9 @@ function MultiCycleSummary({ data }: { data: SeededData }) {
           const r = rows[i];
           return [
             cy.name,
-            <Lozenge key={cy.status} appearance={STATUS_APPEARANCE[cy.status] ?? 'default'}>{cy.status}</Lozenge>,
+            cy.status
+              ? <Lozenge key="st" appearance={STATUS_APPEARANCE[cy.status] ?? 'default'}>{cy.status}</Lozenge>
+              : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
             r.scopeTotal,
             r.passed,
             <PassRateBar key={cy.id} rate={r.passRate} />,
@@ -612,7 +648,7 @@ function MultiCycleSummary({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleDetail({ data }: { data: SeededData }) {
+function MultiCycleDetail({ data }: { data: ReportData }) {
   const { cycles, rows } = useMemo(() => computeMultiCycleDetail(data), [data]);
   if (rows.length === 0) return <ReportEmptyState />;
 
@@ -632,7 +668,7 @@ function MultiCycleDetail({ data }: { data: SeededData }) {
         rows={rows.map(row => [
           <KeyText key={row.caseKey}>{row.caseKey}</KeyText>,
           <TitleText key={row.title}>{row.title}</TitleText>,
-          <span key="folder" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{row.folder}</span>,
+          <span key="folder" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{row.folder ?? '—'}</span>,
           ...cycles.map(cy => {
             const st = row.statuses[cy.id] ?? null;
             return st ? (
@@ -647,15 +683,8 @@ function MultiCycleDetail({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleDistribution({ data }: { data: SeededData }) {
-  const statusGroups = ['passed', 'failed', 'blocked', 'not_run', 'skipped'];
-  const rows = statusGroups.map(st => {
-    const cycleCounts = data.cycles.map(cy => {
-      const cycleRuns = data.runs.filter(r => r.cycleId === cy.id);
-      return cycleRuns.filter(r => r.status === st).length;
-    });
-    return { status: st, counts: cycleCounts };
-  }).filter(r => r.counts.some(c => c > 0));
+function MultiCycleDistribution({ data }: { data: ReportData }) {
+  const { rows } = useMemo(() => computeMultiCycleDistribution(data), [data]);
 
   const chartData = data.cycles.map((cy, ci) => {
     const obj: Record<string, number | string> = { name: cy.name.split(' — ')[0] };
@@ -674,6 +703,7 @@ function MultiCycleDistribution({ data }: { data: SeededData }) {
               { dataKey: 'passed', name: 'Passed', color: ADS_CHART.success, stackId: 'a' },
               { dataKey: 'failed', name: 'Failed', color: ADS_CHART.danger, stackId: 'a' },
               { dataKey: 'blocked', name: 'Blocked', color: ADS_CHART.warning, stackId: 'a' },
+              { dataKey: 'in_progress', name: 'In Progress', color: ADS_CHART.information, stackId: 'a' },
               { dataKey: 'not_run', name: 'Not Run', color: ADS_CHART.neutral, stackId: 'a' },
             ]}
           />
@@ -695,114 +725,10 @@ function MultiCycleDistribution({ data }: { data: SeededData }) {
   );
 }
 
-function ProjectOverview({ data }: { data: SeededData }) {
-  const totalRuns = data.runs.length;
-  const passed = data.runs.filter(r => r.status === 'passed').length;
-  const failed = data.runs.filter(r => r.status === 'failed').length;
-  const blocked = data.runs.filter(r => r.status === 'blocked').length;
-  const activeCycles = data.cycles.filter(c => c.status === 'active').length;
-  const linkedCases = data.cases.filter(c => c.linkedFeature !== null).length;
-
-  const metrics = [
-    { label: 'Total Test Cases', value: data.cases.length },
-    { label: 'Active Cycles', value: activeCycles },
-    { label: 'Total Cycles', value: data.cycles.length },
-    { label: 'Total Runs', value: totalRuns },
-    { label: 'Passed', value: passed },
-    { label: 'Failed', value: failed },
-    { label: 'Blocked', value: blocked },
-    { label: 'Pass Rate', value: `${Math.round((passed / totalRuns) * 100)}%` },
-    { label: 'Coverage', value: `${Math.round((linkedCases / data.cases.length) * 100)}%` },
-    { label: 'Open Defects', value: data.defects.filter(d => d.status === 'open').length },
-  ];
-
-  return (
-    <Section>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
-        {metrics.map(m => (
-          <div key={m.label} style={{ background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-              {m.label}
-            </div>
-            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums' }}>
-              {m.value}
-            </div>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function ProjectMetrics({ data }: { data: SeededData }) {
-  const metrics = useMemo(() => computeProjectMetrics(data), [data]);
-  const trendData = data.cycles.map((cy) => {
-    const runs = data.runs.filter(r => r.cycleId === cy.id);
-    const passed = runs.filter(r => r.status === 'passed').length;
-    return { name: cy.name.split(' — ')[0], passRate: Math.round((passed / Math.max(1, runs.length)) * 100) };
-  });
-
-  return (
-    <>
-      <Section>
-        <ChartWrap title="Pass rate trend by cycle">
-          <ReportLineChart
-            data={trendData}
-            xKey="name"
-            series={[{ dataKey: 'passRate', name: 'Pass rate', color: ADS_CHART.success }]}
-            yDomain={[0, 100]}
-            yUnit="%"
-            tooltipFormatter={(v) => [`${v}%`, 'Pass rate']}
-            showLegend={false}
-          />
-        </ChartWrap>
-      </Section>
-      <Section>
-        <DataTable
-          headers={[{ label: 'Metric', width: '60%' }, { label: 'Value', align: 'right', width: '40%' }]}
-          rows={metrics.map(m => [m.metric, <strong key={m.metric} style={{ fontSize: 'var(--ds-font-size-400)' }}>{m.value}</strong>])}
-        />
-      </Section>
-    </>
-  );
-}
-
-function ProjectActivity({ data }: { data: SeededData }) {
-  const rows = data.runs
-    .sort((a, b) => new Date(b.executedAt).getTime() - new Date(a.executedAt).getTime())
-    .slice(0, 80)
-    .map(r => {
-      const tc = data.cases.find(c => c.id === r.caseId);
-      const cy = data.cycles.find(c => c.id === r.cycleId);
-      return { date: r.executedAt, action: `Run ${r.status}`, user: r.executedBy, entity: tc?.caseKey ?? '—', cycle: cy?.name ?? '—' };
-    });
-
-  return (
-    <Section>
-      <DataTable
-        headers={[
-          { label: 'Date', width: '12%' },
-          { label: 'Action', width: '14%' },
-          { label: 'User', width: '16%' },
-          { label: 'Entity', width: '10%' },
-          { label: 'Cycle', width: '48%' },
-        ]}
-        rows={rows.map(r => [
-          <span key={r.date} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
-          <Lozenge key={r.action} appearance={STATUS_APPEARANCE[r.action.split(' ')[1]] ?? 'default'}>{r.action}</Lozenge>,
-          r.user,
-          <KeyText key={r.entity}>{r.entity}</KeyText>,
-          <span key={r.cycle} style={{ fontSize: 'var(--ds-font-size-200)' }}>{r.cycle}</span>,
-        ])}
-      />
-    </Section>
-  );
-}
-
-function TraceabilitySummary({ data }: { data: SeededData }) {
+function TraceabilitySummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeTraceabilitySummary(data), [data]);
   const totalCases = data.cases.length;
-  const linkedCases = data.cases.filter(c => c.linkedFeature !== null).length;
+  const linkedCases = data.cases.filter(c => c.linkedIssueKeys.length > 0).length;
 
   return (
     <>
@@ -840,7 +766,9 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
           ]}
           rows={rows.map(r => [
             <KeyText key={r.issueKey}>{r.issueKey}</KeyText>,
-            <TitleText key={r.summary}>{r.summary}</TitleText>,
+            r.summary
+              ? <TitleText key="s">{r.summary}</TitleText>
+              : <span key="s" style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
             r.caseCount,
             `${r.coveragePct}%`,
             <PassRateBar key={r.issueKey} rate={r.passRate} />,
@@ -851,29 +779,37 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
   );
 }
 
-function TraceabilityDetail({ data }: { data: SeededData }) {
+function TraceabilityDetail({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeTraceabilityDetail(data), [data]);
   return (
     <Section>
       <DataTable
         headers={[
           { label: 'Issue', width: '10%' },
-          { label: 'Requirement', width: '22%' },
+          { label: 'Requirement', width: '20%' },
           { label: 'Case Key', width: '9%' },
-          { label: 'Case Title', width: '28%' },
-          { label: 'Owner', width: '12%' },
-          { label: 'Last Run', width: '10%', align: 'center' },
-          { label: 'Defects', align: 'right', width: '9%' },
+          { label: 'Case Title', width: '25%' },
+          { label: 'Owner', width: '11%' },
+          { label: 'Last Run', width: '9%', align: 'center' },
+          { label: 'Defects', align: 'right', width: '8%' },
+          { label: 'Links', align: 'right', width: '8%' },
         ]}
         rows={rows.map(r => [
           <KeyText key={r.issueKey}>{r.issueKey}</KeyText>,
-          <span key={r.issueSummary} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{r.issueSummary}</span>,
+          r.issueSummary
+            ? <span key="rs" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{r.issueSummary}</span>
+            : <span key="rs" style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           <KeyText key={r.caseKey} color="var(--ds-text)">{r.caseKey}</KeyText>,
           <TitleText key={r.caseTitle}>{r.caseTitle}</TitleText>,
-          r.owner,
-          <Lozenge key={r.lastRunStatus} appearance={STATUS_APPEARANCE[r.lastRunStatus] ?? 'default'}>{r.lastRunStatus.replace(/_/g, ' ')}</Lozenge>,
+          r.owner ?? <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          r.lastRunStatus
+            ? <Lozenge key="lr" appearance={STATUS_APPEARANCE[r.lastRunStatus] ?? 'default'}>{r.lastRunStatus.replace(/_/g, ' ')}</Lozenge>
+            : <span key="lr" style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           r.defectCount > 0
             ? <Lozenge key="d" appearance="removed">{r.defectCount}</Lozenge>
+            : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          r.relatedLinks > 0
+            ? r.relatedLinks
             : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
         ])}
       />
@@ -885,7 +821,7 @@ function TraceabilityDetail({ data }: { data: SeededData }) {
 
 interface Props {
   slug: string;
-  data: SeededData;
+  data: ReportData;
   filters: FilterState;
 }
 
@@ -893,7 +829,7 @@ export default function ReportCanvas({ slug, data, filters }: Props) {
   const def = REPORT_DEFS.find(d => d.slug === slug);
   if (!def) return <ReportEmptyState message="Unknown report" hint="Select a report from the navigator." />;
 
-  const renderers: Record<string, React.ComponentType<{ data: SeededData }>> = {
+  const renderers: Record<string, React.ComponentType<{ data: ReportData }>> = {
     'execution-overview': ExecutionOverview,
     'execution-summary': ExecutionSummary,
     'execution-burndown': ExecutionBurndown,
@@ -909,9 +845,6 @@ export default function ReportCanvas({ slug, data, filters }: Props) {
     'multi-cycle-summary': MultiCycleSummary,
     'multi-cycle-detail': MultiCycleDetail,
     'multi-cycle-distribution': MultiCycleDistribution,
-    'project-overview': ProjectOverview,
-    'project-metrics': ProjectMetrics,
-    'project-activity': ProjectActivity,
     'traceability-summary': TraceabilitySummary,
     'traceability-detail': TraceabilityDetail,
   };

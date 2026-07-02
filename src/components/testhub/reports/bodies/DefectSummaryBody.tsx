@@ -2,11 +2,11 @@
  * DefectSummaryBody — project-scoped hybrid defect report body (registry: defect-summary).
  * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from DefectsIncidentsPage,
  * merge per disposition matrix #9).
- * ph_issues QA Bug/Defect + Production Incident (real volume) + tm_defects (test-linked).
+ * ph_issues QA Bug/Defect (real volume) + tm_defects (test-linked).
  *
- * Title stays "Defects & Incidents" until Lane C.
- * LANE-C: incident section moves to /incident-hub/reports — the incident metric cards and
- * the open-incidents table below are kept for now and removed in Phase 2 Lane C.
+ * Phase 2 Lane C (CAT-REPORTS-HUB-20260703-001): the incident half (metric cards,
+ * open-incidents table, regression gap) moved to /incident-hub/reports. This body
+ * is defects-only; the registry label ("Defect Summary") is fixed separately.
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
+import SectionMessage, { SectionMessageAction } from '@atlaskit/section-message';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
 import { Heading } from '@/components/ads';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
@@ -24,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDefectsIncidents, type IssueRow } from '@/components/testhub/reports/hooks/useDefectsIncidents';
 import { ReportBarChart } from '@/components/testhub/reports/charts/ReportChart';
 import { ADS_CHART } from '@/lib/charts/adsChartTheme';
+import { Routes } from '@/lib/routes';
 import { cardStyle, metricValue, metricLabel, sectionH, subtle } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption { label: string; value: string }
@@ -65,8 +67,7 @@ export function DefectSummaryBody() {
 
   const insight = useMemo(() => {
     if (!data) return null;
-    const parts = [`${data.defectsOpen} open defects of ${data.defectsTotal}, ${data.incidentsOpen} open incidents of ${data.incidentsTotal}.`];
-    if (data.regressionGap > 0) parts.push(`${data.regressionGap} incident(s) have no linked regression test.`);
+    const parts = [`${data.defectsOpen} open defects of ${data.defectsTotal}.`];
     if (data.tmDefects > 0) parts.push(`${data.tmDefects} defect(s) linked to a test.`);
     return parts.join(' ');
   }, [data]);
@@ -109,18 +110,14 @@ export function DefectSummaryBody() {
           )
         ) : isLoading || !data ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
-            <Spinner size="medium" /> Loading defects & incidents…
+            <Spinner size="medium" /> Loading defects…
           </div>
         ) : (
           <>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={cardStyle}><div style={metricValue}>{data.defectsTotal}</div><div style={metricLabel}>Total defects</div></div>
               <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsOpen ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{data.defectsOpen}</div><div style={metricLabel}>Open defects</div></div>
-              {/* LANE-C: incident metric cards move to /incident-hub/reports */}
-              <div style={cardStyle}><div style={metricValue}>{data.incidentsTotal}</div><div style={metricLabel}>Total incidents</div></div>
-              <div style={cardStyle}><div style={{ ...metricValue, color: data.incidentsOpen ? 'var(--ds-text-warning)' : 'var(--ds-text)' }}>{data.incidentsOpen}</div><div style={metricLabel}>Open incidents</div></div>
               <div style={cardStyle}><div style={metricValue}>{data.tmDefects}</div><div style={metricLabel}>Test-linked</div></div>
-              <div style={cardStyle}><div style={{ ...metricValue, color: data.regressionGap ? 'var(--ds-text-warning)' : 'var(--ds-text)' }}>{data.regressionGap}</div><div style={metricLabel}>Regression gaps</div></div>
             </div>
 
             {insight && (
@@ -152,10 +149,12 @@ export function DefectSummaryBody() {
                 emptyView={<div style={{ padding: 'var(--ds-space-250)', color: 'var(--ds-text-subtle)' }}>No open defects.</div>} />
             </div>
 
-            {/* LANE-C: incident section moves to /incident-hub/reports */}
-            <div style={sectionH}><Heading size="small">Open production incidents ({data.openIncidents.length})</Heading></div>
-            <JiraTable<IssueRow> columns={cols} data={data.openIncidents} getRowId={(r) => r.issue_key} onRowClick={(r) => navigate(`/browse/${r.issue_key}`)} isLoading={false} ariaLabel="Open incidents"
-              emptyView={<div style={{ padding: 'var(--ds-space-250)', color: 'var(--ds-text-subtle)' }}>No open incidents.</div>} />
+            <SectionMessage
+              appearance="information"
+              actions={<SectionMessageAction href={Routes.incidentHub.reports()}>Incident Hub → Reports</SectionMessageAction>}
+            >
+              Production incident reporting has moved to Incident Hub → Reports.
+            </SectionMessage>
           </>
         )}
     </div>

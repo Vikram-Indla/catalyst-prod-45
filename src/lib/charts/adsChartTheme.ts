@@ -17,4 +17,5 @@ export const ADS_CHART = {
   danger: 'var(--ds-chart-danger)',
   warning: 'var(--ds-chart-warning)',
   neutral: 'var(--ds-chart-neutral)',
+  information: 'var(--ds-chart-information)',
 } as const;

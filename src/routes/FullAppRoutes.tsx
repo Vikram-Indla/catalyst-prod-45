@@ -141,7 +141,9 @@ const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/Inci
 const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
 const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
-// IncidentHubReportsPage and IncidentHubCommitteeQueuePage deprecated — routes removed
+// IncidentHubCommitteeQueuePage deprecated — route removed. /incident-hub/reports is the
+// Production Incident report (CAT-REPORTS-HUB-20260703-001 Phase 2 Lane C).
+const IncidentHubReportPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentReportPage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
 // TestHub Admin
@@ -732,7 +734,11 @@ export default function FullAppRoutes() {
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
-        {/* /incident-hub/reports and /incident-hub/committee-queue deprecated — routes removed */}
+        {/* Production Incident report — incident half of the old TestHub
+            defects-incidents report (CAT-REPORTS-HUB-20260703-001 Phase 2
+            Lane C; CRE Grid A: Production Incident → INCIDENT module).
+            /incident-hub/committee-queue stays deprecated — route removed. */}
+        <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportPage /></S></MG>} />
         <Route path="/incident-hub/view/:incidentKey" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
         {/* 2026-06-16: redirect alias — the BacklogPage's default
             "open in full page" pattern was {baseUrl}/backlog/{key} which

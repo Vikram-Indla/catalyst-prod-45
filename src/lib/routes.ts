@@ -146,6 +146,8 @@ export const incidentHubRoutes = {
   detail: (incidentKey: string) => `/incident-hub/view/${incidentKey}`,
   work: () => '/incident-hub/work',
   analytics: () => '/incident-hub/analytics',
+  // Production-incident report (CAT-REPORTS-HUB-20260703-001 Phase 2 Lane C)
+  reports: () => '/incident-hub/reports',
   timeline: () => '/incident-hub/timeline',
   dependencies: () => '/incident-hub/dependencies',
   filters: () => '/incident-hub/filters',
