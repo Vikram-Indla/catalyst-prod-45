@@ -1267,10 +1267,19 @@ export interface ParentChoice {
    *  never a colored background. Defaults to false so non-Epic parents don't
    *  get a fabricated color. */
   isEpic?: boolean;
+  /** Set to the parent's project key (e.g. "MIM") when it differs from the
+   *  current surface's project — i.e. this parent lives in a different Jira
+   *  project entirely. Renders a small muted project-key badge so a
+   *  cross-project parent doesn't read as "this must be wrong" or get
+   *  mistaken for a same-project relationship. Undefined/null = same
+   *  project, no badge (CAT-PARENT-CROSSPROJECT-BADGE-20260703-001). */
+  crossProjectKey?: string | null;
 }
 
-function ParentChip({ choice }: { choice: { id: string; key: string | null; label: string; icon?: React.ReactNode; statusCategory?: 'new' | 'indeterminate' | 'done' | null; isEpic?: boolean } }) {
-  const display = choice.key ? `${choice.key} ${choice.label}` : choice.label;
+function ParentChip({ choice }: { choice: { id: string; key: string | null; label: string; icon?: React.ReactNode; statusCategory?: 'new' | 'indeterminate' | 'done' | null; isEpic?: boolean; crossProjectKey?: string | null } }) {
+  const display = choice.crossProjectKey
+    ? `${choice.key ? `${choice.key} ` : ''}${choice.label} (${choice.crossProjectKey} project — different from this one)`
+    : choice.key ? `${choice.key} ${choice.label}` : choice.label;
   const linkColor = token('color.link', 'var(--ds-link)');
   const { bg, text } = choice.isEpic
     ? accentColorForSeed(choice.id || choice.key || choice.label)
@@ -1295,6 +1304,20 @@ function ParentChip({ choice }: { choice: { id: string; key: string | null; labe
         overflow: 'hidden',
       }}
     >
+      {choice.crossProjectKey && (
+        <span style={{
+          flexShrink: 0,
+          padding: '0 4px',
+          borderRadius: 3,
+          fontSize: 'var(--ds-font-size-100)',
+          fontWeight: 600,
+          lineHeight: '16px',
+          color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+        }}>
+          {choice.crossProjectKey}
+        </span>
+      )}
       {choice.icon && (
         <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
           {choice.icon}

@@ -552,7 +552,15 @@ export default function AtlaskitStoryBacklogPage({
           getParent: (r) => {
             const ep = r.feature?.epic;
             if (!ep) return null;
-            return { id: ep.id, key: ep.epic_key, label: ep.name, isEpic: true };
+            return {
+              id: ep.id,
+              key: ep.epic_key,
+              label: ep.name,
+              isEpic: true,
+              crossProjectKey: ep.epic_key && projectKey && ep.epic_key.split('-')[0] !== projectKey
+                ? ep.epic_key.split('-')[0]
+                : null,
+            };
           },
           options: parentOptions,
           canEdit: () => true,

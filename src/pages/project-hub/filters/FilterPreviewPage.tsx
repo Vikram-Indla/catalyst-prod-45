@@ -998,6 +998,9 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
               label: r.parentSummary ?? r.parentKey,
               icon: pType ? <JiraIssueTypeIcon type={pType} size={16} /> : undefined,
               isEpic: pType === 'Epic',
+              crossProjectKey: r.parentKey.split('-')[0] !== projectKey
+                ? r.parentKey.split('-')[0]
+                : null,
             };
           },
           options: [],
