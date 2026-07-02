@@ -1,6 +1,6 @@
 /**
- * Tester Performance — tester-scoped real-data report (B1 group 8).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
+ * TesterPerformanceBody — tester-scoped real-data report body (registry: tester-performance).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from TesterPerformancePage).
  * Workload + execution for one tester. ADS tokens; @atlaskit components own color; JiraTable for the case list.
  */
 import { useMemo, useState } from 'react';
@@ -13,12 +13,11 @@ import EmptyState from '@atlaskit/empty-state';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
 import { Heading } from '@/components/ads';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_TESTER_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
-import { useTesterPerformance, type TesterCaseRow } from './useTesterPerformance';
-import { cardStyle, metricValue, metricLabel, sectionH } from './ReportStatusView';
+import { useTesterPerformance, type TesterCaseRow } from '@/components/testhub/reports/hooks/useTesterPerformance';
+import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
 interface TesterOption {
   label: string;
@@ -54,7 +53,6 @@ function runAppearance(s: string): ThemeAppearance {
   }
 }
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
 export function TesterPerformanceBody() {
   const navigate = useNavigate();
   const { data: testers, isLoading: testersLoading } = useTesters();
@@ -157,11 +155,4 @@ export function TesterPerformanceBody() {
   );
 }
 
-export default function TesterPerformancePage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Tester Performance" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <TesterPerformanceBody />
-    </div>
-  );
-}
+export default TesterPerformanceBody;

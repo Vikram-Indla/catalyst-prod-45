@@ -14,11 +14,33 @@ const EMPTY_EXEC: ExecBreakdown = {
   passed: 0, failed: 0, blocked: 0, not_run: 0, in_progress: 0, skipped: 0, total: 0,
 };
 
+/** Count-based story status_category distribution (Lane A flagship chart — counts only, no story points). */
+export interface StoryStatusCounts {
+  todo: number;
+  in_progress: number;
+  done: number;
+}
+
+export interface SprintTestingStatus extends ProjectTestingStatus {
+  storyStatusCounts: StoryStatusCounts;
+}
+
+function countStoryStatuses(stories: StoryRow[]): StoryStatusCounts {
+  const counts: StoryStatusCounts = { todo: 0, in_progress: 0, done: 0 };
+  for (const s of stories) {
+    const c = (s.status_category ?? '').toLowerCase().replace(/\s+/g, '_');
+    if (c === 'done') counts.done += 1;
+    else if (c === 'in_progress' || c === 'indeterminate') counts.in_progress += 1;
+    else counts.todo += 1;
+  }
+  return counts;
+}
+
 export function useSprintTestingStatus(sprintName?: string) {
   return useQuery({
     queryKey: ['sprint-testing-status', sprintName],
     enabled: !!sprintName,
-    queryFn: async (): Promise<ProjectTestingStatus> => {
+    queryFn: async (): Promise<SprintTestingStatus> => {
       // sprint_release is a JSONB array [{id,name,releaseDate}]; PostgREST containment encoding is
       // unreliable for names with spaces/commas, so scope is resolved client-side.
       const inSprint = (sr: unknown) => Array.isArray(sr) && sr.some((e) => (e as { name?: string })?.name === sprintName);
@@ -42,6 +64,7 @@ export function useSprintTestingStatus(sprintName?: string) {
           totalStories: 0, coveredStories: 0, coveragePct: 0,
           exec: { ...EMPTY_EXEC }, defects: { qaBugs: 0, incidents: 0, tmDefects: 0 },
           mismatches: [], uncovered: [],
+          storyStatusCounts: { todo: 0, in_progress: 0, done: 0 },
         };
       }
 
@@ -116,6 +139,7 @@ export function useSprintTestingStatus(sprintName?: string) {
         defects: { qaBugs, incidents, tmDefects },
         mismatches,
         uncovered,
+        storyStatusCounts: countStoryStatuses(stories),
       };
     },
   });

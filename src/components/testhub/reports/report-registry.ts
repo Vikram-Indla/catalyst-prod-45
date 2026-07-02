@@ -3,7 +3,7 @@
  * Feature: CAT-REPORTS-HUB-20260703-001 (S1.1).
  *
  * 23 entries from the Phase 0 disposition matrix (PHASE0_DATA_CONTRACT_PROOF.md §S0.3).
- * - status 'wired'  → Body extracted from an existing standalone report page (real staging data).
+ * - status 'wired'  → real-data Body under ./bodies (Phase 2 Lane A; legacy standalone pages deleted).
  * - status 'demo'   → Lab-derived report rendered through LabReportBody (seeded data,
  *                     DEMO banner shown by ReportRenderer). Real wiring lands in Phase 2 Lane B.
  */
@@ -110,12 +110,11 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
   // ─── Defects ───────────────────────────────────────────────────────────
   {
     id: 'defect-summary',
-    label: 'Defect Summary',
+    // LANE-C: incident half moves to /incident-hub/reports; title stays "Defects & Incidents" until then.
+    label: 'Defects & Incidents',
     description: 'Defects and production incidents — open counts, test linkage, regression gaps.',
     category: 'Defects',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/DefectsIncidentsPage').then((m) => ({ default: m.DefectsIncidentsBody })),
-    ),
+    component: lazy(() => import('./bodies/DefectSummaryBody')),
     status: 'wired',
     usesProjectPicker: true,
   },
@@ -177,9 +176,7 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Project Testing Status',
     description: 'Coverage, execution distribution, defects and governance mismatches for a project.',
     category: 'Project',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/ProjectTestingStatusPage').then((m) => ({ default: m.ProjectTestingStatusBody })),
-    ),
+    component: lazy(() => import('./bodies/ProjectTestingStatusBody')),
     status: 'wired',
     usesProjectPicker: true,
   },
@@ -188,9 +185,7 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Product / Business Request Status',
     description: 'Testing status for an epic (business request proxy) and its child stories.',
     category: 'Project',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/ProductStatusPage').then((m) => ({ default: m.ProductStatusBody })),
-    ),
+    component: lazy(() => import('./bodies/ProductStatusBody')),
     status: 'wired',
   },
 
@@ -200,9 +195,7 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Sprint Testing Status',
     description: 'Coverage and execution status for the stories in a sprint.',
     category: 'Sprint',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/SprintTestingStatusPage').then((m) => ({ default: m.SprintTestingStatusBody })),
-    ),
+    component: lazy(() => import('./bodies/SprintTestingStatusBody')),
     status: 'wired',
   },
 
@@ -212,9 +205,7 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Tester Performance',
     description: 'Workload and execution results for one tester.',
     category: 'People',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/TesterPerformancePage').then((m) => ({ default: m.TesterPerformanceBody })),
-    ),
+    component: lazy(() => import('./bodies/TesterPerformanceBody')),
     status: 'wired',
   },
   {
@@ -222,9 +213,7 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Team Performance',
     description: 'Per-tester breakdown of assigned cases and execution results for a project.',
     category: 'People',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/TeamPerformancePage').then((m) => ({ default: m.TeamPerformanceBody })),
-    ),
+    component: lazy(() => import('./bodies/TeamPerformanceBody')),
     status: 'wired',
     usesProjectPicker: true,
   },
@@ -235,9 +224,7 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     label: 'Governance & Mismatch',
     description: 'Stories whose delivery status contradicts their test results.',
     category: 'Governance',
-    component: lazy(() =>
-      import('@/pages/testhub/reports/GovernancePage').then((m) => ({ default: m.GovernanceBody })),
-    ),
+    component: lazy(() => import('./bodies/GovernanceBody')),
     status: 'wired',
     usesProjectPicker: true,
   },

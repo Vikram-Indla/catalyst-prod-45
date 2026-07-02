@@ -1,6 +1,6 @@
 /**
- * Team Performance — project-scoped QA team report (B1 group 9).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
+ * TeamPerformanceBody — project-scoped QA team report body (registry: team-performance).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from TeamPerformancePage).
  * Team = testers assigned to the project's test cases (D-010). ADS tokens; @atlaskit; JiraTable.
  */
 import { useMemo, useState } from 'react';
@@ -11,12 +11,11 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Heading } from '@/components/ads';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
-import { useTeamPerformance, type TeamMemberRow } from './useTeamPerformance';
-import { cardStyle, metricValue, metricLabel, sectionH } from './ReportStatusView';
+import { useTeamPerformance, type TeamMemberRow } from '@/components/testhub/reports/hooks/useTeamPerformance';
+import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption {
   label: string;
@@ -36,7 +35,6 @@ function useTmProjects() {
 
 const num: React.CSSProperties = { color: 'var(--ds-text)' };
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
 export function TeamPerformanceBody() {
   const { data: projects, isLoading: projectsLoading } = useTmProjects();
   const [selected, setSelected] = useState<ProjectOption | null>(null);
@@ -140,11 +138,4 @@ export function TeamPerformanceBody() {
   );
 }
 
-export default function TeamPerformancePage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Team Performance" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <TeamPerformanceBody />
-    </div>
-  );
-}
+export default TeamPerformanceBody;

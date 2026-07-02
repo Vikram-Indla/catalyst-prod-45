@@ -1,6 +1,6 @@
 /**
- * Governance & Mismatch — project-scoped contradiction report (B1 group 10, B5).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
+ * GovernanceBody — project-scoped contradiction report body (registry: governance).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from GovernancePage).
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,12 +11,11 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Heading } from '@/components/ads';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
-import { useGovernance, type GovernanceRow } from './useGovernance';
-import { cardStyle, metricValue, metricLabel, sectionH } from './ReportStatusView';
+import { useGovernance, type GovernanceRow } from '@/components/testhub/reports/hooks/useGovernance';
+import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption { label: string; value: string }
 
@@ -31,7 +30,6 @@ function useTmProjects() {
   });
 }
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
 export function GovernanceBody() {
   const navigate = useNavigate();
   const { data: projects, isLoading: projectsLoading } = useTmProjects();
@@ -107,11 +105,4 @@ export function GovernanceBody() {
   );
 }
 
-export default function GovernancePage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Governance & Mismatch" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <GovernanceBody />
-    </div>
-  );
-}
+export default GovernanceBody;

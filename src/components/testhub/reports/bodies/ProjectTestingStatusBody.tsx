@@ -1,6 +1,6 @@
 /**
- * Project Testing Status — first REAL-data report of the Test Hub reporting revamp.
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001 (B1 group 1).
+ * ProjectTestingStatusBody — project-scoped real-data report body (registry: project-testing-status).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from ProjectTestingStatusPage).
  *
  * For a selected project: coverage % (stories denominator, D-006), execution
  * distribution, hybrid defects/incidents (D-005), governance mismatches (B5 G-M1),
@@ -13,11 +13,10 @@ import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { useProjectTestingStatus } from './useProjectTestingStatus';
-import { ReportStatusView, metricLabel } from './ReportStatusView';
+import { useProjectTestingStatus } from '@/components/testhub/reports/hooks/useProjectTestingStatus';
+import { ReportStatusView, metricLabel } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption {
   label: string;
@@ -38,7 +37,6 @@ function useTmProjects() {
   });
 }
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
 export function ProjectTestingStatusBody() {
   const navigate = useNavigate();
   const { data: projects, isLoading: projectsLoading } = useTmProjects();
@@ -96,11 +94,4 @@ export function ProjectTestingStatusBody() {
   );
 }
 
-export default function ProjectTestingStatusPage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Project Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <ProjectTestingStatusBody />
-    </div>
-  );
-}
+export default ProjectTestingStatusBody;

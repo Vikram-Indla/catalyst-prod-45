@@ -1,19 +1,20 @@
 /**
- * Product / Business Request Testing Status — epic-scoped report (B1 group 4).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
+ * ProductStatusBody — epic-scoped report body (registry: product-status).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from ProductStatusPage).
  * Scope = an Epic (Business Request proxy). Reuses ReportStatusView with epic descendant stories.
+ * Picker parity (S1.5): single epic → auto-select; else last-used (validated) or empty-state.
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Spinner from '@atlaskit/spinner';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import EmptyState from '@atlaskit/empty-state';
 import { supabase } from '@/integrations/supabase/client';
-import { useProductStatus } from './useProductStatus';
-import { ReportStatusView, metricLabel } from './ReportStatusView';
+import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_EPIC_KEY } from '@/components/testhub/reports/useReportPickerDefault';
+import { useProductStatus } from '@/components/testhub/reports/hooks/useProductStatus';
+import { ReportStatusView, metricLabel } from '@/pages/testhub/reports/ReportStatusView';
 
-const DEFAULT_EPIC = 'BAU-4466';
 interface EpicOption { label: string; value: string }
 
 function useEpics() {
@@ -32,17 +33,13 @@ function useEpics() {
   });
 }
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
 export function ProductStatusBody() {
   const navigate = useNavigate();
-  const { data: epics } = useEpics();
+  const { data: epics, isLoading: epicsLoading } = useEpics();
   const [selected, setSelected] = useState<EpicOption | null>(null);
 
-  const activeOption = useMemo<EpicOption | null>(() => {
-    if (selected) return selected;
-    if (!epics?.length) return null;
-    return epics.find((e) => e.value === DEFAULT_EPIC) ?? epics[0];
-  }, [selected, epics]);
+  // S1.5: single epic → auto-select; else last-used (validated) or none (no first-epic default).
+  const activeOption = useReportPickerDefault(REPORTS_LAST_EPIC_KEY, epics, selected);
 
   const { data, isLoading } = useProductStatus(activeOption?.value);
 
@@ -59,10 +56,29 @@ export function ProductStatusBody() {
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '32rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Epic / Business Request</div>
-          <Select<EpicOption> inputId="prod-epic" options={epics ?? []} value={activeOption} onChange={(o) => setSelected(o as EpicOption)} isLoading={!epics} spacing="default" />
+          <Select<EpicOption>
+            inputId="prod-epic"
+            options={epics ?? []}
+            value={activeOption}
+            onChange={(o) => {
+              const opt = o as EpicOption;
+              setSelected(opt);
+              rememberReportPick(REPORTS_LAST_EPIC_KEY, opt.value);
+            }}
+            isLoading={!epics}
+            spacing="default"
+          />
         </div>
 
-        {isLoading || !data ? (
+        {!activeOption ? (
+          epicsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
+              <Spinner size="medium" /> Loading epics…
+            </div>
+          ) : (
+            <EmptyState header="Select an epic" description="Choose an epic (business request) to run this report." />
+          )
+        ) : isLoading || !data ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading product testing status…
           </div>
@@ -73,11 +89,4 @@ export function ProductStatusBody() {
   );
 }
 
-export default function ProductStatusPage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Product / Business Request Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <ProductStatusBody />
-    </div>
-  );
-}
+export default ProductStatusBody;

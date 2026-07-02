@@ -1,7 +1,12 @@
 /**
- * Defects & Incidents — project-scoped hybrid report (B1 group 6).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
+ * DefectSummaryBody — project-scoped hybrid defect report body (registry: defect-summary).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from DefectsIncidentsPage,
+ * merge per disposition matrix #9).
  * ph_issues QA Bug/Defect + Production Incident (real volume) + tm_defects (test-linked).
+ *
+ * Title stays "Defects & Incidents" until Lane C.
+ * LANE-C: incident section moves to /incident-hub/reports — the incident metric cards and
+ * the open-incidents table below are kept for now and removed in Phase 2 Lane C.
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,12 +18,13 @@ import EmptyState from '@atlaskit/empty-state';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
 import { Heading } from '@/components/ads';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
-import { useDefectsIncidents, type IssueRow } from './useDefectsIncidents';
-import { cardStyle, metricValue, metricLabel, sectionH } from './ReportStatusView';
+import { useDefectsIncidents, type IssueRow } from '@/components/testhub/reports/hooks/useDefectsIncidents';
+import { ReportBarChart } from '@/components/testhub/reports/charts/ReportChart';
+import { ADS_CHART } from '@/lib/charts/adsChartTheme';
+import { cardStyle, metricValue, metricLabel, sectionH, subtle } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption { label: string; value: string }
 
@@ -41,8 +47,7 @@ function catAppearance(c: string): ThemeAppearance {
   }
 }
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
-export function DefectsIncidentsBody() {
+export function DefectSummaryBody() {
   const navigate = useNavigate();
   const { data: projects, isLoading: projectsLoading } = useTmProjects();
   const [selected, setSelected] = useState<ProjectOption | null>(null);
@@ -64,6 +69,16 @@ export function DefectsIncidentsBody() {
     if (data.regressionGap > 0) parts.push(`${data.regressionGap} incident(s) have no linked regression test.`);
     if (data.tmDefects > 0) parts.push(`${data.tmDefects} defect(s) linked to a test.`);
     return parts.join(' ');
+  }, [data]);
+
+  // Defects-by-status — real counts already fetched (open vs closed of total).
+  // Zero-assumption law: no defects at all → no chart rendered.
+  const defectBars = useMemo(() => {
+    if (!data || data.defectsTotal === 0) return [];
+    return [
+      { status: `Open (${data.defectsOpen})`, key: 'open', count: data.defectsOpen },
+      { status: `Closed (${data.defectsTotal - data.defectsOpen})`, key: 'closed', count: data.defectsTotal - data.defectsOpen },
+    ];
   }, [data]);
 
   return (
@@ -101,6 +116,7 @@ export function DefectsIncidentsBody() {
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={cardStyle}><div style={metricValue}>{data.defectsTotal}</div><div style={metricLabel}>Total defects</div></div>
               <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsOpen ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{data.defectsOpen}</div><div style={metricLabel}>Open defects</div></div>
+              {/* LANE-C: incident metric cards move to /incident-hub/reports */}
               <div style={cardStyle}><div style={metricValue}>{data.incidentsTotal}</div><div style={metricLabel}>Total incidents</div></div>
               <div style={cardStyle}><div style={{ ...metricValue, color: data.incidentsOpen ? 'var(--ds-text-warning)' : 'var(--ds-text)' }}>{data.incidentsOpen}</div><div style={metricLabel}>Open incidents</div></div>
               <div style={cardStyle}><div style={metricValue}>{data.tmDefects}</div><div style={metricLabel}>Test-linked</div></div>
@@ -113,12 +129,30 @@ export function DefectsIncidentsBody() {
               </div>
             )}
 
+            {defectBars.length > 0 && (
+              <div style={{ marginBottom: 'var(--ds-space-300)' }}>
+                <div style={sectionH}>
+                  <Heading size="small">
+                    Defects by status <span style={subtle}>— {data.defectsTotal} total</span>
+                  </Heading>
+                </div>
+                <ReportBarChart
+                  data={defectBars}
+                  series={[{ dataKey: 'count', name: 'Defects' }]}
+                  xKey="status"
+                  showLegend={false}
+                  getBarColor={(d) => ((d as { key: string }).key === 'open' ? ADS_CHART.danger : ADS_CHART.success)}
+                />
+              </div>
+            )}
+
             <div style={sectionH}><Heading size="small">Open defects ({data.openDefects.length})</Heading></div>
             <div style={{ marginBottom: 'var(--ds-space-300)' }}>
               <JiraTable<IssueRow> columns={cols} data={data.openDefects} getRowId={(r) => r.issue_key} onRowClick={(r) => navigate(`/browse/${r.issue_key}`)} isLoading={false} ariaLabel="Open defects"
                 emptyView={<div style={{ padding: 'var(--ds-space-250)', color: 'var(--ds-text-subtle)' }}>No open defects.</div>} />
             </div>
 
+            {/* LANE-C: incident section moves to /incident-hub/reports */}
             <div style={sectionH}><Heading size="small">Open production incidents ({data.openIncidents.length})</Heading></div>
             <JiraTable<IssueRow> columns={cols} data={data.openIncidents} getRowId={(r) => r.issue_key} onRowClick={(r) => navigate(`/browse/${r.issue_key}`)} isLoading={false} ariaLabel="Open incidents"
               emptyView={<div style={{ padding: 'var(--ds-space-250)', color: 'var(--ds-text-subtle)' }}>No open incidents.</div>} />
@@ -128,11 +162,4 @@ export function DefectsIncidentsBody() {
   );
 }
 
-export default function DefectsIncidentsPage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Defects & Incidents" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <DefectsIncidentsBody />
-    </div>
-  );
-}
+export default DefectSummaryBody;

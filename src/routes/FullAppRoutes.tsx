@@ -171,8 +171,8 @@ const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"))
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
 // Reports hub — single registry-driven surface (CAT-REPORTS-HUB-20260703-001 S1.2).
-// Old standalone report pages + Lab + ReportDetailPage routes are now redirects;
-// their files remain until Phase 2 completes the ports.
+// Old standalone report URLs redirect below; the legacy page files were deleted in
+// Phase 2 Lane A (bodies now live in src/components/testhub/reports/bodies/).
 const TestHubReportsHubPage = lazy(() => import("../pages/testhub/reports/ReportsHubPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));

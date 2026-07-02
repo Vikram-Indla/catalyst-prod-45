@@ -1,7 +1,7 @@
 /**
- * Sprint Testing Status — sprint-scoped real-data report (B1 group 3).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
- * Scope resolved from ph_issues.sprint_release JSONB (B2). Shares ReportStatusView with the project report.
+ * SprintTestingStatusBody — sprint-scoped real-data report body (registry: sprint-testing-status).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from SprintTestingStatusPage).
+ * Scope resolved from ph_issues.sprint_release JSONB. Shares ReportStatusView with the project report.
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +11,13 @@ import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { Heading } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_SPRINT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { useSprintTestingStatus } from './useSprintTestingStatus';
-import { ReportStatusView, metricLabel } from './ReportStatusView';
+import { useSprintTestingStatus } from '@/components/testhub/reports/hooks/useSprintTestingStatus';
+import { ReportPieChart } from '@/components/testhub/reports/charts/ReportChart';
+import { ADS_CHART, ADS_SERIES } from '@/lib/charts/adsChartTheme';
+import { ReportStatusView, metricLabel, sectionH, subtle } from '@/pages/testhub/reports/ReportStatusView';
 
 interface SprintOption {
   label: string;
@@ -46,7 +48,13 @@ function sprintStatusAppearance(s: string | null): ThemeAppearance {
   }
 }
 
-/** Page content minus page-shell chrome — rendered via the report registry (S1.1). */
+/** ADS token per scope-status slice (component-owned semantics, tokens only). */
+const STATUS_SLICE_COLOR: Record<string, string> = {
+  done: ADS_CHART.success,
+  in_progress: ADS_SERIES[0],
+  todo: ADS_CHART.neutral,
+};
+
 export function SprintTestingStatusBody() {
   const navigate = useNavigate();
   const { data: sprints, isLoading: sprintsLoading } = useSprints();
@@ -65,6 +73,18 @@ export function SprintTestingStatusBody() {
     if (data.mismatches.length) parts.push(`${data.mismatches.length} Done story(ies) have a failing test.`);
     if (data.exec.not_run > 0) parts.push(`${data.exec.not_run} execution(s) still pending.`);
     return parts.join(' ');
+  }, [data]);
+
+  // Scope status distribution — count-based, real numbers in the labels.
+  // Zero-assumption law: all-zero counts → no chart rendered at all.
+  const statusSlices = useMemo(() => {
+    if (!data) return [];
+    const c = data.storyStatusCounts;
+    return [
+      { key: 'todo', name: `To Do (${c.todo})`, value: c.todo },
+      { key: 'in_progress', name: `In Progress (${c.in_progress})`, value: c.in_progress },
+      { key: 'done', name: `Done (${c.done})`, value: c.done },
+    ].filter((s) => s.value > 0);
   }, [data]);
 
   return (
@@ -103,17 +123,27 @@ export function SprintTestingStatusBody() {
           <Spinner size="medium" /> Loading sprint testing status…
         </div>
       ) : (
-        <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story in this sprint has a test case." />
+        <>
+          <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story in this sprint has a test case." />
+
+          {statusSlices.length > 0 && (
+            <div style={{ marginTop: 'var(--ds-space-300)' }}>
+              <div style={sectionH}>
+                <Heading size="small">
+                  Scope status distribution <span style={subtle}>— {data.totalStories} stories (count-based)</span>
+                </Heading>
+              </div>
+              <ReportPieChart
+                data={statusSlices}
+                getColor={(d) => STATUS_SLICE_COLOR[(d as { key: string }).key] ?? ADS_CHART.neutral}
+                showLegend
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 }
 
-export default function SprintTestingStatusPage() {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Sprint Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-      <SprintTestingStatusBody />
-    </div>
-  );
-}
+export default SprintTestingStatusBody;

@@ -16,6 +16,8 @@ export const REPORTS_LAST_PROJECT_KEY = 'catalyst.reports.lastProject';
 export const REPORTS_LAST_SPRINT_KEY = 'catalyst.reports.lastSprint';
 /** Shared last-used-tester key (tester ids are not project ids — separate key). */
 export const REPORTS_LAST_TESTER_KEY = 'catalyst.reports.lastTester';
+/** Shared last-used-epic key (Product / Business Request Status). */
+export const REPORTS_LAST_EPIC_KEY = 'catalyst.reports.lastEpic';
 
 function readStored(storageKey: string): string | null {
   try {
