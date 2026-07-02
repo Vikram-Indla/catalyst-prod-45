@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { iconUrlForKey, PROJECT_ICONS } from '@/components/shared/IconPickerGrid';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,7 +65,12 @@ export default function ProjectDirectory() {
   });
 
   // Fetch programs for filter dropdown
-  const { data: programs } = useQuery({
+  const {
+    data: programs,
+    isError: programsIsError,
+    error: programsError,
+    refetch: refetchPrograms,
+  } = useQuery({
     queryKey: ['programs-for-filter'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -129,6 +135,22 @@ export default function ProjectDirectory() {
           </Button>
         </div>
       </div>
+
+      {/* Programs dropdown failure — the main projects query is gated above,
+          but a failed programs query silently renders a filter with only
+          "All programs". isError alone misses the persisted-cache case where
+          only `error` is set on a failed background refetch. */}
+      {(programsIsError || programsError) && (
+        <div style={{ marginBottom: 16, maxWidth: 720 }}>
+          <SectionMessage
+            appearance="error"
+            title="Couldn't load programs filter"
+            actions={[{ key: 'retry', text: 'Retry', onClick: () => void refetchPrograms() }]}
+          >
+            {(programsError as Error)?.message ?? 'Unknown error loading programs.'}
+          </SectionMessage>
+        </div>
+      )}
 
       {/* FILTERS */}
       <div className="flex gap-3 mb-4">

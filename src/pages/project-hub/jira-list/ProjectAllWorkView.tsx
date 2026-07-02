@@ -42,6 +42,7 @@ import { applyCatyFilter } from '@/components/caty/applyCatyFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import { filterStateToJql } from '@/lib/filters/filterStateToJql';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 /* 2026-06-15: product-mode adapter. The same canonical view now serves both
    project hub and product hub. Product branch reads business_requests, maps
    them to WorkItem shape via mapBrToWorkItem below, and pipes through the
@@ -252,7 +253,12 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
 
   const productBrs = (isProduct ? productBrsQuery.data ?? [] : []) as BusinessRequest[];
 
-  const { data: productProfileMap = new Map<string, ProductProfileRow>() } = useQuery({
+  const {
+    data: productProfileMap = new Map<string, ProductProfileRow>(),
+    isError: profileMapIsError,
+    error: profileMapError,
+    refetch: refetchProfileMap,
+  } = useQuery({
     queryKey: ['allwork-product-profiles', projectId, productBrs.length],
     enabled: isProduct && productBrs.length > 0,
     queryFn: async () => {
@@ -262,8 +268,11 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
         if (r.po_user_id) ids.add(r.po_user_id);
       });
       if (!ids.size) return new Map<string, ProductProfileRow>();
-      const { data } = await supabase
+      // Throw so React Query records the failure — destructuring only {data}
+      // silently degraded every assignee to "Unknown".
+      const { data, error } = await supabase
         .from('profiles').select('id, full_name, avatar_url').in('id', Array.from(ids));
+      if (error) throw error;
       const map = new Map<string, ProductProfileRow>();
       ((data ?? []) as ProductProfileRow[]).forEach((p) => map.set(p.id, p));
       return map;
@@ -289,7 +298,12 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     () => (isProduct ? productItems.map((i) => i.dbId).filter(Boolean) as string[] : []),
     [isProduct, productItems],
   );
-  const { data: healthMap = new Map<string, string>() } = useBatchBusinessRequestHealth(productBrIds);
+  const {
+    data: healthMap = new Map<string, string>(),
+    isError: healthIsError,
+    error: healthError,
+    refetch: refetchHealth,
+  } = useBatchBusinessRequestHealth(productBrIds);
 
   /* Enrich product items with healthStatus so itemPassesFilters + distinctOptions can read it. */
   const enrichedProductItems: WorkItem[] = useMemo(
@@ -333,7 +347,12 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
   const isCreateMode  = urlMode === 'create-filter';
 
   // Load the saved filter when ?filterId is present
-  const { data: activeFilter } = useQuery({
+  const {
+    data: activeFilter,
+    isError: activeFilterIsError,
+    error: activeFilterError,
+    refetch: refetchActiveFilter,
+  } = useQuery({
     queryKey: ['active-filter-banner', urlFilterId],
     queryFn: async () => {
       if (!urlFilterId) return null;
@@ -341,13 +360,19 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
         .from('ph_saved_filters')
         .select('id, name, jql_query')
         .eq('id', urlFilterId)
-        .single();
-      if (error) return null;
-      return data as { id: string; name: string; jql_query: string | null };
+        .maybeSingle();
+      // Throw so React Query records the failure — returning null here made a
+      // failed filter fetch silently render the UNFILTERED list with no banner.
+      if (error) throw error;
+      return data as { id: string; name: string; jql_query: string | null } | null;
     },
     enabled: !!urlFilterId,
     staleTime: 60_000,
   });
+  /* isError alone misses the persisted-cache case: only `error` is set on a
+     failed background refetch. */
+  const filterLoadError: Error | null =
+    activeFilterIsError || activeFilterError ? (activeFilterError as Error) : null;
 
   /* CAT-DEF-013: when arriving via ?filterId, hold the list empty + show a spinner
      until the saved filter's JQL is actually applied, so stale UNFILTERED tickets
@@ -356,6 +381,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
      Only relevant in project mode — product/incident/tasks filter client-side. */
   const filterPending =
     !!urlFilterId && !isProduct && !isIncident && !isTasks &&
+    !filterLoadError && // a failed filter fetch shows an error banner, not an eternal spinner
     (activeFilter === undefined ||
       (!!activeFilter?.jql_query && activeFilterJql === undefined));
 
@@ -642,6 +668,50 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           projectKey={projectKey}
           hubType={isProduct ? 'product' : isIncident ? 'incident' : undefined}
         />
+      )}
+      {/* Saved-filter fetch failure — without this the list silently renders
+          UNFILTERED with no banner, indistinguishable from the filter applying. */}
+      {filterLoadError && (
+        <div style={{ padding: '8px 12px', flexShrink: 0 }}>
+          <SectionMessage
+            appearance="error"
+            title="Couldn't load saved filter"
+            actions={[
+              { key: 'retry', text: 'Retry', onClick: () => void refetchActiveFilter() },
+              {
+                key: 'clear',
+                text: 'Clear filter',
+                onClick: () => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); },
+              },
+            ]}
+          >
+            {filterLoadError.message ?? 'Unknown error loading the saved filter.'}{' '}
+            The list below is unfiltered.
+          </SectionMessage>
+        </div>
+      )}
+      {/* Product-mode supplementary fetches — the list itself still renders,
+          so a lighter warning fits: profiles failing degrades assignees to
+          "Unknown", health failing empties the Health facet. */}
+      {isProduct && (profileMapIsError || profileMapError || healthIsError || healthError) && (
+        <div style={{ padding: '8px 12px', flexShrink: 0 }}>
+          <SectionMessage
+            appearance="warning"
+            title="Some work-item details failed to load"
+            actions={[{
+              key: 'retry',
+              text: 'Retry',
+              onClick: () => {
+                if (profileMapIsError || profileMapError) void refetchProfileMap();
+                if (healthIsError || healthError) void refetchHealth();
+              },
+            }]}
+          >
+            {(profileMapIsError || profileMapError) ? 'Assignee names may show as "Unknown".' : ''}
+            {(profileMapIsError || profileMapError) && (healthIsError || healthError) ? ' ' : ''}
+            {(healthIsError || healthError) ? 'Health statuses may be missing.' : ''}
+          </SectionMessage>
+        </div>
       )}
       {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
           Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}

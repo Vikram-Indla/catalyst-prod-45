@@ -19,18 +19,22 @@ export function useBatchBusinessRequestHealth(brIds: string[]) {
       const result = new Map<string, string>();
       if (!brIds.length) return result;
 
-      const { data: brs } = await (supabase as any)
+      // Throw on error so React Query records the failure — destructuring
+      // only {data} would silently degrade every BR to "no health status".
+      const { data: brs, error: brsError } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, end_date, process_step, release_id, created_at, updated_at')
         .in('id', brIds);
+      if (brsError) throw brsError;
 
       if (!brs?.length) return result;
 
-      const { data: linkedRows } = await (supabase as any)
+      const { data: linkedRows, error: linkedError } = await (supabase as any)
         .from('ph_issues')
         .select('id, issue_key, issue_type, project_key, status, due_date, created_at, updated_at, parent_key, severity, business_request_id')
         .in('business_request_id', brIds)
         .limit(2000);
+      if (linkedError) throw linkedError;
 
       const linkedByBR = new Map<string, WorkItem[]>();
       for (const r of (linkedRows ?? [])) {
