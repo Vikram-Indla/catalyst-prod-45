@@ -10,6 +10,7 @@ import { token } from '@atlaskit/tokens';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import EpicIcon from '@atlaskit/icon-object/glyph/epic/16';
+import Lozenge from '@atlaskit/lozenge';
 import { ColumnHeader, ColumnBody } from './Column';
 import { DraggableCard } from './DraggableCard';
 import { SwimlaneHeader } from './SwimlaneHeader';
