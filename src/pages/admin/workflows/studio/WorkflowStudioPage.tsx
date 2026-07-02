@@ -33,6 +33,7 @@ import { useCreateDraft, useDiscardDraft } from '@/hooks/workflow-v2/useWorkflow
 import { ENTITY_GROUPS, LIFECYCLE_APPEARANCE, fmtDate } from './entities';
 import { PublishModal } from './PublishModal';
 import { AuditTab, EnforcementTab, SchemesTab, StatusesTab } from './StudioTabs';
+import { WorkItemTypesTab } from './WorkItemTypesTab';
 
 type VersionRow = WfVersion & { template_name: string | null };
 
@@ -366,20 +367,6 @@ function WorkflowsTab() {
   );
 }
 
-// ── Interim tab: only Work item types remains pending (P3) ──────────────────
-function InterimTab({ label }: { label: string }) {
-  return (
-    <div style={{ padding: '24px 16px', maxWidth: 720 }}>
-      <SectionMessage appearance="information" title={`${label} arrives with the custom-types phase`}>
-        <p style={{ marginBottom: 8 }}>
-          Custom work item types and configurable hierarchy land here (P3). Until then the
-          type registry is code-defined.
-        </p>
-      </SectionMessage>
-    </div>
-  );
-}
-
 const STUDIO_TABS = [
   'Workflows',
   'Schemes',
@@ -430,7 +417,7 @@ export default function WorkflowStudioPage() {
               <StatusesTab />
             </TabPanel>
             <TabPanel>
-              <InterimTab label="Work item types" />
+              <WorkItemTypesTab />
             </TabPanel>
             <TabPanel>
               <EnforcementTab />
