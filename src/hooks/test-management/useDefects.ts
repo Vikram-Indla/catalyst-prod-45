@@ -135,7 +135,12 @@ function mapDbRowToTMDefect(row: any): TMDefect {
 // ============================================================================
 
 async function generateDefectKey(projectId: string): Promise<string> {
-  // MAX scan — collision-safe even after deletions
+  // Race-safe key allocation via the same RPC cases/cycles use (P0-S7).
+  const { data: rpcKey, error: rpcError } = await supabase
+    .rpc('tm_next_entity_key', { p_project_id: projectId, p_prefix: 'DEF' });
+  if (!rpcError && rpcKey) return rpcKey as string;
+
+  // Fallback MAX scan (only if the RPC is unavailable in this environment)
   const { data: allDefects, error: defectsError } = await supabase
     .from('tm_defects')
     .select('defect_key')
@@ -395,7 +400,7 @@ export function useCreateDefect() {
       if (input.cycle_id) {
         const { data: cycleRow, error: cycleError } = await supabase
           .from('tm_test_cycles')
-          .select('id, name, plan_id:plan_test_cycles(plan_id, tm_test_plans(id, name, release_id, releases(id, name)))')
+          .select('id, name, plan:tm_test_plans!test_plan_id(id, name, release_id)')
           .eq('id', input.cycle_id)
           .single();
 
@@ -412,9 +417,10 @@ export function useCreateDefect() {
             created_by: user.id,
           });
 
-          // Plan row — derive from cycle via plan_test_cycles join
-          const planLink = Array.isArray(cycleRow.plan_id) ? cycleRow.plan_id[0] : null;
-          const planRow = planLink?.tm_test_plans;
+          // Plan row — derive from the cycle's test_plan_id FK
+          const planRow = Array.isArray((cycleRow as any).plan)
+            ? (cycleRow as any).plan[0]
+            : (cycleRow as any).plan;
           if (planRow?.id) {
             linkRows.push({
               defect_id: data.id,
@@ -425,16 +431,14 @@ export function useCreateDefect() {
               created_by: user.id,
             });
 
-            // Release row — derive from plan
-            const releaseRow = Array.isArray(planRow.releases)
-              ? planRow.releases[0]
-              : planRow.releases;
-            if (releaseRow?.id) {
+            // Release row — derive from the plan's release_id (label unknown
+            // here; zero-assumption: no fabricated name)
+            if (planRow.release_id) {
               linkRows.push({
                 defect_id: data.id,
                 link_type: 'release',
-                linked_id: releaseRow.id,
-                entity_label: releaseRow.name || null,
+                linked_id: planRow.release_id,
+                entity_label: null,
                 link_source: 'auto_execution',
                 created_by: user.id,
               });
@@ -443,27 +447,25 @@ export function useCreateDefect() {
         }
       }
 
-      // Row — Requirement link (derive from test case via tm_requirement_tests)
+      // Row — Requirement link (derive from the canonical tm_requirement_links)
       if (input.source_test_case_id) {
         // maybeSingle: no linked requirement is a legitimate case (not an error)
         const { data: reqLink, error: reqLinkError } = await supabase
-          .from('tm_requirement_tests')
-          .select('requirement_id, tm_requirements(id, title)')
+          .from('tm_requirement_links')
+          .select('requirement_id, external_title')
           .eq('test_case_id', input.source_test_case_id)
+          .not('requirement_id', 'is', null)
           .limit(1)
           .maybeSingle();
 
         if (reqLinkError) throw reqLinkError;
 
         if (reqLink?.requirement_id) {
-          const reqRow = Array.isArray(reqLink.tm_requirements)
-            ? reqLink.tm_requirements[0]
-            : reqLink.tm_requirements;
           linkRows.push({
             defect_id: data.id,
             link_type: 'requirement',
             linked_id: reqLink.requirement_id,
-            entity_label: reqRow?.title || null,
+            entity_label: reqLink.external_title || null,
             link_source: 'auto_execution',
             created_by: user.id,
           });
