@@ -5,6 +5,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import type { UserContext } from './useUserContext';
 import { getTierConfig, isWithinFreshness, sortByHierarchy, findCommonTitlePattern } from '../workItemHierarchy';
 import { WORKSTREAM_COLORS } from '@/constants/workstreamColors';
@@ -191,13 +192,23 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
 
       // ═══ WEEK NARRATIVE (hierarchy-aware) ═══
       const weekStart = getSaudiWeekStart();
-      const { data: weekData } = await supabase
-        .from('ph_issues')
-        .select('issue_type, project_key, assignee_display_name')
-        .in('project_key', userCtx.projectKeys)
-        .is('jira_removed_at', null)
-        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
-        .gte('jira_updated_at', weekStart);
+      // PostgREST caps responses at max_rows (1000); page past it so the
+      // weekly counts don't silently undercount. Stable .order required.
+      const weekData = await fetchAllPages<{
+        issue_type: string | null;
+        project_key: string;
+        assignee_display_name: string | null;
+      }>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('issue_type, project_key, assignee_display_name')
+          .in('project_key', userCtx.projectKeys)
+          .is('jira_removed_at', null)
+          .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
+          .gte('jira_updated_at', weekStart)
+          .order('id', { ascending: true })
+          .range(from, to),
+      );
 
       const byType: Record<string, number> = {};
       const projectBreakdown: Record<string, number> = {};

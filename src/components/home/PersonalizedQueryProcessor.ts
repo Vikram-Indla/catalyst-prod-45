@@ -3,6 +3,7 @@
  * Adapted to ph_issues schema: issue_key, summary, issue_type, jira_updated_at, jira_created_at.
  */
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import type { UserContext } from './hooks/useUserContext';
 
 export interface QueryResult {
@@ -203,19 +204,23 @@ async function fetchMyBlocked(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchTeamWorkload(ctx: UserContext): Promise<QueryResult> {
-  const { data, error } = await supabase
-    .from('ph_issues')
-    .select('assignee_display_name, status, project_key')
-    .in('project_key', ctx.projectKeys)
-    .is('jira_removed_at', null)
-    .not('assignee_display_name', 'is', null)
-    .not('status', 'ilike', '%done%')
-    .not('status', 'ilike', '%closed%')
-    .not('status', 'ilike', '%resolved%')
-    .limit(500);
-  if (error) throw error;
+  // Per-member counts must see every open row — a flat limit (clamped to
+  // max_rows anyway) skews the workload stats once matches exceed the cap.
+  const data = await fetchAllPages((from, to) =>
+    supabase
+      .from('ph_issues')
+      .select('assignee_display_name, status, project_key')
+      .in('project_key', ctx.projectKeys)
+      .is('jira_removed_at', null)
+      .not('assignee_display_name', 'is', null)
+      .not('status', 'ilike', '%done%')
+      .not('status', 'ilike', '%closed%')
+      .not('status', 'ilike', '%resolved%')
+      .order('id')
+      .range(from, to),
+  );
 
-  if (!data?.length) return {
+  if (!data.length) return {
     type: 'narrative', title: 'No open items', message: 'No open items found in your projects.',
   };
 
@@ -532,16 +537,20 @@ async function fetchReopened(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchReleaseReadiness(ctx: UserContext): Promise<QueryResult> {
-  const { data, error } = await supabase
-    .from('ph_issues')
-    .select('project_key, status, status_category')
-    .in('project_key', ctx.projectKeys)
-    .is('jira_removed_at', null)
-    .not('status', 'ilike', '%cancelled%')
-    .limit(500);
-  if (error) throw error;
+  // Per-project done/blocked ratios need the full row set — a flat limit
+  // (clamped to max_rows anyway) misreports release health past the cap.
+  const data = await fetchAllPages((from, to) =>
+    supabase
+      .from('ph_issues')
+      .select('project_key, status, status_category')
+      .in('project_key', ctx.projectKeys)
+      .is('jira_removed_at', null)
+      .not('status', 'ilike', '%cancelled%')
+      .order('id')
+      .range(from, to),
+  );
 
-  if (!data?.length) return {
+  if (!data.length) return {
     type: 'narrative', title: 'No release data', message: 'No items found for release analysis.',
   };
 
