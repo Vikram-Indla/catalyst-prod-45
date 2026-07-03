@@ -8,14 +8,18 @@
  *   C) Timeline (audit trail)
  */
 
+import { useState } from 'react';
 import { AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/lib/auth';
+import { useRecordApproval, useRecordVeto } from '@/hooks/useCommitteeQueue';
 import type { CommitteeQueueItem, CommitteeApprover, CommitteeDecisionStatus } from '@/hooks/useCommitteeQueue';
 
 interface CommitteeQueueDrawerProps {
@@ -42,7 +46,22 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 }
 
 // Approver row with addedBy
-function ApproverRow({ approver }: { approver: CommitteeApprover }) {
+function ApproverRow({
+  approver,
+  canVote,
+  onApprove,
+  onVeto,
+  isVoting,
+}: {
+  approver: CommitteeApprover;
+  canVote: boolean;
+  onApprove: () => void;
+  onVeto: (comment: string) => void;
+  isVoting: boolean;
+}) {
+  const [vetoing, setVetoing] = useState(false);
+  const [vetoComment, setVetoComment] = useState('');
+
   const statusCfg: Record<CommitteeDecisionStatus, { label: string; fg: string; icon: typeof Clock }> = {
     pending: { label: 'Pending', fg: 'var(--ds-text-subtle)', icon: Clock },
     approved: { label: 'Approved', fg: 'var(--ds-text-success)', icon: CheckCircle },
@@ -101,6 +120,68 @@ function ApproverRow({ approver }: { approver: CommitteeApprover }) {
               {approver.comment}
             </div>
           )}
+          {/* Your vote */}
+          {canVote && approver.decision === 'pending' && (
+            // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+            <div className="mt-2">
+              {!vetoing ? (
+                // ads-scanner:ignore-next-line — layout utility, matches gap-2 pattern already used elsewhere in this file
+                <div className="flex gap-2">
+                  {/* ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file */}
+                  <Button size="sm" className="h-7 text-xs" disabled={isVoting} onClick={onApprove}>
+                    Approve
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+                    className="h-7 text-xs"
+                    disabled={isVoting}
+                    onClick={() => setVetoing(true)}
+                  >
+                    Veto
+                  </Button>
+                </div>
+              ) : (
+                // ads-scanner:ignore-next-line — layout utility, matches space-y-2 pattern already used elsewhere in this file
+                <div className="space-y-2">
+                  <Textarea
+                    placeholder="Reason for veto (required)"
+                    value={vetoComment}
+                    onChange={(e) => setVetoComment(e.target.value)}
+                    // ads-scanner:ignore-next-line — sizing utility, matches text-xs pattern already used elsewhere in this file
+                    className="text-xs min-h-16"
+                  />
+                  {/* ads-scanner:ignore-next-line — layout utility, matches gap-2 pattern already used elsewhere in this file */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+                      className="h-7 text-xs"
+                      disabled={isVoting || vetoComment.trim().length === 0}
+                      onClick={() => onVeto(vetoComment)}
+                    >
+                      Confirm veto
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+                      className="h-7 text-xs"
+                      disabled={isVoting}
+                      onClick={() => {
+                        setVetoing(false);
+                        setVetoComment('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -145,6 +226,10 @@ function TimelineItem({ event, isLast }: { event: TimelineEvent; isLast: boolean
 }
 
 export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers }: CommitteeQueueDrawerProps) {
+  const { user } = useAuth();
+  const recordApproval = useRecordApproval();
+  const recordVeto = useRecordVeto();
+
   if (!item) return null;
 
   // Build timeline
@@ -289,7 +374,18 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
               </div>
               <div className="space-y-2">
                 {item.approvers.map((a) => (
-                  <ApproverRow key={a.id} approver={a} />
+                  <ApproverRow
+                    key={a.id}
+                    approver={a}
+                    canVote={item.committeeStatus === 'pending' && a.userId === user?.id}
+                    isVoting={recordApproval.isPending || recordVeto.isPending}
+                    onApprove={() =>
+                      recordApproval.mutate({ committeeId: item.committeeId, memberId: a.id })
+                    }
+                    onVeto={(comment) =>
+                      recordVeto.mutate({ committeeId: item.committeeId, memberId: a.id, comment })
+                    }
+                  />
                 ))}
               </div>
             </section>

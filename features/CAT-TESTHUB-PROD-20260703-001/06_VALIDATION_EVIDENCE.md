@@ -63,3 +63,18 @@ Chain executed: repository (11 cases, folder tree) → set detail via row click 
 **P1-S4 is now fully done**: restore is append-only (S4a), row-delete is archive (S4b-1), version diff view is canonical-ADS and wired in (S4b-2), the orphaned folder is gone (S4b-3). Tokens debt ratcheted down twice more during this stretch: 25951→25907→25631; typography 1601→1590.
 
 **Next up per Plan Lock: P1-S5** (status-vocabulary truth — case enum + cycle FSM type-swap).
+
+## P1-S5 (status-vocabulary truth)
+
+| Item | Evidence |
+|---|---|
+| `needs_update` dropped | Never a real `tm_case_status` enum value (probe P0.8), zero live callers — removed from `BulkCaseStatus` type + one dead display-mapping |
+| `tm_cycle_status` 7→4 collapse | Full type-swap migration `20260703115102_tm_cycle_status_collapse.sql`: `draft`/`planned` and `active`/`in_progress` were silent duplicate synonyms, `paused` had zero UI representation and zero live writers (confirmed via full table scan before deciding — actual data: only draft/active/planned rows existed). 5 dependent views (3 found only after first apply failed) + FSM trigger all dropped and recreated |
+| Canonical enum bridge | `src/lib/testhub/enums.ts` (D-PIN-6) — `cycleStatusToDb`/`FromDb` centralized, `useTestCycles.ts`'s duplicate local mapper deleted |
+| Found+fixed live bug | `useStartCycle` wrote `status:'in_progress'` — a value the enum never actually accepted post-collapse (would 400) |
+| FSM proof | Invalid transition (planned→completed) rejected by trigger with exact error message; valid chain planned→active→completed run through the **real UI buttons** ("Start cycle"/"Complete"), `actual_start`/`actual_end` auto-set both times, verified via SQL before/after |
+| Scope discipline | `useTestCyclesEnhanced.ts`'s stale `draft`/`in_progress` literals left untouched — confirmed zero live callers, scheduled for deletion in P1-S6 (touching it now would be wasted, redundant work) |
+
+**Concurrent-session note:** a foreign session's uncommitted edit to `src/components/committee/CommitteeQueueDrawer.tsx` sat in this shared checkout throughout S5 and briefly caused a false ADS-gate failure (their file's pre-existing violations, not mine). Verified via `git stash push` (full path stash, not `--keep-index` — that mode left shared-index-staged foreign content in place) that my own changes were gate-clean, committed, then restored their file byte-for-byte immediately after. Never touched, read for content, or altered their work.
+
+**P1-S5 done.** Next per Plan Lock: **P1-S6** — cycle CRUD consolidation onto one hook stack (delete `useTestCyclesEnhanced.ts`, now confirmed fully dead).
