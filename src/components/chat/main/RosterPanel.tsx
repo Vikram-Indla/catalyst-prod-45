@@ -88,7 +88,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          fontSize: 'var(--ds-font-size-100)',
+                          fontSize: 'var(--ds-font-size-400)',
                           fontWeight: 600,
                           color: 'var(--ds-text)',
                         }}
@@ -116,7 +116,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                         )}
                       </div>
                       {m.email && (
-                        <div style={{ fontSize: 'var(--ds-font-size-075)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
                       )}
                       <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                         joined {timeAgo(m.joinedAt)}

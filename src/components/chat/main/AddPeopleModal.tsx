@@ -165,7 +165,7 @@ export function AddPeopleModal({
             {error && (
               <div
                 style={{
-                  fontSize: 'var(--ds-font-size-075)',
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-danger)',
                   background: 'var(--ds-background-danger)',
                   padding: '4px 10px',
@@ -217,7 +217,7 @@ export function AddPeopleModal({
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {c.name}
                         </span>
@@ -237,7 +237,7 @@ export function AddPeopleModal({
                         )}
                       </div>
                       {c.subtitle && (
-                        <div style={{ fontSize: 'var(--ds-font-size-075)', color: 'var(--ds-text-subtle)' }}>{c.subtitle}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{c.subtitle}</div>
                       )}
                     </div>
                   </button>
