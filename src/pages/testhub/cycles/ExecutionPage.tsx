@@ -9,6 +9,7 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
+import SectionMessage from '@atlaskit/section-message';
 import Textarea from '@atlaskit/textarea';
 import { ArrowLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { TMCycleScope, TMCaseStep, RunStatus } from '@/types/test-management';
@@ -127,7 +128,7 @@ function computeRunStatus(stepStates: StepState[]): RunStatus {
 export default function ExecutionPage() {
   const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
   const cycleParam = cycleKey ?? legacyId;
-  const { data: cycleRecord } = useTestCycleByKey(cycleParam, projectKey);
+  const { data: cycleRecord, isError: isCycleError, error: cycleError, refetch: refetchCycle } = useTestCycleByKey(cycleParam, projectKey);
   const cycleId = cycleRecord?.id ?? (cycleParam && /^[0-9a-f-]{36}$/.test(cycleParam) ? cycleParam : undefined);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -136,15 +137,18 @@ export default function ExecutionPage() {
   const { data: projects = [] } = useProjects();
   const projectId = projects[0]?.id;
 
-  const { data: scopeItems = [], isLoading } = useCycleScope(cycleId);
+  const { data: scopeItems = [], isLoading, isError: isScopeError, error: scopeError, refetch: refetchScope } = useCycleScope(cycleId);
 
   const initialCaseId = searchParams.get('caseId');
   const [selectedScopeId, setSelectedScopeId] = useState<string | null>(null);
+  // URL ?caseId is applied at most once so refetches never yank the tester off their current case
+  const initialCaseApplied = useRef(false);
 
-  // Auto-select first scope item or the one from URL
+  // Auto-select first scope item or (once) the one from URL
   useEffect(() => {
     if (scopeItems.length === 0) return;
-    if (initialCaseId) {
+    if (initialCaseId && !initialCaseApplied.current) {
+      initialCaseApplied.current = true;
       const match = scopeItems.find(s => s.case_id === initialCaseId);
       if (match) {
         setSelectedScopeId(match.id);
@@ -154,9 +158,24 @@ export default function ExecutionPage() {
     if (!selectedScopeId) {
       setSelectedScopeId(scopeItems[0].id);
     }
-  }, [scopeItems, initialCaseId]);
+  }, [scopeItems, initialCaseId, selectedScopeId]);
 
   const selectedScope = scopeItems.find(s => s.id === selectedScopeId) ?? null;
+
+  if (isCycleError || isScopeError) {
+    const err = (isCycleError ? cycleError : scopeError) as Error | null;
+    return (
+      <div style={{ padding: 32, maxWidth: 640 }}>
+        <SectionMessage
+          appearance="error"
+          title="Couldn't load the execution runner"
+          actions={[{ text: 'Retry', onClick: () => (isCycleError ? refetchCycle() : refetchScope()) }]}
+        >
+          {err?.message ?? 'The cycle or its scope failed to load.'}
+        </SectionMessage>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -460,13 +479,14 @@ function StepRunner({
       const isTerminal = runStatus !== 'NOT_RUN' && runStatus !== 'IN_PROGRESS';
 
       // Compute next run number
-      const { data: maxRow } = await supabase
+      const { data: maxRow, error: maxErr } = await supabase
         .from('tm_test_runs')
         .select('run_number')
         .eq('cycle_scope_id', scope.id)
         .order('run_number', { ascending: false })
         .limit(1)
         .maybeSingle();
+      if (maxErr) throw maxErr;
       const nextRunNumber = (maxRow?.run_number ?? 0) + 1;
 
       // Insert run record
@@ -497,7 +517,8 @@ function StepRunner({
           actual_result: ss.actualResult || null,
           executed_at: new Date().toISOString(),
         }));
-        await supabase.from('tm_step_results').insert(stepResults);
+        const { error: stepErr } = await supabase.from('tm_step_results').insert(stepResults);
+        if (stepErr) throw stepErr;
       }
 
       // Upload attachments
@@ -527,10 +548,11 @@ function StepRunner({
       }
 
       // Update scope status
-      await supabase
+      const { error: scopeUpdateErr } = await supabase
         .from('tm_cycle_scope')
         .update({ current_status: dbStatus })
         .eq('id', scope.id);
+      if (scopeUpdateErr) throw scopeUpdateErr;
 
       setShowSaveModal(false);
       setPendingFiles([]);

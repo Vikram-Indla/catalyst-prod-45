@@ -18,7 +18,8 @@ export function useTestCycleByKey(cycleKeyOrId: string | undefined | null, proje
       } else {
         query = query.eq('cycle_key', cycleKeyOrId);
       }
-      const { data } = await query.maybeSingle();
+      const { data, error } = await query.maybeSingle();
+      if (error) throw error;
       return data ?? null;
     },
   });
