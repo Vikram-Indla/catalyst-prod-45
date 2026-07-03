@@ -17,6 +17,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_SPRINT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { usePointsBurndown, fetchAllSprintReleaseRows } from '@/components/testhub/reports/hooks/usePointsBurndown';
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
+import ReportExportMenu from '@/components/testhub/reports/ReportExportMenu';
+import type { ExportColumn, ExportRow } from '@/components/testhub/reports/reportExportRows';
 import { ReportLineChart } from '@/components/testhub/reports/charts/ReportChart';
 import { ADS_CHART, ADS_SERIES } from '@/lib/charts/adsChartTheme';
 import { cardStyle, metricValue, metricLabel, sectionH, subtle } from '@/pages/testhub/reports/ReportStatusView';
@@ -86,9 +88,19 @@ export function PointsBurndownBody() {
 
   const unit = data?.mode === 'points' ? 'points' : 'items';
 
+  const exportColumns: ExportColumn[] = [
+    { key: 'date', header: 'Date' },
+    { key: 'remaining', header: `Remaining (${unit})` },
+    { key: 'ideal', header: `Ideal (${unit})` },
+  ];
+  const exportRows = useMemo<ExportRow[]>(
+    () => (data ? data.series.map((p) => ({ date: p.date, remaining: p.remaining, ideal: p.ideal })) : []),
+    [data],
+  );
+
   return (
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
-      <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
+      <div style={{ maxWidth: '26rem', marginBottom: 'var(--ds-space-250)' }}>
         <div style={metricLabel}>Sprint</div>
         <Select<SprintOption>
           inputId="pb-sprint"
@@ -120,6 +132,15 @@ export function PointsBurndownBody() {
         <EmptyState header="Nothing in this sprint" description="No work items reference this sprint." />
       ) : (
         <>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--ds-space-100)' }}>
+            <ReportExportMenu
+              reportId="points-burndown"
+              reportLabel="Points Burndown"
+              projectName={activeOption.label}
+              columns={exportColumns}
+              rows={exportRows}
+            />
+          </div>
           <ReportInsightCard
             reportId="points-burndown"
             reportLabel="Points Burndown"

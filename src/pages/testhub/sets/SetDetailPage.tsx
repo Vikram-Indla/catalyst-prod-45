@@ -776,7 +776,6 @@ function CaseStatusPill({ status }: { status: string }) {
     draft: 'default',
     ready: 'inprogress',
     approved: 'success',
-    needs_update: 'moved',
     deprecated: 'default',
   };
   const label = status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');

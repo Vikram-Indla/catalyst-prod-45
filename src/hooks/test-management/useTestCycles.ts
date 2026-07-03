@@ -15,31 +15,10 @@ import {
 } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
 import { auditCycleCreate, auditCycleUpdate, auditCycleDelete } from '@/lib/tmAuditLogger';
-
-// Status mapping (DB uses lowercase)
-type DbCycleStatus = "active" | "archived" | "completed" | "draft" | "in_progress" | "paused" | "planned";
-const cycleStatusToDb = (status: string): DbCycleStatus => {
-  const map: Record<string, DbCycleStatus> = {
-    'PLANNED': 'draft',
-    'IN_PROGRESS': 'active',
-    'COMPLETED': 'completed',
-    'CANCELLED': 'archived',
-    'ARCHIVED': 'archived',
-  };
-  return map[status] || (status.toLowerCase() as DbCycleStatus);
-};
-
-const cycleStatusFromDb = (status: string | null): 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' => {
-  const map: Record<string, 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'> = {
-    'draft': 'PLANNED',
-    'planned': 'PLANNED',
-    'active': 'IN_PROGRESS',
-    'in_progress': 'IN_PROGRESS',
-    'completed': 'COMPLETED',
-    'archived': 'CANCELLED',
-  };
-  return map[status || 'draft'] || 'PLANNED';
-};
+// P1-S5 (D-PIN-6): cycle status mapping lives in one canonical bridge module —
+// tm_cycle_status was collapsed 7->4 (draft/planned and active/in_progress
+// were silent duplicate synonyms; paused had zero UI representation).
+import { cycleStatusToDb, cycleStatusFromDb } from '@/lib/testhub/enums';
 
 // Execution status mapping
 const execStatusToDb = (status: string): 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped' => {
@@ -479,6 +458,7 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
         status: execStatusFromDb(row.current_status),
         last_run_id: latestRun?.id ?? null,
         last_run_at: latestRun?.completed_at ?? latestRun?.started_at ?? null,
+        locked_version: row.locked_version ?? null,
         created_at: row.added_at || '',
         test_case: row.test_case ? {
           ...row.test_case,
@@ -677,8 +657,8 @@ export function useStartCycle() {
     mutationFn: async (input: { id: string; project_id: string }): Promise<TMCycle> => {
       const { data, error } = await supabase
         .from('tm_test_cycles')
-        .update({ 
-          status: 'in_progress',
+        .update({
+          status: 'active', // P1-S5: 'in_progress' no longer a valid tm_cycle_status value
           actual_start: new Date().toISOString(),
         })
         .eq('id', input.id)

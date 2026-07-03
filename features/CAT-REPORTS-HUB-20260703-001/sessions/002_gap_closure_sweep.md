@@ -53,3 +53,13 @@ Verified live: 209 scope / 197 done / 12 remaining = DB truth; honest "No timeli
 - **Reload-into-light** (theme toggle persists to DB; localStorage 'catalyst-theme' alone is overridden): defect-closure-trend, approval-age, points-burndown, sprint-testing-status all render clean in light — tokens resolve, charts readable, lozenges correct. Dark restored after.
 - **Regression pass on paginated hooks:** sprint-testing-status live on Refactor-Senaei 3.0 — 3 stories / 193 QA bugs / 12 incidents (full QA-bug count only correct WITH pagination); points-burndown 209/197/12 unchanged.
 - **App-wide truncation scan (agent):** reports tree clean; four unbounded sites remain OUTSIDE this feature — kanban product/BR board (no limit, worst), PersonalizedQueryProcessor + useProjectBriefing week narratives, useWeekSummary my/team closed. Out of scope here → spawned background task chip "Fix max_rows truncation outside reports tree" with file:line details. Kanban issue boards already .limit(2000); backlog health already paginates.
+
+## "go" #3 — picker parity + exports on new bodies
+- SprintTestingStatusBody picker now scope-derived (same fix as burndown: sprint_release truth + item counts + recency order), status lozenge preserved via ph_jira_sprints enrichment. Verified live: "(209 items)" + COMPLETED lozenge, report data intact.
+- ReportExportMenu (CSV/PDF) added to the 3 new bodies: defect-closure-trend (weekly rows), approval-age (full rows table), points-burndown (daily series; disabled when no timeline). Verified live on approval-age.
+- Truncation-fix chip for kanban/home surfaces started by Vikram in separate session — those files untouched here.
+
+## "Fix everything bending" pass
+- Approval Age JiraTable clipped its Age column past the canvas (fixed widths summed 48/100 + flex) → widths rebalanced to 38 total, label "Age (d)"; no horizontal scroll, verified live.
+- Points Burndown sprint picker truncated count labels at 20rem → 26rem (parity with sprint body); full label verified.
+- Defect closure trend line chart drew false continuity across empty weeks → weeks zero-filled between first and last activity (line at 0 is truth; a skipped week is a lie).

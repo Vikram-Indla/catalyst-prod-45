@@ -69,12 +69,24 @@ export function useDefectClosureTrend(projectId?: string) {
         }
       }
 
+      // Zero-fill the weeks between first and last activity — a line chart that
+      // skips empty weeks draws false continuity (points connect across gaps).
+      const sparse = [...byWeek.values()].sort((a, b) => a.week.localeCompare(b.week));
+      const weeks: ClosureWeekRow[] = [];
+      if (sparse.length) {
+        const last = new Date(sparse[sparse.length - 1].week);
+        for (let d = new Date(sparse[0].week); d <= last; d.setUTCDate(d.getUTCDate() + 7)) {
+          const key = d.toISOString().slice(0, 10);
+          weeks.push(byWeek.get(key) ?? { week: key, raised: 0, closed: 0 });
+        }
+      }
+
       return {
         totalDefects: rows.length,
         open,
         closedDated,
         undatedClosed,
-        weeks: [...byWeek.values()].sort((a, b) => a.week.localeCompare(b.week)),
+        weeks,
       };
     },
   });

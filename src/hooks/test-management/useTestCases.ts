@@ -5,8 +5,10 @@ import { catalystToast } from '@/lib/catalystToast';
 import { auditTestCaseCreate, auditTestCaseUpdate, auditTestCaseDelete } from '@/lib/tmAuditLogger';
 
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
-// CaseStatus for bulk operations uses DB-level values
-export type BulkCaseStatus = 'draft' | 'ready' | 'approved' | 'needs_update' | 'deprecated';
+// CaseStatus for bulk operations uses DB-level values. P1-S5 (D-REQ-2):
+// 'needs_update' dropped — it was never a real tm_case_status enum value
+// (probe P0.8), had zero live callers, and would have 400'd on write.
+export type BulkCaseStatus = DbCaseStatus;
 
 const statusToDb = (status: string): DbCaseStatus => {
   const map: Record<string, DbCaseStatus> = {
@@ -205,6 +207,7 @@ export function useTestCase(caseId: string | undefined) {
         .from('tm_test_steps')
         .select('*')
         .eq('test_case_id', caseId)
+        .is('deleted_at', null) // P1-S1: hard delete replaced by soft delete
         .order('step_number', { ascending: true });
 
       if (stepsError) throw stepsError;
@@ -438,16 +441,6 @@ export function useUpdateTestCase() {
 
       const { id, steps, label_ids, project_id, ...updates } = input;
 
-      const { data: current, error: currentError } = await supabase
-        .from('tm_test_cases')
-        .select('version')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (currentError) throw currentError;
-
-      const newVersion = (current?.version || 0) + 1;
-
       const dbUpdates: Record<string, unknown> = {};
       if (updates.title) dbUpdates.title = updates.title;
       if (updates.objective !== undefined) dbUpdates.description = updates.objective;
@@ -456,7 +449,8 @@ export function useUpdateTestCase() {
       if (updates.folder_id !== undefined) dbUpdates.folder_id = updates.folder_id;
       if (updates.priority_id !== undefined) dbUpdates.priority_id = updates.priority_id;
       if (updates.type_id !== undefined) dbUpdates.case_type_id = updates.type_id;
-      dbUpdates.version = newVersion;
+      // version is no longer set here — the canonical snapshot RPC below
+      // owns version numbering (P1-S3: one snapshot writer).
 
       const { data: testCase, error: caseError } = await supabase
         .from('tm_test_cases')
@@ -500,42 +494,14 @@ export function useUpdateTestCase() {
         }
       }
 
-      // Fetch current steps for version snapshot
-      const { data: savedSteps, error: savedStepsError } = await supabase
-        .from('tm_test_steps')
-        .select('step_number, action, expected_result, test_data')
-        .eq('test_case_id', id)
-        .order('step_number', { ascending: true });
+      // Canonical snapshot RPC (P1-S3): reads the just-saved case+steps,
+      // creates the version row, and bumps tm_test_cases.version atomically.
+      const { data: newVersion, error: versionError } = await supabase.rpc(
+        'tm_create_version_snapshot',
+        { p_case_id: id, p_change_summary: 'Updated via edit dialog' },
+      );
 
-      if (savedStepsError) throw savedStepsError;
-
-      // Create version snapshot in tm_test_case_versions
-      const snapshot = {
-        title: testCase.title,
-        description: testCase.description,
-        preconditions: testCase.preconditions,
-        status: testCase.status,
-        priority_id: testCase.priority_id,
-        case_type_id: testCase.case_type_id,
-        folder_id: testCase.folder_id,
-        steps: (savedSteps || []).map(s => ({
-          step_number: s.step_number,
-          action: s.action,
-          expected_result: s.expected_result || '',
-          test_data: s.test_data,
-        })),
-      };
-
-      const { error: versionInsertError } = await typedQuery('tm_test_case_versions')
-        .insert({
-          test_case_id: id,
-          version_number: newVersion,
-          snapshot,
-          change_summary: 'Updated via edit dialog',
-          changed_by: user.id,
-        });
-
-      if (versionInsertError) throw versionInsertError;
+      if (versionError) throw versionError;
 
       return {
         ...testCase,
@@ -543,6 +509,7 @@ export function useUpdateTestCase() {
         status: statusFromDb(testCase.status),
         type_id: testCase.case_type_id,
         updated_by: testCase.created_by || '',
+        version: newVersion ?? testCase.version,
       } as unknown as TMTestCase;
     },
     onSuccess: (data) => {

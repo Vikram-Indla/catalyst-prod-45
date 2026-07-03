@@ -22,7 +22,7 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Textfield from '@atlaskit/textfield';
-import Select from '@atlaskit/select';
+import Select, { AsyncSelect } from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -36,6 +36,7 @@ import {
 } from '../shared/sections';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
+import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /* ═══════════════════════════════════════════
@@ -216,9 +217,10 @@ export default function CatalystViewTestCase({
     [testCase?.objective],
   );
 
-  /* Versions (list + restore). */
+  /* Versions (list + restore + compare). */
   const { data: versions = [] } = useTestCaseVersions(isOpen ? itemId : undefined);
   const restoreVersion = useRestoreTestCaseVersion();
+  const [diffOpen, setDiffOpen] = useState(false);
 
   /* ── Write paths — direct tm_test_cases updates, no version churn. ── */
   const handleTitleChange = useCallback(async (newTitle: string) => {
@@ -341,6 +343,20 @@ export default function CatalystViewTestCase({
         <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No version history. Use "New version" in the repository to create a snapshot.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {versions.length > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
+              <button
+                onClick={() => setDiffOpen(true)}
+                style={{
+                  padding: '4px 10px', fontSize: 'var(--ds-font-size-200)',
+                  border: '1px solid var(--ds-border)', borderRadius: 4,
+                  background: 'none', cursor: 'pointer', color: 'var(--ds-text)',
+                }}
+              >
+                Compare versions
+              </button>
+            </div>
+          )}
           {versions.map((v: any, idx: number) => (
             <div key={v.id} style={{
               display: 'flex', alignItems: 'center', gap: 8,
@@ -387,6 +403,15 @@ export default function CatalystViewTestCase({
           ))}
         </div>
       )}
+      {diffOpen && (
+        <VersionDiffView
+          open={diffOpen}
+          onOpenChange={setDiffOpen}
+          versions={versions}
+          initialLeft={versions[versions.length - 1]?.version_number}
+          initialRight={versions[0]?.version_number}
+        />
+      )}
     </div>
   );
 
@@ -406,21 +431,72 @@ export default function CatalystViewTestCase({
     enabled: !!itemId,
   });
 
-  const [linkForm, setLinkForm] = useState({ open: false, type: 'external', extKey: '', extTitle: '', linkType: 'verifies', saving: false });
+  const [linkForm, setLinkForm] = useState({
+    open: false,
+    mode: 'issue' as 'issue' | 'external',
+    picked: null as { id: string; issue_key: string; summary: string; issue_type: string } | null,
+    extKey: '',
+    extTitle: '',
+    linkType: 'verifies',
+    saving: false,
+  });
+
+  // P1-S10: real ph_issues picker (id-backed) for the 3 types the
+  // requirement_type CHECK maps cleanly to. Defect/incident/other types stay
+  // on the free-text external path until E4 widens the CHECK (P2 — see
+  // Plan Lock Forbidden note on this slice).
+  const ISSUE_TYPE_TO_REQUIREMENT_TYPE: Record<string, string> = {
+    Story: 'story',
+    Epic: 'epic',
+    Feature: 'feature',
+  };
+
+  const loadIssueOptions = useCallback(async (input: string) => {
+    // Repo-wide search, no project_key scope — matches LinkToolbar.tsx's
+    // canonical picker idiom. RepositoryPage has no :projectKey route param
+    // (its `projectKey` prop is a hardcoded 'TESTHUB' placeholder that
+    // matches no real ph_issues row), so scoping by it would silently
+    // return zero results for every real project.
+    const q = input.trim();
+    let query = supabase
+      .from('ph_issues')
+      .select('id, issue_key, summary, issue_type')
+      .in('issue_type', ['Story', 'Epic', 'Feature'])
+      .is('jira_removed_at', null)
+      .limit(10);
+    query = q ? query.or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`) : query.order('jira_updated_at', { ascending: false });
+    const { data, error } = await query;
+    if (error || !data) return [];
+    return data.map((r: any) => ({
+      value: r.id as string,
+      label: `${r.issue_key} ${r.summary}`,
+      issue_key: r.issue_key as string,
+      summary: r.summary as string,
+      issue_type: r.issue_type as string,
+    }));
+  }, []);
 
   const handleAddLink = useCallback(async () => {
-    if (!linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
+    const usingIssue = linkForm.mode === 'issue' && !!linkForm.picked;
+    if (!usingIssue && !linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
     setLinkForm(f => ({ ...f, saving: true }));
     try {
-      const { error } = await supabase.rpc('tm_link_requirement', {
+      const { error } = await supabase.rpc('tm_link_requirement', usingIssue ? {
         p_case_id: itemId,
-        p_requirement_type: linkForm.type,
+        p_requirement_type: ISSUE_TYPE_TO_REQUIREMENT_TYPE[linkForm.picked!.issue_type] ?? 'story',
+        p_requirement_id: linkForm.picked!.id,
+        p_external_key: linkForm.picked!.issue_key,
+        p_external_title: linkForm.picked!.summary,
+        p_link_type: linkForm.linkType,
+      } : {
+        p_case_id: itemId,
+        p_requirement_type: 'external',
         p_external_key: linkForm.extKey.trim() || null,
         p_external_title: linkForm.extTitle.trim() || null,
         p_link_type: linkForm.linkType,
       });
       if (error) throw error;
-      setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '', saving: false }));
+      setLinkForm(f => ({ ...f, open: false, picked: null, extKey: '', extTitle: '', saving: false }));
       refetchLinks();
       catalystToast.success('Requirement linked');
     } catch (err: any) {
@@ -478,33 +554,59 @@ export default function CatalystViewTestCase({
       {/* Add link form */}
       {linkForm.open ? (
         <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: 12, background: 'var(--ds-surface-sunken)', marginBottom: 8 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
-            <div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
-              <Textfield
-                value={linkForm.extKey}
-                onChange={e => setLinkForm(f => ({ ...f, extKey: e.target.value }))}
-                placeholder="e.g. REQ-001"
-              />
-            </div>
-            <div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
-              <Textfield
-                value={linkForm.extTitle}
-                onChange={e => setLinkForm(f => ({ ...f, extTitle: e.target.value }))}
-                placeholder="Requirement description"
-              />
-            </div>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)', cursor: 'pointer' }}>
+              <input type="radio" checked={linkForm.mode === 'issue'} onChange={() => setLinkForm(f => ({ ...f, mode: 'issue' }))} />
+              Search issue
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)', cursor: 'pointer' }}>
+              <input type="radio" checked={linkForm.mode === 'external'} onChange={() => setLinkForm(f => ({ ...f, mode: 'external' }))} />
+              External reference
+            </label>
           </div>
+          {linkForm.mode === 'issue' ? (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>STORY / EPIC / FEATURE</div>
+              <AsyncSelect
+                inputId="tc-req-issue-picker"
+                aria-label="Search issues"
+                cacheOptions
+                defaultOptions
+                loadOptions={loadIssueOptions}
+                value={linkForm.picked ? { value: linkForm.picked.id, label: `${linkForm.picked.issue_key} ${linkForm.picked.summary}` } : null}
+                onChange={(opt: any) => setLinkForm(f => ({ ...f, picked: opt ? { id: opt.value, issue_key: opt.issue_key, summary: opt.summary, issue_type: opt.issue_type } : null }))}
+                placeholder="Search by key or title…"
+              />
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
+              <div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
+                <Textfield
+                  value={linkForm.extKey}
+                  onChange={e => setLinkForm(f => ({ ...f, extKey: e.target.value }))}
+                  placeholder="e.g. DEF-001"
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
+                <Textfield
+                  value={linkForm.extTitle}
+                  onChange={e => setLinkForm(f => ({ ...f, extTitle: e.target.value }))}
+                  placeholder="Requirement description"
+                />
+              </div>
+            </div>
+          )}
           <div style={{ marginBottom: 8 }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
             <Select
               value={{ label: linkForm.linkType, value: linkForm.linkType }}
               options={[
                 { label: 'verifies', value: 'verifies' },
-                { label: 'covers', value: 'covers' },
-                { label: 'implements', value: 'implements' },
-                { label: 'relates_to', value: 'relates_to' },
+                { label: 'tests', value: 'tests' },
+                { label: 'derives_from', value: 'derives_from' },
+                { label: 'related_to', value: 'related_to' },
               ]}
               onChange={(opt) => opt && setLinkForm(f => ({ ...f, linkType: opt.value }))}
             />
@@ -512,13 +614,13 @@ export default function CatalystViewTestCase({
           <div style={{ display: 'flex', gap: 8 }}>
             <button
               onClick={handleAddLink}
-              disabled={linkForm.saving || (!linkForm.extKey.trim() && !linkForm.extTitle.trim())}
+              disabled={linkForm.saving || (linkForm.mode === 'issue' ? !linkForm.picked : (!linkForm.extKey.trim() && !linkForm.extTitle.trim()))}
               style={{ padding: '4px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
             >
               {linkForm.saving ? 'Saving…' : 'Add link'}
             </button>
             <button
-              onClick={() => setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '' }))}
+              onClick={() => setLinkForm(f => ({ ...f, open: false, picked: null, extKey: '', extTitle: '' }))}
               style={{ padding: '4px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
             >
               Cancel

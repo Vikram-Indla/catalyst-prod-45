@@ -15,6 +15,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { useDefectClosureTrend } from '@/components/testhub/reports/hooks/useDefectClosureTrend';
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
+import ReportExportMenu from '@/components/testhub/reports/ReportExportMenu';
+import type { ExportColumn, ExportRow } from '@/components/testhub/reports/reportExportRows';
 import { ReportLineChart } from '@/components/testhub/reports/charts/ReportChart';
 import { ADS_CHART, ADS_SERIES } from '@/lib/charts/adsChartTheme';
 import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
@@ -38,6 +40,16 @@ export function DefectClosureTrendBody() {
   const activeOption = useReportPickerDefault(REPORTS_LAST_PROJECT_KEY, projects, selected);
 
   const { data, isLoading } = useDefectClosureTrend(activeOption?.value);
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'week', header: 'Week (Mon)' },
+    { key: 'raised', header: 'Raised' },
+    { key: 'closed', header: 'Closed' },
+  ];
+  const exportRows = useMemo<ExportRow[]>(
+    () => (data ? data.weeks.map((w) => ({ week: w.week, raised: w.raised, closed: w.closed })) : []),
+    [data],
+  );
 
   const aggregates = useMemo<Record<string, unknown> | null>(() => {
     if (!data) return null;
@@ -85,6 +97,15 @@ export function DefectClosureTrendBody() {
         <EmptyState header="No defects" description="No QA defects recorded for this project." />
       ) : (
         <>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--ds-space-100)' }}>
+            <ReportExportMenu
+              reportId="defect-closure-trend"
+              reportLabel="Defect Closure Trend"
+              projectName={activeOption.label}
+              columns={exportColumns}
+              rows={exportRows}
+            />
+          </div>
           <ReportInsightCard
             reportId="defect-closure-trend"
             reportLabel="Defect Closure Trend"

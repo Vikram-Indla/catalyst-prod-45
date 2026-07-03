@@ -5,6 +5,7 @@ import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@a
 import Button from '@atlaskit/button/standard-button';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
+import { useExecutionSteps } from '@/hooks/test-management/useTestSteps';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -378,7 +379,10 @@ function StepRunner({
   onSaved: () => void;
 }) {
   const { data: caseDetail, isLoading } = useTestCase(scope.case_id);
-  const steps: TMCaseStep[] = caseDetail?.steps ?? [];
+  // P1-S2: steps come from the version pinned at scope-add time, not live
+  // tm_test_steps — editing a case mid-cycle must never rewrite what a run
+  // tested. Title/preconditions above still read live (unaffected by VER-001).
+  const { data: steps = [] } = useExecutionSteps(scope.case_id, scope.locked_version);
   const [stepStates, setStepStates] = useState<StepState[]>([]);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);

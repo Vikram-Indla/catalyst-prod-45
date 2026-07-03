@@ -4,6 +4,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import type { UserContext } from './useUserContext';
 
 function getSaudiWeekStart(): string {
@@ -29,14 +30,19 @@ export function useWeekSummary(userCtx: UserContext | undefined) {
       const weekStart = getSaudiWeekStart();
       const now = new Date();
 
-      // My closed items this week
-      const { data: myClosed } = await supabase
-        .from('ph_issues')
-        .select('issue_type')
-        .is('jira_removed_at', null)
-        .ilike('assignee_display_name', userCtx.displayName)
-        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
-        .gte('jira_updated_at', weekStart);
+      // My closed items this week. PostgREST caps responses at max_rows
+      // (1000); page past it so totals don't silently undercount.
+      const myClosed = await fetchAllPages<{ issue_type: string | null }>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('issue_type')
+          .is('jira_removed_at', null)
+          .ilike('assignee_display_name', userCtx.displayName)
+          .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
+          .gte('jira_updated_at', weekStart)
+          .order('id', { ascending: true })
+          .range(from, to),
+      );
 
       const byType: Record<string, number> = {};
       (myClosed || []).forEach(item => {
@@ -44,14 +50,18 @@ export function useWeekSummary(userCtx: UserContext | undefined) {
         byType[t] = (byType[t] || 0) + 1;
       });
 
-      // Team closed this week
-      const { data: teamClosed } = await supabase
-        .from('ph_issues')
-        .select('project_key')
-        .is('jira_removed_at', null)
-        .in('project_key', userCtx.projectKeys)
-        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
-        .gte('jira_updated_at', weekStart);
+      // Team closed this week (paged past max_rows, same as myClosed)
+      const teamClosed = await fetchAllPages<{ project_key: string }>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('project_key')
+          .is('jira_removed_at', null)
+          .in('project_key', userCtx.projectKeys)
+          .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.done')
+          .gte('jira_updated_at', weekStart)
+          .order('id', { ascending: true })
+          .range(from, to),
+      );
 
       const byProject: Record<string, number> = {};
       (teamClosed || []).forEach(item => {
