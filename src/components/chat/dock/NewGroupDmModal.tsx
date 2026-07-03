@@ -11,14 +11,8 @@
  *  - Idempotent: same exact set → same conversation id (dm_pair_hash)
  */
 import React, { useMemo, useState } from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTransition,
-} from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
+import { DockPanel } from './DockPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useChatSearch } from '@/hooks/chat/useChatSearch';
@@ -120,15 +114,32 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width={360}>
-          <ModalHeader>
-            <ModalTitle>New group message</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', marginBottom: 8 }}>
+    <DockPanel
+      title="New group message"
+      onClose={onClose}
+      footer={
+        <>
+          <Button appearance="subtle" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            appearance="primary"
+            isDisabled={selected.size < 2 || submitting}
+            onClick={submit}
+          >
+            {submitting
+              ? 'Starting…'
+              : selected.size < 2
+              ? 'Start group'
+              : `Start group with ${selected.size}`}
+          </Button>
+        </>
+      }
+    >
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', marginBottom: 8 }}>
               Pick 2–{MAX_OTHERS} teammates. You're added automatically.
             </div>
             <input
@@ -139,7 +150,7 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 'var(--ds-font-size-400)',
+                fontSize: 'var(--ds-font-size-100)',
                 border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 marginBottom: 12,
@@ -147,14 +158,14 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
             />
             {error && (
               <div style={{
-                fontSize: 'var(--ds-font-size-200)',
+                fontSize: 'var(--ds-font-size-075)',
                 color: 'var(--ds-text-danger)',
                 marginBottom: 8,
               }}>{error}</div>
             )}
             <div style={{ maxHeight: 320, overflowY: 'auto' }}>
               {candidates.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   No matches.
                 </div>
               )}
@@ -188,35 +199,16 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{c.name}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text)' }}>{c.name}</div>
                       {c.sub && (
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{c.sub}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-075)', color: 'var(--ds-text-subtle)' }}>{c.sub}</div>
                       )}
                     </div>
                   </button>
                 );
               })}
             </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              isDisabled={selected.size < 2 || submitting}
-              onClick={submit}
-            >
-              {submitting
-                ? 'Starting…'
-                : selected.size < 2
-                ? 'Start group'
-                : `Start group with ${selected.size}`}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+    </DockPanel>
   );
 }
 

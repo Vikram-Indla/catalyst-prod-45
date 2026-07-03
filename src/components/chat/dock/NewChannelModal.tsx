@@ -8,7 +8,7 @@
  * by the ph_projects INSERT trigger or by the admin via the Projects section.
  */
 import React, { useMemo, useState } from 'react';
-import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import { DockPanel } from './DockPanel';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Flag, { FlagGroup } from '@atlaskit/flag';
@@ -132,11 +132,25 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
   };
 
   return (
-    <ModalDialog onClose={onClose} width="small">
-      <ModalHeader>
-        <ModalTitle>New channel</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
+    <DockPanel
+      title="New channel"
+      onClose={onClose}
+      footer={
+        <>
+          <Button appearance="subtle" onClick={onClose} isDisabled={submitting}>
+            Cancel
+          </Button>
+          <Button
+            appearance="primary"
+            onClick={handleSubmit}
+            isDisabled={!canSubmit}
+            isLoading={submitting}
+          >
+            Create channel
+          </Button>
+        </>
+      }
+    >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {atLimit && (
             <div
@@ -258,21 +272,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             </div>
           </div>
         </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose} isDisabled={submitting}>
-          Cancel
-        </Button>
-        <Button
-          appearance="primary"
-          onClick={handleSubmit}
-          isDisabled={!canSubmit}
-          isLoading={submitting}
-        >
-          Create channel
-        </Button>
-      </ModalFooter>
-    </ModalDialog>
+    </DockPanel>
   );
 }
 

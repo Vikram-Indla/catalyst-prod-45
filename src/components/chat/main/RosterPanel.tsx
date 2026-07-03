@@ -18,6 +18,7 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
+import { DockPanel } from '@/components/chat/dock/DockPanel';
 import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
 import { useChatRemoveMember } from '@/hooks/chat/useChatActions';
 import { useAuth } from '@/hooks/useAuth';
@@ -50,14 +51,11 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
   const myRole = members.find((m) => user && m.userId === user.id)?.role ?? 'member';
   const canRemove = myRole === 'admin';
 
-  return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width="small">
-          <ModalHeader>
-            <ModalTitle>People ({members.length})</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
+  const inDock =
+    typeof document !== 'undefined' && !!document.querySelector('.cc-dock');
+
+  const body = (
+    <>
             {isLoading && (
               <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                 Loading…
@@ -142,17 +140,39 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                 );
               })}
             </div>
-          </ModalBody>
-          <ModalFooter>
-            {onInvite && (
-              <Button appearance="primary" onClick={onInvite}>
-                Add people
-              </Button>
-            )}
-            <Button appearance="subtle" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
+    </>
+  );
+
+  const footer = (
+    <>
+      {onInvite && (
+        <Button appearance="primary" onClick={onInvite}>
+          Add people
+        </Button>
+      )}
+      <Button appearance="subtle" onClick={onClose}>
+        Close
+      </Button>
+    </>
+  );
+
+  if (inDock) {
+    return isOpen ? (
+      <DockPanel title={`People (${members.length})`} onClose={onClose} footer={footer}>
+        {body}
+      </DockPanel>
+    ) : null;
+  }
+
+  return (
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} width="small">
+          <ModalHeader>
+            <ModalTitle>People ({members.length})</ModalTitle>
+          </ModalHeader>
+          <ModalBody>{body}</ModalBody>
+          <ModalFooter>{footer}</ModalFooter>
         </Modal>
       )}
     </ModalTransition>
