@@ -1,11 +1,116 @@
+# PLAN LOCK — SPRINTS-NATIVE (Phase 3, Slice 1: health FK fix)
+
+**Status:** APPROVED — implemented (see `06_VALIDATION_EVIDENCE.md` VG-002)
+**Approved by:** Vikram ("go", 2026-07-03)
+**Timebox:** 2 hours from approval
+**Slice:** Phase 3 Slice 1 of 6 (slice order agreed with Vikram in `07_HANDOVER.md` "PHASE 3 — PROPOSED SLICE ORDER", not previously Plan-Locked)
+
+---
+
+## OBJECTIVE
+
+`src/features/health/adapters/entity.ts` (`useEntityHealthAdapter`) currently matches sprint work-item membership via `ph_issues.sprint_release` JSONB `.contains()` — a path `SPRINT_CONFIG.matchIssueByFk` in `src/lib/entity-hub/config.ts:154` explicitly documents as dead for sprints since D-002/S0.2b. Any sprint health score computed today is silently wrong (matches by stale JSONB name, not the live `sprint_id` FK). Fix: when the adapter is invoked for a sprint-kind config, query `ph_issues` filtered by `sprint_id` FK instead — mirroring the already-shipped, already-correct pattern in `WorkItemsSection.tsx:239-251`. Release-kind health (`config.kind === 'timeline'`) is unaffected; it keeps the existing JSONB-contains + fallback-scan path, since releases have no FK equivalent.
+
+Done = `useEntityHealthAdapter` branches on `config.matchIssueByFk`; when set, queries `.eq(config.matchIssueByFk, entityId)` against `ph_issues` instead of the JSONB contains/fallback; release path byte-for-byte unchanged; a DB probe on a known sprint confirms the FK-matched row set is correct and differs from (or matches, where FK/JSONB happen to agree) the old JSONB-matched set.
+
+## NON-SCOPE (this slice)
+
+- Wiring a health card into `ReleaseSidePanel.tsx` for sprints (Phase 3 Slice 2 — health engine has zero UI references there today; this slice only fixes the adapter's query, it is not yet rendered for sprints anywhere).
+- AI summary + cache (Slice 3), time-in-status/efficiency (Slice 4), scope-change history (Slice 5), dependencies (Slice 6).
+- Any change to `WorkItemsSection.tsx` (already correct — the reference implementation, untouched).
+- Any change to `SPRINT_CONFIG`/`RELEASE_CONFIG` in `config.ts` (the `matchIssueByFk`/`matchIssueByField` fields already exist and are already correct; this slice only makes the health adapter *read* them).
+- Migration-ledger drift, prod strategy — both explicitly deferred per Vikram (D-013, memory `feedback-functionality-over-migrations`).
+
+## CANONICAL COMPONENTS SELECTED
+
+None — this is a data-fetching bug fix inside an existing hook (`useEntityHealthAdapter`). No new UI is rendered; the health panel is not yet wired into any sprint-facing surface (confirmed via `grep` — zero references to `useHealthSignals`/`HealthPanel` in `ReleaseSidePanel.tsx`). No component discovery needed.
+
+## CANONICAL SCREENS SELECTED
+
+None rendered this slice. Consumers of the fixed adapter (`useHealthSignals` → `useEntityHealthAdapter`) today: `ReleaseDetailPage.tsx` (`healthOpen` panel, release-kind only in practice — sprint kind wires the scope but no UI toggle surfaces it yet per Slice-2 scope). No route changes.
+
+## FILES TO MODIFY
+
+| File | Change | Summary |
+|---|---|---|
+| `src/features/health/adapters/entity.ts` | edit | In `useEntityHealthAdapter`'s `queryFn` (lines 61-87): branch on `config.matchIssueByFk`. If set, query `ph_issues.select(INSIGHTS_SELECT columns).eq(config.matchIssueByFk, entityId).limit(2000)` — no JSONB contains, no fallback scan (FK is exact, unlike the JSONB name-match). If not set (release path), keep the existing `contains('sprint_release', ...)` + fallback-scan logic byte-for-byte. |
+
+## FILES FORBIDDEN
+
+- `src/components/releases/detail/WorkItemsSection.tsx` — already correct (D-002 reference implementation), not touched this slice.
+- `src/lib/entity-hub/config.ts` — `matchIssueByFk`/`matchIssueByField` already correctly declared; read-only for this slice.
+- `src/components/releases/detail/ReleaseSidePanel.tsx` — health-card wiring is Slice 2, out of scope here.
+- `src/features/health/hooks/useHealthSignals.ts` — facade already passes the correct `entityId` (`scope.sprintId` = the sprint UUID, confirmed via `ReleaseDetailPage.tsx:563` `{ moduleKey: 'sprint', sprintId: release.id }`); no change needed.
+- `src/pages/Sprints.tsx`, `SprintBoard.tsx` — legacy SAFe `iterations` stack, untouched.
+- `src/lib/statusPalette.ts`, `defectWorkflow.ts`, kanban `columnConfig.ts` — global regression surface (D-006).
+- `rh_*` release-ops tables/pages — untouched.
+- Anything prod-targeting (`lmqwtldpfacrrlvdnmld`) — explicitly deferred (D-013).
+
+## UI/UX RULES
+
+No visual changes this slice (no UI currently renders sprint health — see NON-SCOPE). N/A for ADS tokens/spacing/JiraTable rules; nothing styled is touched.
+
+## DATA/BACKEND RULES
+
+- `ph_issues.sprint_id` column already exists and is already the live FK write-path (used by `WorkItemsSection.tsx`'s move/remove mutations and by the DoD/approval trigger stack shipped in Phase 2). No migration needed.
+- Query is read-only (`.select().eq().limit()`), no RLS impact.
+- snake_case raw rows preserved; no assumption defaults introduced.
+- Zero-assumption: if `entityId` is null for a sprint-kind config, the query stays gated by the existing `enabled: !!entityId && !!entityName` — unchanged.
+
+## INTEGRATION/WIRING RULES
+
+- Hook touched: `useEntityHealthAdapter` (edit). `useHealthSignals` (facade) and `useBoardInsights`'s `computeInsights`/`INSIGHTS_SELECT` are consumed unchanged.
+- No edge functions. No new hooks. No new query keys (the existing `['entity-health', config.kind, entityId]` key is unaffected — same shape, different row-source).
+- Contract: `config.matchIssueByFk` (typed `'sprint_id'` in `EntityConfig`) is the discriminator — mirrors the discriminator already used in `WorkItemsSection.tsx` (`config.kind === 'sprint'`), but keyed off the config field directly so any future FK-matched entity kind gets the fix for free without another `kind === 'sprint'` special-case.
+
+## PARALLEL EXECUTION PLAN
+
+Single-file, single-branch fix — no parallel discovery agents needed (canonical pattern, reference implementation, and consuming call sites are already fully traced above). Single-threaded implement → verify.
+
+## SCREENSHOT CHECKLIST
+
+No screenshots this slice — there is no UI surface today that renders sprint health (confirmed: zero references in `ReleaseSidePanel.tsx`; Slice 2 adds the UI). Per CLAUDE.md, "screenshots do not prove functionality" — functional proof here is a DB/API probe instead:
+- [ ] DB probe: for one sprint with known members (e.g. a sprint used in `VG-001`'s evidence trail), compare row count/IDs from `.eq('sprint_id', <id>)` against the old `.contains('sprint_release', ...)` result for the same sprint name — confirm the FK path returns the true live membership.
+- [ ] Adjacent regression: release-kind health query (JSONB path) returns identical results before/after the diff (byte-for-byte unchanged branch).
+
+## VALIDATION COMMANDS
+
+```bash
+npx tsc -p tsconfig.app.json --noEmit   # compare error count to ~183 baseline (07_HANDOVER.md)
+npm run lint:colors:gate
+npm run audit:ads:gate
+# DB probe (PostgREST, staging cyijbdeuehohvhnsywig): compare sprint_id-FK row set
+# vs sprint_release-JSONB row set for one known sprint
+```
+
+## STOP CONDITIONS
+
+- Any file outside `entity.ts` needs changes → RED FLAG.
+- Release-kind (JSONB) path produces different results after the edit → regression, stop.
+- `ph_issues.sprint_id` column missing/renamed (re-verify via `information_schema` before editing if any doubt) → stop, inspect.
+- tsc error count rises above baseline; either ratchet gate fails; slice exceeds 2h.
+
+## DRIFT/REBASELINE RULES
+
+Per template: stop → `08_DRIFT_LOG.md` → rebaseline approval → mark SUPERSEDED → new Plan Lock.
+
+## Plan Lock status
+
+DRAFT — awaiting Vikram/JK review. **No code until APPROVED.**
+
+---
+---
+
+# SUPERSEDED — original S0.1a lock (see `08_DRIFT_LOG.md` DRIFT-003)
+
+> Archived below for history. This slice shipped long ago (Phase 0/1/2 all shipped — DRIFT-001/002). Content kept verbatim, not deleted, per append-only discipline.
+
 # PLAN LOCK — SPRINTS-NATIVE (slice S0.1a)
 
-**Status:** DRAFT
+**Status:** DRAFT (historical — slice shipped without formal re-lock, see DRIFT-001)
 **Approved by:** — (awaiting Vikram/JK)
 **Timebox:** 2 hours from approval
 **Slice:** S0.1a of 22 (master slice plan: agents/A6_implementation_plan.md; blueprint: 13_COUNCIL_VERDICT.md + 05_UI_UX_REVIEW.md)
-
----
 
 ## OBJECTIVE
 
@@ -100,5 +205,6 @@ Phase 2 lifecycle: S2.1a DoD schema, S2.1b DoD card, S2.2a awaiting_approval DB 
 Phase 3 (gated by D-007 proofs): S3.1a summary cache, S3.1b UI, S3.2 dependencies, S3.3 scope history, S3.4 health, S3.5 time-in-status + efficiency.
 Open decisions for approval: prod-drift option; sync-discriminator for native sprints (created_by IS NOT NULL vs jira_sprint_id IS NULL); keep `draft` status?; ENTERPRISE (business request) exclusion from sprints (JK brief says yes).
 
-## Plan Lock status
-DRAFT — awaiting Vikram/JK review. **No code until APPROVED.**
+## Plan Lock status (historical)
+
+Superseded per DRIFT-003 — Phase 0/1/2 shipped without a matching re-lock. See top of this file for the active Phase 3 Slice 1 lock.

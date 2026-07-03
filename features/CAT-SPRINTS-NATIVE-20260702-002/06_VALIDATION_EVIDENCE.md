@@ -38,3 +38,21 @@ No TODOs, incomplete branches, or silently-swallowed errors found in the new cod
 2. Health sprint adapter (`CAT-HEALTH-ENGINE-20260702-001`) — verdict: **RESOLVED / unaffected**. The adapter (`src/features/health/adapters/entity.ts:56-111`) reads only `ph_issues` core columns + the JSONB `sprint_release` column, never `ph_jira_sprints` or the FK path the new migrations touch. None of the 4 new sprint migrations touch its dependency surface. The original "unverified post-restart" flag was about live-DOM re-confirmation, not a schema mismatch — no mismatch exists.
 
 **Net verdict:** the shipped work is real and functions end-to-end (not vaporware), on thin (single-sprint) live coverage, with one confirmed regression-fix and one confirmed non-issue. One genuine unresolved gap surfaced: **approval/status-transition mutations are enforced client-side only, not at the DB/RLS layer** — matches the RLS risk A5 already flagged. See `09_DECISIONS.md` D-011–D-014 for the four implicit Plan Lock decisions ratified/flagged as part of this gate.
+
+---
+
+## VG-002 — 2026-07-03 — Phase 3 Slice 1 (health FK fix) implemented
+
+Implemented per `03_PLAN_LOCK.md`'s Phase 3 Slice 1 lock: `src/features/health/adapters/entity.ts`'s `useEntityHealthAdapter` now branches on `config.matchIssueByFk`. Sprint-kind configs (`SPRINT_CONFIG.matchIssueByFk = 'sprint_id'`) query `ph_issues.eq('sprint_id', entityId)` directly; release-kind configs (no `matchIssueByFk`) keep the original JSONB `contains('sprint_release', ...)` + fallback-scan path byte-for-byte.
+
+**Static/code verification:**
+| Check | Verdict | Evidence |
+|---|---|---|
+| Query shape matches the proven reference | CONFIRMED | Identical to `WorkItemsSection.tsx:239-251`'s already-shipped `entityKind === 'sprint'` branch — same table, same column, same `.eq()` filter |
+| Release path unaffected | CONFIRMED | Diff shows the JSONB contains/fallback block is unchanged, just moved after the new `if (config.matchIssueByFk)` early-return |
+| `entityId` passed for sprint scope is the correct value | CONFIRMED (traced, not re-probed) | `useHealthSignals.ts:74-76` passes `scope.sprintId` for `moduleKey: 'sprint'`; `ReleaseDetailPage.tsx:563` sets `sprintId: release.id` — the sprint's own UUID, which is exactly what `ph_issues.sprint_id` stores per the D-002 FK contract |
+| `npx tsc -p tsconfig.app.json --noEmit` | CONFIRMED | 183 errors — matches the `07_HANDOVER.md` baseline exactly, zero new errors, none in `entity.ts` |
+| `npm run lint:colors:gate` | CONFIRMED | 0 = baseline 0 |
+| `npm run audit:ads:gate` | CONFIRMED | no category above baseline (backend-only change, no styled code touched) |
+
+**Live DB probe — NOT obtained, documented honestly rather than skipped silently:** attempted a PostgREST probe against staging (`cyijbdeuehohvhnsywig`, anon key from `.env.local`, same approach as VG-001) to compare FK-matched vs JSONB-matched row sets for a known sprint. `ph_issues` returned `content-range: */0` for every anon-key query (`HTTP 200`, empty array) — RLS blocks anonymous reads on `ph_issues` entirely (VG-001's live probes evidently ran under an authenticated session/service context this session did not have). The authenticated Supabase MCP available this session (`mcp__6c122156...`) is scoped only to `catalyst-prod` (`list_projects` returned exactly one project, `lmqwtldpfacrrlvdnmld`) — prod has no `ph_jira_sprints` table at all (D-013) and querying it would prove nothing about this fix, so it was not used. No credentials were requested from the user. **Net: this slice's correctness rests on code-parity with an already-verified reference implementation + clean typecheck/gates, not a fresh live-data probe.** Recommend a live click-through/DOM check once Slice 2 wires a health card into the sprint side panel (there is currently no UI surface to click-test against).
