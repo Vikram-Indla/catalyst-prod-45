@@ -195,19 +195,19 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
         }}>
           <button role="menuitem" style={item}
             onClick={e => { e.stopPropagation(); copyMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Copy set
           </button>
           <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning)' }}
             onClick={e => { e.stopPropagation(); archiveMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Archive set
           </button>
           <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger)' }}
             onClick={e => { e.stopPropagation(); deleteMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Delete set
           </button>
@@ -325,7 +325,7 @@ export default function TestSetsPage() {
           padding: 16,
           marginBottom: 24,
           background: 'var(--ds-surface-overlay)',
-          boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
+          boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed)',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
             New Test Set
@@ -444,7 +444,7 @@ export default function TestSetsPage() {
                 borderRadius: idx === sets.length - 1 ? '0 0 6px 6px' : 0,
                 cursor: 'pointer',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface)')}
             >
               <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>

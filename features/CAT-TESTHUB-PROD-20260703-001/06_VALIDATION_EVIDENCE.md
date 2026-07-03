@@ -281,3 +281,19 @@ Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this
 | Live proof (build) | tsc clean, `vitest` parity test green, both ADS gates pass (ratcheted typography down 1573→1570 from the deletions), `lint:cre` passes, full `npm run build` succeeds |
 
 **P1-S16 mostly done** — real dead code removed, disconnected admin page removed, ModuleGate wired. **Flagging for Vikram**: the browser session for live verification logged out and needs re-authentication before the visual (light/dark) walkthrough can be completed — not something I can resolve myself.
+
+## P1-S17a (dark/ADS sweep — color fixes; split from S17 per Plan Lock's own >2h allowance)
+
+Vikram authorized continuing without live browser verification (session logout, no credentials available) — this sub-slice is verified via tsc/gates/build only; visual proof deferred.
+
+| Item | Evidence |
+|---|---|
+| `AIGenerateTestCasesDialog.tsx` | This file accounted for 79 of the "95 Tailwind hits" the audit tool reports, but the raw count includes every Tailwind utility (spacing/typography too, a known-noisy category per this repo's own audit-gate comments). Isolated the REAL banned color literals via a targeted regex: 6 lines, 11 tokens (`from-blue-500`/`to-blue-400`/`text-white`, `text-blue-500`, `bg-green-100`/`dark:bg-green-900/30`, `text-green-600`/`dark:text-green-400` ×2, `border-gray-300`). All converted to inline ADS tokens (`var(--ds-background-brand-bold)`, `var(--ds-icon-information)`, `var(--ds-background-success)`/`var(--ds-icon-success)`, `var(--ds-border)`, `var(--ds-text-success)`) — one semantic token per case, no `dark:` twin needed since the token itself resolves per-theme (VETO-2) |
+| `TestSetsPage.tsx` | 5 `RAW_RGB_HSL` hits — all `var(--ds-background-neutral-subtle-hovered/pressed, rgba(9,30,66,0.0X))` hex/rgba-fallback pattern (banned per CLAUDE.md: "hex fallbacks in `var(--ds-*, #fallback)` — token-only, no fallback"). Confirmed both tokens are real, already-defined CSS custom properties (`src/index.css`) before stripping the fallback — safe, not a guess |
+| `AddTestCasesToCycleDialog/utils.ts` (Plan Lock's named color-maps file) | **Doesn't exist** — already deleted/refactored away by earlier work (P0-S2's dead-code sweep or similar). Confirmed via direct file check + repo-wide grep for any surviving color-map pattern in `src/components/testhub/` — zero matches. Moot, same class as D-007/D-008 |
+| `.th-badge` remnants | Zero matches anywhere under `src/pages/testhub` or `src/components/testhub` — moot |
+| Accept grep | `grep -rn "dark:" src/pages/testhub src/components/testhub` → **0** (was 3, all in the one file fixed above) |
+| Live proof (build) | tsc clean, `lint:colors:gate` pass, `audit:ads:gate` pass (ratcheted tokens down 25348→25340 from the real reductions), full `npm run build` succeeds |
+| **Deferred** | Dark/light screenshot walkthrough across all routed surfaces — blocked by the browser session logout (D-016 context). Will complete once re-authenticated |
+
+**P1-S17a done.** Next: **P1-S17b** — JiraTable adoption for the 4 banned hand-rolled tables (TestSetsPage grid, SetDetailPage ×2, CycleDetailPage scope table).
