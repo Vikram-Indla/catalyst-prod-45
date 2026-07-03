@@ -6237,13 +6237,14 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] aside nav a.active,
 .dark aside nav a[data-active="true"],
 [data-theme="dark"] aside nav a[data-active="true"] {
-  background-color: var(
-    --ds-background-information-bold,
-    rgba(59, 130, 246, 0.1)
-  ) !important;
+  /* ADS selected pairing — subtle selected bg + selected text. The previous
+     values used --ds-background-information-bold for BOTH bg and color,
+     rendering the active nav label blue-on-blue (invisible) in dark mode
+     (CAT dark-mode sweep 2026-07-03). */
+  background-color: var(--ds-background-selected) !important;
   border-left: 0px solid
-    var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb)) !important;
-  color: var(--ds-background-information-bold, #0c66e4) !important;
+    var(--cp-workstream-catalyst-primary, var(--ds-link)) !important;
+  color: var(--ds-text-selected) !important;
 }
 
 .dark [data-sidebar] svg,
