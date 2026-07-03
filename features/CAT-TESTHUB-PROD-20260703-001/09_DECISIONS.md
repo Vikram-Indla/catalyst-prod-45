@@ -46,3 +46,6 @@ Target verified: MCP → https://cyijbdeuehohvhnsywig.supabase.co (staging).
 | tm_ai_usage_log | EXISTS on cyij (0 rows, FK→tm_projects) — memory claim "dropped" is prod/stale; AI usage logging can resume without migration. |
 
 Write-probes (authed INSERT/UPDATE/DELETE per core table) deferred to P0-S11 seeded walkthrough — UI round-trips prove the same paths.
+
+## D-005 (2026-07-03, found live during P1-S2)
+**tm_test_case_versions RLS was broken schema-wide** — both policies gated on `is_project_member(uuid,uuid)` with arguments reversed vs that function's real signature, AND even corrected, `is_project_member` reads an empty `project_members` table (0 rows for DEMO project; disconnected from the `tm_user_roles`-based membership every other tm_* policy uses). This silently blocked 100% of direct client reads/writes on version history — masked because the only writer was the SECURITY DEFINER RPC (bypasses RLS). Fixed by standardizing on `tm_user_has_access` (migration `20260703102113_fix_tm_test_case_versions_rls.sql`). Found via a live scratch-row acceptance probe for P1-S2, not by static analysis — recorded as a lesson: RLS policies using an uncommon gate function deserve a live round-trip test, not just a `pg_policies` read.
