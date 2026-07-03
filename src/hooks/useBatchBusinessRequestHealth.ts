@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDatePulseViolations } from '@/lib/date-pulse/DatePulseEngine';
 import { computeHealthStatus } from '@/lib/date-pulse/HealthStatusEngine';
+import { normalizeIssueTypeBucket, normalizeWorkStatus } from '@/lib/date-pulse/normalize';
 import type { BusinessRequest, WorkItem } from '@/types/date-pulse';
 
 export function useBatchBusinessRequestHealth(brIds: string[]) {
@@ -31,7 +32,7 @@ export function useBatchBusinessRequestHealth(brIds: string[]) {
 
       const { data: linkedRows, error: linkedError } = await (supabase as any)
         .from('ph_issues')
-        .select('id, issue_key, issue_type, project_key, status, due_date, created_at, updated_at, parent_key, severity, business_request_id')
+        .select('id, issue_key, issue_type, project_key, status, status_category, due_date, created_at, updated_at, parent_key, severity, business_request_id')
         .in('business_request_id', brIds)
         .limit(2000);
       if (linkedError) throw linkedError;
@@ -43,12 +44,13 @@ export function useBatchBusinessRequestHealth(brIds: string[]) {
         arr.push({
           id: r.id,
           issue_key: r.issue_key,
-          issue_type: r.issue_type ?? null,
+          // Title-Case display → lowercase bucket (see useBusinessRequestHealth
+          // for the full rationale). Raw values silently break the engines.
+          issue_type: normalizeIssueTypeBucket(r.issue_type),
           project_key: r.project_key ?? '',
-          // Zero-assumption: null status is "unscorable" — HealthStatusEngine
-          // excludes it from in-progress/done/blocked bucketing rather than
-          // counting it as 'todo' (CLAUDE.md).
-          status: r.status ?? null,
+          // status_category → bucket, display 'Blocked' → blocked. Zero-assumption
+          // null when unknown ("unscorable"), not counted as 'todo' (CLAUDE.md).
+          status: normalizeWorkStatus(r.status, r.status_category),
           due_date: r.due_date ?? null,
           severity: r.severity ?? null,
           parent_key: r.parent_key ?? null,

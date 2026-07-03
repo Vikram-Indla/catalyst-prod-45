@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDatePulseViolations } from '@/lib/date-pulse/DatePulseEngine';
 import { computeHealthStatus } from '@/lib/date-pulse/HealthStatusEngine';
+import { normalizeIssueTypeBucket, normalizeWorkStatus } from '@/lib/date-pulse/normalize';
 import type {
   BusinessRequest,
   WorkItem,
@@ -61,13 +62,17 @@ export function useBusinessRequestHealth(brId: string | undefined | null) {
       const linkedWork: WorkItem[] = (linkedRows ?? []).map((r: any) => ({
         id: r.id,
         issue_key: r.issue_key,
-        issue_type: r.issue_type ?? null,
+        // ph_issues.issue_type is Title-Case display ('Epic'/'QA Bug'/…).
+        // Normalize to the lowercase bucket the engines compare against, else
+        // epic-exclusion + defect rules silently never fire.
+        issue_type: normalizeIssueTypeBucket(r.issue_type),
         project_key: r.project_key ?? '',
-        // Zero-assumption: null status is "unscorable" — HealthStatusEngine
-        // excludes it from in-progress/done/blocked bucketing rather than
-        // counting it as 'todo' (not-started), which would skew health
-        // verdicts toward Uncommitted/At Risk (CLAUDE.md).
-        status: r.status ?? null,
+        // ph_issues.status is Title-Case display ('Done'/'Blocked'/…); the
+        // lowercase bucket lives in status_category (todo/in_progress/done, no
+        // 'blocked'). Normalize both: category → bucket, display 'Blocked' →
+        // blocked. Zero-assumption: unknown → null ("unscorable"), excluded
+        // from bucketing rather than counted as 'todo' (CLAUDE.md).
+        status: normalizeWorkStatus(r.status, r.status_category),
         due_date: r.due_date ?? null,
         severity: r.severity ?? null,
         parent_key: r.parent_key ?? null,
