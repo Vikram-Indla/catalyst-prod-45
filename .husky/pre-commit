@@ -15,6 +15,10 @@ echo ""
 echo "🎨 ADS color ratchet (blocks on NEW hard-coded colors)…"
 node scripts/ads-color-gate.cjs || exit 1
 
+echo ""
+echo "🎨 ADS fallback-hex ratchet (blocks on NEW var(--ds-*, #hex) / token('x','#hex'))…"
+node scripts/ads-fallback-hex-gate.cjs || exit 1
+
 # Runs the design-governance audit ONCE and gates per category
 # (tokens/typography/spacing/fontImports) vs design-governance/audit-baseline.json.
 echo ""
