@@ -83,10 +83,12 @@ async function generateCycleKey(projectId: string): Promise<string> {
   }
 
   // Fallback: generate manually
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from('tm_test_cycles')
     .select('*', { count: 'exact', head: true })
     .eq('project_id', projectId);
+
+  if (countError) throw countError;
 
   const nextNum = (count || 0) + 1;
   return `CY-${String(nextNum).padStart(3, '0')}`;
@@ -355,11 +357,14 @@ export function useCloneCycle() {
 
       if (fetchError) throw fetchError;
 
-      // Fetch scope
-      const { data: scope } = await supabase
+      // Fetch scope — VER-042: abort the clone if the scope read fails.
+      // Never clone with a silently-empty scope.
+      const { data: scope, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select('test_case_id')
         .eq('cycle_id', input.id);
+
+      if (scopeError) throw scopeError;
 
       // Generate new key
       const cycleKey = await generateCycleKey(input.project_id);
@@ -389,7 +394,8 @@ export function useCloneCycle() {
           current_status: 'not_run' as const,
         }));
 
-        await supabase.from('tm_cycle_scope').insert(scopeToInsert);
+        const { error: scopeInsertError } = await supabase.from('tm_cycle_scope').insert(scopeToInsert);
+        if (scopeInsertError) throw scopeInsertError;
       }
 
       return mapDbRowToTMCycle(cloned);
@@ -598,10 +604,12 @@ export function useBulkAssignTesters() {
         const scopeId = input.scope_ids[i];
         const testerId = input.tester_ids[i % input.tester_ids.length];
         
-        await supabase
+        const { error } = await supabase
           .from('tm_cycle_scope')
           .update({ assigned_to: testerId })
           .eq('id', scopeId);
+
+        if (error) throw error;
       }
     },
     onSuccess: (_, variables) => {
