@@ -4,6 +4,8 @@
  * removed status (the publish RPC refuses without full remap coverage).
  */
 import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Button,
   Lozenge,
@@ -60,6 +62,53 @@ export function PublishModal({
     value: s.status_key,
     label: s.display_label,
   }));
+
+  // F7: live item counts per removed status so the admin knows the blast
+  // radius of each remap. Only ph_issues-backed entities are countable —
+  // for everything else we render nothing (zero-assumption rule).
+  const ENTITY_TO_ISSUE_TYPES: Record<string, string[]> = {
+    story: ['Story'],
+    epic: ['Epic'],
+    feature: ['Feature'],
+    subtask: ['Sub-task'],
+  };
+  const publishedLabelByKey = useMemo(
+    () => new Map((publishedStatuses.data ?? []).map((s) => [s.status_key, s.display_label])),
+    [publishedStatuses.data]
+  );
+  const { data: removedCounts } = useQuery({
+    queryKey: ['wf-removed-status-counts', version.entity_key, removed.join(',')],
+    enabled: removed.length > 0,
+    staleTime: 30_000,
+    queryFn: async (): Promise<Record<string, number> | null> => {
+      let issueTypes = ENTITY_TO_ISSUE_TYPES[version.entity_key];
+      if (!issueTypes) {
+        // Custom types live in ph_issues under their registry display name.
+        const { data: reg } = await supabase
+          .from('ph_work_item_types')
+          .select('display_name')
+          .eq('entity_key', version.entity_key)
+          .is('archived_at', null)
+          .maybeSingle();
+        const name = (reg as { display_name: string } | null)?.display_name;
+        if (!name) return null; // not ph_issues-backed → no counts
+        issueTypes = [name];
+      }
+      const counts: Record<string, number> = {};
+      for (const k of removed) {
+        const label = publishedLabelByKey.get(k) ?? k;
+        const { count, error } = await supabase
+          .from('ph_issues')
+          .select('issue_key', { count: 'exact', head: true })
+          .in('issue_type', issueTypes)
+          .is('deleted_at', null)
+          .ilike('status', label);
+        if (error) throw error;
+        counts[k] = count ?? 0;
+      }
+      return counts;
+    },
+  });
 
   const remapsComplete = removed.every((k) => !!remaps[k]);
   const deltaLoading =
@@ -130,9 +179,14 @@ export function PublishModal({
                   {removed.map((k) => (
                     <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                       <Lozenge appearance="removed">{k}</Lozenge>
+                      {removedCounts?.[k] != null && (
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+                          {removedCounts[k]} item{removedCounts[k] === 1 ? '' : 's'}
+                        </span>
+                      )}
                       <span aria-hidden>→</span>
                       <div style={{ flex: 1 }}>
-                        <Select usePortal usePortal
+                        <Select usePortal
                           options={remapOptions}
                           value={remapOptions.find((o) => o.value === remaps[k]) ?? null}
                           onChange={(o) =>

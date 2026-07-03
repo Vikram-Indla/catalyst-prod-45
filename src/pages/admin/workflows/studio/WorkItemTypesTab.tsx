@@ -434,7 +434,7 @@ function TypeDetailPanel({
 
         <div>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Hierarchy level</div>
-          <Select usePortal usePortal
+          <Select usePortal
             options={levelOptions}
             value={levelId ?? currentLevel}
             onChange={setLevelId}

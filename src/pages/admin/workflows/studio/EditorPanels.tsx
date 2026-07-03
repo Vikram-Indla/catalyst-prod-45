@@ -138,7 +138,7 @@ export function TransitionPanel({
       {detail.isLoading && <Spinner size="small" />}
 
       <FieldLabel>Type</FieldLabel>
-      <Select usePortal usePortal
+      <Select usePortal
         options={TRANSITION_TYPES.map(opt)}
         value={opt(transition.transition_type)}
         onChange={(o) => o && isDraft && patchTransition({ transition_type: o.value })}
@@ -271,7 +271,7 @@ export function TransitionPanel({
       {isDraft && (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
-            <Select usePortal usePortal
+            <Select usePortal
               options={GUARD_TYPES.filter((t) => !guards.some((g) => g.guard_type === t)).map(opt)}
               value={newGuard}
               onChange={setNewGuard}
@@ -385,7 +385,7 @@ export function StatusPanel({
       </p>
 
       <FieldLabel>Category</FieldLabel>
-      <Select usePortal usePortal
+      <Select usePortal
         options={CATEGORY_OPTIONS}
         value={CATEGORY_OPTIONS.find((o) => o.value === status.category) ?? null}
         onChange={(o) => o && isDraft && patch({ category: o.value })}
@@ -436,7 +436,7 @@ export function StatusPanel({
               <p style={{ fontSize: 'var(--ds-font-size-100)', marginBottom: 8 }}>
                 Re-point inbound transitions to (optional — otherwise they are removed):
               </p>
-              <Select usePortal usePortal
+              <Select usePortal
                 options={rewireOptions}
                 value={rewireTo}
                 onChange={setRewireTo}

@@ -97,6 +97,10 @@ export default function WorkflowEditorPage() {
   const [addingStatus, setAddingStatus] = useState(false);
   const [newStatusName, setNewStatusName] = useState('');
   const [newStatusCat, setNewStatusCat] = useState('todo');
+  // F6: any-status ("global") transitions have no edge on the canvas, so the
+  // toolbar carries their add/remove affordance.
+  const [addingGlobal, setAddingGlobal] = useState(false);
+  const [globalTarget, setGlobalTarget] = useState<string | null>(null);
 
   const onError = useCallback((e: unknown) => setActionError((e as Error).message), []);
 
@@ -356,7 +360,7 @@ export default function WorkflowEditorPage() {
               {addingStatus ? (
                 <>
                   <div style={{ width: 140 }}>
-                    <Select usePortal usePortal
+                    <Select usePortal
                       options={CATEGORY_OPTIONS}
                       value={CATEGORY_OPTIONS.find((o) => o.value === newStatusCat) ?? null}
                       onChange={(o) => setNewStatusCat((o?.value as string) ?? 'todo')}
@@ -387,6 +391,76 @@ export default function WorkflowEditorPage() {
                   + Add status
                 </Button>
               )}
+              {addingGlobal ? (
+                <>
+                  <div style={{ width: 220 }}>
+                    <Select
+                      usePortal
+                      options={statuses
+                        .filter((s) => !globalIn.some((t) => t.to_status_key === s.status_key))
+                        .map((s) => ({ value: s.status_key, label: `Any status → ${s.display_label}` }))}
+                      value={
+                        globalTarget
+                          ? {
+                              value: globalTarget,
+                              label: `Any status → ${
+                                statuses.find((s) => s.status_key === globalTarget)?.display_label ?? globalTarget
+                              }`,
+                            }
+                          : null
+                      }
+                      onChange={(o) => setGlobalTarget((o?.value as string) ?? null)}
+                      placeholder="Any status → …"
+                      ariaLabel="Any-status transition target"
+                    />
+                  </div>
+                  <Button
+                    appearance="primary"
+                    spacing="compact"
+                    isDisabled={!globalTarget || upsertTransition.isPending}
+                    onClick={() =>
+                      globalTarget &&
+                      upsertTransition.mutate(
+                        { from_status_key: null, to_status_key: globalTarget },
+                        {
+                          onSuccess: () => {
+                            setGlobalTarget(null);
+                            setAddingGlobal(false);
+                          },
+                          onError,
+                        }
+                      )
+                    }
+                  >
+                    Add
+                  </Button>
+                  <Button appearance="subtle" spacing="compact" onClick={() => { setAddingGlobal(false); setGlobalTarget(null); }}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button spacing="compact" onClick={() => setAddingGlobal(true)}>
+                  + Any-status transition
+                </Button>
+              )}
+              {globalIn.map((t) => {
+                const label =
+                  statuses.find((s) => s.status_key === t.to_status_key)?.display_label ??
+                  t.to_status_key;
+                return (
+                  <span key={t.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                    <Lozenge appearance="new">any → {label}</Lozenge>
+                    <Button
+                      appearance="subtle"
+                      spacing="compact"
+                      aria-label={`Delete any-status transition to ${label}`}
+                      onClick={() => deleteTransition.mutate(t.id, { onError })}
+                    >
+                      ×
+                    </Button>
+                  </span>
+                );
+              })}
               <span style={{ flex: 1 }} />
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                 Drag handles to connect statuses · click a transition's × to delete ·{' '}

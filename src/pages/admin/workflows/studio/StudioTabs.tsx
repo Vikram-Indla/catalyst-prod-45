@@ -12,6 +12,7 @@ import {
   SectionMessage,
   Select,
   Spinner,
+  Textfield,
   type SelectOption,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
@@ -29,6 +30,10 @@ import {
   useWfSchemes,
   useWfVersions,
   useWfVersionStatuses,
+  useAddEnforcementRow,
+  useCreateScheme,
+  useUpsertSchemeEntry,
+  useDeleteSchemeEntry,
   type WfAudit,
   type EnforcementRow,
 } from '@/hooks/workflow-v2/useWorkflowFoundation';
@@ -80,6 +85,21 @@ export function SchemesTab() {
 
   const [applyTarget, setApplyTarget] = useState<{ schemeId: string; project: SelectOption | null } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  // F5: scheme + entry management (direct writes, admin RLS).
+  const createScheme = useCreateScheme();
+  const upsertEntry = useUpsertSchemeEntry();
+  const deleteEntry = useDeleteSchemeEntry();
+  const [creatingScheme, setCreatingScheme] = useState(false);
+  const [newSchemeName, setNewSchemeName] = useState('');
+  const [entryTarget, setEntryTarget] = useState<{ schemeId: string; version: SelectOption | null } | null>(null);
+
+  // Only published versions are assignable to a scheme entry.
+  const publishedVersionOptions: SelectOption[] = (versions.data ?? [])
+    .filter((v) => v.lifecycle === 'published')
+    .map((v) => ({
+      value: v.id,
+      label: `${ENTITY_LABELS[v.entity_key] ?? v.entity_key} v${v.version_no}`,
+    }));
 
   const versionNo = (id: string) => {
     const v = (versions.data ?? []).find((x) => x.id === id);
@@ -101,6 +121,46 @@ export function SchemesTab() {
           {actionError}
         </SectionMessage>
       )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {creatingScheme ? (
+          <>
+            <div style={{ width: 260 }}>
+              <Textfield
+                value={newSchemeName}
+                onChange={(e) => setNewSchemeName((e.target as HTMLInputElement).value)}
+                placeholder="Scheme name…"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setCreatingScheme(false);
+                }}
+              />
+            </div>
+            <Button
+              appearance="primary"
+              spacing="compact"
+              isDisabled={!newSchemeName.trim() || createScheme.isPending}
+              onClick={() =>
+                createScheme.mutate(newSchemeName.trim(), {
+                  onSuccess: () => {
+                    setNewSchemeName('');
+                    setCreatingScheme(false);
+                  },
+                  onError: (e) => setActionError((e as Error).message),
+                })
+              }
+            >
+              Create
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setCreatingScheme(false)}>
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <Button spacing="compact" onClick={() => setCreatingScheme(true)}>
+            + Create scheme
+          </Button>
+        )}
+      </div>
       <QueryStates
         isLoading={schemes.isLoading || entries.isLoading}
         error={schemes.error ?? entries.error}
@@ -124,18 +184,63 @@ export function SchemesTab() {
                   Assign to project…
                 </Button>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
                 {rows.map((e) => (
                   <CatalystTag
                     key={e.id}
                     text={`${ENTITY_LABELS[e.entity_key] ?? e.entity_key} ${versionNo(e.version_id)}`}
+                    onRemove={() =>
+                      deleteEntry.mutate(e.id, { onError: (err) => setActionError((err as Error).message) })
+                    }
                   />
                 ))}
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={() => setEntryTarget({ schemeId: s.id, version: null })}
+                >
+                  + Add entry
+                </Button>
               </div>
+              {entryTarget?.schemeId === s.id && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', maxWidth: 480 }}>
+                  <div style={{ flex: 1 }}>
+                    <Select
+                      usePortal
+                      options={publishedVersionOptions}
+                      value={entryTarget.version}
+                      onChange={(o) => setEntryTarget({ schemeId: s.id, version: o })}
+                      placeholder="Published workflow…"
+                      ariaLabel="Workflow version for scheme entry"
+                    />
+                  </div>
+                  <Button
+                    appearance="primary"
+                    spacing="compact"
+                    isDisabled={!entryTarget.version || upsertEntry.isPending}
+                    onClick={() => {
+                      const v = (versions.data ?? []).find((x) => x.id === entryTarget.version!.value);
+                      if (!v) return;
+                      upsertEntry.mutate(
+                        { schemeId: s.id, entityKey: v.entity_key, versionId: v.id },
+                        {
+                          onSuccess: () => setEntryTarget(null),
+                          onError: (e) => setActionError((e as Error).message),
+                        }
+                      );
+                    }}
+                  >
+                    Add
+                  </Button>
+                  <Button appearance="subtle" spacing="compact" onClick={() => setEntryTarget(null)}>
+                    Cancel
+                  </Button>
+                </div>
+              )}
               {applyTarget?.schemeId === s.id && (
                 <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', maxWidth: 480 }}>
                   <div style={{ flex: 1 }}>
-                    <Select usePortal usePortal
+                    <Select usePortal
                       options={projectOptions}
                       value={applyTarget.project}
                       onChange={(o) => setApplyTarget({ schemeId: s.id, project: o })}
@@ -299,6 +404,20 @@ export function EnforcementTab() {
   const config = useEnforcementConfig();
   const setMode = useSetEnforcementMode();
   const [actionError, setActionError] = useState<string | null>(null);
+  // F4: add a project+entity enforcement row inline.
+  const addRow = useAddEnforcementRow();
+  const projects = usePhProjects();
+  const [adding, setAdding] = useState(false);
+  const [addProject, setAddProject] = useState<SelectOption | null>(null);
+  const [addEntity, setAddEntity] = useState<SelectOption | null>(null);
+  const [addMode, setAddMode] = useState<SelectOption>({ value: 'advisory', label: 'Advisory' });
+  const addProjectOptions: SelectOption[] = ((projects.data as { id: string; key: string; name: string }[] | undefined) ?? []).map(
+    (p) => ({ value: p.id, label: `${p.name} (${p.key})` })
+  );
+  const addEntityOptions: SelectOption[] = ENTITY_GROUPS.flatMap((g) => g.entities).map((e) => ({
+    value: e.key,
+    label: e.label,
+  }));
 
   const columns: Column<EnforcementRow>[] = [
     {
@@ -375,6 +494,61 @@ export function EnforcementTab() {
           {actionError}
         </SectionMessage>
       )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        {adding ? (
+          <>
+            <div style={{ width: 240 }}>
+              <Select usePortal options={addProjectOptions} value={addProject} onChange={setAddProject} placeholder="Project…" ariaLabel="Enforcement project" />
+            </div>
+            <div style={{ width: 200 }}>
+              <Select usePortal options={addEntityOptions} value={addEntity} onChange={setAddEntity} placeholder="Entity…" ariaLabel="Enforcement entity" />
+            </div>
+            <div style={{ width: 150 }}>
+              <Select
+                usePortal
+                options={[
+                  { value: 'advisory', label: 'Advisory' },
+                  { value: 'blocking', label: 'Blocking' },
+                ]}
+                value={addMode}
+                onChange={(o) => o && setAddMode(o)}
+                ariaLabel="Enforcement mode"
+              />
+            </div>
+            <Button
+              appearance="primary"
+              spacing="compact"
+              isDisabled={!addProject || !addEntity || addRow.isPending}
+              onClick={() =>
+                addRow.mutate(
+                  {
+                    projectId: addProject!.value as string,
+                    entityKey: addEntity!.value as string,
+                    mode: addMode.value as 'advisory' | 'blocking',
+                  },
+                  {
+                    onSuccess: () => {
+                      setAdding(false);
+                      setAddProject(null);
+                      setAddEntity(null);
+                    },
+                    onError: (e) => setActionError((e as Error).message),
+                  }
+                )
+              }
+            >
+              Add
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setAdding(false)}>
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <Button spacing="compact" onClick={() => setAdding(true)}>
+            + Add enforcement
+          </Button>
+        )}
+      </div>
       <QueryStates isLoading={config.isLoading} error={config.error} refetch={() => config.refetch()}>
         {(config.data ?? []).length === 0 ? (
           <EmptyState header="No enforcement rows" description="Enforcement is configured per project + entity." />
