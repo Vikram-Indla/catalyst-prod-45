@@ -1,14 +1,24 @@
 /**
  * EpicTableView - Industry Epic Table (Mirrors BacklogTableView exactly)
  * Enhanced data table with drag-and-drop, bulk actions, and keyboard navigation
+ *
+ * 2026-07-03 (CAT-JIRATABLE-MIGRATION): migrated from a hand-rolled <table> to
+ * the canonical JiraTable component (src/components/shared/JiraTable). Row
+ * drag-to-reorder now uses @atlaskit/pragmatic-drag-and-drop directly on each
+ * row via JiraTable's `renderRowDragHandle` slot (replacing @hello-pangea/dnd,
+ * which cannot wrap JiraTable's internally-owned <tbody>). All columns,
+ * sorting, selection, and cell rendering behavior is preserved.
  */
 
-import { useMemo, useCallback, useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
+import {
+  draggable,
+  dropTargetForElements,
+  monitorForElements,
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { cn } from '@/lib/utils';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical, Columns, Check } from '@/lib/atlaskit-icons';
-import { Skeleton } from '@/components/ui/skeleton';
+import { GripVertical, Pencil, Columns, Check } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,6 +34,8 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 import { getEpicStatusConfigFromList, getEpicStatusStyles } from '@/components/items/epics/drawer';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column, SortOrder } from '@/components/shared/JiraTable/types';
 
 interface EpicRow {
   id: string;
@@ -51,24 +63,21 @@ interface EpicTableViewProps {
   onItemSelect?: (id: string, selected: boolean) => void;
 }
 
-interface TableColumn {
+interface TableColumnDef {
   key: string;
   label: string;
   width?: string;
-  minWidth?: string;
-  sortable?: boolean;
   visible?: boolean;
 }
 
-const DEFAULT_COLUMNS: TableColumn[] = [
-  { key: 'checkbox', label: '', width: '48px', visible: true },
-  { key: 'id', label: 'ID', width: '110px', sortable: true, visible: true },
-  { key: 'name', label: 'Summary', width: '320px', sortable: true, visible: true },
-  { key: 'status', label: 'Status', width: '140px', sortable: true, visible: true },
-  { key: 'theme', label: 'Theme', width: '160px', sortable: true, visible: true },
-  { key: 'assignee', label: 'Assignee', width: '150px', sortable: true, visible: true },
-  { key: 'quarter', label: 'Quarter', width: '120px', sortable: true, visible: true },
-  { key: 'mvp', label: 'MVP', width: '70px', sortable: true, visible: true },
+const DEFAULT_COLUMNS: TableColumnDef[] = [
+  { key: 'id', label: 'ID', width: '110px', visible: true },
+  { key: 'name', label: 'Summary', width: '320px', visible: true },
+  { key: 'status', label: 'Status', width: '140px', visible: true },
+  { key: 'theme', label: 'Theme', width: '160px', visible: true },
+  { key: 'assignee', label: 'Assignee', width: '150px', visible: true },
+  { key: 'quarter', label: 'Quarter', width: '120px', visible: true },
+  { key: 'mvp', label: 'MVP', width: '70px', visible: true },
 ];
 
 /**
@@ -77,48 +86,121 @@ const DEFAULT_COLUMNS: TableColumn[] = [
  */
 function generateProgramAcronym(programName: string): string {
   if (!programName) return 'EPC';
-  
+
   const words = programName
     .replace(/[^a-zA-Z\s]/g, '')
     .split(/\s+/)
     .filter(w => w.length > 0);
-  
+
   if (words.length === 0) return 'EPC';
-  
+
   if (words.length === 1) {
     return words[0].slice(0, 3).toUpperCase();
   }
-  
+
   // Take first letter of first 3 significant words
-  const significantWords = words.filter(w => 
+  const significantWords = words.filter(w =>
     !['the', 'a', 'an', 'and', 'or', 'of', 'for', 'to', 'in', 'on'].includes(w.toLowerCase())
   );
-  
+
   if (significantWords.length >= 3) {
     return significantWords.slice(0, 3).map(w => w[0].toUpperCase()).join('');
   }
-  
+
   return words.slice(0, 3).map(w => w[0].toUpperCase()).join('');
 }
 
-export function EpicTableView({ 
-  data, 
-  isLoading, 
-  onRowClick, 
+/**
+ * EpicDragHandle — row-level drag-and-drop reorder handle.
+ * Registers both draggable() (drag source, handle = this element) and
+ * dropTargetForElements() on the closest <tr> using Pragmatic's imperative
+ * API. Simple hover-reveal grip — no preview pill / menu (matches the
+ * original hello-pangea/dnd behavior: drag row, drop, persist rank).
+ */
+function EpicDragHandle({
+  row,
+  onReorder,
+}: {
+  row: EpicRow;
+  onReorder: (sourceId: string, targetId: string) => void;
+}) {
+  const gripRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDropTarget, setIsDropTarget] = useState(false);
+
+  useEffect(() => {
+    const grip = gripRef.current;
+    if (!grip) return;
+    const tr = grip.closest('tr');
+    if (!tr) return;
+
+    const cleanupDraggable = draggable({
+      element: tr,
+      dragHandle: grip,
+      getInitialData: () => ({ epicRowId: row.id }),
+      onGenerateDragPreview: ({ nativeSetDragImage }) => {
+        disableNativeDragPreview({ nativeSetDragImage });
+      },
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
+    });
+
+    const cleanupDropTarget = dropTargetForElements({
+      element: tr,
+      getData: () => ({ epicRowId: row.id }),
+      canDrop: ({ source }) => source.data.epicRowId !== row.id,
+      onDragEnter: () => setIsDropTarget(true),
+      onDragLeave: () => setIsDropTarget(false),
+      onDrop: ({ source }) => {
+        setIsDropTarget(false);
+        const sourceId = source.data.epicRowId as string | undefined;
+        if (sourceId && sourceId !== row.id) {
+          onReorder(sourceId, row.id);
+        }
+      },
+    });
+
+    return () => {
+      cleanupDraggable();
+      cleanupDropTarget();
+    };
+  }, [row.id, onReorder]);
+
+  return (
+    <div
+      ref={gripRef}
+      className={cn(
+        'jira-row-drag-handle flex items-center justify-center cursor-grab active:cursor-grabbing',
+        isDropTarget && 'outline outline-2'
+      )}
+      style={{
+        width: 18,
+        height: 18,
+        outlineColor: isDropTarget ? 'var(--ds-border-selected)' : undefined,
+        opacity: isDragging ? 0.4 : undefined,
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <GripVertical className="h-4 w-4 opacity-50 hover:opacity-100" />
+    </div>
+  );
+}
+
+export function EpicTableView({
+  data,
+  isLoading,
+  onRowClick,
   programId,
   selectedItems = [],
   onItemSelect,
 }: EpicTableViewProps) {
   const queryClient = useQueryClient();
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<{ column: string; direction: 'asc' | 'desc' }>({ 
-    column: 'rank', 
-    direction: 'asc' 
-  });
-  
+  const [sortKey, setSortKey] = useState<string>('rank');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
+
   // Fetch epic statuses for proper label/color rendering
   const { data: epicStatuses = [] } = useActiveEpicStatuses();
-  
+
   // Fetch program info for acronym generation
   const { data: program } = useQuery({
     queryKey: ['program-for-table', programId],
@@ -166,8 +248,8 @@ export function EpicTableView({
     setVisibleColumns(prev => {
       const next = new Set(prev);
       if (next.has(columnKey)) {
-        // Don't allow hiding checkbox column
-        if (columnKey !== 'checkbox') {
+        // Don't allow hiding the ID column
+        if (columnKey !== 'id') {
           next.delete(columnKey);
         }
       } else {
@@ -182,44 +264,30 @@ export function EpicTableView({
   };
 
   const hideAllColumns = () => {
-    // Keep checkbox visible
-    setVisibleColumns(new Set(['checkbox', 'id', 'name']));
+    setVisibleColumns(new Set(['id', 'name']));
   };
 
   // Selection helpers
-  const selectedSet = new Set(selectedItems);
-  const isAllSelected = data.length > 0 && data.every(d => selectedSet.has(d.id));
-  const isIndeterminate = data.some(d => selectedSet.has(d.id)) && !isAllSelected;
+  const selectionSet = useMemo(() => new Set(selectedItems), [selectedItems]);
 
-  const toggleSelection = (id: string) => {
-    if (onItemSelect) {
-      onItemSelect(id, !selectedSet.has(id));
+  const handleSelectionChange = useCallback((next: Set<string>) => {
+    if (!onItemSelect) return;
+    // Diff against current selection and fire onItemSelect per changed row —
+    // preserves the parent's per-item selection contract.
+    for (const id of next) {
+      if (!selectionSet.has(id)) onItemSelect(id, true);
     }
-  };
-
-  const toggleAll = () => {
-    if (isAllSelected) {
-      // Deselect all
-      data.forEach(d => onItemSelect?.(d.id, false));
-    } else {
-      // Select all
-      data.forEach(d => onItemSelect?.(d.id, true));
+    for (const id of selectionSet) {
+      if (!next.has(id)) onItemSelect(id, false);
     }
-  };
-
-  const handleSort = (column: string) => {
-    setSortConfig(prev => ({
-      column,
-      direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
-    }));
-  };
+  }, [onItemSelect, selectionSet]);
 
   // Sort data
   const sortedData = useMemo(() => {
     const sorted = [...data];
     sorted.sort((a, b) => {
       let aVal: any, bVal: any;
-      switch (sortConfig.column) {
+      switch (sortKey) {
         case 'rank': aVal = a.rank ?? a.globalRank ?? 999; bVal = b.rank ?? b.globalRank ?? 999; break;
         case 'name': aVal = a.name || ''; bVal = b.name || ''; break;
         case 'status': aVal = a.status || a.processStep || ''; bVal = b.status || b.processStep || ''; break;
@@ -229,20 +297,26 @@ export function EpicTableView({
         case 'mvp': aVal = a.mvp ? 1 : 0; bVal = b.mvp ? 1 : 0; break;
         default: aVal = a.rank ?? 999; bVal = b.rank ?? 999;
       }
-      if (sortConfig.direction === 'asc') return aVal > bVal ? 1 : -1;
+      if (sortOrder === 'ASC') return aVal > bVal ? 1 : -1;
       return aVal < bVal ? 1 : -1;
     });
     return sorted;
-  }, [data, sortConfig]);
+  }, [data, sortKey, sortOrder]);
 
-  // Handle drag end for reordering
-  const handleDragEnd = useCallback(async (result: DropResult) => {
-    const { destination, source } = result;
-    if (!destination || destination.index === source.index) return;
+  const handleSortChange = useCallback((key: string, order: SortOrder) => {
+    setSortKey(key);
+    setSortOrder(order);
+  }, []);
+
+  // Persist a full reordering (drag source dropped onto target row).
+  const persistReorder = useCallback(async (sourceId: string, targetId: string) => {
+    const sourceIndex = sortedData.findIndex(d => d.id === sourceId);
+    const targetIndex = sortedData.findIndex(d => d.id === targetId);
+    if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
 
     const reordered = Array.from(sortedData);
-    const [removed] = reordered.splice(source.index, 1);
-    reordered.splice(destination.index, 0, removed);
+    const [removed] = reordered.splice(sourceIndex, 1);
+    reordered.splice(targetIndex, 0, removed);
 
     const updates = reordered.map((item, index) => ({
       id: item.id,
@@ -267,126 +341,172 @@ export function EpicTableView({
   }, [sortedData, queryClient]);
 
   // Build epic key with program acronym
-  const buildEpicKey = (row: EpicRow): string => {
+  const buildEpicKey = useCallback((row: EpicRow): string => {
     if (row.epic_key) return row.epic_key;
-    
+
     const acronym = program?.key || generateProgramAcronym(program?.name || '');
     const num = row.rank ?? row.globalRank ?? 1;
     return `${acronym}-${String(num).padStart(3, '0')}`;
-  };
+  }, [program]);
 
   // Get status display info
-  const getStatusInfo = (status?: string) => {
+  const getStatusInfo = useCallback((status?: string) => {
     if (!status) return { label: '—', color: null };
     return getEpicStatusConfigFromList(status, epicStatuses);
-  };
+  }, [epicStatuses]);
 
-  // Filter columns based on visibility
-  const displayColumns = useMemo(() => {
-    return DEFAULT_COLUMNS.filter(c => visibleColumns.has(c.key));
-  }, [visibleColumns]);
-
-  const renderSortIcon = (column: TableColumn) => {
-    if (!column.sortable) return null;
-    const isActive = sortConfig.column === column.key;
-    return (
-      <span className={cn("ml-1", isActive ? "text-[var(--brand-gold)]" : "text-muted-foreground/40")}>
-        {isActive && sortConfig.direction === 'asc' ? (
-          <ChevronUp className="h-3.5 w-3.5" />
-        ) : (
-          <ChevronDown className="h-3.5 w-3.5" />
-        )}
-      </span>
-    );
-  };
-
-  const renderCellContent = (column: TableColumn, row: EpicRow) => {
-    switch (column.key) {
-      case 'checkbox':
-        return (
-          <Checkbox
-            checked={selectedSet.has(row.id)}
-            onCheckedChange={() => toggleSelection(row.id)}
-            className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
-          />
-        );
-      case 'id':
-        return (
-          <span 
+  const columns: Column<EpicRow>[] = useMemo(() => {
+    const all: Column<EpicRow>[] = [
+      {
+        id: 'id',
+        label: 'ID',
+        width: 9,
+        sortable: true,
+        alwaysVisible: true,
+        cell: ({ row }) => (
+          <span
             className="font-mono text-xs font-semibold cursor-pointer hover:underline"
-            style={{ color: 'hsl(var(--secondary-bronze))' }}
+            style={{ color: 'var(--ds-text-brand)' }}
             onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
           >
             {buildEpicKey(row)}
           </span>
-        );
-      case 'name':
-        return (
-          <span className="text-sm font-medium truncate block max-w-full" style={{ color: 'var(--text-1)' }}>
+        ),
+      },
+      {
+        id: 'name',
+        label: 'Summary',
+        flex: true,
+        sortable: true,
+        cell: ({ row }) => (
+          <span className="text-sm font-medium truncate block max-w-full" style={{ color: 'var(--ds-text)' }}>
             {row.name || '—'}
           </span>
-        );
-      case 'status':
-        const statusInfo = getStatusInfo(row.status ?? row.processStep);
-        const styles = getEpicStatusStyles(statusInfo.color);
-        return (
-          <span
-            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide"
-            style={{
-              background: styles.bg,
-              color: styles.text,
-              border: `1px solid ${styles.border}`,
-            }}
-          >
+        ),
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        width: 12,
+        sortable: true,
+        cell: ({ row }) => {
+          const statusInfo = getStatusInfo(row.status ?? row.processStep);
+          const styles = getEpicStatusStyles(statusInfo.color);
+          return (
             <span
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ background: styles.dot }}
-            />
-            {statusInfo.label}
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide"
+              style={{
+                background: styles.bg,
+                color: styles.text,
+                border: `1px solid ${styles.border}`,
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: styles.dot }}
+              />
+              {statusInfo.label}
+            </span>
+          );
+        },
+      },
+      {
+        id: 'theme',
+        label: 'Theme',
+        width: 13,
+        sortable: true,
+        cell: ({ row }) => (
+          <span className="text-sm truncate block" style={{ color: 'var(--ds-text-subtle)' }}>
+            {row.themeName || '—'}
           </span>
-        );
-      case 'theme':
-        return <span className="text-sm text-muted-foreground truncate block">{row.themeName || '—'}</span>;
-      case 'assignee':
-        return <span className="text-sm text-muted-foreground truncate block">{row.assigneeName || '—'}</span>;
-      case 'quarter':
-        if (!row.quarters || row.quarters.length === 0) return <span className="text-sm text-muted-foreground">—</span>;
-        return (
-          <div className="flex items-center gap-1">
-            {row.quarters.slice(0, 2).map((q, i) => (
-              <Lozenge key={i} appearance="default">{q}</Lozenge>
-            ))}
-          </div>
-        );
-      case 'mvp':
-        return (
+        ),
+      },
+      {
+        id: 'assignee',
+        label: 'Assignee',
+        width: 12,
+        sortable: true,
+        cell: ({ row }) => (
+          <span className="text-sm truncate block" style={{ color: 'var(--ds-text-subtle)' }}>
+            {row.assigneeName || '—'}
+          </span>
+        ),
+      },
+      {
+        id: 'quarter',
+        label: 'Quarter',
+        width: 10,
+        sortable: true,
+        cell: ({ row }) => {
+          if (!row.quarters || row.quarters.length === 0) {
+            return <span className="text-sm" style={{ color: 'var(--ds-text-subtle)' }}>—</span>;
+          }
+          return (
+            <div className="flex items-center gap-1">
+              {row.quarters.slice(0, 2).map((q, i) => (
+                <Lozenge key={i} appearance="default">{q}</Lozenge>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
+        id: 'mvp',
+        label: 'MVP',
+        width: 6,
+        sortable: true,
+        align: 'center',
+        cell: ({ row }) => (
           <span className="text-sm text-center block">{row.mvp ? 'Yes' : 'No'}</span>
-        );
-      default:
-        return null;
-    }
-  };
+        ),
+      },
+      {
+        id: '__actions',
+        label: '',
+        width: 6,
+        alwaysVisible: true,
+        cell: ({ row }) => (
+          <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onRowClick(row.id)}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        ),
+      },
+    ];
+    return all.filter(c => c.alwaysVisible || visibleColumns.has(c.id));
+  }, [visibleColumns, onRowClick, buildEpicKey, getStatusInfo]);
+
+  const emptyView = (
+    <div className="text-center py-20" style={{ color: 'var(--ds-text-subtle)' }}>
+      No epics found
+    </div>
+  );
 
   return (
     <div className="flex flex-col h-full">
       {/* Table Container with Industry styling */}
-      <div 
-        className={cn(
-          "flex flex-col flex-1 rounded-[14px] border overflow-hidden",
-          "bg-[var(--industry-bg-card)] border-[var(--industry-border-default)]",
-          "dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))] dark:border-[var(--ds-text-subtle)]"
-        )}
-        style={{ boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.04))' }}
+      <div
+        className="flex flex-col flex-1 rounded-[14px] border overflow-hidden"
+        style={{
+          background: 'var(--ds-surface)',
+          borderColor: 'var(--ds-border)',
+          boxShadow: 'var(--ds-shadow-raised)',
+        }}
       >
         {/* Header Bar */}
-        <div className={cn(
-          "flex items-center justify-between px-4 py-2.5 border-b",
-          "border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)]",
-          "dark:border-[var(--ds-text-subtle)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))]"
-        )}>
+        <div
+          className="flex items-center justify-between px-4 py-2.5 border-b"
+          style={{ borderColor: 'var(--ds-border)', background: 'var(--ds-surface-sunken)' }}
+        >
           <div className="flex items-center gap-3">
-            <span className="text-sm text-[var(--industry-text-secondary)] dark:text-gray-300">
-              <strong className="font-semibold text-[var(--industry-text-primary)] dark:text-gray-100">{sortedData.length}</strong> {sortedData.length === 1 ? 'epic' : 'epics'}
+            <span className="text-sm" style={{ color: 'var(--ds-text-subtle)' }}>
+              <strong className="font-semibold" style={{ color: 'var(--ds-text)' }}>{sortedData.length}</strong> {sortedData.length === 1 ? 'epic' : 'epics'}
             </span>
           </div>
 
@@ -397,10 +517,10 @@ export function EpicTableView({
                 variant="outline"
                 size="sm"
                 className="h-8 px-3 gap-1.5 text-xs font-medium"
-                style={{ 
-                  backgroundColor: 'var(--surface-1)', 
-                  borderColor: 'var(--border-color)',
-                  color: 'var(--text-1)'
+                style={{
+                  backgroundColor: 'var(--ds-surface)',
+                  borderColor: 'var(--ds-border)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 <Columns className="h-3.5 w-3.5" />
@@ -410,28 +530,29 @@ export function EpicTableView({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel className="text-xs font-semibold">Toggle Columns</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {DEFAULT_COLUMNS.filter(col => col.key !== 'checkbox').map(column => (
+              {DEFAULT_COLUMNS.filter(col => col.key !== 'id').map(column => (
                 <DropdownMenuItem
                   key={column.key}
                   onClick={() => toggleColumn(column.key)}
                   className="flex items-center gap-2 cursor-pointer"
                 >
-                  <div className={cn(
-                    "w-4 h-4 rounded border flex items-center justify-center",
-                    visibleColumns.has(column.key) 
-                      ? "bg-brand-primary border-brand-primary" 
-                      : "border-muted-foreground/30"
-                  )}>
-                    {visibleColumns.has(column.key) && <Check className="w-3 h-3 text-white" />}
+                  <div
+                    className="w-4 h-4 rounded border flex items-center justify-center"
+                    style={{
+                      background: visibleColumns.has(column.key) ? 'var(--ds-background-brand-bold)' : undefined,
+                      borderColor: visibleColumns.has(column.key) ? 'var(--ds-background-brand-bold)' : 'var(--ds-border)',
+                    }}
+                  >
+                    {visibleColumns.has(column.key) && <Check className="w-3 h-3" style={{ color: 'var(--ds-text-inverse)' }} />}
                   </div>
                   <span className="text-sm">{column.label || column.key}</span>
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={showAllColumns} className="text-xs text-muted-foreground">
+              <DropdownMenuItem onClick={showAllColumns} className="text-xs" style={{ color: 'var(--ds-text-subtle)' }}>
                 Show All
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={hideAllColumns} className="text-xs text-muted-foreground">
+              <DropdownMenuItem onClick={hideAllColumns} className="text-xs" style={{ color: 'var(--ds-text-subtle)' }}>
                 Hide All
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -440,157 +561,26 @@ export function EpicTableView({
 
         {/* Table */}
         <div className="flex-1 overflow-auto">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <table className="w-full min-w-[900px] border-collapse text-[13px]">
-              <thead className={cn(
-                "sticky top-0 z-10",
-                "bg-[var(--industry-bg-card)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))]"
-              )}>
-                <tr>
-                  <th className={cn(
-                    "w-8 px-2 py-3.5 text-left border-b",
-                    "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle)]"
-                  )} />
-                  {displayColumns.map(column => {
-                    const isActive = sortConfig.column === column.key;
-                    return (
-                      <th
-                        key={column.key}
-                        className={cn(
-                          "text-left border-b whitespace-nowrap px-4 py-3.5",
-                          "text-[11px] uppercase font-semibold tracking-[0.5px]",
-                          "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle)]",
-                          isActive 
-                            ? "text-[var(--brand-gold)] dark:text-[var(--ds-background-warning-bold)]" 
-                            : "text-[var(--industry-text-muted)] dark:text-gray-400",
-                          column.sortable && "cursor-pointer hover:text-[var(--industry-text-secondary)] dark:hover:text-gray-300"
-                        )}
-                        style={{ width: column.width, minWidth: column.minWidth }}
-                        onClick={() => column.sortable && handleSort(column.key)}
-                      >
-                        {column.key === 'checkbox' ? (
-                          <Checkbox
-                            checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
-                            onCheckedChange={() => toggleAll()}
-                            className={cn(
-                              "data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]",
-                              "border-border/50 dark:border-border/30 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))]"
-                            )}
-                          />
-                        ) : (
-                          <div className="flex items-center">
-                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] dark:border-[var(--ds-background-warning-bold)] pb-0.5")}>
-                              {column.label}
-                            </span>
-                            {renderSortIcon(column)}
-                          </div>
-                        )}
-                      </th>
-                    );
-                  })}
-                  {/* Actions column header */}
-                  <th className={cn(
-                    "w-[80px] text-right px-4 py-3.5 border-b",
-                    "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle)]"
-                  )} />
-                </tr>
-              </thead>
-              <Droppable droppableId="epic-table">
-                {(provided) => (
-                  <tbody 
-                    ref={provided.innerRef} 
-                    {...provided.droppableProps}
-                    className="divide-y divide-gray-100 dark:divide-[var(--ds-text-subtle)]"
-                  >
-                    {isLoading ? (
-                      Array.from({ length: 6 }).map((_, i) => (
-                        <tr key={i} className="border-b border-[var(--industry-border-subtle)] dark:border-[var(--ds-text-subtle)]">
-                          <td className="px-2 py-3.5" />
-                          {displayColumns.map(col => (
-                            <td key={col.key} className="px-4 py-3.5">
-                              <Skeleton className="h-5 w-full" />
-                            </td>
-                          ))}
-                          <td className="px-4 py-3.5" />
-                        </tr>
-                      ))
-                    ) : sortedData.length === 0 ? (
-                      <tr>
-                        <td colSpan={displayColumns.length + 2} className="text-center py-20 text-[var(--industry-text-muted)] dark:text-gray-400">
-                          No epics found
-                        </td>
-                      </tr>
-                    ) : (
-                      sortedData.map((row, index) => (
-                        <Draggable key={row.id} draggableId={row.id} index={index}>
-                          {(provided, snapshot) => (
-                            <tr
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={cn(
-                                "transition-colors cursor-pointer",
-                                "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[var(--ds-text)]/50",
-                                selectedSet.has(row.id) && "bg-blue-500/[0.08] dark:bg-blue-500/[0.15]",
-                                snapshot.isDragging && "bg-muted dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))] shadow-lg"
-                              )}
-                              onClick={() => onRowClick(row.id)}
-                              onMouseEnter={() => setHoveredRowId(row.id)}
-                              onMouseLeave={() => setHoveredRowId(null)}
-                            >
-                              {/* Drag handle */}
-                              <td
-                                {...provided.dragHandleProps}
-                                className="px-2 py-3.5 cursor-grab active:cursor-grabbing"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <GripVertical 
-                                  className={cn(
-                                    "h-4 w-4 transition-opacity",
-                                    hoveredRowId === row.id ? "opacity-50 hover:opacity-100" : "opacity-0"
-                                  )} 
-                                />
-                              </td>
-                              
-                              {displayColumns.map(column => (
-                                <td
-                                  key={column.key}
-                                  className="px-4 py-3.5"
-                                  onClick={column.key === 'checkbox' ? (e) => e.stopPropagation() : undefined}
-                                >
-                                  {renderCellContent(column, row)}
-                                </td>
-                              ))}
-                              
-                              {/* Row actions */}
-                              <td 
-                                className="px-4 py-3.5 text-right" 
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <div className={cn(
-                                  "flex items-center justify-end gap-1 transition-opacity",
-                                  hoveredRowId === row.id ? "opacity-100" : "opacity-0"
-                                )}>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7"
-                                    onClick={() => onRowClick(row.id)}
-                                  >
-                                    <Pencil className="h-3.5 w-3.5" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </Draggable>
-                      ))
-                    )}
-                    {provided.placeholder}
-                  </tbody>
-                )}
-              </Droppable>
-            </table>
-          </DragDropContext>
+          <JiraTable<EpicRow>
+            columns={columns}
+            data={sortedData}
+            getRowId={(row) => row.id}
+            onRowClick={(row) => onRowClick(row.id)}
+            selectable
+            selection={selectionSet}
+            onSelectionChange={handleSelectionChange}
+            sortKey={sortKey}
+            sortOrder={sortOrder}
+            onSortChange={handleSortChange}
+            renderRowDragHandle={(row) => (
+              <EpicDragHandle row={row} onReorder={persistReorder} />
+            )}
+            showRowCount={false}
+            density="compact"
+            ariaLabel="Epics"
+            isLoading={isLoading}
+            emptyView={emptyView}
+          />
         </div>
       </div>
     </div>
