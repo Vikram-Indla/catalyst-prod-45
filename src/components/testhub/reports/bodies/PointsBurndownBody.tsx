@@ -15,7 +15,7 @@ import SectionMessage from '@atlaskit/section-message';
 import { Heading } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_SPRINT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
-import { usePointsBurndown } from '@/components/testhub/reports/hooks/usePointsBurndown';
+import { usePointsBurndown, fetchAllSprintReleaseRows } from '@/components/testhub/reports/hooks/usePointsBurndown';
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import { ReportLineChart } from '@/components/testhub/reports/charts/ReportChart';
 import { ADS_CHART, ADS_SERIES } from '@/lib/charts/adsChartTheme';
@@ -23,15 +23,41 @@ import { cardStyle, metricValue, metricLabel, sectionH, subtle } from '@/pages/t
 
 interface SprintOption { label: string; value: string }
 
+/**
+ * Sprints that actually have work items. ph_jira_sprints alone is wrong for this
+ * report: staging carries archived/duplicate sprint rows (e.g. "…06 Jul 26-2")
+ * that no ph_issues.sprint_release entry references, so a picker built from that
+ * table defaults to a scope-less sprint and the report dead-ends on an empty
+ * state. Scope truth lives in the sprint_release JSONB — derive options from it.
+ */
 function useSprints() {
   return useQuery({
-    queryKey: ['ph-jira-sprints-list'],
+    queryKey: ['ph-sprints-with-scope'],
     queryFn: async (): Promise<SprintOption[]> => {
-      const { data } = await supabase
-        .from('ph_jira_sprints')
-        .select('name, status, sort_order')
-        .order('sort_order', { ascending: true });
-      return (data ?? []).map((s: { name: string }) => ({ label: s.name, value: s.name }));
+      const [issues, { data: sprints }] = await Promise.all([
+        fetchAllSprintReleaseRows<{ sprint_release: unknown }>('sprint_release'),
+        supabase.from('ph_jira_sprints').select('name, sort_order').order('sort_order', { ascending: true }),
+      ]);
+      const counts = new Map<string, number>();
+      for (const row of issues) {
+        if (!Array.isArray(row.sprint_release)) continue;
+        for (const entry of row.sprint_release as { name?: string }[]) {
+          if (entry?.name) counts.set(entry.name, (counts.get(entry.name) ?? 0) + 1);
+        }
+      }
+      const order = new Map(
+        ((sprints ?? []) as { name: string; sort_order: number | null }[]).map((s, i) => [s.name, s.sort_order ?? i]),
+      );
+      return [...counts.entries()]
+        .map(([name, count]) => ({ label: `${name} (${count} items)`, value: name }))
+        .sort((a, b) => {
+          const ao = order.get(a.value);
+          const bo = order.get(b.value);
+          if (ao !== undefined && bo !== undefined) return bo - ao; // recent sprints first
+          if (ao !== undefined) return -1;
+          if (bo !== undefined) return 1;
+          return b.value.localeCompare(a.value);
+        });
     },
     staleTime: 5 * 60 * 1000,
   });

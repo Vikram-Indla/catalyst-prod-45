@@ -41,6 +41,25 @@ export interface PointsBurndown {
 const dayMs = 86_400_000;
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 
+/** Server max_rows caps every response at 1000 (ph_issues is ~2400 rows —
+ *  .limit() alone silently truncates and undercounts sprints), so page. */
+const PAGE = 1000;
+export async function fetchAllSprintReleaseRows<T>(columns: string): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from('ph_issues')
+      .select(columns)
+      .not('sprint_release', 'is', null)
+      .order('issue_key', { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    rows.push(...((data ?? []) as T[]));
+    if (!data || data.length < PAGE) break;
+  }
+  return rows;
+}
+
 export function usePointsBurndown(sprintName?: string) {
   return useQuery({
     queryKey: ['points-burndown', sprintName],
@@ -60,14 +79,11 @@ export function usePointsBurndown(sprintName?: string) {
       //    break PostgREST containment encoding — same as useSprintTestingStatus).
       const inSprint = (sr: unknown) =>
         Array.isArray(sr) && sr.some((e) => (e as { name?: string })?.name === sprintName);
-      const { data: issueData, error: issueErr } = await supabase
-        .from('ph_issues')
-        .select('issue_key, status_category, story_points, sprint_release')
-        .not('sprint_release', 'is', null);
-      if (issueErr) throw issueErr;
-      const issues = ((issueData ?? []) as {
-        issue_key: string; status_category: string | null; story_points: number | null; sprint_release: unknown;
-      }[]).filter((i) => inSprint(i.sprint_release));
+      const issues = (
+        await fetchAllSprintReleaseRows<{
+          issue_key: string; status_category: string | null; story_points: number | null; sprint_release: unknown;
+        }>('issue_key, status_category, story_points, sprint_release')
+      ).filter((i) => inSprint(i.sprint_release));
 
       const pointedIssues = issues.filter((i) => i.story_points !== null).length;
       const mode: PointsBurndown['mode'] = pointedIssues > 0 ? 'points' : 'count';

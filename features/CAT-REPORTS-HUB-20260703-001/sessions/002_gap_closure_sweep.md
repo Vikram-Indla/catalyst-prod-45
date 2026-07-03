@@ -35,3 +35,10 @@
 - e7cfe1e0b — S2.1 insight cards ×5 + d3 removal
 - 4f31d7594 — S2.2–S2.4 DDL + 4 CUT reports + people identity
 - (final) — docs + seed placeholder migration
+
+## Post-review fix ("fix", same session)
+Points Burndown dead-ended: picker built from ph_jira_sprints defaulted to archived duplicate sprint ("…06 Jul 26-2") that zero issues reference → "Nothing in this sprint". Three stacked causes fixed:
+1. Picker now derives options from ph_issues.sprint_release (scope truth) with item counts, ordered by sprint recency.
+2. PostgREST max_rows=1000 silently truncated the 2381-row sprint_release fetch (undercounted every sprint, 104 vs 209) → paginated fetchAllSprintReleaseRows with .range() batches.
+3. catalyst-rq-cache (PersistQueryClientProvider, 15-min staleTime) kept serving the truncated result across reloads — cache cleared to verify; entry expires naturally for users.
+Verified live: 209 scope / 197 done / 12 remaining = DB truth; honest "No timeline to plot" (sprint lacks start_date).
