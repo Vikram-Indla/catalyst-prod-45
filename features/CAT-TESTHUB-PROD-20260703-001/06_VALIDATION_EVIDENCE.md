@@ -166,3 +166,16 @@ Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this
 | Live proof (build) | tsc clean, both gates pass, full `npm run build` succeeds |
 
 **P1-S10a done.** Next: **P1-S10b** — unify `TestCasesSection.tsx` and `TestCoveragePanel.tsx` readers onto `tm_requirement_links`.
+
+## P1-S10b (unify story-side reader + writer onto tm_requirement_links)
+
+| Item | Evidence |
+|---|---|
+| `TestCasesSection.tsx` reader rewritten | Was `tm_test_cases.eq('linked_story_key', storyKey)` — a totally disconnected column from what the case-side req tab (and `TestCoveragePanel.tsx`) already read. Now: `tm_requirement_links.eq('external_key', storyKey).eq('requirement_type','story')` → `tm_test_cases` by id, `archived=false` preserved. Matches `TestCoveragePanel.tsx`'s existing query shape exactly — one link model, not two |
+| AI-generation writer updated | After each generated case+steps insert, now also calls `tm_link_requirement` (RPC, same one S10a fixed) with `p_external_key=storyKey`, best-effort `p_requirement_id` resolved from `ph_issues` once before the loop. `linked_story_key` write on the case row itself is left untouched (retire-first banned, A2 S3) — vestigial now but harmless |
+| **Live bug found in my own P1-S9 work** | The P1-S9 backfill migration set `requirement_id` but never `external_key`/`external_title` on its 16 rows — both readers filter by `external_key`, so those 16 rows were invisible despite having a valid FK. Caught by live testing (story showed "Test cases 2", not the expected 16+), not by re-reading the migration. Recorded as D-009 |
+| Fix | Data-repair migration `20260703430000_backfill_requirement_links_external_key.sql` — sets `external_key`/`external_title` from `ph_issues` for any `requirement_type='story'` row with a `requirement_id` but null `external_key`. 16/16 fixed, 0 remaining nulls |
+| Live proof | Story BAU-2668 (`/project-hub/BAU/story/b29cfc9e-0c7b-4de6-a1b8-0831a1479071`) — before fix: "Test cases 2"; after: "Test cases 18" (2 pre-existing + 16 backfilled), all rows rendering with correct key/title/status lozenges. Verified via reload-into-dark (not runtime toggle, per established discipline) — first check without clearing rq-cache falsely showed "2" again (stale cache, not a regression), confirmed real by re-clearing cache before reload |
+| Live proof (build) | tsc clean, both gates pass, full `npm run build` succeeds |
+
+**P1-S10 (picker + unified readers) is now fully done** across S10a + S10b. Next per Plan Lock: **P1-S11** — computed coverage (view/RPC engine).
