@@ -130,6 +130,7 @@ export const testHubRoutes = {
   filter: (filterSlug: string) => `/testhub/filters/${filterSlug}`,
   timeline: () => '/testhub/timeline',
   defects: () => '/testhub/defects',
+  defect: (defectKey: string) => `/testhub/defects/${defectKey}`,
   traceability: () => '/testhub/traceability',
 };
 

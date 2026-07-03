@@ -216,3 +216,20 @@ Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this
 | Live proof (build) | tsc clean, `lint:cre` + both ADS gates pass |
 
 **P1-S12 done** — one hook spine, sprint FK now actually written, and a genuinely broken (not just duplicated) stats RPC fixed along the way. Recorded as D-012. Next per Plan Lock: **P1-S13** — defect spine 2 (canonical detail everywhere).
+
+## P1-S13 (defect spine 2 — canonical detail everywhere)
+
+| Item | Evidence |
+|---|---|
+| Research first | Agent found a real architectural mismatch: `CatalystViewDefect` (existing, in `CatalystDetailRouter`'s default type-resolution path) is built for **`ph_issues`** rows (issue_type Bug/QA Bug), but the whole TestHub defect surface (`/testhub/defects`, `CreateStoryModal`'s QA Bug branch, everything from P0/P1-S12) writes to **`tm_defects`** — a different table entirely. The existing view cannot render a `tm_defects` row; nothing was reusable as-is |
+| New component | `CatalystViewTmDefect.tsx` — same REUSE-FIRST pattern as `CatalystViewTestCase`/`TaskCatalystView` (dedicated canonical view for a non-`ph_issues` table, not a fork of the ph_issues-based sibling). Tabs: Details (severity/priority/description) + **History** (real `tm_defect_links` → `tm_test_runs` join, run number/status/timestamp — DEF-004/010) |
+| New hooks | `useDefectByKey` (by `defect_key`, returns raw enum values alongside the display-mapped `TMDefect` so the status/severity controls write real db values, not lossy display labels) and `useDefectHistory` (the links→runs join) in `useDefects.ts` |
+| Route | `Routes.testHub.defect(defectKey)` → `/testhub/defects/:defectKey` (real key, no `:id`/`:uuid` — slug contract intact). New page `src/pages/testhub/defects/DefectDetailPage.tsx`, mounts `CatalystDetailRouter` with `entityKind='tm_defect'` + `fullPageMode` — no pre-resolution needed, the key is unambiguous |
+| Router wiring | `CatalystDetailRouter.tsx` gets a new `entityKind === 'tm_defect'` short-circuit (mirrors the existing `test_case`/`test_cycle`/`task` pattern exactly); `entityKind` union type extended in `shared/types.ts` |
+| **Found live: the click-through was ALSO blocked one layer up, in `BacklogPage.atlaskit.tsx`** — its `openDetail`/`openModal` functions (the actual row-click/key-click handlers) hard-coded `if (dataSource?.entityKind === 'defect') { navigate('/testhub/defects'); return; }` — a P0-S5 placeholder that redirected back to the list, **before ever reaching `dataSource.onOpenItem`**. My first fix (wiring `defectsDataSource.ts`'s `onOpenItem`) was correct but dead — this file gates the click before that callback is ever invoked. Fixed both `openDetail` and `openModal` to navigate to the real route, matching the existing `test_case`/`release` branches' pattern exactly |
+| Live proof: deep-link | `http://localhost:8080/testhub/defects/DEF-002` renders the full canonical page directly — title, status pill, key details (Priority: Major, Severity: Major), "History (1)" tab showing **Run #2, FAILED, real timestamp** (from `tm_defect_links` → `tm_test_runs`, not a hand-maintained log) |
+| Live proof: click-through | From `/testhub/defects` list, clicking DEF-002's row now navigates to `/testhub/defects/DEF-002` (previously redirected back to the list) |
+| Live proof (light+dark) | Verified via reload-into-dark and reload-into-light — both render cleanly, token-correct, no light-metaphor bugs. Console clean (only pre-existing repo-wide `@atlaskit/select` legacy-context warning, unrelated) |
+| Live proof (build) | tsc clean, all 3 gates pass, full `npm run build` succeeds |
+
+**P1-S13 done** — canonical defect detail exists, is routable by key, click-through works, history reads real runs. No modal-only defect detail remains. Next per Plan Lock: **P1-S14** — slug contract sweep.

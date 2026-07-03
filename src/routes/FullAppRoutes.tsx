@@ -181,6 +181,7 @@ const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability
 // Phase 2 Lane A (bodies now live in src/components/testhub/reports/bodies/).
 const TestHubReportsHubPage = lazy(() => import("../pages/testhub/reports/ReportsHubPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
+const TestHubDefectDetailPage = lazy(() => import("../pages/testhub/defects/DefectDetailPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
 
@@ -684,6 +685,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
+        <Route path="/testhub/defects/:defectKey" element={<S><TestHubDefectDetailPage /></S>} />
         {/* Reports hub (CAT-REPORTS-HUB-20260703-001): one surface, :reportSlug
             selects a REPORT_REGISTRY entry. Old report URLs redirect to their
             registry slugs; governance + product-status slugs are unchanged so

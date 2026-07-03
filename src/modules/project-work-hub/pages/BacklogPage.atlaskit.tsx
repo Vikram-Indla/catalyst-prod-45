@@ -2676,11 +2676,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/testhub/repository?case=${it.id}`);
       return;
     }
-    /* 2026-07-03 (P0-S5): /testhub/defects/:id was never registered — the
-       old navigate() here hard-404'd. tm_defects has no detail surface yet
-       (P1 slice); keep the user on the list instead of a dead URL. */
+    /* P1-S13: canonical defect detail now exists (CatalystViewTmDefect,
+       routed at /testhub/defects/:defectKey) — navigate there. */
     if (dataSource?.entityKind === 'defect') {
-      navigate(`/testhub/defects`);
+      navigate(`/testhub/defects/${it.key ?? it.id}`);
       return;
     }
     writeTicketOrigin({
@@ -2724,8 +2723,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       return;
     }
     if (dataSource?.entityKind === 'defect') {
-      // P0-S5: no registered defect detail route — stay on the list (see openDetail).
-      navigate(`/testhub/defects`);
+      // P1-S13: canonical defect detail now exists — see openDetail.
+      navigate(`/testhub/defects/${it.key ?? it.id}`);
       return;
     }
     const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;

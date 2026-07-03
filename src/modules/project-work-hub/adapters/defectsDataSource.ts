@@ -7,9 +7,11 @@
  * to no-op if route absent.
  */
 import { useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useDefects, useCreateDefect, useUpdateDefect, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { Routes } from '@/lib/routes';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
@@ -79,6 +81,7 @@ const DEFECT_PATCH_MAP: Record<string, string> = {
 };
 
 export function useDefectsSource(): BacklogDataSource | null {
+  const navigate = useNavigate();
   const { data: projects = [], isLoading: pl } = useProjects();
   const projectId = projects[0]?.id;
   const { data: defectsData, isLoading: dl } = useDefects(projectId);
@@ -145,11 +148,11 @@ export function useDefectsSource(): BacklogDataSource | null {
       statusAppearance: resolvedStatusAppearance,
       statusLabel: resolvedStatusLabel,
       allStatuses,
-      /* P0-S5: a full-page tm_defects view does not exist yet (P1 slice).
-         Previously this hard-navigated to unregistered /testhub/defects/:id
-         (guaranteed 404 + full reload). Until the detail surface ships, the
-         action is intentionally inert rather than a dead URL. */
-      onOpenItem: () => {},
+      /* P1-S13: the canonical detail surface now exists (CatalystViewTmDefect,
+         routed at /testhub/defects/:defectKey). key is the row's defect_key. */
+      onOpenItem: (key) => {
+        if (key) navigate(Routes.testHub.defect(key));
+      },
       onUpdate: async (id, patch) => {
         const mapped: Record<string, any> = {};
         let canonicalKey: string | null = null;
