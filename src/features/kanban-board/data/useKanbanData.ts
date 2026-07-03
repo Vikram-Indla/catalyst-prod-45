@@ -617,15 +617,20 @@ export function useKanbanData(
     queryKey: ['kb-product-issues', productId],
     queryFn: async () => {
       if (!productId) return [] as any[];
-      const { data, error } = await (supabase as any)
-        .from('business_requests')
-        .select(BR_SELECT)
-        .eq('product_id', productId)
-        .is('deleted_at', null)
-        .order('board_position', { ascending: true, nullsFirst: false })
-        .order('updated_at', { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as any[];
+      // PostgREST caps responses at max_rows (1000); page past it. The id
+      // tiebreak keeps the order stable so pages never overlap or skip rows.
+      const rows = await fetchAllPages<any>((from, to) =>
+        (supabase as any)
+          .from('business_requests')
+          .select(BR_SELECT)
+          .eq('product_id', productId)
+          .is('deleted_at', null)
+          .order('board_position', { ascending: true, nullsFirst: false })
+          .order('updated_at', { ascending: false })
+          .order('id', { ascending: true })
+          .range(from, to),
+      );
+      return rows as any[];
     },
     enabled: !!productId && isProduct,
     staleTime: 30_000,
