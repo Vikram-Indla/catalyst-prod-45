@@ -185,10 +185,10 @@ interface RenderedPath {
 }
 
 interface LockedChainData {
-  theme: { key: string; name: string; status: string; progress: number };
-  goal: { key: string; title: string; status: string; progress: number; health?: number };
-  krs: { key: string; title: string; status: string; progress: number }[];
-  initiative: { key: string; title: string; status: string; progress: number } | null;
+  theme: { key: string; name: string; status: string; progress?: number };
+  goal: { key: string; title: string; status: string; progress?: number; health?: number };
+  krs: { key: string; title: string; status: string; progress?: number }[];
+  initiative: { key: string; title: string; status: string; progress?: number } | null;
   epic: { key: string; title: string; status: string } | null;
 }
 
@@ -318,21 +318,21 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     if (matchingRows.length === 0) return null;
 
     const firstRow = matchingRows[0];
-    const theme = { key: firstRow.theme_key, name: firstRow.theme_name, status: firstRow.theme_status, progress: Number(firstRow.theme_progress) || 0 };
+    const theme = { key: firstRow.theme_key, name: firstRow.theme_name, status: firstRow.theme_status, progress: firstRow.theme_progress != null ? Number(firstRow.theme_progress) : undefined };
     const goal = firstRow.goal_id ? {
       key: firstRow.goal_key || '', title: firstRow.goal_title || '', status: firstRow.goal_status || 'draft',
-      progress: Number(firstRow.goal_progress) || 0, health: firstRow.goal_health != null ? Number(firstRow.goal_health) : undefined,
-    } : { key: '', title: 'No goal linked', status: 'draft', progress: 0 };
+      progress: firstRow.goal_progress != null ? Number(firstRow.goal_progress) : undefined, health: firstRow.goal_health != null ? Number(firstRow.goal_health) : undefined,
+    } : { key: '', title: 'No goal linked', status: 'draft', progress: undefined };
 
-    const krsMap = new Map<string, { key: string; title: string; status: string; progress: number }>();
+    const krsMap = new Map<string, { key: string; title: string; status: string; progress?: number }>();
     matchingRows.forEach(r => {
       if (r.kr_id && !krsMap.has(r.kr_id)) {
-        krsMap.set(r.kr_id, { key: r.kr_key || '', title: r.kr_title || '', status: r.kr_status || 'not_started', progress: Number(r.kr_progress) || 0 });
+        krsMap.set(r.kr_id, { key: r.kr_key || '', title: r.kr_title || '', status: r.kr_status || 'not_started', progress: r.kr_progress != null ? Number(r.kr_progress) : undefined });
       }
     });
 
     const initiative = firstRow.request_id ? {
-      key: firstRow.initiative_key || '', title: firstRow.initiative_title || '', status: firstRow.initiative_status || 'draft', progress: Number(firstRow.initiative_progress) || 0,
+      key: firstRow.initiative_key || '', title: firstRow.initiative_title || '', status: firstRow.initiative_status || 'draft', progress: firstRow.initiative_progress != null ? Number(firstRow.initiative_progress) : undefined,
     } : null;
     const epic = firstRow.epic_id ? {
       key: firstRow.epic_key || '', title: firstRow.epic_title || '', status: firstRow.epic_status || 'proposed',
