@@ -23,8 +23,8 @@ export type StatusAppearance =
 /**
  * ADS bold background tokens paired with WCAG-correct text tokens.
  *
- * moved uses dark text (not inverse) — #E2B203 amber with white text fails
- * WCAG AA (contrast ~1.9:1). Dark text passes 4.7:1.
+ * moved uses warning-inverse (not plain inverse) — amber with white text fails
+ * WCAG AA (contrast ~1.9:1). Warning-inverse stays dark in both themes.
  * new uses discovery-bold (purple) + inverse — no subtle-only constraint.
  */
 export const STATUS_BG: Record<StatusAppearance, string> = {
@@ -36,11 +36,14 @@ export const STATUS_BG: Record<StatusAppearance, string> = {
   default:    'var(--ds-background-neutral)',
 };
 
-/** Matching text token per status. Inverse for dark bgs, dark text for amber. */
+/** Matching text token per status. Inverse for dark bgs, dark text for amber.
+ *  moved MUST be warning-inverse, not --ds-text: --ds-text flips light in dark
+ *  mode and washes out on the amber bold bg (probed 2026-07-03, ~1.6:1).
+ *  --ds-text-warning-inverse stays dark in both themes. */
 export const STATUS_FG: Record<StatusAppearance, string> = {
   success:    'var(--ds-text-inverse)',
   inprogress: 'var(--ds-text-inverse)',
-  moved:      'var(--ds-text)',
+  moved:      'var(--ds-text-warning-inverse)',
   new:        'var(--ds-text-inverse)',
   removed:    'var(--ds-text-inverse)',
   default:    'var(--ds-text)',
