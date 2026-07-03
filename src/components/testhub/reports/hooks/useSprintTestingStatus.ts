@@ -75,11 +75,12 @@ export function useSprintTestingStatus(sprintName?: string) {
       }
 
       // 2) Links for those stories → covered keys + case ids
-      const { data: linkData } = await supabase
+      const { data: linkData, error: linkError } = await supabase
         .from('tm_requirement_links')
         .select('external_key, test_case_id')
         .eq('requirement_type', 'story')
         .in('external_key', storyKeys);
+      if (linkError) throw linkError;
       const coveredKeys = new Set<string>((linkData ?? []).map((l: { external_key: string }) => l.external_key));
       const caseIds = Array.from(new Set((linkData ?? []).map((l: { test_case_id: string }) => l.test_case_id)));
       const caseToStory = new Map<string, string>();
@@ -91,7 +92,8 @@ export function useSprintTestingStatus(sprintName?: string) {
       // case_key lookup for readable governance rows
       const caseKeyById = new Map<string, string>();
       if (caseIds.length) {
-        const { data: cs } = await supabase.from('tm_test_cases').select('id, case_key').in('id', caseIds);
+        const { data: cs, error: csError } = await supabase.from('tm_test_cases').select('id, case_key').in('id', caseIds);
+        if (csError) throw csError;
         for (const c of cs ?? []) caseKeyById.set((c as { id: string }).id, (c as { case_key: string }).case_key);
       }
 
@@ -99,10 +101,11 @@ export function useSprintTestingStatus(sprintName?: string) {
       const exec: ExecBreakdown = { ...EMPTY_EXEC };
       const caseStatus = new Map<string, string>();
       if (caseIds.length) {
-        const { data: scope } = await supabase
+        const { data: scope, error: scopeError } = await supabase
           .from('tm_cycle_scope')
           .select('test_case_id, current_status')
           .in('test_case_id', caseIds);
+        if (scopeError) throw scopeError;
         for (const s of scope ?? []) {
           const row = s as { test_case_id: string; current_status: string };
           const k = row.current_status as keyof ExecBreakdown;
@@ -127,6 +130,7 @@ export function useSprintTestingStatus(sprintName?: string) {
       let tmDefects = 0;
       if (caseIds.length) {
         const d = await supabase.from('tm_defects').select('id', { count: 'exact', head: true }).in('source_test_case_id', caseIds);
+        if (d.error) throw d.error;
         tmDefects = d.count ?? 0;
       }
       const qb = await fetchAllPages<{ sprint_release?: unknown }>((from, to) =>

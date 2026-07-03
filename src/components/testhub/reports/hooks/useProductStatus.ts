@@ -18,20 +18,22 @@ export function useProductStatus(epicKey?: string) {
     enabled: !!epicKey,
     queryFn: async (): Promise<ProjectTestingStatus> => {
       // direct children of the epic
-      const { data: children } = await supabase
+      const { data: children, error: childrenError } = await supabase
         .from('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type')
         .eq('parent_key', epicKey!);
+      if (childrenError) throw childrenError;
       const kids = (children ?? []) as (StoryRow & { issue_type: string })[];
       const featureKeys = kids.filter((k) => k.issue_type === 'Feature').map((k) => k.issue_key);
 
       let stories: StoryRow[] = kids.filter((k) => k.issue_type === 'Story').map(({ issue_key, summary, status, status_category }) => ({ issue_key, summary, status, status_category }));
       if (featureKeys.length) {
-        const { data: gk } = await supabase
+        const { data: gk, error: gkError } = await supabase
           .from('ph_issues')
           .select('issue_key, summary, status, status_category')
           .in('parent_key', featureKeys)
           .eq('issue_type', 'Story');
+        if (gkError) throw gkError;
         stories = stories.concat((gk ?? []) as StoryRow[]);
       }
       const storyByKey = new Map(stories.map((s) => [s.issue_key, s]));
@@ -42,7 +44,8 @@ export function useProductStatus(epicKey?: string) {
       }
 
       // coverage links
-      const { data: links } = await supabase.from('tm_requirement_links').select('external_key, test_case_id').eq('requirement_type', 'story').in('external_key', storyKeys);
+      const { data: links, error: linksError } = await supabase.from('tm_requirement_links').select('external_key, test_case_id').eq('requirement_type', 'story').in('external_key', storyKeys);
+      if (linksError) throw linksError;
       const coveredKeys = new Set<string>((links ?? []).map((l: { external_key: string }) => l.external_key));
       const caseIds = Array.from(new Set((links ?? []).map((l: { test_case_id: string }) => l.test_case_id)));
       const caseToStory = new Map<string, string>();
@@ -52,7 +55,8 @@ export function useProductStatus(epicKey?: string) {
       const exec: ExecBreakdown = { ...EMPTY_EXEC };
       const failedCases: string[] = [];
       if (caseIds.length) {
-        const { data: scope } = await supabase.from('tm_cycle_scope').select('test_case_id, current_status').in('test_case_id', caseIds);
+        const { data: scope, error: scopeError } = await supabase.from('tm_cycle_scope').select('test_case_id, current_status').in('test_case_id', caseIds);
+        if (scopeError) throw scopeError;
         for (const s of scope ?? []) {
           const row = s as { test_case_id: string; current_status: string };
           const k = row.current_status as keyof ExecBreakdown;

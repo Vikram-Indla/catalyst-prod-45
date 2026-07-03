@@ -31,11 +31,12 @@ export function useTeamPerformance(projectId?: string) {
     enabled: !!projectId,
     queryFn: async (): Promise<TeamPerformance> => {
       // 1) Project cases + their assignee
-      const { data: cases } = await supabase
+      const { data: cases, error: casesError } = await supabase
         .from('tm_test_cases')
         .select('id, assigned_to')
         .eq('project_id', projectId!)
         .not('assigned_to', 'is', null);
+      if (casesError) throw casesError;
       const caseList = (cases ?? []) as { id: string; assigned_to: string }[];
       if (!caseList.length) return { members: [], totals: { testers: 0, assigned: 0, executed: 0, passed: 0, failed: 0, defects: 0 } };
 
@@ -44,7 +45,8 @@ export function useTeamPerformance(projectId?: string) {
       const testerIds = Array.from(new Set(caseList.map((c) => c.assigned_to)));
 
       // 2) Names
-      const { data: profs } = await supabase.from('profiles').select('id, full_name').in('id', testerIds);
+      const { data: profs, error: profsError } = await supabase.from('profiles').select('id, full_name').in('id', testerIds);
+      if (profsError) throw profsError;
       const nameById = new Map((profs ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name ?? p.id]));
 
       // 3) Per-case latest status (cycle scope) → attribute to the case's assignee
@@ -56,10 +58,11 @@ export function useTeamPerformance(projectId?: string) {
       };
       for (const c of caseList) ensure(c.assigned_to).assigned += 1;
 
-      const { data: scope } = await supabase
+      const { data: scope, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select('test_case_id, current_status')
         .in('test_case_id', caseIds);
+      if (scopeError) throw scopeError;
       for (const s of scope ?? []) {
         const row = s as { test_case_id: string; current_status: string };
         const tid = caseAssignee.get(row.test_case_id);
@@ -72,10 +75,11 @@ export function useTeamPerformance(projectId?: string) {
       }
 
       // 4) Defects raised per tester (in this project)
-      const { data: defects } = await supabase
+      const { data: defects, error: defectsError } = await supabase
         .from('tm_defects')
         .select('reporter_id')
         .eq('project_id', projectId!);
+      if (defectsError) throw defectsError;
       for (const d of defects ?? []) {
         const rid = (d as { reporter_id: string | null }).reporter_id;
         if (rid && member.has(rid)) ensure(rid).defects += 1;
