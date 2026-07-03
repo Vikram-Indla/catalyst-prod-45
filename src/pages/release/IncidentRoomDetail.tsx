@@ -217,12 +217,34 @@ export default function IncidentRoomDetail() {
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('submit-vote', {
-        body: { committee_id: committeeId, vote, is_veto: isVeto, note },
-      });
+      // Client-side vote: upsert the caller's OWN vote row. RLS scopes writes
+      // to the voting member (member_id → auth.uid()), so we resolve the
+      // caller's committee_members row and refuse if they aren't a member.
+      const { data: { user } } = await supabase.auth.getUser();
+      const members = (incident?.committee?.members || committeeRecord?.members || []) as Array<{
+        id: string;
+        user?: { id?: string } | null;
+      }>;
+      const myMember = members.find((m) => m.user?.id === user?.id);
+      if (!myMember) throw new Error('You are not a member of this committee.');
+
+      const resolvedVote: 'approved' | 'rejected' | 'vetoed' = isVeto ? 'vetoed' : vote;
+
+      const { error } = await supabase
+        .from('committee_votes')
+        .upsert(
+          {
+            committee_id: committeeId,
+            member_id: myMember.id,
+            vote: resolvedVote,
+            voted_at: new Date().toISOString(),
+            comment: note?.trim() || null,
+          },
+          { onConflict: 'committee_id,member_id' },
+        );
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      catalystToast.success(data.message || 'Vote submitted');
+
+      catalystToast.success('Vote submitted');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
       queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
     } catch (error: any) {
@@ -322,20 +344,11 @@ export default function IncidentRoomDetail() {
 
       if (memberError) throw memberError;
 
-      const { data: newMember } = await supabase
-        .from('committee_members')
-        .select('id')
-        .eq('committee_id', committeeId)
-        .eq('user_id', userId)
-        .single();
-
-      if (newMember) {
-        await supabase.from('committee_votes').insert({
-          committee_id: committeeId,
-          member_id: newMember.id,
-          vote: 'pending',
-        });
-      }
+      // No pending committee_votes row is created here. Vote rows are created
+      // lazily when a member casts their first vote (RLS lets a member write
+      // only their own row; a pre-created 'pending' insert here would fail the
+      // service_role-only insert path anyway). A missing row = "pending" in the
+      // UI vote-count logic.
 
       await supabase.from('incident_history').insert({
         incident_id: incidentId,
@@ -356,24 +369,9 @@ export default function IncidentRoomDetail() {
     }
   };
 
-  const handleInitiateCommittee = async () => {
-    if (!incidentId) return;
-    setIsSubmitting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('send-to-committee', {
-        body: { incident_id: incidentId },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      catalystToast.success('Committee review initiated');
-      queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
-      queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
-    } catch (error: any) {
-      catalystToast.error(error.message || 'Failed to initiate committee');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // "Use Default Approvers" removed: it invoked a send-to-committee edge
+  // function that is not deployed (404), and there is no default-approver
+  // config to back it. Use "Create Committee" + "Add first approver" instead.
 
   const handleAssignToMe = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -502,7 +500,6 @@ export default function IncidentRoomDetail() {
           onDeleteFile={(attId, path) => deleteAttachment.mutate({ attachmentId: attId, incidentId: incidentId!, storagePath: path })}
           onVote={handleVote}
           onAddApprover={handleAddApprover}
-          onInitiateCommittee={handleInitiateCommittee}
           onCreateCommittee={handleCreateCommittee}
           onResolutionChange={(field, value) => handleFieldChange(field, value)}
           onOpenLinkWorkItem={() => setLinkWorkItemOpen(true)}
