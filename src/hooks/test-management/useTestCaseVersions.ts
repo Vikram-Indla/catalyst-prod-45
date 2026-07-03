@@ -123,14 +123,22 @@ interface RestoreVersionInput {
 }
 
 /**
- * Restore a test case to a specific version
+ * Restore a test case to a specific version.
+ *
+ * P1-S4 / VER-003/004: restore is snapshot-first and append-only — it never
+ * rewrites history. The old implementation hard-DELETEd every live step
+ * (destroying step identity, and — before P1-S1's soft-delete — silently
+ * wiping execution history via CASCADE) then reinserted from the snapshot.
+ * Restore now soft-deletes current steps, inserts fresh rows matching the
+ * target snapshot, and records the restore itself as a NEW version via the
+ * canonical RPC — "restore to v2" reads as "v(latest+1) == v2's content" in
+ * the version list, never as a rewrite of the past.
  */
 export function useRestoreTestCaseVersion() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: RestoreVersionInput) => {
-      // Fetch the version to restore
       const { data: version, error: versionError } = await typedQuery('tm_test_case_versions')
         .select('snapshot')
         .eq('test_case_id', input.testCaseId)
@@ -141,7 +149,6 @@ export function useRestoreTestCaseVersion() {
 
       const snapshot = version.snapshot as TestCaseVersionSnapshot;
 
-      // Update the test case
       const { error: updateError } = await supabase
         .from('tm_test_cases')
         .update({
@@ -157,13 +164,14 @@ export function useRestoreTestCaseVersion() {
 
       if (updateError) throw updateError;
 
-      // Delete existing steps and insert from snapshot
-      const { error: deleteStepsError } = await supabase
+      // Soft-delete current steps (P1-S1) — never destroy step history.
+      const { error: archiveStepsError } = await supabase
         .from('tm_test_steps')
-        .delete()
-        .eq('test_case_id', input.testCaseId);
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('test_case_id', input.testCaseId)
+        .is('deleted_at', null);
 
-      if (deleteStepsError) throw deleteStepsError;
+      if (archiveStepsError) throw archiveStepsError;
 
       if (snapshot.steps && snapshot.steps.length > 0) {
         const stepsToInsert = snapshot.steps.map(s => ({
@@ -181,11 +189,22 @@ export function useRestoreTestCaseVersion() {
         if (insertStepsError) throw insertStepsError;
       }
 
+      // Record the restore as a new version (P1-S3 canonical writer) —
+      // append-only history, never a rewrite of the restored-from version.
+      const { error: snapshotError } = await supabase.rpc('tm_create_version_snapshot', {
+        p_case_id: input.testCaseId,
+        p_change_summary: `Restored to version ${input.versionNumber}`,
+      });
+
+      if (snapshotError) throw snapshotError;
+
       return input;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.testCaseId] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.testCaseId] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.testCaseId] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.testCaseId] });
       queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
       catalystToast.success(`Restored to version ${data.versionNumber}`);
     },
