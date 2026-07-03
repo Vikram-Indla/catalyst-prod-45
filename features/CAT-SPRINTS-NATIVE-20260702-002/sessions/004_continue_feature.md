@@ -37,6 +37,16 @@ Plan Lock approved by Vikram ("go"). Implemented the single-file fix in `src/fea
 
 Validation: `tsc` 183 errors (matches baseline, zero new), `lint:colors:gate` and `audit:ads:gate` both pass. Attempted a live DB probe against staging via anon key (same method as VG-001) but `ph_issues` is RLS-locked for anon reads (`content-range: */0`) — documented honestly in `06_VALIDATION_EVIDENCE.md` VG-002 rather than fabricating a result; the authenticated Supabase MCP available this session is scoped to prod only, which has no `ph_jira_sprints` table (D-013) and was correctly not used. Correctness rests on code-parity with the already-shipped reference implementation plus clean typecheck/gates.
 
-No commit made — not requested yet. Nothing currently staged.
+Committed (`9481249`) and pushed to `origin/main` on request. Fast-forward-merged 30 unrelated commits from origin first (real concurrent-session drift this time — checked for file-level conflicts before merging; only one touched `entity.ts` and it was the file's original creation commit, already an ancestor, not a conflict).
 
-**Next action:** Slice 2 (wire a sprint health card into `ReleaseSidePanel.tsx`, gated on `config.kind === 'sprint'`, pattern-matching the existing `DefinitionOfDoneCard` gate) — needs its own Plan Lock before code, per handover's proposed Phase 3 order.
+## Slice 2 scoping — found it's already done
+
+Started discovery for the handover's proposed Slice 2 ("wire a sprint health card into `ReleaseSidePanel.tsx`"). Grepped `ReleaseSidePanel.tsx` — confirmed zero health references there, matching the handover. But traced up one level to `ReleaseDetailPage.tsx` (the shared page both release and sprint detail routes mount) and found a header toggle button + `HealthPanel` swap already wired, gated only on `config.kind !== 'milestone'` — already active for sprints today.
+
+Verified live via authenticated Chrome MCP session (not just code-reading): navigated to two real staging sprints on `localhost:8080`.
+- Empty sprint (`bau-sprint-71-06-jul-26-2`, 0 work items) → toggled health → "0 Analysed / Looks healthy".
+- Populated sprint (`sprint28-03-jul-2025`, 7 work items visible) → toggled health → "7 Analysed", exact match.
+
+This closes Slice 2 as unnecessary (D-021) and also closes VG-002's outstanding live-probe gap for Slice 1 (VG-003) — the FK fix is now proven end-to-end through the real UI, not just by code parity. No new code written for this half of the session; two feature-folder doc updates only (`06_VALIDATION_EVIDENCE.md` VG-003, `09_DECISIONS.md` D-020/D-021).
+
+**Next action:** former Slice 3 (AI summary + cache) is now next in line — needs its own Plan Lock before code, per the handover's Phase 3 order (renumbered per D-021).
