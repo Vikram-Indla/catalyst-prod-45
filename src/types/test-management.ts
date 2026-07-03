@@ -244,6 +244,9 @@ export interface TMCycleScope {
   last_run_id: string | null;
   last_run_at: string | null;
   created_at: string;
+  /** tm_test_cases.version pinned at scope-add time (P1-S2). Null for scope
+   * rows added before this column existed — runner falls back to live steps. */
+  locked_version: number | null;
   test_case?: TMTestCase;
   assignee?: { id: string; full_name: string; avatar_url?: string };
   last_run?: TMRun;

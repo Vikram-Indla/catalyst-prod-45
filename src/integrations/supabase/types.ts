@@ -42854,6 +42854,7 @@ export type Database = {
           cycle_id: string
           due_date: string | null
           id: string
+          locked_version: number | null
           priority: string | null
           sort_order: number | null
           test_case_id: string
@@ -42868,6 +42869,7 @@ export type Database = {
           cycle_id: string
           due_date?: string | null
           id?: string
+          locked_version?: number | null
           priority?: string | null
           sort_order?: number | null
           test_case_id: string
@@ -42882,6 +42884,7 @@ export type Database = {
           cycle_id?: string
           due_date?: string | null
           id?: string
+          locked_version?: number | null
           priority?: string | null
           sort_order?: number | null
           test_case_id?: string

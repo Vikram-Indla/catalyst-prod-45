@@ -479,6 +479,7 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
         status: execStatusFromDb(row.current_status),
         last_run_id: latestRun?.id ?? null,
         last_run_at: latestRun?.completed_at ?? latestRun?.started_at ?? null,
+        locked_version: row.locked_version ?? null,
         created_at: row.added_at || '',
         test_case: row.test_case ? {
           ...row.test_case,

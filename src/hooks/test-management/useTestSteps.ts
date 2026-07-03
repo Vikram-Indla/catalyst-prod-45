@@ -2,10 +2,80 @@
  * Hook for managing test steps
  * Auto-versions on step changes
  */
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { createVersionSnapshot } from './useAutoVersioning';
+import type { TMCaseStep } from '@/types/test-management';
+
+/**
+ * Execution-time step resolution (P1-S2 / VER-001): the runner must show the
+ * steps as they existed when the case was scoped into the cycle, not
+ * whatever they've since been edited to. Reads the pinned version's
+ * snapshot from tm_test_case_versions when one was ever recorded for it;
+ * falls back to live tm_test_steps only when no snapshot exists (the case
+ * was never edited since scope-add, so live === pinned — not a lie).
+ */
+export function useExecutionSteps(caseId: string | undefined, lockedVersion: number | null | undefined) {
+  return useQuery({
+    queryKey: ['tm-execution-steps', caseId, lockedVersion],
+    queryFn: async (): Promise<TMCaseStep[]> => {
+      if (!caseId) return [];
+
+      if (lockedVersion != null) {
+        const { data: versionRow, error: versionError } = await typedQuery('tm_test_case_versions')
+          .select('snapshot')
+          .eq('test_case_id', caseId)
+          .eq('version_number', lockedVersion)
+          .maybeSingle();
+
+        if (versionError) throw versionError;
+
+        const snapshotSteps = (versionRow?.snapshot as any)?.steps as
+          | Array<{ step_number: number; action: string; expected_result: string; test_data?: string | null }>
+          | undefined;
+
+        if (snapshotSteps?.length) {
+          return snapshotSteps
+            .slice()
+            .sort((a, b) => a.step_number - b.step_number)
+            .map((s, i) => ({
+              id: `pinned-${caseId}-v${lockedVersion}-${i}`,
+              case_id: caseId,
+              step_number: s.step_number,
+              action: s.action,
+              expected_result: s.expected_result || '',
+              test_data: s.test_data ?? undefined,
+              created_at: '',
+              updated_at: '',
+            }));
+        }
+      }
+
+      // No snapshot recorded for this version — fall back to live steps.
+      const { data, error } = await supabase
+        .from('tm_test_steps')
+        .select('*')
+        .eq('test_case_id', caseId)
+        .is('deleted_at', null)
+        .order('step_number', { ascending: true });
+
+      if (error) throw error;
+
+      return (data ?? []).map(s => ({
+        id: s.id,
+        case_id: s.test_case_id,
+        step_number: s.step_number,
+        action: s.action,
+        expected_result: s.expected_result || '',
+        test_data: s.test_data ?? undefined,
+        created_at: s.created_at || '',
+        updated_at: s.updated_at || '',
+      }));
+    },
+    enabled: !!caseId,
+  });
+}
 
 interface AddStepInput {
   test_case_id: string;
