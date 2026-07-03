@@ -55,13 +55,19 @@ export interface IncomingHuddle {
   conversationId: string;
   conversationName: string;
   callerName: string;
+  /** true when the user snoozed this (still-live) huddle — muted, not ringing. */
+  snoozed: boolean;
 }
 
 export function useIncomingHuddle(): {
+  /** a live huddle ringing right now (not snoozed) */
   incoming: IncomingHuddle | null;
+  /** a live huddle the user snoozed — surfaced so they can still answer it */
+  snoozedCall: IncomingHuddle | null;
   accept: () => void;
   decline: () => void;
   snooze: () => void;
+  unsnooze: () => void;
 } {
   const { user } = useAuth();
   const userId = user?.id ?? null;
@@ -94,8 +100,10 @@ export function useIncomingHuddle(): {
         .is('left_at', null)
         .gt('last_seen_at', liveCutoff());
       const liveHuddleIds = new Set(((fresh ?? []) as PartRow[]).map((p) => p.huddle_id));
+      // A snoozed huddle is NOT excluded here — we still surface it (as snoozed)
+      // so the user can answer it; the `snoozed` flag drives the muted UI.
       const candidate = rows.find(
-        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id) && !isSnoozed(h.id) && liveHuddleIds.has(h.id),
+        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id) && liveHuddleIds.has(h.id),
       );
       if (!candidate) return null;
       const [{ data: caller }, { data: conv }] = await Promise.all([
@@ -109,6 +117,7 @@ export function useIncomingHuddle(): {
         conversationId: candidate.conversation_id,
         conversationName: convName,
         callerName,
+        snoozed: isSnoozed(candidate.id),
       };
     },
   });
@@ -126,10 +135,12 @@ export function useIncomingHuddle(): {
     return () => { supabase.removeChannel(ch); };
   }, [userId, qc, instanceId]);
 
-  const incoming = !activeInCall && data ? data : null;
+  const base = !activeInCall && data ? data : null;
+  const incoming = base && !base.snoozed ? base : null;
+  const snoozedCall = base && base.snoozed ? base : null;
 
   const decline = useCallback(() => {
-    if (data) { declined.add(data.huddleId); persistDeclined(); }
+    if (data) { declined.add(data.huddleId); snoozed.delete(data.huddleId); persistDeclined(); persistSnoozed(); }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 
@@ -138,11 +149,17 @@ export function useIncomingHuddle(): {
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 
+  const unsnooze = useCallback(() => {
+    if (data) { snoozed.delete(data.huddleId); persistSnoozed(); }
+    qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+  }, [data, qc, userId]);
+
   const accept = useCallback(() => {
     if (!data) return;
+    if (snoozed.has(data.huddleId)) { snoozed.delete(data.huddleId); persistSnoozed(); }
     const conv = { id: data.conversationId, title: data.conversationName } as ChatConversation;
     void startOrJoin(conv);
   }, [data, startOrJoin]);
 
-  return { incoming, accept, decline, snooze };
+  return { incoming, snoozedCall, accept, decline, snooze, unsnooze };
 }

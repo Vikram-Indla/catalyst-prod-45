@@ -456,6 +456,26 @@
   pointer-events: none;
   opacity: 0;
 }
+/* Snoozed call — muted, no vibrate. Static clock badge marks a callable call. */
+.cc-fab--snoozed .cc-wake-disc {
+  border-color: var(--ds-border-bold);
+}
+.cc-fab__snooze-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-background-neutral-bold);
+  color: var(--ds-text-inverse);
+  border: 2px solid var(--ds-surface);
+  box-sizing: border-box;
+}
+
 /* hover fan swings into place (rotate-in driven by rAF in DockCallRing) */
 .cc-ring-fan {
   position: absolute;

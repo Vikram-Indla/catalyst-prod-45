@@ -13,6 +13,8 @@ type Props = {
   centerX: number;
   centerY: number;
   open: boolean;
+  /** 'ringing' → decline/snooze/accept; 'snoozed' → dismiss/answer only */
+  variant?: 'ringing' | 'snoozed';
   onOpen: () => void;
   onClose: () => void;
   onDecline: () => void;
@@ -25,16 +27,24 @@ function polar(r: number, deg: number) {
   return { x: r * Math.cos(a), y: r * Math.sin(a) };
 }
 
+type Action = { key: string; angle: number; r: number; size: number; iconSize: number; title: string; bg: string; Icon: (p: { size?: number }) => React.ReactElement };
+
 // 0deg = right, -90deg = up, 180deg = left (screen y-down).
-// decline/accept sit wide + smaller; snooze rides on top.
-const ACTIONS = [
+// ringing → decline/accept sit wide + smaller, snooze rides on top.
+const RINGING_ACTIONS: Action[] = [
   { key: 'decline', angle: 180, r: 58, size: 38, iconSize: 17, title: 'Decline', bg: 'var(--ds-background-danger-bold)', Icon: PhoneDownIcon },
   { key: 'snooze', angle: -90, r: 48, size: 44, iconSize: 20, title: 'Snooze 1 hour', bg: 'var(--ds-background-neutral-bold)', Icon: SnoozeIcon },
   { key: 'accept', angle: 0, r: 58, size: 38, iconSize: 17, title: 'Accept', bg: 'var(--ds-background-success-bold)', Icon: PhoneIcon },
-] as const;
+];
+// snoozed → the call is muted; offer answer + dismiss so the user can still join.
+const SNOOZED_ACTIONS: Action[] = [
+  { key: 'decline', angle: 180, r: 54, size: 40, iconSize: 18, title: 'Dismiss call', bg: 'var(--ds-background-danger-bold)', Icon: PhoneDownIcon },
+  { key: 'accept', angle: 0, r: 54, size: 40, iconSize: 18, title: 'Answer snoozed call', bg: 'var(--ds-background-success-bold)', Icon: PhoneIcon },
+];
 
-export function DockCallRing({ centerX, centerY, open, onOpen, onClose, onDecline, onSnooze, onAccept }: Props) {
+export function DockCallRing({ centerX, centerY, open, variant = 'ringing', onOpen, onClose, onDecline, onSnooze, onAccept }: Props) {
   const handlers: Record<string, () => void> = { decline: onDecline, snooze: onSnooze, accept: onAccept };
+  const ACTIONS = variant === 'snoozed' ? SNOOZED_ACTIONS : RINGING_ACTIONS;
   const fanRef = React.useRef<HTMLDivElement>(null);
 
   // rAF entrance: swing the fan in around the FAB centre. Inline transforms

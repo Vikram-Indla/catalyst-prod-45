@@ -250,8 +250,10 @@ export function ChatDock({
 
   // Incoming huddle → vibrate the FAB (magenta) instead of a separate strap.
   // Hovering the FAB stops the vibration and fans out decline/snooze/accept.
-  const { incoming, accept: acceptCall, decline: declineCall, snooze: snoozeCall } = useIncomingHuddle();
+  const { incoming, snoozedCall, accept: acceptCall, decline: declineCall, snooze: snoozeCall } = useIncomingHuddle();
   const ringing = !!incoming;
+  const snoozed = !!snoozedCall;
+  const callActive = ringing || snoozed;
   const [ringHovered, setRingHovered] = React.useState(false);
   const ringDiscRef = React.useRef<HTMLSpanElement>(null);
   const ringPulseRef = React.useRef<HTMLSpanElement>(null);
@@ -301,7 +303,7 @@ export function ChatDock({
     };
   }, [ringing, ringHovered]);
 
-  const fanOpen = ringing && ringHovered;
+  const fanOpen = callActive && ringHovered;
 
   // Full list passed to DockDirectory so archived section works.
   const listConversations = conversations ?? [];
@@ -312,21 +314,31 @@ export function ChatDock({
     <button
       ref={fabRef}
       type="button"
-      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${ringing && !fanOpen ? ' cc-fab--ringing' : ''}`}
+      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${ringing && !fanOpen ? ' cc-fab--ringing' : ''}${snoozed ? ' cc-fab--snoozed' : ''}`}
       style={{ top: pos.y, left: pos.x, display: fabHidden ? 'none' : undefined }}
       onClick={() => { if (!didMove.current) onToggleCollapsed(); }}
       onPointerDown={dragHandlers.onPointerDown}
       onPointerMove={dragHandlers.onPointerMove}
       onPointerUp={dragHandlers.onPointerUp}
-      onMouseEnter={ringing ? openRing : undefined}
-      onMouseLeave={ringing ? closeRing : undefined}
-      aria-label={totalUnread > 0
-        ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
-        : 'Caty online. Open messages.'}
-      title="Open messages"
+      onMouseEnter={callActive ? openRing : undefined}
+      onMouseLeave={callActive ? closeRing : undefined}
+      aria-label={snoozed
+        ? `Snoozed call from ${snoozedCall?.callerName ?? 'someone'}. Hover to answer.`
+        : totalUnread > 0
+          ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
+          : 'Caty online. Open messages.'}
+      title={snoozed ? `Snoozed call from ${snoozedCall?.callerName ?? 'someone'}` : 'Open messages'}
     >
       <span className="cc-wake-disc" ref={ringDiscRef}>
         {ringing && <span className="cc-fab__ring" ref={ringPulseRef} aria-hidden />}
+        {snoozed && (
+          <span className="cc-fab__snooze-badge" aria-hidden title="Snoozed call">
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="13" r="8" />
+              <path d="M12 9v4l2.5 2M9 2h6M10 5.5 8 3" />
+            </svg>
+          </span>
+        )}
         <CatyPulseIcon size={28} />
         {totalUnread > 0 ? (
           <span
@@ -340,11 +352,12 @@ export function ChatDock({
         )}
       </span>
     </button>
-    {ringing && !fabHidden && (
+    {callActive && !fabHidden && (
       <DockCallRing
         centerX={pos.x + 38.5}
         centerY={pos.y + 38.5}
         open={fanOpen}
+        variant={ringing ? 'ringing' : 'snoozed'}
         onOpen={openRing}
         onClose={closeRing}
         onDecline={() => { setRingHovered(false); declineCall(); }}
