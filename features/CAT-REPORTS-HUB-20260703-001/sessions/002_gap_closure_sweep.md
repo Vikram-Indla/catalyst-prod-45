@@ -58,3 +58,8 @@ Verified live: 209 scope / 197 done / 12 remaining = DB truth; honest "No timeli
 - SprintTestingStatusBody picker now scope-derived (same fix as burndown: sprint_release truth + item counts + recency order), status lozenge preserved via ph_jira_sprints enrichment. Verified live: "(209 items)" + COMPLETED lozenge, report data intact.
 - ReportExportMenu (CSV/PDF) added to the 3 new bodies: defect-closure-trend (weekly rows), approval-age (full rows table), points-burndown (daily series; disabled when no timeline). Verified live on approval-age.
 - Truncation-fix chip for kanban/home surfaces started by Vikram in separate session — those files untouched here.
+
+## "Fix everything bending" pass
+- Approval Age JiraTable clipped its Age column past the canvas (fixed widths summed 48/100 + flex) → widths rebalanced to 38 total, label "Age (d)"; no horizontal scroll, verified live.
+- Points Burndown sprint picker truncated count labels at 20rem → 26rem (parity with sprint body); full label verified.
+- Defect closure trend line chart drew false continuity across empty weeks → weeks zero-filled between first and last activity (line at 0 is truth; a skipped week is a lie).

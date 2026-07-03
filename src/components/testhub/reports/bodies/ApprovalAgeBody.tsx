@@ -32,18 +32,20 @@ function statusAppearance(s: string): ThemeAppearance {
 export function ApprovalAgeBody() {
   const { data, isLoading } = useApprovalAge();
 
+  // Fixed widths total 38/100 so the flex subject column absorbs the rest —
+  // at 48 the Age column clipped past the canvas edge.
   const cols: Column<ApprovalAgeRow>[] = [
-    { id: 'kind', label: 'Type', width: 14, sortable: true, cell: ({ row }) => <span style={{ color: 'var(--ds-text-subtle)' }}>{row.kind}</span> },
+    { id: 'kind', label: 'Type', width: 12, sortable: true, cell: ({ row }) => <span style={{ color: 'var(--ds-text-subtle)' }}>{row.kind}</span> },
     { id: 'subject', label: 'Subject', flex: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{row.subject}</span> },
-    { id: 'status', label: 'Status', width: 12, cell: ({ row }) => <Lozenge appearance={statusAppearance(row.status)}>{row.status}</Lozenge> },
+    { id: 'status', label: 'Status', width: 10, cell: ({ row }) => <Lozenge appearance={statusAppearance(row.status)}>{row.status}</Lozenge> },
     {
-      id: 'requestedAt', label: 'Requested', width: 12,
+      id: 'requestedAt', label: 'Requested', width: 10,
       cell: ({ row }) => row.requestedAt
         ? <span style={{ color: 'var(--ds-text-subtle)' }}>{row.requestedAt.slice(0, 10)}</span>
         : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
     },
     {
-      id: 'ageDays', label: 'Age (days)', width: 10, align: 'center', sortable: true,
+      id: 'ageDays', label: 'Age (d)', width: 6, align: 'center', sortable: true,
       cell: ({ row }) => row.ageDays === null
         ? <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>
         : <span style={{ color: !row.decidedAt && row.ageDays > 7 ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{row.ageDays}</span>,
