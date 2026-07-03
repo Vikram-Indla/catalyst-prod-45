@@ -682,7 +682,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/timeline" element={<S><TestHubTimelinePage /></S>} />
         <Route path="/testhub/dependencies" element={<S><TestHubDependenciesPage /></S>} />
         <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
-        <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
+        <Route path="/testhub/sets/:setKey" element={<S><TestHubSetDetailPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
         <Route path="/testhub/defects/:defectKey" element={<S><TestHubDefectDetailPage /></S>} />

@@ -233,3 +233,20 @@ Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this
 | Live proof (build) | tsc clean, all 3 gates pass, full `npm run build` succeeds |
 
 **P1-S13 done** — canonical defect detail exists, is routable by key, click-through works, history reads real runs. No modal-only defect detail remains. Next per Plan Lock: **P1-S14** — slug contract sweep.
+
+## P1-S14 (slug contract sweep)
+
+| Item | Evidence |
+|---|---|
+| Testhub block audit | `grep -n 'path="/testhub' src/routes/FullAppRoutes.tsx \| grep ':id\|:uuid'` → one hit: `/testhub/sets/:id`. Everything else already keyed (cycles, defects post-S13, reports, filters) |
+| Fixed | `SetDetailPage.tsx` was querying `tm_test_sets.eq('id', setId)` off the raw route param — `set_key` was already selected in the query but never used for lookup (same "column exists, unwired" pattern as S10a/S11's routing findings). Route changed to `/testhub/sets/:setKey`, lookup changed to `.eq('set_key', routeSetKey)`, then `const setId = set?.id` derived for all downstream FK-scoped child queries (cases/cycles) — zero other call sites needed touching since they already expected the internal id, not the route param |
+| Caller fixed | `TestSetsPage.tsx`'s row-click `navigate('/testhub/sets/${set.id}')` → `${set.set_key}` |
+| **Found: `saved_filters` (SHARED across every hub) had no `slug` column at all** — `FilterDetailPage.tsx` already had an `isUuid ? 'id' : 'slug'` read-path fallback, but that branch would `42703` (column doesn't exist) if a real slug were ever passed. Silent/dormant only because nothing has ever generated a non-uuid filterId |
+| Fixed | Migration `20260703470000_saved_filters_slug.sql` — `ADD COLUMN slug`, `saved_filters_generate_slug()` trigger (mirrors the repo's existing `sprints_generate_slug()` pattern exactly, reusing the shared `catalyst_slugify()` helper — no reinvention), `NOT NULL` + `UNIQUE` after. Table confirmed empty (0 rows) — zero backfill risk, no dual-read window needed |
+| Live proof (trigger) | Inserted a real scratch row: `name: 'P1-S14 slug probe'` → `slug: 'p1-s14-slug-probe'` computed correctly; deleted after |
+| Scope discipline | Did **not** rewrite every `saved_filters` consumer across the app (a dozen+ files spanning every hub) — out of scope for this slice's file list (`migration + routes.ts + FullAppRoutes.tsx testhub block`); existing `isUuid` fallback in `FilterDetailPage.tsx` means nothing breaks, and future filter-sharing work can adopt the now-real slug column incrementally. Did **not** create a separate `useSetByKey` hook file (named in the Plan Lock's Files list) — inlined the by-key query directly in `SetDetailPage.tsx` since it has exactly one caller; a wrapper hook for a single call site would be a premature abstraction per CLAUDE.md |
+| Accept grep | `grep -n ":id" ` /testhub block of `FullAppRoutes.tsx` → **0** |
+| Live proof | `/testhub/sets/SET-001` renders directly (3 cases, 1 active cycle, Smoke type); click-through from `/testhub/sets` list navigates to the real key URL (not a uuid). Verified light + dark via reload |
+| Live proof (build) | tsc clean, all 3 gates pass, full `npm run build` succeeds |
+
+**P1-S14 done** — testhub block is slug/key-pure; `saved_filters`' slug infrastructure now exists for the whole app to adopt. Next per Plan Lock: **P1-S15** — runner UX floor.

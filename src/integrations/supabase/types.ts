@@ -33165,6 +33165,7 @@ export type Database = {
           is_starred: boolean | null
           name: string
           query: string | null
+          slug: string
           status: string | null
           type: string | null
           updated_at: string
@@ -33177,6 +33178,7 @@ export type Database = {
           is_starred?: boolean | null
           name: string
           query?: string | null
+          slug: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -33189,6 +33191,7 @@ export type Database = {
           is_starred?: boolean | null
           name?: string
           query?: string | null
+          slug?: string
           status?: string | null
           type?: string | null
           updated_at?: string

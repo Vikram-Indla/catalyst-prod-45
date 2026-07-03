@@ -364,7 +364,11 @@ function AddToCycleDropdown({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SetDetailPage() {
-  const { id: setId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
+  // P1-S14 (slug contract): route param is the set's set_key, not its uuid.
+  // Resolve to the internal id below; every downstream query/FK write in
+  // this file already expects that internal id, so `setId` keeps its
+  // existing meaning once resolved.
+  const { setKey: routeSetKey, projectKey = 'BAU' } = useParams<{ setKey: string; projectKey: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: projects = [] } = useProjects();
@@ -377,18 +381,20 @@ export default function SetDetailPage() {
 
   // Query the set itself
   const { data: set, isLoading: setLoading } = useQuery({
-    queryKey: ['test-set', setId],
+    queryKey: ['test-set', routeSetKey],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_test_sets')
         .select('id, name, description, set_type, membership_type, is_active, project_id, set_key')
-        .eq('id', setId!)
+        .eq('set_key', routeSetKey!)
         .single();
       if (error) throw error;
       return data as TmTestSet;
     },
-    enabled: !!setId,
+    enabled: !!routeSetKey,
   });
+
+  const setId = set?.id;
 
   // Query cases in this set
   const { data: setCases = [], isLoading: casesLoading } = useQuery({
