@@ -36,6 +36,7 @@ import {
 } from '../shared/sections';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
+import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /* ═══════════════════════════════════════════
@@ -216,9 +217,10 @@ export default function CatalystViewTestCase({
     [testCase?.objective],
   );
 
-  /* Versions (list + restore). */
+  /* Versions (list + restore + compare). */
   const { data: versions = [] } = useTestCaseVersions(isOpen ? itemId : undefined);
   const restoreVersion = useRestoreTestCaseVersion();
+  const [diffOpen, setDiffOpen] = useState(false);
 
   /* ── Write paths — direct tm_test_cases updates, no version churn. ── */
   const handleTitleChange = useCallback(async (newTitle: string) => {
@@ -341,6 +343,20 @@ export default function CatalystViewTestCase({
         <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No version history. Use "New version" in the repository to create a snapshot.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {versions.length > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
+              <button
+                onClick={() => setDiffOpen(true)}
+                style={{
+                  padding: '4px 10px', fontSize: 'var(--ds-font-size-200)',
+                  border: '1px solid var(--ds-border)', borderRadius: 4,
+                  background: 'none', cursor: 'pointer', color: 'var(--ds-text)',
+                }}
+              >
+                Compare versions
+              </button>
+            </div>
+          )}
           {versions.map((v: any, idx: number) => (
             <div key={v.id} style={{
               display: 'flex', alignItems: 'center', gap: 8,
@@ -386,6 +402,15 @@ export default function CatalystViewTestCase({
             </div>
           ))}
         </div>
+      )}
+      {diffOpen && (
+        <VersionDiffView
+          open={diffOpen}
+          onOpenChange={setDiffOpen}
+          versions={versions}
+          initialLeft={versions[versions.length - 1]?.version_number}
+          initialRight={versions[0]?.version_number}
+        />
       )}
     </div>
   );
