@@ -15,6 +15,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { translate } from '@/lib/jql/translator';
@@ -592,19 +593,21 @@ export function useKanbanData(
      project (ph_issues) writes apply unchanged. */
   const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents, error: incidentError } = useQuery({
     queryKey: ['kb-incident-issues'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select(ISSUE_SELECT)
-        .eq('issue_type', 'Production Incident')
-        .is('deleted_at', null)
-        .is('archived_at', null)
-        .order('board_position', { ascending: true, nullsFirst: false })
-        .order('jira_updated_at', { ascending: false })
-        .limit(2000);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () =>
+      // PostgREST max_rows clamps any .limit() above 1000, so a flat cap
+      // silently truncates large incident sets — drain pages instead.
+      fetchAllPages((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select(ISSUE_SELECT)
+          .eq('issue_type', 'Production Incident')
+          .is('deleted_at', null)
+          .is('archived_at', null)
+          .order('board_position', { ascending: true, nullsFirst: false })
+          .order('jira_updated_at', { ascending: false })
+          .order('id')
+          .range(from, to),
+      ),
     enabled: isIncident,
     staleTime: 5 * 60_000,
   });
