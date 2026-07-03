@@ -20,6 +20,7 @@ import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo
 // canonical edit factories from JiraTable.
 import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
 // CRE chokepoint (Grids A + D): the Backlog is a TEAM surface, so the inline
 // create catalogue must pass the Catalyst Rules Engine filter before render.
 // See RULE_TABLE.md.
@@ -1716,6 +1717,16 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // the background refetch. onError reverts the snapshot if the PATCH
   // fails. onSettled is the single invalidation point so the local
   // optimistic write reconciles with the authoritative server response.
+  // F3: when an adapter refuses a status change with WF_REASON_REQUIRED,
+  // stash the failed variables here, open ReasonCaptureModal, and retry the
+  // same mutation with reasonCode/reasonText folded into the patch.
+  const [reasonRetry, setReasonRetry] = useState<{
+    id: string;
+    source?: string;
+    patch: Record<string, unknown>;
+    ctx: { entityType: string; from: string | null; to: string };
+  } | null>(null);
+
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
       // Adapter route — for product hub business_requests rows. Skips the
@@ -1810,7 +1821,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
       return { prevStories, prevEpics };
     },
-    onError: (e: Error, _variables, context) => {
+    onError: (e: Error, variables, context) => {
       // Revert every snapshotted query on failure.
       if (context?.prevStories) {
         for (const [key, data] of context.prevStories) {
@@ -1821,6 +1832,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         for (const [key, data] of context.prevEpics) {
           queryClient.setQueryData(key, data);
         }
+      }
+      // F3: adapter refused the status change pending a reason — capture it
+      // inline instead of surfacing an error flag.
+      if ((e as any).code === 'WF_REASON_REQUIRED') {
+        const ctx = (e as any).ctx ?? { entityType: 'Work item', from: null, to: '' };
+        setReasonRetry({ id: variables.id, source: variables.source, patch: variables.patch, ctx });
+        return;
       }
       flag.error('Update failed', e.message);
     },
@@ -5119,6 +5137,27 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           setEditingId(null);
         }}
       />
+
+      {/* F3: reason capture for workflow-gated status changes made from the
+          table. The adapter throws WF_REASON_REQUIRED; we collect the reason
+          here and retry the same patch with it attached. */}
+      {reasonRetry && (
+        <ReasonCaptureModal
+          entityType={reasonRetry.ctx.entityType}
+          itemKey={reasonRetry.id}
+          fromStatus={reasonRetry.ctx.from}
+          toStatus={reasonRetry.ctx.to}
+          onSubmit={(reason) => {
+            updateField.mutate({
+              id: reasonRetry.id,
+              source: reasonRetry.source,
+              patch: { ...reasonRetry.patch, reasonCode: reason.code, reasonText: reason.text },
+            });
+            setReasonRetry(null);
+          }}
+          onCancel={() => setReasonRetry(null)}
+        />
+      )}
 
       {/* Apr 27, 2026 (L53): both delete dialogs now use the canonical
           DangerConfirmModal, which mirrors Jira's exact pattern from the

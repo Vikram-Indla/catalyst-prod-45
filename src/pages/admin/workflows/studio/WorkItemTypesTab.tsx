@@ -32,6 +32,7 @@ import {
   useWorkItemTypes,
   type WorkItemTypeRow,
 } from '@/hooks/workflow-v2/useWorkItemTypes';
+import { useCreateDraft } from '@/hooks/workflow-v2/useWorkflowDraft';
 import { ENTITY_LABELS, statusKeyFromLabel } from './entities';
 
 const GROUP_OPTIONS: SelectOption[] = [
@@ -54,6 +55,7 @@ export function WorkItemTypesTab() {
   const rules = useParentRules();
   const versions = useWfVersions();
   const upsert = useUpsertWorkItemType();
+  const createDraft = useCreateDraft();
   const archive = useArchiveWorkItemType();
   const setRules = useSetParentRules();
 
@@ -102,17 +104,39 @@ export function WorkItemTypesTab() {
       width: 20,
       cell: ({ row }) => {
         const pub = publishedFor(row.entity_key);
-        return pub ? (
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            onClick={() => navigate(`/admin/workflows/${pub.id}/edit`)}
-          >
-            {`${ENTITY_LABELS[row.entity_key ?? ''] ?? row.entity_key} v${pub.version_no}`}
-          </Button>
-        ) : (
-          <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>
-        );
+        if (pub) {
+          return (
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => navigate(`/admin/workflows/${pub.id}/edit`)}
+            >
+              {`${ENTITY_LABELS[row.entity_key ?? ''] ?? row.display_name} v${pub.version_no}`}
+            </Button>
+          );
+        }
+        // F1: every type with an entity namespace can start its own workflow.
+        if (row.entity_key) {
+          return (
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              isDisabled={createDraft.isPending}
+              onClick={() =>
+                createDraft.mutate(
+                  { entityKey: row.entity_key as string },
+                  {
+                    onSuccess: (id) => navigate(`/admin/workflows/${id}/edit`),
+                    onError,
+                  }
+                )
+              }
+            >
+              Create workflow
+            </Button>
+          );
+        }
+        return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
       },
     },
   ];
