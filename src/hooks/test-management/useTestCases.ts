@@ -271,6 +271,7 @@ export function useTestCaseSteps(caseId: string | undefined) {
         .from('tm_test_steps')
         .select('*')
         .eq('test_case_id', caseId)
+        .is('deleted_at', null) // P1-S1: hard delete replaced by soft delete
         .order('step_number', { ascending: true });
 
       if (error) throw error;

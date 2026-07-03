@@ -22939,6 +22939,61 @@ export type Database = {
           },
         ]
       }
+      ph_sprint_status_transitions: {
+        Row: {
+          created_at: string
+          from_status: string | null
+          id: string
+          sprint_id: string
+          to_status: string
+          transitioned_at: string
+          transitioned_by: string | null
+          transitioned_by_avatar: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id: string
+          to_status: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id?: string
+          to_status?: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
+          },
+        ]
+      }
       ph_status_transitions: {
         Row: {
           changed_at: string | null
@@ -45738,45 +45793,51 @@ export type Database = {
       }
       tm_step_results: {
         Row: {
+          action_snapshot: string | null
           actual_result: string | null
           comment: string | null
           created_at: string | null
           duration_seconds: number | null
           executed_at: string | null
           executed_by: string | null
+          expected_snapshot: string | null
           id: string
           status: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id: string | null
           updated_at: string | null
         }
         Insert: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id?: string
-          test_step_id?: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -47753,6 +47814,7 @@ export type Database = {
           action: string
           action_html: string | null
           created_at: string | null
+          deleted_at: string | null
           estimated_time_seconds: number | null
           expected_result: string | null
           expected_result_html: string | null
@@ -47770,6 +47832,7 @@ export type Database = {
           action: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -47787,6 +47850,7 @@ export type Database = {
           action?: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -58735,6 +58799,10 @@ export type Database = {
       compute_home_analytics_daily: {
         Args: { target_date?: string }
         Returns: undefined
+      }
+      compute_sprint_efficiency: {
+        Args: { p_sprint_id: string }
+        Returns: Json
       }
       convert_idea_to_initiative: {
         Args: { p_idea_id: string; p_user_id?: string }
