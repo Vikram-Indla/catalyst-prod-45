@@ -15,6 +15,9 @@ import { Heading } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_SPRINT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { useSprintTestingStatus } from '@/components/testhub/reports/hooks/useSprintTestingStatus';
+import ReportExportMenu from '@/components/testhub/reports/ReportExportMenu';
+import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
+import type { ExportColumn, ExportRow } from '@/components/testhub/reports/reportExportRows';
 import { ReportPieChart } from '@/components/testhub/reports/charts/ReportChart';
 import { ADS_CHART, ADS_SERIES } from '@/lib/charts/adsChartTheme';
 import { ReportStatusView, metricLabel, sectionH, subtle } from '@/pages/testhub/reports/ReportStatusView';
@@ -75,6 +78,45 @@ export function SprintTestingStatusBody() {
     return parts.join(' ');
   }, [data]);
 
+  // Task B export: mismatches + uncovered stories as one sectioned table.
+  const exportColumns: ExportColumn[] = [
+    { key: 'section', header: 'Section' },
+    { key: 'issue_key', header: 'Story' },
+    { key: 'summary', header: 'Summary' },
+    { key: 'status', header: 'Status' },
+    { key: 'case_key', header: 'Test case' },
+    { key: 'test_status', header: 'Test status' },
+  ];
+  const exportRows = useMemo<ExportRow[]>(() => {
+    if (!data) return [];
+    return [
+      ...data.mismatches.map((m) => ({
+        section: 'Governance mismatch', issue_key: m.issue_key, summary: m.summary,
+        status: m.status, case_key: m.case_key, test_status: m.test_status,
+      })),
+      ...data.uncovered.map((s) => ({
+        section: 'Uncovered story', issue_key: s.issue_key, summary: s.summary,
+        status: s.status, case_key: null, test_status: null,
+      })),
+    ];
+  }, [data]);
+
+  // Task A insight: counts-only aggregates for the Caty narrative.
+  const aggregates = useMemo<Record<string, unknown> | null>(() => {
+    if (!data) return null;
+    return {
+      report_id: 'sprint-testing-status',
+      total_stories: data.totalStories,
+      covered_stories: data.coveredStories,
+      coverage_pct: data.coveragePct,
+      execution: data.exec,
+      defects: data.defects,
+      governance_mismatches: data.mismatches.length,
+      uncovered_stories: data.uncovered.length,
+      story_status_counts: data.storyStatusCounts,
+    };
+  }, [data]);
+
   // Scope status distribution — count-based, real numbers in the labels.
   // Zero-assumption law: all-zero counts → no chart rendered at all.
   const statusSlices = useMemo(() => {
@@ -124,6 +166,21 @@ export function SprintTestingStatusBody() {
         </div>
       ) : (
         <>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--ds-space-100)' }}>
+            <ReportExportMenu
+              reportId="sprint-testing-status"
+              reportLabel="Sprint Testing Status"
+              projectName={activeOption.label}
+              columns={exportColumns}
+              rows={exportRows}
+            />
+          </div>
+          <ReportInsightCard
+            reportId="sprint-testing-status"
+            reportLabel="Sprint Testing Status"
+            projectName={activeOption.label}
+            computed={aggregates}
+          />
           <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story in this sprint has a test case." />
 
           {statusSlices.length > 0 && (

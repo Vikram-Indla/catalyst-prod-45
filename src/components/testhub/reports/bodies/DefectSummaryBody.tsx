@@ -23,6 +23,9 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useDefectsIncidents, type IssueRow } from '@/components/testhub/reports/hooks/useDefectsIncidents';
+import ReportExportMenu from '@/components/testhub/reports/ReportExportMenu';
+import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
+import type { ExportColumn, ExportRow } from '@/components/testhub/reports/reportExportRows';
 import { ReportBarChart } from '@/components/testhub/reports/charts/ReportChart';
 import { ADS_CHART } from '@/lib/charts/adsChartTheme';
 import { Routes } from '@/lib/routes';
@@ -72,6 +75,31 @@ export function DefectSummaryBody() {
     return parts.join(' ');
   }, [data]);
 
+  // Task B export: open-defects table (the report's primary table).
+  const exportColumns: ExportColumn[] = [
+    { key: 'issue_key', header: 'Key' },
+    { key: 'summary', header: 'Summary' },
+    { key: 'status', header: 'Status' },
+    { key: 'status_category', header: 'Status category' },
+  ];
+  const exportRows = useMemo<ExportRow[]>(
+    () => (data ? data.openDefects.map((d) => ({ ...d })) : []),
+    [data],
+  );
+
+  // Task A insight: counts-only aggregates for the Caty narrative.
+  const aggregates = useMemo<Record<string, unknown> | null>(() => {
+    if (!data) return null;
+    return {
+      report_id: 'defect-summary',
+      defects_total: data.defectsTotal,
+      defects_open: data.defectsOpen,
+      defects_closed: data.defectsTotal - data.defectsOpen,
+      test_linked_defects: data.tmDefects,
+      open_defects_listed: data.openDefects.length,
+    };
+  }, [data]);
+
   // Defects-by-status — real counts already fetched (open vs closed of total).
   // Zero-assumption law: no defects at all → no chart rendered.
   const defectBars = useMemo(() => {
@@ -114,6 +142,21 @@ export function DefectSummaryBody() {
           </div>
         ) : (
           <>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--ds-space-100)' }}>
+              <ReportExportMenu
+                reportId="defect-summary"
+                reportLabel="Defect Summary"
+                projectName={activeOption.label}
+                columns={exportColumns}
+                rows={exportRows}
+              />
+            </div>
+            <ReportInsightCard
+              reportId="defect-summary"
+              reportLabel="Defect Summary"
+              projectName={activeOption.label}
+              computed={aggregates}
+            />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={cardStyle}><div style={metricValue}>{data.defectsTotal}</div><div style={metricLabel}>Total defects</div></div>
               <div style={cardStyle}><div style={{ ...metricValue, color: data.defectsOpen ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{data.defectsOpen}</div><div style={metricLabel}>Open defects</div></div>

@@ -10,6 +10,7 @@
  * THROWN so ReportRenderer's boundary shows SectionMessage + Retry.
  */
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Select from '@atlaskit/select';
 import EmptyState from '@atlaskit/empty-state';
 import Spinner from '@atlaskit/spinner';
@@ -18,6 +19,9 @@ import ReportFilterBar, { FilterState } from '@/pages/testhub/reports/lab/Report
 import ReportSkeleton from '@/pages/testhub/reports/lab/ReportSkeleton';
 import { REPORT_DEFS } from '@/pages/testhub/reports/lab/reportDefinitions';
 import type { ReportData } from '@/pages/testhub/reports/lab/reportData';
+import ReportExportMenu from './ReportExportMenu';
+import ReportInsightCard from './ReportInsightCard';
+import { deriveWiredAggregates, getExportRows } from './reportExportRows';
 import {
   useRealTestReportData,
   useTmProjectOptions,
@@ -82,14 +86,31 @@ function applyFilters(data: ReportData, filters: FilterState): ReportData {
   return { ...data, cases, cycles, runs, defects };
 }
 
+const VALID_RANGES: ReadonlyArray<FilterState['dateRange']> = ['7d', '30d', '90d', 'all'];
+
 export default function WiredReportBody({ slug }: { slug: string }) {
   const def = REPORT_DEFS.find((d) => d.slug === slug);
-  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  // Saved-view deep link (Task C): ?project=<tm_projects id>&range=<7d|30d|90d|all>
+  // is the INITIAL state only; user picks still win and are remembered as before.
+  const [searchParams] = useSearchParams();
+  const urlProjectId = searchParams.get('project');
+  const urlRange = searchParams.get('range');
+  const [filters, setFilters] = useState<FilterState>(() =>
+    urlRange && (VALID_RANGES as readonly string[]).includes(urlRange)
+      ? { ...DEFAULT_FILTERS, dateRange: urlRange as FilterState['dateRange'] }
+      : DEFAULT_FILTERS,
+  );
   const [selected, setSelected] = useState<ProjectOption | null>(null);
 
   const { data: projects, isLoading: projectsLoading } = useTmProjectOptions();
   // S1.5: single project → auto-select; else last-used (validated) or none.
-  const activeOption = useReportPickerDefault(REPORTS_LAST_PROJECT_KEY, projects, selected);
+  const pickerDefault = useReportPickerDefault(REPORTS_LAST_PROJECT_KEY, projects, selected);
+  const urlOption = useMemo(
+    () => (urlProjectId ? (projects ?? []).find((p) => p.value === urlProjectId) ?? null : null),
+    [urlProjectId, projects],
+  );
+  // Precedence: in-session pick > URL param (saved view) > localStorage default.
+  const activeOption = selected ?? urlOption ?? pickerDefault;
 
   const query = useRealTestReportData(activeOption?.value, activeOption?.label);
 
@@ -106,6 +127,17 @@ export default function WiredReportBody({ slug }: { slug: string }) {
     () =>
       [...new Set((query.data?.cases ?? []).map((c) => c.owner).filter((o): o is string => !!o))].sort(),
     [query.data],
+  );
+
+  // Task B: primary table of the CURRENTLY FILTERED data for CSV/PDF export.
+  const exportTable = useMemo(
+    () => (filtered ? getExportRows(slug, filtered) : null),
+    [slug, filtered],
+  );
+  // Task A: counts-only aggregates for the Caty Insight narrative.
+  const aggregates = useMemo(
+    () => (filtered ? deriveWiredAggregates(slug, filtered) : null),
+    [slug, filtered],
   );
 
   // Thrown after all hooks — caught by ReportRenderer's error boundary (Retry refetches on remount).
@@ -141,6 +173,15 @@ export default function WiredReportBody({ slug }: { slug: string }) {
             placeholder="Select a project…"
           />
         </div>
+        <div style={{ flex: 1 }} />
+        <ReportExportMenu
+          reportId={slug}
+          reportLabel={def?.label ?? slug}
+          projectName={activeOption?.label ?? null}
+          dateLabel={filters.dateRange === 'all' ? null : `Last ${filters.dateRange}`}
+          columns={exportTable?.columns ?? []}
+          rows={exportTable?.rows ?? []}
+        />
       </div>
 
       {!activeOption ? (
@@ -172,6 +213,15 @@ export default function WiredReportBody({ slug }: { slug: string }) {
             showDateRange={def?.usesDateRange ?? true}
           />
           <div style={{ flex: 1, overflowY: 'auto' }}>
+            <div style={{ padding: '0 var(--ds-space-250)' }}>
+              <ReportInsightCard
+                reportId={slug}
+                reportLabel={def?.label ?? slug}
+                projectName={activeOption?.label ?? null}
+                computed={aggregates}
+                dateRange={filters.dateRange === 'all' ? null : `Last ${filters.dateRange}`}
+              />
+            </div>
             <ReportCanvas slug={slug} data={filtered} filters={filters} />
           </div>
         </>

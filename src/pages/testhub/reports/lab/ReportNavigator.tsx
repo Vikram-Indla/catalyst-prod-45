@@ -1,5 +1,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
+import Tooltip from '@atlaskit/tooltip';
+import { Trash2 } from '@/lib/atlaskit-icons';
 import { REPORT_DEFS, REPORT_CATEGORIES, ReportDef, ReportStatus } from './reportDefinitions';
 
 /** Registry-driven entry (Reports hub, CAT-REPORTS-HUB-20260703-001 S1.2). */
@@ -11,6 +13,16 @@ export interface NavigatorEntry {
   demo?: boolean;
 }
 
+/** Saved view entry (Phase 3 Task C — tm_saved_reports). */
+export interface SavedNavEntry {
+  id: string;
+  name: string;
+  /** true when shared by another user (delete hidden — RLS would reject it). */
+  shared?: boolean;
+  /** true when the current user owns the row (may delete). */
+  ownedByMe?: boolean;
+}
+
 interface Props {
   selected: string;
   onSelect: (slug: string) => void;
@@ -18,6 +30,10 @@ interface Props {
   entries?: NavigatorEntry[];
   /** Category order for `entries` grouping. */
   categories?: readonly string[];
+  /** Saved views rendered in a "Saved" section at the top (Phase 3 Task C). */
+  saved?: SavedNavEntry[];
+  onSelectSaved?: (id: string) => void;
+  onDeleteSaved?: (id: string) => void;
 }
 
 const STATUS_COLOR: Record<ReportStatus, { bg: string; text: string }> = {
@@ -99,7 +115,7 @@ function NavItem({ label, badge, selected, onSelect }: { label: string; badge: R
   );
 }
 
-export default function ReportNavigator({ selected, onSelect, entries, categories }: Props) {
+export default function ReportNavigator({ selected, onSelect, entries, categories, saved, onSelectSaved, onDeleteSaved }: Props) {
   const groups: { category: string; items: { slug: string; label: string; badge: React.ReactNode }[] }[] = entries
     ? (categories ?? [...new Set(entries.map(e => e.category))]).map(cat => ({
         category: cat,
@@ -146,6 +162,58 @@ export default function ReportNavigator({ selected, onSelect, entries, categorie
       >
         Reports
       </div>
+
+      {/* Saved views (Phase 3 Task C) — top of the navigator */}
+      {saved && saved.length > 0 && (
+        <div>
+          <div
+            style={{
+              padding: 'var(--ds-space-100) var(--ds-space-150) var(--ds-space-050)',
+              fontSize: 'var(--ds-font-size-50)',
+              fontWeight: 700,
+              color: 'var(--ds-text-subtlest)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            {/* literal caps to match sibling section headers without the banned text-transform */}
+            SAVED
+          </div>
+          {saved.map(view => (
+            <div key={view.id} style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <NavItem
+                  label={view.name}
+                  badge={view.shared ? <Lozenge appearance="new">SHARED</Lozenge> : null}
+                  selected={false}
+                  onSelect={() => onSelectSaved?.(view.id)}
+                />
+              </div>
+              {view.ownedByMe && onDeleteSaved && (
+                <Tooltip content="Delete saved view">
+                  <button
+                    type="button"
+                    aria-label={`Delete saved view ${view.name}`}
+                    onClick={() => onDeleteSaved(view.id)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: 'none',
+                      background: 'transparent',
+                      cursor: 'pointer',
+                      padding: 'var(--ds-space-050) var(--ds-space-100) var(--ds-space-050) var(--ds-space-025)',
+                      color: 'var(--ds-icon-subtle)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </Tooltip>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {groups.filter(g => g.items.length > 0).map(group => (
         <div key={group.category}>
