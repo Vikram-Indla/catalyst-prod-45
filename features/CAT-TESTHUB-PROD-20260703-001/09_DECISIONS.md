@@ -22,8 +22,10 @@ Advisor verdicts (full reports in `council/`):
 Where council agrees: trust repair before features; reuse over rebuild (quality gates, Gemini fn, JiraTable, adapters); staging probes before any migration; enforcement ratchets in P1.
 Where council disagrees: A5 wants quality-gate lift early (P1), A2/A3 sequence it after the coverage-engine spine (P2 start). Plan Lock sides with A2/A3; gate lift = P2-S1.
 
-## D-003 (2026-07-03)
+## D-003 (2026-07-03, RESOLVED 2026-07-04 by Vikram)
 **Release id-space decision needed from Vikram (blocks PLN-025/TRC-012 cluster):** test↔release FKs point at legacy `releases`; live UX runs on `ph_releases`/`rh_releases`. Options in council/A4 §Corrected-schema-list. Plan Lock P2 assumes re-point to `ph_releases` — flagged PLACEHOLDER-07, not executed without approval.
+
+**Resolution: `ph_releases`.** Vikram confirmed via direct question at P2 kickoff — matches Plan Lock's own default assumption. `tm_test_cycles.release_id` FK re-points from legacy `releases` to `ph_releases` in P2-S1…S3. PLACEHOLDER-07 cleared.
 
 ## D-004 (2026-07-03, P0-S0 cyij probe batch — EXECUTED, rulings)
 Target verified: MCP → https://cyijbdeuehohvhnsywig.supabase.co (staging).
@@ -58,6 +60,50 @@ Write-probes (authed INSERT/UPDATE/DELETE per core table) deferred to P0-S11 see
 
 ## D-008 (2026-07-03, found during P1-S8)
 **The whole test-plans feature has zero routed UI — no `/testhub/plan*` route exists in `FullAppRoutes.tsx`.** P1-S8's target (`usePlanLinkedCycles`/`useLinkCycleToPlan`/`useUnlinkCycleFromPlan` in `useTestPlansG26.ts`) queried a plan-cycle join table that P0.1 already proved absent from the DB (D-001 ghost-relation list) and had zero callers anywhere in `src/` — unreachable dead code, not a live migration target. Deleted the 3 exports + `LinkedCycle` interface outright (grep=0 accept criterion met exactly) rather than rewriting them onto `tm_test_cycles.test_plan_id`, since nothing would ever call the rewritten version either. The real FK spine already works today, read-only, via `useDefects.ts` (defect plan provenance). **Scope note:** the rest of `useTestPlansG26.ts` (plan CRUD, scope, team, approvals, templates — ~20 more exports) was NOT audited this slice; it may share the same zero-route fate but that's a separate finding for a future gap slice, not P1-S8's mandate.
+
+## D-020 (2026-07-04, found live during P2-S1 — quality-gate/readiness stack had never run)
+**The entire quality-gate/release-readiness RPC stack (`tm_get_release_test_summary`,
+`tm_evaluate_quality_gates`, `tm_evaluate_release_gates`, `tm_create_readiness_snapshot`) had
+never executed successfully.** Live invocation surfaced four distinct 42703/22P02-class bugs,
+stacked (each fix uncovered the next): (1) `tm_get_release_test_summary` filtered
+`tm_cycle_scope` on a column called `status`, which doesn't exist (real column `current_status`)
+— Postgres silently resolved the unqualified name to the *outer* `tm_test_cycles.status` instead
+of erroring at parse time, so it looked plausible until executed; (2) `ORDER BY c.start_date` —
+`tm_test_cycles` has no such column (real: `planned_start`); (3) the defects sub-join read the
+dead legacy `defects` table (`d.test_case_id`, 0 rows confirmed) instead of live `tm_defects`,
+which has no `test_case_id` at all — provenance is `tm_defects.source_test_run_id →
+tm_test_runs.cycle_scope_id → tm_cycle_scope.cycle_id`; (4) the defects status filter used
+`'verified'`, not a member of `tm_defect_status` (real set: open/in_progress/resolved/closed/
+reopened). Separately, `tm_evaluate_quality_gates` read six *denormalized* columns off the
+legacy `releases` row (`test_cases_executed`, `test_cases_passed`, `defects_open`,
+`coverage_percent`, etc.) that no live trigger ever maintained — meaningless once release_id
+re-points to `ph_releases`, which has no such columns at all. And `tm_evaluate_release_gates`'s
+`coverage` gate type compared a raw case *count* against a percentage threshold (copy-paste bug,
+always nonsensical), and only wrote `tm_release_gate_results`, leaving
+`tm_release_quality_gates.current_value/status` stale after every readiness evaluation — a
+split-brain between the two gate-evaluation entrypoints (`useReleaseQualityGates`'s manual
+"Evaluate Now" vs `useReleaseReadiness`'s snapshot flow). All four RPCs rewritten to compute
+live from `tm_cycle_scope`/`tm_defects`/`v_tm_requirement_coverage` (P1-S11's view, reused not
+rebuilt); `tm_evaluate_release_gates` now also syncs the gate-list table. Live-proofed
+end-to-end on real Senaei BAU data (3 cycles re-pointed to `ph_releases` "Refactor-Senaei 3.3",
+4 real gates inserted): summary/evaluate/snapshot all returned consistent, correct numbers
+(58 cases, 69.2% pass, 89.7% exec, 1 open critical defect, readiness = not_ready). **Known
+follow-up, not fixed this slice:** `blocker_count` gate type has inconsistent semantics between
+the two evaluators (`tm_evaluate_quality_gates` counts blocker+critical severities combined;
+`tm_evaluate_release_gates` counts `blocker` severity only) — both are internally consistent
+and functional, but they disagree with each other on this one gate type. Pick one canonical
+definition in a future slice rather than silently picking one now.
+
+**Scope boundary (same slice):** `tm_release_signoffs` (3 live rows, read by the live
+`useApprovalAge.ts`/`ApprovalAgeBody.tsx` report) and `th_test_cycles` (6 rows, zero live
+readers — only in generated types) both still FK to legacy `releases` and were deliberately
+**not** re-pointed: `tm_release_signoffs`'s 3 rows share one legacy release id with no
+`ph_releases` counterpart to map onto, and the live report that reads it never touches
+`release_id`/`releases` at all (grep confirmed), so leaving it alone is zero-risk and in-scope
+work would require inventing a mapping — a zero-assumption violation. `th_test_cycles` is dead
+weight, out of the TestHub-live mandate, not touched. Fourteen other FKs to legacy `releases`
+exist across unrelated modules (`features`, `subtasks`, `milestones`, `work_item_versions`,
+etc.) — explicitly out of scope for a TestHub feature, not touched, not audited further here.
 
 ## D-009 (2026-07-03, found live during P1-S10b — self-correction of my own P1-S9 work)
 **The P1-S9 backfill migration (`20260703410000`) set `requirement_id` on its 16 rows but never `external_key`/`external_title`.** Both `TestCoveragePanel.tsx` and (after S10b) `TestCasesSection.tsx` filter `tm_requirement_links` by `external_key`, not `requirement_id` — so all 16 backfilled rows were invisible to both readers despite having a technically-correct FK. Caught by live testing (story BAU-2668 showed "Test cases 2" instead of the expected 18), not by re-reading my own migration SQL. Fixed with a follow-up data-repair migration (`20260703430000`) rather than amending the original — the original already ran and is committed; a second additive migration is the correct fix per the migration-ledger discipline (never alter an applied migration's file after the fact). Lesson: when a migration sets one column that participates in a join/filter used elsewhere, grep every reader's filter column before declaring the backfill's job done — count equality (16=16) on the wrong column silently proves nothing.
