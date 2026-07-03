@@ -12,6 +12,11 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import { useCatyReleaseSummarize } from './catyReleaseSummarizeStore';
+import {
+  computeSprintInsightHash,
+  readSprintInsightCache,
+  writeSprintInsightCache,
+} from './sprintInsightHash';
 
 interface Options {
   mountedForReleaseId: string | null | undefined;
@@ -81,6 +86,21 @@ export function useReleaseSummaryStream({ mountedForReleaseId }: Options) {
 
     (async () => {
       try {
+        let sprintCacheHash: string | null = null;
+        if (payload.entityKind === 'sprint') {
+          // 2026-07-03: sprint summaries are cached by structural hash — a
+          // hit skips the edge-function call entirely (CAT-SPRINTS-NATIVE
+          // Phase 3 Slice 3). Release summaries are never cached.
+          sprintCacheHash = await computeSprintInsightHash(payload.releaseId);
+          if (sprintCacheHash) {
+            const cached = await readSprintInsightCache(payload.releaseId, sprintCacheHash);
+            if (cached) {
+              if (!cancelled) useCatyReleaseSummarize.getState().complete(cached);
+              return;
+            }
+          }
+        }
+
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token ?? null;
 
@@ -139,6 +159,9 @@ export function useReleaseSummaryStream({ mountedForReleaseId }: Options) {
                   }
                 }
                 streamComplete = true;
+                if (sprintCacheHash && fullText) {
+                  void writeSprintInsightCache(payload.releaseId, sprintCacheHash, fullText);
+                }
                 if (charBuffer.length === 0) {
                   stopTypewriter();
                   useCatyReleaseSummarize.getState().complete(fullText);

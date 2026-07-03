@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       _ph_jira_sprints_status_migration_20260703: {
@@ -34132,6 +34157,55 @@ export type Database = {
           },
         ]
       }
+      sprint_insight_cache: {
+        Row: {
+          created_at: string
+          data_hash: string
+          id: string
+          sprint_id: string
+          summary_text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_hash: string
+          id?: string
+          sprint_id: string
+          summary_text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_hash?: string
+          id?: string
+          sprint_id?: string
+          summary_text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprint_insight_cache_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprint_insight_cache_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprint_insight_cache_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
+          },
+        ]
+      }
       sprints: {
         Row: {
           created_at: string | null
@@ -61854,6 +61928,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       alignment_type: ["direct", "inherited"],

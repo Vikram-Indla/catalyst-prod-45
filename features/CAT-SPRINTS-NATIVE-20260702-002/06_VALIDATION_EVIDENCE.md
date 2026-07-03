@@ -70,3 +70,24 @@ While scoping what was believed to be Phase 3 Slice 2 ("wire a health card into 
 **Populated sprint** (`/project-hub/BAU/sprints/sprint28-03-jul-2025`, "Work items 7" in the list view, 7 real `BAU-*` rows visible): clicked the same toggle → Health panel showed **7 Analysed**, matching the visible work-items count exactly, plus a real signal ("Board median last-updated: 2 days ago") and honest data-coverage disclaimers (sprint risk / time-in-status unavailable — zero-assumption, not fabricated).
 
 **Verdict:** CONFIRMED live. The FK-matched query in `useEntityHealthAdapter` returns the correct row count for both an empty and a populated sprint, through the actual mounted UI (not just a code read). Screenshots not saved to the feature folder (ephemeral browser session) but reproducible via the routes above.
+
+## VG-004 — 2026-07-03 — Phase 3 Slice 3 (AI summary + cache): FK fix + cache hit/miss/bust, live-verified on staging
+
+**Migration + edge function deploy:** `20260703280000_sprint_insight_cache.sql` applied to staging (`cyijbdeuehohvhnsywig`) via `supabase db query --linked -f`; ledger auto-recorded (`supabase_migrations.schema_migrations` confirmed to contain version `20260703280000` immediately after, no manual insert needed). `sprint_insight_cache` table confirmed live via `information_schema.columns` (all 6 columns present, correct types). Types regenerated (`supabase gen types typescript --linked`), diffed against the checked-in `src/integrations/supabase/types.ts` (0 removed lines, 222 added — purely the new table's typing, confirmed by grepping the diff for `sprint_insight_cache`), then committed to the file. `summarize-release` edge function redeployed to staging via `supabase functions deploy summarize-release --project-ref cyijbdeuehohvhnsywig` (succeeded).
+
+**Static gates:**
+```
+npx tsc -p tsconfig.app.json --noEmit → 183 errors (matches baseline exactly, 0 new)
+npm run lint:colors:gate → ✅ 0 = baseline 0
+npm run audit:ads:gate → ✅ no category above baseline
+```
+
+**Live probe (Chrome MCP, authenticated session, `localhost:8080`), sprint `BAU-Sprint 7.1 - 06 Jul 26` (`88fc7fa1-55eb-4a37-8000-29e70b8f3b01`, 2 real work items — BAU-6112 done, BAU-6114 in progress):**
+
+1. **FK-fix correctness:** First "Summarize Sprint" click streamed: *"Sprint BAU-Sprint 7.1, covering July 2nd to July 6th, is currently 50% complete. One item is done, and one is in progress..."* — matches the Work Items panel exactly (1 of 2 done). Confirms `fetchReleaseContext`'s sprint branch now reads the correct `sprint_id`-FK-matched item set (previously would have read via the dead `sprint_release` JSONB match).
+2. **Cache write:** `SELECT * FROM sprint_insight_cache` immediately after showed exactly one row (`data_hash = d8a09f4d...`, `summary_text` = the full generated text, byte-for-byte).
+3. **Cache hit:** Dismissed the summary card, re-clicked "Summarize Sprint" — full text rendered within ~2s (no visible typewriter/streaming, unlike the ~10s+ of the first generation). DB re-check: still exactly 1 row, same `data_hash`, `updated_at` unchanged (`01:37:31.982`, not bumped) — confirms the store's `complete()` was called directly from the cached read path with zero edge-function invocation, and the cache-write path was correctly skipped (no duplicate/updated row).
+4. **Cache bust:** Mutated `ph_issues.assignee_display_name` for `BAU-6114` (`null` → `'QA Probe Tester'`, a field included in the hash per the Plan Lock's HASH INPUTS list) directly via `supabase db query --linked`. Dismissed + re-clicked "Summarize Sprint" — screenshot taken ~1s after click showed mid-stream partial text ("Sprint BAU" + blinking cursor), confirming a fresh edge-function call (cache miss, correctly busted by the field change). DB re-check after completion: a **second** row appeared (`data_hash = 695aba94...`, different from the first), original row untouched (`updated_at` still `01:37:31.982`). Reverted `assignee_display_name` back to `null` immediately after to leave staging data clean — no lasting side effect.
+5. **Release-path regression check:** On release `Refactor-Senaei 4.2 -10 July 26` (`b382f76b-0629-4dd1-896d-0372a78b2031`), clicked "Summarize Release" twice (dismiss between clicks) — **both times** showed the "Generating summary" fetching state (bouncing dots), never an instant/cached render. `SELECT count(*) FROM sprint_insight_cache` before and after: unchanged at 2 rows (both from the sprint tests above) — confirms zero leakage into the cache table from the release path, matching the code's `payload.entityKind === 'sprint'` gate.
+
+**Verdict:** CONFIRMED live, all four Plan Lock proof points (FK correctness, cache hit, cache bust, release-path non-regression) hold under real staging data through the actual mounted UI.

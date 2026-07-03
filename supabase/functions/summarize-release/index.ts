@@ -91,8 +91,12 @@ async function fetchReleaseContext(
   const sb = createClient(url, service, { auth: { persistSession: false } });
 
   // 2026-06-26: Phase 3 — entity-aware table swap. Sprint surface reads
-  // from ph_jira_sprints; release surface keeps ph_releases. Both link to
-  // ph_issues via the same sprint_release JSONB name match.
+  // from ph_jira_sprints; release surface keeps ph_releases.
+  // 2026-07-03: sprint membership reads ph_issues.sprint_id (FK) — the
+  // sprint_release JSONB name-match was declared dead for sprints in
+  // D-002/S0.2b and is release-only from here on (see D-020, the same
+  // fix already applied to the health adapter in src/features/health/
+  // adapters/entity.ts).
   const entityTable = entityKind === "sprint" ? "ph_jira_sprints" : "ph_releases";
 
   const { data: release } = await sb
@@ -105,33 +109,41 @@ async function fetchReleaseContext(
 
   if (!release) return { release: null, items: [] };
 
-  const target = ((release as ReleaseRow).name || (release as ReleaseRow).title || "").trim();
-  if (!target) return { release: release as ReleaseRow, items: [] };
-
-  // Try server-side contains; fall back to client-side filter.
   let rows: IssueRow[] = [];
-  const containsResult = await sb
-    .from("ph_issues")
-    .select(
-      "issue_key, summary, issue_type, status, status_category, priority, assignee_display_name, parent_key, jira_created_at, sprint_release",
-    )
-    .contains("sprint_release", JSON.stringify([{ name: target }]) as unknown as string)
-    .limit(2000);
-  if ((containsResult.data?.length ?? 0) > 0) {
-    rows = containsResult.data as IssueRow[];
-  } else {
-    const fb = await sb
+  const ISSUE_SELECT =
+    "issue_key, summary, issue_type, status, status_category, priority, assignee_display_name, parent_key, jira_created_at, sprint_release";
+
+  if (entityKind === "sprint") {
+    const fkResult = await sb
       .from("ph_issues")
-      .select(
-        "issue_key, summary, issue_type, status, status_category, priority, assignee_display_name, parent_key, jira_created_at, sprint_release",
-      )
-      .not("sprint_release", "is", null)
-      .limit(5000);
-    if (fb.data) {
-      rows = (fb.data as IssueRow[]).filter((row) => {
-        const arr = row.sprint_release;
-        return Array.isArray(arr) && arr.some((el) => el && (el as { name?: string }).name === target);
-      });
+      .select(ISSUE_SELECT)
+      .eq("sprint_id", releaseId)
+      .limit(2000);
+    rows = (fkResult.data as IssueRow[]) ?? [];
+  } else {
+    const target = ((release as ReleaseRow).name || (release as ReleaseRow).title || "").trim();
+    if (!target) return { release: release as ReleaseRow, items: [] };
+
+    // Try server-side contains; fall back to client-side filter.
+    const containsResult = await sb
+      .from("ph_issues")
+      .select(ISSUE_SELECT)
+      .contains("sprint_release", JSON.stringify([{ name: target }]) as unknown as string)
+      .limit(2000);
+    if ((containsResult.data?.length ?? 0) > 0) {
+      rows = containsResult.data as IssueRow[];
+    } else {
+      const fb = await sb
+        .from("ph_issues")
+        .select(ISSUE_SELECT)
+        .not("sprint_release", "is", null)
+        .limit(5000);
+      if (fb.data) {
+        rows = (fb.data as IssueRow[]).filter((row) => {
+          const arr = row.sprint_release;
+          return Array.isArray(arr) && arr.some((el) => el && (el as { name?: string }).name === target);
+        });
+      }
     }
   }
 
