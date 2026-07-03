@@ -13,6 +13,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 
 const INCIDENT_TYPE = 'Production Incident';
 
@@ -56,13 +57,16 @@ export function useIncidentProjectOptions() {
   return useQuery({
     queryKey: ['incident-report-projects'],
     queryFn: async (): Promise<IncidentProjectOption[]> => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('project_key, project_name')
-        .eq('issue_type', INCIDENT_TYPE);
-      if (error) throw error;
+      const data = await fetchAllPages<{ project_key: string; project_name: string | null }>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('project_key, project_name')
+          .eq('issue_type', INCIDENT_TYPE)
+          .order('issue_key', { ascending: true })
+          .range(from, to),
+      );
       const seen = new Map<string, string>();
-      for (const r of (data ?? []) as { project_key: string; project_name: string | null }[]) {
+      for (const r of data) {
         if (r.project_key && !seen.has(r.project_key)) {
           seen.set(r.project_key, r.project_name ?? r.project_key);
         }
@@ -80,15 +84,18 @@ export function useIncidentReport(projectKey?: string) {
   return useQuery({
     queryKey: ['incident-report', projectKey ?? 'all'],
     queryFn: async (): Promise<IncidentReport> => {
-      let query = supabase
-        .from('ph_issues')
-        .select('issue_key, summary, status, status_category, priority, jira_created_at, assignee_display_name')
-        .eq('issue_type', INCIDENT_TYPE)
-        .order('jira_created_at', { ascending: false, nullsFirst: false });
-      if (projectKey) query = query.eq('project_key', projectKey);
-      const { data, error } = await query;
-      if (error) throw error;
-      const incidents = (data ?? []) as IncidentReportRow[];
+      // Paged past the server max_rows cap — totals must not silently truncate.
+      const incidents = await fetchAllPages<IncidentReportRow>((from, to) => {
+        let query = supabase
+          .from('ph_issues')
+          .select('issue_key, summary, status, status_category, priority, jira_created_at, assignee_display_name')
+          .eq('issue_type', INCIDENT_TYPE)
+          .order('jira_created_at', { ascending: false, nullsFirst: false })
+          .order('issue_key', { ascending: true })
+          .range(from, to);
+        if (projectKey) query = query.eq('project_key', projectKey);
+        return query;
+      });
 
       // Regression coverage: incidents with a linked test (tm_requirement_links.external_key).
       let linkedIncidents = 0;

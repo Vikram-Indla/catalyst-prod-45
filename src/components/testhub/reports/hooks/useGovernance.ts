@@ -7,6 +7,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from './fetchAllPages';
 
 export interface GovernanceRow {
   issue_key: string;
@@ -23,12 +24,16 @@ export function useGovernance(projectName?: string, projectId?: string) {
     queryKey: ['governance', projectName, projectId],
     enabled: !!projectName && !!projectId,
     queryFn: async (): Promise<{ rows: GovernanceRow[]; storiesChecked: number }> => {
-      const { data: storyData } = await supabase
-        .from('ph_issues')
-        .select('issue_key, summary, status, status_category')
-        .eq('project_name', projectName!)
-        .eq('issue_type', 'Story');
-      const stories = (storyData ?? []) as Story[];
+      // Paged past the server max_rows cap — truncation silently drops stories.
+      const stories = await fetchAllPages<Story>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('issue_key, summary, status, status_category')
+          .eq('project_name', projectName!)
+          .eq('issue_type', 'Story')
+          .order('issue_key', { ascending: true })
+          .range(from, to),
+      );
       const byKey = new Map(stories.map((s) => [s.issue_key, s]));
 
       // links for this project's cases → story → case ids

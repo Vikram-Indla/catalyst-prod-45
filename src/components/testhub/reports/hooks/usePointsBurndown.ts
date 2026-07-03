@@ -14,6 +14,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from './fetchAllPages';
 
 export interface BurndownPoint {
   /** yyyy-mm-dd */
@@ -43,21 +44,15 @@ const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 
 /** Server max_rows caps every response at 1000 (ph_issues is ~2400 rows —
  *  .limit() alone silently truncates and undercounts sprints), so page. */
-const PAGE = 1000;
 export async function fetchAllSprintReleaseRows<T>(columns: string): Promise<T[]> {
-  const rows: T[] = [];
-  for (let from = 0; ; from += PAGE) {
-    const { data, error } = await supabase
+  return fetchAllPages<T>((from, to) =>
+    supabase
       .from('ph_issues')
       .select(columns)
       .not('sprint_release', 'is', null)
       .order('issue_key', { ascending: true })
-      .range(from, from + PAGE - 1);
-    if (error) throw error;
-    rows.push(...((data ?? []) as T[]));
-    if (!data || data.length < PAGE) break;
-  }
-  return rows;
+      .range(from, to) as unknown as PromiseLike<{ data: T[] | null; error: null }>,
+  );
 }
 
 export function usePointsBurndown(sprintName?: string) {

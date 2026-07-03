@@ -8,6 +8,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from './fetchAllPages';
 import type { StoryRow, MismatchRow, ExecBreakdown, ProjectTestingStatus } from './useProjectTestingStatus';
 
 const EMPTY_EXEC: ExecBreakdown = {
@@ -45,11 +46,16 @@ export function useSprintTestingStatus(sprintName?: string) {
       // unreliable for names with spaces/commas, so scope is resolved client-side.
       const inSprint = (sr: unknown) => Array.isArray(sr) && sr.some((e) => (e as { name?: string })?.name === sprintName);
 
-      // 1) Sprint-scope stories
-      const { data: storyData } = await supabase
-        .from('ph_issues')
-        .select('issue_key, summary, status, status_category, sprint_release')
-        .eq('issue_type', 'Story');
+      // 1) Sprint-scope stories (paged — whole-type selects trip the server's
+      //    max_rows=1000 cap as volumes grow; truncation silently undercounts)
+      const storyData = await fetchAllPages<StoryRow & { sprint_release?: unknown }>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('issue_key, summary, status, status_category, sprint_release')
+          .eq('issue_type', 'Story')
+          .order('issue_key', { ascending: true })
+          .range(from, to),
+      );
       const stories: StoryRow[] = (storyData ?? [])
         .filter((s) => inSprint((s as { sprint_release?: unknown }).sprint_release))
         .map((s) => {
@@ -123,10 +129,16 @@ export function useSprintTestingStatus(sprintName?: string) {
         const d = await supabase.from('tm_defects').select('id', { count: 'exact', head: true }).in('source_test_case_id', caseIds);
         tmDefects = d.count ?? 0;
       }
-      const { data: qb } = await supabase.from('ph_issues').select('sprint_release').eq('issue_type', 'QA Bug');
-      const qaBugs = (qb ?? []).filter((r) => inSprint((r as { sprint_release?: unknown }).sprint_release)).length;
-      const { data: inc } = await supabase.from('ph_issues').select('sprint_release').eq('issue_type', 'Production Incident');
-      const incidents = (inc ?? []).filter((r) => inSprint((r as { sprint_release?: unknown }).sprint_release)).length;
+      const qb = await fetchAllPages<{ sprint_release?: unknown }>((from, to) =>
+        supabase.from('ph_issues').select('sprint_release').eq('issue_type', 'QA Bug')
+          .order('issue_key', { ascending: true }).range(from, to),
+      );
+      const qaBugs = qb.filter((r) => inSprint(r.sprint_release)).length;
+      const inc = await fetchAllPages<{ sprint_release?: unknown }>((from, to) =>
+        supabase.from('ph_issues').select('sprint_release').eq('issue_type', 'Production Incident')
+          .order('issue_key', { ascending: true }).range(from, to),
+      );
+      const incidents = inc.filter((r) => inSprint(r.sprint_release)).length;
 
       const coveredStories = stories.filter((s) => coveredKeys.has(s.issue_key)).length;
       const uncovered = stories.filter((s) => !coveredKeys.has(s.issue_key));
