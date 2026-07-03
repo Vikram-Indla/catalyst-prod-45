@@ -16,6 +16,7 @@ import EmptyState from '@atlaskit/empty-state';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { useProjectTestingStatus } from '@/components/testhub/reports/hooks/useProjectTestingStatus';
+import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import { ReportStatusView, metricLabel } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption {
@@ -57,6 +58,21 @@ export function ProjectTestingStatusBody() {
     return parts.join(' ');
   }, [data]);
 
+  // Counts-only aggregates for the Caty narrative.
+  const aggregates = useMemo<Record<string, unknown> | null>(() => {
+    if (!data) return null;
+    return {
+      report_id: 'project-testing-status',
+      total_stories: data.totalStories,
+      covered_stories: data.coveredStories,
+      coverage_pct: data.coveragePct,
+      execution: data.exec,
+      defects: data.defects,
+      governance_mismatches: data.mismatches.length,
+      uncovered_stories: data.uncovered.length,
+    };
+  }, [data]);
+
   return (
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
@@ -88,7 +104,15 @@ export function ProjectTestingStatusBody() {
             <Spinner size="medium" /> Loading testing status…
           </div>
         ) : (
-          <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every in-scope story has at least one test case." />
+          <>
+            <ReportInsightCard
+              reportId="project-testing-status"
+              reportLabel="Project Testing Status"
+              projectName={activeOption.label}
+              computed={aggregates}
+            />
+            <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every in-scope story has at least one test case." />
+          </>
         )}
     </div>
   );

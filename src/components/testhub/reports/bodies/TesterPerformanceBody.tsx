@@ -17,6 +17,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useTesterPerformance, type TesterCaseRow } from '@/components/testhub/reports/hooks/useTesterPerformance';
+import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
 interface TesterOption {
@@ -77,6 +78,17 @@ export function TesterPerformanceBody() {
     return `${data.assigned} cases assigned, ${done} executed (${data.exec.passed} passed, ${data.exec.failed} failed). ${data.defectsRaised} defect(s) raised.`;
   }, [data]);
 
+  // Counts-only aggregates for the Caty narrative.
+  const aggregates = useMemo<Record<string, unknown> | null>(() => {
+    if (!data) return null;
+    return {
+      report_id: 'tester-performance',
+      assigned_cases: data.assigned,
+      execution: data.exec,
+      defects_raised: data.defectsRaised,
+    };
+  }, [data]);
+
   return (
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
@@ -109,6 +121,12 @@ export function TesterPerformanceBody() {
           </div>
         ) : (
           <>
+            <ReportInsightCard
+              reportId="tester-performance"
+              reportLabel="Tester Performance"
+              projectName={activeOption.label}
+              computed={aggregates}
+            />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={cardStyle}>
                 <div style={metricValue}>{data.assigned}</div>

@@ -15,6 +15,7 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useGovernance, type GovernanceRow } from '@/components/testhub/reports/hooks/useGovernance';
+import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption { label: string; value: string }
@@ -53,6 +54,16 @@ export function GovernanceBody() {
     return `${data.rows.length} governance mismatch(es) across ${data.storiesChecked} stories — delivery status contradicts test results. Review before release.`;
   }, [data]);
 
+  // Counts-only aggregates for the Caty narrative.
+  const aggregates = useMemo<Record<string, unknown> | null>(() => {
+    if (!data) return null;
+    return {
+      report_id: 'governance',
+      mismatches: data.rows.length,
+      stories_checked: data.storiesChecked,
+    };
+  }, [data]);
+
   return (
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
@@ -85,6 +96,12 @@ export function GovernanceBody() {
           </div>
         ) : (
           <>
+            <ReportInsightCard
+              reportId="governance"
+              reportLabel="Governance & Mismatch"
+              projectName={activeOption.label}
+              computed={aggregates}
+            />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={cardStyle}><div style={{ ...metricValue, color: data.rows.length ? 'var(--ds-text-danger)' : 'var(--ds-text)' }}>{data.rows.length}</div><div style={metricLabel}>Mismatches</div></div>
               <div style={cardStyle}><div style={metricValue}>{data.storiesChecked}</div><div style={metricLabel}>Stories checked</div></div>

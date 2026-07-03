@@ -13,6 +13,7 @@ import EmptyState from '@atlaskit/empty-state';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_EPIC_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { useProductStatus } from '@/components/testhub/reports/hooks/useProductStatus';
+import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import { ReportStatusView, metricLabel } from '@/pages/testhub/reports/ReportStatusView';
 
 interface EpicOption { label: string; value: string }
@@ -52,6 +53,19 @@ export function ProductStatusBody() {
     return parts.join(' ');
   }, [data]);
 
+  // Counts-only aggregates for the Caty narrative.
+  const aggregates = useMemo<Record<string, unknown> | null>(() => {
+    if (!data) return null;
+    return {
+      report_id: 'product-status',
+      total_stories: data.totalStories,
+      covered_stories: data.coveredStories,
+      coverage_pct: data.coveragePct,
+      governance_mismatches: data.mismatches.length,
+      uncovered_stories: data.uncovered.length,
+    };
+  }, [data]);
+
   return (
     <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '32rem', marginBottom: 'var(--ds-space-250)' }}>
@@ -83,7 +97,15 @@ export function ProductStatusBody() {
             <Spinner size="medium" /> Loading product testing status…
           </div>
         ) : (
-          <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story under this epic has a test case." />
+          <>
+            <ReportInsightCard
+              reportId="product-status"
+              reportLabel="Product / Business Request Status"
+              projectName={activeOption.label}
+              computed={aggregates}
+            />
+            <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every story under this epic has a test case." />
+          </>
         )}
     </div>
   );
