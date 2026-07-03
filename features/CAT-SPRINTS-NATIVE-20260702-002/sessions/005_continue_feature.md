@@ -75,6 +75,18 @@ Presented the approval-timeliness gap to the user via AskUserQuestion; user chos
 
 Docs updated: `03_PLAN_LOCK.md` (Slice 4a lock, approved→implemented), `06_VALIDATION_EVIDENCE.md` (VG-005), `09_DECISIONS.md` (D-023, D-024), this session log. Not yet committed — awaiting user direction.
 
+## Continuation — commit incident, and Slice 4b (efficiency formula + card)
+
+Committing Slice 4a surfaced two serious concurrent-checkout incidents in a row: (1) `git status` showed ~40 (later ~75) unrelated file modifications/deletions actively appearing in this shared checkout — flagged to the user before touching git, user chose to commit only the 6 known files; (2) after committing, discovered the new commit sat on top of 2 unpushed commits from another session (dialog/perf fixes), neither authored nor known to this session — logged as DRIFT-005, held off pushing per user direction. While committing DRIFT-005's own doc update, a second incident occurred: a `git commit` swept in 82 unrelated files because another process staged its own changes into the same shared `.git/index` between this session's `git add` and `git commit` — caught immediately via `git show --stat` showing far more than the 1 intended file, fixed via `git reset --soft HEAD~1` (safe: local, unpushed, undoing this session's own mistake) then re-staged/committed atomically.
+
+User then said "You must proceed and finish the functionality as it is. Don't worry about anything else" — directing to stop pausing on the concurrent-session noise and complete Slice 4b. Wrote a concise Slice 4b Plan Lock (concrete formulas for all 4 D-008 components, since D-008 only names weights) and proceeded straight to implementation without further check-ins, per that direction.
+
+**Implemented Slice 4b:** `compute_sprint_efficiency` SQL RPC (`supabase/migrations/20260703400000_sprint_efficiency_rpc.sql` — renamed from `20260703330000` after a real collision with the concurrent session's `senaei_bau_dedup_and_signoff_seed`, same class as DRIFT-004), `useSprintEfficiency` hook, `SprintEfficiencyCard` component (styled identically to `DefinitionOfDoneCard`, using the ADS `ProgressBar`), wired into `ReleaseSidePanel.tsx` next to the DoD card. Types regenerated (0 removed / 4 added — RPC signature only). Gates: tsc 183/183, color/ADS clean.
+
+**Live-verified both zero-assumption states** on the Slice 4a test sprint: insufficient-data ("missing Approval timeliness") before an approver existed, then added and approved a real approver through the actual UI and confirmed a 91% overall score with all four sub-percentages rendering, exactly matching the RPC's own output. Full detail: `06_VALIDATION_EVIDENCE.md` VG-006, `09_DECISIONS.md` D-025.
+
+Docs updated: `03_PLAN_LOCK.md` (Slice 4b lock, approved→implemented), `06_VALIDATION_EVIDENCE.md` (VG-006), `09_DECISIONS.md` (D-025), this session log.
+
 ## Next action
 
-Present Slice 4a's diff and ask for commit/push approval. After that, Slice 4b (the actual efficiency formula + `SprintEfficiencyCard`) needs its own Plan Lock before any code — the exact weighting/normalization for flow-efficiency, scope-stability, and approval-timeliness still needs to be defined and locked.
+Present Slice 4b's diff for commit approval (staging file-by-file explicit path again, given the demonstrated shared-index race risk — add and commit as one atomic command, verify immediately with `git show --stat`). Phase 3 Slices 5 (scope-change history) and 6 (dependencies) remain unbuilt. Given the extent of concurrent-session activity discovered this session (5 separate incidents: DRIFT-004 migration collision, DRIFT-005 unpushed-commits, a second migration collision in Slice 4b, and two near-miss commit-sweep incidents), the next session should re-verify repo state carefully at start (fetch, check for local-ahead commits, check `git status` for unexpected files) before doing anything else.

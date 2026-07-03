@@ -105,3 +105,17 @@ Slice 4a shipped: `ph_sprint_status_transitions` + `trg_record_sprint_status_tra
 **The Plan Lock's flagged uncertainty resolved in the better direction**: it was unclear whether the DoD-satisfaction auto-transition (`active → awaiting_approval`, fired from `fn_sprint_check_dod`'s trigger cascade rather than a direct user action on the sprint row) would have `auth.uid()` set, since S0.1b's own equivalent skip-condition existed for a reason. Live-tested via a fresh sprint (`06_VALIDATION_EVIDENCE.md` VG-005): drove a real work item through its full workflow to Done, satisfying DoD, and the resulting `active → awaiting_approval` cascade **was** captured with a real actor. `auth.uid()` persists through the whole cascade within one authenticated Supabase request/transaction, regardless of how many nested triggers fire. This means Slice 4b's approval-timeliness component will have real start-timestamps for sprints going through their natural DoD-driven lifecycle — not only sprints where someone manually overrides the status dropdown.
 
 Slice 4b (formula + `SprintEfficiencyCard`, per discovery: extend `ReleaseSidePanel.tsx` next to `DefinitionOfDoneCard` using the ADS `ProgressBar`, reading `work_item_transitions` for flow-efficiency — not `catalyst_status_history` or `ph_issue_status_history`, two unrelated tables serving different features) still needs its own Plan Lock before any code.
+
+### D-025 — Phase 3 Slice 4b: efficiency formula shipped, live-verified in both zero-assumption states (2026-07-03)
+
+Shipped `compute_sprint_efficiency` (SQL RPC, `supabase/migrations/20260703400000_sprint_efficiency_rpc.sql`), `useSprintEfficiency` hook, and `SprintEfficiencyCard` (mounted in `ReleaseSidePanel.tsx` next to `DefinitionOfDoneCard`, same `config.kind === 'sprint'` gate). Concrete formulas (not fully specified by D-008, which only names the weights):
+
+- Completion: `done_count / total_count` over current FK-linked items.
+- Flow-efficiency: `in_progress` dwell time / total dwell time, from `work_item_transitions`.
+- Scope-stability: `1 - (removed_count / total_ever_added)`, from `work_item_changelogs` (`field_name='sprint'`).
+- Approval-timeliness: elapsed time from the most recent `awaiting_approval` transition (`ph_sprint_status_transitions`, Slice 4a) to the latest approver `decided_at`, scored 100 at ≤24h down to 0 at one sprint-length; simplified to not model `any`/`all`/`quorum` policy nuance precisely (no `quorum_count` column exists).
+- Overall: the D-008 weighted sum, **only when all four components are non-null** — zero-assumption is structural (every component defaults to `null`, never a guessed value).
+
+Migration timestamp `20260703330000` collided with the concurrent session's already-applied `senaei_bau_dedup_and_signoff_seed` (same class as DRIFT-004) — renamed to `20260703400000` before it caused a ledger conflict.
+
+Live-verified both states end-to-end (`06_VALIDATION_EVIDENCE.md` VG-006): the Slice 4a test sprint showed *"Not enough data yet — missing Approval timeliness"* before an approver existed; after adding and approving a real approver through the actual UI, the card rendered a 91% score with all four sub-percentages, exactly matching the RPC's own output. This is the first time D-008's formula has rendered on this feature.

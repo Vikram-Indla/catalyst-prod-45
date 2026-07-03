@@ -1,3 +1,66 @@
+# PLAN LOCK — SPRINTS-NATIVE (Phase 3, Slice 4b: efficiency formula + card)
+
+**Status:** APPROVED — implemented and live-verified (see `06_VALIDATION_EVIDENCE.md` VG-006, `09_DECISIONS.md` D-025)
+**Timebox:** 2 hours from approval
+**Slice:** Phase 3 Slice 4b of 6 — the formula + UI half of Slice 4, following 4a (trigger, shipped).
+
+## OBJECTIVE
+
+Compute D-008's per-sprint efficiency score (40% completion + 25% flow-efficiency + 20% scope-stability + 15% approval-timeliness) via a single read-only Postgres RPC function, and render it in a new `SprintEfficiencyCard` mounted in `ReleaseSidePanel.tsx` next to `DefinitionOfDoneCard` (same `config.kind === 'sprint'` gate, same card styling). Per this repo's zero-assumption rule, the overall score renders **only when all four components are computable** for that specific sprint — otherwise the card shows which component(s) are missing, never a fabricated/partial score.
+
+## FORMULA DEFINITIONS (concrete, since D-008 only names the weights)
+
+- **Completion** = `done_count / total_count` over `ph_issues.sprint_id = sprint`. Null if `total_count = 0`.
+- **Flow-efficiency** = `sum(time_in_from_status_ms where from_status_category='in_progress') / sum(time_in_from_status_ms where not null)` over `work_item_transitions` joined to the sprint's current items. Null if no item has any recorded transition.
+- **Scope-stability** = `1 - (removed_count / total_ever_added)`, from `work_item_changelogs` (`field_name='sprint'`): `total_ever_added` = rows where `to_value = sprint_id`; `removed_count` = rows where `from_value = sprint_id`. Null if `total_ever_added = 0` (no changelog coverage for this sprint — thin/no data, not assumed-stable).
+- **Approval-timeliness**: elapsed = `max(ph_sprint_approvers.decided_at) − (most recent ph_sprint_status_transitions row where to_status='awaiting_approval').transitioned_at`. Score = 100 at ≤24h elapsed, linearly down to 0 at `length_weeks*7` days elapsed, floored at 0. Null if no `awaiting_approval` transition recorded or no decision yet. Simplification: uses the latest decision timestamp regardless of `any`/`all`/`quorum` policy nuance (no `quorum_count` column exists to model quorum precisely) — approximates "when did the approval process conclude," not exact per-policy semantics.
+- **Overall** = `0.40·completion + 0.25·flow_efficiency + 0.20·scope_stability + 0.15·approval_timeliness` (all as 0-100), only when all four are non-null.
+
+## FILES TO MODIFY
+
+| File | Change | Summary |
+|---|---|---|
+| `supabase/migrations/20260703330000_sprint_efficiency_rpc.sql` | add | `compute_sprint_efficiency(p_sprint_id uuid) RETURNS jsonb`, `SECURITY INVOKER` (read-only, RLS-respecting), implementing the four formulas above via CTEs; returns `{completion, flow_efficiency, scope_stability, approval_timeliness, overall, missing: text[]}` (0-100 scale, `null` where not computable). |
+| `src/hooks/useSprintEfficiency.ts` | add | Thin React Query hook wrapping `supabase.rpc('compute_sprint_efficiency', { p_sprint_id: sprintId })`. |
+| `src/components/sprints/SprintEfficiencyCard.tsx` | add | New card, styled identically to `DefinitionOfDoneCard` (same border/padding/typography tokens). Renders `ProgressBar` (`src/components/ads/ProgressBar.tsx`) + numeric score when `overall` is non-null; otherwise a subtle "Not enough data yet" line naming which component(s) are missing (zero-assumption, no fabricated score). |
+| `src/components/releases/detail/ReleaseSidePanel.tsx` | edit | One line, mirroring line 273 exactly: `{config.kind === 'sprint' && <SprintEfficiencyCard sprintId={releaseId} />}`, placed adjacent to the `DefinitionOfDoneCard` mount. |
+
+## FILES FORBIDDEN
+
+- `DefinitionOfDoneCard.tsx`, `useSprintDod.ts` — reference pattern only, untouched.
+- `ph_sprint_status_transitions`, `work_item_transitions`, `work_item_changelogs` schemas — read-only consumption, no migration touches these tables' structure.
+- Everything else on the standing forbidden list (legacy Sprints/SprintBoard, statusPalette, kanban columnConfig, `rh_*`, prod).
+
+## DATA/BACKEND RULES
+
+- RPC is `SECURITY INVOKER`, not `DEFINER` — it only reads tables the calling user already has RLS access to (no privilege escalation needed, unlike the trigger functions which write).
+- Zero-assumption is structural: every component defaults to `null`, never `0` or a guessed value, when its source data is absent.
+
+## SCREENSHOT CHECKLIST
+
+- [ ] Sprint with insufficient data (most sprints today) — card shows the "not enough data" state, light + dark.
+- [ ] The test sprint from Slice 4a (`705a5197-...`, has a real DoD-driven `awaiting_approval` transition) — check which components resolve once an approver decision is added live during verification.
+
+## VALIDATION COMMANDS
+
+```bash
+npx tsc -p tsconfig.app.json --noEmit   # 183 baseline
+npm run lint:colors:gate
+npm run audit:ads:gate
+```
+
+## STOP CONDITIONS
+
+- Any component ever renders a numeric value when its source data doesn't exist → stop, zero-assumption violation.
+- tsc/gate regressions; slice exceeds 2h.
+
+---
+---
+
+# SUPERSEDED — Phase 3 Slice 4a lock (sprint-status transition trigger, shipped)
+
+> Archived below for history. Slice 4a shipped and was verified (`06_VALIDATION_EVIDENCE.md` VG-005, `09_DECISIONS.md` D-024).
+
 # PLAN LOCK — SPRINTS-NATIVE (Phase 3, Slice 4a: sprint-status transition trigger)
 
 **Status:** APPROVED — implemented and live-verified (see `06_VALIDATION_EVIDENCE.md` VG-005, `09_DECISIONS.md` D-024)

@@ -58816,6 +58816,10 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
+      compute_sprint_efficiency: {
+        Args: { p_sprint_id: string }
+        Returns: Json
+      }
       convert_idea_to_initiative: {
         Args: { p_idea_id: string; p_user_id?: string }
         Returns: string

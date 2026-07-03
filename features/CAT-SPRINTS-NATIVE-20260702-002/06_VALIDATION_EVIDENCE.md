@@ -109,3 +109,22 @@ npm run audit:ads:gate → ✅ no category above baseline
 2. **DoD-cascade transition (the case flagged as uncertain in the Plan Lock's stop conditions)** — added a real work item (`BAU-6118`), set its Definition of Done ("Sub-task" → "Done"), then drove the item through its real workflow (To Do → Assigned → In Progress → Code Review → Done) via the actual item detail panel. This satisfied the sprint's DoD, and `fn_sprint_check_dod` auto-transitioned the sprint `active → awaiting_approval` (confirmed via DB: `ph_jira_sprints.status = 'awaiting_approval'`, UI hadn't refreshed but DB was already correct). Checked `ph_sprint_status_transitions`: **the row was captured**, `from_status: active`, `to_status: awaiting_approval`, `transitioned_by: Vikram Indla` (a real actor, not skipped) — confirming `auth.uid()` persists through the full trigger cascade within one authenticated request, so the common real-world DoD-completion path populates this table, not just manual dropdown overrides.
 
 **Verdict:** CONFIRMED live. Both the manual and DoD-cascade transition paths are captured correctly with real actors and timestamps. This resolves Slice 4a's flagged uncertainty in favor of the better outcome — approval-timeliness (Slice 4b) will have real start-timestamps for sprints going through their natural DoD-driven lifecycle, not only ones manually overridden via the dropdown. Test sprint left in place (not deleted) — it's clean, real data (an `awaiting_approval` sprint with no approver yet), useful as a live fixture for Slice 4b's own testing.
+
+## VG-006 — 2026-07-03 — Phase 3 Slice 4b (efficiency formula + card), both zero-assumption states verified live
+
+**Migration:** `20260703400000_sprint_efficiency_rpc.sql` (`compute_sprint_efficiency` RPC). Collided on first attempt at `20260703330000` with the concurrent session's already-applied `senaei_bau_dedup_and_signoff_seed` (same class as DRIFT-004) — renamed to `20260703400000`, ledger corrected. Types regenerated (0 removed / 4 added — the RPC signature only), overwritten.
+
+**Static gates:**
+```
+npx tsc -p tsconfig.app.json --noEmit → 183 errors (baseline match, 0 new; grepped log for SprintEfficiencyCard/useSprintEfficiency/ReleaseSidePanel — 0 hits)
+npm run lint:colors:gate → ✅ 0 = baseline 0
+npm run audit:ads:gate → ✅ no category above baseline (tokens/typography actually dropped — unrelated concurrent-session activity, not ratcheted down)
+```
+
+**RPC correctness (direct SQL call before any UI involvement):** against the Slice 4a test sprint (`705a5197-...`, 1 real item, no approver yet) — `{completion: 100, flow_efficiency: 64.65, scope_stability: 100, approval_timeliness: null, missing: ["approval_timeliness"], overall: null}`. Confirms zero-assumption: three real components computed correctly, the fourth genuinely absent, and `overall` correctly withheld rather than partially averaged.
+
+**Live UI — insufficient-data state:** Sprint detail page rendered the new "Sprint Efficiency" card showing *"Not enough data yet — missing Approval timeliness."* — exact match to the RPC's `missing` array, human-labeled.
+
+**Live UI — full-data state:** Added a real approver (Vikram Indla) via the actual Approvers UI, clicked approve (sprint auto-transitioned `awaiting_approval → completed`). Re-queried the RPC directly: `{completion: 100, flow_efficiency: 64.65, scope_stability: 100, approval_timeliness: 100, missing: [], overall: 91.16}`. Reloaded the page (waited for the round-trip this time, after an initial premature screenshot showed stale cached data) — card rendered a real `ProgressBar` at 91%, with all four component percentages listed (Completion 100%, Flow efficiency 65%, Scope stability 100%, Approval timeliness 100%), byte-consistent with the RPC's own numbers.
+
+**Verdict:** CONFIRMED live. Both zero-assumption states (insufficient-data and full-data) render correctly and match the RPC's output exactly, through the real mounted UI. D-008's formula is live for the first time on this feature.

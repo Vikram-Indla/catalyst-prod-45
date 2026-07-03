@@ -44,6 +44,7 @@ const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered)';
 
 import { sprintStatusToReleaseBucket, isSprintStatus, SPRINT_STATUS_LABEL, SPRINT_STATUS_TRANSITIONS, type SprintStatus } from '@/lib/sprints/sprintStatus';
 import { DefinitionOfDoneCard } from '@/components/sprints/DefinitionOfDoneCard';
+import { SprintEfficiencyCard } from '@/components/sprints/SprintEfficiencyCard';
 
 type DBStatus = 'planning' | 'in_progress' | 'released' | 'archived';
 const fromDBStatus = (s: string | null | undefined): ReleaseStatus => {
@@ -271,6 +272,10 @@ export function ReleaseSidePanel(props: Props) {
       {/* S2.1b: Definition of Done — sprint-kind only, gated behind real
           per-type status catalogs (see DefinitionOfDoneCard header comment). */}
       {config.kind === 'sprint' && <DefinitionOfDoneCard sprintId={releaseId} />}
+
+      {/* Phase 3 Slice 4b: efficiency score — sprint-kind only, zero-assumption
+          gated (see SprintEfficiencyCard header comment). */}
+      {config.kind === 'sprint' && <SprintEfficiencyCard sprintId={releaseId} />}
 
       {/* ApproversCard is config-aware (ph_release_approvers vs
           ph_sprint_approvers, FK column, profile embed alias). entityStatus
