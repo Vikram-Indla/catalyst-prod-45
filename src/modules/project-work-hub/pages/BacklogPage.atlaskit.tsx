@@ -2653,6 +2653,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
   // ── Row click → in-page right side panel ──
   const openDetail = useCallback((it: BacklogItem) => {
+    /* 2026-07-03 (CAT-AUDIT-1053): adapter fully owns row-click handling
+       (e.g. risks — no CatalystDetailRouter entry, no detail route; opens
+       its own RiskDetailPanel drawer instead). Bypasses every default
+       below, including the BIZ_SOURCE → 'business_request' fallback. */
+    if (dataSource?.onRowClick) {
+      dataSource.onRowClick({ id: (it as any).issue_key || it.id, key: it.key ?? null });
+      return;
+    }
     // Save scroll position before opening detail view
     const container = document.querySelector('[data-backlog-scroll-container]');
     if (container && projectKey) {
@@ -2714,6 +2722,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Mirrors openDetail's entityKind short-circuits (release/test_case/defect
   // navigate to dedicated detail pages — no modal surface for those kinds).
   const openModal = useCallback((it: BacklogItem) => {
+    /* 2026-07-03 (CAT-AUDIT-1053): see matching guard in openDetail above. */
+    if (dataSource?.onRowClick) {
+      dataSource.onRowClick({ id: (it as any).issue_key || it.id, key: it.key ?? null });
+      return;
+    }
     if (dataSource?.entityKind === 'release') {
       navigate(`/release-hub/${it.id}`);
       return;

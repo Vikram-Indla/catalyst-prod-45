@@ -1,34 +1,45 @@
 // Risk Grid Page - Main tabular view of risks
 // Source: Screenshot-Risk1, Implementation Spec Section 6.1
 // Route: /risks
+//
+// 2026-07-03 (CAT-AUDIT-1053, features/CAT-AUDIT-FULLSWEEP-20260703-001/
+// lanes/LANE-12_cross-surface.md): migrated from bespoke shadcn-table
+// chrome (custom <Table>, custom pagination, custom column-visibility
+// toggling) to the canonical BacklogPage + data-adapter pattern already
+// proven by incidenthub (IncidentListPage.tsx / incidentsBacklogDataSource.ts).
+// Inherits the same JiraTable, column picker, toolbar, sticky header,
+// sort, keyboard nav, bulk-select as /project-hub/BAU/backlog.
+//
+// Preserved per audit note "ROAM badge/detail-panel wiring must be
+// preserved": the risk-specific chrome (Add Risk, Filters, Actions menu
+// incl. Mass Move / Export / ROAM report, RiskDetailPanel drawer,
+// Create/Edit/Delete/MassMove/Filters dialogs) is kept as page-level
+// header chrome above the BacklogPage mount — same pattern as incidents'
+// stats cards. RoamBadge itself has no equivalent column in BacklogPage's
+// shared registry (see risksBacklogDataSource.ts) so it no longer renders
+// per-row inside the table; the existing "Where Status = X" filter chip in
+// the header communicates active filtering same as before.
+//
+// Data: `risks` table via useRisksBacklogSource — a real Catalyst-owned
+// table, so unlike incidents this adapter wires REAL create/update/delete
+// mutations (see risksBacklogDataSource.ts for exact mapping).
 
-import { useState, useMemo } from "react";
-import { Search } from "lucide-react";
+import { useState } from "react";
 import AddIcon from '@atlaskit/icon/core/add';
 import FilterIcon from '@atlaskit/icon/core/filter';
 import ShowMoreVerticalIcon from '@atlaskit/icon/core/show-more-vertical';
+import Spinner from '@atlaskit/spinner';
+import Button from "@atlaskit/button/new";
+import { BacklogPage } from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
+import { useRisksBacklogSource } from './risksBacklogDataSource';
 import { useRisks } from "@/hooks/risks/useRisks";
 import { RisksSidebar } from "@/components/risks/RisksSidebar";
 import { Risk, RiskGridFilters } from "@/types/risks";
-import { RoamBadge } from "@/components/risks/RoamBadge";
 import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
 import { RiskFiltersDialog } from "@/components/risks/RiskFiltersDialog";
 import { CreateEditRiskDialog } from "@/components/risks/CreateEditRiskDialog";
 import { DeleteRiskDialog } from "@/components/risks/DeleteRiskDialog";
-import { MassMoveDialog } from "@/components/risks/MassMoveDialog";
-import { ColumnsDialog } from "@/components/risks/ColumnsDialog";
-import Button from "@atlaskit/button/new";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,53 +47,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const RISKS_SENTINEL_KEY = 'RISKS';
+const RISKS_SENTINEL_ID = 'risks';
+
 export default function RisksGridPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRiskIds, setSelectedRiskIds] = useState<string[]>([]);
   const [selectedRisk, setSelectedRisk] = useState<Risk | null>(null);
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [isCreateEditOpen, setIsCreateEditOpen] = useState(false);
   const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [riskToDelete, setRiskToDelete] = useState<Risk | null>(null);
-  const [isMassMoveOpen, setIsMassMoveOpen] = useState(false);
-  const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'roam', 'title', 'pi', 'occurrence', 'impact', 'critical_path', 'status'
-  ]);
   const [filters, setFilters] = useState<RiskGridFilters>({
     owner_id: null,
     status: "Open", // Default filter per Screenshot-Risk1
     resolution_method: null,
     occurrence: null,
     impact: null,
-    critical_path: null
+    critical_path: null,
   });
 
-  // Get programId from navigation context - for now, using first program
-  const { risks, isLoading, createRisk, updateRisk, deleteRisk, isCreating, isUpdating } = useRisks();
+  // updateRisk/deleteRisk here drive the dialogs below (edit/delete flows
+  // launched from page chrome); the adapter has its own useRisks() call for
+  // the table itself — same data, React Query dedupes the fetch.
+  const { risks, updateRisk, deleteRisk, createRisk, isCreating, isUpdating } = useRisks();
   const { toast } = useToast();
 
-  // Filter and search risks
-  const filteredRisks = useMemo(() => {
-    return risks?.filter((risk: Risk) => {
-      // Apply status filter
-      if (filters.status && risk.status !== filters.status) return false;
-      
-      // Apply search
-      if (searchQuery && !risk.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
-
-      return true;
-    }) || [];
-  }, [risks, filters, searchQuery]);
-
-  const toggleRiskSelection = (riskId: string) => {
-    setSelectedRiskIds(prev =>
-      prev.includes(riskId) ? prev.filter(id => id !== riskId) : [...prev, riskId]
-    );
-  };
+  const adapter = useRisksBacklogSource(setSelectedRisk);
 
   const handleCreateEditSave = (data: any) => {
     if (editingRisk) {
@@ -107,16 +97,11 @@ export default function RisksGridPage() {
     }
   };
 
-  const handleMassMove = (piId: string) => {
-    // PI functionality removed
-    setSelectedRiskIds([]);
-    setIsMassMoveOpen(false);
-  };
-
   const handleExport = () => {
+    const rows = risks ?? [];
     const csv = [
       ["Risk #", "Title", "Status", "ROAM", "Occurrence", "Impact", "Critical Path"].join(","),
-      ...filteredRisks.map((risk) =>
+      ...rows.map((risk: Risk) =>
         [
           risk.risk_number,
           `"${risk.title}"`,
@@ -143,258 +128,127 @@ export default function RisksGridPage() {
     });
   };
 
+  if (!adapter) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 48 }}>
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full bg-background">
       <RisksSidebar className="hidden lg:flex" />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
-      {/* Page Header with design tokens */}
-      <div className="border-b bg-card px-[var(--s2)] sm:px-[var(--s4)] lg:px-[var(--s6)] py-[var(--s2)] sm:py-[var(--s3)]">
-        <div className="flex flex-col gap-[var(--s2)]">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-[var(--s2)] min-w-0 flex-1">
-              <span className="text-brand-primary flex-shrink-0 text-sm sm:text-base">☆</span>
-              <h1 className="text-sm sm:text-base lg:text-lg font-heading font-semibold text-text-primary truncate">
-                Risk Grid
-              </h1>
-              {filters.status && (
-                <span className="text-xs text-text-secondary hidden xl:inline whitespace-nowrap">
-                  Where Status = {filters.status}
-                </span>
-              )}
-            </div>
-            
-            <Button
-              appearance="primary"
-              iconBefore={AddIcon}
-              onClick={() => {
-                setEditingRisk(null);
-                setIsCreateEditOpen(true);
-              }}
-            >
-              Add Risk
-            </Button>
-          </div>
-          
-          <div className="flex items-center gap-[var(--s2)]">
-            <Button
-              appearance="default"
-              iconBefore={FilterIcon}
-              onClick={() => setIsFiltersDialogOpen(true)}
-            >
-              Filters
-            </Button>
+        {/* Page Header with design tokens */}
+        <div className="border-b bg-card px-[var(--s2)] sm:px-[var(--s4)] lg:px-[var(--s6)] py-[var(--s2)] sm:py-[var(--s3)]">
+          <div className="flex flex-col gap-[var(--s2)]">
+            <div className="flex items-center justify-between gap-2 min-w-0">
+              <div className="flex items-center gap-[var(--s2)] min-w-0 flex-1">
+                <span className="text-brand-primary flex-shrink-0 text-sm sm:text-base">☆</span>
+                <h1 className="text-sm sm:text-base lg:text-lg font-heading font-semibold text-text-primary truncate">
+                  Risk Grid
+                </h1>
+                {filters.status && (
+                  <span className="text-xs text-text-secondary hidden xl:inline whitespace-nowrap">
+                    Where Status = {filters.status}
+                  </span>
+                )}
+              </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button appearance="default" iconBefore={ShowMoreVerticalIcon}>
-                  Actions
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsColumnsDialogOpen(true)}>
-                  Columns Shown
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  disabled={selectedRiskIds.length === 0}
-                  onClick={() => setIsMassMoveOpen(true)}
-                >
-                  Mass Move
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  disabled={selectedRiskIds.length === 0}
-                  onClick={() => {
-                    if (selectedRiskIds.length > 0 && filteredRisks.length > 0) {
-                      const firstSelected = filteredRisks.find(r => r.id === selectedRiskIds[0]);
-                      if (firstSelected) handleDelete(firstSelected);
-                    }
-                  }}
-                >
-                  Delete
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExport}>Export Risks</DropdownMenuItem>
-                <DropdownMenuItem>Risk ROAM Report</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <Button
+                appearance="primary"
+                iconBefore={AddIcon}
+                onClick={() => {
+                  setEditingRisk(null);
+                  setIsCreateEditOpen(true);
+                }}
+              >
+                Add Risk
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-[var(--s2)]">
+              <Button
+                appearance="default"
+                iconBefore={FilterIcon}
+                onClick={() => setIsFiltersDialogOpen(true)}
+              >
+                Filters
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button appearance="default" iconBefore={ShowMoreVerticalIcon}>
+                    Actions
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExport}>Export Risks</DropdownMenuItem>
+                  <DropdownMenuItem>Risk ROAM Report</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Search Bar with design tokens */}
-      <div className="px-[var(--s2)] sm:px-[var(--s4)] lg:px-[var(--s6)] py-[var(--s2)] border-b">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <Input
-            placeholder="Search risks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 text-sm h-9"
+        {/* Canonical BacklogPage table — column picker, toolbar, sort,
+            bulk-select, inline create are all inherited unchanged. */}
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <BacklogPage
+            /* projectId / projectKey are sentinels — BacklogPage's own
+               ph_issues query returns nothing for these, so all rows come
+               from the adapter's extraStories. */
+            projectId={RISKS_SENTINEL_ID}
+            projectKey={RISKS_SENTINEL_KEY}
+            displayName="Risks"
+            baseUrl="/risks"
+            dataSource={adapter}
           />
         </div>
-      </div>
 
-      {/* Data Table */}
-      <div className="flex-1 overflow-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-64 text-xs sm:text-sm text-text-muted">
-            Loading risks...
-          </div>
-        ) : (
-          <div className="overflow-x-auto -mx-2 sm:mx-0">
-            <Table className="min-w-[600px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-8 sm:w-10">☆</TableHead>
-                <TableHead className="w-12 sm:w-16 text-xs sm:text-sm">ID</TableHead>
-                {visibleColumns.includes('roam') && <TableHead className="w-24 sm:w-32 text-xs sm:text-sm">ROAM</TableHead>}
-                {visibleColumns.includes('title') && <TableHead className="text-xs sm:text-sm">Title</TableHead>}
-                {visibleColumns.includes('pi') && <TableHead className="w-20 sm:w-32 text-xs sm:text-sm hidden md:table-cell">PI</TableHead>}
-                {visibleColumns.includes('occurrence') && <TableHead className="w-16 sm:w-20 text-xs sm:text-sm hidden lg:table-cell">Occ</TableHead>}
-                {visibleColumns.includes('impact') && <TableHead className="w-16 sm:w-20 text-xs sm:text-sm hidden lg:table-cell">Imp</TableHead>}
-                {visibleColumns.includes('critical_path') && <TableHead className="w-20 sm:w-24 text-xs sm:text-sm hidden xl:table-cell">Critical</TableHead>}
-                {visibleColumns.includes('status') && <TableHead className="w-16 sm:w-20 text-xs sm:text-sm">Status</TableHead>}
-                <TableHead className="w-12 sm:w-16">
-                  <Checkbox />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRisks.map((risk: Risk) => (
-                <TableRow
-                  key={risk.id}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => setSelectedRisk(risk)}
-                >
-                  <TableCell className="text-xs sm:text-sm">☆</TableCell>
-                  <TableCell className="font-medium text-text-primary text-xs sm:text-sm">
-                    {risk.risk_number}
-                  </TableCell>
-                  {visibleColumns.includes('roam') && (
-                    <TableCell>
-                      <RoamBadge status={risk.resolution_method} />
-                    </TableCell>
-                  )}
-                  {visibleColumns.includes('title') && (
-                    <TableCell className="text-text-primary text-xs sm:text-sm">
-                      {risk.title}
-                    </TableCell>
-                  )}
-                  {visibleColumns.includes('pi') && (
-                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden md:table-cell">
-                      —
-                    </TableCell>
-                  )}
-                  {visibleColumns.includes('occurrence') && (
-                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden lg:table-cell">
-                      {risk.occurrence || '—'}
-                    </TableCell>
-                  )}
-                  {visibleColumns.includes('impact') && (
-                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden lg:table-cell">
-                      {risk.impact || '—'}
-                    </TableCell>
-                  )}
-                  {visibleColumns.includes('critical_path') && (
-                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden xl:table-cell">
-                      {risk.critical_path || '—'}
-                    </TableCell>
-                  )}
-                  {visibleColumns.includes('status') && (
-                    <TableCell className="text-text-secondary text-xs sm:text-sm">
-                      {risk.status}
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedRiskIds.includes(risk.id)}
-                      onCheckedChange={() => toggleRiskSelection(risk.id)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            </Table>
-          </div>
+        {/* Risk Detail Panel */}
+        {selectedRisk && (
+          <RiskDetailPanel
+            risk={selectedRisk}
+            isOpen={!!selectedRisk}
+            onClose={() => setSelectedRisk(null)}
+            onUpdate={(updates) => {
+              updateRisk(updates as any);
+              setSelectedRisk(null);
+            }}
+          />
         )}
-      </div>
 
-      {/* Pagination Footer */}
-      <div className="border-t px-2 sm:px-4 lg:px-6 py-2 bg-card">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-text-secondary">
-          <div className="text-center sm:text-left">
-            {filteredRisks.length > 0 
-              ? `1-${Math.min(10, filteredRisks.length)} of ${filteredRisks.length}`
-              : '0 Records'}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs">Page 1 of {Math.ceil(filteredRisks.length / 10) || 1}</span>
-            <div className="flex gap-1">
-              <Button appearance="default" spacing="compact">First</Button>
-              <Button appearance="default" spacing="compact">Prev</Button>
-              <Button appearance="default" spacing="compact">Next</Button>
-              <Button appearance="default" spacing="compact">Last</Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Risk Detail Panel */}
-      {selectedRisk && (
-        <RiskDetailPanel
-          risk={selectedRisk}
-          isOpen={!!selectedRisk}
-          onClose={() => setSelectedRisk(null)}
-          onUpdate={(updates) => {
-            updateRisk(updates as any);
-            setSelectedRisk(null);
-          }}
+        {/* Filters Dialog */}
+        <RiskFiltersDialog
+          isOpen={isFiltersDialogOpen}
+          onClose={() => setIsFiltersDialogOpen(false)}
+          filters={filters}
+          onFiltersChange={setFilters}
         />
-      )}
 
-      {/* Filters Dialog */}
-      <RiskFiltersDialog
-        isOpen={isFiltersDialogOpen}
-        onClose={() => setIsFiltersDialogOpen(false)}
-        filters={filters}
-        onFiltersChange={setFilters}
-      />
+        {/* Create/Edit Risk Panel */}
+        <CreateEditRiskDialog
+          risk={editingRisk || undefined}
+          open={isCreateEditOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setIsCreateEditOpen(false);
+              setEditingRisk(null);
+            }
+          }}
+          onSave={handleCreateEditSave}
+          isSubmitting={isCreating || isUpdating}
+        />
 
-      {/* Create/Edit Risk Panel */}
-      <CreateEditRiskDialog
-        risk={editingRisk || undefined}
-        open={isCreateEditOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setIsCreateEditOpen(false);
-            setEditingRisk(null);
-          }
-        }}
-        onSave={handleCreateEditSave}
-        isSubmitting={isCreating || isUpdating}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteRiskDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleDeleteConfirm}
-        riskTitle={riskToDelete?.title || ''}
-      />
-
-      {/* Mass Move Dialog */}
-      <MassMoveDialog
-        isOpen={isMassMoveOpen}
-        onClose={() => setIsMassMoveOpen(false)}
-        onConfirm={handleMassMove}
-        selectedCount={selectedRiskIds.length}
-      />
-
-      {/* Columns Dialog */}
-      <ColumnsDialog
-        isOpen={isColumnsDialogOpen}
-        onClose={() => setIsColumnsDialogOpen(false)}
-        visibleColumns={visibleColumns}
-        onColumnsChange={setVisibleColumns}
-      />
+        {/* Delete Confirmation Dialog */}
+        <DeleteRiskDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleDeleteConfirm}
+          riskTitle={riskToDelete?.title || ''}
+        />
       </div>
     </div>
   );
