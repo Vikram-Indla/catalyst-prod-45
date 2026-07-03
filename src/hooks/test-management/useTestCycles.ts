@@ -431,7 +431,8 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
             priority:tm_case_priorities(*),
             type:tm_case_types(*)
           ),
-          assignee:profiles(id, full_name, avatar_url)
+          assignee:profiles(id, full_name, avatar_url),
+          runs:tm_test_runs(id, run_number, completed_at, started_at)
         `)
         .eq('cycle_id', cycleId)
         .order('sort_order', { ascending: true });
@@ -461,23 +462,31 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
         throw error;
       }
 
-      // Map to TMCycleScope
-      return (data || []).map((row: any) => ({
+      // Map to TMCycleScope. last_run_* derive from the scope's runs — the
+      // old hardcoded null made the Defects/Comments/Evidence panels claim
+      // "no execution run yet" forever (P0-S7b).
+      return (data || []).map((row: any) => {
+        const latestRun = (row.runs ?? []).reduce(
+          (best: any, r: any) => (!best || (r.run_number ?? 0) > (best.run_number ?? 0) ? r : best),
+          null,
+        );
+        return ({
         id: row.id,
         cycle_id: row.cycle_id,
         case_id: row.test_case_id,
         assigned_to: row.assigned_to,
         due_date: row.due_date ?? null,
         status: execStatusFromDb(row.current_status),
-        last_run_id: null,
-        last_run_at: null,
+        last_run_id: latestRun?.id ?? null,
+        last_run_at: latestRun?.completed_at ?? latestRun?.started_at ?? null,
         created_at: row.added_at || '',
         test_case: row.test_case ? {
           ...row.test_case,
           key: row.test_case.case_key,
         } : undefined,
         assignee: row.assignee,
-      }));
+      });
+      });
     },
     enabled: !!cycleId,
   });
