@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
+  CatalystTag,
   Lozenge,
   SectionMessage,
   Select,
@@ -237,9 +238,10 @@ export function TransitionPanel({
           <div key={g.id} style={{ border: '1px solid var(--ds-border)', borderRadius: 4, padding: '4px 8px', marginBottom: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, flex: 1 }}>{g.guard_type}</span>
-              <Lozenge appearance={reg?.blockingSafe ? 'success' : 'moved'}>
-                {reg?.blockingSafe ? 'evidence' : 'advisory'}
-              </Lozenge>
+              <CatalystTag
+                color={reg?.blockingSafe ? 'green' : 'yellow'}
+                text={reg?.blockingSafe ? 'evidence' : 'advisory'}
+              />
               {isDraft && (
                 <Button
                   appearance="subtle"

@@ -189,7 +189,7 @@ function EntityStatuses({ entityKey }: { entityKey: string }) {
     <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <span style={{ fontWeight: 600 }}>{ENTITY_LABELS[entityKey] ?? entityKey}</span>
-        <Lozenge appearance="success">v{published.version_no}</Lozenge>
+        <CatalystTag color="green" text={`v${published.version_no}`} />
         <span style={{ flex: 1 }} />
         <Button
           appearance="subtle"
