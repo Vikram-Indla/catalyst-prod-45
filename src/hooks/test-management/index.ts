@@ -25,7 +25,6 @@ export { useDefects } from './useDefects';
 
 // ── Real hooks from sibling files (with adapter wrappers for API compat) ──
 export { useTestPlan, useCreateTestPlan, useUpdateTestPlan, useDeleteTestPlan } from '../useTestPlansG26';
-export { cycleListKeys } from '../test-cycles/useTestCycleList';
 
 // useTestPlans wrapper: consumers expect { plans: [] } shape and string projectId arg
 import { useTestPlans as _useTestPlans } from '../useTestPlansG26';
