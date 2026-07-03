@@ -217,7 +217,7 @@ export function ProjectPageHeader({
           <span
             aria-hidden
             style={{
-              color: "var(--ds-border-bold)",
+              color: "var(--ds-text-subtlest)",
               fontSize: 14,
               lineHeight: 1,
               flexShrink: 0,

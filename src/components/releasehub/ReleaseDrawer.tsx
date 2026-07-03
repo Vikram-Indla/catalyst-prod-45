@@ -742,7 +742,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
   if (entries.length === 0) {
     return (
       <div className="text-center py-12">
-        <Activity size={32} style={{ color: 'var(--ds-border-disabled)', margin: '0 auto 12px' }} />
+        <Activity size={32} style={{ color: 'var(--ds-icon-disabled)', margin: '0 auto 12px' }} />
         <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>No activity yet</p>
         <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
           Activity will appear here as changes progress through their lifecycle.

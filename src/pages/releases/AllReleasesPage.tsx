@@ -737,7 +737,7 @@ export default function AllReleasesPage() {
             <button onClick={handleExportSelected} style={bulkBarBtnStyle}>
               Export Selected
             </button>
-            <button onClick={() => setDeleteConfirm(true)} style={{ ...bulkBarBtnStyle, borderColor: 'var(--ds-background-danger, rgba(239,68,68,0.5))', color: 'var(--ds-border-danger)' }}>
+            <button onClick={() => setDeleteConfirm(true)} style={{ ...bulkBarBtnStyle, borderColor: 'var(--ds-border-danger)', color: 'var(--ds-text-danger)' }}>
               Delete
             </button>
             <div className="flex-1" />
