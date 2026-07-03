@@ -29,3 +29,12 @@ Only true schema gap (transition dates; changelog empty). Adding ph_issue_status
 ## D-005 (2026-07-03) — Phase 4 scope (light)
 
 No DDL. Ship: consume existing ph_issue_links in traceability reports; defect→release derivation via parent_key/sprint_release; cross-links between Reports hub ↔ Incident Hub ↔ Project Hub dashboards. ECharts stays proof-gated (not admitted this program).
+
+## D-006 (2026-07-03) — Gap-closure sweep authorized; D-004 deferral lifted
+
+Vikram: "complete all known gaps" (session 002). Consequences:
+- D-004 status-history DDL executed as 20260703290000 (`ph_issue_status_history` + ph_issues trigger + tm_defects.resolved_at stamp). Capture-forward only; the CUT-report consequence is dissolved — registry grows to 26.
+- approval-age discovered to need NO history: tm_plan_approvals / tm_release_signoffs natively carry requested_at/decided_at (PHASE0 "no approved_at" claim was checked against the wrong table).
+- tm_ai_usage_log restored (20260703280000). REVAMP-DEMO-20260703 seed applied (placeholder 20260703300000).
+- d3 + dormant WikiKnowledgeGraphPage deleted (sole consumer, unrouted).
+- All new reports disclose capture-start; zero backfill (zero-assumption law).

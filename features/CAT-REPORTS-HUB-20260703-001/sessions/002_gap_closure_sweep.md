@@ -25,4 +25,13 @@
 - tm_* demo seed on cyij, REVAMP-DEMO-20260703 tag.
 
 ## Evidence
-(appended per slice — see 06_VALIDATION_EVIDENCE.md)
+- Gates at both commits: tsc clean · lint:colors:gate 0 · audit:ads:gate at baseline (tokens 27316, typography 1658, spacing 1) · CRE gate pass.
+- Trigger smoke test: transactional status flip on BAU-5923 captured 1 history row, fully rolled back (0 residue, status unchanged).
+- Seed verify (cyij): tm_test_cases 41→71, runs 13→53, RVCYC-003 scope 44, story links 38, defects 14 (4 dated closures via trigger), plans 2, approvals 3.
+- Live screenshots (dark mode, 2026-07-03, in transcript): defect-closure-trend (13/9/4 + weekly chart + Caty chip), approval-age (1 pending/2 decided/2.5 avg/5 oldest + lozenge table), incident report (MTTR em-dash "capture from 2026-07-03", assignee avatars), team-performance (9 testers, avatars, insight), points-burndown honest empty state on itemless sprint.
+- Ledger: 20260703280000 / 290000 / 300000 rows reconciled 1:1 with committed files.
+
+## Commits
+- e7cfe1e0b — S2.1 insight cards ×5 + d3 removal
+- 4f31d7594 — S2.2–S2.4 DDL + 4 CUT reports + people identity
+- (final) — docs + seed placeholder migration

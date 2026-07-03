@@ -1,0 +1,17 @@
+-- CAT-REPORTS-HUB-20260703-001 gap closure S2.4 — REVAMP-DEMO-20260703 seed.
+-- ENVIRONMENT-SPECIFIC DATA SEED (staging cyij only) — intentional no-op here so the
+-- migration ledger stays 1:1 with committed files without replaying demo data anywhere else.
+--
+-- What was seeded on cyij (all rows tagged 'REVAMP-DEMO-20260703' in description/notes,
+-- executed 2026-07-03 via SQL batch, idempotent NOT EXISTS guards):
+--   tm_test_cases   RVTC-015..044 (30) on Senaei BAU 84f91caf, assigned round-robin
+--   tm_test_cycles  RVCYC-003 (active) + tm_cycle_scope for all 44 project cases
+--                   (passed/failed/blocked/in_progress/not_run distribution)
+--   tm_test_runs    53 runs spread over the trailing 3 weeks
+--   tm_requirement_links  RVTC-015..034 → 10 BAU stories (link_type 'tests')
+--   tm_defects      RVDF-004..013; RVDF-010..013 closed via status UPDATE (exercised
+--                   tm_defects_resolved_at_trg), resolved_at spread over 4 weeks
+--   tm_test_plans   RVPL-001/002 + 3 tm_plan_approvals (approved/pending/rejected)
+--
+-- Cleanup query: delete where description/notes like '%REVAMP-DEMO-20260703%'.
+SELECT 1;
