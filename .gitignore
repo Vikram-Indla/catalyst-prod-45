@@ -45,6 +45,9 @@ playwright/.cache/
 *.orig
 *.rej
 
+# FUSE filesystem ghosts of deleted-while-open files (CAT-AUDIT-0801)
+.fuse_hidden*
+
 # Claude Code local settings
 .claude/settings.local.json
 
