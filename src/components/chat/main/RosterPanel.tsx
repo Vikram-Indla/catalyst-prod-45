@@ -66,7 +66,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                 No members yet.
               </div>
             )}
-            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            <div style={inDock ? undefined : { maxHeight: 360, overflowY: 'auto' }}>
               {members.map((m) => {
                 const isSelf = user && m.userId === user.id;
                 const canActOnRow = canRemove || isSelf;

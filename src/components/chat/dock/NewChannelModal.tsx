@@ -217,8 +217,6 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             />
             <div
               style={{
-                maxHeight: 220,
-                overflowY: 'auto',
                 marginTop: 8,
                 border: '1px solid var(--ds-border)',
                 borderRadius: 4,

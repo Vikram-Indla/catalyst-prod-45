@@ -177,7 +177,7 @@ export function AddPeopleModal({
                 {error}
               </div>
             )}
-            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            <div style={inDock ? undefined : { maxHeight: 360, overflowY: 'auto' }}>
               {candidates.length === 0 && (
                 <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   No matches.

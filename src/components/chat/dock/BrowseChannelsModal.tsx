@@ -110,7 +110,7 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                 marginBottom: 12,
               }}
             />
-            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            <div>
               {isLoading && (
                 <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   Loading…
