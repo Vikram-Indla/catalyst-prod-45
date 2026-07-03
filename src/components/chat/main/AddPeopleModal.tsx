@@ -158,7 +158,7 @@ export function AddPeopleModal({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 'var(--ds-font-size-400)',
+                fontSize: 'var(--ds-font-size-100)',
                 border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 marginBottom: 12,
@@ -181,7 +181,7 @@ export function AddPeopleModal({
             )}
             <div style={{ maxHeight: 360, overflowY: 'auto' }}>
               {candidates.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   No matches.
                 </div>
               )}
@@ -219,7 +219,7 @@ export function AddPeopleModal({
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {c.name}
                         </span>

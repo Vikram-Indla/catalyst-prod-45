@@ -307,9 +307,10 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             <line x1="1" y1="1" x2="23" y2="23" />
           </svg>
         ) : (
-          /* Filled bell = notifications on */
-          <svg viewBox="0 0 24 24" width={16} height={16} fill="currentColor" stroke="none">
-            <path d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 0 1-3.46 0H13.73z" />
+          /* Outline bell = notifications on */
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
         )}
       </button>

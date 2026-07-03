@@ -16,8 +16,14 @@ import { MessageList } from '@/features/chat-v2/components/MessagePanel/MessageL
  * - windowState 'maximized' : full-viewport.
  * Mounted at app-shell scope (survives route changes), like the FAB.
  */
-const POS_KEY = 'huddle-window-pos';
+const POS_KEY = 'huddle-window-pos-br';
 const SIZE_KEY = 'huddle-window-size';
+const WIN_MARGIN = 24;
+function bottomRight(w: number, h: number): { top: number; left: number } {
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 900;
+  return { top: Math.max(8, vh - h - WIN_MARGIN), left: Math.max(8, vw - w - WIN_MARGIN) };
+}
 type Pos = { top: number; left: number };
 type Size = { w: number; h: number };
 function load<T>(key: string, fallback: T): T {
@@ -30,10 +36,28 @@ export function HuddleWindow() {
   const windowState = useHuddleStore((s) => s.windowState);
   const setWindowState = useHuddleStore((s) => s.setWindowState);
 
-  const [pos, setPos] = useState<Pos>(() => load(POS_KEY, { top: 48, left: 48 }));
   const [size] = useState<Size>(() => load(SIZE_KEY, { w: 900, h: 560 }));
+  const [pos, setPos] = useState<Pos>(() => {
+    const stored = load<Pos | null>(POS_KEY, null);
+    return stored ?? bottomRight(Math.max(size.w, 560), Math.max(size.h, 380));
+  });
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+
+  // After the window mounts, clamp its position into the viewport using its REAL
+  // rendered size (min-width/height can make it larger than `size`), so it can
+  // never end up mostly off-screen in the bottom-right corner.
+  useEffect(() => {
+    if (!active || windowState !== 'open') return;
+    const el = wrapRef.current;
+    if (!el) return;
+    const w = el.offsetWidth || size.w;
+    const h = el.offsetHeight || size.h;
+    setPos((p) => ({
+      left: Math.max(8, Math.min(window.innerWidth - w - 8, p.left)),
+      top: Math.max(8, Math.min(window.innerHeight - h - 8, p.top)),
+    }));
+  }, [active?.huddleId, windowState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const chatPanelOpen = useHuddleStore((s) => s.chatPanelOpen);
   // In-huddle messages thread under the "Huddle is happening" event row. They show

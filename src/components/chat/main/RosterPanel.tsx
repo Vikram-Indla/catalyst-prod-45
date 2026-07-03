@@ -59,12 +59,12 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
           </ModalHeader>
           <ModalBody>
             {isLoading && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                 Loading…
               </div>
             )}
             {!isLoading && members.length === 0 && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                 No members yet.
               </div>
             )}
@@ -90,7 +90,8 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          fontSize: 'var(--ds-font-size-400)',
+                          fontSize: 'var(--ds-font-size-100)',
+                          fontWeight: 600,
                           color: 'var(--ds-text)',
                         }}
                       >
@@ -117,7 +118,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                         )}
                       </div>
                       {m.email && (
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-075)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
                       )}
                       <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                         joined {timeAgo(m.joinedAt)}

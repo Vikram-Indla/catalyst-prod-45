@@ -29,6 +29,24 @@ function persistDeclined() {
   try { localStorage.setItem(DECLINED_KEY, JSON.stringify([...declined].slice(-200))); } catch { /* ignore */ }
 }
 
+// Snoozed huddles — { huddleId: expiryMs }. A snooze mutes the ring for 1 hour;
+// after expiry the same huddle (if still active) rings again. Survives refresh.
+const SNOOZE_KEY = 'huddle-snoozed';
+const SNOOZE_MS = 60 * 60 * 1000; // 1 hour
+const snoozed: Map<string, number> = (() => {
+  try { return new Map<string, number>(Object.entries(JSON.parse(localStorage.getItem(SNOOZE_KEY) || '{}'))); }
+  catch { return new Map<string, number>(); }
+})();
+function persistSnoozed() {
+  try { localStorage.setItem(SNOOZE_KEY, JSON.stringify(Object.fromEntries(snoozed))); } catch { /* ignore */ }
+}
+function isSnoozed(id: string): boolean {
+  const until = snoozed.get(id);
+  if (until == null) return false;
+  if (Date.now() >= until) { snoozed.delete(id); persistSnoozed(); return false; }
+  return true;
+}
+
 interface HuddleRow { id: string; conversation_id: string; started_by: string }
 interface PartRow { huddle_id: string }
 
@@ -43,6 +61,7 @@ export function useIncomingHuddle(): {
   incoming: IncomingHuddle | null;
   accept: () => void;
   decline: () => void;
+  snooze: () => void;
 } {
   const { user } = useAuth();
   const userId = user?.id ?? null;
@@ -76,7 +95,7 @@ export function useIncomingHuddle(): {
         .gt('last_seen_at', liveCutoff());
       const liveHuddleIds = new Set(((fresh ?? []) as PartRow[]).map((p) => p.huddle_id));
       const candidate = rows.find(
-        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id) && liveHuddleIds.has(h.id),
+        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id) && !isSnoozed(h.id) && liveHuddleIds.has(h.id),
       );
       if (!candidate) return null;
       const [{ data: caller }, { data: conv }] = await Promise.all([
@@ -114,11 +133,16 @@ export function useIncomingHuddle(): {
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 
+  const snooze = useCallback(() => {
+    if (data) { snoozed.set(data.huddleId, Date.now() + SNOOZE_MS); persistSnoozed(); }
+    qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+  }, [data, qc, userId]);
+
   const accept = useCallback(() => {
     if (!data) return;
     const conv = { id: data.conversationId, title: data.conversationName } as ChatConversation;
     void startOrJoin(conv);
   }, [data, startOrJoin]);
 
-  return { incoming, accept, decline };
+  return { incoming, accept, decline, snooze };
 }

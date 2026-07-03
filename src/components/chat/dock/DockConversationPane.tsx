@@ -114,6 +114,7 @@ export function DockConversationPane({
 
   const [summaryDismissed, setSummaryDismissed] = useState(false);
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
+  const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
 
   const savedIds = useMemo(
     () =>
@@ -311,6 +312,16 @@ export function DockConversationPane({
             savedIds={savedIds}
             pinnedIds={pinnedIds}
             attachmentsByMessage={attachmentsByMessage}
+            jumpHighlightId={jumpHighlightId}
+            onJumpTo={(messageId) => {
+              setJumpHighlightId(messageId);
+              requestAnimationFrame(() => {
+                document
+                  .querySelector(`.cc-conv-pane [data-message-id="${messageId}"]`)
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              });
+              window.setTimeout(() => setJumpHighlightId(null), 2400);
+            }}
             onOpenThread={handleOpenThread}
             onToggleReaction={toggleReaction}
             onEdit={(messageId, markdown) => {

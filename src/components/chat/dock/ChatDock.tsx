@@ -12,11 +12,16 @@
 import React, { useState, Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { IconButton } from "@atlaskit/button/new";
+import Badge from "@atlaskit/badge";
+import Tabs, { Tab, TabList } from "@atlaskit/tabs";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
-import CloseIcon from "@atlaskit/icon/core/close";
+import MinusIcon from "@atlaskit/icon/core/minus";
 import { CatyPulseIcon } from "@/components/ui/CatyPulseIcon";
 import { useConversations } from "@/hooks/chat/useConversations";
+import { useIncomingHuddle } from "@/hooks/chat/useIncomingHuddle";
+import { startRing, stopRing } from "@/lib/chat/huddle/ringtone";
+import { DockCallRing } from "./DockCallRing";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
 import { useDraggableFab } from "./useDraggableFab";
@@ -243,25 +248,85 @@ export function ChatDock({
 
   const fabRef = React.useRef<HTMLButtonElement>(null);
 
+  // Incoming huddle → vibrate the FAB (magenta) instead of a separate strap.
+  // Hovering the FAB stops the vibration and fans out decline/snooze/accept.
+  const { incoming, accept: acceptCall, decline: declineCall, snooze: snoozeCall } = useIncomingHuddle();
+  const ringing = !!incoming;
+  const [ringHovered, setRingHovered] = React.useState(false);
+  const ringDiscRef = React.useRef<HTMLSpanElement>(null);
+  const ringPulseRef = React.useRef<HTMLSpanElement>(null);
+  const ringCloseRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openRing = React.useCallback(() => {
+    if (ringCloseRef.current) { clearTimeout(ringCloseRef.current); ringCloseRef.current = null; }
+    setRingHovered(true);
+  }, []);
+  const closeRing = React.useCallback(() => {
+    if (ringCloseRef.current) clearTimeout(ringCloseRef.current);
+    ringCloseRef.current = setTimeout(() => setRingHovered(false), 220);
+  }, []);
+
+  React.useEffect(() => {
+    if (!ringing) { setRingHovered(false); return; }
+    startRing();
+    window.dispatchEvent(new CustomEvent('huddle:incoming-ring'));
+    return () => stopRing();
+  }, [ringing, incoming?.huddleId]);
+
+  // rAF-driven vibrate + expanding ring. Inline transforms bypass the global
+  // `prefers-reduced-motion` reset in index.css that kills all CSS animation.
+  React.useEffect(() => {
+    if (!ringing) return;
+    let raf = 0;
+    const t0 = performance.now();
+    const loop = (now: number) => {
+      const t = (now - t0) / 1000;
+      const disc = ringDiscRef.current;
+      const ring = ringPulseRef.current;
+      if (disc) {
+        disc.style.transform = ringHovered
+          ? 'translate(0,0) rotate(0deg)'
+          : `translate(${(Math.sin(t * 40) * 1.4).toFixed(2)}px, ${(Math.cos(t * 36) * 0.9).toFixed(2)}px) rotate(${(Math.sin(t * 38) * 3).toFixed(2)}deg)`;
+      }
+      if (ring) {
+        const p = (t % 1.25) / 1.25; // 0→1 expanding pulse
+        ring.style.transform = `scale(${(0.9 + p * 0.85).toFixed(3)})`;
+        ring.style.opacity = (0.65 * (1 - p)).toFixed(3);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (ringDiscRef.current) ringDiscRef.current.style.transform = '';
+    };
+  }, [ringing, ringHovered]);
+
+  const fanOpen = ringing && ringHovered;
+
   // Full list passed to DockDirectory so archived section works.
   const listConversations = conversations ?? [];
 
+  const fabHidden = dockMounted && !collapsed;
   const fab = (
+    <>
     <button
       ref={fabRef}
       type="button"
-      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
-      style={{ top: pos.y, left: pos.x, display: dockMounted && !collapsed ? 'none' : undefined }}
+      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${ringing && !fanOpen ? ' cc-fab--ringing' : ''}`}
+      style={{ top: pos.y, left: pos.x, display: fabHidden ? 'none' : undefined }}
       onClick={() => { if (!didMove.current) onToggleCollapsed(); }}
       onPointerDown={dragHandlers.onPointerDown}
       onPointerMove={dragHandlers.onPointerMove}
       onPointerUp={dragHandlers.onPointerUp}
+      onMouseEnter={ringing ? openRing : undefined}
+      onMouseLeave={ringing ? closeRing : undefined}
       aria-label={totalUnread > 0
         ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
         : 'Caty online. Open messages.'}
       title="Open messages"
     >
-      <span className="cc-wake-disc">
+      <span className="cc-wake-disc" ref={ringDiscRef}>
+        {ringing && <span className="cc-fab__ring" ref={ringPulseRef} aria-hidden />}
         <CatyPulseIcon size={28} />
         {totalUnread > 0 ? (
           <span
@@ -275,6 +340,19 @@ export function ChatDock({
         )}
       </span>
     </button>
+    {ringing && !fabHidden && (
+      <DockCallRing
+        centerX={pos.x + 38.5}
+        centerY={pos.y + 38.5}
+        open={fanOpen}
+        onOpen={openRing}
+        onClose={closeRing}
+        onDecline={() => { setRingHovered(false); declineCall(); }}
+        onSnooze={() => { setRingHovered(false); snoozeCall(); }}
+        onAccept={() => { setRingHovered(false); acceptCall(); }}
+      />
+    )}
+    </>
   );
 
   // Phase 0: before first FAB click — FAB only, zero dock mount cost.
@@ -332,20 +410,23 @@ export function ChatDock({
                 <button
                   type="button"
                   className="cc-dock__shell-action-btn"
-                  aria-label="Close"
-                  title="Close"
+                  aria-label="Minimize"
+                  title="Minimize"
                   onClick={onToggleCollapsed}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
                 </button>
               </div>
             </div>
-            <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
-              <button type="button" role="tab" className="cc-mode-tab cc-mode-tab--active" aria-selected={true}>Messages</button>
-              <button type="button" role="tab" className="cc-mode-tab" aria-selected={false}>Assistant</button>
+            <div className="cc-mode-tabs">
+              <Tabs id="cc-dock-mode-loading" selected={0} onChange={() => {}}>
+                <TabList>
+                  <Tab>Messages</Tab>
+                  <Tab>Assistant</Tab>
+                </TabList>
+              </Tabs>
             </div>
           </div>
           <div className="cc-dock__messages-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
@@ -400,41 +481,35 @@ export function ChatDock({
                 onClick={onPopOut}
               />
               <IconButton
-                icon={(p) => <CloseIcon {...p} LEGACY_size="small" />}
-                label="Close"
+                icon={(p) => <MinusIcon {...p} LEGACY_size="small" />}
+                label="Minimize"
                 appearance="subtle"
                 spacing="compact"
-                title="Close"
+                title="Minimize"
                 onClick={onToggleCollapsed}
               />
             </div>
           </div>
 
-          {/* Row 2 — dual-mode underline tabs */}
-          <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
-            <button
-              type="button"
-              role="tab"
-              className={`cc-mode-tab${dockMode === "messages" ? " cc-mode-tab--active" : ""}`}
-              onClick={() => setDockMode("messages")}
-              aria-selected={dockMode === "messages"}
+          {/* Row 2 — dual-mode tabs (@atlaskit/tabs owns the selected-underline) */}
+          <div className="cc-mode-tabs">
+            <Tabs
+              id="cc-dock-mode"
+              selected={dockMode === "caty" ? 1 : 0}
+              onChange={(index) => setDockMode(index === 1 ? "caty" : "messages")}
             >
-              Messages
-              {totalUnread > 0 && (
-                <span className="cc-mode-tab__badge" aria-label={`${totalUnread} unread`}>
-                  {totalUnread > 99 ? "99+" : totalUnread}
-                </span>
-              )}
-            </button>
-            <button
-              type="button"
-              role="tab"
-              className={`cc-mode-tab${dockMode === "caty" ? " cc-mode-tab--active" : ""}`}
-              onClick={() => setDockMode("caty")}
-              aria-selected={dockMode === "caty"}
-            >
-              Assistant
-            </button>
+              <TabList>
+                <Tab>
+                  Messages
+                  {totalUnread > 0 && (
+                    <span style={{ marginInlineStart: "var(--ds-space-075)" }}>
+                      <Badge appearance="primary" max={99}>{totalUnread}</Badge>
+                    </span>
+                  )}
+                </Tab>
+                <Tab>Assistant</Tab>
+              </TabList>
+            </Tabs>
           </div>
         </div>
 
