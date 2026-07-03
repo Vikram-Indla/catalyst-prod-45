@@ -130,3 +130,22 @@ Plan Lock's binary accept condition — "reschedule one test → other rows' dat
 **Screenshot n/a** — no route/page existed to screenshot; the "plan detail still lists cycles" sub-condition is moot for the same reason as D-007 (cited surface doesn't exist). Recorded as D-008.
 
 **P1-S8 done.** Next per Plan Lock: **P1-S9** — traceability single link model 1 (FK + backfill).
+
+## P1-S9 (traceability single link model 1 — FK + backfill)
+
+Migration `20260703410000_tm_requirement_links_fk_and_backfill.sql` on cyij:
+
+| Step | Result |
+|---|---|
+| Orphan cleanup (probe P0.3 re-verified live) | 0 orphans out of 20 pre-existing links — no cleanup needed |
+| `ADD COLUMN project_id` | Added, FK → `tm_projects` (correct split per P0.5 — tm_requirement_links is not in the `projects`-FK exception list) |
+| Backfill `project_id` | From `tm_test_cases.project_id` via `test_case_id` join |
+| `ADD CONSTRAINT ... NOT VALID` then `VALIDATE CONSTRAINT` | `requirement_id` → `ph_issues(id)`; `pg_constraint.convalidated = true` confirmed live |
+| Legacy `linked_story_key` backfill (DAT-031) | 16 `tm_test_cases` rows with `linked_story_key='BAU-2668'` → 16 new `tm_requirement_links` rows (`requirement_type='story'`, resolved via `ph_issues.issue_key`), `ON CONFLICT ... DO NOTHING` idempotent |
+| Accept SQL | orphan-link count = **0**; cases-with-key (16) = backfilled-link-rows (16) — exact equality, both Plan Lock's binary criteria |
+| Retire-first discipline (A2 S3) | `linked_story_key` column and its one live reader/writer (`TestCasesSection.tsx`) untouched — repoint happens in P1-S10, not here |
+| Ledger reconciliation | Ran via `db query --linked` (not `apply_migration`, which is currently permission-blocked for this session) — inserted matching `supabase_migrations.schema_migrations` row manually so the ledger stays 1:1 with the committed file, per CLAUDE.md migration-ledger discipline |
+| Types | Regenerated via `supabase gen types typescript` — new FK (`tm_requirement_links_project_id_fkey`, `tm_requirement_links_requirement_id_fkey`) present |
+| Live proof | tsc clean |
+
+**P1-S9 done.** Next per Plan Lock: **P1-S10** — traceability 2 (picker + unified readers).

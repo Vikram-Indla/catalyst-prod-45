@@ -45185,6 +45185,7 @@ export type Database = {
           id: string
           link_type: string | null
           notes: string | null
+          project_id: string | null
           requirement_id: string | null
           requirement_type: string
           test_case_id: string
@@ -45200,6 +45201,7 @@ export type Database = {
           id?: string
           link_type?: string | null
           notes?: string | null
+          project_id?: string | null
           requirement_id?: string | null
           requirement_type: string
           test_case_id: string
@@ -45215,6 +45217,7 @@ export type Database = {
           id?: string
           link_type?: string | null
           notes?: string | null
+          project_id?: string | null
           requirement_id?: string | null
           requirement_type?: string
           test_case_id?: string
@@ -45269,6 +45272,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_resource_profile"
             referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_requirement_links_test_case_id_fkey"
