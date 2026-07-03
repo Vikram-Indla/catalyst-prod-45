@@ -30,6 +30,7 @@ export interface SelectionStats {
     high: number;
     medium: number;
     low: number;
+    'no-priority': number;
   };
   byFolder: Record<string, number>;
 }

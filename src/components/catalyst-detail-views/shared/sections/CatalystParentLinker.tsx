@@ -169,13 +169,13 @@ function ParentLozenge({
   onClick,
   onOpenParent,
 }: {
-  parentType: string;
+  parentType: string | null | undefined;
   parentKey: string;
   parentSummary?: string;
   onClick?: () => void;
   onOpenParent?: () => void;
 }) {
-  const tok = PARENT_TOKENS[parentType] ?? PARENT_TOKENS.default;
+  const tok = (parentType ? PARENT_TOKENS[parentType] : undefined) ?? PARENT_TOKENS.default;
   return (
     <span
       data-cp-parent-lozenge
@@ -189,7 +189,7 @@ function ParentLozenge({
       }}
       title={`${parentKey} ${parentSummary ?? ""}`}
     >
-      <IssueIcon type={parentType} size={14} />
+      {parentType ? <IssueIcon type={parentType} size={14} /> : null}
       <span
         role="button"
         onClick={(e) => {
@@ -916,7 +916,7 @@ function SingleParentPicker({
         />
       ) : hasRawParent ? (
         <ParentLozenge
-          parentType={(issue as any)?.parent_issue_type || "Epic"}
+          parentType={(issue as any)?.parent_issue_type ?? null}
           parentKey={rawParentKey!}
           parentSummary={(issue as any)?.parent_summary}
           onClick={() => setShowPicker(!showPicker)}

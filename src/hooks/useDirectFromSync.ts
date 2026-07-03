@@ -83,7 +83,7 @@ export function useDirectFromSync(unreadOnly: boolean) {
         )
         .eq('assignee_account_id', myJiraId)
         .is('deleted_at', null)
-        .order('jira_updated_at', { ascending: false })
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(50);
 
       if (error) throw error;
@@ -137,7 +137,7 @@ export function useDirectFromSync(unreadOnly: boolean) {
         const actor = actorMap.get(issue.id);
         return {
           id: `sync::${issue.id}`,
-          created_at: issue.jira_updated_at ?? new Date().toISOString(),
+          created_at: issue.jira_updated_at ?? null,
           read_at: readMap.get(issue.id) ?? null,
           delivered_at: null,
           snoozed_until: null,

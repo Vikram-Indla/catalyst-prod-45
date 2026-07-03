@@ -17,6 +17,7 @@ interface SelectionSummaryProps {
     high: number;
     medium: number;
     low: number;
+    'no-priority': number;
   };
   onClearAll: () => void;
 }
@@ -58,6 +59,9 @@ export function SelectionSummary({
         )}
         {priorityBreakdown.low > 0 && (
           <Lozenge appearance="default">{priorityBreakdown.low} Low</Lozenge>
+        )}
+        {priorityBreakdown['no-priority'] > 0 && (
+          <Lozenge appearance="default">{priorityBreakdown['no-priority']} No Priority</Lozenge>
         )}
       </div>
     </div>

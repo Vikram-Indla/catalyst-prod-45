@@ -63,7 +63,10 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
         if (!showDone) continue;
       }
 
-      const status = item.status || 'Backlog';
+      // Zero-assumption: an item with no real status is grouped under its
+      // own "Unknown" bucket rather than lying that it's in 'Backlog'
+      // (CLAUDE.md zero-assumption data rendering).
+      const status = item.status ?? 'Unknown';
       if (!statusMap.has(status)) {
         statusMap.set(status, {
           status,

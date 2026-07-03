@@ -66,7 +66,7 @@ export function useIncidentDetail(incidentId: string | null) {
         component: data.service_component || 'General',
         components: data.service_component ? [data.service_component] : [],
         labels: [],
-        targetDate: data.target_date || new Date().toISOString(),
+        targetDate: data.target_date ?? null,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         linkedItems: [],

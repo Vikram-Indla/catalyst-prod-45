@@ -103,18 +103,23 @@ export function useTestCaseSelection(
       high: 0,
       medium: 0,
       low: 0,
+      'no-priority': 0,
     };
 
     selectedTestCases.forEach(tc => {
-      const priorityName = tc.priority?.name?.toLowerCase() || 'medium';
-      if (priorityName.includes('critical')) {
+      const priorityName = tc.priority?.name?.toLowerCase();
+      if (!priorityName) {
+        breakdown['no-priority']++;
+      } else if (priorityName.includes('critical')) {
         breakdown.critical++;
       } else if (priorityName.includes('high')) {
         breakdown.high++;
       } else if (priorityName.includes('low')) {
         breakdown.low++;
-      } else {
+      } else if (priorityName.includes('medium')) {
         breakdown.medium++;
+      } else {
+        breakdown['no-priority']++;
       }
     });
 

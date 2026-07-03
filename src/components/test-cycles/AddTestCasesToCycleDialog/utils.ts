@@ -89,7 +89,10 @@ export function formatDuration(minutes: number): string {
  * Get priority color class
  */
 export function getPriorityColor(priorityName: string | undefined): string {
-  const name = priorityName?.toLowerCase() || 'medium';
+  const name = priorityName?.toLowerCase();
+  if (!name) {
+    return 'bg-slate-100 text-slate-600 border-slate-200';
+  }
   if (name.includes('critical')) {
     return 'bg-red-100 text-red-700 border-red-200';
   }
@@ -99,14 +102,20 @@ export function getPriorityColor(priorityName: string | undefined): string {
   if (name.includes('low')) {
     return 'bg-slate-100 text-slate-600 border-slate-200';
   }
-  return 'bg-blue-100 text-blue-700 border-blue-200';
+  if (name.includes('medium')) {
+    return 'bg-blue-100 text-blue-700 border-blue-200';
+  }
+  return 'bg-slate-100 text-slate-600 border-slate-200';
 }
 
 /**
  * Get priority badge variant
  */
 export function getPriorityBadgeClass(priorityName: string | undefined): string {
-  const name = priorityName?.toLowerCase() || 'medium';
+  const name = priorityName?.toLowerCase();
+  if (!name) {
+    return 'bg-slate-100 text-slate-600';
+  }
   if (name.includes('critical')) {
     return 'bg-red-100 text-red-700';
   }
@@ -116,7 +125,10 @@ export function getPriorityBadgeClass(priorityName: string | undefined): string 
   if (name.includes('low')) {
     return 'bg-slate-100 text-slate-600';
   }
-  return 'bg-blue-100 text-blue-700';
+  if (name.includes('medium')) {
+    return 'bg-blue-100 text-blue-700';
+  }
+  return 'bg-slate-100 text-slate-600';
 }
 
 /**
@@ -149,20 +161,27 @@ export function groupByPriority(
     'High': [],
     'Medium': [],
     'Low': [],
+    'No Priority': [],
   };
-  
+
   testCases.forEach(tc => {
-    const priorityName = tc.priority?.name || 'Medium';
+    const priorityName = tc.priority?.name ?? null;
+    if (!priorityName) {
+      grouped['No Priority'].push(tc);
+      return;
+    }
     const normalizedName = priorityName.charAt(0).toUpperCase() + priorityName.slice(1).toLowerCase();
-    
+
     if (normalizedName.includes('Critical')) {
       grouped['Critical'].push(tc);
     } else if (normalizedName.includes('High')) {
       grouped['High'].push(tc);
     } else if (normalizedName.includes('Low')) {
       grouped['Low'].push(tc);
-    } else {
+    } else if (normalizedName.includes('Medium')) {
       grouped['Medium'].push(tc);
+    } else {
+      grouped['No Priority'].push(tc);
     }
   });
 

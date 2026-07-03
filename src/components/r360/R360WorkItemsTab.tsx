@@ -144,7 +144,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
-                <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
+                {item.work_item_type ? <JiraIssueTypeIcon type={item.work_item_type} size={16} /> : null}
               </span>
               <span style={{ width: 100, fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4, paddingLeft: 8 }}>{item.item_key}</span>
               <span style={{
@@ -152,7 +152,9 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
               }}>{item.title}</span>
               <span style={{ width: 120 }}>
-                <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
+                {(item.status || item.status_category) ? (
+                  <R360StatusLozenge status={item.status || item.status_category} />
+                ) : null}
               </span>
               <span style={{ width: 90, textAlign: 'right' as const, fontSize: 'var(--ds-font-size-100)', color: MUTED }}>{relTime(item.updated_at)}</span>
             </div>

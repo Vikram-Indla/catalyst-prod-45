@@ -356,7 +356,7 @@ function ApproversCard({
   const approvers: Approver[] = useMemo(() => rows.map((r) => ({
     rowId: r.id,
     userId: r.user_id,
-    name: r.profile?.full_name || 'Unknown',
+    name: r.profile?.full_name || '—',
     avatarUrl: r.profile?.avatar_url ?? null,
     status: r.status,
     description: r.description ?? '',
@@ -962,7 +962,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
               >
                 <CatalystAvatar size="small" name={u.full_name || undefined} src={resolveAvatarUrl(u.full_name) ?? u.avatar_url ?? undefined} />
                 <span style={{ fontSize: 'var(--ds-font-size-400)', color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {u.full_name || 'Unknown'}
+                  {u.full_name || '—'}
                 </span>
               </button>
             );

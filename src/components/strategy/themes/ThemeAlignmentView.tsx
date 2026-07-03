@@ -51,7 +51,8 @@ const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; lab
   analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Analyzing' },
 };
 
-function getProgressColor(v: number) {
+function getProgressColor(v: number | null | undefined) {
+  if (v == null) return 'var(--ds-text-subtlest)';
   if (v >= 60) return 'var(--ds-text-success, var(--cp-success))';
   if (v >= 40) return 'var(--ds-text-warning, var(--cp-warning))';
   return 'var(--ds-text-danger)';
@@ -904,9 +905,9 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                           </p>
                           <div className="flex items-center gap-2 mt-2.5">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 5 }}>
-                              <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
+                              <div className="rounded-full transition-all" style={{ width: `${t.progress ?? 0}%`, height: 5, background: getProgressColor(t.progress) }} />
                             </div>
-                            <span className="font-bold text-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{Math.round(t.progress || 0)}%</span>
+                            <span className="font-bold text-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{t.progress != null ? `${Math.round(t.progress)}%` : '—'}</span>
                           </div>
                           <div className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', marginTop: 8 }}>
                             {t.goalCount || 0} goals · {t.krCount || 0} KRs
@@ -939,9 +940,9 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                           <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>{g.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
-                              <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
+                              <div className="rounded-full" style={{ width: `${g.progress ?? 0}%`, height: 4, background: getProgressColor(g.progress) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(g.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{g.progress != null ? `${Math.round(g.progress)}%` : '—'}</span>
                           </div>
                         </div>
                       </div>
@@ -971,9 +972,9 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                           <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{kr.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 3 }}>
-                              <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
+                              <div className="rounded-full" style={{ width: `${kr.progress ?? 0}%`, height: 3, background: getProgressColor(kr.progress) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(kr.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{kr.progress != null ? `${Math.round(kr.progress)}%` : '—'}</span>
                           </div>
                         </div>
                       </div>
@@ -1006,9 +1007,9 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                           <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>{ini.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
-                              <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
+                              <div className="rounded-full" style={{ width: `${ini.progress ?? 0}%`, height: 4, background: getProgressColor(ini.progress) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(ini.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{ini.progress != null ? `${Math.round(ini.progress)}%` : '—'}</span>
                           </div>
                         </div>
                       </div>

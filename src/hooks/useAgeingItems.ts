@@ -10,11 +10,15 @@ import { useAuth } from "@/hooks/useAuth";
 export interface AgeingItem {
   id: string;
   issue_key: string;
-  issue_type: string;
+  /** Null when the source row carries no issue type. Never default to
+   *  'Task' (CLAUDE.md zero-assumption rule). */
+  issue_type: string | null;
   summary: string;
   status: string;
   status_category: string;
-  priority: string;
+  /** Null when the source row carries no priority. Never default to
+   *  'medium'. */
+  priority: string | null;
   jira_created_at: string;
   jira_updated_at: string;
   parent_key: string | null;
@@ -181,11 +185,11 @@ export function useAgeingItems() {
         return {
           id: item.id,
           issue_key: item.issue_key || '',
-          issue_type: item.issue_type || 'Task',
+          issue_type: item.issue_type ?? null,
           summary: item.summary || '',
           status: item.status || '',
           status_category: item.status_category || '',
-          priority: item.priority || 'medium',
+          priority: item.priority ?? null,
           jira_created_at: item.jira_created_at || '',
           jira_updated_at: item.jira_updated_at || '',
           parent_key: item.parent_key,

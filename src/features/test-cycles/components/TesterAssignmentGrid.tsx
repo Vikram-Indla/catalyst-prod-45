@@ -139,7 +139,7 @@ export const TesterAssignmentGrid = memo(function TesterAssignmentGrid({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm truncate">
-                      {assignment.user_name || 'Unknown User'}
+                      {assignment.user_name || '—'}
                     </span>
                     <Select
                       value={assignment.role}

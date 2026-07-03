@@ -197,7 +197,7 @@ export function useAssignmentTable(cycleId: string) {
             executedAt: null,
             automationStatus,
             defectCount: 0,
-            createdAt: scope.added_at || new Date().toISOString(),
+            createdAt: scope.added_at ?? null,
           };
         });
       } catch (error) {

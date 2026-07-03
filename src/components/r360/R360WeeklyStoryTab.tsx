@@ -114,13 +114,15 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
                 minHeight: 50,
                 borderBottom: idx < timelineItems.length - 1 ? '0.75px solid var(--divider)' : 'none',
               }}>
-                <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
+                {item.work_item_type ? <JiraIssueTypeIcon type={item.work_item_type} size={16} /> : null}
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
                 <span style={{
                   flex: 1, fontSize: 'var(--ds-font-size-300)', color: INK2, overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                 }}>{item.title}</span>
-                <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
+                {(item.status || item.status_category) ? (
+                  <R360StatusLozenge status={item.status || item.status_category} />
+                ) : null}
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
               </div>
             ))}

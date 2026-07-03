@@ -93,7 +93,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
               <div className="w-[3px] h-3 bg-amber-500 rounded-sm"></div>
             </div>
             <span className="text-sm text-foreground">
-              {incident.priority?.charAt(0).toUpperCase() + incident.priority?.slice(1) || 'Medium'}
+              {incident.priority ? incident.priority.charAt(0).toUpperCase() + incident.priority.slice(1) : '—'}
             </span>
           </div>
         </div>

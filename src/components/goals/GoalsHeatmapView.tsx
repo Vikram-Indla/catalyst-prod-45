@@ -27,7 +27,10 @@ function getCurrentQuarter(): string {
   return `Q${q} ${now.getFullYear()}`;
 }
 
-function getCellStyle(avgPct: number, isDark = false) {
+function getCellStyle(avgPct: number | null, isDark = false) {
+  if (avgPct === null) {
+    return { bg: isDark ? 'var(--ds-surface-overlay)' : 'var(--ds-surface-sunken)', text: 'var(--ds-text-subtlest)', border: 'none' };
+  }
   if (isDark) {
     if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.20))', text: 'var(--ds-background-success)', border: 'none' };
     if (avgPct >= 60) return { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.12))', text: 'var(--ds-background-success)', border: 'none' };
@@ -44,11 +47,15 @@ function getCellStyle(avgPct: number, isDark = false) {
 
 function getThemeDotColor(goals: Goal[]): string {
   if (goals.length === 0) return 'var(--ds-text-disabled)';
-  const avgProgress = goals.reduce((sum, g) => sum + (g.progress_pct || 0), 0) / goals.length;
   const hasOffTrack = goals.some(g => g.status === 'off_track');
   const hasAtRisk = goals.some(g => g.status === 'at_risk');
-  if (hasOffTrack || avgProgress < 40) return 'var(--ds-text-danger)';
-  if (hasAtRisk || avgProgress < 60) return 'var(--ds-text-warning, var(--cp-warning))';
+  const measuredGoals = goals.filter(g => g.progress_pct != null);
+  const avgProgress = measuredGoals.length > 0
+    ? measuredGoals.reduce((sum, g) => sum + (g.progress_pct as number), 0) / measuredGoals.length
+    : null;
+  if (hasOffTrack || (avgProgress !== null && avgProgress < 40)) return 'var(--ds-text-danger)';
+  if (hasAtRisk || (avgProgress !== null && avgProgress < 60)) return 'var(--ds-text-warning, var(--cp-warning))';
+  if (avgProgress === null) return 'var(--ds-text-subtlest)';
   return 'var(--ds-text-success, var(--cp-success))';
 }
 
@@ -134,7 +141,10 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                   </div>
                 );
               }
-              const avgPct = Math.round(cellGoals.reduce((s, g) => s + (g.progress_pct || 0), 0) / cellGoals.length);
+              const measuredCellGoals = cellGoals.filter(g => g.progress_pct != null);
+              const avgPct = measuredCellGoals.length > 0
+                ? Math.round(measuredCellGoals.reduce((s, g) => s + (g.progress_pct as number), 0) / measuredCellGoals.length)
+                : null;
               const style = getCellStyle(avgPct, isDark);
 
               return (
@@ -153,7 +163,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                     transition: 'outline 150ms, box-shadow 150ms',
                   }}
                 >
-                  <span style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct !== null ? `${avgPct}%` : '—'}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 0 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
                 </div>
               );
