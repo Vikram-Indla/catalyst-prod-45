@@ -165,7 +165,7 @@ export function CatalystHeader() {
                 fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 500,
                 fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
-                color: isDark ? 'var(--ds-border)' : 'var(--ds-text)',
+                color: 'var(--ds-text)',
                 letterSpacing: '-0.4px'
               }}>
                 Catalyst
