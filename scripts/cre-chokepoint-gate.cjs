@@ -31,6 +31,16 @@ const CHECKS = [
     optional: true, // dead code since 2026-06-15 — checked only while it exists
   },
   {
+    file: 'src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx',
+    needles: ['@/lib/catalyst-rules', 'filterCreatableTypes'],
+    why: 'Backlog inline-create catalogue must pass the CRE Grid A/D filter',
+  },
+  {
+    file: 'src/components/WorkListPanel/IssueTypeSelector.tsx',
+    needles: ['@/lib/catalyst-rules', 'filterCreatableTypes'],
+    why: 'WorkListPanel create-modal type picker must pass the CRE Grid A/D filter',
+  },
+  {
     file: 'src/modules/project-work-hub/components/SubtasksPanel/hierarchy.ts',
     needles: ['@/lib/catalyst-rules', 'getAllowedChildTypes'],
     why: 'Subtask panel child types must derive from CRE Grid B',

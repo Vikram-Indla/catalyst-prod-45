@@ -20,6 +20,10 @@ import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo
 // canonical edit factories from JiraTable.
 import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
+// CRE chokepoint (Grids A + D): the Backlog is a TEAM surface, so the inline
+// create catalogue must pass the Catalyst Rules Engine filter before render.
+// See RULE_TABLE.md.
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import InlineEdit from '@atlaskit/inline-edit';
 import { BizArabicTranslateLink } from '@/components/shared/title-translate/BizArabicTranslateLink';
@@ -6974,17 +6978,24 @@ function ColumnFilterMultiSelect({
   );
 }
 
-const CREATABLE_TYPES: CreatableIssueType[] = [
-  'Story',
-  'Epic',
-  'Feature',
-  'Task',
-  'QA Bug',
-  'Production Incident',
-  'Business Gap',
-  'API Requirement',
-  'Change Request',
-];
+/* CRE chokepoint (Grids A + D): QA Bug is TESTHUB-owned and Production
+   Incident is INCIDENT-owned, so filterCreatableTypes strips them from this
+   TEAM surface (Grid I also bans them as Backlog rows). The filter returns
+   string[]; every input is a CreatableIssueType, so the cast is safe. */
+const CREATABLE_TYPES = filterCreatableTypes(
+  [
+    'Story',
+    'Epic',
+    'Feature',
+    'Task',
+    'QA Bug',
+    'Production Incident',
+    'Business Gap',
+    'API Requirement',
+    'Change Request',
+  ],
+  'TEAM',
+) as CreatableIssueType[];
 
 /**
  * 2026-07-01 (user request): map a backlog row's `type` to the creatable issue
