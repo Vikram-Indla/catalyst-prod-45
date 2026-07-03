@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import * as XLSX from 'xlsx';
 import Popup from '@atlaskit/popup';
 import Button from '@atlaskit/button/new';
 import { token } from '@atlaskit/tokens';
@@ -73,7 +72,12 @@ function exportCSV(items: UWVItem[], cols: UWVColumn[], title: string) {
   downloadFile(`${title || 'work-items'}.csv`, csv, 'text/csv');
 }
 
-function exportXLSX(items: UWVItem[], cols: UWVColumn[], title: string) {
+// Dynamically imported (CAT-AUDIT-0710): a static `import * as XLSX from 'xlsx'`
+// here forced the whole vendor-export-xlsx chunk to download whenever the
+// (React.lazy) UniversalWorkView drawer opened, not when the user actually
+// requested an export.
+async function exportXLSX(items: UWVItem[], cols: UWVColumn[], title: string) {
+  const XLSX = await import('xlsx');
   const wb = XLSX.utils.book_new();
 
   // Sheet 1 — visible columns
@@ -173,7 +177,7 @@ export function UWVExport({ items, columns, title }: Props) {
             appearance="subtle"
             shouldFitContainer
             onClick={() => {
-              exportXLSX(items, visibleCols, title);
+              void exportXLSX(items, visibleCols, title);
               setIsOpen(false);
             }}
           >
