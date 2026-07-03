@@ -16,6 +16,7 @@ import type { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-rel
 import type { ProductMilestoneWithProgress } from '@/types/product-milestone';
 import { ReleasesTable } from '@/components/releases/ReleasesTable';
 import { MilestoneCreateModal } from '@/components/product-hub/MilestoneCreateModal';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { CatalystListPageLayout } from '@/components/shared/CatalystListPage';
 import {
@@ -92,6 +93,31 @@ export function MilestonesPage() {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<any | null>(null);
+  // F3: reason capture for workflow-gated milestone completion.
+  const [reasonRetry, setReasonRetry] = useState<{
+    id: string;
+    ctx: { entityType: string; from: string | null; to: string };
+  } | null>(null);
+
+  const completeMilestone = useCallback(
+    async (id: string, reason?: { code: string | null; text: string | null }) => {
+      try {
+        await productMilestoneService.updateMilestone(id, {
+          status: 'completed',
+          ...(reason ? { reasonCode: reason.code, reasonText: reason.text } : {}),
+        });
+        queryClient.invalidateQueries({ queryKey: ['product-milestones', product?.id] });
+        catalystFlag.success('Milestone marked completed.');
+      } catch (e: any) {
+        if (e?.code === 'WF_REASON_REQUIRED') {
+          setReasonRetry({ id, ctx: e.ctx ?? { entityType: 'Milestone', from: null, to: 'completed' } });
+          return;
+        }
+        catalystFlag.error(e?.message ?? 'Failed to complete milestone.');
+      }
+    },
+    [product?.id, queryClient]
+  );
 
   const milestones: CellMilestone[] = useMemo(
     () => rawMilestones.map((m, i) => toRelease(m as ProductMilestoneWithProgress, i)),
@@ -227,15 +253,7 @@ export function MilestonesPage() {
           groups={grouped ?? undefined}
           calculateProgress={() => null}
           onOpenDetail={(id) => navigate(`/product-hub/${productCode}/milestones/${id}`)}
-          onRelease={async (r) => {
-            try {
-              await productMilestoneService.updateMilestone(r.id, { status: 'completed' });
-              queryClient.invalidateQueries({ queryKey: ['product-milestones', product?.id] });
-              catalystFlag.success('Milestone marked completed.');
-            } catch (e: any) {
-              catalystFlag.error(e?.message ?? 'Failed to complete milestone.');
-            }
-          }}
+          onRelease={(r) => completeMilestone(r.id)}
           onArchive={async (r) => {
             try {
               await productMilestoneService.archiveMilestone(r.id);
@@ -287,6 +305,21 @@ export function MilestonesPage() {
           );
         }}
       />
+
+      {/* F3: workflow-gated completion — collect the reason and retry. */}
+      {reasonRetry && (
+        <ReasonCaptureModal
+          entityType={reasonRetry.ctx.entityType}
+          fromStatus={reasonRetry.ctx.from}
+          toStatus={reasonRetry.ctx.to}
+          onSubmit={(reason) => {
+            const { id } = reasonRetry;
+            setReasonRetry(null);
+            completeMilestone(id, reason);
+          }}
+          onCancel={() => setReasonRetry(null)}
+        />
+      )}
     </CatalystListPageLayout>
   );
 }

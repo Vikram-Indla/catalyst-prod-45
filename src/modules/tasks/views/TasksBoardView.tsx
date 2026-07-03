@@ -51,6 +51,7 @@ import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import type { BoardIssue } from '@/components/kanban/kanban-types';
 import { useTasksKanbanSource, useTasksKanbanMutations, buildColMap } from '@/modules/tasks/sources/tasksKanbanSource';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
 
 const CatalystDetailPanel = lazy(() =>
   import('@/components/shared/CatalystDetailPanel').then((m) => ({
@@ -121,7 +122,13 @@ export default function TasksBoardView() {
   } = useTasksKanbanSource();
 
   // ── Mutations ───────────────────────────────────────────────────────────
-  const { persistDrop, persistStatusChange } = useTasksKanbanMutations(statuses);
+  // F3: workflow-gated status changes surface ReasonCaptureModal, then retry.
+  const [reasonRetry, setReasonRetry] = useState<{
+    cardId: string;
+    statusSlug: string;
+    ctx: { entityType: string; from: string | null; to: string };
+  } | null>(null);
+  const { persistDrop, persistStatusChange } = useTasksKanbanMutations(statuses, setReasonRetry);
 
   // ── Toolbar state ───────────────────────────────────────────────────────
   const [search, setSearch] = useState('');
@@ -374,6 +381,21 @@ export default function TasksBoardView() {
           onDrop={persistDrop}
         />
       </div>
+
+      {/* F3: reason capture for workflow-gated status changes. */}
+      {reasonRetry && (
+        <ReasonCaptureModal
+          entityType={reasonRetry.ctx.entityType}
+          fromStatus={reasonRetry.ctx.from}
+          toStatus={reasonRetry.ctx.to}
+          onSubmit={(reason) => {
+            const { cardId, statusSlug } = reasonRetry;
+            setReasonRetry(null);
+            persistStatusChange(cardId, statusSlug, reason);
+          }}
+          onCancel={() => setReasonRetry(null)}
+        />
+      )}
 
       {/* ── Detail panel ──────────────────────────────────────────────── */}
       {selectedId && (
