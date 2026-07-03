@@ -19,6 +19,7 @@
     "lint:fallback-hex": "node scripts/no-fallback-hex.cjs",
     "lint:fallback-hex:gate": "node scripts/ads-fallback-hex-gate.cjs",
     "lint:fallback-hex:update-baseline": "node scripts/ads-fallback-hex-gate.cjs --update",
+    "lint:colors:testhub": "node scripts/lint-colors-testhub.cjs",
     "lint:accessibility": "node scripts/audit-accessibility.cjs",
     "lint:cre": "node scripts/cre-chokepoint-gate.cjs",
     "audit:contrast": "node scripts/ads-contrast-gate.cjs",

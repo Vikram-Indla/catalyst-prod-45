@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useDefects, useCreateDefect, useUpdateDefect, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
 import { Routes } from '@/lib/routes';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
@@ -192,7 +193,10 @@ export function useDefectsSource(): BacklogDataSource | null {
       ],
       productId: effectiveProjectId,
       entityKind: 'defect',
-      creatableTypes: ['QA Bug'],
+      // CRE chokepoint (P1-S19, E4): TestHub owns 'QA Bug' per Grid A
+      // (MODULE_OWNED_TYPES.TESTHUB) — route through the filter rather than
+      // hardcoding, so ownership drift is caught automatically.
+      creatableTypes: filterCreatableTypes(['QA Bug'], 'TESTHUB'),
       defaultCreatableType: 'QA Bug',
       resolveItemType: () => 'QA Bug',
     };
