@@ -136,13 +136,20 @@ export default function CatalystViewEpic({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={useMemo(() => [
-        { label: 'Print', onClick: () => window.print() },
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
-        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Move', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete epic', onClick: () => setShowDeleteDialog(true), danger: true },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ], [issue?.issue_key])}
+      flagContext={issue?.id && issue?.issue_key ? {
+        issueId: issue.id,
+        issueKey: issue.issue_key,
+        isFlagged: !!(issue as any).is_flagged,
+        issueTitle: issue.summary,
+        issueType: issue.issue_type,
+        tableName: 'ph_issues',
+      } : undefined}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent}
       cover={(issue as any)?.cover ?? null}

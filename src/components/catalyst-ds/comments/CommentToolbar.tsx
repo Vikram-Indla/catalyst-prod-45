@@ -13,8 +13,6 @@ import { EmojiPicker } from '@/components/catalyst-detail-views/shared/sections/
 import { useAnchoredPosition } from '@/hooks/useAnchoredPosition';
 import type { CdsCommentReaction } from '../types';
 
-const MENU_WIDTH = 168;
-const MENU_HEIGHT = 96;
 const EMOJI_PICKER_WIDTH = 320;
 const EMOJI_PICKER_HEIGHT = 360;
 
@@ -170,35 +168,6 @@ export function CommentToolbar({
   onCopyLink,
   onDelete,
 }: CommentToolbarProps) {
-  // ── State for the ⋯ menu ───────────────────────────────────────
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const menuTriggerRef = React.useRef<HTMLButtonElement | null>(null);
-  const menuRef = React.useRef<HTMLDivElement | null>(null);
-  const menuPos = useAnchoredPosition(menuTriggerRef, {
-    open: menuOpen,
-    menuWidth: MENU_WIDTH,
-    menuHeight: MENU_HEIGHT,
-  });
-
-  React.useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (menuTriggerRef.current?.contains(t)) return;
-      if (menuRef.current?.contains(t)) return;
-      setMenuOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
-    document.addEventListener('mousedown', onClick);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onClick);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [menuOpen]);
-
   // ── State for the 😊+ emoji picker ─────────────────────────────
   // Drives the EmojiPicker via {left, top, bottom} coords so we can
   // flip it above the trigger when there's no room below. The picker
@@ -336,68 +305,7 @@ export function CommentToolbar({
       )}
 
       {hasMenuItems && (
-        <>
-          <IconButton
-            ref={menuTriggerRef}
-            active={menuOpen}
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-haspopup="menu"
-            aria-expanded={menuOpen}
-            aria-label="More actions"
-            title="More actions"
-          >
-            <MoreHorizontal />
-          </IconButton>
-          {menuOpen &&
-            menuPos &&
-            createPortal(
-              <div
-                ref={menuRef}
-                role="menu"
-                style={{
-                  position: 'fixed',
-                  top: menuPos.top,
-                  left: menuPos.left,
-                  width: 168,
-                  background: 'var(--ds-surface-overlay)',
-                  border: '1px solid var(--ds-border)',
-                  borderRadius: 6,
-                  boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
-                  zIndex: 2000,
-                  padding: '4px 0',
-                }}
-              >
-                {onCopyLink && (
-                  <MenuItem
-                    onClick={async () => {
-                      setMenuOpen(false);
-                      try {
-                        await Promise.resolve(onCopyLink());
-                        toast('Link copied to clipboard');
-                      } catch {
-                        toast.error('Could not copy link');
-                      }
-                    }}
-                    icon={<LinkExternal />}
-                  >
-                    Copy link
-                  </MenuItem>
-                )}
-                {onDelete && (
-                  <MenuItem
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onDelete();
-                    }}
-                    icon={<Trash2 />}
-                  >
-                    Delete
-                  </MenuItem>
-                )}
-              </div>,
-              document.body,
-            )}
-        </>
+        <MoreActionsMenu onCopyLink={onCopyLink} onDelete={onDelete} />
       )}
     </div>
   );
@@ -451,5 +359,133 @@ function MenuItem({ icon, onClick, children }: MenuItemProps) {
       </span>
       <span style={{ flex: 1 }}>{children}</span>
     </button>
+  );
+}
+
+/**
+ * MoreActionsMenu — hand-rolled ⋯ dropdown for a single comment.
+ *
+ * Atlaskit's <DropdownMenu> renders its popup into a body-portal, which
+ * breaks on the catalyst-detail-views surface because that drawer wraps
+ * everything in a `transform`-based slide-in animation. A `transform`
+ * ancestor becomes the containing block for `position: fixed`, and the
+ * body-portaled popup lands at (0, 0) of that ancestor instead of the
+ * viewport. Same bug ImproveIssueDropdown documents at the top of its
+ * file.
+ *
+ * This inline replacement matches ImproveIssueDropdown's pattern:
+ * absolute coords from getBoundingClientRect() and a portal to
+ * document.body with `position: fixed`.
+ */
+function MoreActionsMenu({
+  onCopyLink,
+  onDelete,
+}: {
+  onCopyLink?: () => void | Promise<void>;
+  onDelete?: () => void | Promise<void>;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+  const menuRef = React.useRef<HTMLDivElement | null>(null);
+  const [pos, setPos] = React.useState<{ top: number; right: number } | null>(null);
+
+  // Anchor to the trigger's right edge so the popup opens leftward.
+  React.useEffect(() => {
+    if (!open) { setPos(null); return; }
+    const place = () => {
+      const r = triggerRef.current?.getBoundingClientRect();
+      if (!r) return;
+      setPos({
+        top: r.bottom + 4,
+        right: Math.max(8, window.innerWidth - r.right),
+      });
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [open]);
+
+  // Click outside / Escape → close.
+  React.useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      if (menuRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <IconButton
+        ref={triggerRef}
+        active={open}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="More actions"
+        title="More actions"
+      >
+        <MoreHorizontal />
+      </IconButton>
+      {open && pos && createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            right: pos.right,
+            minWidth: 168,
+            background: 'var(--ds-surface-overlay)',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 6,
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
+            zIndex: 2000,
+            padding: '4px 0',
+          }}
+        >
+          {onCopyLink && (
+            <MenuItem
+              onClick={async () => {
+                setOpen(false);
+                try {
+                  await Promise.resolve(onCopyLink());
+                  toast('Link copied to clipboard');
+                } catch {
+                  toast.error('Could not copy link');
+                }
+              }}
+              icon={<LinkExternal />}
+            >
+              Copy link
+            </MenuItem>
+          )}
+          {onDelete && (
+            <MenuItem
+              onClick={() => { setOpen(false); void onDelete(); }}
+              icon={<Trash2 />}
+            >
+              Delete
+            </MenuItem>
+          )}
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }

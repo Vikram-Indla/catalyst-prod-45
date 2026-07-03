@@ -195,7 +195,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
       currentUser,
       onSubmit,
       onCancel,
-      placeholder = 'Type /ai to Ask Caty or @ to mention and notify someone',
+      placeholder = 'Add a comment...',
       defaultValue = '',
       className,
       workItemId,
@@ -481,7 +481,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             // editor's default fallback is DEFAULT_PLACEHOLDER
             // ("Add a description…") which is for the description
             // surface, not comments. Vikram 2026-07-03.
-            placeholder="Type /ai to Ask Caty or @ to mention and notify someone"
+            placeholder="Add a comment..."
             // Compact: auto-grows from 40px as user types.
             minHeight={40}
             onImproveClick={improveContext ? handleImproveClick : undefined}

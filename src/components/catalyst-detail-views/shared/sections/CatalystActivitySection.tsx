@@ -26,14 +26,17 @@ interface CatalystActivitySectionProps {
 }
 
 const QUICK_REPLIES: CdsQuickReply[] = [
+  { label: 'Suggest a reply...', template: '' },
+  { label: 'Can I get more info...?', template: 'Can I get more info on ' },
   { label: 'Status update...', template: 'Status update: ' },
-  { label: 'Thanks...', template: 'Thanks for the update. ' },
-  { label: 'Agree...', template: 'Agreed. ' },
 ];
 
 function mapComment(raw: any): CdsComment {
   const isJira = raw.source === 'jira';
   const profile = raw.author;
+  const rawType = raw.comment_type;
+  const commentType: CdsComment['commentType'] =
+    rawType === 'flag_added' || rawType === 'flag_removed' ? rawType : 'normal';
   return {
     id: raw.id,
     author: {
@@ -49,6 +52,7 @@ function mapComment(raw: any): CdsComment {
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
     isEdited: !isJira && raw.updated_at && raw.updated_at !== raw.created_at,
+    commentType,
     parentId: raw.parent_comment_id ?? null,
   };
 }
@@ -191,6 +195,14 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  // Seed currentUser from the raw auth.uid() as soon as it's available so
+  // author-owned affordances (edit / delete pencil) render on first paint
+  // instead of waiting for the profile-lookup query below to complete.
+  useEffect(() => {
+    if (!user?.id) return;
+    setCurrentUser((prev) => (prev?.id === user.id ? prev : { id: user.id, name: 'You' }));
+  }, [user?.id]);
 
   useQuery({
     queryKey: ['current-user-profile', user?.id],

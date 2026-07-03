@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import { Avatar } from '@/components/ads';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
+import { token } from '@atlaskit/tokens';
 import type { CdsComment, CdsReaction, CdsUser } from '../types';
 import { CommentAction } from './CommentAction';
 import {
@@ -134,6 +137,13 @@ function formatAbsoluteDate(dateStr: string): string {
       hour12: true,
     })
   );
+}
+
+/** Jira-parity relative time — "11 minutes ago" / "2 hours ago". */
+function formatRelativeDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '';
+  return formatDistanceToNow(date, { addSuffix: true });
 }
 
 function renderContent(
@@ -281,6 +291,37 @@ function CommentBody({ content }: { content: string }) {
   );
 }
 
+/**
+ * Jira-parity render for flag audit comments. Two-line layout:
+ *   line 1: flag icon (orange for added / subtle gray for removed) + label
+ *   line 2: optional user note — only rendered when non-empty
+ */
+function FlagCommentBody({ variant, content }: {
+  variant: 'flag_added' | 'flag_removed';
+  content: string;
+}) {
+  const isAdded = variant === 'flag_added';
+  const label = isAdded ? 'Flag added' : 'Flag removed';
+  const trimmed = (content ?? '').trim();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--ds-text)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <FlagFilledIcon
+          label={label}
+          spacing="none"
+          color={isAdded
+            ? token('color.icon.warning', 'var(--ds-background-warning-bold)')
+            : token('color.icon.subtle', 'var(--ds-icon-subtle)')}
+        />
+        <span>{label}</span>
+      </div>
+      {trimmed.length > 0 && (
+        <div style={{ color: 'var(--ds-text-subtle)' }}>{trimmed}</div>
+      )}
+    </div>
+  );
+}
+
 export interface CommentProps {
   comment: CdsComment;
   /** Renders between the message body and the actions toolbar. Use
@@ -295,7 +336,8 @@ export interface CommentProps {
 
 const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
   ({ comment, extras, actions, isHighlighted, className }, ref) => {
-    const { author, content, createdAt, isEdited, isSystem } = comment;
+    const { author, content, createdAt, isEdited, isSystem, commentType } = comment;
+    const isFlagComment = commentType === 'flag_added' || commentType === 'flag_removed';
 
     return (
       <div
@@ -322,21 +364,26 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
         </span>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 14, fontWeight: 600, color: isSystem ? 'var(--ds-text-subtlest)' : 'var(--ds-text)' }}>
               {author.name}
             </span>
+            <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text)' }}>added a comment</span>
           </div>
           <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', marginBottom: 8 }}>
-            {formatAbsoluteDate(createdAt)}
+            {formatRelativeDate(createdAt)}
             {isEdited && (
               <span style={{ fontStyle: 'italic', marginLeft: 8 }}>edited</span>
             )}
           </div>
 
-          <CommentBody content={content} />
-
           {extras}
+
+          {isFlagComment ? (
+            <FlagCommentBody variant={commentType as 'flag_added' | 'flag_removed'} content={content} />
+          ) : (
+            <CommentBody content={content} />
+          )}
 
           {actions && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
