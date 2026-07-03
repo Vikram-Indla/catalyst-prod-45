@@ -1,11 +1,62 @@
 /**
  * IncidentHub — TanStack Query hooks
- * Sources ALL data from ph_issues where issue_type = 'Production Incident'
- * and jira_created_at >= 2026-01-01
+ * ph_issues (issue_type = 'Production Incident') remains the record of truth for
+ * everything Jira-sourced: title, status, assignee, comments, changelog. Governance
+ * data (severity, priority, SLA due/breach, committee) comes from the `incidents`
+ * extension table, FK'd 1:1 via ph_issue_id, auto-populated by a DB trigger for every
+ * Production Incident row (see incidents_extend_ph_issues migration). Client-side
+ * severity/priority/breach heuristics have been replaced with the real governance data.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+
+interface IncidentSlaRecord {
+  response_due_at: string | null;
+  response_met_at: string | null;
+  response_breached: boolean | null;
+  resolution_due_at: string | null;
+  resolution_met_at: string | null;
+  resolution_breached: boolean | null;
+}
+
+interface IncidentGovernanceRow {
+  id: string;
+  ph_issue_id: string;
+  severity: string;
+  priority: string;
+  is_major_incident: boolean;
+  committee_id: string | null;
+  status: string;
+  sla_records: IncidentSlaRecord[] | null;
+}
+
+async function fetchGovernanceByPhIssueIds(ids: string[]): Promise<Map<string, IncidentGovernanceRow>> {
+  const map = new Map<string, IncidentGovernanceRow>();
+  if (ids.length === 0) return map;
+  const { data, error } = await supabase
+    .from('incidents')
+    .select('id, ph_issue_id, severity, priority, is_major_incident, committee_id, status, sla_records(response_due_at, response_met_at, response_breached, resolution_due_at, resolution_met_at, resolution_breached)')
+    .in('ph_issue_id', ids);
+  if (error) {
+    // Governance extension is additive — if it's unreachable, fall back to Jira-derived heuristics below
+    return map;
+  }
+  for (const row of (data || []) as unknown as IncidentGovernanceRow[]) {
+    map.set(row.ph_issue_id, row);
+  }
+  return map;
+}
+
+function isCurrentlyBreaching(sla: IncidentSlaRecord): boolean {
+  const responseBreaching = sla.response_met_at
+    ? !!sla.response_breached
+    : (sla.response_due_at ? new Date(sla.response_due_at).getTime() < Date.now() : false);
+  const resolutionBreaching = sla.resolution_met_at
+    ? !!sla.resolution_breached
+    : (sla.resolution_due_at ? new Date(sla.resolution_due_at).getTime() < Date.now() : false);
+  return responseBreaching || resolutionBreaching;
+}
 
 export interface ProductionIncident {
   id: string;
@@ -69,7 +120,7 @@ function mapStatus(status: string | null, statusCategory: string | null): string
   return 'open';
 }
 
-// ── List View (from ph_issues) ──
+// ── List View (from ph_issues, enriched with real governance data) ──
 export function useIncidentListView() {
   return useQuery({
     queryKey: ['incident-hub-list'],
@@ -83,33 +134,49 @@ export function useIncidentListView() {
         .is('archived_at', null)
         .order('jira_created_at', { ascending: false });
       if (error) throw error;
-      return (data || []).map(row => ({
-        id: row.id,
-        incident_key: row.issue_key,
-        title: row.summary,
-        description: row.description_text,
-        severity: mapSeverity(row.priority),
-        priority: mapPriority(row.priority),
-        status: mapStatus(row.status, row.status_category),
-        jira_status: row.status,
-        project_name: row.project_name || row.project_key,
-        assignee_name: row.assignee_display_name,
-        reporter_name: row.reporter_display_name,
-        created_at: row.jira_created_at,
-        updated_at: row.jira_updated_at,
-        resolution: row.resolution,
-        labels: row.labels,
-        due_date: row.due_date,
-        type_icon_url: row.type_icon_url,
-        parent_key: row.parent_key,
-        parent_summary: row.parent_summary,
-        comments_json: row.comments,
-        changelog_json: row.changelog,
-        // SLA-related (derived from due_date)
-        resolution_breached: row.due_date ? new Date(row.due_date).getTime() < Date.now() : false,
-        response_breached: false,
-        resolution_due_at: row.due_date,
-      }));
+
+      const rows = data || [];
+      const governanceMap = await fetchGovernanceByPhIssueIds(rows.map(r => r.id));
+
+      return rows.map(row => {
+        const gov = governanceMap.get(row.id);
+        const sla = gov?.sla_records?.[0];
+        return {
+          id: row.id,
+          incident_key: row.issue_key,
+          title: row.summary,
+          description: row.description_text,
+          // Governance fields (from `incidents` extension) with Jira-derived fallback
+          // for the rare row the auto-extend trigger hasn't caught up on yet.
+          severity: gov?.severity ?? mapSeverity(row.priority).replace('SEV-', 'SEV'),
+          priority: gov?.priority ?? mapPriority(row.priority),
+          is_major_incident: gov?.is_major_incident ?? false,
+          committee_id: gov?.committee_id ?? null,
+          status: mapStatus(row.status, row.status_category),
+          jira_status: row.status,
+          project_name: row.project_name || row.project_key,
+          assignee_name: row.assignee_display_name,
+          reporter_name: row.reporter_display_name,
+          created_at: row.jira_created_at,
+          updated_at: row.jira_updated_at,
+          resolution: row.resolution,
+          labels: row.labels,
+          due_date: row.due_date,
+          type_icon_url: row.type_icon_url,
+          parent_key: row.parent_key,
+          parent_summary: row.parent_summary,
+          comments_json: row.comments,
+          changelog_json: row.changelog,
+          // SLA: real breach state from sla_records when governance data exists,
+          // else fall back to the due_date heuristic.
+          response_breached: sla ? isCurrentlyBreaching(sla) && !sla.response_met_at : false,
+          resolution_breached: sla
+            ? isCurrentlyBreaching(sla)
+            : (row.due_date ? new Date(row.due_date).getTime() < Date.now() : false),
+          resolution_due_at: sla?.resolution_due_at ?? row.due_date,
+          response_due_at: sla?.response_due_at ?? null,
+        };
+      });
     },
   });
 }
@@ -182,13 +249,22 @@ export function useProductionIncident(id: string) {
   });
 }
 
-// ── Committee Queue (keep for UI, returns empty if no committee data) ──
+// ── Committee Queue (real data from incident_committees/committee_votes) ──
 export function useCommitteeQueueView() {
   return useQuery({
     queryKey: ['incident-hub-committee-queue'],
     queryFn: async () => {
-      // Committee data is not in ph_issues, return empty
-      return [];
+      const { data, error } = await supabase
+        .from('incident_committees')
+        .select(`
+          id, status, required_approvals, decided_at, decision_note,
+          incidents!committee_id(incident_key, title, severity, ph_issue_id),
+          committee_votes(id, vote, comment, voted_at, member_id)
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
     },
   });
 }

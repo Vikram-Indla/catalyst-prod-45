@@ -141,9 +141,13 @@ const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/Inci
 const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
 const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
-// IncidentHubCommitteeQueuePage deprecated — route removed. /incident-hub/reports is the
 // Production Incident report (CAT-REPORTS-HUB-20260703-001 Phase 2 Lane C).
 const IncidentHubReportPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentReportPage"));
+// Committee Queue — governance workflow (approve/veto) for incidents sent to committee.
+// Revived 2026-07-03: distinct from the read-only Production Incident report above —
+// this is an actionable surface, backed by the incidents/incident_committees/committee_votes
+// extension schema (see incidents_extend_ph_issues migration).
+const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
 // TestHub Admin
@@ -736,9 +740,9 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
         {/* Production Incident report — incident half of the old TestHub
             defects-incidents report (CAT-REPORTS-HUB-20260703-001 Phase 2
-            Lane C; CRE Grid A: Production Incident → INCIDENT module).
-            /incident-hub/committee-queue stays deprecated — route removed. */}
+            Lane C; CRE Grid A: Production Incident → INCIDENT module). */}
         <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportPage /></S></MG>} />
+        <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
         <Route path="/incident-hub/view/:incidentKey" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
         {/* 2026-06-16: redirect alias — the BacklogPage's default
             "open in full page" pattern was {baseUrl}/backlog/{key} which
