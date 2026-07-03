@@ -507,6 +507,7 @@ function DragRowPreview() {
       {state.iconSrc && (
         <img
           src={state.iconSrc}
+          alt=""
           width={16}
           height={16}
           style={{ flexShrink: 0, display: 'block' }}

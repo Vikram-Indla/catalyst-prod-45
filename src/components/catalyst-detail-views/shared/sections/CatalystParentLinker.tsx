@@ -192,9 +192,17 @@ function ParentLozenge({
       {parentType ? <IssueIcon type={parentType} size={14} /> : null}
       <span
         role="button"
+        tabIndex={0}
         onClick={(e) => {
           e.stopPropagation();
           onOpenParent?.();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            onOpenParent?.();
+          }
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.textDecoration = "underline";
@@ -542,6 +550,7 @@ function BusinessRequestParentPicker({
                 {search && (
                   <button
                     onClick={() => setSearch("")}
+                    aria-label="Clear search"
                     style={{
                       background: "none",
                       border: "none",
@@ -1275,6 +1284,7 @@ function MultiLinkPicker({
                   {search && (
                     <button
                       onClick={() => setSearch("")}
+                      aria-label="Clear search"
                       style={{
                         background: "none",
                         border: "none",

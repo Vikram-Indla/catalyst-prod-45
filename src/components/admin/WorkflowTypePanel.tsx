@@ -195,6 +195,7 @@ function StatusChip({
             <button
               {...tp}
               onClick={onRemove}
+              aria-label={`Remove "${name}" from this workflow`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -277,6 +278,7 @@ function TransitionPill({
             <button
               {...tp}
               onClick={onRemove}
+              aria-label={isGlobal ? 'Remove global rule for all work item types' : `Remove transition to "${name}"`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

@@ -316,6 +316,12 @@ function DenseRow({
       onClick={onClick}
       role="button"
       tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(e as unknown as React.MouseEvent);
+        }
+      }}
       style={{
         position: 'relative',
         padding: '12px 16px',
@@ -421,6 +427,12 @@ function SingleLineRow({
       onClick={onClick}
       role="button"
       tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(e as unknown as React.MouseEvent);
+        }
+      }}
       style={{
         position: 'relative',
         padding: '12px 18px',

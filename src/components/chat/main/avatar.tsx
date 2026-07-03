@@ -59,7 +59,7 @@ export function Avatar({ name, seed, className, color, presence, size = 28 }: Av
       style={style}
     >
       {photo ? (
-        <img src={photo} alt="" className="cc-av__img" />
+        <img src={photo} alt={name} className="cc-av__img" />
       ) : (
         initialsOf(name)
       )}

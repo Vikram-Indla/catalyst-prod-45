@@ -392,6 +392,7 @@ function SortableRow({
         <div className="flex items-center justify-center gap-1">
           <button
             onClick={() => onEdit(assignment)}
+            aria-label="Edit assignment"
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
             style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
@@ -401,6 +402,7 @@ function SortableRow({
           </button>
           <button
             onClick={() => onDelete(assignment)}
+            aria-label="Delete assignment"
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
             style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
