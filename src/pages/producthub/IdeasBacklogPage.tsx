@@ -1,27 +1,37 @@
 /**
  * Ideas Backlog Page — /product/ideas/backlog
- * V12 Hybrid Precision — 36px rows, 3-color lozenges, high-contrast quarters
+ * CAT-AUDIT-1055: migrated from a raw <table> to the canonical
+ * BacklogPage + data-adapter pattern (see ideasBacklogDataSource.ts),
+ * matching /incident-hub's IncidentListPage. BacklogPage supplies the
+ * table, column picker, column filters, toolbar, sticky header, sort,
+ * keyboard nav, and row detail panel. Ideas-specific chrome (header,
+ * stats bar, filter pills, New Idea / AI Triage / Intelligence dialogs)
+ * is preserved as a wrapper above the mount.
  * ALL data from useIdeasHub() — ZERO hardcoded.
- * + New Idea wired to useCreateIdea(). Row click opens drawer.
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import Spinner from '@atlaskit/spinner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
-import { Search, Plus, Sparkles, ArrowUpRight } from '@/lib/atlaskit-icons';
-import { useIdeasHub, useIdeaStats, useUpdateIdea, useCreateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
+import { Search, Plus, Sparkles } from '@/lib/atlaskit-icons';
+import { useIdeasHub, useIdeaStats, useCreateIdea } from '@/hooks/useIdeasHub';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import IdeaDrawer from '../../modules-dormant/ideation/IdeaDrawer';
+import { BacklogPage } from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
+import { useIdeasBacklogSource } from './ideasBacklogDataSource';
 import IdeationTriagePanel from '../../modules-dormant/ideation/IdeationTriagePanel';
 import IdeationIntelligenceHub from '../../modules-dormant/ideation/IdeationIntelligenceHub';
 import { CreateRequestDrawer, type ConversionSource } from '@/components/producthub/shared/CreateRequestDrawer';
-import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from '../../modules-dormant/ideation/ideation-data';
+import { QUARTER_BADGE } from '../../modules-dormant/ideation/ideation-data';
 import type { Idea } from '../../modules-dormant/ideation/ideation-data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { IdeaRow } from '@/hooks/useIdeasHub';
+
+const IDEAS_SENTINEL_KEY = 'IDEAS';
+const IDEAS_SENTINEL_ID = 'ideas';
 
 /** Map IdeaRow → Idea for Triage/Intelligence panels */
 function toIdea(r: IdeaRow): Idea {
@@ -70,8 +80,6 @@ export default function IdeasBacklogPage() {
   const themeFilter = searchParams.get('theme') || undefined;
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [drawerKey, setDrawerKey] = useState<string | null>(null);
   const [convertDrawerOpen, setConvertDrawerOpen] = useState(false);
   const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
   const [triageOpen, setTriageOpen] = useState(false);
@@ -79,19 +87,14 @@ export default function IdeasBacklogPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: ideas = [], isLoading } = useIdeasHub({
+  const ideasFilters = {
     status: statusFilter !== 'all' ? statusFilter : undefined,
     theme: themeFilter,
     search: search || undefined,
-  });
+  };
+  const { data: ideas = [] } = useIdeasHub(ideasFilters);
   const { data: stats } = useIdeaStats();
-
-  const toggleRow = (key: string) => {
-    setSelectedRows(prev => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n; });
-  };
-  const toggleAll = () => {
-    setSelectedRows(ideas.length === selectedRows.size ? new Set() : new Set(ideas.map(i => i.idea_key)));
-  };
+  const adapter = useIdeasBacklogSource(ideasFilters);
 
   const qCounts = useMemo(() => {
     const m: Record<string, number> = {};
@@ -107,20 +110,6 @@ export default function IdeasBacklogPage() {
   const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
     catalystToast.info(`Merging ${mergeKey} into ${primaryKey}`);
   }, []);
-
-  const handleConvertIdea = (idea: IdeaRow) => {
-    // ph_ideas.description may be ADF JSON or plain text — flatten to plain
-    // text for the conversion seed which is then concatenated into prose.
-    const descPlain = adfToPlainText(idea.description ?? '');
-    setConversionSource({
-      type: 'single',
-      primaryIdea: {
-        key: idea.idea_key, title: idea.title, description: descPlain || idea.title,
-        impact: idea.impact_total || 0, votes: idea.vote_count || 0, dept: idea.assigned_team || '', priority: idea.priority || 'P3',
-      },
-    });
-    setConvertDrawerOpen(true);
-  };
 
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
@@ -202,122 +191,27 @@ export default function IdeasBacklogPage() {
         </button>
       </div>
 
-      {/* Table */}
-      <div style={{ flex: 1, overflow: 'auto', background: dk.pageBg, padding: '16px 28px 24px' }}>
-        {isLoading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: dk.t3 }}>Loading ideas...</div>
-        ) : ideas.length === 0 ? (
-          <div style={{ padding: '48px', textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>💡</div>
-            <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: dk.t1, marginBottom: '4px' }}>No ideas yet</div>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>Create your first idea to get started.</div>
+      {/* Backlog table — canonical BacklogPage + adapter (CAT-AUDIT-1055).
+          Same JiraTable, column picker, filters, toolbar, sort, keyboard nav,
+          and detail panel as /project-hub/BAU/backlog. Row click opens the
+          canonical CatalystViewIdea detail panel (via the adapter's
+          onOpenItem → globalOpenDetail), not the legacy IdeaDrawer. */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        {!adapter ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 48 }}>
+            <Spinner size="large" />
           </div>
         ) : (
-          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ height: '50px', background: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}>
-                  <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
-                    <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
-                  </th>
-                  {[
-                    { label: 'KEY', width: '90px' }, { label: 'TITLE' }, { label: 'STATUS', width: '140px' },
-                    { label: 'TYPE', width: '70px' }, { label: 'PRI', width: '40px' }, { label: 'IMPACT', width: '60px' },
-                    { label: 'THEME', width: '140px' }, { label: 'QTR', width: '60px' },
-                    { label: 'ASSIGNEE', width: '140px' }, { label: 'UPDATED', width: '80px' },
-                  ].map(col => (
-                    <th key={col.label} style={{
-                      textAlign: 'left', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', padding: '8px 12px',
-                      borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
-                    }}>{col.label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {ideas.map(idea => {
-                  const isConverted = idea.status === 'Converted to Request' || idea.status === 'Converted';
-                  return (
-                    <tr key={idea.idea_key} onClick={() => setDrawerKey(idea.idea_key)}
-                      style={{ height: '50px', maxHeight: '50px', cursor: 'pointer', borderBottom: `0.75px solid ${dk.divider}`, background: selectedRows.has(idea.idea_key) ? dk.selectedBg : 'transparent', transition: 'background 150ms' }}
-                      onMouseEnter={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = dk.hoverBg; }}
-                      onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" checked={selectedRows.has(idea.idea_key)} onChange={() => toggleRow(idea.idea_key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
-                          onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                          onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-                        >{idea.idea_key}</span>
-                      </td>
-                      <td style={{ padding: '8px 12px', maxWidth: '400px' }}>
-                        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.title}</div>
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <StatusBadge status={idea.status} />
-                          {isConverted && idea.linked_initiative_key && (
-                            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: '#11853D', fontFamily: 'var(--cp-font-mono)' }}>
-                              → {idea.linked_initiative_key}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
-                          {(idea.idea_type || 'Feature').substring(0, 7)}
-                        </span>
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 650, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
-                          {idea.priority || 'P2'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: idea.impact_total > 0 ? dk.green : dk.t3 }}>
-                          {idea.impact_total.toFixed(2)}
-                        </span>
-                      </td>
-                      <td style={{ padding: '8px 12px' }} title={idea.theme || undefined}>
-                        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: idea.theme ? dk.t2 : dk.t3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '140px' }}>
-                          {idea.theme || '—'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        {idea.roadmap_quarter ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>{idea.roadmap_quarter}</span>
-                        ) : <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3 }}>—</span>}
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        {idea.assigned_to_name ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, flexShrink: 0 }}>
-                              {idea.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)}
-                            </div>
-                            <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.assigned_to_name}</span>
-                          </div>
-                        ) : <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, fontStyle: 'italic' }}>Unassigned</span>}
-                      </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>
-                          {idea.updated_at ? new Date(idea.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div style={{ padding: '8px 16px', borderTop: `0.75px solid ${dk.divider}` }}>
-              <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
-            </div>
-          </div>
+          <BacklogPage
+            projectId={IDEAS_SENTINEL_ID}
+            projectKey={IDEAS_SENTINEL_KEY}
+            displayName="Ideas"
+            baseUrl="/product-hub/ideas"
+            dataSource={adapter}
+          />
         )}
       </div>
 
-      {drawerKey && <IdeaDrawer ideaKey={drawerKey} onClose={() => setDrawerKey(null)} onConvert={handleConvertIdea} />}
       <CreateRequestDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
@@ -341,30 +235,6 @@ export default function IdeasBacklogPage() {
       <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
       <CreateIdeaDialog open={createOpen} onClose={() => setCreateOpen(false)} />
     </div>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const { isDark } = useTheme();
-  const darkColors: Record<string, { bg: string; text: string }> = {
-    'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Under Review':             { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link))' },
-    'Approved':                 { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link))' },
-    'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Converted':                { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success)' },
-    'Converted to Request':  { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success)' },
-  };
-  const s = isDark
-    ? (darkColors[status] ?? { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-text-subtlest)' })
-    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' });
-  const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', background: s.bg, color: s.text,
-      height: 20, padding: '0 8px', borderRadius: 4,
-      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, whiteSpace: 'nowrap', textTransform: 'uppercase',
-    }}>{label}</span>
   );
 }
 
