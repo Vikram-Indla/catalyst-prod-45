@@ -10,8 +10,8 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 export function statusBackground(cat: string | undefined): string {
-  if (cat === 'done') return 'var(--ds-background-success, rgba(148,199,72,0.18))';
-  if (cat === 'inprogress') return 'var(--ds-background-information, rgba(102,157,241,0.18))';
+  if (cat === 'done') return 'var(--ds-background-success)';
+  if (cat === 'inprogress') return 'var(--ds-background-information)';
   return 'var(--ds-background-neutral-subtle)';
 }
 

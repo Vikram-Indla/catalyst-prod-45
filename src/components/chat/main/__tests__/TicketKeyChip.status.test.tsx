@@ -13,20 +13,20 @@ vi.mock('@/store/globalSearchStore', () => ({
 }));
 
 describe('statusBackground (pure function)', () => {
-  it('done → green tint', () => {
-    expect(statusBackground('done')).toBe('rgba(148,199,72,0.18)'); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  it('done → success token', () => {
+    expect(statusBackground('done')).toBe('var(--ds-background-success)');
   });
-  it('inprogress → blue tint', () => {
-    expect(statusBackground('inprogress')).toBe('rgba(102,157,241,0.18)'); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  it('inprogress → information token', () => {
+    expect(statusBackground('inprogress')).toBe('var(--ds-background-information)');
   });
   it('todo → neutral token', () => {
-    expect(statusBackground('todo')).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
+    expect(statusBackground('todo')).toBe('var(--ds-background-neutral-subtle)');
   });
   it('undefined → neutral token', () => {
-    expect(statusBackground(undefined)).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
+    expect(statusBackground(undefined)).toBe('var(--ds-background-neutral-subtle)');
   });
   it('empty string → neutral token', () => {
-    expect(statusBackground('')).toBe('var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))');
+    expect(statusBackground('')).toBe('var(--ds-background-neutral-subtle)');
   });
 });
 

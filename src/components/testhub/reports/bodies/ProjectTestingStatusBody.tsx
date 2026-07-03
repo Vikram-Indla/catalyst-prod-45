@@ -1,6 +1,6 @@
 /**
- * Project Testing Status — first REAL-data report of the Test Hub reporting revamp.
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001 (B1 group 1).
+ * ProjectTestingStatusBody — project-scoped real-data report body (registry: project-testing-status).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from ProjectTestingStatusPage).
  *
  * For a selected project: coverage % (stories denominator, D-006), execution
  * distribution, hybrid defects/incidents (D-005), governance mismatches (B5 G-M1),
@@ -12,12 +12,11 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Spinner from '@atlaskit/spinner';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import EmptyState from '@atlaskit/empty-state';
 import { supabase } from '@/integrations/supabase/client';
-import { useProjectTestingStatus } from './useProjectTestingStatus';
-import { ReportStatusView, metricLabel } from './ReportStatusView';
-
-const SENAEI_BAU_ID = '84f91caf-7511-470a-9a26-3e52e66258bf';
+import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
+import { useProjectTestingStatus } from '@/components/testhub/reports/hooks/useProjectTestingStatus';
+import { ReportStatusView, metricLabel } from '@/pages/testhub/reports/ReportStatusView';
 
 interface ProjectOption {
   label: string;
@@ -38,16 +37,13 @@ function useTmProjects() {
   });
 }
 
-export default function ProjectTestingStatusPage() {
+export function ProjectTestingStatusBody() {
   const navigate = useNavigate();
-  const { data: projects } = useTmProjects();
+  const { data: projects, isLoading: projectsLoading } = useTmProjects();
   const [selected, setSelected] = useState<ProjectOption | null>(null);
 
-  const activeOption = useMemo<ProjectOption | null>(() => {
-    if (selected) return selected;
-    if (!projects?.length) return null;
-    return projects.find((p) => p.value === SENAEI_BAU_ID) ?? projects[0];
-  }, [selected, projects]);
+  // S1.5: single project → auto-select; else last-used (validated) or none.
+  const activeOption = useReportPickerDefault(REPORTS_LAST_PROJECT_KEY, projects, selected);
 
   const { data, isLoading } = useProjectTestingStatus(activeOption?.value, activeOption?.label);
 
@@ -62,30 +58,40 @@ export default function ProjectTestingStatusPage() {
   }, [data]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Project Testing Status" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-
-      <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Project</div>
           <Select<ProjectOption>
             inputId="pts-project"
             options={projects ?? []}
             value={activeOption}
-            onChange={(opt) => setSelected(opt as ProjectOption)}
+            onChange={(opt) => {
+              const o = opt as ProjectOption;
+              setSelected(o);
+              rememberReportPick(REPORTS_LAST_PROJECT_KEY, o.value);
+            }}
             isLoading={!projects}
             spacing="default"
           />
         </div>
 
-        {isLoading || !data ? (
+        {!activeOption ? (
+          projectsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
+              <Spinner size="medium" /> Loading projects…
+            </div>
+          ) : (
+            <EmptyState header="Select a project" description="Choose a project to run this report." />
+          )
+        ) : isLoading || !data ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading testing status…
           </div>
         ) : (
           <ReportStatusView data={data} insight={insight} onRowOpen={(k) => navigate(`/browse/${k}`)} uncoveredEmpty="Every in-scope story has at least one test case." />
         )}
-      </div>
     </div>
   );
 }
+
+export default ProjectTestingStatusBody;
