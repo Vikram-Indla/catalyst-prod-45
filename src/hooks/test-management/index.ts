@@ -13,7 +13,6 @@ export {
   useBulkDeleteTestCases,
 } from './useTestCases';
 export { useTestCycles } from './useTestCycles';
-export { useCreateCycleEnhanced, useDeleteCycleEnhanced, useCloneCycleEnhanced } from './useTestCyclesEnhanced';
 export { useProjects } from './useProjects';
 export { useReleases } from './useReleases';
 export { useSprintsByProject } from './useSprintsByProject';
