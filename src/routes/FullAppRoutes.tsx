@@ -154,7 +154,6 @@ const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDe
 const TestAdminPrioritiesPage   = lazy(() => import("../pages/admin/test/TestPrioritiesPage"));
 const TestAdminCaseTypesPage    = lazy(() => import("../pages/admin/test/TestCaseTypesPage"));
 const TestAdminCaseStatusesPage = lazy(() => import("../pages/admin/test/TestCaseStatusesPage"));
-const TestAdminRunStatusesPage  = lazy(() => import("../pages/admin/test/TestRunStatusesPage"));
 const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPermissionsPage"));
 
 // RBAC Admin — mock-safe mode (schema not yet deployed)
@@ -668,41 +667,46 @@ export default function FullAppRoutes() {
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
 
         {/* TestHub */}
+        {/* P1-S16: /testhub/* was completely ungated (ModuleGate infra already
+            existed and is used by every sibling hub — 'testhub' already
+            aliases to feature_flags.module_key 'test_hub', zero new plumbing
+            needed). Wrap every content route; pure redirects are left
+            unwrapped since they only forward to an already-gated destination. */}
         <Route path="/testhub" element={<Navigate to="/testhub/dashboard" replace />} />
-        <Route path="/testhub/dashboard" element={<S><TestHubDashboardPage /></S>} />
-        <Route path="/testhub/my-work" element={<S><TestHubMyWorkPage /></S>} />
-        <Route path="/testhub/board" element={<S><TestHubBoardPage /></S>} />
-        <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
-        <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
-        <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<S><TestHubCycleDetailPage /></S>} />
-        <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<S><TestHubExecutionPage /></S>} />
+        <Route path="/testhub/dashboard" element={<MG k="testhub" t="Test Hub"><S><TestHubDashboardPage /></S></MG>} />
+        <Route path="/testhub/my-work" element={<MG k="testhub" t="Test Hub"><S><TestHubMyWorkPage /></S></MG>} />
+        <Route path="/testhub/board" element={<MG k="testhub" t="Test Hub"><S><TestHubBoardPage /></S></MG>} />
+        <Route path="/testhub/repository" element={<MG k="testhub" t="Test Hub"><S><TestHubRepositoryPage /></S></MG>} />
+        <Route path="/testhub/cycles" element={<MG k="testhub" t="Test Hub"><S><TestHubCyclesPage /></S></MG>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
         {/* Legacy routes without projectKey — backward compat */}
-        <Route path="/testhub/cycles/:cycleKey" element={<S><TestHubCycleDetailPage /></S>} />
-        <Route path="/testhub/cycles/:cycleKey/execute" element={<S><TestHubExecutionPage /></S>} />
-        <Route path="/testhub/timeline" element={<S><TestHubTimelinePage /></S>} />
-        <Route path="/testhub/dependencies" element={<S><TestHubDependenciesPage /></S>} />
-        <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
-        <Route path="/testhub/sets/:setKey" element={<S><TestHubSetDetailPage /></S>} />
-        <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
-        <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
-        <Route path="/testhub/defects/:defectKey" element={<S><TestHubDefectDetailPage /></S>} />
+        <Route path="/testhub/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
+        <Route path="/testhub/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
+        <Route path="/testhub/timeline" element={<MG k="testhub" t="Test Hub"><S><TestHubTimelinePage /></S></MG>} />
+        <Route path="/testhub/dependencies" element={<MG k="testhub" t="Test Hub"><S><TestHubDependenciesPage /></S></MG>} />
+        <Route path="/testhub/sets" element={<MG k="testhub" t="Test Hub"><S><TestHubSetsPage /></S></MG>} />
+        <Route path="/testhub/sets/:setKey" element={<MG k="testhub" t="Test Hub"><S><TestHubSetDetailPage /></S></MG>} />
+        <Route path="/testhub/traceability" element={<MG k="testhub" t="Test Hub"><S><TestHubTraceabilityPage /></S></MG>} />
+        <Route path="/testhub/defects" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectsPage /></S></MG>} />
+        <Route path="/testhub/defects/:defectKey" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectDetailPage /></S></MG>} />
         {/* Reports hub (CAT-REPORTS-HUB-20260703-001): one surface, :reportSlug
             selects a REPORT_REGISTRY entry. Old report URLs redirect to their
             registry slugs; governance + product-status slugs are unchanged so
             the :reportSlug route serves them directly. */}
         <Route path="/testhub/reports-lab" element={<Navigate to="/testhub/reports/execution-overview" replace />} />
-        <Route path="/testhub/reports" element={<S><TestHubReportsHubPage /></S>} />
+        <Route path="/testhub/reports" element={<MG k="testhub" t="Test Hub"><S><TestHubReportsHubPage /></S></MG>} />
         <Route path="/testhub/reports/project-status" element={<Navigate to="/testhub/reports/project-testing-status" replace />} />
         <Route path="/testhub/reports/sprint-status" element={<Navigate to="/testhub/reports/sprint-testing-status" replace />} />
         <Route path="/testhub/reports/tester-status" element={<Navigate to="/testhub/reports/tester-performance" replace />} />
         <Route path="/testhub/reports/team-status" element={<Navigate to="/testhub/reports/team-performance" replace />} />
         <Route path="/testhub/reports/defects-incidents" element={<Navigate to="/testhub/reports/defect-summary" replace />} />
-        <Route path="/testhub/reports/:reportSlug" element={<S><TestHubReportsHubPage /></S>} />
+        <Route path="/testhub/reports/:reportSlug" element={<MG k="testhub" t="Test Hub"><S><TestHubReportsHubPage /></S></MG>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
-        <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />
-        <Route path="/testhub/filters/create" element={<S><TestHubFilterPreviewPage /></S>} />
-        <Route path="/testhub/filters/:filterId" element={<S><TestHubFilterPreviewPage /></S>} />
+        <Route path="/testhub/filters" element={<MG k="testhub" t="Test Hub"><S><TestHubFiltersListPage /></S></MG>} />
+        <Route path="/testhub/filters/create" element={<MG k="testhub" t="Test Hub"><S><TestHubFilterPreviewPage /></S></MG>} />
+        <Route path="/testhub/filters/:filterId" element={<MG k="testhub" t="Test Hub"><S><TestHubFilterPreviewPage /></S></MG>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
@@ -989,7 +993,10 @@ export default function FullAppRoutes() {
           <Route path="test/priorities"    element={<S><TestAdminPrioritiesPage /></S>} />
           <Route path="test/case-types"    element={<S><TestAdminCaseTypesPage /></S>} />
           <Route path="test/case-statuses" element={<S><TestAdminCaseStatusesPage /></S>} />
-          <Route path="test/run-statuses"  element={<S><TestAdminRunStatusesPage /></S>} />
+          {/* P1-S16: "Run statuses" removed -- managed a disconnected legacy
+              test_run_statuses table (0 rows, 0 readers anywhere else) with
+              zero bearing on the real tm_execution_status enum that drives
+              execution. See D-016. */}
           <Route path="test/permissions"   element={<S><TestAdminPermissionsPage /></S>} />
           {/* RBAC Admin — mock-safe mode; RBAC_SCHEMA_DEPLOYED=false */}
           <Route path="roles"        element={<S><RolesAdminPageLazy /></S>} />
