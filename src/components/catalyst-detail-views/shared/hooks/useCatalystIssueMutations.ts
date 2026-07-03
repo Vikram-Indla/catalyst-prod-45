@@ -65,7 +65,23 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
         .eq('issue_key', itemId)
         .maybeSingle();
 
-      const entityKey = before?.issue_type ? ISSUE_TYPE_TO_ENTITY[before.issue_type] : undefined;
+      // F1: custom types carry entity_key = type_key in the registry — resolve
+      // there when the hardcoded system map misses so their published
+      // workflows gate transitions too.
+      let entityKey: EntityKey | undefined = before?.issue_type
+        ? ISSUE_TYPE_TO_ENTITY[before.issue_type]
+        : undefined;
+      if (!entityKey && before?.issue_type) {
+        const { data: reg } = await supabase
+          .from('ph_work_item_types')
+          .select('entity_key')
+          .is('archived_at', null)
+          .ilike('display_name', before.issue_type)
+          .maybeSingle();
+        entityKey = ((reg as { entity_key: string | null } | null)?.entity_key ?? undefined) as
+          | EntityKey
+          | undefined;
+      }
 
       // Canonical gate (resolves advisory|blocking, evaluates role+guards, audits reason).
       if (entityKey && before?.id) {

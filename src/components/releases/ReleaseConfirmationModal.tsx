@@ -24,6 +24,8 @@ import { catalystFlag } from '@/lib/catalystFlag';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { ProductSelect, type ProductOption } from './ReleaseFilters';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
+import { checkReasonRequired, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
 
 interface Props {
   isOpen: boolean;
@@ -141,9 +143,35 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
     !!releaseDate &&
     (!hasUnresolved || action === 'ignore' || (action === 'move' && !!targetId));
 
+  // F3: workflow-gated completion — collect a reason and retry.
+  const [pendingReason, setPendingReason] = useState<{ from: string | null; to: string } | null>(null);
+
   const mutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (reason?: { code: string | null; text: string | null }) => {
       const sourceName = release.name ?? '';
+      const entityKey = config.kind === 'sprint' ? ('sprint' as const) : ('release' as const);
+      const toStatus = config.kind === 'sprint' ? 'completed' : 'released';
+      const fromStatus = ((release as any).status as string | undefined) ?? null;
+
+      // F3: reason preflight BEFORE any write.
+      if (fromStatus !== toStatus && !reason) {
+        const preflight = await checkReasonRequired(entityKey, null, fromStatus, toStatus);
+        if (preflight.reasonRequired) {
+          const err = new Error('This transition requires a reason.');
+          (err as any).code = 'WF_REASON_REQUIRED';
+          (err as any).ctx = { from: fromStatus, to: toStatus };
+          throw err;
+        }
+      }
+      const recordAdvisory = () => {
+        if (fromStatus === toStatus) return;
+        recordAdvisoryStatusChange({
+          entityKey, entityId: release.id, projectKey: null,
+          fromStatusRaw: fromStatus, toStatusRaw: toStatus,
+          sourceSurface: config.kind === 'sprint' ? 'sprint_confirm_modal' : 'release_confirm_modal',
+          reasonCode: reason?.code ?? null, reasonText: reason?.text ?? null,
+        }).catch(() => {/* advisory — non-blocking */});
+      };
 
       // 2026-06-26: Phase 2b — when user picks "Move unresolved work items to
       // <target>", actually re-point each unresolved issue's sprint_release
@@ -179,6 +207,7 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
           })
           .eq('id', release.id);
         if (error) throw new Error(error.message);
+        recordAdvisory();
         return;
       }
 
@@ -228,6 +257,7 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
         })
         .eq('id', release.id);
       if (error) throw new Error(error.message);
+      recordAdvisory();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
@@ -247,6 +277,11 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
       onClose();
     },
     onError: (err: any) => {
+      // F3: workflow refused pending a reason — collect it, keep this modal open.
+      if (err?.code === 'WF_REASON_REQUIRED') {
+        setPendingReason(err.ctx ?? { from: null, to: config.kind === 'sprint' ? 'completed' : 'released' });
+        return;
+      }
       catalystFlag.error(err?.message || `Failed to release ${config.label.lowerSingular}`);
     },
   });
@@ -336,11 +371,27 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
               appearance="warning"
               isDisabled={!canSubmit || mutation.isPending}
               isLoading={mutation.isPending}
-              onClick={() => mutation.mutate()}
+              onClick={() => mutation.mutate(undefined)}
             >
               Release
             </Button>
           </ModalFooter>
+
+          {/* F3: workflow-gated completion — reason capture stacked over
+              this modal, then the same mutation retries with the reason. */}
+          {pendingReason && (
+            <ReasonCaptureModal
+              entityType={config.kind === 'sprint' ? 'Sprint' : 'Release'}
+              itemTitle={release.name}
+              fromStatus={pendingReason.from}
+              toStatus={pendingReason.to}
+              onSubmit={(reason) => {
+                setPendingReason(null);
+                mutation.mutate(reason);
+              }}
+              onCancel={() => setPendingReason(null)}
+            />
+          )}
         </Modal>
       )}
     </ModalTransition>

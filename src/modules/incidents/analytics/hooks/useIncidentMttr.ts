@@ -11,6 +11,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 
 export interface MttrWeekRow {
   /** ISO Monday of the bucket week (yyyy-mm-dd). */
@@ -41,15 +42,20 @@ export function useIncidentMttr(projectKey?: string) {
   return useQuery({
     queryKey: ['incident-mttr', projectKey ?? 'all'],
     queryFn: async (): Promise<IncidentMttr> => {
-      let hq = supabase
-        .from('ph_issue_status_history')
-        .select('issue_key, to_status_category, changed_at')
-        .eq('issue_type', INCIDENT_TYPE)
-        .order('changed_at', { ascending: true });
-      if (projectKey) hq = hq.eq('project_key', projectKey);
-      const { data: hist, error: histErr } = await hq;
-      if (histErr) throw histErr;
-      const rows = (hist ?? []) as { issue_key: string; to_status_category: string | null; changed_at: string }[];
+      // History grows without bound — page past the server max_rows cap.
+      const rows = await fetchAllPages<{ issue_key: string; to_status_category: string | null; changed_at: string }>(
+        (from, to) => {
+          let hq = supabase
+            .from('ph_issue_status_history')
+            .select('issue_key, to_status_category, changed_at')
+            .eq('issue_type', INCIDENT_TYPE)
+            .order('changed_at', { ascending: true })
+            .order('id', { ascending: true })
+            .range(from, to);
+          if (projectKey) hq = hq.eq('project_key', projectKey);
+          return hq;
+        },
+      );
 
       const captureStart = rows.length ? rows[0].changed_at : null;
       const firstDone = new Map<string, string>();

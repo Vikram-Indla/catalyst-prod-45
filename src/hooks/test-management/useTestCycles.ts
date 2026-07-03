@@ -83,10 +83,12 @@ async function generateCycleKey(projectId: string): Promise<string> {
   }
 
   // Fallback: generate manually
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from('tm_test_cycles')
     .select('*', { count: 'exact', head: true })
     .eq('project_id', projectId);
+
+  if (countError) throw countError;
 
   const nextNum = (count || 0) + 1;
   return `CY-${String(nextNum).padStart(3, '0')}`;
@@ -226,6 +228,8 @@ export function useCreateCycle() {
           environment_id: input.environment || null,
           planned_start: input.planned_start_date || null,
           planned_end: input.planned_end_date || null,
+          sprint_id: input.sprint_id || null,
+          assigned_to: input.assigned_to || null,
           created_by: user.id,
         })
         .select()
@@ -355,11 +359,14 @@ export function useCloneCycle() {
 
       if (fetchError) throw fetchError;
 
-      // Fetch scope
-      const { data: scope } = await supabase
+      // Fetch scope — VER-042: abort the clone if the scope read fails.
+      // Never clone with a silently-empty scope.
+      const { data: scope, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select('test_case_id')
         .eq('cycle_id', input.id);
+
+      if (scopeError) throw scopeError;
 
       // Generate new key
       const cycleKey = await generateCycleKey(input.project_id);
@@ -389,7 +396,8 @@ export function useCloneCycle() {
           current_status: 'not_run' as const,
         }));
 
-        await supabase.from('tm_cycle_scope').insert(scopeToInsert);
+        const { error: scopeInsertError } = await supabase.from('tm_cycle_scope').insert(scopeToInsert);
+        if (scopeInsertError) throw scopeInsertError;
       }
 
       return mapDbRowToTMCycle(cloned);
@@ -423,7 +431,8 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
             priority:tm_case_priorities(*),
             type:tm_case_types(*)
           ),
-          assignee:profiles(id, full_name, avatar_url)
+          assignee:profiles(id, full_name, avatar_url),
+          runs:tm_test_runs(id, run_number, completed_at, started_at)
         `)
         .eq('cycle_id', cycleId)
         .order('sort_order', { ascending: true });
@@ -453,23 +462,31 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
         throw error;
       }
 
-      // Map to TMCycleScope
-      return (data || []).map((row: any) => ({
+      // Map to TMCycleScope. last_run_* derive from the scope's runs — the
+      // old hardcoded null made the Defects/Comments/Evidence panels claim
+      // "no execution run yet" forever (P0-S7b).
+      return (data || []).map((row: any) => {
+        const latestRun = (row.runs ?? []).reduce(
+          (best: any, r: any) => (!best || (r.run_number ?? 0) > (best.run_number ?? 0) ? r : best),
+          null,
+        );
+        return ({
         id: row.id,
         cycle_id: row.cycle_id,
         case_id: row.test_case_id,
         assigned_to: row.assigned_to,
         due_date: row.due_date ?? null,
         status: execStatusFromDb(row.current_status),
-        last_run_id: null,
-        last_run_at: null,
+        last_run_id: latestRun?.id ?? null,
+        last_run_at: latestRun?.completed_at ?? latestRun?.started_at ?? null,
         created_at: row.added_at || '',
         test_case: row.test_case ? {
           ...row.test_case,
           key: row.test_case.case_key,
         } : undefined,
         assignee: row.assignee,
-      }));
+      });
+      });
     },
     enabled: !!cycleId,
   });
@@ -598,10 +615,12 @@ export function useBulkAssignTesters() {
         const scopeId = input.scope_ids[i];
         const testerId = input.tester_ids[i % input.tester_ids.length];
         
-        await supabase
+        const { error } = await supabase
           .from('tm_cycle_scope')
           .update({ assigned_to: testerId })
           .eq('id', scopeId);
+
+        if (error) throw error;
       }
     },
     onSuccess: (_, variables) => {

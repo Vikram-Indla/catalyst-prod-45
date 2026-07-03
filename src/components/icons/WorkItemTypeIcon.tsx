@@ -9,6 +9,8 @@
  */
 
 import * as React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 import {
   WORK_TYPE_REGISTRY,
@@ -17,6 +19,35 @@ import {
   type WorkTypeMeta,
 } from './icons.registry';
 import { useIconOverrides } from './useIconOverrides';
+
+/**
+ * F8: custom registry types (ph_work_item_types, is_system=false) carry a
+ * canonical icon id chosen in the Workflow Studio. Resolve display_name /
+ * type_key → icon id so custom-type items get their icon on boards and
+ * tables instead of the Task fallback. Cached — one fetch per 5 minutes.
+ */
+function useCustomTypeIconMap(): Record<string, string> | undefined {
+  const { data } = useQuery({
+    queryKey: ['wf-v2', 'types', 'icon-map'],
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<Record<string, string>> => {
+      const { data: rows, error } = await supabase
+        .from('ph_work_item_types' as never)
+        .select('display_name, type_key, icon')
+        .eq('is_system', false)
+        .is('archived_at', null);
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const r of (rows ?? []) as unknown as { display_name: string; type_key: string; icon: string | null }[]) {
+        if (!r.icon) continue;
+        map[r.display_name.toLowerCase()] = r.icon;
+        map[r.type_key.toLowerCase()] = r.icon;
+      }
+      return map;
+    },
+  });
+  return data;
+}
 
 export interface WorkItemTypeIconProps {
   /** Canonical Catalyst type id OR free-text Jira string. */
@@ -49,9 +80,11 @@ export function WorkItemTypeIcon({
 }: WorkItemTypeIconProps) {
   const { isDark } = useTheme();
   const { data: overrides } = useIconOverrides();
+  const customIcons = useCustomTypeIconMap();
 
   let meta: WorkTypeMeta = TASK_FALLBACK;
   let resolvedType: WorkItemType = 'task';
+  let customLabel: string | null = null;
 
   if (type && typeof type === 'string') {
     if (type in WORK_TYPE_REGISTRY) {
@@ -63,7 +96,16 @@ export function WorkItemTypeIcon({
         resolvedType = normalized;
         meta = WORK_TYPE_REGISTRY[normalized];
       } else {
-        warnUnknown(type);
+        // F8: custom registry type → its Studio-chosen canonical icon id,
+        // labelled with the custom type's own name.
+        const customIcon = customIcons?.[type.toLowerCase()];
+        if (customIcon && customIcon in WORK_TYPE_REGISTRY) {
+          resolvedType = customIcon as WorkItemType;
+          meta = WORK_TYPE_REGISTRY[resolvedType];
+          customLabel = type;
+        } else {
+          warnUnknown(type);
+        }
       }
     }
   }
@@ -72,7 +114,7 @@ export function WorkItemTypeIcon({
   const override = overrides?.workType?.[resolvedType]?.[variantKey];
   const src = override ?? (isDark ? meta.dark : meta.light);
 
-  const resolvedLabel = label ?? meta.label;
+  const resolvedLabel = label ?? customLabel ?? meta.label;
   const isDecorative = resolvedLabel === '';
 
   return (

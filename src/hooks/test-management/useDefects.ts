@@ -34,21 +34,23 @@ export async function resolveTmProjectId(
   const key = canonical.key?.trim() || null;
 
   if (name) {
-    const { data: byName } = await supabase
+    const { data: byName, error: byNameError } = await supabase
       .from('tm_projects')
       .select('id')
       .ilike('name', name)
       .limit(1)
       .maybeSingle();
+    if (byNameError) throw byNameError;
     if (byName?.id) return byName.id;
   }
   if (key) {
-    const { data: byKey } = await supabase
+    const { data: byKey, error: byKeyError } = await supabase
       .from('tm_projects')
       .select('id')
       .eq('key', key)
       .limit(1)
       .maybeSingle();
+    if (byKeyError) throw byKeyError;
     if (byKey?.id) return byKey.id;
   }
 
@@ -133,11 +135,18 @@ function mapDbRowToTMDefect(row: any): TMDefect {
 // ============================================================================
 
 async function generateDefectKey(projectId: string): Promise<string> {
-  // MAX scan — collision-safe even after deletions
-  const { data: allDefects } = await supabase
+  // Race-safe key allocation via the same RPC cases/cycles use (P0-S7).
+  const { data: rpcKey, error: rpcError } = await supabase
+    .rpc('tm_next_entity_key', { p_project_id: projectId, p_prefix: 'DEF' });
+  if (!rpcError && rpcKey) return rpcKey as string;
+
+  // Fallback MAX scan (only if the RPC is unavailable in this environment)
+  const { data: allDefects, error: defectsError } = await supabase
     .from('tm_defects')
     .select('defect_key')
     .eq('project_id', projectId);
+
+  if (defectsError) throw defectsError;
 
   let maxNum = 0;
   for (const d of allDefects || []) {
@@ -389,11 +398,13 @@ export function useCreateDefect() {
 
       // Row 3 — Test cycle link (derive plan + release from cycle)
       if (input.cycle_id) {
-        const { data: cycleRow } = await supabase
+        const { data: cycleRow, error: cycleError } = await supabase
           .from('tm_test_cycles')
-          .select('id, name, plan_id:plan_test_cycles(plan_id, tm_test_plans(id, name, release_id, releases(id, name)))')
+          .select('id, name, plan:tm_test_plans!test_plan_id(id, name, release_id)')
           .eq('id', input.cycle_id)
           .single();
+
+        if (cycleError) throw cycleError;
 
         if (cycleRow) {
           // Cycle row
@@ -406,9 +417,10 @@ export function useCreateDefect() {
             created_by: user.id,
           });
 
-          // Plan row — derive from cycle via plan_test_cycles join
-          const planLink = Array.isArray(cycleRow.plan_id) ? cycleRow.plan_id[0] : null;
-          const planRow = planLink?.tm_test_plans;
+          // Plan row — derive from the cycle's test_plan_id FK
+          const planRow = Array.isArray((cycleRow as any).plan)
+            ? (cycleRow as any).plan[0]
+            : (cycleRow as any).plan;
           if (planRow?.id) {
             linkRows.push({
               defect_id: data.id,
@@ -419,16 +431,14 @@ export function useCreateDefect() {
               created_by: user.id,
             });
 
-            // Release row — derive from plan
-            const releaseRow = Array.isArray(planRow.releases)
-              ? planRow.releases[0]
-              : planRow.releases;
-            if (releaseRow?.id) {
+            // Release row — derive from the plan's release_id (label unknown
+            // here; zero-assumption: no fabricated name)
+            if (planRow.release_id) {
               linkRows.push({
                 defect_id: data.id,
                 link_type: 'release',
-                linked_id: releaseRow.id,
-                entity_label: releaseRow.name || null,
+                linked_id: planRow.release_id,
+                entity_label: null,
                 link_source: 'auto_execution',
                 created_by: user.id,
               });
@@ -437,24 +447,25 @@ export function useCreateDefect() {
         }
       }
 
-      // Row — Requirement link (derive from test case via tm_requirement_tests)
+      // Row — Requirement link (derive from the canonical tm_requirement_links)
       if (input.source_test_case_id) {
-        const { data: reqLink } = await supabase
-          .from('tm_requirement_tests')
-          .select('requirement_id, tm_requirements(id, title)')
+        // maybeSingle: no linked requirement is a legitimate case (not an error)
+        const { data: reqLink, error: reqLinkError } = await supabase
+          .from('tm_requirement_links')
+          .select('requirement_id, external_title')
           .eq('test_case_id', input.source_test_case_id)
+          .not('requirement_id', 'is', null)
           .limit(1)
-          .single();
+          .maybeSingle();
+
+        if (reqLinkError) throw reqLinkError;
 
         if (reqLink?.requirement_id) {
-          const reqRow = Array.isArray(reqLink.tm_requirements)
-            ? reqLink.tm_requirements[0]
-            : reqLink.tm_requirements;
           linkRows.push({
             defect_id: data.id,
             link_type: 'requirement',
             linked_id: reqLink.requirement_id,
-            entity_label: reqRow?.title || null,
+            entity_label: reqLink.external_title || null,
             link_source: 'auto_execution',
             created_by: user.id,
           });
@@ -511,8 +522,9 @@ export function useUpdateDefect() {
         // of the 18). workflow_status_key IS the source of truth; the enum is
         // only set to the nearest SAFE compat value (never widened). Keys with
         // no compat mapping leave the existing enum untouched.
-        const { data: cur } = await supabase
+        const { data: cur, error: curError } = await supabase
           .from('tm_defects').select('status, workflow_status_key').eq('id', id).maybeSingle();
+        if (curError) throw curError;
         prevEnum = (cur as any)?.status ?? null;
         prevKey = (cur as any)?.workflow_status_key ?? null;
         updates.workflow_status_key = workflowStatusKey;
@@ -525,7 +537,8 @@ export function useUpdateDefect() {
         auditTo = workflowStatusKey;
       } else if (status !== undefined) {
         // capture prior enum status for the bridged audit
-        const { data: cur } = await supabase.from('tm_defects').select('status').eq('id', id).maybeSingle();
+        const { data: cur, error: curError } = await supabase.from('tm_defects').select('status').eq('id', id).maybeSingle();
+        if (curError) throw curError;
         prevEnum = (cur as any)?.status ?? null;
         updates.status = statusToDb(status); // enum preserved (compat field)
         // Bridged canonical key (Option A): workflow_status_key is the canonical
@@ -886,9 +899,11 @@ export function useDeleteAttachment() {
       const pathParts = input.file_path.split('/');
       const storagePath = pathParts.slice(-3).join('/'); // Get last 3 parts
       
-      await supabase.storage
+      const { error: storageError } = await supabase.storage
         .from('tm-attachments')
         .remove([storagePath]);
+
+      if (storageError) throw storageError;
 
       // Delete record
       const { error } = await supabase
@@ -919,29 +934,32 @@ export function useDefectsByCycle(cycleId: string | undefined) {
       if (!cycleId) return [];
 
       // Get scope items for this cycle
-      const { data: scopeItems } = await supabase
+      const { data: scopeItems, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select('id')
         .eq('cycle_id', cycleId);
 
+      if (scopeError) throw scopeError;
       if (!scopeItems || scopeItems.length === 0) return [];
 
       // Get run IDs for these scope items
-      const { data: runs } = await supabase
+      const { data: runs, error: runsError } = await supabase
         .from('tm_test_runs')
         .select('id')
         .in('cycle_scope_id', scopeItems.map(s => s.id));
 
+      if (runsError) throw runsError;
       if (!runs || runs.length === 0) return [];
 
       const runIds = runs.map(r => r.id);
 
       // Get defect links for these runs
-      const { data: links } = await supabase
+      const { data: links, error: linksError } = await supabase
         .from('tm_defect_links')
         .select('defect_id')
         .in('test_run_id', runIds);
 
+      if (linksError) throw linksError;
       if (!links || links.length === 0) return [];
 
       const defectIds = [...new Set(links.map(l => l.defect_id))];

@@ -171,7 +171,7 @@ export function useDeleteDefectG25() {
   });
 }
 
-// ─── History (via tm_defect_links → th_test_executions) ──────────
+// ─── History (via tm_defect_links → tm_test_runs) ────────────────
 export function useDefectHistoryG25(defectId: string | undefined) {
   return useQuery({
     queryKey: ['g25-defect-history', defectId],
@@ -181,29 +181,32 @@ export function useDefectHistoryG25(defectId: string | undefined) {
       const { data: links, error: linkErr } = await typedQuery('tm_defect_links')
         .select('id, test_run_id, step_result_id, created_at')
         .eq('defect_id', defectId);
-      if (linkErr || !links?.length) return [];
+      if (linkErr) throw new Error(linkErr.message);
+      if (!links?.length) return [];
 
       const runIds = links
         .map((l: any) => l.test_run_id)
         .filter(Boolean) as string[];
       if (!runIds.length) return [];
 
-      // 2. Fetch executions for those runs
+      // 2. Fetch executions for those runs (tm_test_runs — th_test_executions is dead)
       const { data: execs, error: execErr } = await supabase
-        .from('th_test_executions')
-        .select('id, result, executed_at, executed_by, notes, test_case_id, cycle_scope_id')
+        .from('tm_test_runs')
+        .select('id, status, executed_at, executed_by, case_id')
         .in('id', runIds)
         .order('executed_at', { ascending: false });
-      if (execErr || !execs?.length) return [];
+      if (execErr) throw new Error(execErr.message);
+      if (!execs?.length) return [];
 
       // 3. Resolve executor names
       const userIds = [...new Set(execs.map((e: any) => e.executed_by).filter(Boolean))];
       let profileMap: Record<string, string> = {};
       if (userIds.length) {
-        const { data: profiles } = await supabase
+        const { data: profiles, error: profilesErr } = await supabase
           .from('profiles')
           .select('id, full_name')
           .in('id', userIds);
+        if (profilesErr) throw new Error(profilesErr.message);
         if (profiles) {
           profileMap = Object.fromEntries(profiles.map((p: any) => [p.id, p.full_name]));
         }
@@ -211,11 +214,11 @@ export function useDefectHistoryG25(defectId: string | undefined) {
 
       return execs.map((e: any) => ({
         id: e.id,
-        action: e.result,
+        action: e.status,
         performed_by: profileMap[e.executed_by] || 'Unknown',
         performed_at: e.executed_at,
-        notes: e.notes,
-        test_case_id: e.test_case_id,
+        notes: null,
+        test_case_id: e.case_id,
       }));
     },
     enabled: !!defectId,
@@ -299,13 +302,14 @@ export function useDefectLinksG25(defectId: string | undefined) {
       if (error) throw new Error(error.message);
 
       const links = (data || []) as unknown as DefectLink[];
-      // Resolve test case links
+      // Resolve test case links (maybeSingle: stale linked_id is not an error)
       for (const link of links) {
         if (link.link_type === 'test_case') {
-          const { data: tc } = await typedQuery('tm_test_cases')
+          const { data: tc, error: tcError } = await typedQuery('tm_test_cases')
             .select('id, case_key, title')
             .eq('id', link.linked_id)
-            .single();
+            .maybeSingle();
+          if (tcError) throw new Error(tcError.message);
           if (tc) link.test_case = tc as any;
         }
       }

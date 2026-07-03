@@ -110,13 +110,7 @@ export function useTestCaseVersionsCount(testCaseId: string | undefined) {
         .select('*', { count: 'exact', head: true })
         .eq('test_case_id', testCaseId);
 
-      if (error) {
-        // Don't log if it's just empty/permissions - return 0
-        if (error.message) {
-          console.error('Error counting versions:', error);
-        }
-        return 0;
-      }
+      if (error) throw error;
       return count ?? 0;
     },
     enabled: !!testCaseId,
@@ -158,11 +152,13 @@ export function useCreateTestCaseVersion() {
       if (stepsError) throw stepsError;
 
       // Get next version number
-      const { data: existingVersions } = await typedQuery('tm_test_case_versions')
+      const { data: existingVersions, error: versionsError } = await typedQuery('tm_test_case_versions')
         .select('version_number')
         .eq('test_case_id', input.testCaseId)
         .order('version_number', { ascending: false })
         .limit(1);
+
+      if (versionsError) throw versionsError;
 
       const nextVersion = (existingVersions?.[0]?.version_number || 0) + 1;
 
@@ -250,10 +246,12 @@ export function useRestoreTestCaseVersion() {
       if (updateError) throw updateError;
 
       // Delete existing steps and insert from snapshot
-      await supabase
+      const { error: deleteStepsError } = await supabase
         .from('tm_test_steps')
         .delete()
         .eq('test_case_id', input.testCaseId);
+
+      if (deleteStepsError) throw deleteStepsError;
 
       if (snapshot.steps && snapshot.steps.length > 0) {
         const stepsToInsert = snapshot.steps.map(s => ({
@@ -264,9 +262,11 @@ export function useRestoreTestCaseVersion() {
           test_data: s.test_data,
         }));
 
-        await supabase
+        const { error: insertStepsError } = await supabase
           .from('tm_test_steps')
           .insert(stepsToInsert);
+
+        if (insertStepsError) throw insertStepsError;
       }
 
       return input;

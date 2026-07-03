@@ -9,6 +9,7 @@
  */
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useIssueTypeWorkflow, type IssueTypeWorkflowResult, type WorkflowStatusGroup } from './useIssueTypeWorkflow';
 import type { StatusCategory } from '@/constants/statusCategoryColors';
 import type { EntityKey } from '@/lib/workflow/canonical/contracts';
@@ -40,7 +41,26 @@ export function useCanonicalIssueWorkflow(
   issueType: string | null | undefined,
 ): IssueTypeWorkflowResult & CanonicalWorkflowExtras {
   const legacy = useIssueTypeWorkflow(issueType);
-  const entityKey = issueType ? ISSUE_TYPE_TO_ENTITY[issueType] : undefined;
+  // F1: custom types own entity_key = type_key in the registry — fall back
+  // there when the hardcoded system map misses, so custom-type items resolve
+  // their own published workflow.
+  const { data: registryEntity } = useQuery({
+    queryKey: ['registry-entity-key', issueType],
+    enabled: !!issueType && !ISSUE_TYPE_TO_ENTITY[issueType],
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<string | null> => {
+      const { data } = await supabase
+        .from('ph_work_item_types')
+        .select('entity_key')
+        .is('archived_at', null)
+        .ilike('display_name', issueType as string)
+        .maybeSingle();
+      return (data as { entity_key: string | null } | null)?.entity_key ?? null;
+    },
+  });
+  const entityKey = issueType
+    ? (ISSUE_TYPE_TO_ENTITY[issueType] ?? (registryEntity as EntityKey | undefined) ?? undefined)
+    : undefined;
 
   const { data: canonical, isLoading } = useQuery({
     queryKey: ['canonical-issue-workflow', entityKey],

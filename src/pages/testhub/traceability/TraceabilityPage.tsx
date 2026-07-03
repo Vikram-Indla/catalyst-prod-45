@@ -69,25 +69,25 @@ function useTraceability(projectId: string | undefined) {
           external_title,
           link_type,
           test_case_id,
-          test_case:tm_test_cases!test_case_id(case_key, title, status, project_id)
+          test_case:tm_test_cases!test_case_id!inner(case_key, title, status, project_id)
         `)
+        .eq('test_case.project_id', projectId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      const projectLinks = (links ?? []).filter(
-        (l: any) => l.test_case?.project_id === projectId
-      );
+      const projectLinks = links ?? [];
 
       if (projectLinks.length === 0) return [];
 
       // Latest exec status per case from tm_cycle_scope
       const caseIds = [...new Set(projectLinks.map((l: any) => l.test_case_id as string))];
-      const { data: scopes } = await supabase
+      const { data: scopes, error: scopesError } = await supabase
         .from('tm_cycle_scope')
         .select('test_case_id, current_status, updated_at')
         .in('test_case_id', caseIds)
         .order('updated_at', { ascending: false });
+      if (scopesError) throw scopesError;
 
       const latestByCase = new Map<string, string>();
       for (const s of (scopes ?? [])) {
@@ -118,7 +118,9 @@ function useTraceability(projectId: string | undefined) {
 export default function TraceabilityPage() {
   const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [], isLoading: projLoading } = useProjects();
-  const projectId = projects[0]?.id;
+  // Resolve the route's project; fall back to first project only when the
+  // route key matches nothing (legacy no-key URL).
+  const projectId = (projects.find((p: any) => p.key === projectKey) ?? projects[0])?.id;
 
   const { data: links = [], isLoading: linksLoading } = useTraceability(projectId);
   const isLoading = projLoading || linksLoading;

@@ -179,7 +179,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
         width: 640,
         height: '100vh',
         background: 'var(--ds-surface-overlay)',
-        boxShadow: '-4px 0 20px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         zIndex: 400,
         display: 'flex',
         flexDirection: 'column',

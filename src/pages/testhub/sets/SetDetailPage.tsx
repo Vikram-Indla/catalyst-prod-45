@@ -46,8 +46,8 @@ interface CycleSet {
     id: string;
     name: string;
     status: string;
-    planned_start_date: string | null;
-    planned_end_date: string | null;
+    planned_start: string | null;
+    planned_end: string | null;
     sprint?: { id: string; name: string; status: string } | null;
   } | null;
 }
@@ -152,7 +152,7 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',
@@ -163,7 +163,7 @@ function AddCasesModal({
         maxHeight: '80vh',
         background: 'var(--ds-surface-overlay)',
         borderRadius: 8,
-        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         zIndex: 301,
         display: 'flex',
         flexDirection: 'column',
@@ -297,7 +297,7 @@ function AddToCycleDropdown({
 
   const handleSelectCycle = async (cycle: AvailableCycle) => {
     try {
-      const { error } = await (supabase.from('tm_cycle_sets') as any).insert({
+      const { error } = await supabase.from('tm_cycle_sets').insert({
         cycle_id: cycle.id,
         set_id: setId,
       });
@@ -321,7 +321,7 @@ function AddToCycleDropdown({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         padding: '4px 0',
         minWidth: 200,
         zIndex: 9999,
@@ -408,8 +408,8 @@ export default function SetDetailPage() {
   const { data: cycleSets = [], isLoading: cyclesLoading } = useQuery({
     queryKey: ['set-cycle-sets', setId],
     queryFn: async () => {
-      const { data, error } = await (supabase.from('tm_cycle_sets') as any)
-        .select('id, cycle_id, tm_test_cycles(id, name, status, planned_start_date, planned_end_date)')
+      const { data, error } = await supabase.from('tm_cycle_sets')
+        .select('id, cycle_id, tm_test_cycles(id, name, status, planned_start, planned_end)')
         .eq('set_id', setId!);
       if (error) throw error;
       return (data ?? []) as CycleSet[];
@@ -689,10 +689,10 @@ export default function SetDetailPage() {
                           {cycle?.sprint?.name ?? '—'}
                         </td>
                         <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_start_date ? formatDate(cycle.planned_start_date) : '—'}
+                          {cycle?.planned_start ? formatDate(cycle.planned_start) : '—'}
                         </td>
                         <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_end_date ? formatDate(cycle.planned_end_date) : '—'}
+                          {cycle?.planned_end ? formatDate(cycle.planned_end) : '—'}
                         </td>
                         <td style={tdStyle}>
                           {cycle?.id && (

@@ -15,10 +15,13 @@ import { useApprovalAge, type ApprovalAgeRow } from '@/components/testhub/report
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
+// tm_plan_approvals.status: pending/approved/rejected · tm_release_signoffs.decision: pending/approve/reject/abstain
 function statusAppearance(s: string): ThemeAppearance {
   switch (s.toLowerCase()) {
-    case 'approved': return 'success';
-    case 'rejected': return 'removed';
+    case 'approved':
+    case 'approve': return 'success';
+    case 'rejected':
+    case 'reject': return 'removed';
     case 'pending': return 'inprogress';
     default: return 'default';
   }

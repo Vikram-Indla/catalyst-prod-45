@@ -9,6 +9,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from './fetchAllPages';
 
 export interface IssueRow {
   issue_key: string;
@@ -31,13 +32,17 @@ export function useDefectsIncidents(projectName?: string, projectId?: string) {
     queryKey: ['defects-incidents', projectName, projectId],
     enabled: !!projectName && !!projectId,
     queryFn: async (): Promise<DefectsIncidents> => {
-      const { data: defectData } = await supabase
-        .from('ph_issues')
-        .select('issue_key, summary, status, status_category')
-        .eq('project_name', projectName!)
-        .in('issue_type', ['QA Bug', 'Defect'])
-        .order('jira_updated_at', { ascending: false, nullsFirst: false });
-      const defects = (defectData ?? []) as IssueRow[];
+      // Paged past the server max_rows cap (QA Bug volume is closest to it).
+      const defects = await fetchAllPages<IssueRow>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('issue_key, summary, status, status_category')
+          .eq('project_name', projectName!)
+          .in('issue_type', ['QA Bug', 'Defect'])
+          .order('jira_updated_at', { ascending: false, nullsFirst: false })
+          .order('issue_key', { ascending: true })
+          .range(from, to),
+      );
 
       const tmDef = await supabase.from('tm_defects').select('id', { count: 'exact', head: true }).eq('project_id', projectId!);
 

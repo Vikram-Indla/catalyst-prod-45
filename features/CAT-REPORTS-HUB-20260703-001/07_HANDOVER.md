@@ -28,10 +28,14 @@
 6. **d3 removed** from package.json (+@types), lockfile regenerated; sole consumer (dormant WikiKnowledgeGraphPage, unrouted) deleted. ECharts stays proof-gated (unchanged, intentional).
 7. Concurrent-session note stands: workflow-studio files not ours.
 
-## Still open (new, small)
-- Points burndown honest-empty until ph story transitions accrue post-capture; MTTR likewise (samples from 2026-07-03 onward).
-- release signoffs unseeded (releases table needs release_vehicles chain — left empty; approval-age runs on plan approvals).
-- Duplicate "Senaei BAU" tm_projects rows (84f91caf active w/ cycles, 748f80ae has 16 orphan-ish cases) — dedup candidate.
+## Still open
+- Points burndown timeline + MTTR samples accrue from 2026-07-03 (capture-forward); honest empty/partial until then. Time fixes this, not code.
+
+## Closed in the "go" sweep (commits 098c48601→b68f53119, ab0efcf26)
+- Points burndown fixed: picker derives from sprint_release scope (dead archived sprints gone), max_rows=1000 truncation paginated. Same truncation class swept across ALL growth-unbounded report queries via shared fetchAllPages (sprint/project/governance/defects/incident/MTTR hooks).
+- Release-signoff chain seeded (vehicle→release→3 signoffs); approval-age shows both sources; lozenge map covers approve/reject vocab.
+- Senaei BAU tm_projects deduped (16 cases merged into 84f91caf, stale row deleted) — one project, 60 cases.
+- Landmine for future sessions: persisted react-query cache (catalyst-rq-cache, 15-min staleTime) serves stale report data across reloads — clear it before judging a report fix. And check schema_migrations for version collisions BEFORE naming a migration (two collisions with concurrent sessions today).
 
 ## Rules learned
 - MCP edge deploys: zero external imports only (Deno.serve + fetch).

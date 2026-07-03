@@ -508,6 +508,7 @@ export async function checkReasonRequired(
 export async function recordAdvisoryStatusChange(args: {
   entityKey: EntityKey; entityId: string; projectKey?: string | null;
   fromStatusRaw: string | null; toStatusRaw: string; currentRole?: string | null; sourceSurface: string;
+  reasonCode?: string | null; reasonText?: string | null;
 }): Promise<{ reasonRequired: boolean } | null> {
   try {
     const version = await resolveCanonicalVersion(args.entityKey, args.projectKey);
@@ -519,6 +520,7 @@ export async function recordAdvisoryStatusChange(args: {
     await writeAdvisoryAudit({
       entityKey: args.entityKey, entityId: args.entityId, versionId: version.versionId,
       fromKey, toKey, evaluation, sourceSurface: args.sourceSurface,
+      reasonCode: args.reasonCode ?? null, reasonText: args.reasonText ?? null,
     });
     return { reasonRequired: evaluation.reasonRequired };
   } catch (err) { console.warn('[canonical-workflow] recordAdvisoryStatusChange skipped', err); return null; }

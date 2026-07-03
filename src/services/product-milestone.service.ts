@@ -100,10 +100,27 @@ export class ProductMilestoneService {
     // A-lite: product_milestones.status IS the canonical store. Capture current
     // status before write so the advisory audit has a meaningful "from" value.
     let prevStatus: string | null = null;
+    const isStatusChange = input.status !== undefined && !!input.status;
     if (input.status !== undefined) {
       const { data: cur } = await supabase
         .from('product_milestones').select('status').eq('id', id).maybeSingle();
       prevStatus = (cur as any)?.status ?? null;
+    }
+
+    // F3: reason preflight must run BEFORE the write — throwing after the
+    // update persisted would change the status and then claim it didn't.
+    const reasonText = input.reasonText ?? null;
+    const reasonCode = input.reasonCode ?? null;
+    if (isStatusChange && prevStatus !== input.status && !reasonText && !reasonCode) {
+      const preflight = await checkReasonRequired('product_milestone', null, prevStatus, input.status!);
+      if (preflight.reasonRequired) {
+        // Typed refusal: callers catch WF_REASON_REQUIRED, collect a reason
+        // via ReasonCaptureModal, and retry with it attached.
+        const err = new Error('This transition requires a reason.');
+        (err as any).code = 'WF_REASON_REQUIRED';
+        (err as any).ctx = { entityType: 'Milestone', from: prevStatus, to: input.status };
+        throw err;
+      }
     }
 
     const { data, error } = await supabase
@@ -123,16 +140,14 @@ export class ProductMilestoneService {
     if (error) throw error;
 
     // Advisory audit for status changes. Canonical key = the status value (A-lite).
-    if (input.status !== undefined && prevStatus !== input.status && input.status) {
-      const preflight = await checkReasonRequired('product_milestone', null, prevStatus, input.status);
-      if (preflight.reasonRequired) {
-        throw new Error('This milestone transition requires a reason. Open the milestone detail to provide one.');
-      }
+    if (isStatusChange && prevStatus !== input.status) {
       recordAdvisoryStatusChange({
         entityKey: 'product_milestone', entityId: id, projectKey: null,
-        fromStatusRaw: prevStatus, toStatusRaw: input.status,
+        fromStatusRaw: prevStatus, toStatusRaw: input.status!,
         sourceSurface: 'milestone_manager',
-      }).catch(() => {/* advisory — non-blocking */});
+        reasonText,
+        reasonCode,
+      } as any).catch(() => {/* advisory — non-blocking */});
     }
 
     return this.mapToDomain(data);

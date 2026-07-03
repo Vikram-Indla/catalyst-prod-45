@@ -391,6 +391,8 @@ export interface CreateCycleInput {
   build_version?: string;
   planned_start_date?: string;
   planned_end_date?: string;
+  sprint_id?: string | null;
+  assigned_to?: string | null;
 }
 
 export interface UpdateCycleInput extends Partial<CreateCycleInput> {

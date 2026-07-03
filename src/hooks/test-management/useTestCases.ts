@@ -115,11 +115,13 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
       const stepsCounts: Record<string, number> = {};
       
       if (caseIds.length > 0) {
-        const { data: stepsData } = await supabase
+        const { data: stepsData, error: stepsCountError } = await supabase
           .from('tm_test_steps')
           .select('test_case_id')
           .in('test_case_id', caseIds);
-        
+
+        if (stepsCountError) throw stepsCountError;
+
         // Count steps per case
         if (stepsData) {
           stepsData.forEach(step => {
@@ -132,12 +134,14 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
       const lastExecutions: Record<string, { status: string; executed_at: string | null }> = {};
       
       if (caseIds.length > 0) {
-        const { data: execData } = await supabase
+        const { data: execData, error: execError } = await supabase
           .from('test_cycle_executions')
           .select('case_id, status, executed_at')
           .in('case_id', caseIds)
           .order('executed_at', { ascending: false });
-        
+
+        if (execError) throw execError;
+
         // Get latest execution per case
         if (execData) {
           execData.forEach(exec => {
@@ -213,12 +217,14 @@ export function useTestCase(caseId: string | undefined) {
       if (labelsError) throw labelsError;
 
       // Fetch last execution status
-      const { data: executions } = await supabase
+      const { data: executions, error: execError } = await supabase
         .from('test_cycle_executions')
         .select('status, executed_at')
         .eq('case_id', caseId)
         .order('executed_at', { ascending: false })
         .limit(1);
+
+      if (execError) throw execError;
 
       const lastExecution = executions && executions.length > 0 
         ? { status: executions[0].status || 'not_run', executed_at: executions[0].executed_at }
@@ -289,12 +295,14 @@ async function generateCaseKey(projectId: string, folderId?: string | null): Pro
   
   // If folder_id is provided, get folder name and use first 3 letters
   if (folderId) {
-    const { data: folder } = await supabase
+    const { data: folder, error: folderError } = await supabase
       .from('tm_folders')
       .select('name')
       .eq('id', folderId)
       .maybeSingle();
-    
+
+    if (folderError) throw folderError;
+
     if (folder?.name) {
       // Get first 3 letters of folder name, uppercase, remove special chars
       prefix = folder.name
@@ -311,10 +319,12 @@ async function generateCaseKey(projectId: string, folderId?: string | null): Pro
 
   if (!error && data) return data;
 
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from('tm_test_cases')
     .select('*', { count: 'exact', head: true })
     .eq('project_id', projectId);
+
+  if (countError) throw countError;
 
   const nextNum = (count || 0) + 1;
   return `${prefix}-${String(nextNum).padStart(3, '0')}`;
@@ -382,7 +392,8 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
           label_id: labelId,
         }));
 
-        await supabase.from('tm_case_labels').insert(labelsToInsert);
+        const { error: labelsError } = await supabase.from('tm_case_labels').insert(labelsToInsert);
+        if (labelsError) throw labelsError;
       }
 
       return {
@@ -426,11 +437,13 @@ export function useUpdateTestCase() {
 
       const { id, steps, label_ids, project_id, ...updates } = input;
 
-      const { data: current } = await supabase
+      const { data: current, error: currentError } = await supabase
         .from('tm_test_cases')
         .select('version')
         .eq('id', id)
         .maybeSingle();
+
+      if (currentError) throw currentError;
 
       const newVersion = (current?.version || 0) + 1;
 
@@ -454,7 +467,8 @@ export function useUpdateTestCase() {
       if (caseError) throw caseError;
 
       if (steps !== undefined) {
-        await supabase.from('tm_test_steps').delete().eq('test_case_id', id);
+        const { error: deleteStepsError } = await supabase.from('tm_test_steps').delete().eq('test_case_id', id);
+        if (deleteStepsError) throw deleteStepsError;
 
         if (steps.length > 0) {
           const stepsToInsert = steps.map((step, index) => ({
@@ -465,12 +479,14 @@ export function useUpdateTestCase() {
             expected_result: step.expected_result,
           }));
 
-          await supabase.from('tm_test_steps').insert(stepsToInsert);
+          const { error: insertStepsError } = await supabase.from('tm_test_steps').insert(stepsToInsert);
+          if (insertStepsError) throw insertStepsError;
         }
       }
 
       if (label_ids !== undefined) {
-        await supabase.from('tm_case_labels').delete().eq('test_case_id', id);
+        const { error: deleteLabelsError } = await supabase.from('tm_case_labels').delete().eq('test_case_id', id);
+        if (deleteLabelsError) throw deleteLabelsError;
 
         if (label_ids.length > 0) {
           const labelsToInsert = label_ids.map(labelId => ({
@@ -478,16 +494,19 @@ export function useUpdateTestCase() {
             label_id: labelId,
           }));
 
-          await supabase.from('tm_case_labels').insert(labelsToInsert);
+          const { error: insertLabelsError } = await supabase.from('tm_case_labels').insert(labelsToInsert);
+          if (insertLabelsError) throw insertLabelsError;
         }
       }
 
       // Fetch current steps for version snapshot
-      const { data: savedSteps } = await supabase
+      const { data: savedSteps, error: savedStepsError } = await supabase
         .from('tm_test_steps')
         .select('step_number, action, expected_result, test_data')
         .eq('test_case_id', id)
         .order('step_number', { ascending: true });
+
+      if (savedStepsError) throw savedStepsError;
 
       // Create version snapshot in tm_test_case_versions
       const snapshot = {
@@ -506,7 +525,7 @@ export function useUpdateTestCase() {
         })),
       };
 
-      await typedQuery('tm_test_case_versions')
+      const { error: versionInsertError } = await typedQuery('tm_test_case_versions')
         .insert({
           test_case_id: id,
           version_number: newVersion,
@@ -514,6 +533,8 @@ export function useUpdateTestCase() {
           change_summary: 'Updated via edit dialog',
           changed_by: user.id,
         });
+
+      if (versionInsertError) throw versionInsertError;
 
       return {
         ...testCase,
@@ -661,10 +682,12 @@ export function useUpsertTestCaseDraft() {
       // Persist steps: delete existing and insert new ones
       if (input.steps && input.steps.length > 0) {
         // Delete existing steps for this case
-        await supabase
+        const { error: deleteStepsError } = await supabase
           .from('tm_test_steps')
           .delete()
           .eq('test_case_id', caseId);
+
+        if (deleteStepsError) throw deleteStepsError;
 
         // Insert new steps
         const stepsToInsert = input.steps.map((step, index) => ({
@@ -679,16 +702,15 @@ export function useUpsertTestCaseDraft() {
           .from('tm_test_steps')
           .insert(stepsToInsert);
 
-        if (stepsError) {
-          console.error('Failed to save steps:', stepsError);
-          // Don't throw - the case was saved, just steps failed
-        }
+        if (stepsError) throw stepsError;
       } else if (input.draft_id) {
         // If updating and no steps provided, delete existing steps
-        await supabase
+        const { error: clearStepsError } = await supabase
           .from('tm_test_steps')
           .delete()
           .eq('test_case_id', caseId);
+
+        if (clearStepsError) throw clearStepsError;
       }
 
       return { id: caseId, case_key: caseKey };
@@ -749,11 +771,13 @@ export function useCloneTestCase(options?: { silent?: boolean }) {
 
       if (fetchError) throw fetchError;
 
-      const { data: steps } = await supabase
+      const { data: steps, error: stepsError } = await supabase
         .from('tm_test_steps')
         .select('*')
         .eq('test_case_id', input.id)
         .order('step_number');
+
+      if (stepsError) throw stepsError;
 
       const caseKey = await generateCaseKey(input.project_id, original.folder_id);
 
@@ -786,7 +810,8 @@ export function useCloneTestCase(options?: { silent?: boolean }) {
           expected_result: step.expected_result,
         }));
 
-        await supabase.from('tm_test_steps').insert(stepsToInsert);
+        const { error: cloneStepsError } = await supabase.from('tm_test_steps').insert(stepsToInsert);
+        if (cloneStepsError) throw cloneStepsError;
       }
 
       return {
@@ -915,26 +940,29 @@ export function useBulkCopyTestCases() {
 
       for (const caseId of input.case_ids) {
         // Fetch original case
-        const { data: original } = await supabase
+        const { data: original, error: originalError } = await supabase
           .from('tm_test_cases')
           .select('*')
           .eq('id', caseId)
           .single();
 
+        if (originalError) throw originalError;
         if (!original) continue;
 
         // Fetch steps
-        const { data: steps } = await supabase
+        const { data: steps, error: stepsError } = await supabase
           .from('tm_test_steps')
           .select('*')
           .eq('test_case_id', caseId)
           .order('step_number');
 
+        if (stepsError) throw stepsError;
+
         // Generate new key
         const caseKey = await generateCaseKey(input.project_id, input.folder_id || original.folder_id);
 
         // Create copy
-        const { data: cloned } = await supabase
+        const { data: cloned, error: cloneError } = await supabase
           .from('tm_test_cases')
           .insert({
             project_id: original.project_id,
@@ -952,12 +980,14 @@ export function useBulkCopyTestCases() {
           .select()
           .single();
 
+        if (cloneError) throw cloneError;
+
         if (cloned) {
           copiedCases.push({ key: caseKey, title: `${original.title} (Copy)` });
 
           // Copy steps
           if (steps && steps.length > 0) {
-            await supabase.from('tm_test_steps').insert(
+            const { error: copyStepsError } = await supabase.from('tm_test_steps').insert(
               steps.map(step => ({
                 test_case_id: cloned.id,
                 step_number: step.step_number,
@@ -966,6 +996,7 @@ export function useBulkCopyTestCases() {
                 expected_result: step.expected_result,
               }))
             );
+            if (copyStepsError) throw copyStepsError;
           }
         }
       }
@@ -1151,11 +1182,13 @@ export function useCreateCaseVersion() {
         .single();
       if (fetchErr) throw fetchErr;
 
-      const { data: steps } = await supabase
+      const { data: steps, error: stepsError } = await supabase
         .from('tm_test_steps')
         .select('*')
         .eq('test_case_id', input.case_id)
         .order('step_number');
+
+      if (stepsError) throw stepsError;
 
       const newVersion = (original.current_version ?? original.version ?? 1) + 1;
       const caseKey = await generateCaseKey(input.project_id, original.folder_id);
@@ -1184,14 +1217,16 @@ export function useCreateCaseVersion() {
       if (insertErr) throw insertErr;
 
       // Mark previous as not latest
-      await supabase
+      const { error: markError } = await supabase
         .from('tm_test_cases')
         .update({ is_latest_version: false })
         .eq('id', input.case_id);
 
+      if (markError) throw markError;
+
       // Copy steps
       if (steps && steps.length > 0) {
-        await supabase.from('tm_test_steps').insert(
+        const { error: copyStepsError } = await supabase.from('tm_test_steps').insert(
           steps.map(s => ({
             test_case_id: newCase.id,
             step_number: s.step_number,
@@ -1200,6 +1235,7 @@ export function useCreateCaseVersion() {
             expected_result: s.expected_result,
           }))
         );
+        if (copyStepsError) throw copyStepsError;
       }
 
       return { id: newCase.id, key: caseKey, version: newVersion };

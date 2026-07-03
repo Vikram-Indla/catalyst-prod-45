@@ -82,4 +82,7 @@ export interface UpdateMilestoneInput {
   targetDate?: string;
   status?: string;
   description?: string;
+  /** Workflow reason for gated status transitions (F3). */
+  reasonCode?: string | null;
+  reasonText?: string | null;
 }

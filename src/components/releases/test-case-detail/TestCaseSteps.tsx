@@ -136,15 +136,12 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
 
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-generate-test-cases', {
+      const { data, error } = await supabase.functions.invoke('ai-generate-story-test-cases', {
         body: {
+          mode: 'prompt',
           prompt: aiPrompt,
-          projectName: 'Test Project',
-          testType: testCaseType || 'functional',
-          includeEdgeCases: true,
-          includeNegativeTests: false,
-          includePerformance: false,
-          includeSecurity: false,
+          test_type: testCaseType || 'functional',
+          count: 1,
         },
       });
 
@@ -174,8 +171,13 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
       }
 
       // Extract steps from the first generated test case
-      const generatedTestCase = data?.data?.testCases?.[0];
-      const generatedSteps = generatedTestCase?.steps || [];
+      const generatedTestCase = data?.test_cases?.[0];
+      const generatedSteps: Array<{
+        step_number: number;
+        action: string;
+        test_data?: string;
+        expected_result: string;
+      }> = generatedTestCase?.steps || [];
 
       if (generatedSteps.length === 0) {
         catalystToast.error('No steps were generated. Try a more detailed description.');
@@ -191,8 +193,8 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
             test_case_id: testCaseId,
             step_number: steps.length + i + 1,
             action: step.action || '',
-            expected_result: step.expectedResult || '',
-            test_data: step.testData || undefined,
+            expected_result: step.expected_result || '',
+            test_data: step.test_data || undefined,
           });
           insertedCount++;
         } catch (err) {

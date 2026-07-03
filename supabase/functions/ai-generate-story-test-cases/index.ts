@@ -62,7 +62,46 @@ serve(async (req) => {
   }
 
   try {
+    // ── Auth gate: a valid user JWT is required for every invocation. ──────
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!supabaseUrl || !anonKey) {
+      return new Response(
+        JSON.stringify({ error: "config_error", message: "Auth is not configured" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false },
+    });
+    const {
+      data: { user },
+      error: authError,
+    } = await authClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({
+          error: "unauthorized",
+          message: "A valid user JWT is required",
+        }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const body = await req.json();
+
+    // ── Mode discrimination. Default ("story") preserves the original
+    //    request shape exactly; {mode:"prompt"} enables free-prompt generation.
+    const mode: "story" | "prompt" = body?.mode === "prompt" ? "prompt" : "story";
+
     const storyKey: string =
       typeof body?.story_key === "string" ? body.story_key : "";
     const storySummary: string =
@@ -74,7 +113,37 @@ serve(async (req) => {
         ? body.acceptance_criteria
         : "";
 
-    if (!storySummary.trim() && !storyDescription.trim()) {
+    // Prompt-mode fields.
+    const freePrompt: string =
+      typeof body?.prompt === "string" ? body.prompt : "";
+    const projectId: string =
+      typeof body?.project_id === "string" ? body.project_id : "";
+    const folderId: string =
+      typeof body?.folder_id === "string" ? body.folder_id : "";
+    const projectName: string =
+      typeof body?.project_name === "string" ? body.project_name : "";
+    const featureName: string =
+      typeof body?.feature_name === "string" ? body.feature_name : "";
+    const testTypeFocus: string =
+      typeof body?.test_type === "string" ? body.test_type : "";
+    const rawCount = typeof body?.count === "number" ? body.count : 10;
+    // Hard ceiling of 10 cases in both modes.
+    const maxCases = Math.min(Math.max(1, Math.floor(rawCount) || 10), 10);
+
+    if (mode === "prompt") {
+      if (!freePrompt.trim()) {
+        return new Response(
+          JSON.stringify({
+            error: "invalid_input",
+            message: "prompt is required when mode is 'prompt'",
+          }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+    } else if (!storySummary.trim() && !storyDescription.trim()) {
       return new Response(
         JSON.stringify({
           error: "invalid_input",
@@ -98,22 +167,8 @@ serve(async (req) => {
       );
     }
 
-    // Prompt: enforce max 10 + 100% coverage rules. JSON-only output.
-    const userPrompt = `You are a senior QA engineer designing a compact, high-coverage test suite for a single user story in an enterprise portfolio-management tool.
-
-Story key: ${storyKey || "(unknown)"}
-Story summary: ${storySummary || "(none)"}
-Story description:
-${storyDescription || "(none)"}
-
-Acceptance criteria:
-${acceptanceCriteria || "(none)"}
-
-Rules — read carefully, they are non-negotiable:
-1. Generate AT MOST 10 test cases. Fewer is fine when full coverage needs fewer.
-2. Together, the test cases MUST achieve 100% coverage of the story's stated behavior and every acceptance criterion. Do not omit an acceptance criterion. If a criterion needs multiple tests to be fully covered, split it — but stay within the 10-case ceiling by consolidating overlapping happy-path checks.
-3. Blend: happy path, edge cases, negative / error paths, and permission/auth boundaries when relevant to the story. Prefer breadth over redundancy.
-4. Each title is concise (under 90 chars), imperative, sentence case, no trailing punctuation.
+    // Shared output contract: rules 4–6 + JSON shape are identical in both modes.
+    const sharedRulesAndShape = `4. Each title is concise (under 90 chars), imperative, sentence case, no trailing punctuation.
 5. Each test case has: title, objective (one-sentence purpose), preconditions (short paragraph or "None"), priority (one of: critical, high, medium, low), status ("DRAFT"), and 2–6 numbered steps.
 6. Each step has: step_number (1-based), action (imperative), optional test_data (only when a concrete value matters), expected_result (observable outcome).
 
@@ -133,6 +188,39 @@ Shape:
     }
   ]
 }`;
+
+    // Prompt: enforce max-cases ceiling + coverage rules. JSON-only output.
+    const userPrompt =
+      mode === "prompt"
+        ? `You are a senior QA engineer designing a compact, high-coverage test suite from a free-form requirement description in an enterprise portfolio-management tool.
+
+Project: ${projectName || "(unspecified)"}
+Feature: ${featureName || "(unspecified)"}
+Test type focus: ${testTypeFocus && testTypeFocus !== "all" ? testTypeFocus : "all types"}
+
+Requirement description:
+${freePrompt}
+
+Rules — read carefully, they are non-negotiable:
+1. Generate AT MOST ${maxCases} test cases. Fewer is fine when full coverage needs fewer.
+2. Together, the test cases MUST achieve 100% coverage of the described behavior. If an aspect needs multiple tests to be fully covered, split it — but stay within the ${maxCases}-case ceiling by consolidating overlapping happy-path checks.
+3. Blend: happy path, edge cases, negative / error paths, and permission/auth boundaries when relevant. Prefer breadth over redundancy.
+${sharedRulesAndShape}`
+        : `You are a senior QA engineer designing a compact, high-coverage test suite for a single user story in an enterprise portfolio-management tool.
+
+Story key: ${storyKey || "(unknown)"}
+Story summary: ${storySummary || "(none)"}
+Story description:
+${storyDescription || "(none)"}
+
+Acceptance criteria:
+${acceptanceCriteria || "(none)"}
+
+Rules — read carefully, they are non-negotiable:
+1. Generate AT MOST 10 test cases. Fewer is fine when full coverage needs fewer.
+2. Together, the test cases MUST achieve 100% coverage of the story's stated behavior and every acceptance criterion. Do not omit an acceptance criterion. If a criterion needs multiple tests to be fully covered, split it — but stay within the 10-case ceiling by consolidating overlapping happy-path checks.
+3. Blend: happy path, edge cases, negative / error paths, and permission/auth boundaries when relevant to the story. Prefer breadth over redundancy.
+${sharedRulesAndShape}`;
 
     const aiResp = await fetch(AI_GATEWAY_URL, {
       method: "POST",
@@ -165,7 +253,14 @@ Shape:
       console.error("ai-generate-story-test-cases gateway error:", status, errBody);
       await logGovernance({
         action: "ai_generate_story_test_cases",
-        payload: { story_key: storyKey, summary_len: storySummary.length },
+        payload: {
+          mode,
+          story_key: storyKey,
+          summary_len: storySummary.length,
+          prompt_len: freePrompt.length,
+          project_id: projectId,
+          folder_id: folderId,
+        },
         status: "error",
         error_message: `gateway_${status}`,
       });
@@ -217,7 +312,7 @@ Shape:
     if (!parsed || !Array.isArray(parsed.test_cases)) {
       await logGovernance({
         action: "ai_generate_story_test_cases",
-        payload: { story_key: storyKey, parse_error: parseError ?? "unknown" },
+        payload: { mode, story_key: storyKey, parse_error: parseError ?? "unknown" },
         status: "error",
         error_message: parseError ?? "unparseable",
       });
@@ -239,7 +334,7 @@ Shape:
     const validStatuses: TestStatus[] = ["DRAFT", "REVIEW", "APPROVED"];
     const cleaned: GeneratedCase[] = [];
     for (const raw of parsed.test_cases as unknown[]) {
-      if (cleaned.length >= 10) break;
+      if (cleaned.length >= maxCases) break;
       const c = raw as any;
       const title = typeof c?.title === "string" ? c.title.trim() : "";
       if (!title) continue;
@@ -284,9 +379,13 @@ Shape:
     await logGovernance({
       action: "ai_generate_story_test_cases",
       payload: {
+        mode,
         story_key: storyKey,
         count: cleaned.length,
         summary_len: storySummary.length,
+        prompt_len: freePrompt.length,
+        project_id: projectId,
+        folder_id: folderId,
       },
       status: "ok",
     });

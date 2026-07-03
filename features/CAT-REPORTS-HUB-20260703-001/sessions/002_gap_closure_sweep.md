@@ -35,3 +35,16 @@
 - e7cfe1e0b — S2.1 insight cards ×5 + d3 removal
 - 4f31d7594 — S2.2–S2.4 DDL + 4 CUT reports + people identity
 - (final) — docs + seed placeholder migration
+
+## Post-review fix ("fix", same session)
+Points Burndown dead-ended: picker built from ph_jira_sprints defaulted to archived duplicate sprint ("…06 Jul 26-2") that zero issues reference → "Nothing in this sprint". Three stacked causes fixed:
+1. Picker now derives options from ph_issues.sprint_release (scope truth) with item counts, ordered by sprint recency.
+2. PostgREST max_rows=1000 silently truncated the 2381-row sprint_release fetch (undercounted every sprint, 104 vs 209) → paginated fetchAllSprintReleaseRows with .range() batches.
+3. catalyst-rq-cache (PersistQueryClientProvider, 15-min staleTime) kept serving the truncated result across reloads — cache cleared to verify; entry expires naturally for users.
+Verified live: 209 scope / 197 done / 12 remaining = DB truth; honest "No timeline to plot" (sprint lacks start_date).
+
+## "go" sweep (same session)
+1. **Truncation class sweep:** shared `fetchAllPages` helper; paginated every growth-unbounded reports query past the server max_rows=1000 cap — useSprintTestingStatus (stories/QA Bugs/incidents), useProjectTestingStatus + useGovernance (per-project stories), useDefectsIncidents (QA Bug volume 791, closest to cap), useIncidentReport (rows + project options), useIncidentMttr (history grows forever). Bounded queries (.in(keys), epic children) left alone.
+2. **Release-signoff chain seeded** (REVAMP-DEMO-20260703): release_vehicles → releases (slug senaei-bau-2026-07-seed) → 3 tm_release_signoffs (approve/pending/reject). ApprovalAgeBody lozenge map extended for signoff decision vocab (approve/reject vs approved/rejected). Verified live: 6 rows, 2 pending / 4 decided.
+3. **Senaei BAU dedup:** stale 748f80ae (16 TC-00xx cases + 1 key_sequence, zero other refs) merged into canonical 84f91caf; stale project row deleted. One "Senaei BAU" remains; canonical = 60 cases.
+4. Ledger: my 310000 collided with concurrent session's sprint_insight_cache → renamed to 20260703330000, ledger row updated. (Version collision check BEFORE naming — learned again.)

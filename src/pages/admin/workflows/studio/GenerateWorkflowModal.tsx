@@ -25,8 +25,9 @@ import {
   type GeneratedWorkflow,
 } from '@/hooks/workflow-v2/useWorkflowDraft';
 import { ENTITY_GROUPS } from './entities';
+import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 
-const ENTITY_OPTIONS: SelectOption[] = ENTITY_GROUPS.flatMap((g) => g.entities)
+const SYSTEM_ENTITY_OPTIONS: SelectOption[] = ENTITY_GROUPS.flatMap((g) => g.entities)
   .filter((e) => !e.readOnly)
   .map((e) => ({ value: e.key, label: e.label }));
 
@@ -34,6 +35,14 @@ export function GenerateWorkflowModal({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
   const generate = useGenerateWorkflow();
   const importGen = useImportGeneratedWorkflow();
+  // F1: custom types own an entity namespace — Caty authors their workflows too.
+  const { data: registryTypes } = useWorkItemTypes();
+  const ENTITY_OPTIONS: SelectOption[] = [
+    ...SYSTEM_ENTITY_OPTIONS,
+    ...(registryTypes ?? [])
+      .filter((t) => !t.is_system && t.is_enabled && !!t.entity_key)
+      .map((t) => ({ value: t.entity_key as string, label: `${t.display_name} (custom)` })),
+  ];
 
   const [entity, setEntity] = useState<SelectOption | null>(null);
   const [prompt, setPrompt] = useState('');
@@ -51,7 +60,7 @@ export function GenerateWorkflowModal({ onClose }: { onClose: () => void }) {
         {!result ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ maxWidth: 280 }}>
-              <Select usePortal usePortal
+              <Select usePortal
                 options={ENTITY_OPTIONS}
                 value={entity}
                 onChange={setEntity}

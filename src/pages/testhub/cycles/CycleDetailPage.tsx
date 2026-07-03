@@ -16,6 +16,7 @@ import {
   useCompleteCycle,
 } from '@/hooks/test-management/useTestCycles';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
+import { useCreateDefect } from '@/hooks/test-management/useDefects';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
@@ -540,7 +541,7 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
           </button>
         </td>
       </tr>
-      {panel === 'defect' && <DefectPanel item={item} onClose={() => setPanel(null)} />}
+      {panel === 'defect' && <DefectPanel item={item} cycleId={cycleId} onClose={() => setPanel(null)} />}
       {panel === 'comments' && <CommentsPanel item={item} onClose={() => setPanel(null)} />}
       {panel === 'evidence' && <EvidencePanel item={item} onClose={() => setPanel(null)} />}
     </>
@@ -635,11 +636,11 @@ function RightPanel({ title, subtitle, onClose, children }: {
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.25))' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-blanket)' }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, width: 480, height: '100vh', zIndex: 8001,
         background: 'var(--ds-surface-overlay)',
-        boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
@@ -671,9 +672,25 @@ const NO_RUN_MSG = (
 );
 
 // ── Defect panel ────────────────────────────────────────────────────────────
-function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => void }) {
+function DefectPanel({ item, cycleId, onClose }: { item: TMCycleScope; cycleId: string; onClose: () => void }) {
   const qc = useQueryClient();
   const runId = item.last_run_id;
+
+  // Real project for the defect row — the old inline insert wrote the scope-row
+  // id into project_id (P0-S7 / DEF-002).
+  const { data: cycleProject } = useQuery({
+    queryKey: ['cycle-project', cycleId],
+    enabled: !!cycleId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tm_test_cycles')
+        .select('project_id')
+        .eq('id', cycleId)
+        .single();
+      if (error) throw error;
+      return data.project_id as string;
+    },
+  });
 
   const { data: defects = [], isLoading } = useQuery({
     queryKey: ['scope-defects', runId],
@@ -691,31 +708,27 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
 
   const [title, setTitle] = useState('');
   const [severity, setSeverity] = useState<'critical' | 'major' | 'minor' | 'trivial'>('major');
-  const [saving, setSaving] = useState(false);
+  const createDefect = useCreateDefect();
+  const saving = createDefect.isPending;
 
   const handleFile = async () => {
-    if (!title.trim() || !runId) return;
-    setSaving(true);
+    if (!title.trim() || !runId || !cycleProject) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      const { error } = await supabase.from('tm_defects').insert({
+      // Canonical creation path: RPC-generated defect_key, real project_id,
+      // auto-links to run/cycle (D-PIN-1).
+      await createDefect.mutateAsync({
+        project_id: cycleProject,
         title: title.trim(),
         severity,
-        status: 'open',
-        reporter_id: user.id,
         source_test_run_id: runId,
         source_test_case_id: item.case_id,
-        project_id: item.id, // scope as project proxy
-      });
-      if (error) throw error;
+        run_id: runId,
+        cycle_id: cycleId,
+      } as any);
       qc.invalidateQueries({ queryKey: ['scope-defects', runId] });
       setTitle('');
-      catalystToast.success('Defect filed');
-    } catch (e: unknown) {
-      catalystToast.error(e instanceof Error ? e.message : 'Failed');
-    } finally {
-      setSaving(false);
+    } catch {
+      // useCreateDefect surfaces its own error toast
     }
   };
 
@@ -1073,7 +1086,7 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',

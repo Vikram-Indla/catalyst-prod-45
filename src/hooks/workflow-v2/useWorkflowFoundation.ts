@@ -273,6 +273,109 @@ export function useToggleReasonCodeActive() {
   });
 }
 
+// ── Add enforcement row (F4) — project + entity + mode ───────────────────────
+export function useAddEnforcementRow() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ projectId, entityKey, mode }: { projectId: string; entityKey: string; mode: 'advisory' | 'blocking' }) => {
+      // Resolve the published version so blocking pre-flight has something to check.
+      const { data: pub } = await supabase
+        .from('ph_wf_versions' as any)
+        .select('id')
+        .eq('entity_key', entityKey)
+        .eq('lifecycle', 'published')
+        .maybeSingle();
+      const versionId = (pub as any)?.id ?? null;
+      if (mode === 'blocking' && versionId) {
+        const unsafe = await checkEnforcementBlockingSafe(versionId);
+        if (unsafe.length > 0) {
+          throw new Error(`Cannot enable blocking: guards without evidence source — ${unsafe.join(', ')}`);
+        }
+      }
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('ph_wf_enforcement_config' as any)
+        .insert({
+          project_id: projectId,
+          entity_key: entityKey,
+          mode,
+          workflow_version_id: versionId,
+          enabled_by: user?.id ?? null,
+          enabled_at: new Date().toISOString(),
+        } as any)
+        .select('id')
+        .single();
+      if (error) throw error;
+      await writeAdminAudit('enforcement_row_added', 'enforcement_config', (data as any).id, {
+        after: { projectId, entityKey, mode },
+      });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'enforcement'] }),
+  });
+}
+
+// ── Scheme CRUD (F5) — admin RLS allows direct writes ────────────────────────
+export function useCreateScheme() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string): Promise<string> => {
+      const { data, error } = await supabase
+        .from('ph_wf_schemes' as any)
+        .insert({ name, is_default: false } as any)
+        .select('id')
+        .single();
+      if (error) throw error;
+      const id = (data as any).id as string;
+      await writeAdminAudit('scheme_created', 'scheme', id, { after: { name } });
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'schemes'] }),
+  });
+}
+
+export function useUpsertSchemeEntry() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ schemeId, entityKey, versionId }: { schemeId: string; entityKey: string; versionId: string }) => {
+      const { data: existing } = await supabase
+        .from('ph_wf_scheme_entries' as any)
+        .select('id')
+        .eq('scheme_id', schemeId)
+        .eq('entity_key', entityKey)
+        .maybeSingle();
+      if (existing) {
+        const { error } = await supabase
+          .from('ph_wf_scheme_entries' as any)
+          .update({ version_id: versionId } as any)
+          .eq('id', (existing as any).id);
+        if (error) throw error;
+        await writeAdminAudit('scheme_entry_updated', 'scheme_entry', (existing as any).id, { after: { entityKey, versionId } });
+      } else {
+        const { data, error } = await supabase
+          .from('ph_wf_scheme_entries' as any)
+          .insert({ scheme_id: schemeId, entity_key: entityKey, version_id: versionId } as any)
+          .select('id')
+          .single();
+        if (error) throw error;
+        await writeAdminAudit('scheme_entry_added', 'scheme_entry', (data as any).id, { after: { schemeId, entityKey, versionId } });
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'scheme-entries'] }),
+  });
+}
+
+export function useDeleteSchemeEntry() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (entryId: string) => {
+      const { error } = await supabase.from('ph_wf_scheme_entries' as any).delete().eq('id', entryId);
+      if (error) throw error;
+      await writeAdminAudit('scheme_entry_removed', 'scheme_entry', entryId, {});
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'scheme-entries'] }),
+  });
+}
+
 // ── Toggle enforcement mode (advisory ↔ blocking) with safety pre-flight ────
 export interface EnforcementToggleInput {
   configId: string;

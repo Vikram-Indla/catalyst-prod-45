@@ -145,9 +145,11 @@ export function useDefectsSource(): BacklogDataSource | null {
       statusAppearance: resolvedStatusAppearance,
       statusLabel: resolvedStatusLabel,
       allStatuses,
-      onOpenItem: (_key, id) => {
-        window.location.assign(`/testhub/defects/${id}`);
-      },
+      /* P0-S5: a full-page tm_defects view does not exist yet (P1 slice).
+         Previously this hard-navigated to unregistered /testhub/defects/:id
+         (guaranteed 404 + full reload). Until the detail surface ships, the
+         action is intentionally inert rather than a dead URL. */
+      onOpenItem: () => {},
       onUpdate: async (id, patch) => {
         const mapped: Record<string, any> = {};
         let canonicalKey: string | null = null;

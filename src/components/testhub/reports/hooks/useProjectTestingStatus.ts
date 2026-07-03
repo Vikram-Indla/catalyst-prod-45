@@ -13,6 +13,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from './fetchAllPages';
 
 export interface StoryRow {
   issue_key: string;
@@ -58,13 +59,16 @@ export function useProjectTestingStatus(projectId?: string, projectName?: string
     queryKey: ['project-testing-status', projectId, projectName],
     enabled: !!projectId && !!projectName,
     queryFn: async (): Promise<ProjectTestingStatus> => {
-      // 1) In-scope stories (delivery side)
-      const { data: storyData } = await supabase
-        .from('ph_issues')
-        .select('issue_key, summary, status, status_category')
-        .eq('project_name', projectName!)
-        .eq('issue_type', 'Story');
-      const stories: StoryRow[] = (storyData ?? []) as StoryRow[];
+      // 1) In-scope stories (delivery side) — paged past the server max_rows cap
+      const stories: StoryRow[] = await fetchAllPages<StoryRow>((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select('issue_key, summary, status, status_category')
+          .eq('project_name', projectName!)
+          .eq('issue_type', 'Story')
+          .order('issue_key', { ascending: true })
+          .range(from, to),
+      );
 
       // 2) Covered story keys (test side) — requirement links for this project's cases
       const { data: linkData } = await supabase

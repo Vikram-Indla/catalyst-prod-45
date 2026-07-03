@@ -14,81 +14,74 @@ export interface CreateVersionParams {
 /**
  * Creates a version snapshot of the current test case state
  * Call this AFTER a successful mutation to record the change
+ *
+ * TD-002: snapshot failures THROW so callers surface them — never swallow.
  */
 export async function createVersionSnapshot(params: CreateVersionParams): Promise<void> {
   const { testCaseId, changeSummary } = params;
 
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return; // Skip if not authenticated
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
 
-    // Fetch current test case state
-    const { data: testCase, error: caseError } = await supabase
-      .from('tm_test_cases')
-      .select('*')
-      .eq('id', testCaseId)
-      .single();
+  // Fetch current test case state
+  const { data: testCase, error: caseError } = await supabase
+    .from('tm_test_cases')
+    .select('*')
+    .eq('id', testCaseId)
+    .single();
 
-    if (caseError || !testCase) {
-      console.error('Failed to fetch test case for versioning:', caseError);
-      return;
-    }
+  if (caseError) throw caseError;
+  if (!testCase) throw new Error('Test case not found for versioning');
 
-    // Fetch current steps
-    const { data: steps, error: stepsError } = await supabase
-      .from('tm_test_steps')
-      .select('*')
-      .eq('test_case_id', testCaseId)
-      .order('step_number', { ascending: true });
+  // Fetch current steps
+  const { data: steps, error: stepsError } = await supabase
+    .from('tm_test_steps')
+    .select('*')
+    .eq('test_case_id', testCaseId)
+    .order('step_number', { ascending: true });
 
-    if (stepsError) {
-      console.error('Failed to fetch steps for versioning:', stepsError);
-      return;
-    }
+  if (stepsError) throw stepsError;
 
-    // Get next version number
-    const { data: existingVersions } = await typedQuery('tm_test_case_versions')
-      .select('version_number')
-      .eq('test_case_id', testCaseId)
-      .order('version_number', { ascending: false })
-      .limit(1);
+  // Get next version number
+  const { data: existingVersions, error: versionsError } = await typedQuery('tm_test_case_versions')
+    .select('version_number')
+    .eq('test_case_id', testCaseId)
+    .order('version_number', { ascending: false })
+    .limit(1);
 
-    const nextVersion = (existingVersions?.[0]?.version_number || 0) + 1;
+  if (versionsError) throw versionsError;
 
-    // Create snapshot
-    const snapshot = {
-      title: testCase.title,
-      description: testCase.description,
-      preconditions: testCase.preconditions,
-      status: testCase.status,
-      priority_id: testCase.priority_id,
-      case_type_id: testCase.case_type_id,
-      folder_id: testCase.folder_id,
-      assigned_to: testCase.assigned_to,
-      steps: (steps || []).map((s: any) => ({
-        step_number: s.step_number,
-        action: s.action,
-        expected_result: s.expected_result || '',
-        test_data: s.test_data,
-      })),
-    };
+  const nextVersion = (existingVersions?.[0]?.version_number || 0) + 1;
 
-    // Insert version
-    const { error: insertError } = await typedQuery('tm_test_case_versions')
-      .insert({
-        test_case_id: testCaseId,
-        version_number: nextVersion,
-        snapshot,
-        change_summary: changeSummary,
-        changed_by: user.id,
-      });
+  // Create snapshot
+  const snapshot = {
+    title: testCase.title,
+    description: testCase.description,
+    preconditions: testCase.preconditions,
+    status: testCase.status,
+    priority_id: testCase.priority_id,
+    case_type_id: testCase.case_type_id,
+    folder_id: testCase.folder_id,
+    assigned_to: testCase.assigned_to,
+    steps: (steps || []).map((s: any) => ({
+      step_number: s.step_number,
+      action: s.action,
+      expected_result: s.expected_result || '',
+      test_data: s.test_data,
+    })),
+  };
 
-    if (insertError) {
-      console.error('Failed to create version snapshot:', insertError);
-    }
-  } catch (error) {
-    console.error('Error in createVersionSnapshot:', error);
-  }
+  // Insert version
+  const { error: insertError } = await typedQuery('tm_test_case_versions')
+    .insert({
+      test_case_id: testCaseId,
+      version_number: nextVersion,
+      snapshot,
+      change_summary: changeSummary,
+      changed_by: user.id,
+    });
+
+  if (insertError) throw insertError;
 }
 
 /**
