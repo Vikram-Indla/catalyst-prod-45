@@ -91,3 +91,26 @@ Chain executed: repository (11 cases, folder tree) → set detail via row click 
 | Live proof | tsc clean, full build succeeds, `/testhub/cycles` renders CYC-001 (PLANNED) from the single canonical `['tm-cycles'...]` hook stack, zero console errors |
 
 **One cycle hook stack now.** Next per Plan Lock: **P1-S7** — reschedule truth (per-scope-item dates instead of rewriting the whole cycle).
+
+## P1-S7 (reschedule truth) — CLOSED, no code change
+
+Target bug (PLN-012, "reschedule rewrites whole cycle") no longer exists:
+
+| Check | Finding |
+|---|---|
+| `src/hooks/test-cycles/useTestReschedule.ts` (Plan Lock's cited bug source) | Confirmed deleted in P0-S2's dead-code sweep along with rest of `src/hooks/test-cycles/` (only `useCycleExecutionItems.ts` survived) |
+| Repo-wide reschedule search | Zero references to reschedule feature anywhere live — nothing to fix |
+| `tm_cycle_scope.due_date` column | Already exists (`timestamp with time zone`), no migration needed |
+| Wiring | `useCycleScope` (`useTestCycles.ts`) already reads it; `DueDateCell` in `CycleDetailPage.tsx` already writes it via `.update({ due_date: iso }).eq('id', scopeId)` — correctly scoped to one row already |
+
+**Live proof (real UI, real DB):** set TC-001's due date to 7/11/2026 via the actual date-picker on `/testhub/cycles/CYC-001`. SQL before/after:
+
+```
+TC-0001: null → null (unchanged)
+TC-001:  null → 2026-07-11 00:00:00+00 (changed)
+TC-002:  null → null (unchanged)
+```
+
+Plan Lock's binary accept condition — "reschedule one test → other rows' dates unchanged" — met exactly. Scratch value reset to `null` after proof to keep demo pristine (same discipline as every prior slice).
+
+**No code, no migration, no commit needed for this slice** — closed as documentation-only verification. Next per Plan Lock: **P1-S8**.
