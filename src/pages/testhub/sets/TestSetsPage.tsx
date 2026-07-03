@@ -432,7 +432,7 @@ export default function TestSetsPage() {
           {sets.map((set, idx) => (
             <div
               key={set.id}
-              onClick={() => navigate(`/testhub/${projectKey}/sets/${set.id}`)}
+              onClick={() => navigate(`/testhub/sets/${set.id}`)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',

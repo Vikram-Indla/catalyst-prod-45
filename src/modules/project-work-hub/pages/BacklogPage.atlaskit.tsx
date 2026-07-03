@@ -2675,10 +2675,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/testhub/repository?case=${it.id}`);
       return;
     }
-    /* 2026-06-21: defect entityKind navigates to the dedicated TestHub
-       defect detail. No side-panel — the defect detail is its own surface. */
+    /* 2026-07-03 (P0-S5): /testhub/defects/:id was never registered — the
+       old navigate() here hard-404'd. tm_defects has no detail surface yet
+       (P1 slice); keep the user on the list instead of a dead URL. */
     if (dataSource?.entityKind === 'defect') {
-      navigate(`/testhub/defects/${it.id}`);
+      navigate(`/testhub/defects`);
       return;
     }
     writeTicketOrigin({
@@ -2722,7 +2723,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       return;
     }
     if (dataSource?.entityKind === 'defect') {
-      navigate(`/testhub/defects/${it.id}`);
+      // P0-S5: no registered defect detail route — stay on the list (see openDetail).
+      navigate(`/testhub/defects`);
       return;
     }
     const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;
