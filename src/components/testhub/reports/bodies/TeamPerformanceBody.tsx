@@ -13,6 +13,7 @@ import { Heading } from '@/components/ads';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useTeamPerformance, type TeamMemberRow } from '@/components/testhub/reports/hooks/useTeamPerformance';
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
@@ -46,7 +47,15 @@ export function TeamPerformanceBody() {
   const { data, isLoading } = useTeamPerformance(activeOption?.value);
 
   const columns: Column<TeamMemberRow>[] = [
-    { id: 'name', label: 'Tester', flex: true, sortable: true, cell: ({ row }) => <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{row.name}</span> },
+    {
+      id: 'name', label: 'Tester', flex: true, sortable: true,
+      cell: ({ row }) => (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--ds-space-100)' }}>
+          <CatalystAvatar name={row.name} size="small" />
+          <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{row.name}</span>
+        </span>
+      ),
+    },
     { id: 'assigned', label: 'Assigned', width: 12, align: 'center', sortable: true, cell: ({ row }) => <span style={num}>{row.assigned}</span> },
     { id: 'executed', label: 'Executed', width: 12, align: 'center', sortable: true, cell: ({ row }) => <span style={num}>{row.executed}</span> },
     { id: 'passed', label: 'Passed', width: 10, align: 'center', cell: ({ row }) => <span style={{ color: 'var(--ds-text-success)' }}>{row.passed}</span> },

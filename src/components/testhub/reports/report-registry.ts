@@ -2,7 +2,9 @@
  * REPORT_REGISTRY — single source of truth for the TestHub Reports hub.
  * Feature: CAT-REPORTS-HUB-20260703-001 (S1.1 · Phase 2 Lane B).
  *
- * 23 entries from the Phase 0 disposition matrix (PHASE0_DATA_CONTRACT_PROOF.md §S0.3).
+ * 23 entries from the Phase 0 disposition matrix (PHASE0_DATA_CONTRACT_PROOF.md §S0.3),
+ * plus 3 formerly-CUT reports (defect-closure-trend, approval-age, points-burndown)
+ * unlocked by the D-004 status-history capture DDL (20260703290000).
  * ALL entries are status 'wired' as of Lane B:
  * - dedicated Bodies under ./bodies (Phase 2 Lane A; legacy standalone pages deleted)
  * - Lab-derived reports render through WiredReportBody → useRealTestReportData
@@ -145,6 +147,15 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     usesProjectPicker: true,
     usesDateRange: true,
   },
+  {
+    id: 'defect-closure-trend',
+    label: 'Defect Closure Trend',
+    description: 'Raised vs closed defects per week (closure dates captured from 2026-07-03).',
+    category: 'Defects',
+    component: lazy(() => import('./bodies/DefectClosureTrendBody')),
+    status: 'wired',
+    usesProjectPicker: true,
+  },
 
   // ─── Multi-Cycle (Lab-derived, wired) ─────────────────────────────────
   {
@@ -212,6 +223,14 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     component: lazy(() => import('./bodies/SprintTestingStatusBody')),
     status: 'wired',
   },
+  {
+    id: 'points-burndown',
+    label: 'Points Burndown',
+    description: 'Sprint burndown — points when estimated, item counts otherwise.',
+    category: 'Sprint',
+    component: lazy(() => import('./bodies/PointsBurndownBody')),
+    status: 'wired',
+  },
 
   // ─── People (wired) ────────────────────────────────────────────────────
   {
@@ -241,6 +260,14 @@ export const REPORT_REGISTRY: ReportDefinition[] = [
     component: lazy(() => import('./bodies/GovernanceBody')),
     status: 'wired',
     usesProjectPicker: true,
+  },
+  {
+    id: 'approval-age',
+    label: 'Approval Age',
+    description: 'How long test-plan approvals and release signoffs wait for a decision.',
+    category: 'Governance',
+    component: lazy(() => import('./bodies/ApprovalAgeBody')),
+    status: 'wired',
   },
 
   // ─── Traceability (Lab-derived, wired) ────────────────────────────────

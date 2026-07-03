@@ -9,8 +9,10 @@
  * omitted on global hubs).
  *
  * Data contract: ph_issues WHERE issue_type='Production Incident' (native
- * incidents table = 0 rows). Incident resolved date = MISSING → NO MTTR,
- * NO resolved-trend (zero-assumption law).
+ * incidents table = 0 rows). MTTR comes from ph_issue_status_history
+ * (capture trigger 20260703290000) — samples accrue from capture start;
+ * incidents resolved earlier have no MTTR and are never backfilled
+ * (zero-assumption law).
  */
 import { useMemo, useState, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +27,7 @@ import { CatalystListPageLayout } from '@/components/shared/CatalystListPage';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { ReportBarChart } from '@/components/testhub/reports/charts/ReportChart';
 import { CANONICAL_ROW_TYPOGRAPHY } from '@/lib/catalyst-rules/CatalystRules';
 import { Routes } from '@/lib/routes';
@@ -34,6 +37,7 @@ import {
   type IncidentReportRow,
   type IncidentProjectOption,
 } from '../hooks/useIncidentReport';
+import { useIncidentMttr } from '../hooks/useIncidentMttr';
 
 // Report metric-card styles — same ADS-token recipe as the TestHub report
 // chassis (ReportStatusView), defined locally to keep the module boundary.
@@ -64,12 +68,24 @@ export default function IncidentReportPage() {
 
   const report = useIncidentReport(selected.value || undefined);
   const { data, isPending, isError, error, refetch } = report;
+  const { data: mttr } = useIncidentMttr(selected.value || undefined);
 
   const cols: Column<IncidentReportRow>[] = [
     { id: 'issue_key', label: 'Key', width: 14, sortable: true, cell: ({ row }) => <span style={{ ...CANONICAL_ROW_TYPOGRAPHY.key, fontWeight: 600, color: 'var(--ds-text)' }}>{row.issue_key}</span> },
     { id: 'summary', label: 'Summary', flex: true, cell: ({ row }) => <span style={{ ...CANONICAL_ROW_TYPOGRAPHY.title, color: 'var(--ds-text)' }}>{row.summary}</span> },
     { id: 'status', label: 'Status', width: 20, cell: ({ row }) => <Lozenge appearance={catAppearance(row.status_category)}>{row.status || row.status_category}</Lozenge> },
     { id: 'priority', label: 'Priority', width: 14, cell: ({ row }) => <span style={{ color: 'var(--ds-text-subtle)' }}>{row.priority ?? '—'}</span> },
+    {
+      id: 'assignee', label: 'Assignee', width: 18,
+      cell: ({ row }) => row.assignee_display_name
+        ? (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--ds-space-100)' }}>
+            <CatalystAvatar name={row.assignee_display_name} size="small" />
+            <span style={{ color: 'var(--ds-text-subtle)' }}>{row.assignee_display_name}</span>
+          </span>
+        )
+        : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+    },
   ];
 
   // Incidents by priority — real counts only; no chart when there are none.
@@ -143,6 +159,16 @@ export default function IncidentReportPage() {
                 <div style={metricLabel}>Regression gaps</div>
               </div>
               <div style={cardStyle}>
+                <div style={metricValue}>
+                  {mttr?.mttrHours !== null && mttr?.mttrHours !== undefined ? `${mttr.mttrHours}h` : '—'}
+                </div>
+                <div style={metricLabel}>
+                  {mttr && mttr.sampleSize > 0
+                    ? `MTTR (${mttr.sampleSize} resolved since capture)`
+                    : 'MTTR — no resolutions captured yet (capture from 2026-07-03)'}
+                </div>
+              </div>
+              <div style={cardStyle}>
                 <div style={metricLabel}>By priority</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)', marginTop: 'var(--ds-space-050)' }}>
                   {data.byPriority.map((p) => (
@@ -166,6 +192,22 @@ export default function IncidentReportPage() {
                   data={priorityBars}
                   series={[{ dataKey: 'count', name: 'Incidents' }]}
                   xKey="priority"
+                  showLegend={false}
+                />
+              </div>
+            )}
+
+            {mttr && mttr.weeks.length > 0 && (
+              <div style={{ marginBottom: 'var(--ds-space-300)' }}>
+                <div style={sectionH}>
+                  <Heading size="small">
+                    Mean time to resolution per week <span style={subtle}>— {mttr.sampleSize} resolved since capture began</span>
+                  </Heading>
+                </div>
+                <ReportBarChart
+                  data={mttr.weeks as unknown as Record<string, unknown>[]}
+                  series={[{ dataKey: 'avgHours', name: 'Avg hours to resolve' }]}
+                  xKey="week"
                   showLegend={false}
                 />
               </div>

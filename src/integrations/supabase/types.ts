@@ -21261,6 +21261,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_issue_status_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          from_status: string | null
+          from_status_category: string | null
+          id: string
+          issue_id: string
+          issue_key: string | null
+          issue_type: string | null
+          project_key: string | null
+          source: string
+          to_status: string
+          to_status_category: string | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          from_status?: string | null
+          from_status_category?: string | null
+          id?: string
+          issue_id: string
+          issue_key?: string | null
+          issue_type?: string | null
+          project_key?: string | null
+          source?: string
+          to_status: string
+          to_status_category?: string | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          from_status?: string | null
+          from_status_category?: string | null
+          id?: string
+          issue_id?: string
+          issue_key?: string | null
+          issue_type?: string | null
+          project_key?: string | null
+          source?: string
+          to_status?: string
+          to_status_category?: string | null
+        }
+        Relationships: []
+      }
       ph_issue_translations: {
         Row: {
           created_at: string
@@ -41657,6 +41702,106 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      tm_ai_usage_log: {
+        Row: {
+          created_at: string | null
+          feature: string
+          id: string
+          model: string | null
+          project_id: string | null
+          request_data: Json | null
+          response_summary: string | null
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feature: string
+          id?: string
+          model?: string | null
+          project_id?: string | null
+          request_data?: Json | null
+          response_summary?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feature?: string
+          id?: string
+          model?: string | null
+          project_id?: string | null
+          request_data?: Json | null
+          response_summary?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_ai_usage_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       tm_attachments: {
         Row: {

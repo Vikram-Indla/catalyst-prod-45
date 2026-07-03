@@ -23,6 +23,8 @@ export interface IncidentReportRow {
   status_category: string;
   priority: string | null;
   jira_created_at: string | null;
+  /** Jira-synced display name — the only assignee identity ph_issues carries (no user FK). Null = unassigned, render dash. */
+  assignee_display_name: string | null;
 }
 
 export interface IncidentPriorityCount {
@@ -80,7 +82,7 @@ export function useIncidentReport(projectKey?: string) {
     queryFn: async (): Promise<IncidentReport> => {
       let query = supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, priority, jira_created_at')
+        .select('issue_key, summary, status, status_category, priority, jira_created_at, assignee_display_name')
         .eq('issue_type', INCIDENT_TYPE)
         .order('jira_created_at', { ascending: false, nullsFirst: false });
       if (projectKey) query = query.eq('project_key', projectKey);
