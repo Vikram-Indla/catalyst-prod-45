@@ -97,7 +97,7 @@ export class SupabaseProjectService implements SpaceService {
       purpose:     req.purpose,
       description: data.description ?? undefined,
       isPrivate:   req.isPrivate,
-      createdAt:   data.created_at ?? new Date().toISOString(),
+      createdAt:   data.created_at ?? null,
     };
   }
 }

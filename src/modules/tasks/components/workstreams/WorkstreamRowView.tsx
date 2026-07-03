@@ -170,7 +170,7 @@ export const WorkstreamRow: React.FC<{
                 {workstream.code || workstream.key_prefix || workstream.name.substring(0, 3).toUpperCase()}
               </span>
               <span>·</span>
-              <span>Created {formatDate(workstream.created_at || new Date().toISOString())}</span>
+              {workstream.created_at && <span>Created {formatDate(workstream.created_at)}</span>}
             </div>
           </div>
         </div>

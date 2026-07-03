@@ -17,9 +17,12 @@ export interface BriefingItem {
   projectKey: string;
   assignee: string | null;
   reporter: string | null;
-  updatedAt: string;
+  /** Null when the source row carries no real timestamp. Never fabricate
+   *  "now" — CLAUDE.md zero-assumption rule. */
+  updatedAt: string | null;
   createdAt: string;
-  priority: string;
+  /** Null when the source row carries no priority. Never default to 'Medium'. */
+  priority: string | null;
   tier: number;
   tierLabel: string;
   tierColor: string;
@@ -106,9 +109,9 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
             projectKey: item.project_key,
             assignee: item.assignee_display_name,
             reporter: item.reporter_display_name,
-            updatedAt: item.jira_updated_at || item.jira_created_at || new Date().toISOString(),
+            updatedAt: item.jira_updated_at || item.jira_created_at || null,
             createdAt: item.jira_created_at || '',
-            priority: item.priority || 'Medium',
+            priority: item.priority ?? null,
             tier: cfg.tier,
             tierLabel: cfg.label,
             tierColor: cfg.color,

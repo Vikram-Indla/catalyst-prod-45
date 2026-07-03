@@ -161,6 +161,7 @@ export default function CapacityDepartmentsPage() {
                       <Tooltip content="Copy DID">
                         <button
                           onClick={() => copyToClipboard(dept.department_id)}
+                          aria-label="Copy DID"
                           className="w-6 h-6 rounded flex items-center justify-center transition-colors"
                           style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
@@ -178,6 +179,7 @@ export default function CapacityDepartmentsPage() {
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                       <button
                         onClick={() => openEdit(dept)}
+                        aria-label="Edit department"
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
                         style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
@@ -187,6 +189,7 @@ export default function CapacityDepartmentsPage() {
                       </button>
                       <button
                         onClick={() => handleDeleteClick(dept)}
+                        aria-label="Delete department"
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
                         style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent

@@ -104,9 +104,9 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
   const lastRunStatus = testCase.last_execution?.status || 'not_run';
   const lastRun = lastRunConfig[lastRunStatus] || lastRunConfig['not_run'];
   const LastRunIcon = lastRun.icon;
-  const priorityName = testCase.priority?.name || 'Medium';
-  const priority = priorityConfig[priorityName] || priorityConfig['Medium'];
-  const PriorityIcon = priority.icon;
+  const priorityName = testCase.priority?.name ?? null;
+  const priority = priorityName ? priorityConfig[priorityName] : null;
+  const PriorityIcon = priority?.icon;
   const typeName = testCase.type?.name || 'Functional';
   const type = typeConfig[typeName] || typeConfig['Functional'];
   const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
@@ -153,7 +153,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
 
       <div className="flex items-center gap-6 text-sm flex-wrap">
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Type:</span><Lozenge appearance={type.appearance}>{typeName}</Lozenge></div>
-        <div className="flex items-center gap-2"><span className="text-muted-foreground">Priority:</span><span className={cn('flex items-center gap-1', priority.className)}><PriorityIcon className="w-4 h-4" />{priority.label}</span></div>
+        <div className="flex items-center gap-2"><span className="text-muted-foreground">Priority:</span>{priority && PriorityIcon ? <span className={cn('flex items-center gap-1', priority.className)}><PriorityIcon className="w-4 h-4" />{priority.label}</span> : <span className="text-muted-foreground">—</span>}</div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Assignee:</span><div className="flex items-center gap-1.5"><Avatar src={assigneeAvatar} name={assigneeName} size="xxsmall" /><span>{assigneeName}</span></div></div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Est. Time:</span><span>{estimatedTime}</span></div>
       </div>

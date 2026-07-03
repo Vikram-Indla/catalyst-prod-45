@@ -106,14 +106,14 @@ export function TicketBreadcrumbs({
         ? {
             key: 'parent',
             text: parentKey!,
-            iconBefore: <IssueIcon type={parentType || 'Epic'} size={14} />,
+            iconBefore: parentType ? <IssueIcon type={parentType} size={14} /> : undefined,
             onClick: onParentClick,
             ariaLabel: `Parent ${parentKey}`,
           }
         : {
             key: 'parent',
             text: parentKey!,
-            iconBefore: <IssueIcon type={parentType || 'Epic'} size={14} />,
+            iconBefore: parentType ? <IssueIcon type={parentType} size={14} /> : undefined,
             href: `/browse/${parentKey}`,
             ariaLabel: `Parent ${parentKey}`,
           },

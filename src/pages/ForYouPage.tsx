@@ -253,6 +253,7 @@ export default function ForYouPage() {
       }
       if (af.status?.length && !af.status.includes(item.status)) return false;
       if (af.priority?.length) {
+        if (!item.priority) return false;
         const normPri = item.priority.charAt(0).toUpperCase() + item.priority.slice(1).toLowerCase();
         if (!af.priority.includes(item.priority) && !af.priority.includes(normPri)) return false;
       }

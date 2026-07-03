@@ -276,7 +276,7 @@ export const r360Service = {
         id: item.issue_key,
         item_key: item.issue_key,
         title: item.summary || '',
-        item_type: item.issue_type || 'Task',
+        item_type: item.issue_type ?? null,
         priority: item.priority || 'Medium',
         status: item.status || '',
         status_category: resolvedCategory,

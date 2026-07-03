@@ -273,7 +273,7 @@ export function PlannerPage() {
       progress: task.progress || 0,
       is_starred: false,
       created_by: null,
-      created_at: task.createdAt || new Date().toISOString(),
+      created_at: task.createdAt ?? null,
       updated_at: new Date().toISOString(),
       deleted_at: null,
       cover_url: null,

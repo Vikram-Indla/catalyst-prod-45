@@ -104,7 +104,7 @@ export interface CatalystViewBaseLayoutProps {
   projectKey?: string;
   projectName?: string;
   parentKey?: string | null;
-  parentType?: string;
+  parentType?: string | null;
   onParentClick?: () => void;
   breadcrumbExtra?: React.ReactNode;
   /**

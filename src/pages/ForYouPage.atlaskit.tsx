@@ -210,7 +210,7 @@ export default function ForYouPageAtlaskit() {
     trackView(item.id, item.issueType === 'planner_task' ? 'task' : 'ph_issue');
     useGlobalSearchStore.getState().openDetail({
       id: item.id,
-      itemType: item.issueType,
+      itemType: item.issueType ?? undefined,
       projectKey: item.projectKey,
     });
   }, [trackView]);

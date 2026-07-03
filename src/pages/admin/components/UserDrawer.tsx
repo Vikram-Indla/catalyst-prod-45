@@ -339,7 +339,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
             <h2>{isEditMode ? 'Edit User' : 'Add New User'}</h2>
             <p>{isEditMode ? `Update profile for ${user?.full_name}` : 'Create a new resource'}</p>
           </div>
-          <button className="um-drawer-close" onClick={onClose}>
+          <button className="um-drawer-close" onClick={onClose} aria-label="Close">
             <CrossIcon label="" size="small" />
           </button>
         </div>

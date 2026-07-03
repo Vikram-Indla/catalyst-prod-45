@@ -92,7 +92,7 @@ export default function Features() {
         health: row.health || 'green',
         epic_id: row.epic_id,
         project_id: row.project_id,
-        estimate_points: row.estimate_points || 0,
+        estimate_points: row.estimate_points ?? null,
       })));
       if (error) throw error;
     },
@@ -205,7 +205,7 @@ export default function Features() {
                   </div></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--s4)]">
                   <div><label className="text-sm font-medium text-muted-foreground">Estimate</label>
-                    <p className="mt-1 text-sm">{selectedData.estimate_points || 0} pts</p></div>
+                    <p className="mt-1 text-sm">{selectedData.estimate_points != null ? `${selectedData.estimate_points} pts` : '— pts'}</p></div>
                   <div><label className="text-sm font-medium text-muted-foreground">WSJF</label>
                     <p className="mt-1 text-sm">{selectedData.wsjf_score || 0}</p></div>
                 </div>

@@ -87,8 +87,8 @@ export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters
         status: feature.status || 'open',
         statusCategory: getStatusCategory(feature.status || 'open'),
         priority: 'MEDIUM' as any,
-        createdAt: feature.created_at || new Date().toISOString(),
-        updatedAt: feature.updated_at || new Date().toISOString(),
+        createdAt: feature.created_at ?? null,
+        updatedAt: feature.updated_at ?? null,
         commentsCount: 0,
         epicId: feature.epic_id || undefined,
         epicKey: feature.epics?.epic_key || undefined,
@@ -104,8 +104,8 @@ export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters
         status: story.status || story.state || 'backlog',
         statusCategory: getStatusCategory(story.status || story.state || 'backlog'),
         priority: (story.priority || 'MEDIUM') as any,
-        createdAt: story.created_at || new Date().toISOString(),
-        updatedAt: story.updated_at || new Date().toISOString(),
+        createdAt: story.created_at ?? null,
+        updatedAt: story.updated_at ?? null,
         commentsCount: 0,
         parentId: story.feature_id,
         storyPoints: story.story_points,
@@ -237,13 +237,16 @@ export function useUpdateWorkItemStatus() {
       // Map status to valid enum value based on item type
       if (itemType === 'FEATURE') {
         const mappedStatus = mapToFeatureStatus(newStatus);
+        if (mappedStatus === null) {
+          throw new Error(`Unrecognized column status "${newStatus}" — no feature status mapping found`);
+        }
         const { data: featureData, error: featureError } = await supabase
           .from('features')
           .update({ status: mappedStatus, updated_at: new Date().toISOString() })
           .eq('id', itemId)
           .select('id')
           .single();
-        
+
         if (featureData && !featureError) {
           updated = true;
         } else if (featureError) {
@@ -251,13 +254,16 @@ export function useUpdateWorkItemStatus() {
         }
       } else if (itemType === 'STORY') {
         const mappedStatus = mapToStoryStatus(newStatus);
+        if (mappedStatus === null) {
+          throw new Error(`Unrecognized column status "${newStatus}" — no story status mapping found`);
+        }
         const { data: storyData, error: storyError } = await supabase
           .from('stories')
           .update({ status: mappedStatus, updated_at: new Date().toISOString() })
           .eq('id', itemId)
           .select('id')
           .single();
-        
+
         if (storyData && !storyError) {
           updated = true;
         } else if (storyError) {
@@ -266,25 +272,30 @@ export function useUpdateWorkItemStatus() {
       } else {
         // If type is unknown, try features first, then stories
         const featureMappedStatus = mapToFeatureStatus(newStatus);
-        const { data: featureData, error: featureError } = await supabase
-          .from('features')
-          .update({ status: featureMappedStatus, updated_at: new Date().toISOString() })
-          .eq('id', itemId)
-          .select('id')
-          .single();
-        
+        const { data: featureData, error: featureError } = featureMappedStatus !== null
+          ? await supabase
+              .from('features')
+              .update({ status: featureMappedStatus, updated_at: new Date().toISOString() })
+              .eq('id', itemId)
+              .select('id')
+              .single()
+          : { data: null, error: null };
+
         if (featureData && !featureError) {
           updated = true;
         } else {
           // Try stories
           const storyMappedStatus = mapToStoryStatus(newStatus);
+          if (storyMappedStatus === null) {
+            throw new Error(`Unrecognized column status "${newStatus}" — no feature or story status mapping found`);
+          }
           const { data: storyData, error: storyError } = await supabase
             .from('stories')
             .update({ status: storyMappedStatus, updated_at: new Date().toISOString() })
             .eq('id', itemId)
             .select('id')
             .single();
-          
+
           if (storyData && !storyError) {
             updated = true;
           } else if (storyError) {

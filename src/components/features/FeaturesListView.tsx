@@ -242,10 +242,14 @@ export function FeaturesListView({
 
                           {visibleColumns.includes('progress') && (
                             <TableCell onClick={() => onFeatureSelect(feature.id)}>
-                              <div className="flex items-center gap-2">
-                                <Progress value={feature.progress_pct || 0} className="h-1.5 flex-1" />
-                                <span className="text-xs text-muted-foreground w-10 text-right">{feature.progress_pct || 0}%</span>
-                              </div>
+                              {feature.progress_pct != null ? (
+                                <div className="flex items-center gap-2">
+                                  <Progress value={feature.progress_pct} className="h-1.5 flex-1" />
+                                  <span className="text-xs text-muted-foreground w-10 text-right">{feature.progress_pct}%</span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">Not started</span>
+                              )}
                             </TableCell>
                           )}
 

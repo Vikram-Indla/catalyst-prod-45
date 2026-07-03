@@ -12,7 +12,7 @@ import { ProgressRing } from '../shared/ProgressRing';
 import { ThemeStatusBadge } from '../shared/ThemeStatusBadge';
 import { ThemeModal } from './ThemeModal';
 import { ThemeItemLinker } from './ThemeItemLinker';
-import { ConfirmDialog } from '../shared/ConfirmDialog';
+import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import toast from 'react-hot-toast';
 
 function formatDate(d?: string) {
@@ -231,14 +231,13 @@ export function ThemeDetail() {
 
       {/* Modals */}
       <ThemeModal isOpen={editOpen} onClose={() => setEditOpen(false)} theme={theme as any} />
-      <ConfirmDialog
+      <DangerConfirmModal
         isOpen={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDelete}
         title="Delete Theme"
-        message={`Are you sure you want to delete "${theme.name}"? This will unlink all associated work items. This action cannot be undone.`}
+        description={`You're about to permanently delete "${theme.name}" and unlink all associated work items. This is irreversible.`}
         confirmLabel="Delete Theme"
-        variant="danger"
         isLoading={deleteMut.isPending}
       />
     </div>

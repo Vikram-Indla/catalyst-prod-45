@@ -70,7 +70,7 @@ function mapRow(row: any): TimelineIssue {
     id: row.id,
     issueKey: row.issue_key,
     projectKey: row.project_key,
-    issueType: row.issue_type ?? 'Task',
+    issueType: row.issue_type ?? '',
     summary: row.summary ?? '(No title)',
     status: row.status ?? 'Backlog',
     statusCategory: row.status_category ?? null,

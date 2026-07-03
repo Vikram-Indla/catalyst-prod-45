@@ -59,8 +59,11 @@ const FullAppRoutes = ENABLE_FULL_APP
 
 // Apr 25, 2026 — Persistent cache layer.
 //   • staleTime 15min: data treated fresh for 15 min, no refetch
-//   • gcTime 5min: evict stale cache entries quickly to prevent localStorage bloat
-//     (was 30 days — caused unbounded accumulation across multi-project sessions)
+//   • gcTime 15min: must be >= staleTime — gcTime runs from the moment a query
+//     has zero observers, so gcTime < staleTime evicted still-fresh cache on
+//     back-navigation, forcing a refetch+spinner well inside the freshness
+//     window (CAT-AUDIT-0702). localStorage bloat is controlled independently
+//     by shouldDehydrateQuery below + the buster version bump, not by a short gcTime.
 //   • Persist via SyncStorage → page reloads hydrate instantly from cache,
 //     refetch only happens after staleTime elapses
 //   • buster: bump CACHE_VERSION to invalidate ALL cached queries on deploy
@@ -70,14 +73,14 @@ const FullAppRoutes = ENABLE_FULL_APP
 // new persister below uses a Map-aware serializer so future cache rounds
 // rehydrate correctly. Existing cache from older versions is discarded.
 const CACHE_VERSION = 'v3.2026-06-21';
-const FIVE_MIN_MS = 5 * 60 * 1000;
+const FIFTEEN_MIN_MS = 15 * 60 * 1000;
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 15 * 60 * 1000,
-      gcTime: FIVE_MIN_MS,
+      staleTime: FIFTEEN_MIN_MS,
+      gcTime: FIFTEEN_MIN_MS,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -110,7 +113,10 @@ function rqReviver(_key: string, value: unknown): unknown {
 const persister = createSyncStoragePersister({
   storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   key: 'catalyst-rq-cache',
-  throttleTime: 1000,
+  // 5s, not 1s (CAT-AUDIT-0703): persistence is a reload-hydration optimization,
+  // not a durability guarantee — 1s granularity bought nothing but repeated
+  // full-cache JSON.stringify main-thread stalls during data-heavy navigation.
+  throttleTime: 5000,
   serialize: (data) => JSON.stringify(data, rqReplacer),
   deserialize: (str) => JSON.parse(str, rqReviver),
 });

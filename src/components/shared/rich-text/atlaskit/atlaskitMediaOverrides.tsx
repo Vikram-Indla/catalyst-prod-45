@@ -137,7 +137,7 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }) {
       </button>
       <img
         src={src}
-        alt=""
+        alt="Attachment preview"
         onClick={(e) => e.stopPropagation()}
         style={{
           maxWidth: '90vw', maxHeight: '90vh',

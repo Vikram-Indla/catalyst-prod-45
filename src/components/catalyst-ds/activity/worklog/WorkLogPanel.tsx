@@ -13,6 +13,7 @@ import Tooltip from '@atlaskit/tooltip';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import type { MentionRosterEntry } from '@/lib/mentions/parseMentions';
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
+import { renderPersonOrDash } from '@/lib/renderPersonOrDash';
 
 function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -131,7 +132,7 @@ function WorkLogEntry({
 }) {
   const [editing, setEditing] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string } | null>(null);
-  const authorName = entry.author?.full_name || entry.author?.email || 'Unknown';
+  const authorName = renderPersonOrDash(entry.author);
   const { user } = useAuth();
   const currentUserId = user?.id ?? null;
   const { groups: peopleGroups } = useChatPeople();
@@ -165,11 +166,11 @@ function WorkLogEntry({
     <>
     <div style={{ display: 'flex', gap: 12, padding: '12px 0' }}>
       <span style={{ flexShrink: 0 }}>
-        <Avatar src={entry.author?.avatar_url ?? undefined} name={authorName} size="small" />
+        <Avatar src={entry.author?.avatar_url ?? undefined} name={authorName || '?'} size="small" />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
-          <strong style={{ fontWeight: 600 }}>{authorName}</strong>{' '}
+          <strong style={{ fontWeight: 600 }}>{authorName || '—'}</strong>{' '}
           <span style={{ color: 'var(--ds-text-subtle)' }}>
             logged{' '}
             <strong style={{ fontWeight: 600 }}>{formatJiraTime(entry.time_spent_minutes)}</strong>

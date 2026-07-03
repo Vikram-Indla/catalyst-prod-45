@@ -155,9 +155,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const statusKey = testCase.status || 'DRAFT';
   const status = statusConfig[statusKey] || statusConfig['DRAFT'];
 
-  const priorityName = testCase.priority?.name || 'Medium';
-  const priority = priorityConfig[priorityName] || priorityConfig['Medium'];
-  const PriorityIcon = priority.icon;
+  const priorityName = testCase.priority?.name ?? null;
+  const priority = priorityName ? priorityConfig[priorityName] : null;
+  const PriorityIcon = priority?.icon;
 
   const typeName = testCase.type?.name || 'Functional';
   const type = typeConfig[typeName] || typeConfig['Functional'];
@@ -178,7 +178,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const estimatedTime = getEstimatedDurationDisplay(testCase);
 
   // Created / Updated
-  const createdByName = testCase.created_by_profile?.full_name || 'Unknown';
+  const createdByName = testCase.created_by_profile?.full_name ?? null;
   const createdAt = testCase.created_at 
     ? format(new Date(testCase.created_at), 'MMM d, yyyy')
     : '—';
@@ -511,9 +511,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
               <span className="text-sm text-muted-foreground">Updating...</span>
             </div>
           ) : editingField === 'priority' ? (
-            <Select value={priorityName} onValueChange={handlePriorityChange}>
+            <Select value={priorityName ?? undefined} onValueChange={handlePriorityChange}>
               <SelectTrigger className="w-32 h-7">
-                <SelectValue />
+                <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Critical">Critical</SelectItem>
@@ -524,10 +524,14 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             </Select>
           ) : (
             <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('priority')}>
-              <span className={cn("flex items-center gap-1", priority.className)}>
-                <PriorityIcon className="w-4 h-4" />
-                {priority.label}
-              </span>
+              {priority && PriorityIcon ? (
+                <span className={cn("flex items-center gap-1", priority.className)}>
+                  <PriorityIcon className="w-4 h-4" />
+                  {priority.label}
+                </span>
+              ) : (
+                <span className="text-sm text-muted-foreground">—</span>
+              )}
               <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           )}
@@ -686,7 +690,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Created</span>
-            <span className="text-foreground">{createdAt} by {createdByName}</span>
+            <span className="text-foreground">{createdAt} by {createdByName ?? '—'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Updated</span>

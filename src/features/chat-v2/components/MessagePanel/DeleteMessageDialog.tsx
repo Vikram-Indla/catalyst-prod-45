@@ -14,13 +14,15 @@ interface DeleteMessageDialogProps {
 
 export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMessageDialogProps) {
   useEffect(() => {
+    // CAT-AUDIT-0607: Enter must NOT confirm a destructive action from
+    // anywhere in the dialog — only explicit activation of the focused
+    // Delete button should. Escape-to-cancel is still a safe global default.
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { e.stopPropagation(); onCancel(); }
-      else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); onConfirm(); }
     };
     document.addEventListener('keydown', onKey, true);
     return () => document.removeEventListener('keydown', onKey, true);
-  }, [onCancel, onConfirm]);
+  }, [onCancel]);
 
   return createPortal(
     <div

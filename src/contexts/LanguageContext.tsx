@@ -6,7 +6,7 @@
  *
  * Persisted to localStorage so the preference survives page reload.
  */
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 export type DisplayLang = 'en' | 'ar';
 
@@ -33,17 +33,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return 'en';
   });
 
-  const setDisplayLang = (lang: DisplayLang) => {
+  const setDisplayLang = useCallback((lang: DisplayLang) => {
     try {
       localStorage.setItem(STORAGE_KEY, lang);
     } catch {
       /* SSR safe */
     }
     setDisplayLangState(lang);
-  };
+  }, []);
+
+  const value = useMemo(() => ({ displayLang, setDisplayLang }), [displayLang, setDisplayLang]);
 
   return (
-    <LanguageContext.Provider value={{ displayLang, setDisplayLang }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

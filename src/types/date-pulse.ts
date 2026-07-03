@@ -300,9 +300,14 @@ export interface BusinessRequest {
 export interface WorkItem {
   id: string;
   issue_key: string;
-  issue_type: string;
+  /** Null when the source row carries no issue type. Never default to
+   *  'Story' (CLAUDE.md zero-assumption rule). */
+  issue_type: string | null;
   project_key: string;
-  status: string;
+  /** Null when the source row carries no status. Treated as "unscorable" by
+   *  HealthStatusEngine — excluded from in-progress/done/blocked bucketing
+   *  rather than assumed to be 'todo' (CLAUDE.md zero-assumption rule). */
+  status: string | null;
   due_date: string | null;
   severity?: string;
   parent_key?: string | null;

@@ -126,7 +126,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           {/* ⋯ overflow menu trigger */}
           <div ref={menuRef} style={{ position: 'absolute', top: 48, right: 40 }}>
-            <button onClick={e => { e.stopPropagation(); setMenuOpen(!menuOpen); }} style={{
+            <button onClick={e => { e.stopPropagation(); setMenuOpen(!menuOpen); }} aria-label="Board actions" style={{
               width: 26, height: 26, borderRadius: 4, border: 'none',
               background: 'transparent', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -157,7 +157,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </div>
 
           {/* Star button */}
-          <button onClick={handleStar} style={{
+          <button onClick={handleStar} aria-label={board.isStarred ? 'Unstar board' : 'Star board'} style={{
             position: 'absolute', top: 48, right: 12,
             width: 28, height: 28, borderRadius: 4,
             border: 'none', background: 'transparent', cursor: 'pointer',

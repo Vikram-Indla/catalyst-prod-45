@@ -45,9 +45,12 @@ export function GoalsStatsStripSkeleton({ isDark = false }: { isDark?: boolean }
 
 export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: GoalsStatsStripProps) {
   const totalGoals = goals.length;
-  const onTrackGoals = goals.filter(g => ['active', 'on_track'].includes(g.status) && (g.progress_pct || 0) >= 60).length;
+  const onTrackGoals = goals.filter(g => ['active', 'on_track'].includes(g.status) && g.progress_pct != null && g.progress_pct >= 60).length;
   const onTrackPct = totalGoals > 0 ? Math.round((onTrackGoals / totalGoals) * 100) : 0;
-  const avgProgress = totalGoals > 0 ? Math.round(goals.reduce((s, g) => s + (g.progress_pct || 0), 0) / totalGoals) : 0;
+  const goalsWithProgress = goals.filter(g => g.progress_pct != null);
+  const avgProgress = goalsWithProgress.length > 0
+    ? Math.round(goalsWithProgress.reduce((s, g) => s + (g.progress_pct as number), 0) / goalsWithProgress.length)
+    : null;
   const totalKRs = keyResults.length;
   const krsPerGoal = totalGoals > 0 ? (totalKRs / totalGoals).toFixed(1) : '0';
   const today = new Date().toISOString().split('T')[0];
@@ -57,7 +60,7 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
   const cards = [
     { label: 'Total Goals', value: totalGoals, icon: Target, iconBg: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--cp-blue-wash)', iconColor: 'var(--cp-blue)', sub: `across ${uniqueThemes} themes` },
     { label: 'On Track', value: `${onTrackPct}%`, icon: CheckCircle2, iconBg: 'var(--cp-success-light)', iconColor: 'var(--sem-success)', sub: `${onTrackGoals} of ${totalGoals} goals` },
-    { label: 'Avg Progress', value: `${avgProgress}%`, icon: Activity, iconBg: 'var(--cp-warning-light)', iconColor: 'var(--sem-warning)', sub: `${100 - avgProgress}% to target` },
+    { label: 'Avg Progress', value: avgProgress !== null ? `${avgProgress}%` : '—', icon: Activity, iconBg: 'var(--cp-warning-light)', iconColor: 'var(--sem-warning)', sub: avgProgress !== null ? `${100 - avgProgress}% to target` : `${goalsWithProgress.length} of ${totalGoals} measured` },
     { label: 'Total KRs', value: totalKRs, icon: BarChart3, iconBg: 'var(--cp-primary-light)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', sub: `~${krsPerGoal} per goal` },
     { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'var(--ds-background-danger, rgba(239,68,68,0.12))' : 'var(--ds-surface-overlay)') : (overdueKRs > 0 ? 'var(--ds-background-danger, var(--ds-background-danger))' : 'var(--cp-bd-zone)'), iconColor: overdueKRs > 0 ? 'var(--sem-danger)' : 'var(--fg-4)', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
   ];

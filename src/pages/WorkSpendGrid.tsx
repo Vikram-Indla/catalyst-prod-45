@@ -116,7 +116,7 @@ export default function WorkSpendGrid() {
         feature.display_id || '',
         feature.name,
         '',
-        feature.estimate_points || 0,
+        feature.estimate_points != null ? feature.estimate_points : '',
         '',
       ]),
     ].map(row => row.join(',')).join('\n');
@@ -298,7 +298,7 @@ export default function WorkSpendGrid() {
                           <td className="p-3 text-sm">{feature.name}</td>
                           <td className="p-3 text-sm text-right">—</td>
                           <td className="p-3 text-sm text-right">
-                            {feature.estimate_points || 0} pts
+                            {feature.estimate_points != null ? `${feature.estimate_points} pts` : '— pts'}
                           </td>
                           <td className="p-3 text-sm text-right">—</td>
                         </tr>

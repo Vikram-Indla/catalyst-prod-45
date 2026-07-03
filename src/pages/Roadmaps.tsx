@@ -472,7 +472,7 @@ export default function Roadmaps() {
                       )}
                     </div>
                     <div className="w-24 px-3 py-4 text-sm text-center border-r">
-                      {feature.estimate_points || 0}
+                      {feature.estimate_points != null ? feature.estimate_points : '—'}
                     </div>
                     <div className="w-32 px-3 py-2 flex flex-col items-center justify-center gap-1">
                       <Lozenge appearance="default">

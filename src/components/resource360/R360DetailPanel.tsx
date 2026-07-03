@@ -80,7 +80,7 @@ function resolveStatus(item: any) {
 
   // 2. Custom server-side colors if provided
   if (item.status_dot_color && item.status_bg_color && item.status_color) {
-    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: name || 'To Do' };
+    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: name || null };
   }
 
   // 3. Use shared admin mapping → resolves to 5-category, then map to visual
@@ -122,7 +122,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
 
   const s = resolveStatus(item);
   const ageDays = item.age_days ?? 0;
-  const statusLabel = item.status_name || item.status || 'To Do';
+  const statusLabel = item.status_name || item.status || null;
   const projColor = pColor(item.project_key, item.project_color);
 
   const doneSiblings = siblings.filter(sib => {
@@ -157,14 +157,16 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           </div>
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
             {/* Status pill — INLINE */}
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: '4px',
-              padding: '4px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
-              background: s.bg, color: s.tx,
-            }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
-              {statusLabel}
-            </span>
+            {statusLabel && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '4px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
+                background: s.bg, color: s.tx,
+              }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
+                {statusLabel}
+              </span>
+            )}
             <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '0px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
@@ -269,7 +271,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'var(--ds-border) transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
                   const sibS = resolveStatus(sib);
-                  const sibLabel = sib.status_name || sib.status || 'To Do';
+                  const sibLabel = sib.status_name || sib.status || null;
                   const isCurrent = sib.item_key === item.item_key;
                   return (
                     <div key={sib.id || sib.item_key} onClick={() => !isCurrent && onSiblingClick(sib)} style={{
@@ -281,17 +283,19 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
+                      <span style={{ flexShrink: 0 }}>{sib.item_type ? getJiraIcon(sib.item_type) : null}</span>
                       <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
                       {/* Status pill — INLINE, small */}
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '4px',
-                        padding: '0px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
-                        background: sibS.bg, color: sibS.tx, flexShrink: 0,
-                      }}>
-                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />
-                        {sibLabel}
-                      </span>
+                      {sibLabel && (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '4px',
+                          padding: '0px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
+                          background: sibS.bg, color: sibS.tx, flexShrink: 0,
+                        }}>
+                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />
+                          {sibLabel}
+                        </span>
+                      )}
                       <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.title}</span>
                       <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(sib.age_days ?? 0), fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{sib.age_days ?? 0}d</span>
                     </div>

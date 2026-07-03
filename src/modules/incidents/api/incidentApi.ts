@@ -214,7 +214,7 @@ export const incidentApi = {
         // Map members to include added_at field
         const mappedMembers = members.map((m: any) => ({
           ...m,
-          added_at: m.created_at || new Date().toISOString(),
+          added_at: m.created_at ?? null,
         }));
 
         return {

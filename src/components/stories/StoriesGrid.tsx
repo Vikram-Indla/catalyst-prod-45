@@ -87,15 +87,19 @@ export function StoriesGrid({ stories, isLoading, onStoryClick }: StoriesGridPro
             </TableCell>
             <TableCell className="text-center">{story.story_points || '—'}</TableCell>
             <TableCell>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-brand-primary h-full transition-all"
-                    style={{ width: `${story.progress_pct || 0}%` }}
-                  />
+              {story.progress_pct != null ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-brand-primary h-full transition-all"
+                      style={{ width: `${story.progress_pct}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground">{story.progress_pct}%</span>
                 </div>
-                <span className="text-sm text-muted-foreground">{story.progress_pct || 0}%</span>
-              </div>
+              ) : (
+                <span className="text-sm text-muted-foreground">Not started</span>
+              )}
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">
               {story.features?.name || '—'}

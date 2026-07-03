@@ -69,10 +69,10 @@ function getSortValue(item: WorkItem, colKey: string): string | number {
   switch (colKey) {
     case 'key': return item.key;
     case 'summary': return item.summary.toLowerCase();
-    case 'status': return item.status.toLowerCase();
+    case 'status': return (item.status ?? '').toLowerCase();
     case 'project': return item.project.toLowerCase();
     case 'hub': return item.hubLabel.toLowerCase();
-    case 'priority': return item.priorityLevel;
+    case 'priority': return item.priorityLevel ?? -1;
     case 'updated': return item.updatedAt;
     case 'reporter': return (item.reporter || item.assignee.name).toLowerCase();
     default: return '';
@@ -239,7 +239,9 @@ export function CatalystTable({
                 const currentRowIndex = rowIndex;
                 const isSelected = selectedIds.has(item.id);
                 const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
-                const priorityLabel = PRIORITY_LABELS[item.priorityLevel] || `Priority ${item.priorityLevel}`;
+                // Zero-assumption: null priorityLevel means unknown priority —
+                // render nothing rather than a fabricated "Priority null" label.
+                const priorityLabel = item.priorityLevel != null ? (PRIORITY_LABELS[item.priorityLevel] || null) : null;
                 const reporterName = item.reporter || item.assignee.name;
                 const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
                 const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
@@ -261,7 +263,7 @@ export function CatalystTable({
                       <div onClick={e => e.stopPropagation()} style={{ display: 'inline-flex' }}>
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
-                      <JiraIssueTypeIcon type={item.issueType} size={16} />
+                      {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand))' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
                         <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--ds-border)))', transform: 'rotate(-45deg)' }} />
@@ -292,13 +294,15 @@ export function CatalystTable({
 
                     {/* Row 3: status + hub + priority */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <StatusLozenge status={item.status} statusCategory={item.statusCategory ?? undefined} />
+                      {item.status && <StatusLozenge status={item.status} statusCategory={item.statusCategory ?? undefined} />}
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
-                      <span title={priorityLabel} style={{ display: 'inline-flex' }}>
-                        <PriorityBars priority={normalisePriority(priorityLabel)} />
-                      </span>
+                      {priorityLabel && (
+                        <span title={priorityLabel} style={{ display: 'inline-flex' }}>
+                          <PriorityBars priority={normalisePriority(priorityLabel)} />
+                        </span>
+                      )}
                     </div>
 
                     {/* Row 4: avatar + project + updated */}
@@ -324,7 +328,9 @@ export function CatalystTable({
 
   const renderCell = (colKey: string, item: WorkItem, isSelected: boolean, isFocused: boolean) => {
     const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
-    const priorityLabel = PRIORITY_LABELS[item.priorityLevel] || `Priority ${item.priorityLevel}`;
+    // Zero-assumption: null priorityLevel means unknown priority — render
+    // nothing rather than a fabricated "Priority null" label.
+    const priorityLabel = item.priorityLevel != null ? (PRIORITY_LABELS[item.priorityLevel] || null) : null;
 
     switch (colKey) {
       case 'checkbox':
@@ -353,7 +359,9 @@ export function CatalystTable({
         return (
           <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <JiraIssueTypeIcon type={item.issueType} size={16} />
+              {/* Zero-assumption: render nothing when issue type is unknown
+                  rather than lying with a default icon (CLAUDE.md). */}
+              {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}
             </div>
           </td>
         );
@@ -377,7 +385,7 @@ export function CatalystTable({
       case 'status':
         return (
           <td key={colKey} style={{ width: columnWidths.status, textAlign: 'center' }}>
-            <StatusLozenge status={item.status} statusCategory={item.statusCategory ?? undefined} />
+            {item.status && <StatusLozenge status={item.status} statusCategory={item.statusCategory ?? undefined} />}
           </td>
         );
       case 'project':
@@ -396,8 +404,8 @@ export function CatalystTable({
         );
       case 'priority':
         return (
-          <td key={colKey} style={{ width: columnWidths.priority }} title={priorityLabel}>
-            <PriorityBars priority={normalisePriority(priorityLabel)} />
+          <td key={colKey} style={{ width: columnWidths.priority }} title={priorityLabel ?? undefined}>
+            {priorityLabel && <PriorityBars priority={normalisePriority(priorityLabel)} />}
           </td>
         );
       case 'updated':

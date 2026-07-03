@@ -61,9 +61,13 @@ export function useBusinessRequestHealth(brId: string | undefined | null) {
       const linkedWork: WorkItem[] = (linkedRows ?? []).map((r: any) => ({
         id: r.id,
         issue_key: r.issue_key,
-        issue_type: r.issue_type ?? 'Story',
+        issue_type: r.issue_type ?? null,
         project_key: r.project_key ?? '',
-        status: r.status ?? 'todo',
+        // Zero-assumption: null status is "unscorable" — HealthStatusEngine
+        // excludes it from in-progress/done/blocked bucketing rather than
+        // counting it as 'todo' (not-started), which would skew health
+        // verdicts toward Uncommitted/At Risk (CLAUDE.md).
+        status: r.status ?? null,
         due_date: r.due_date ?? null,
         severity: r.severity ?? null,
         parent_key: r.parent_key ?? null,
@@ -90,6 +94,9 @@ export function useBusinessRequestHealth(brId: string | undefined | null) {
       const healthStatus = computeHealthStatus(brModel, linkedWork, violations);
 
       // 5. Compute derived metrics
+      // Zero-assumption: items with a null status are unscorable and fall
+      // out of every bucket below (mirrors HealthStatusEngine — see there
+      // for why a fabricated 'todo' would skew the verdict).
       const workWithDates = linkedWork.filter(w => w.due_date !== null);
       const inProgress = linkedWork.filter(
         w => w.status && w.status !== 'backlog' && w.status !== 'todo' && w.status !== 'done',

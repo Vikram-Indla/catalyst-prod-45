@@ -172,7 +172,7 @@ function mapComment(raw: any): CdsComment {
     id: raw.id,
     author: {
       id: raw.user_id || 'unknown',
-      name: profile?.full_name || profile?.email || 'Unknown',
+      name: profile?.full_name || profile?.email || '—',
       avatarUrl:
         resolveAvatarUrl(profile?.full_name) ?? profile?.avatar_url ?? null,
       email: profile?.email,
@@ -238,12 +238,14 @@ export function BrActivitySection({
     },
   });
 
-  const mentionableUsers: CdsUser[] = profiles.map((p: any) => ({
-    id: p.id,
-    name: p.full_name || p.email || 'Unknown',
-    avatarUrl: p.avatar_url,
-    email: p.email,
-  }));
+  const mentionableUsers: CdsUser[] = profiles
+    .filter((p: any) => p.full_name || p.email)
+    .map((p: any) => ({
+      id: p.id,
+      name: p.full_name || p.email,
+      avatarUrl: p.avatar_url,
+      email: p.email,
+    }));
 
   useQuery({
     queryKey: ['current-user-profile', user?.id],

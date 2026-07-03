@@ -43,9 +43,12 @@ export function useBatchBusinessRequestHealth(brIds: string[]) {
         arr.push({
           id: r.id,
           issue_key: r.issue_key,
-          issue_type: r.issue_type ?? 'Story',
+          issue_type: r.issue_type ?? null,
           project_key: r.project_key ?? '',
-          status: r.status ?? 'todo',
+          // Zero-assumption: null status is "unscorable" — HealthStatusEngine
+          // excludes it from in-progress/done/blocked bucketing rather than
+          // counting it as 'todo' (CLAUDE.md).
+          status: r.status ?? null,
           due_date: r.due_date ?? null,
           severity: r.severity ?? null,
           parent_key: r.parent_key ?? null,

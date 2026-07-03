@@ -22,7 +22,7 @@
  * NEW CODE MUST IMPORT FROM `@/lib/jira-issue-type-icons` DIRECTLY:
  *
  *   import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
- *   <JiraIssueTypeIcon type={issue.issue_type ?? 'Task'} size={16} />
+ *   {issue.issue_type ? <JiraIssueTypeIcon type={issue.issue_type} size={16} /> : null}
  *
  * An ESLint rule (`no-restricted-imports`) blocks new imports of this
  * file outside the shim itself; CI will fail any PR that adds one.
@@ -79,7 +79,12 @@ export default function WorkItemIcon({ type, size = 16, className }: WorkItemIco
  * This shim returns the input untouched (after a trim) and exists only so
  * legacy `normalizeIconType(t)` call sites keep compiling. Drop the call
  * and pass `t` directly to JiraIssueTypeIcon.
+ *
+ * Returns `undefined` when the type is genuinely unknown — callers must not
+ * fabricate a type (e.g. 'Task'); render no icon instead (zero-assumption
+ * data rendering, CLAUDE.md).
  */
-export function normalizeIconType(raw: string | undefined | null): string {
-  return (raw ?? 'Task').toString().trim() || 'Task';
+export function normalizeIconType(raw: string | undefined | null): string | undefined {
+  const trimmed = (raw ?? '').toString().trim();
+  return trimmed || undefined;
 }

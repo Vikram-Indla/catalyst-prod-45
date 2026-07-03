@@ -46,13 +46,13 @@ export function IncidentDetailsPanel({
     });
   };
 
-  const calculatePriority = (impact: string, urgency: string): 'critical' | 'high' | 'medium' | 'low' => {
+  const calculatePriority = (impact: string, urgency: string): 'critical' | 'high' | 'medium' | 'low' | null => {
     const matrix: Record<string, Record<string, 'critical' | 'high' | 'medium' | 'low'>> = {
       'high': { 'high': 'critical', 'medium': 'high', 'low': 'medium' },
       'medium': { 'high': 'high', 'medium': 'medium', 'low': 'low' },
       'low': { 'high': 'medium', 'medium': 'low', 'low': 'low' },
     };
-    return matrix[impact]?.[urgency] || 'medium';
+    return matrix[impact]?.[urgency] ?? null;
   };
 
   const currentStatus = editedData.status || incident.status;
@@ -95,7 +95,11 @@ export function IncidentDetailsPanel({
           {/* Priority (calculated, read-only) */}
           <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral)]">
             <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest)]">Priority</span>
-            <PriorityBadge priority={calculatedPriority} />
+            {calculatedPriority ? (
+              <PriorityBadge priority={calculatedPriority} />
+            ) : (
+              <span className="text-[13px] font-medium text-[var(--ds-text-subtlest)]">—</span>
+            )}
           </div>
 
           {/* Impact */}
