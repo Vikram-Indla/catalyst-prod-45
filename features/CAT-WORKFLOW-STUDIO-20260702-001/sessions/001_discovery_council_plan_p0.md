@@ -64,5 +64,50 @@
 ## Phase D — design remediation (Vikram design-critique 2026-07-03; H-score was 14/30 HALT)
 - AUDIT: 405 probed defect instances / 16 root causes via Chrome-MCP DOM probes; canon = Backlog (th 12/653 sentence, td 14/400, rows 39-40px, status lozenges uppercase 11/653 PER Vikram's 2026-06-09 lozenge directive — the real D1 defect was lozenge OVERUSE on non-status chips, not uppercase itself). Full inventory in ~/.claude/plans/fuzzy-weaving-shamir.md.
 - SHIPPED (main 4b7e947a2): one-baseline Workflows tab (single card + Edit/Publish/Discard/History; version table + row dropdown DELETED — popup-detach P0 dies with it); usePortal on all 14 selects (clipped-menu P0); non-status chips → CatalystTag (uppercase 195→status-only, matches Backlog); editor nodes sentence-case/no-tracking/on-grid; 12px above tabs + 24px title alignment; CRE C1 (system parents read-only RULE_TABLE mirrors) + C3 (Grid B reconcile migration 20260703130000, 66 rules on cyij). Two crash-fixes en route (HistoryDrawer + CatalystTag missing imports — tsc missed both, runtime caught).
-- CLOSE-OUT (main 723bb852d): CatalystTag→SimpleTag when read-only (phantom × killed); guard evidence/advisory + v{n} chips → tags; post-fix probe = 0 tracking all tabs, uppercase = status/state lozenges only (Backlog-identical), rows 38-39px (canon). Green-arrow evidence screenshot in chat. Rescore: H4 3/3, H8 2/3 (sparse tabs by data, not defect), H9 3/3 → 27-28/30 estimate; formal full rescore pending Vikram signoff. CRE chip session ended WITHOUT landing (no getAllowedTypesForModule callers on main) — chip may need restart.
+- CLOSE-OUT (main 723bb852d): CatalystTag→SimpleTag when read-only (phantom × killed); guard evidence/advisory + v{n} chips → tags; post-fix probe = 0 tracking all tabs, uppercase = status/state lozenges only (Backlog-identical), rows 38-39px (canon). Green-arrow evidence screenshot in chat. Rescore: H4 3/3, H8 2/3 (sparse tabs by data, not defect), H9 3/3 → 27-28/30 estimate; formal full rescore pending Vikram signoff. CRE chip session DID land (07d884cde) — CORRECTION: wiring uses filterCreatableTypes/getAllowedChildTypesWithRegistry/canLinkTo (not getAllowedTypesForModule directly, which my grep checked). CreateStoryModal, both InlineCreates, IssueTypeSelector, LinkToolbar/LinkedWorkItems, SubtasksPanel, BacklogPage wired; scripts/cre-chokepoint-gate.cjs in .husky/pre-commit + npm lint:cre; engine gained isCREGovernedType + registry-aware child lookup (custom types registry-authoritative, CRE types locked). Gate + tsc verified green; Studio smoke clean. CRE C2 CLOSED.
 - OLD NEXT-CONVERSATION CONTRACT (mostly done): remaining slices = row-density fine-tune vs 40px canon (D9); Schemes/Statuses/Types void layout (2-col grid, D11); publish/generate modal + editor-panel re-probe; red→green arrow closure evidence per design-critique protocol + full H1-H10 rescore ≥29/30; CRE C2 chokepoint wiring (getAllowedTypesForModule into CreateStoryModal/InlineCreate — pre-existing repo-wide gap, chip spawned). Auditor JS + canon numbers in the plan file. Do NOT touch engine/RPCs. Staging only.
+
+---
+
+## F-SLICES CLOSED (2026-07-03, session continuation)
+
+Directive: "Production is not something which is mandatory now, but fix everything which is functional stuff." Prod rollout excluded; F2 (level runtime enforcement) by-design — pairwise parent rules govern, levels organize.
+
+### Commits (main-direct)
+- `da6b9eba7` — F1 + F3
+- `fc2cd71b0` — F4 + F5 + F6 + F7 + F8 + usePortal-dup sweep
+
+### What landed
+- **F1** custom-type workflow binding: migration `20260703140000` (wt_upsert_work_item_type assigns entity_key = type_key for custom types, backfill; APPLIED to cyij; E2E passed w/ Risk type). Registry fallback (display_name → entity_key) in useCanonicalIssueWorkflow + useCatalystIssueMutations. Types tab "Create workflow" per bound type; Caty modal lists custom entities.
+- **F3** table reason capture: backlog + releases adapters throw typed `WF_REASON_REQUIRED` (code + ctx {entityType, from, to}); BacklogPage intercepts in updateField onError, mounts ReasonCaptureModal, retries patch with reasonCode/reasonText; advisory audit rows record both.
+- **F4** Enforcement tab inline add-row (project + entity + mode); blocking runs checkEnforcementBlockingSafe pre-flight; useAddEnforcementRow. Insert path probed on cyij as admin (rolled back).
+- **F5** Schemes tab: create scheme + per-scheme entry editor (published versions only, removable CatalystTags); useCreateScheme/useUpsertSchemeEntry/useDeleteSchemeEntry w/ writeAdminAudit. Write path probed on cyij as admin (rolled back). RLS confirmed: *_write_admin ALL policies on all three tables.
+- **F6** editor toolbar any-status transitions: add via target Select → upsertTransition(from null); global-IN chips w/ delete.
+- **F7** PublishModal live item counts per removed status (ph_issues count by published display label; custom types resolved via registry; non-ph_issues entities render nothing — zero-assumption).
+- **F8** WorkItemTypeIcon resolves custom registry types (display_name/type_key → Studio-chosen canonical icon id, custom name as label) instead of Task fallback; cached 5-min query.
+- **Bug swept**: 9× `usePortal usePortal` duplicated prop (earlier scripted-edit artifact) across Studio files.
+
+### Gates
+tsc clean · lint:colors:gate 0/0 · audit:ads:gate all ≤ baseline · cre-chokepoint-gate pass.
+
+### Remaining (explicitly deferred, not blocking)
+- Prod rollout (user-excluded)
+- F4-broad: canonical-label reads + guard evidence tables (new product features)
+- F3-planner: MetadataBar/milestone service reason capture (heavier surface; detail views already covered)
+
+## F3 FULL-PARITY SWEEP (2026-07-03, "proceed")
+
+Commits `e4a4953ec` (milestone + task) and `4530ff4d1` (sprint/release confirm modal). All canonical entities now have reason capture; every advisory audit write carries reasonCode/reasonText.
+
+Bugs found + fixed along the way:
+- **Milestone preflight ordering**: updateMilestone threw the reason error AFTER the status persisted — the change landed, then claimed it didn't. Preflight moved before write.
+- **recordAdvisoryStatusChange dropped reasons**: callers passed reasonCode/reasonText but the runtime never threaded them into writeAdvisoryAudit — audit rows recorded reason-gated transitions with NULL reasons. Fixed at the runtime.
+- **Sprint/release completion invisible to engine**: ReleaseConfirmationModal wrote completed/released with no preflight and no advisory row. Now gated + audited.
+- **Task advisory had from=null**: useUpdatePlannerTask now resolves current status_id → real from→to evaluation.
+
+Reason-modal wiring per entity (versioning registry updated in code):
+story/epic/feature/subtask (detail pill + JiraTable) · defect/incident (detail) · business_request (BacklogPage F3) · product_milestone (MilestonesPage) · task (TasksBoardView card menu + TaskListPageV3 inline; drag-drop useMoveBoardTask still advisory-only — deliberate, drop-revert UX undecided) · sprint/release (confirmation modal, stacked ReasonCaptureModal).
+
+Test: useUpdatePlannerTask.test.ts mock gained chainable select for the preflight fetch; 4/4 pass.
+
+NOTE concurrent session: another window landed reports/testhub commits (…9ea0218c8) in this checkout between my pushes; file sets disjoint, no conflicts. ADS baselines ratcheted DOWN by that session (tokens 27316→25969, typography 1658→1618) — gates still green.
