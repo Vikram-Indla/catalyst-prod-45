@@ -228,6 +228,8 @@ export function useCreateCycle() {
           environment_id: input.environment || null,
           planned_start: input.planned_start_date || null,
           planned_end: input.planned_end_date || null,
+          sprint_id: input.sprint_id || null,
+          assigned_to: input.assigned_to || null,
           created_by: user.id,
         })
         .select()
