@@ -5,8 +5,10 @@ import { catalystToast } from '@/lib/catalystToast';
 import { auditTestCaseCreate, auditTestCaseUpdate, auditTestCaseDelete } from '@/lib/tmAuditLogger';
 
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
-// CaseStatus for bulk operations uses DB-level values
-export type BulkCaseStatus = 'draft' | 'ready' | 'approved' | 'needs_update' | 'deprecated';
+// CaseStatus for bulk operations uses DB-level values. P1-S5 (D-REQ-2):
+// 'needs_update' dropped — it was never a real tm_case_status enum value
+// (probe P0.8), had zero live callers, and would have 400'd on write.
+export type BulkCaseStatus = DbCaseStatus;
 
 const statusToDb = (status: string): DbCaseStatus => {
   const map: Record<string, DbCaseStatus> = {

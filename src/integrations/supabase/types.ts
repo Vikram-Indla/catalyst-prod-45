@@ -11619,6 +11619,13 @@ export type Database = {
             foreignKeyName: "incident_attachments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11683,6 +11690,13 @@ export type Database = {
             foreignKeyName: "incident_comments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_comments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11726,6 +11740,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_committees_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "incident_committees_incident_id_fkey"
             columns: ["incident_id"]
@@ -11841,6 +11862,13 @@ export type Database = {
             foreignKeyName: "incident_history_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_history_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11884,6 +11912,13 @@ export type Database = {
           label_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_labels_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "incident_labels_incident_id_fkey"
             columns: ["incident_id"]
@@ -12004,6 +12039,13 @@ export type Database = {
             foreignKeyName: "incident_watchers_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_watchers_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -12045,6 +12087,13 @@ export type Database = {
             foreignKeyName: "incident_work_items_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_work_items_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -12076,6 +12125,7 @@ export type Database = {
           incident_type: string | null
           is_major_incident: boolean | null
           owning_team_id: string | null
+          ph_issue_id: string | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           project_id: string | null
           release_version_id: string | null
@@ -12124,6 +12174,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           owning_team_id?: string | null
+          ph_issue_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -12172,6 +12223,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           owning_team_id?: string | null
+          ph_issue_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -12236,6 +12288,20 @@ export type Database = {
             columns: ["owning_team_id"]
             isOneToOne: false
             referencedRelation: "owning_teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
           {
@@ -18642,35 +18708,14 @@ export type Database = {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_overdue_view"
+            referencedRelation: "ph_issues"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
         ]
@@ -18954,6 +18999,7 @@ export type Database = {
         Row: {
           author_id: string | null
           body: string
+          comment_type: string
           created_at: string | null
           id: string
           updated_at: string | null
@@ -18962,6 +19008,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           body: string
+          comment_type?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -18970,6 +19017,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           body?: string
+          comment_type?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -18988,41 +19036,6 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "workhub_items_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_overdue_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
         ]
@@ -33446,6 +33459,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "sla_records_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "sla_records_incident_id_fkey"
             columns: ["incident_id"]
@@ -53673,6 +53693,22 @@ export type Database = {
           },
         ]
       }
+      incident_sla_live_status: {
+        Row: {
+          incident_id: string | null
+          incident_key: string | null
+          resolution_breaching: boolean | null
+          resolution_due_at: string | null
+          resolution_met_at: string | null
+          response_breaching: boolean | null
+          response_due_at: string | null
+          response_met_at: string | null
+          severity: Database["public"]["Enums"]["severity_level"] | null
+          status: Database["public"]["Enums"]["incident_status"] | null
+          title: string | null
+        }
+        Relationships: []
+      }
       license_allocation_totals: {
         Row: {
           allocation_status: string | null
@@ -58984,7 +59020,15 @@ export type Database = {
         }
         Returns: Database["public"]["Enums"]["dependency_level_v2"]
       }
+      derive_incident_status_from_ph_issue: {
+        Args: { status_category: string }
+        Returns: Database["public"]["Enums"]["incident_status"]
+      }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
+      derive_severity_from_jira_priority: {
+        Args: { p: string }
+        Returns: Database["public"]["Enums"]["severity_level"]
+      }
       ensure_presence: {
         Args: { conv_uuid: string; heartbeat_interval_seconds?: number }
         Returns: {
@@ -61910,14 +61954,7 @@ export type Database = {
         | "assign"
         | "clone"
       tm_case_status: "draft" | "ready" | "approved" | "deprecated"
-      tm_cycle_status:
-        | "planned"
-        | "in_progress"
-        | "completed"
-        | "archived"
-        | "draft"
-        | "active"
-        | "paused"
+      tm_cycle_status: "planned" | "active" | "completed" | "archived"
       tm_defect_severity: "blocker" | "critical" | "major" | "minor" | "trivial"
       tm_defect_status:
         | "open"
@@ -62700,15 +62737,7 @@ export const Constants = {
         "clone",
       ],
       tm_case_status: ["draft", "ready", "approved", "deprecated"],
-      tm_cycle_status: [
-        "planned",
-        "in_progress",
-        "completed",
-        "archived",
-        "draft",
-        "active",
-        "paused",
-      ],
+      tm_cycle_status: ["planned", "active", "completed", "archived"],
       tm_defect_severity: ["blocker", "critical", "major", "minor", "trivial"],
       tm_defect_status: [
         "open",
