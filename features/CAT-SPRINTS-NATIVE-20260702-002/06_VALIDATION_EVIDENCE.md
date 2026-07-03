@@ -91,3 +91,21 @@ npm run audit:ads:gate → ✅ no category above baseline
 5. **Release-path regression check:** On release `Refactor-Senaei 4.2 -10 July 26` (`b382f76b-0629-4dd1-896d-0372a78b2031`), clicked "Summarize Release" twice (dismiss between clicks) — **both times** showed the "Generating summary" fetching state (bouncing dots), never an instant/cached render. `SELECT count(*) FROM sprint_insight_cache` before and after: unchanged at 2 rows (both from the sprint tests above) — confirms zero leakage into the cache table from the release path, matching the code's `payload.entityKind === 'sprint'` gate.
 
 **Verdict:** CONFIRMED live, all four Plan Lock proof points (FK correctness, cache hit, cache bust, release-path non-regression) hold under real staging data through the actual mounted UI.
+
+## VG-005 — 2026-07-03 — Phase 3 Slice 4a (sprint-status transition trigger), live-verified including the DoD-cascade edge case
+
+**Migration:** `20260703320000_sprint_status_transition_trigger.sql` applied to staging (`cyijbdeuehohvhnsywig`) via `supabase db query --linked -f`; ledger row inserted manually (confirmed `db query -f` does not auto-record the ledger — same lesson as DRIFT-004). `ph_sprint_status_transitions` table + `trg_record_sprint_status_transition` confirmed live via `information_schema`/`pg_trigger`. Types regenerated, diffed (0 removed / 183 added, purely the new table), overwritten.
+
+**Static gates:**
+```
+npx tsc -p tsconfig.app.json --noEmit → 183 errors (baseline match, 0 new)
+npm run lint:colors:gate → ✅ 0 = baseline 0
+npm run audit:ads:gate → ✅ no category above baseline
+```
+
+**Live probe (Chrome MCP, authenticated session, `localhost:8080`):** Created a fresh test sprint via the real create-sprint flow (`BAU-Sprint 7.1 - 07 Jul 26`, `705a5197-5042-4e63-ad9e-89cd728be4fa`) to avoid disturbing prior sessions' test data.
+
+1. **Manual transition** — clicked the status dropdown, "Start sprint" (`planning → active`). DB check: row appeared immediately, `from_status: planning`, `to_status: active`, `transitioned_by: Vikram Indla`, correct timestamp.
+2. **DoD-cascade transition (the case flagged as uncertain in the Plan Lock's stop conditions)** — added a real work item (`BAU-6118`), set its Definition of Done ("Sub-task" → "Done"), then drove the item through its real workflow (To Do → Assigned → In Progress → Code Review → Done) via the actual item detail panel. This satisfied the sprint's DoD, and `fn_sprint_check_dod` auto-transitioned the sprint `active → awaiting_approval` (confirmed via DB: `ph_jira_sprints.status = 'awaiting_approval'`, UI hadn't refreshed but DB was already correct). Checked `ph_sprint_status_transitions`: **the row was captured**, `from_status: active`, `to_status: awaiting_approval`, `transitioned_by: Vikram Indla` (a real actor, not skipped) — confirming `auth.uid()` persists through the full trigger cascade within one authenticated request, so the common real-world DoD-completion path populates this table, not just manual dropdown overrides.
+
+**Verdict:** CONFIRMED live. Both the manual and DoD-cascade transition paths are captured correctly with real actors and timestamps. This resolves Slice 4a's flagged uncertainty in favor of the better outcome — approval-timeliness (Slice 4b) will have real start-timestamps for sprints going through their natural DoD-driven lifecycle, not only ones manually overridden via the dropdown. Test sprint left in place (not deleted) — it's clean, real data (an `awaiting_approval` sprint with no approver yet), useful as a live fixture for Slice 4b's own testing.

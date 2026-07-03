@@ -22964,6 +22964,61 @@ export type Database = {
           },
         ]
       }
+      ph_sprint_status_transitions: {
+        Row: {
+          created_at: string
+          from_status: string | null
+          id: string
+          sprint_id: string
+          to_status: string
+          transitioned_at: string
+          transitioned_by: string | null
+          transitioned_by_avatar: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id: string
+          to_status: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id?: string
+          to_status?: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
+          },
+        ]
+      }
       ph_status_transitions: {
         Row: {
           changed_at: string | null
@@ -42958,13 +43013,133 @@ export type Database = {
           },
         ]
       }
+      tm_cycle_sets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          cycle_id: string
+          id: string
+          set_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          cycle_id: string
+          id?: string
+          set_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          cycle_id?: string
+          id?: string
+          set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_defect_links: {
         Row: {
           attachment_id: string | null
           created_at: string | null
           created_by: string | null
           defect_id: string
+          entity_label: string | null
           id: string
+          link_source: string | null
+          link_type: string | null
+          linked_id: string | null
           step_result_id: string | null
           test_run_id: string | null
         }
@@ -42973,7 +43148,11 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           defect_id: string
+          entity_label?: string | null
           id?: string
+          link_source?: string | null
+          link_type?: string | null
+          linked_id?: string | null
           step_result_id?: string | null
           test_run_id?: string | null
         }
@@ -42982,7 +43161,11 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           defect_id?: string
+          entity_label?: string | null
           id?: string
+          link_source?: string | null
+          link_type?: string | null
+          linked_id?: string | null
           step_result_id?: string | null
           test_run_id?: string | null
         }

@@ -1,3 +1,100 @@
+# PLAN LOCK — SPRINTS-NATIVE (Phase 3, Slice 4a: sprint-status transition trigger)
+
+**Status:** APPROVED — implemented and live-verified (see `06_VALIDATION_EVIDENCE.md` VG-005, `09_DECISIONS.md` D-024)
+**Timebox:** 45 minutes from approval (small, closely-precedented — see OBJECTIVE)
+**Slice:** Phase 3 Slice 4a of 6 — split out of Slice 4 (time-in-status/efficiency) because the full formula (4 weighted components, each needing its own zero-assumption gating, plus a new card) exceeds the 2-hour slice rule on its own. This slice ships the missing prerequisite infrastructure only; Slice 4b (the formula + `SprintEfficiencyCard`) gets its own Plan Lock once this is live.
+
+## WHY THIS SLICE EXISTS
+
+Discovery for Slice 4 found D-008's approval-timeliness component (15% of the efficiency score) cannot be computed at all today — not just thinly. `ph_sprint_approvers.decided_at` exists (D-016) and has 1 real row, but there is no timestamp anywhere recording when a sprint *entered* `awaiting_approval` — no column on `ph_jira_sprints`, no changelog table. `work_item_transitions` (this feature's own S0.1b trigger) only fires on `ph_issues.status`, and its FK (`work_item_transitions_work_item_id_fkey`) hard-references `ph_issues(id)` — confirmed via `pg_constraint`, so it cannot hold sprint-status rows without a schema change. A dedicated table + trigger, mirroring S0.1b's proven pattern exactly, is the smallest fix.
+
+## OBJECTIVE
+
+Add `ph_sprint_status_transitions` (new table) + `trg_record_sprint_status_transition` (new trigger, `AFTER UPDATE OF status ON ph_jira_sprints`), mirroring `record_native_work_item_transition()` (`supabase/migrations/20260703093000_native_transition_trigger.sql`) almost verbatim: skip when `auth.uid()` is null (service-role/sync writes aren't genuine user-driven transitions, same D-013 reasoning), resolve actor via `profiles.full_name`/`avatar_url`, record `from_status`/`to_status`/`transitioned_at`. No dwell-time chaining needed this slice (Slice 4b computes approval-timeliness as `decided_at − (transitioned_at of the row where to_status='awaiting_approval')` directly, not via a running dwell column) — kept simpler than S0.1b's dwell-chaining since there's no equivalent "prior Jira-backfilled history" to chain off for sprints (sprints are 100% native, no Jira-sync predecessor).
+
+Done = every `ph_jira_sprints.status` change by an authenticated user writes a row; live-verified by flipping one real sprint's status through `awaiting_approval` and confirming a correct row appears with the right `from_status`/`to_status`/`transitioned_by`/timestamp.
+
+## NON-SCOPE (this slice)
+
+- The efficiency formula itself (completion/flow-efficiency/scope-stability/approval-timeliness weighting, zero-assumption per-sprint gating) — Slice 4b, separate Plan Lock.
+- `SprintEfficiencyCard` UI, `ReleaseSidePanel.tsx` changes — Slice 4b.
+- Scope-change history UI (Slice 5), dependencies (Slice 6).
+- Backfilling historical `awaiting_approval` timestamps for sprints that already transitioned before this trigger existed (e.g. `BAU-Sprint 7.1 - 06 Jul 26`, already `completed`/`approved`) — not possible, no historical record exists; those sprints' approval-timeliness will read as unknown/no-data in Slice 4b, not fabricated.
+- Any change to `work_item_transitions`, `record_native_work_item_transition()`, or anything `ph_issues`-status-related — S0.1b territory, already correct, untouched.
+
+## CANONICAL COMPONENTS SELECTED
+
+None — DB migration only, no UI this slice.
+
+## CANONICAL SCREENS SELECTED
+
+None — no UI this slice.
+
+## FILES TO MODIFY
+
+| File | Change | Summary |
+|---|---|---|
+| `supabase/migrations/20260703320000_sprint_status_transition_trigger.sql` | add | `CREATE TABLE ph_sprint_status_transitions(id uuid PK, sprint_id uuid NOT NULL REFERENCES ph_jira_sprints(id) ON DELETE CASCADE, from_status text, to_status text NOT NULL, transitioned_by text, transitioned_by_avatar text, transitioned_at timestamptz NOT NULL DEFAULT now(), created_at timestamptz NOT NULL DEFAULT now())`; index on `(sprint_id, transitioned_at)`; RLS enabled, `SELECT` for `authenticated` (team-shared read, mirrors the sprint-membership-changelog precedent — no per-user scoping needed for a status audit trail), no client `INSERT`/`UPDATE`/`DELETE` policies (writes are trigger-only, `SECURITY DEFINER`, same as S0.1b). Trigger function `record_sprint_status_transition()` (mirrors `record_native_work_item_transition()` structure) + `trg_record_sprint_status_transition AFTER UPDATE OF status ON ph_jira_sprints`. |
+
+## FILES FORBIDDEN
+
+- `supabase/migrations/20260703093000_native_transition_trigger.sql`, `work_item_transitions` — S0.1b territory, correct and untouched (different FK target, different trigger).
+- `ph_sprint_approvers`, its RLS (D-016) — untouched, only read from in Slice 4b.
+- Anything UI-facing (`ReleaseSidePanel.tsx`, `HealthPanel.tsx`, `ReleaseDetailPage.tsx`) — no UI this slice.
+- `src/pages/Sprints.tsx`, `SprintBoard.tsx`, `statusPalette.ts`, `defectWorkflow.ts`, kanban `columnConfig.ts`, `rh_*` release-ops — standing forbidden list.
+- Anything prod-targeting (`lmqwtldpfacrrlvdnmld`) — explicitly deferred (D-013).
+
+## UI/UX RULES
+
+N/A — no UI this slice.
+
+## DATA/BACKEND RULES
+
+- `SECURITY DEFINER` + `SET search_path = public`, matching S0.1b's pattern exactly (avoids search-path injection, matches existing trigger function security posture in this codebase).
+- Skip insert when `auth.uid() IS NULL` — service-role/sync writes (e.g. the DoD-satisfaction auto-transition to `awaiting_approval`, which fires from a trigger context, not a direct authenticated user action) would NOT be captured under this rule, same as S0.1b's own skip condition. This is a deliberate, known limitation carried over from the precedent, not a new gap — flagged here so Slice 4b's zero-assumption gating accounts for it (a DoD-auto-transition won't have a `transitioned_by` row if it truly runs under a non-authenticated context; verify this empirically during Slice 4a's own live-verification, since it directly affects whether Slice 4b's approval-timeliness source is populated at all for the common case).
+- RLS: `SELECT` for `authenticated`, no per-user scoping (status audit trail is team-shared, same reasoning as `sprint_insight_cache`'s D-022 sharing decision). No client write policies — trigger-only via `SECURITY DEFINER`.
+
+## INTEGRATION/WIRING RULES
+
+- No hooks, no edge functions, no frontend changes this slice.
+- Types regeneration (`supabase gen types typescript --linked`) needed after migration, same diff-then-overwrite discipline as Slice 3.
+
+## PARALLEL EXECUTION PLAN
+
+Single-file, single-trigger, closely mirrors an already-shipped, already-verified pattern (S0.1b) — no discovery agents needed, single-threaded implement → verify.
+
+## SCREENSHOT CHECKLIST
+
+No UI this slice. Functional proof only:
+- [ ] DB probe: change a real sprint's `status` (e.g. `planning` → `active` → `awaiting_approval`) via an authenticated session or an authenticated-context SQL update (`SET request.jwt.claims` or via the app UI's own status dropdown), confirm a correctly-populated row appears in `ph_sprint_status_transitions` for each transition.
+- [ ] Confirm the DoD-auto-transition path (active → awaiting_approval via `fn_sprint_check_dod`) — check empirically whether it runs with `auth.uid()` set or not, since this determines whether the common real-world path (not a manual dropdown override) actually populates this table.
+
+## VALIDATION COMMANDS
+
+```bash
+npx tsc -p tsconfig.app.json --noEmit   # compare error count to 183 baseline
+npm run lint:colors:gate
+npm run audit:ads:gate
+# DB probe (staging cyijbdeuehohvhnsywig): status flip → row appears with correct from/to/actor/timestamp
+```
+
+## STOP CONDITIONS
+
+- Any file outside FILES TO MODIFY needs changes → RED FLAG.
+- The DoD-auto-transition path never populates this table (auth.uid() null in that trigger context) → not a stop condition by itself, but must be recorded as a Slice 4b constraint (approval-timeliness would then only be computable for manually-triggered awaiting_approval transitions, a real product gap to flag before Slice 4b's Plan Lock, not silently patched over).
+- tsc error count rises above baseline; either ratchet gate fails; slice exceeds 45 min.
+
+## DRIFT/REBASELINE RULES
+
+Per template: stop → `08_DRIFT_LOG.md` → rebaseline approval → mark SUPERSEDED → new Plan Lock.
+
+---
+---
+
+# SUPERSEDED — Phase 3 Slice 3 lock (AI summary + cache, shipped)
+
+> Archived below for history. Slice 3 shipped and was verified (`06_VALIDATION_EVIDENCE.md` VG-004, `09_DECISIONS.md` D-022/D-023). Content kept verbatim, not deleted, per append-only discipline.
+
 # PLAN LOCK — SPRINTS-NATIVE (Phase 3, Slice 3: AI summary + cache)
 
 **Status:** APPROVED — implemented and live-verified (see `06_VALIDATION_EVIDENCE.md` VG-004, `09_DECISIONS.md` D-022)
