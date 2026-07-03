@@ -52,3 +52,14 @@ Chain executed: repository (11 cases, folder tree) → set detail via row click 
 **Deferred (P1-S4b-2, next slice):** side-by-side version-diff view. `VersionDiffView.tsx` (`src/components/testhub/versioning/`) has a large pre-existing Tailwind-color debt (VER-023) that must be rewritten to ADS tokens before it can be wired into the Versions tab — a distinct, non-trivial sub-task, not started tonight. `src/components/releases/test-case-detail/**` (incl. `TestCaseVersionHistory.tsx`) stays until that port lands, per the original P0-S2 exclusion note.
 
 **Noted but explicitly out of scope:** `src/modules/project-work-hub/adapters/testCasesDataSource.ts` still exposes hard-delete via `useDeleteTestCase`, reachable from `MyWorkPage.tsx`'s generic BacklogPage bulk-action bar. Plan Lock scoped S4 to RepositoryPage only; this adapter shares a component (`BacklogPage`) used by many non-TestHub hubs, so touching it is higher blast radius than this slice's mandate. Flagged for a future slice.
+
+## P1-S4 completion (same session, continued)
+
+| Slice | Commit | Live proof |
+|---|---|---|
+| P1-S4b-2 diff view ADS rewrite + wire-in | 7ac5d939f | `VersionDiffView.tsx` fully rewritten off Tailwind/ui-* onto ads/Modal+ads/Select+inline tokens; "Compare versions" wired into `CatalystViewTestCase`'s Versions tab; proven live in **both light and dark** (title diff red/green panels, unchanged fields un-highlighted, 3→3 steps diff, no light-metaphor bugs) |
+| P1-S4b-3 folder deletion | 09446c63e | `src/components/releases/test-case-detail/**` (12 files) deleted — confirmed every remaining name-collision hit outside the folder was a false positive (coincidental naming); tsc clean, full `npm run build` succeeds, live repository sweep zero console errors |
+
+**P1-S4 is now fully done**: restore is append-only (S4a), row-delete is archive (S4b-1), version diff view is canonical-ADS and wired in (S4b-2), the orphaned folder is gone (S4b-3). Tokens debt ratcheted down twice more during this stretch: 25951→25907→25631; typography 1601→1590.
+
+**Next up per Plan Lock: P1-S5** (status-vocabulary truth — case enum + cycle FSM type-swap).
