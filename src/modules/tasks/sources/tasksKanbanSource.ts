@@ -403,13 +403,27 @@ export function useTasksKanbanMutations(
       // briefly revert the card order. useMoveBoardTask.onSettled now
       // invalidates planner-tasks AFTER the mutation completes, which is
       // the correct sync point.
-      moveTask.mutate({
-        task_id: cardId,
-        target_status_id: destColId,
-        target_position: targetPosition,
-      });
+      moveTask.mutate(
+        {
+          task_id: cardId,
+          target_status_id: destColId,
+          target_position: targetPosition,
+        },
+        {
+          onError: (e) => {
+            // F3 parity: workflow refused pending a reason — the optimistic
+            // patch above self-heals via useMoveBoardTask's onSettled
+            // invalidate. Hand off to the view's ReasonCaptureModal; the
+            // retry goes through persistStatusChange (status-only, no
+            // position — acceptable for a reason-gated transition).
+            if ((e as any)?.code === 'WF_REASON_REQUIRED' && onReasonRequired) {
+              onReasonRequired({ cardId, statusSlug: destSlug ?? destColId, ctx: (e as any).ctx });
+            }
+          },
+        },
+      );
     },
-    [moveTask, qc, statuses],
+    [moveTask, qc, statuses, onReasonRequired],
   );
 
   const persistStatusChange = useCallback(

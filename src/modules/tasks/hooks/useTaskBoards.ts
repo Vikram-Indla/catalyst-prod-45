@@ -239,9 +239,29 @@ export function useUpdateBoardTask() {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function useMoveBoardTask() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ task_id, target_status_id, target_position }: MoveTaskInput) => {
+      // F3 parity: drag-drop was the one status-change surface that bypassed
+      // the workflow reason gate — resolve prev/target slugs from the board
+      // caches (self-contained, no extra args needed) and preflight before
+      // the write. Retry after a refusal goes through persistStatusChange
+      // (status-only, no position), so no reason params are threaded here.
+      const cachedTasks = queryClient.getQueryData<BoardTask[]>(['tasks', 'board', 'tasks']);
+      const cachedColumns = queryClient.getQueryData<BoardColumn[]>(['tasks', 'board', 'columns']);
+      const prevSlug = cachedTasks?.find((t) => t.id === task_id)?.status_slug ?? null;
+      const toSlug = cachedColumns?.find((c) => c.id === target_status_id)?.slug ?? null;
+      if (prevSlug !== toSlug && toSlug) {
+        const { checkReasonRequired } = await import('@/lib/workflow/canonical/runtime');
+        const preflight = await checkReasonRequired('task', null, prevSlug, toSlug);
+        if (preflight.reasonRequired) {
+          const err = new Error('This transition requires a reason.');
+          (err as any).code = 'WF_REASON_REQUIRED';
+          (err as any).ctx = { entityType: 'Task', from: prevSlug, to: toSlug };
+          throw err;
+        }
+      }
+
       const { data, error } = await supabase
         .from('tasks')
         .update({
@@ -252,8 +272,15 @@ export function useMoveBoardTask() {
         .eq('id', task_id)
         .select()
         .single();
-      
+
       if (error) throw error;
+      if (prevSlug !== toSlug && toSlug) {
+        const { recordAdvisoryStatusChange } = await import('@/lib/workflow/canonical/runtime');
+        recordAdvisoryStatusChange({
+          entityKey: 'task', entityId: task_id, projectKey: null,
+          fromStatusRaw: prevSlug, toStatusRaw: toSlug, sourceSurface: 'task_board_drag',
+        }).catch(() => {/* advisory — non-blocking */});
+      }
       return data;
     },
     onMutate: async ({ task_id, target_status_id }) => {

@@ -45793,45 +45793,51 @@ export type Database = {
       }
       tm_step_results: {
         Row: {
+          action_snapshot: string | null
           actual_result: string | null
           comment: string | null
           created_at: string | null
           duration_seconds: number | null
           executed_at: string | null
           executed_by: string | null
+          expected_snapshot: string | null
           id: string
           status: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id: string | null
           updated_at: string | null
         }
         Insert: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id?: string
-          test_step_id?: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -47808,6 +47814,7 @@ export type Database = {
           action: string
           action_html: string | null
           created_at: string | null
+          deleted_at: string | null
           estimated_time_seconds: number | null
           expected_result: string | null
           expected_result_html: string | null
@@ -47825,6 +47832,7 @@ export type Database = {
           action: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -47842,6 +47850,7 @@ export type Database = {
           action?: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null

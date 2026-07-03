@@ -84,9 +84,14 @@ export function useDeleteTestStep() {
 
   return useMutation({
     mutationFn: async (input: { id: string; test_case_id: string }) => {
+      // Soft delete (P1-S1 / VER-002): a hard delete cascaded into deleting
+      // every historical tm_step_results row for this step. The FK is now
+      // ON DELETE SET NULL and results carry an immutable text snapshot, but
+      // there is no reason to hard-delete steps at all — soft delete keeps
+      // the step row (and its id) referenceable while hiding it from the UI.
       const { error } = await supabase
         .from('tm_test_steps')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', input.id);
 
       if (error) throw error;
