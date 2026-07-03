@@ -252,9 +252,20 @@ export default function IncidentRoomDetail() {
 
       if (createError) throw createError;
 
+      // Link the committee AND move the incident into the committee queue.
+      // Without the status write the committee row exists but the incident
+      // never surfaces in /incident-hub/committee-queue (which filters
+      // status='to_committee'), so approvers can't act on it. Guard against
+      // clobbering terminal states — a closed/converted incident keeps its
+      // status and just gets the committee link.
+      const moveToCommittee =
+        incident?.status !== 'closed' && incident?.status !== 'converted';
       const { error: linkError } = await supabase
         .from('incidents')
-        .update({ committee_id: newCommittee.id })
+        .update({
+          committee_id: newCommittee.id,
+          ...(moveToCommittee ? { status: 'to_committee' } : {}),
+        })
         .eq('id', incidentId);
 
       if (linkError) throw linkError;
