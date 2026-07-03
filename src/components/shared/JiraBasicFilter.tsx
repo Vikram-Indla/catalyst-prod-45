@@ -121,7 +121,7 @@ export function JiraBasicFilter({
   }, [onClose]);
 
   return (
-    <div className="jf-panel" ref={panelRef} role="dialog" aria-modal="false" aria-label="Filter issues">
+    <div className="jf-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Filter issues">
       <div className="jf-panel-inner">
         <div className="jf-content">
           {/* Tab label — Basic only */}

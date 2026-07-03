@@ -40,9 +40,8 @@ import {
   Edit2,
 } from '@/lib/atlaskit-icons';
 import type { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@/types/test-management';
-import { CaseDrawer } from './CaseDrawer';
 // D4 (2026-06-27) — view/edit a case via the canonical CatalystViewBase shell
-// (entityKind='test_case'). Create still uses CaseDrawer (coexist).
+// (entityKind='test_case'). Router wires query params to detail panel.
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 // ── Folder modal (ADS modal-dialog) ──────────────────────────────────────────
@@ -919,16 +918,7 @@ export default function RepositoryPage() {
           )}
         </div>
 
-        {drawerOpen && projectId && (
-          <CaseDrawer
-            projectId={projectId}
-            folderId={activeFolderId}
-            existingCase={editingCase}
-            onClose={() => { setDrawerOpen(false); setEditingCase(null); }}
-          />
-        )}
-
-        {/* D4: canonical detail panel for view/edit (coexists with CaseDrawer). */}
+        {/* D4: canonical detail panel for view/edit. */}
         {selectedCaseId && (
           <CatalystDetailRouter
             entityKind="test_case"

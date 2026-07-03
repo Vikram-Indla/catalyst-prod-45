@@ -345,14 +345,6 @@ const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pa
 const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
-const IncidentDetail = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentDetail })));
-const IncidentsDashboard = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentsDashboard })));
-const CreateIncident = lazy(() => import("../pages/release").then(m => ({ default: m.CreateIncident })));
-const CommitteeQueue = lazy(() => import("../pages/release").then(m => ({ default: m.CommitteeQueue })));
-const IncidentReports = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentReports })));
-const IncidentRoomList = lazy(() => import("../pages/release/IncidentRoomList"));
-const IncidentRoomDetail = lazy(() => import("../pages/release/IncidentRoomDetail"));
-const IncidentCommandCenter = lazy(() => import("../pages/release/IncidentCommandCenter"));
 const IncidentAnalyticsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("../modules/incidents/kanban/pages/IncidentKanbanPage"));
@@ -912,20 +904,6 @@ export default function FullAppRoutes() {
         <Route path="/knowledge-hub/spaces/:spaceId" element={<S><KnowledgeHubSpacePage /></S>} />
         <Route path="/knowledge-hub/documents/:documentId" element={<S><KnowledgeHubDocumentPage /></S>} />
 
-        <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
-        <Route path="/release/incidents" element={<S><IncidentRoomList /></S>} />
-        <Route path="/release/incidents/dashboard" element={<S><IncidentsDashboard /></S>} />
-        <Route path="/release/incidents/analytics" element={<S><IncidentAnalyticsPage /></S>} />
-        <Route path="/release/incidents/insights" element={<S><IncidentInsightsPage /></S>} />
-        <Route path="/release/incidents/kanban" element={<S><IncidentKanbanPage /></S>} />
-        <Route path="/release/incidents/create" element={<S><CreateIncident /></S>} />
-        <Route path="/release/incidents/reports" element={<S><IncidentReports /></S>} />
-        <Route path="/release/incidents/:incidentId" element={<S><IncidentRoomDetail /></S>} />
-        <Route path="/release/incident-room" element={<Navigate to="/release/incidents" replace />} />
-        <Route path="/release/incident-room/:incidentId" element={<Navigate to="/release/incidents/:incidentId" replace />} />
-        <Route path="/release/incident-reports" element={<Navigate to="/release/incidents/reports" replace />} />
-        <Route path="/release/incident-command-center" element={<S><IncidentCommandCenter /></S>} />
-        <Route path="/release/committee-queue" element={<S><CommitteeQueue /></S>} />
 
         <Route path="/insights/portfolio" element={<S><EnterpriseComingSoon /></S>} />
         <Route path="/insights/program" element={<S><EnterpriseComingSoon /></S>} />

@@ -353,6 +353,18 @@ export function CatalystViewBase({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, panelMode, onClose]);
 
+  /* ── Scroll lock for panel mode ─────────── */
+  useEffect(() => {
+    if (!isOpen || !panelMode) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, panelMode]);
+
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
   const location = useLocation();
@@ -818,7 +830,7 @@ export function CatalystViewBase({
         <div
           data-cv-scope
           role={fullPageMode ? undefined : 'dialog'}
-          aria-modal={fullPageMode ? undefined : panelMode ? 'false' : 'true'}
+          aria-modal={fullPageMode ? undefined : 'true'}
           aria-label={fullPageMode ? undefined : ariaLabel}
           style={MODAL}
           onClick={e => e.stopPropagation()}
