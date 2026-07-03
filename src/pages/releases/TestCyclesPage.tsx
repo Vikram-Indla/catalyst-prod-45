@@ -28,19 +28,17 @@ import { CycleTableView } from '@/components/releases/test-cycles/CycleTableView
 import { CreateCycleModalEnhanced, CreateCycleFormData } from '@/components/releases/test-cycles/CreateCycleModalEnhanced';
 import { EditTestCycleDialog } from '@/components/releases/test-cycles/EditTestCycleDialog';
 import { 
-  useTestCycleList,
-  useTestCycleListSummary,
   cycleListKeys,
   useCreateCycleEnhanced,
   useDeleteCycleEnhanced,
   useCloneCycleEnhanced,
   useProjects,
   useReleases,
-  type CycleListRow,
 } from '@/hooks/test-management';
 import { useQueryClient } from '@tanstack/react-query';
 import { exportTestCycles } from '@/utils/exportTestCycles';
 
+type CycleListRow = any;
 type ViewMode = 'card' | 'list';
 
 const STATUS_OPTIONS = [
@@ -91,10 +89,10 @@ export default function TestCyclesPage() {
   const { data: releases } = useReleases();
   
   // Fetch cycles with authoritative metrics from view
-  const { data: cycles, isLoading } = useTestCycleList(projectId, filters);
+  const cycles: CycleListRow[] = []; const isLoading = false; // stub hook excised (P0-S1); page deleted in P0-S2
   
   // Fetch summary KPIs (respects same filters)
-  const { data: summary } = useTestCycleListSummary(projectId, filters);
+  const summary: null = null;
   
   // Mutations with proper cache invalidation
   const createCycleMutation = useCreateCycleEnhanced();

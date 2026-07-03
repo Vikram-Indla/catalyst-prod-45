@@ -60,7 +60,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   useTestPlans,
   useDeleteTestPlan,
-  useCloneTestPlan,
 } from '@/hooks/test-management';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { TMTestPlan, TestPlanStatus } from '@/types/test-management';
@@ -89,7 +88,7 @@ export default function TestPlansPage() {
   const { data: testPlansData, isLoading, refetch } = useTestPlans(projectId);
   const testPlans = testPlansData?.plans;
   const deletePlanMutation = useDeleteTestPlan();
-  const clonePlanMutation = useCloneTestPlan(projectId);
+  const clonePlanMutation = { mutateAsync: async (_: string) => { throw new Error('Clone plan not implemented'); } }; // stub excised (P0-S1); page deleted in P0-S2
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
