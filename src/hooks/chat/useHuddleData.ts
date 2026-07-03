@@ -11,7 +11,8 @@ import { useHuddleStore } from '@/store/huddleStore';
 import type { ChatConversation } from '@/types/chat';
 
 const db = supabase as unknown as { from: (t: string) => any };
-const HUDDLE_CAP = 2;
+// Mesh call: up to 4 participants (full mesh of MeshPeer connections).
+const HUDDLE_CAP = 4;
 // A participant heartbeats every ~5s (huddleStore). Treat a row whose
 // last_seen_at is older than this as gone, so an uncleanly-dropped huddle
 // (both sides crashed/closed) stops showing a phantom "Rejoin" within ~25s.
@@ -143,7 +144,7 @@ export function useActiveHuddle(conversationId: string | null) {
   return { huddle: data ?? null, refetch };
 }
 
-/** Start a new huddle (or join the existing one), enforcing cap-2, then connect. */
+/** Start a new huddle (or join the existing one), enforcing the cap, then connect. */
 export function useHuddleActions() {
   const { user } = useAuth();
   const enter = useHuddleStore((s) => s.enter);
@@ -174,7 +175,7 @@ export function useHuddleActions() {
         });
         return;
       }
-      // cap-2 check on live participants (fresh heartbeat only — a stale row
+      // cap check on live participants (fresh heartbeat only — a stale row
       // from a dropped peer must not block a rejoin)
       const { data: parts } = await db.from('chat_huddle_participants')
         .select('user_id, left_at').eq('huddle_id', huddleId).is('left_at', null)

@@ -7,6 +7,7 @@ import { useMessages } from '@/hooks/chat/useMessages';
 import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
 import { Composer } from '@/features/chat-v2/components/Composer/Composer';
 import { MessageList } from '@/features/chat-v2/components/MessagePanel/MessageList';
+import { HuddleAddPeople } from './HuddleAddPeople';
 
 /**
  * HuddleWindow — large draggable + resizable Slack-style huddle surface.
@@ -80,6 +81,9 @@ export function HuddleWindow() {
   const markerPen = useHuddleStore((s) => s.markerPen);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
+  const HUDDLE_MAX = 4;
+  const canAddPeople = participants.length < HUDDLE_MAX;
+  const [addOpen, setAddOpen] = useState(false);
   const remoteSharing = !!active?.remoteSharing;
   const localSharing = !!active?.screenSharing;
   const showRemote = remoteSharing;
@@ -92,15 +96,16 @@ export function HuddleWindow() {
     const list = participants.length > 0
       ? participants
       : [{ userId: 'self', name: active!.conversationName, avatarUrl: '' }];
-    // Square tiles (aspect-ratio, not fixed height) so a portrait photo never
-    // stretches into a tall sliver when the window is narrow.
+    // Square tiles that SCALE with the window: aspect-ratio 1/1 + maxHeight:100%
+    // ties each tile to the available body height, so resizing the huddle window
+    // grows/shrinks the tiles instead of pinning them at a fixed 280px.
     const tileSize: React.CSSProperties = variant === 'stage'
-      ? { flex: '1 1 0', minWidth: 0, maxWidth: 280, aspectRatio: '1 / 1', maxHeight: 280 }
-      : { flex: 1, minWidth: 0, maxWidth: 160, aspectRatio: '1 / 1', maxHeight: 160 };
+      ? { flex: '1 1 220px', minWidth: 0, maxWidth: '100%', maxHeight: '100%', aspectRatio: '1 / 1' }
+      : { flex: '0 0 auto', width: 120, height: 120, minWidth: 0 };
     return (
       <div style={{
         display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap',
-        ...(variant === 'stage' ? { flex: 1, minWidth: 0, padding: 12 } : { padding: 12 }),
+        ...(variant === 'stage' ? { flex: 1, minWidth: 0, minHeight: 0, padding: 12 } : { padding: 12 }),
       }}>
         {list.map((p) => (
           <div key={p.userId} style={{
@@ -407,11 +412,29 @@ export function HuddleWindow() {
             }} />
           )}
         </button>
+        <button type="button" data-huddle-btn onClick={() => canAddPeople && setAddOpen(true)}
+          disabled={!canAddPeople}
+          title={canAddPeople ? 'Add people to the call' : `Call is full (max ${HUDDLE_MAX})`}
+          style={{ ...ctrlBtn('var(--ds-surface-sunken)'),
+            opacity: canAddPeople ? 1 : 0.45, cursor: canAddPeople ? 'pointer' : 'not-allowed' }}>
+          Add people
+        </button>
         <button type="button" data-huddle-btn onClick={leave} title="Leave huddle"
-          style={{ ...ctrlBtn('var(--ds-background-danger-bold)'), color: '#FFFFFF' }}>
+          style={{ ...ctrlBtn('var(--ds-background-danger-bold)'), color: 'var(--ds-text-inverse)' }}>
           Leave
         </button>
       </div>
+
+      {addOpen && active && (
+        <HuddleAddPeople
+          conversationId={active.conversationId}
+          conversationName={active.conversationName}
+          existingMemberIds={new Set(participants.map((p) => p.userId))}
+          remainingSlots={Math.max(0, HUDDLE_MAX - participants.length)}
+          onClose={() => setAddOpen(false)}
+          onAdded={() => setAddOpen(false)}
+        />
+      )}
     </div>
   );
 }
