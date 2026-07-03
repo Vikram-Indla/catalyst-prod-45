@@ -196,3 +196,23 @@ Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this
 | Live proof (build) | tsc clean, both gates pass |
 
 **P1-S11 done** (engine built, one dead file removed, one dead RPC dropped) — **with a caveat**: `TraceabilityPage.tsx`'s screenshot leg is blocked by D-011, an out-of-scope pre-existing bug, not by this slice's own code. Next per Plan Lock: **P1-S12** — defect spine 1 (single hook layer).
+
+## P1-S12 (defect spine 1 — single hook layer)
+
+| Item | Evidence |
+|---|---|
+| Research first | Agent-confirmed split-brain: `test-management/useDefects.ts` (`tm-*` keys, project-scoped stats, 3 real callers) vs `useDefectsG25.ts` (`g25-*` keys, org-wide broken stats, reachable only through one dead re-export shim) — canonical vs dead was clear-cut, not ambiguous |
+| Deleted `src/lib/shared-quality/hooks/useDefects.ts` | Zero importers confirmed (grep repo-wide) |
+| Deleted `src/hooks/useDefectsG25.ts` | Its only importer was the file just deleted; re-confirmed zero remaining importers (only self-reference + a generated, non-executing registry artifact) before deleting |
+| Sprint dual-write fixed (DEF-012) | `CreateStoryModal.tsx:845-871` resolved `form.sprintReleases[0]` down to a label string and wrote only `sprint` (text); it never used the id it already had. Now writes both `sprint` (unchanged) and `sprint_id` (new) — `sprintOptions.value` **is** `ph_jira_sprints.id` already, no extra lookup needed. `CreateDefectInput` type + `useCreateDefect`'s insert both updated to carry `sprint_id` through |
+| Backfill attempted, honestly no-op | Migration `20260703450000` — name-matches existing `tm_defects.sprint` text against `ph_jira_sprints.name` for any row missing `sprint_id`. Live-checked all 3 pre-existing rows' `sprint` values first (`'BAU-6075'` etc.) — they don't match any real sprint name (look like issue keys, not sprint names), so the backfill correctly finds 0 matches rather than fabricating one. Forward writes are what's actually fixed |
+| Text-column retirement **not** done | Per A2 S4 binding order: retirement requires grepping all 26 report hooks for readers first — that's a separate, later slice. `sprint` stays live, dual-write window open |
+| Accept grep | `grep -rn "\['g25-" src/hooks` → **0** |
+| **Found live: the canonical `get_defect_stats` RPC was itself broken** — not just the G25 duplicate. `FROM th_defects` (a dead legacy table, confirmed 0 rows) instead of `tm_defects`; its project filter was the literal tautology `(p_project_id IS NULL OR TRUE)` — always true, **never actually scoped by project despite accepting the parameter**; and its status/severity `WHERE` literals (`'new'`, `'fixed'`, `'verified'`, `'deferred'`, `'high'`, `'medium'`, `'low'`) don't exist in the real `tm_defect_status`/`tm_defect_severity` enums (`open/in_progress/resolved/closed/reopened` and `blocker/critical/major/minor/trivial`). Caught while trying to prove this slice's own "stats change when switching project" accept condition — both real projects returned all-zero. |
+| Fix | Migration `20260703460000` — rewrote `get_defect_stats` against `tm_defects`, correct column (`assignee_id` not `assigned_to`), correct enum literals, real `project_id = p_project_id` filter. JSON output keys unchanged (`useDefectStats`'s mapping wasn't touched) |
+| Live proof | `get_defect_stats` for DEMO project → `total: 2`; for SENAEI-BAU project → `total: 13` — genuinely different, project-scoped counts, both realistic given each project's actual row count (verified separately via plain `COUNT(*) GROUP BY project_id`) |
+| **Screenshot leg not possible** — `useDefectStats` has **zero live consumers anywhere in the routed app** (no dashboard widget, no defects-page stat cards call it). Wiring a new stats UI is a real feature, not this slice's mandate (Plan Lock's file list names only the two hook files + `CreateStoryModal.tsx`) — proven via rigorous SQL before/after instead, same discipline as D-011 |
+| Live proof: create-defect write path | Created a real QA Bug via the live modal (`Create → QA Bug`, project Senaei BAU, sprint "BAU-Sprint 7.1 - 07 Jul 26") — SQL confirmed `sprint_id` = the exact `ph_jira_sprints.id` for that sprint, not just the text label. Scratch row deleted after |
+| Live proof (build) | tsc clean, `lint:cre` + both ADS gates pass |
+
+**P1-S12 done** — one hook spine, sprint FK now actually written, and a genuinely broken (not just duplicated) stats RPC fixed along the way. Recorded as D-012. Next per Plan Lock: **P1-S13** — defect spine 2 (canonical detail everywhere).
