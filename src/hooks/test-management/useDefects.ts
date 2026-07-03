@@ -341,6 +341,7 @@ export function useCreateDefect() {
           due_date: input.due_date || null,
           parent_key: input.parent_key || null,
           sprint: input.sprint || null,
+          sprint_id: input.sprint_id || null,
           status: 'open',
           // Canonical Defect workflow initial status (bridged Option A): enum
           // stays 'open' (compat), workflow_status_key starts on the real track.

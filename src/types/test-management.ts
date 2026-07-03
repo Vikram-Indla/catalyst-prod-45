@@ -420,6 +420,8 @@ export interface CreateDefectInput {
   due_date?: string;
   parent_key?: string;
   sprint?: string;
+  /** ph_jira_sprints.id — canonical FK, write alongside `sprint` (DEF-012, dual-write window). */
+  sprint_id?: string;
   assigned_to?: string;
   case_id?: string;
   run_id?: string;
