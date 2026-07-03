@@ -35,3 +35,20 @@ Chain executed: repository (11 cases, folder tree) → set detail via row click 
 - Known-remaining (P1 scope, honestly stated): TC-0001 step-less case cannot receive verdict (EXE-004); no keyboard runner; no in-runner defect raise (panel is on cycle detail); defect full-page view absent (row click stays on list — S5 note).
 
 ## P0 EXIT CRITERION: **MET** — every routed surface works or visibly fails; zero dead clicks found in walkthrough; zero success-toasts-over-nothing observed; forced-failure error states implemented across the spine.
+
+## P1 execution (post-P0, same session)
+
+| Slice | Commit(s) | Live proof |
+|---|---|---|
+| P1-S1 immutable snapshot | 6c491a15c | Scratch step hard-deleted → `test_step_id` nulled, `action_snapshot`/status/actual_result survive (SQL before/after) |
+| P1-S2 pinned-version runner | c5d87830f | Edited a live step's text; runner (browser, TC-002) still showed pre-edit pinned text; **found+fixed D-005**: tm_test_case_versions RLS had reversed function args + read an empty disconnected membership table |
+| P1-S3 one snapshot writer | aeb794ee0 | **Found+fixed D-006**: the RPC itself had never run (4 nonexistent-column references) — fixed, then proved live via RPC call: version created, case.version bumped, step snapshot correct |
+| P1-S4a restore = append-only | 4e24c543b | Full v1→v2(edit)→restore-to-v1 cycle: live steps match v1 exactly, all 6 historical step rows survive soft-deleted (not destroyed), 3 versions deep (append-only) |
+| P1-S4b-1 archive replaces delete | b7cc4e8b1 | Archived TC-010 live (browser): row vanished from list, case+2 steps intact in DB (`archived=true`), restored |
+| — (unscoped, blocking) | 5c26c0fd1 | Fixed a foreign concurrent-session commit's forgotten file (`renderPersonOrDash.tsx`) that hard-broke a shared component — flagged separately, not folded into TestHub commits |
+
+**Versions tab (list + restore) confirmed live-working and ADS-token-clean already** — created a real version via the fixed RPC, saw it render correctly in `CatalystViewTestCase`'s Versions tab (browser), cleaned up.
+
+**Deferred (P1-S4b-2, next slice):** side-by-side version-diff view. `VersionDiffView.tsx` (`src/components/testhub/versioning/`) has a large pre-existing Tailwind-color debt (VER-023) that must be rewritten to ADS tokens before it can be wired into the Versions tab — a distinct, non-trivial sub-task, not started tonight. `src/components/releases/test-case-detail/**` (incl. `TestCaseVersionHistory.tsx`) stays until that port lands, per the original P0-S2 exclusion note.
+
+**Noted but explicitly out of scope:** `src/modules/project-work-hub/adapters/testCasesDataSource.ts` still exposes hard-delete via `useDeleteTestCase`, reachable from `MyWorkPage.tsx`'s generic BacklogPage bulk-action bar. Plan Lock scoped S4 to RepositoryPage only; this adapter shares a component (`BacklogPage`) used by many non-TestHub hubs, so touching it is higher blast radius than this slice's mandate. Flagged for a future slice.
