@@ -121,3 +121,30 @@ backend-only, no-UI-code-touched change. Full detail: `09_DECISIONS.md` D-016.
 **Not yet done:** nothing has been committed or pushed to git for this migration — it's applied live to
 staging but the file itself is still untracked in the working tree, same as the rest of this session's
 pattern. Awaiting explicit commit direction.
+
+## UPDATE 4 — committed, synced with a concurrent session, D-014 closed, Phase 3 scoped, handover written
+
+Committed and pushed the RLS fix. Push raced with a concurrent session (confirmed active, not
+hypothetical) — fetched, found a real migration-timestamp collision with their independently-added
+`20260703220000_restore_wrongly_deleted_bau_issues.sql`, renamed this feature's colliding file
+(D-017), merged cleanly (kept the real BAU-restore migration over their placeholder), pushed.
+Discovered via that merge that the other session already hit a worse version of the exact incident
+class flagged in DRIFT-002 and added a hard-stop `CLAUDE.md` section + a `PreToolUse` guard hook for it.
+
+Vikram gave two standing directives: defer prod strategy (D-013), prioritize functionality over
+migration/infra work — both saved to memory (`staging-first-prod-deferred`,
+`feedback-functionality-over-migrations`).
+
+Investigated D-014 (BR exclusion from sprints) before building anything — turned out to be already
+structurally satisfied (Business Requests live in a separate table with no path into `ph_issues`/sprint
+membership). Closed with no code, per Simplicity First.
+
+Kicked off Phase 3 discovery (2 parallel read-only agents): confirmed D-007's data-proof gates hold,
+found a real bug in the health engine's sprint adapter (uses deprecated `sprint_release` JSONB match
+instead of `sprint_id` FK), corrected a stale memory about a nonexistent d3/recharts timeline component,
+and mapped what's reusable vs. net-new for AI summary caching and the D-008 efficiency formula. Proposed
+and got agreement on a 6-slice Phase 3 order (see `07_HANDOVER.md`).
+
+**Session ended here on explicit handover request** — full handover written to `07_HANDOVER.md`
+(supersedes the prior version), including the proposed slice order, standing directives, and a
+copy-paste next-session prompt. No Phase 3 code was written this session — discovery and planning only.
