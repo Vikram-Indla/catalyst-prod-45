@@ -1,9 +1,9 @@
 # HANDOVER — CAT-SPRINTS-NATIVE-20260702-002
 
-**Written:** 2026-07-03, end of session 003
-**Session ended at:** user requested a copy-paste handover before ending the conversation
-**Git HEAD:** `3cbf32781e1dd7eebc4fcc707d9be5dae7c162bd`
-**Branch:** `main` (pushed — `main` and `origin/main` match at time of writing; this repo has an actively concurrent session pushing to `origin/main`, expect drift — `git fetch` before trusting "0 behind")
+**Written:** 2026-07-03, end of session 004
+**Session ended at:** user requested a handover to close out the conversation
+**Git HEAD:** `b8a9a87f9d0d2c11c21ffa0f0a1e626a68b08efe`
+**Branch:** `main` (pushed — `main` and `origin/main` match at time of writing; this repo has seen repeated concurrent-session activity across sessions 003 and 004 — `git fetch` before trusting "0 behind", per the standing `CLAUDE.md` "CONCURRENT SESSIONS & DB TARGETING" hard-stop)
 
 ---
 
@@ -16,47 +16,47 @@ Replace dead Jira-synced sprint data with Catalyst-native sprints: FK-only membe
 ## ACTIVE PLAN LOCK
 
 File: `03_PLAN_LOCK.md`
-Status: **DRAFT — still not re-locked as-built.** It only ever formally covered slice S0.1a (a schema/routing slice from early in the feature). Phases 0, 1, and 2 all shipped since then without a matching Plan Lock — recorded honestly as process debt across `08_DRIFT_LOG.md` DRIFT-001/002, not hidden. **Re-locking the Plan Lock as-built (or writing a fresh one for Phase 3) is the single biggest process debt item outstanding.**
+Status: **APPROVED — implemented** (Phase 3 Slice 1 only; this is a per-slice lock, not a feature-wide one)
 
-Key constraints still in force from the DRAFT lock + subsequent decisions:
-- Files forbidden (Phase 0 scope): legacy `Sprints.tsx`/`SprintBoard.tsx` (SAFe `iterations` table — untouched), `statusPalette.ts`, `defectWorkflow.ts`, kanban `columnConfig.ts`, `rh_*` release-ops stack.
-- No touching Jira sync, prod strategy (explicitly deferred by Vikram — see D-013), or the migration-ledger drift (explicitly deprioritized by Vikram in favor of functionality work — see memory `feedback-functionality-over-migrations`).
+Key constraints from the Slice 1 lock (still in force as historical record, slice itself is done):
+- Files to modify: `src/features/health/adapters/entity.ts` only — done.
+- Files forbidden: `WorkItemsSection.tsx`, `config.ts`, `ReleaseSidePanel.tsx`, `useHealthSignals.ts`, legacy `Sprints.tsx`/`SprintBoard.tsx`, `statusPalette.ts`, `defectWorkflow.ts`, kanban `columnConfig.ts`, `rh_*` release-ops, anything prod-targeting.
+- Timebox: was 2h, slice completed within budget.
+- **No Plan Lock exists yet for the next slice** (former Slice 3, AI summary + cache — see below). Write one before touching code, per the standing "no code before Plan Lock" rule. The old S0.1a lock is archived below a SUPERSEDED marker in the same file (see `08_DRIFT_LOG.md` DRIFT-003) — don't confuse it with the active Slice 1 content at the top of the file.
 
 ---
 
 ## CURRENT STATE
 
 ### What is working (verified live this session, not just claimed)
-- **Phase 0/1/2 sprint lifecycle** — list, create, DoD, awaiting_approval trigger, approve/reject, release link — verified via a 3-agent verification gate against live staging data (not just commit messages). See `06_VALIDATION_EVIDENCE.md` VG-001. Thin coverage (one real sprint, `88fc7fa1`, carries all the live evidence) but the mechanism works end-to-end.
-- **RLS hardening (D-015/D-016)** — approve/reject and sprint-status transitions are now enforced at the DB layer (`supabase/migrations/20260703260000_sprint_approval_rls_hardening.sql`), not just client code. Applied to staging, verified via `pg_policies`/`pg_proc` catalog queries (trigger functions confirmed to bypass RLS as table owner). Same fix extended to `ph_release_approvers` for parity.
-- **D-014 closed, no code needed** — traced the actual add-to-sprint code path; Business Requests structurally cannot reach sprints (separate table, no `sprint_id`/`project_id` FK, the work-item picker never queries `business_requests`).
-- **Release-detail loading bug** — confirmed fixed live (fresh load + hard reload, no stuck state).
-- **Migration-collision fix** — a concurrent session independently created a colliding migration filename (`20260703220000`); resolved by renaming this feature's file to `20260703270000_sprint_release_link.sql` (see D-017) and merging cleanly.
+- **Phase 0/1/2 sprint lifecycle** — unchanged from prior sessions, still verified per `06_VALIDATION_EVIDENCE.md` VG-001.
+- **Phase 3 Slice 1 — sprint health FK fix, shipped and live-verified.** `useEntityHealthAdapter` (`src/features/health/adapters/entity.ts`) now branches on `config.matchIssueByFk`: sprint configs query `ph_issues.eq('sprint_id', entityId)` directly (mirrors the proven `WorkItemsSection.tsx:239-251` pattern); release path (JSONB `contains` + fallback scan) is byte-for-byte unchanged. Verified via an authenticated Chrome MCP session against `localhost:8080` on two real staging sprints: an empty sprint (`bau-sprint-71-06-jul-26-2`) showed "0 Analysed / Looks healthy"; a 7-item sprint (`sprint28-03-jul-2025`) showed "7 Analysed", exact match to the visible work-items list. See `06_VALIDATION_EVIDENCE.md` VG-002 (static/code proof) and VG-003 (live DOM proof). Decision record: `09_DECISIONS.md` D-020.
+- **Sprint health UI already exists — Slice 2 (as originally scoped) is unnecessary.** The handover going into this session proposed Slice 2 as "wire a health card into `ReleaseSidePanel.tsx`" on the premise that no UI exists. That premise was wrong: `ReleaseDetailPage.tsx` (the shared page both release and sprint detail routes mount) already has a header toggle button (`ReleaseDetailPage.tsx:414-431`, gated on `config.kind !== 'milestone'` — already true for sprints) that swaps the whole right rail from `ReleaseSidePanel` to `HealthPanel` (`ReleaseDetailPage.tsx:558-577`), already wired with `scope: { moduleKey: 'sprint', sprintId: release.id }` for sprints. This was caught **before** writing a Plan Lock for redundant work, by tracing the actual UI live rather than trusting the prior session's narrative. See `09_DECISIONS.md` D-021 for the full correction. **No code needed for this item — it's closed.**
 
 ### What is NOT working / incomplete
-- **Sprint health engine has a real bug**: `src/features/health/adapters/entity.ts` (`useEntityHealthAdapter`) matches sprint membership via the deprecated `sprint_release` JSONB field, not the `sprint_id` FK — contradicts `SPRINT_CONFIG.matchIssueByFk` in `src/lib/entity-hub/config.ts:152-153`, which explicitly documents that path as dead for sprints. **Any sprint health score today is silently wrong.** This is the recommended first Phase-3 slice — small, contained, high-leverage.
-- **No AI summary caching exists for sprints or releases** — `summarize-release` edge function has zero caching (every "Summarize" click re-invokes the LLM). The cached-by-hash pattern the objective wants (D-007/S3.1) exists in a *different* feature (For You board insights: `hashBoardState` + `board_insight_cache` table) and needs to be ported, not assumed to already exist.
-- **No formula exists for D-008's efficiency score** (40% completion + 25% flow-efficiency + 20% scope-stability + 15% approval-timeliness) — must be built fresh; nothing in the codebase computes this composite today.
-- **No reusable timeline/chart component exists for scope-change history (S3.3)** — corrected a stale memory on this; `d3`/`recharts` are installed as deps but nothing pre-built in this repo actually uses them for a lane/timeline view. Would be genuinely new UI work.
-- **Prod strategy (D-013)** — explicitly deferred, not pending action. Prod still has no `ph_jira_sprints` table.
-- **Migration-ledger drift** (`supabase db push --linked` fails on unrecorded/duplicate versions) — explicitly deprioritized by Vikram this session in favor of functionality work. Flagged, not fixed, not currently being worked.
+- **No AI summary caching exists for sprints or releases** — unchanged from before this session. `summarize-release` edge function has zero caching; the cached-by-hash pattern (D-007/S3.1) exists only in a different feature (For You board insights: `hashBoardState` + `board_insight_cache`) and needs porting, not assuming-exists.
+- **No formula exists for D-008's efficiency score** — unchanged, must be built fresh.
+- **No reusable timeline/chart component for scope-change history** — unchanged, genuinely new UI work.
+- **Prod strategy (D-013)** — still explicitly deferred. Prod (`lmqwtldpfacrrlvdnmld`) still has no `ph_jira_sprints` table; confirmed again this session via the Supabase MCP's `list_projects` (it returned exactly one project — prod — meaning the MCP available this session cannot reach staging directly; staging access this session was via anon-key PostgREST + an authenticated browser session, not the Supabase MCP tools).
+- **Migration-ledger drift** — unchanged, still explicitly deprioritized by Vikram in favor of functionality work.
+- **`D-018` gap** — `WorkItemsSection.tsx` code comments reference a `D-018` decision (about the sprint membership changelog trigger) that was never actually written into `09_DECISIONS.md`. Noticed this session while picking the next decision number; left as-is (pre-existing gap, not this session's scope) — flagging here so the next session doesn't accidentally reuse or misassign that number. New entries this session are D-020 and D-021.
 
 ### What was last touched
-File: none — last action was discovery (2 parallel read-only agents), no code written this session for Phase 3 yet.
-State: Phase 3 is **scoped and ordered, not started**.
+File: `features/CAT-SPRINTS-NATIVE-20260702-002/09_DECISIONS.md`, `06_VALIDATION_EVIDENCE.md`, `sessions/004_continue_feature.md` (docs-only, commit `b8a9a87f9`)
+State: complete, committed, pushed. No code changes pending; working tree clean at handover time.
 
 ---
 
-## PHASE 3 — PROPOSED SLICE ORDER (agreed with Vikram, not yet Plan-Locked)
+## PHASE 3 — SLICE ORDER (renumbered per D-021; former Slice 2 closed with no build)
 
-1. **Health FK fix** — `src/features/health/adapters/entity.ts`: switch sprint membership match from `sprint_release` JSONB `.contains()` to `sprint_id` FK, matching `SPRINT_CONFIG.matchIssueByFk`. Small, contained bug fix — do this first, everything else about sprint health is untrustworthy until it's fixed.
-2. **Wire sprint health into the side panel** — health engine already exists and is wired in 5 other places (`BoardManagerPage.tsx`, `BacklogPage.atlaskit.tsx`, `FilterPreviewPage.tsx`, `DependenciesView.tsx`, `ReleaseDetailPage.tsx` via a full-panel toggle) but has zero references in `ReleaseSidePanel.tsx` (1,693 lines, checked). Needs a `config.kind === 'sprint'`-gated health card, pattern-matching the existing `DefinitionOfDoneCard` gate.
-3. **AI summary + cache (S3.1)** — port `hashBoardState`'s SHA-256 hash-cache pattern (currently only in `CatyBoardInsight.tsx` + `board_insight_cache` table) into a new sprint-scoped cache table; wire the existing `ReleaseSummaryCard` component (`src/components/releases/detail/summarize/ReleaseSummaryCard.tsx` — already has an `entityLabel?: string` prop specifically for this, defaults to `'Release'`) with `entityLabel="Sprint"`; needs a sprint branch in `summarize-release` edge function or a new one, plus a sprint-scoped store/hook (current `catyReleaseSummarizeStore.ts` / `useReleaseSummaryStream.ts` are keyed on `releaseId`).
-4. **Time-in-status / efficiency (S3.5)** — build D-008's formula fresh. Real transition data confirmed available: `work_item_transitions` has 2,095 rows staging-wide (2,085 backfilled + 10 native, up from 2 at last checkpoint), with real non-null dwell times (`time_in_from_status_ms`) on 1,278 of them.
-5. **Scope-change history (S3.3)** — genuinely new UI, no reusable chart/timeline component exists. Do this after the lower-risk slices, budget more time.
-6. **Dependencies (S3.2)** — least specified in the original objective; lowest priority.
+1. ~~Health FK fix~~ — **DONE** (Slice 1, this session, D-020).
+2. ~~Wire sprint health into the side panel~~ — **CLOSED, no code needed** (was Slice 2, D-021 — already live via `ReleaseDetailPage.tsx`'s existing toggle).
+3. **AI summary + cache (was Slice 3, now next)** — port `hashBoardState`'s SHA-256 hash-cache pattern (currently only in `CatyBoardInsight.tsx` + `board_insight_cache` table) into a new sprint-scoped cache table; wire the existing `ReleaseSummaryCard` component (`src/components/releases/detail/summarize/ReleaseSummaryCard.tsx` — already has an `entityLabel?: string` prop specifically for this, defaults to `'Release'`) with `entityLabel="Sprint"`; needs a sprint branch in `summarize-release` edge function or a new one, plus a sprint-scoped store/hook (current `catyReleaseSummarizeStore.ts` / `useReleaseSummaryStream.ts` are keyed on `releaseId`).
+4. **Time-in-status / efficiency (was Slice 4)** — build D-008's formula fresh. Real transition data confirmed available (as of last check): `work_item_transitions` had 2,095 rows staging-wide with real non-null dwell times on 1,278 of them — re-verify counts before building, this is from a prior session's snapshot, not re-checked this session.
+5. **Scope-change history (was Slice 5)** — genuinely new UI, no reusable chart/timeline component exists. Budget more time.
+6. **Dependencies (was Slice 6)** — least specified in the original objective; lowest priority.
 
-None of these are Plan-Locked yet. **The next session should write a Plan Lock for slice 1 (health FK fix) before touching code**, per the standing "no code before Plan Lock" rule — this handover is not a substitute for that.
+**None of these are Plan-Locked yet. The next session should write a Plan Lock for slice 3 (AI summary + cache) before touching code**, per the standing "no code before Plan Lock" rule.
 
 ---
 
@@ -64,14 +64,14 @@ None of these are Plan-Locked yet. **The next session should write a Plan Lock f
 
 | File | Status | Notes |
 |---|---|---|
-| `supabase/migrations/20260703260000_sprint_approval_rls_hardening.sql` | complete, applied to staging | D-015/D-016 RLS fix |
-| `supabase/migrations/20260703270000_sprint_release_link.sql` | complete (renamed) | was `20260703220000_...`, renamed to resolve a version collision, D-017 |
-| `features/CAT-SPRINTS-NATIVE-20260702-002/06_VALIDATION_EVIDENCE.md` | complete | VG-001 verification gate results |
-| `features/CAT-SPRINTS-NATIVE-20260702-002/08_DRIFT_LOG.md` | complete | DRIFT-002 (concurrent-session commit collision) |
-| `features/CAT-SPRINTS-NATIVE-20260702-002/09_DECISIONS.md` | complete | D-011 through D-017 |
-| `features/CAT-SPRINTS-NATIVE-20260702-002/sessions/003_continue_feature.md` | complete | full session narrative |
+| `src/features/health/adapters/entity.ts` | complete | Phase 3 Slice 1 — FK-match branch for sprint configs |
+| `features/CAT-SPRINTS-NATIVE-20260702-002/03_PLAN_LOCK.md` | complete | rewritten for Phase 3 Slice 1; old S0.1a lock archived below a SUPERSEDED marker in the same file |
+| `features/CAT-SPRINTS-NATIVE-20260702-002/06_VALIDATION_EVIDENCE.md` | complete | VG-002 (static/code proof), VG-003 (live DOM proof, both sprint kinds) |
+| `features/CAT-SPRINTS-NATIVE-20260702-002/08_DRIFT_LOG.md` | complete | DRIFT-003 (Plan Lock supersession record) |
+| `features/CAT-SPRINTS-NATIVE-20260702-002/09_DECISIONS.md` | complete | D-020 (Slice 1 fix), D-021 (Slice 2 closed, no build) |
+| `features/CAT-SPRINTS-NATIVE-20260702-002/sessions/004_continue_feature.md` | complete | full session narrative |
 
-No Phase 3 code has been written yet — discovery only.
+Commits: `9481249` (Slice 1 fix + docs), `b8a9a87f9` (D-020/D-021 + VG-003 docs). Both pushed to `origin/main`.
 
 ---
 
@@ -81,13 +81,17 @@ Do not touch these in the next session without a fresh Plan Lock decision:
 - `src/pages/Sprints.tsx`, `SprintBoard.tsx` — legacy SAFe `iterations` stack, explicitly untouched
 - `src/lib/statusPalette.ts`, `defectWorkflow.ts`, kanban `columnConfig.ts` — global regression surface (D-006)
 - `rh_*` release-ops tables/pages — untouched
-- Anything prod-targeting (`lmqwtldpfacrrlvdnmld`) — explicitly deferred per Vikram
+- Anything prod-targeting (`lmqwtldpfacrrlvdnmld`) — explicitly deferred per Vikram (D-013)
+- `src/components/releases/detail/WorkItemsSection.tsx` — reference implementation for the FK match pattern, correct as-is, don't touch without reason
+- `src/pages/release-hub/ReleaseDetailPage.tsx` — the health toggle + `HealthPanel` wiring here is already correct for sprints (D-021); don't "fix" or duplicate it
 
 ---
 
 ## SCREENSHOTS
 
-No new screenshots this session — RLS fix was backend-only (no UI touched), verified via SQL catalog queries instead. Prior session's full screenshot round (list, create modal, detail states, kebab menu) still stands, referenced in `sessions/002_continue_feature.md`.
+No screenshots saved to the feature folder this session — the Slice 1 fix is backend-only (no visual change), and the Slice 2 live-verification was done via ephemeral Chrome MCP browser actions (not saved to disk), reproducible via:
+- `http://localhost:8080/project-hub/BAU/sprints/bau-sprint-71-06-jul-26-2` → click "View sprint health" → expect "0 Analysed"
+- `http://localhost:8080/project-hub/BAU/sprints/sprint28-03-jul-2025` → click "View sprint health" → expect "7 Analysed"
 
 ---
 
@@ -95,14 +99,20 @@ No new screenshots this session — RLS fix was backend-only (no UI touched), ve
 
 ```bash
 npx tsc -p tsconfig.app.json --noEmit
-# 183 errors — matches pre-existing baseline, zero new errors from this session's merge
+# 183 errors — matches the pre-existing baseline exactly (07_HANDOVER.md prior version), zero new errors
+
+npm run lint:colors:gate
+# ✅ 0 = baseline 0
+
+npm run audit:ads:gate
+# ✅ no category above baseline (tokens/typography actually dropped slightly — unrelated to this session, not ratcheted down)
 ```
 
-Full verification-gate raw evidence (DB probes, code-diff review, live DOM checks): `06_VALIDATION_EVIDENCE.md` VG-001.
+Full evidence: `06_VALIDATION_EVIDENCE.md` VG-002 (static), VG-003 (live DOM, two real sprints).
 
 Outstanding validations needed:
-- Live click-through regression test of the RLS fix (Chrome MCP disconnected mid-session; only catalog-verified, not click-tested)
-- D-007 gate proof (3) DB-level re-verification (code-level confirmed clean; a live `information_schema`/view check on `vw_sprint_jira_progress` would close the loop fully)
+- None for Slice 1/2 — both are closed with live proof.
+- Before Slice 3 (AI summary + cache): re-verify `work_item_transitions` row counts (D-007 gate data) since the last snapshot is from a prior session.
 
 ---
 
@@ -110,17 +120,19 @@ Outstanding validations needed:
 
 See `08_DRIFT_LOG.md` for full log.
 
-Active drift events: 2 (DRIFT-001, DRIFT-002 — both are process-debt records, not currently-open incidents)
-Most recent: DRIFT-002 — a concurrent session committed session 002's pending work mid-conversation, including this session's own in-progress session-log file, confirming two Claude Code sessions were operating on the same non-worktree checkout simultaneously. **Note for next session:** the *other* concurrent session has since added a hard-stop `CLAUDE.md` section ("CONCURRENT SESSIONS & DB TARGETING") and a `PreToolUse` hook (`.claude/hooks/supabase-linked-guard.sh`) directly addressing this exact class of incident — read that section before running any more `supabase --linked` commands or assuming you have the checkout to yourself.
+Active drift events: 3 (DRIFT-001, DRIFT-002, DRIFT-003 — all are process-debt/supersession records, not currently-open incidents).
+Most recent: DRIFT-003 — `03_PLAN_LOCK.md` only ever formally covered slice S0.1a (long shipped); rewritten this session for Phase 3 Slice 1, old content archived below a SUPERSEDED marker in the same file rather than deleted.
+
+**New this session (not yet its own DRIFT entry, noting here instead):** `origin/main` had accumulated ~30 unrelated commits from other concurrent sessions between session 003 and session 004 (Reports Hub, Workflow Studio, CRE work, etc.). Checked for file-level conflicts before merging (`git log origin/main -- <changed files>`) — found exactly one hit, the original creation commit of `entity.ts`, already an ancestor, not a real conflict. Fast-forward merge was safe and clean. No incident, but a reminder that this checkout is genuinely shared across multiple concurrent sessions — always `git fetch` + check for file-level overlap before merging/pushing, per the standing hard-stop rule.
 
 ---
 
-## STANDING DIRECTIVES FROM VIKRAM (this session)
+## STANDING DIRECTIVES FROM VIKRAM (carried forward, still in force)
 
-1. **"dont worry ever about prod its long way. first stabilize stageing"** — prod strategy (D-013) is explicitly deferred, not a blocker. (Saved to memory: `staging-first-prod-deferred`.)
-2. **"lets focus on functionality not migrations here"** — said right after the above, in response to a proposed migration-ledger-drift audit. Don't self-select into infra/CI hygiene work; default to functionality unless explicitly asked. (Saved to memory: `feedback-functionality-over-migrations`.)
+1. **Prod is deferred** — don't work on prod strategy (D-013). (Memory: `staging-first-prod-deferred`.)
+2. **Functionality over migration/infra hygiene** — don't self-select into drift/ledger cleanup work unless explicitly asked. (Memory: `feedback-functionality-over-migrations`.)
 
-Both are durable — they should shape prioritization in future sessions on this repo, not just this conversation.
+Both remain durable across sessions on this repo.
 
 ---
 
@@ -134,23 +146,29 @@ continue feature CAT-SPRINTS-NATIVE-20260702-002
 Read (in order):
   features/CAT-SPRINTS-NATIVE-20260702-002/00_READ_ME_FIRST.md
   features/CAT-SPRINTS-NATIVE-20260702-002/01_OBJECTIVE.md
-  features/CAT-SPRINTS-NATIVE-20260702-002/03_PLAN_LOCK.md
-  features/CAT-SPRINTS-NATIVE-20260702-002/07_HANDOVER.md   <- this file, read fully, it has the Phase 3 slice order
+  features/CAT-SPRINTS-NATIVE-20260702-002/03_PLAN_LOCK.md   <- Slice 1 lock is at the TOP; old S0.1a lock is archived below a SUPERSEDED marker further down in the same file, don't confuse the two
+  features/CAT-SPRINTS-NATIVE-20260702-002/07_HANDOVER.md    <- this file, read fully, has the renumbered Phase 3 slice order
   features/CAT-SPRINTS-NATIVE-20260702-002/08_DRIFT_LOG.md
-  features/CAT-SPRINTS-NATIVE-20260702-002/09_DECISIONS.md  <- D-011 through D-017 especially
-  features/CAT-SPRINTS-NATIVE-20260702-002/06_VALIDATION_EVIDENCE.md  <- VG-001
+  features/CAT-SPRINTS-NATIVE-20260702-002/09_DECISIONS.md   <- D-020/D-021 especially (Slice 1 done, Slice 2 closed with no build)
+  features/CAT-SPRINTS-NATIVE-20260702-002/06_VALIDATION_EVIDENCE.md  <- VG-002/VG-003
 
 Also read CLAUDE.md's "CONCURRENT SESSIONS & DB TARGETING — HARD STOP" section before any
-git or supabase --linked command — a different concurrent session hit a real incident this
-class of risk caused and added hard guardrails; assume they may still be running.
+git or supabase command — this checkout has had real concurrent-session activity across
+multiple sessions now (30+ unrelated commits landed on origin/main during session 004 alone).
+Always `git fetch origin main` and check `git log --oneline main..origin/main` before trusting
+local state, and check for file-level overlap (`git log origin/main -- <your files>`) before
+merging if there's any drift.
 
 Then run pre-flight:
 pwd && git branch --show-current && git status --short --untracked-files=all && git stash list --max-count=5
-git fetch origin main && git log --oneline main..origin/main   <- check for concurrent-session drift before doing anything
+git fetch origin main && git log --oneline main..origin/main
 
-Next action: write a Plan Lock for Phase 3 slice 1 (health FK fix — src/features/health/adapters/entity.ts
-switch sprint-membership match from ph_issues.sprint_release JSONB to the sprint_id FK, matching
-SPRINT_CONFIG.matchIssueByFk in src/lib/entity-hub/config.ts). Get it approved before writing code.
-Standing directives: prod is deferred (D-013), prioritize functionality over migration/infra hygiene
-work unless explicitly asked.
+Next action: write a Plan Lock for Phase 3 Slice 3 (AI summary + cache for sprints — port
+hashBoardState's SHA-256 hash-cache pattern from board_insight_cache into a new sprint-scoped
+cache table; wire ReleaseSummaryCard with entityLabel="Sprint"; add a sprint branch to
+summarize-release or a new edge function; new sprint-scoped store/hook since the current
+catyReleaseSummarizeStore.ts/useReleaseSummaryStream.ts are keyed on releaseId).
+Get the Plan Lock approved before writing code.
+Standing directives: prod is deferred (D-013), prioritize functionality over migration/infra
+hygiene work unless explicitly asked.
 ```
