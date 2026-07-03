@@ -121,8 +121,8 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
   },
   sprint: {
     runtimeReadWired: false, runtimeReadNote: 'no canonical read surface — sprint status shown as raw text',
-    runtimeWriteWired: true, runtimeWriteNote: 'useCanonicalSprintUpdate (useEntities.ts) → status (A-lite) + recordAdvisoryStatusChange',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'ReleaseConfirmationModal (complete) → status, reason preflight before write + recordAdvisoryStatusChange; useCanonicalSprintUpdate kept for programmatic writes',
+    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal stacked over the sprint/release confirmation modal (F3)',
   },
 };
 
