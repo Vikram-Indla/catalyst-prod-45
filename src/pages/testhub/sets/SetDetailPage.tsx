@@ -152,7 +152,7 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',
@@ -163,7 +163,7 @@ function AddCasesModal({
         maxHeight: '80vh',
         background: 'var(--ds-surface-overlay)',
         borderRadius: 8,
-        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         zIndex: 301,
         display: 'flex',
         flexDirection: 'column',
@@ -321,7 +321,7 @@ function AddToCycleDropdown({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         padding: '4px 0',
         minWidth: 200,
         zIndex: 9999,

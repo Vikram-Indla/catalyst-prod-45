@@ -636,11 +636,11 @@ function RightPanel({ title, subtitle, onClose, children }: {
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.25))' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-blanket)' }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, width: 480, height: '100vh', zIndex: 8001,
         background: 'var(--ds-surface-overlay)',
-        boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
@@ -1086,7 +1086,7 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',

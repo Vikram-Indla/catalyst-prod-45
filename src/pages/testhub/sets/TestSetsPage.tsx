@@ -190,7 +190,7 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
           position: 'fixed', top: pos.top, left: pos.left,
           background: 'var(--ds-surface-overlay)',
           border: '1px solid var(--ds-border)',
-          borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+          borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay)',
           padding: '4px 0', minWidth: 160, zIndex: 9999,
         }}>
           <button role="menuitem" style={item}

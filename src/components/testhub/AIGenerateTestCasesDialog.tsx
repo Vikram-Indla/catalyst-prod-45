@@ -327,7 +327,7 @@ export function AIGenerateTestCasesDialog({
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerating || !prompt.trim()}
-                  className="min-w-[140px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+                  className="min-w-[140px]" style={{ background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}
                 >
                   {isGenerating ? (
                     <>
@@ -384,7 +384,7 @@ export function AIGenerateTestCasesDialog({
               className="flex-1 min-h-0 flex flex-col gap-4 overflow-hidden"
             >
               {/* Summary */}
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-500/10 to-blue-400/10 rounded-lg border shrink-0">
+              <div className="flex items-center justify-between p-4 rounded-lg border shrink-0" style={{ background: 'var(--ds-background-information)' }}>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                     <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -580,7 +580,7 @@ export function AIGenerateTestCasesDialog({
                   <Button
                     onClick={handleAddSelected}
                     disabled={selectedTestCases.size === 0}
-                    className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+                    style={{ background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Selected Test Cases
