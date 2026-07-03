@@ -15,6 +15,7 @@ import Textarea from '@atlaskit/textarea';
 import { ArrowLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { TMCycleScope, TMCaseStep, RunStatus } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
+import { UnsavedChangesModal } from '@/components/shared/UnsavedChangesModal';
 
 const ATTACHMENT_BUCKET = 'testhub-attachments';
 const OFFLINE_QUEUE_KEY = 'testhub_offline_queue';
@@ -163,6 +164,27 @@ export default function ExecutionPage() {
 
   const selectedScope = scopeItems.find(s => s.id === selectedScopeId) ?? null;
 
+  // P1-S15 (EXE-003): nav guard on dirty runner state — StepRunner reports
+  // dirty status up; this page gates the two exit points (Back button,
+  // case-list click) plus tab close/refresh.
+  const [runnerDirty, setRunnerDirty] = useState(false);
+  const [pendingDiscard, setPendingDiscard] = useState<(() => void) | null>(null);
+
+  useEffect(() => {
+    if (!runnerDirty) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [runnerDirty]);
+
+  const guardedNavigate = useCallback((action: () => void) => {
+    if (runnerDirty) {
+      setPendingDiscard(() => action);
+      return;
+    }
+    action();
+  }, [runnerDirty]);
+
   if (isCycleError || isScopeError) {
     const err = (isCycleError ? cycleError : scopeError) as Error | null;
     return (
@@ -200,7 +222,7 @@ export default function ExecutionPage() {
       }}>
         <div style={{ padding: 16, borderBottom: '1px solid var(--ds-border)' }}>
           <button
-            onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycleId}`)}
+            onClick={() => guardedNavigate(() => navigate(`/testhub/${projectKey}/cycles/${cycleId}`))}
             style={{
               background: 'none',
               border: 'none',
@@ -225,7 +247,7 @@ export default function ExecutionPage() {
           {scopeItems.map(item => (
             <div
               key={item.id}
-              onClick={() => setSelectedScopeId(item.id)}
+              onClick={() => guardedNavigate(() => setSelectedScopeId(item.id))}
               style={{
                 padding: '12px 16px',
                 cursor: 'pointer',
@@ -259,7 +281,11 @@ export default function ExecutionPage() {
           <StepRunner
             scope={selectedScope}
             cycleId={cycleId!}
-            onSaved={() => queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] })}
+            onSaved={() => {
+              setRunnerDirty(false);
+              queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+            }}
+            onDirtyChange={setRunnerDirty}
           />
         ) : (
           <div style={{ padding: 48, textAlign: 'center', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
@@ -267,6 +293,12 @@ export default function ExecutionPage() {
           </div>
         )}
       </div>
+      <UnsavedChangesModal
+        isOpen={!!pendingDiscard}
+        onCancel={() => setPendingDiscard(null)}
+        onDiscard={() => { pendingDiscard?.(); setPendingDiscard(null); }}
+        message="You have an unsaved execution result. Leaving now will discard it."
+      />
     </div>
   );
 }
@@ -373,10 +405,14 @@ function StepRunner({
   scope,
   cycleId,
   onSaved,
+  onDirtyChange,
 }: {
   scope: TMCycleScope;
   cycleId: string;
   onSaved: () => void;
+  // P1-S15 (EXE-003): parent gates nav (Back button, case-list clicks,
+  // beforeunload) on this — StepRunner owns the actual dirty state.
+  onDirtyChange: (dirty: boolean) => void;
 }) {
   const { data: caseDetail, isLoading } = useTestCase(scope.case_id);
   // P1-S2: steps come from the version pinned at scope-add time, not live
@@ -384,6 +420,9 @@ function StepRunner({
   // tested. Title/preconditions above still read live (unaffected by VER-001).
   const { data: steps = [] } = useExecutionSteps(scope.case_id, scope.locked_version);
   const [stepStates, setStepStates] = useState<StepState[]>([]);
+  // P1-S15 (EXE-004): a 0-step case has no per-step buttons to record a
+  // verdict through — this is the case-level equivalent.
+  const [caseVerdict, setCaseVerdict] = useState<StepStatus | null>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -392,6 +431,15 @@ function StepRunner({
   const isOnline = useOnlineStatus();
   const queryClient = useQueryClient();
   const [offlineQueueCount, setOfflineQueueCount] = useState(() => readQueue().length);
+
+  const isDirty = steps.length === 0
+    ? caseVerdict !== null
+    : stepStates.some(s => s.status !== 'NOT_RUN' || s.actualResult.trim() !== '') || pendingFiles.length > 0;
+
+  useEffect(() => { onDirtyChange(isDirty); }, [isDirty, onDirtyChange]);
+  // Runner unmounts on scope switch (parent gates that click already) — clear
+  // the flag so a stale "dirty" doesn't linger against the next case.
+  useEffect(() => () => onDirtyChange(false), []);
 
   // Flush offline queue when coming back online
   useEffect(() => {
@@ -421,6 +469,7 @@ function StepRunner({
   // Reset step states when scope changes
   useEffect(() => {
     setStepStates([]);
+    setCaseVerdict(null);
     setPendingFiles([]);
     timer.reset();
   }, [scope.id]);
@@ -434,8 +483,14 @@ function StepRunner({
     setStepStates(prev => prev.map((s, i) => i === idx ? { ...s, actualResult: value } : s));
   };
 
+  const updateCaseVerdict = (status: StepStatus) => {
+    setCaseVerdict(status);
+    if (!timer.running) timer.start();
+  };
+
   const handleReset = () => {
     setStepStates(steps.map(s => ({ stepId: s.id, status: 'NOT_RUN', actualResult: '' })));
+    setCaseVerdict(null);
     setPendingFiles([]);
     timer.reset();
   };
@@ -447,7 +502,11 @@ function StepRunner({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const runStatus = computeRunStatus(stepStates);
+      // EXE-004: a 0-step case has no per-step aggregate to compute from —
+      // the case-level verdict button IS the verdict.
+      const runStatus: RunStatus = steps.length === 0
+        ? ((caseVerdict ?? 'NOT_RUN') as RunStatus)
+        : computeRunStatus(stepStates);
       const dbStatus = runStatus.toLowerCase() as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
 
       // ── Offline path ──────────────────────────────────────────────────────────
@@ -473,9 +532,18 @@ function StepRunner({
         writeQueue(q);
         setOfflineQueueCount(q.length);
         setShowSaveModal(false);
+        // EXE-002 minimum: attachments can't be queued offline (File objects
+        // aren't serializable into localStorage) — warn instead of silently
+        // dropping them, so the tester knows to re-attach after reconnecting.
+        if (pendingFiles.length > 0) {
+          catalystToast.error(
+            `Offline — result queued, but ${pendingFiles.length} attachment${pendingFiles.length > 1 ? 's' : ''} could not be saved. Re-attach after reconnecting.`
+          );
+        } else {
+          catalystToast.success('Offline — result queued. Will sync on reconnect.');
+        }
         setPendingFiles([]);
         timer.reset();
-        catalystToast.success('Offline — result queued. Will sync on reconnect.');
         onSaved();
         return;
       }
@@ -668,8 +736,19 @@ function StepRunner({
 
       {/* Steps */}
       {steps.length === 0 ? (
-        <div style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: '24px 0' }}>
-          No steps defined for this test case.
+        <div style={{
+          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 16, marginBottom: 24,
+          background: 'var(--ds-surface)',
+        }}>
+          <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)', marginBottom: 12 }}>
+            No steps defined for this test case — record a case-level verdict instead.
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <StepBtn label="Pass" icon="✓" active={caseVerdict === 'PASSED'} color="var(--ds-text-success)" onClick={() => updateCaseVerdict('PASSED')} />
+            <StepBtn label="Fail" icon="✗" active={caseVerdict === 'FAILED'} color="var(--ds-text-danger)" onClick={() => updateCaseVerdict('FAILED')} />
+            <StepBtn label="Block" icon="⊘" active={caseVerdict === 'BLOCKED'} color="var(--ds-text-warning)" onClick={() => updateCaseVerdict('BLOCKED')} />
+            <StepBtn label="Skip" icon="→" active={caseVerdict === 'SKIPPED'} color="var(--ds-text-subtlest)" onClick={() => updateCaseVerdict('SKIPPED')} />
+          </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
@@ -782,12 +861,15 @@ function StepRunner({
         )}
         <button
           onClick={() => setShowSaveModal(true)}
+          disabled={steps.length === 0 && caseVerdict === null}
+          title={steps.length === 0 && caseVerdict === null ? 'Pick a verdict above first' : undefined}
           style={{
             padding: '8px 24px',
             background: 'var(--ds-background-brand-bold)',
             color: 'var(--ds-text-inverse)',
             border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
-            cursor: 'pointer',
+            cursor: (steps.length === 0 && caseVerdict === null) ? 'not-allowed' : 'pointer',
+            opacity: (steps.length === 0 && caseVerdict === null) ? 0.5 : 1,
           }}
         >
           {completedRunCount === 0 ? 'Save execution' : 'Add run'}

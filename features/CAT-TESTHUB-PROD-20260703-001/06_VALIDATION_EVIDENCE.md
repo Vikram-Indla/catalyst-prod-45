@@ -250,3 +250,18 @@ Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this
 | Live proof (build) | tsc clean, all 3 gates pass, full `npm run build` succeeds |
 
 **P1-S14 done** — testhub block is slug/key-pure; `saved_filters`' slug infrastructure now exists for the whole app to adopt. Next per Plan Lock: **P1-S15** — runner UX floor.
+
+## P1-S15 (runner UX floor)
+
+| Item | Evidence |
+|---|---|
+| Research first | Agent confirmed all three gaps precisely, plus the repo's existing canonical pattern for this exact problem: `src/components/shared/UnsavedChangesModal.tsx` + a `pendingDiscard`/`beforeunload` idiom already used in `MapStatusesPage.tsx` — reused verbatim, no new pattern invented |
+| EXE-003 (dirty-nav guard) | `StepRunner` computes `isDirty` (any step touched, any pending attachment, or a case-level verdict set) and reports it up via a new `onDirtyChange` prop. Parent `ExecutionPage` gates both exit points — the "Back to cycle" button and every case-list row click — through a `guardedNavigate` wrapper, plus a `beforeunload` listener for tab-close. `UnsavedChangesModal` renders on any blocked action |
+| EXE-004 (0-step verdict) | Added a case-level Pass/Fail/Block/Skip control (reusing the existing `StepBtn` component — no hand-rolled buttons) that renders when `steps.length === 0`, replacing the old dead-end "No steps defined" message. `handleSave` branches to use this verdict directly instead of aggregating from `stepStates` (which was hard-coded to always return `NOT_RUN` for an empty array). Save button is disabled until a verdict is picked for 0-step cases |
+| EXE-002 minimum (offline attachment warning) | The offline-queue path silently called `setPendingFiles([])` with no attachment-specific warning (File objects can't be serialized into the localStorage queue). Now checks `pendingFiles.length` and shows a specific error toast ("N attachment(s) could not be saved — re-attach after reconnecting") instead of the generic success toast when attachments would be lost. The online-path failure toast (upload errors) already existed and was left unchanged |
+| Live proof: dirty guard | Real 0-step case (RVTC-035, cycle RVCYC-003): clicked Pass → clicked "Back to cycle" → `UnsavedChangesModal` appeared with the exact message → "Keep editing" correctly stayed on the page with state intact (verified via a second screenshot, timer still running, Pass still active) |
+| Live proof: 0-step save | Clicked "Add run" → `SaveRunModal` → saved → SQL confirmed a real terminal run (`status: 'passed'`, `completed_at` set) — the exact accept condition ("0-step case can record verdict"). Scratch run deleted after, scope status reverted to match the remaining real run |
+| Live proof (light+dark) | Re-tested the full dirty-guard flow in light mode (separate case/session) — modal, buttons, disabled-state opacity all token-correct in both themes, "Discard changes" correctly navigated away |
+| Live proof (build) | tsc clean, all 3 gates pass |
+
+**P1-S15 done** — no silent data-loss path remains in the runner: dirty nav is blocked with a real confirm, 0-step cases have a real save path, and offline attachment loss is now a warning instead of silence. Next per Plan Lock: **P1-S16** — admin truth.
