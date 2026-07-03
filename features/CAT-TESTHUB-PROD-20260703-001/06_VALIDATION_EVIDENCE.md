@@ -149,3 +149,20 @@ Migration `20260703410000_tm_requirement_links_fk_and_backfill.sql` on cyij:
 | Live proof | tsc clean |
 
 **P1-S9 done.** Next per Plan Lock: **P1-S10** — traceability 2 (picker + unified readers).
+
+## P1-S10a (ph_issues picker + case-side write path)
+
+Split from the Plan Lock's P1-S10 (mirrors the S4b sub-slice precedent) — this half covers `CatalystViewTestCase.tsx`'s requirements tab; reader unification (`TestCasesSection.tsx`/`TestCoveragePanel.tsx`) is S10b.
+
+| Item | Evidence |
+|---|---|
+| Free-text KEY/TITLE inputs replaced | New "Search issue" / "External reference" mode toggle; issue mode is a real `ph_issues`-backed `AsyncSelect` picker (id-backed, modeled on `LinkToolbar.tsx`'s canonical async-search idiom — confirmed via research agent no dedicated reusable picker component exists yet, so this extracts the existing idiom rather than hand-rolling new UI) |
+| Real FK now written | `handleAddLink` calls `tm_link_requirement` with `p_requirement_id` = picked `ph_issues.id`, `p_requirement_type` mapped from `issue_type` (Story→story, Epic→epic, Feature→feature — the 3 types the CHECK maps cleanly to; defect/incident/other stay on the unchanged free-text external path per the Plan Lock's Forbidden note, deferred to E4/P2) |
+| Live bug found+fixed: wrong project scope | Picker's first draft scoped by the `projectKey` prop — discovered live that `RepositoryPage.tsx` has no `:projectKey` route param, so the prop is a hardcoded `'TESTHUB'` placeholder matching zero real `ph_issues` rows (real data uses `BAU`, 1713 rows). Fixed by dropping the scope filter entirely, matching `LinkToolbar.tsx`'s own repo-wide (unscoped) search — not a regression, `LinkToolbar` never scoped by project either |
+| Live bug found+fixed: `link_type` CHECK mismatch | Old dropdown offered `verifies/covers/implements/relates_to` — only `verifies` is a real `tm_requirement_links_link_type_check` value; the other 3 would have 400'd on save. Replaced with the real CHECK values (`verifies/tests/derives_from/related_to`) |
+| Live bug found+fixed: `project_id` never set on new links | `tm_link_requirement` RPC (migration `20260703420000_tm_link_requirement_sets_project_id.sql`) now derives `project_id` from the test case at insert time — P1-S9 added the column, but the RPC never populated it for new rows, so it would have silently regressed the column back to all-null |
+| Live proof | Linked TC-002 → BAU-2668 via the real picker on `/testhub/repository`: SQL confirmed `requirement_id` = the real `ph_issues.id`, `requirement_type='story'`, `project_id` matches the case's project exactly. Re-tested after the RPC fix (deleted the scratch row, redid the same UI flow) — `project_id` now populates correctly. Delete (X) path re-verified working, case left in its original zero-links state. Dark mode verified via reload-into-dark (not runtime toggle) — form, picker, existing-link row all token-correct, no light-metaphor bugs |
+| Ledger | Both migrations (`...410000`, `...420000`) ran via `db query --linked` (apply_migration MCP still permission-blocked this session); ledger rows inserted manually to stay 1:1 with committed files |
+| Live proof (build) | tsc clean, both gates pass, full `npm run build` succeeds |
+
+**P1-S10a done.** Next: **P1-S10b** — unify `TestCasesSection.tsx` and `TestCoveragePanel.tsx` readers onto `tm_requirement_links`.
