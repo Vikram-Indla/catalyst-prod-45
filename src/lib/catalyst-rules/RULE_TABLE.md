@@ -91,7 +91,8 @@ All non-banned pairs are allowed unless explicitly listed here.
 
 ## GRID D — Creation Rights
 
-Each module may only create the types it owns, plus subtask family.
+Each module may only create the types it owns, plus subtask family, plus any
+explicit cross-module creation right (D7+).
 
 | ID  | Module    | Types Permitted to Create                                     |
 |-----|-----------|---------------------------------------------------------------|
@@ -101,6 +102,7 @@ Each module may only create the types it owns, plus subtask family.
 | D4  | TESTHUB   | QA Bug, Test Case, Test Cycle + subtask family                |
 | D5  | INCIDENT  | Production Incident + subtask family                          |
 | D6  | ENTERPRISE| Theme, Objective, Snapshot                                    |
+| D7  | TEAM      | + Epic — cross-module creation right (Backlog inline create parity); ownership remains PROGRAM per A2 |
 
 ---
 
@@ -376,6 +378,7 @@ Still fully visible via TestHub / Incident Hub.
 | 2026-07-02 | G5   | Assignee lock: "once assigned, forever" → "only when status CLOSED or CANCELED" | Vikram |
 | 2026-07-02 | H3   | Kanban card typography resolved: WorkItemCard.tsx keeps its own compact density scale (not folded into H1); fixed its 2 magic-literal line-heights (key `+4` density-derived, subtask chip `calc()`-anchored) per CAT-KANBAN-TYPOGRAPHY-20260702-001 | Vikram |
 | 2026-07-03 | I1–I2 | Grid I added: Backlog/All-Work View Eligibility — QA Bug and Production Incident banned as standalone rows in Backlog and All Work (still valid Epic children per B2, unaffected) | Vikram |
+| 2026-07-03 | D7   | TEAM surfaces may create Epic (cross-module creation right; Grid A2 ownership unchanged) — restores Backlog inline Epic create dropped by chokepoint wiring e7d0c7c78 | Vikram |
 
 ---
 

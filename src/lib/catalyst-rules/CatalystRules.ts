@@ -162,23 +162,35 @@ export function normalizeType(raw: string | null | undefined): string {
 // ─── QUERY API ────────────────────────────────────────────────────────────────
 
 /**
+ * Cross-module creation rights (Grid D exceptions) — types creatable in a
+ * module that does NOT own them. Grid A ownership is unchanged, so hierarchy
+ * (Grid B), links (Grid C), and getOwningModule() are unaffected.
+ * D7 (2026-07-03): TEAM surfaces (Backlog inline create) may create Epic.
+ */
+const EXTRA_CREATE_RIGHTS: Record<string, readonly string[]> = {
+  TEAM: ['Epic'],
+};
+
+/**
  * Returns true if typeName may be created inside moduleCode.
  * Subtask family types are permitted in every module (Grid A10).
+ * Cross-module creation rights (Grid D7+) are honoured after ownership.
  */
 export function canCreateInModule(typeName: string, moduleCode: string): boolean {
   const canonical = normalizeType(typeName);
   if (isSubtaskFamily(canonical) || SUBTASK_FAMILY.includes(canonical)) return true;
+  if ((EXTRA_CREATE_RIGHTS[moduleCode] ?? []).includes(canonical)) return true;
   const ownedTypes = MODULE_OWNED_TYPES[moduleCode as CREModule] ?? [];
   return ownedTypes.includes(canonical);
 }
 
 /**
  * Returns all type names permitted for creation in a given module.
- * Includes subtask family in the result.
+ * Includes cross-module creation rights (Grid D7+) and subtask family.
  */
 export function getAllowedTypesForModule(moduleCode: string): string[] {
   const owned = MODULE_OWNED_TYPES[moduleCode as CREModule] ?? [];
-  return [...owned, ...SUBTASK_FAMILY];
+  return [...owned, ...(EXTRA_CREATE_RIGHTS[moduleCode] ?? []), ...SUBTASK_FAMILY];
 }
 
 /**
