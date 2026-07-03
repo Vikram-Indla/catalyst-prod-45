@@ -13,6 +13,8 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { useApprovalAge, type ApprovalAgeRow } from '@/components/testhub/reports/hooks/useApprovalAge';
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
+import ReportExportMenu from '@/components/testhub/reports/ReportExportMenu';
+import type { ExportColumn, ExportRow } from '@/components/testhub/reports/reportExportRows';
 import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
 // tm_plan_approvals.status: pending/approved/rejected · tm_release_signoffs.decision: pending/approve/reject/abstain
@@ -48,6 +50,24 @@ export function ApprovalAgeBody() {
     },
   ];
 
+  const exportColumns: ExportColumn[] = [
+    { key: 'kind', header: 'Type' },
+    { key: 'subject', header: 'Subject' },
+    { key: 'status', header: 'Status' },
+    { key: 'requestedAt', header: 'Requested' },
+    { key: 'decidedAt', header: 'Decided' },
+    { key: 'ageDays', header: 'Age (days)' },
+  ];
+  const exportRows = useMemo<ExportRow[]>(
+    () => (data ? data.rows.map((r) => ({
+      kind: r.kind, subject: r.subject, status: r.status,
+      requestedAt: r.requestedAt?.slice(0, 10) ?? null,
+      decidedAt: r.decidedAt?.slice(0, 10) ?? null,
+      ageDays: r.ageDays,
+    })) : []),
+    [data],
+  );
+
   const aggregates = useMemo<Record<string, unknown> | null>(() => {
     if (!data) return null;
     return {
@@ -72,6 +92,14 @@ export function ApprovalAgeBody() {
         />
       ) : (
         <>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--ds-space-100)' }}>
+            <ReportExportMenu
+              reportId="approval-age"
+              reportLabel="Approval Age"
+              columns={exportColumns}
+              rows={exportRows}
+            />
+          </div>
           <ReportInsightCard
             reportId="approval-age"
             reportLabel="Approval Age"
