@@ -118,6 +118,7 @@ export function ReportLineChart(props: ReportChartProps) {
               stroke={seriesColor(s, i)}
               strokeWidth={2}
               dot={{ r: 4 }}
+              isAnimationActive={false}
             />
           ))}
         </LineChart>
@@ -147,6 +148,7 @@ export function ReportBarChart(
               name={s.name ?? s.dataKey}
               stackId={s.stackId}
               fill={seriesColor(s, i)}
+              isAnimationActive={false}
             >
               {series.length === 1 && getBarColor
                 ? data.map((d, di) => <Cell key={di} fill={getBarColor(d, di)} />)
@@ -176,6 +178,7 @@ export function ReportAreaChart(props: ReportChartProps) {
               stroke={seriesColor(s, i)}
               fill={seriesColor(s, i)}
               fillOpacity={0.2}
+              isAnimationActive={false}
             />
           ))}
         </AreaChart>
@@ -214,6 +217,7 @@ export function ReportPieChart({
             dataKey={dataKey}
             nameKey={nameKey}
             label={({ name, percent }) => `${name} ${Math.round((percent ?? 0) * 100)}%`}
+            isAnimationActive={false}
           >
             {data.map((d, i) => (
               <Cell key={i} fill={getColor ? getColor(d, i) : ADS_SERIES[i % ADS_SERIES.length]} />

@@ -288,9 +288,9 @@ function ExecutionBurndown({ data }: { data: ReportData }) {
                 <RechartTooltip labelFormatter={formatDate} contentStyle={ADS_TOOLTIP_CONTENT_STYLE} />
                 <Legend />
                 {hasIdeal && (
-                  <Line type="monotone" dataKey="ideal" stroke={ADS_SERIES[0]} strokeDasharray="6 3" name="Ideal remaining" dot={false} />
+                  <Line type="monotone" dataKey="ideal" stroke={ADS_SERIES[0]} strokeDasharray="6 3" name="Ideal remaining" dot={false} isAnimationActive={false} />
                 )}
-                <Area type="monotone" dataKey="remaining" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Actual remaining" />
+                <Area type="monotone" dataKey="remaining" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Actual remaining" isAnimationActive={false} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -325,9 +325,9 @@ function ExecutionBurnup({ data }: { data: ReportData }) {
                 <YAxis tick={ADS_AXIS_TICK} />
                 <RechartTooltip labelFormatter={formatDate} contentStyle={ADS_TOOLTIP_CONTENT_STYLE} />
                 <Legend />
-                <Line type="monotone" dataKey="scope" stroke="var(--ds-border-bold)" strokeDasharray="6 3" name="Total scope" dot={false} />
-                <Area type="monotone" dataKey="cumTotal" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Cumulative executed" />
-                <Area type="monotone" dataKey="cumPassed" fill={ADS_CHART.success} fillOpacity={0.2} stroke={ADS_CHART.success} name="Cumulative passed" />
+                <Line type="monotone" dataKey="scope" stroke="var(--ds-border-bold)" strokeDasharray="6 3" name="Total scope" dot={false} isAnimationActive={false} />
+                <Area type="monotone" dataKey="cumTotal" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Cumulative executed" isAnimationActive={false} />
+                <Area type="monotone" dataKey="cumPassed" fill={ADS_CHART.success} fillOpacity={0.2} stroke={ADS_CHART.success} name="Cumulative passed" isAnimationActive={false} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
