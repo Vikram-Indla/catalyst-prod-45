@@ -123,7 +123,8 @@ export const testHubRoutes = {
   sets: () => '/testhub/sets',
   set: (setSlug: string) => `/testhub/sets/${setSlug}`,
   reports: () => '/testhub/reports',
-  report: (reportType: string) => `/testhub/reports/${reportType}`,
+  // Reports hub — slug is a REPORT_REGISTRY id (CAT-REPORTS-HUB-20260703-001)
+  report: (slug: string) => `/testhub/reports/${slug}`,
   filters: () => '/testhub/filters',
   filterCreate: () => '/testhub/filters/create',
   filter: (filterSlug: string) => `/testhub/filters/${filterSlug}`,
@@ -145,6 +146,8 @@ export const incidentHubRoutes = {
   detail: (incidentKey: string) => `/incident-hub/view/${incidentKey}`,
   work: () => '/incident-hub/work',
   analytics: () => '/incident-hub/analytics',
+  // Production-incident report (CAT-REPORTS-HUB-20260703-001 Phase 2 Lane C)
+  reports: () => '/incident-hub/reports',
   timeline: () => '/incident-hub/timeline',
   dependencies: () => '/incident-hub/dependencies',
   filters: () => '/incident-hub/filters',

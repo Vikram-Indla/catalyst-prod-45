@@ -9,7 +9,7 @@ import Lozenge from '@atlaskit/lozenge';
 import type { ThemeAppearance } from '@atlaskit/lozenge';
 import { Heading } from '@/components/ads';
 import type { Column } from '@/components/shared/JiraTable';
-import type { ProjectTestingStatus, MismatchRow, StoryRow } from './useProjectTestingStatus';
+import type { ProjectTestingStatus, MismatchRow, StoryRow } from '@/components/testhub/reports/hooks/useProjectTestingStatus';
 
 interface ReportStatusViewProps {
   data: ProjectTestingStatus;

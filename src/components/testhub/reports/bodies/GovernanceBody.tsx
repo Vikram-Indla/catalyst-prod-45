@@ -1,6 +1,6 @@
 /**
- * Governance & Mismatch — project-scoped contradiction report (B1 group 10, B5).
- * Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001.
+ * GovernanceBody — project-scoped contradiction report body (registry: governance).
+ * Feature: CAT-REPORTS-HUB-20260703-001 (Phase 2 Lane A port from GovernancePage).
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,15 +8,15 @@ import { useQuery } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
+import EmptyState from '@atlaskit/empty-state';
 import { Heading } from '@/components/ads';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_PROJECT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { supabase } from '@/integrations/supabase/client';
-import { useGovernance, type GovernanceRow } from './useGovernance';
-import { cardStyle, metricValue, metricLabel, sectionH } from './ReportStatusView';
+import { useGovernance, type GovernanceRow } from '@/components/testhub/reports/hooks/useGovernance';
+import { cardStyle, metricValue, metricLabel, sectionH } from '@/pages/testhub/reports/ReportStatusView';
 
-const SENAEI_BAU_ID = '84f91caf-7511-470a-9a26-3e52e66258bf';
 interface ProjectOption { label: string; value: string }
 
 function useTmProjects() {
@@ -30,16 +30,13 @@ function useTmProjects() {
   });
 }
 
-export default function GovernancePage() {
+export function GovernanceBody() {
   const navigate = useNavigate();
-  const { data: projects } = useTmProjects();
+  const { data: projects, isLoading: projectsLoading } = useTmProjects();
   const [selected, setSelected] = useState<ProjectOption | null>(null);
 
-  const activeOption = useMemo<ProjectOption | null>(() => {
-    if (selected) return selected;
-    if (!projects?.length) return null;
-    return projects.find((p) => p.value === SENAEI_BAU_ID) ?? projects[0];
-  }, [selected, projects]);
+  // S1.5: single project → auto-select; else last-used (validated) or none.
+  const activeOption = useReportPickerDefault(REPORTS_LAST_PROJECT_KEY, projects, selected);
 
   const { data, isLoading } = useGovernance(activeOption?.label, activeOption?.value);
 
@@ -57,16 +54,32 @@ export default function GovernancePage() {
   }, [data]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
-      <ProjectPageHeader hubType="test" title="Governance & Mismatch" trail={[{ text: 'Reports', href: '/testhub/reports' }]} />
-
-      <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ flex: 1, padding: 'var(--ds-space-250) var(--ds-space-300) var(--ds-space-600)', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '20rem', marginBottom: 'var(--ds-space-250)' }}>
           <div style={metricLabel}>Project</div>
-          <Select<ProjectOption> inputId="gov-project" options={projects ?? []} value={activeOption} onChange={(o) => setSelected(o as ProjectOption)} isLoading={!projects} spacing="default" />
+          <Select<ProjectOption>
+            inputId="gov-project"
+            options={projects ?? []}
+            value={activeOption}
+            onChange={(o) => {
+              const opt = o as ProjectOption;
+              setSelected(opt);
+              rememberReportPick(REPORTS_LAST_PROJECT_KEY, opt.value);
+            }}
+            isLoading={!projects}
+            spacing="default"
+          />
         </div>
 
-        {isLoading || !data ? (
+        {!activeOption ? (
+          projectsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
+              <Spinner size="medium" /> Loading projects…
+            </div>
+          ) : (
+            <EmptyState header="Select a project" description="Choose a project to run this report." />
+          )
+        ) : isLoading || !data ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading governance report…
           </div>
@@ -88,7 +101,8 @@ export default function GovernancePage() {
               emptyView={<div style={{ padding: 'var(--ds-space-250)', color: 'var(--ds-text-subtle)' }}>No contradictions — delivery and test status agree.</div>} />
           </>
         )}
-      </div>
     </div>
   );
 }
+
+export default GovernanceBody;

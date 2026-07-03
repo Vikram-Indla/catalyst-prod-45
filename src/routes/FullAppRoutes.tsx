@@ -141,7 +141,9 @@ const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/Inci
 const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
 const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
-// IncidentHubReportsPage and IncidentHubCommitteeQueuePage deprecated — routes removed
+// IncidentHubCommitteeQueuePage deprecated — route removed. /incident-hub/reports is the
+// Production Incident report (CAT-REPORTS-HUB-20260703-001 Phase 2 Lane C).
+const IncidentHubReportPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentReportPage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
 // TestHub Admin
@@ -170,16 +172,10 @@ const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/Executio
 const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
-const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
-const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
-const TestHubReportsCommandCenterPage = lazy(() => import("../pages/testhub/reports/lab/ReportsCommandCenterPage"));
-const TestHubProjectTestingStatusPage = lazy(() => import("../pages/testhub/reports/ProjectTestingStatusPage"));
-const TestHubSprintTestingStatusPage = lazy(() => import("../pages/testhub/reports/SprintTestingStatusPage"));
-const TestHubTesterPerformancePage = lazy(() => import("../pages/testhub/reports/TesterPerformancePage"));
-const TestHubTeamPerformancePage = lazy(() => import("../pages/testhub/reports/TeamPerformancePage"));
-const TestHubDefectsIncidentsPage = lazy(() => import("../pages/testhub/reports/DefectsIncidentsPage"));
-const TestHubGovernancePage = lazy(() => import("../pages/testhub/reports/GovernancePage"));
-const TestHubProductStatusPage = lazy(() => import("../pages/testhub/reports/ProductStatusPage"));
+// Reports hub — single registry-driven surface (CAT-REPORTS-HUB-20260703-001 S1.2).
+// Old standalone report URLs redirect below; the legacy page files were deleted in
+// Phase 2 Lane A (bodies now live in src/components/testhub/reports/bodies/).
+const TestHubReportsHubPage = lazy(() => import("../pages/testhub/reports/ReportsHubPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
@@ -684,16 +680,18 @@ export default function FullAppRoutes() {
         <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
-        <Route path="/testhub/reports-lab" element={<S><TestHubReportsCommandCenterPage /></S>} />
-        <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
-        <Route path="/testhub/reports/project-status" element={<S><TestHubProjectTestingStatusPage /></S>} />
-        <Route path="/testhub/reports/sprint-status" element={<S><TestHubSprintTestingStatusPage /></S>} />
-        <Route path="/testhub/reports/tester-status" element={<S><TestHubTesterPerformancePage /></S>} />
-        <Route path="/testhub/reports/team-status" element={<S><TestHubTeamPerformancePage /></S>} />
-        <Route path="/testhub/reports/defects-incidents" element={<S><TestHubDefectsIncidentsPage /></S>} />
-        <Route path="/testhub/reports/governance" element={<S><TestHubGovernancePage /></S>} />
-        <Route path="/testhub/reports/product-status" element={<S><TestHubProductStatusPage /></S>} />
-        <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
+        {/* Reports hub (CAT-REPORTS-HUB-20260703-001): one surface, :reportSlug
+            selects a REPORT_REGISTRY entry. Old report URLs redirect to their
+            registry slugs; governance + product-status slugs are unchanged so
+            the :reportSlug route serves them directly. */}
+        <Route path="/testhub/reports-lab" element={<Navigate to="/testhub/reports/execution-overview" replace />} />
+        <Route path="/testhub/reports" element={<S><TestHubReportsHubPage /></S>} />
+        <Route path="/testhub/reports/project-status" element={<Navigate to="/testhub/reports/project-testing-status" replace />} />
+        <Route path="/testhub/reports/sprint-status" element={<Navigate to="/testhub/reports/sprint-testing-status" replace />} />
+        <Route path="/testhub/reports/tester-status" element={<Navigate to="/testhub/reports/tester-performance" replace />} />
+        <Route path="/testhub/reports/team-status" element={<Navigate to="/testhub/reports/team-performance" replace />} />
+        <Route path="/testhub/reports/defects-incidents" element={<Navigate to="/testhub/reports/defect-summary" replace />} />
+        <Route path="/testhub/reports/:reportSlug" element={<S><TestHubReportsHubPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
         <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />
@@ -736,7 +734,11 @@ export default function FullAppRoutes() {
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
-        {/* /incident-hub/reports and /incident-hub/committee-queue deprecated — routes removed */}
+        {/* Production Incident report — incident half of the old TestHub
+            defects-incidents report (CAT-REPORTS-HUB-20260703-001 Phase 2
+            Lane C; CRE Grid A: Production Incident → INCIDENT module).
+            /incident-hub/committee-queue stays deprecated — route removed. */}
+        <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportPage /></S></MG>} />
         <Route path="/incident-hub/view/:incidentKey" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
         {/* 2026-06-16: redirect alias — the BacklogPage's default
             "open in full page" pattern was {baseUrl}/backlog/{key} which
