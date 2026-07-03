@@ -57108,6 +57108,66 @@ export type Database = {
           },
         ]
       }
+      v_tm_requirement_coverage: {
+        Row: {
+          coverage_verdict: string | null
+          external_key: string | null
+          external_title: string | null
+          latest_run_status:
+            | Database["public"]["Enums"]["tm_execution_status"]
+            | null
+          link_id: string | null
+          link_type: string | null
+          project_id: string | null
+          requirement_id: string | null
+          requirement_type: string | null
+          test_case_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_tm_test_cases_full: {
         Row: {
           automation_id: string | null
@@ -61237,10 +61297,6 @@ export type Database = {
       tm_update_assignment_status: {
         Args: { p_assignment_id: string; p_notes?: string; p_status: string }
         Returns: Json
-      }
-      tm_update_coverage_status: {
-        Args: { p_link_id: string; p_status: string }
-        Returns: boolean
       }
       tm_update_cycle_milestone: {
         Args: {
