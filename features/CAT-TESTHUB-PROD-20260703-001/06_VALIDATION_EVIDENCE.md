@@ -114,3 +114,19 @@ TC-002:  null → null (unchanged)
 Plan Lock's binary accept condition — "reschedule one test → other rows' dates unchanged" — met exactly. Scratch value reset to `null` after proof to keep demo pristine (same discipline as every prior slice).
 
 **No code, no migration, no commit needed for this slice** — closed as documentation-only verification. Next per Plan Lock: **P1-S8**.
+
+## P1-S8 (plan↔cycle single spine)
+
+| Check | Finding |
+|---|---|
+| Join-table hooks (`usePlanLinkedCycles`/`useLinkCycleToPlan`/`useUnlinkCycleFromPlan`, `src/hooks/useTestPlansG26.ts`) | Queried a plan-cycle join table confirmed absent in P0.1 (D-001, "ALL 14 ABSENT" ghost-relation probe) — would 42P01 on any call |
+| Live callers | Zero anywhere in `src/` (grepped before touching) |
+| Plan detail route | **None exists** — `src/routes/FullAppRoutes.tsx` has zero `/testhub/plan*` routes; no page could ever have hosted these hooks |
+| Real spine | `tm_test_cycles.test_plan_id` FK already exists, already live-read by `useDefects.ts:403` (`tm_test_plans!test_plan_id`) for defect plan provenance — the "single spine" the slice asked for already works for reads |
+| Action taken | Deleted the 3 dead exports + `LinkedCycle` interface (ghost-table dead code, zero blast radius) |
+| Accept cmd | `grep -rc 'plan_test_cycles' src/ ...` → **0**, exact Plan Lock binary criterion |
+| Live proof | tsc clean, `lint:colors:gate` + `audit:ads:gate` pass unchanged, full `npm run build` succeeds |
+
+**Screenshot n/a** — no route/page existed to screenshot; the "plan detail still lists cycles" sub-condition is moot for the same reason as D-007 (cited surface doesn't exist). Recorded as D-008.
+
+**P1-S8 done.** Next per Plan Lock: **P1-S9** — traceability single link model 1 (FK + backfill).
