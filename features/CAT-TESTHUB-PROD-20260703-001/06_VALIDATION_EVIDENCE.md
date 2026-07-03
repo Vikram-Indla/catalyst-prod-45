@@ -78,3 +78,16 @@ Chain executed: repository (11 cases, folder tree) → set detail via row click 
 **Concurrent-session note:** a foreign session's uncommitted edit to `src/components/committee/CommitteeQueueDrawer.tsx` sat in this shared checkout throughout S5 and briefly caused a false ADS-gate failure (their file's pre-existing violations, not mine). Verified via `git stash push` (full path stash, not `--keep-index` — that mode left shared-index-staged foreign content in place) that my own changes were gate-clean, committed, then restored their file byte-for-byte immediately after. Never touched, read for content, or altered their work.
 
 **P1-S5 done.** Next per Plan Lock: **P1-S6** — cycle CRUD consolidation onto one hook stack (delete `useTestCyclesEnhanced.ts`, now confirmed fully dead).
+
+## P1-S6 (cycle CRUD consolidation)
+
+| Item | Evidence |
+|---|---|
+| Deleted `useTestCyclesEnhanced.ts` (516 lines) | Confirmed zero live callers before deletion (only barrel re-export + doc file) |
+| Deleted `cycle-config.ts` (337 lines) | Orphaned once its sole importer was removed |
+| Barrel fixed | `hooks/test-management/index.ts` re-export of the 3 Enhanced hooks removed |
+| Acceptance grep | `grep -rc 'useTestCyclesEnhanced' src/` → 0, exact Plan Lock binary criterion |
+| Bonus finding | The deleted file's `useCreateCycleEnhanced` still hardcoded `status:'draft'` — a value P1-S5's enum collapse had already removed; would have 400'd on first real use |
+| Live proof | tsc clean, full build succeeds, `/testhub/cycles` renders CYC-001 (PLANNED) from the single canonical `['tm-cycles'...]` hook stack, zero console errors |
+
+**One cycle hook stack now.** Next per Plan Lock: **P1-S7** — reschedule truth (per-scope-item dates instead of rewriting the whole cycle).
