@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { XIcon } from '../shared/Icon';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface CreateChannelModalProps {
   workspaceName: string;
@@ -39,6 +40,7 @@ export function CreateChannelModal({
   const [isPrivate, setIsPrivate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   useEffect(() => {
     if (step === 1) inputRef.current?.focus();
@@ -77,6 +79,7 @@ export function CreateChannelModal({
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Create a channel"

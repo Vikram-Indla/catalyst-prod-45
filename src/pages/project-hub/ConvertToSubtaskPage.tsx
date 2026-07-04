@@ -1003,7 +1003,7 @@ export default function ConvertToSubtaskPage() {
               {/* "Step 2 not required" note only when step 2 was skipped —
                   Jira parity (2026-07-04). */}
               {!stepNeedsStatus && (
-                {/* ads-scanner:ignore-next-line — 60px indent aligns the note under the step body, Jira parity (probed 2026-07-04) */}
+                // ads-scanner:ignore-next-line — 60px indent aligns the note under the step body, Jira parity (probed 2026-07-04)
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingLeft: 60 }}>
                   <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-icon-brand)', marginTop: 'var(--ds-space-025)' }}>
                     <InfoIcon label="" />

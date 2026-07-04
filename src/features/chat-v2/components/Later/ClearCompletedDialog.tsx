@@ -3,6 +3,7 @@
  */
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface Props {
   count: number;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
+  const trapRef = useFocusTrap<HTMLDivElement>();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { e.stopPropagation(); onCancel(); }
@@ -21,6 +23,7 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Clear completed reminders"

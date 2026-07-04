@@ -1,6 +1,28 @@
 # Handover — CAT-CHAT-V2-PROD-20260704-001 (2026-07-04)
 
-## State: COMPLETE (session 001). Verdict: AMBER→GREEN-leaning (see final report in session log).
+## State: COMPLETE (sessions 001 + 002 polish pass). Verdict: GREEN-leaning AMBER.
+
+## Session 002 — enterprise polish pass (same day)
+- Header mute bell was FAKE (local useState) → wired to chat_set_mute RPC via useChatSetMute
+  (optimistic cache flip). Verified live: DB is_muted true→false round-trip.
+- Mute semantics swept Slack-style: muted rows dim + never bold/badge (ConversationRow,
+  DmRichRow), excluded from nav-rail DM count (ChatV2Shell) and activity unread heads
+  (useActivityFeed).
+- Fenced code blocks shipped in renderer (markdown.ts): ```blocks``` → <pre><code>, escaped,
+  LTR-forced, tolerant of content on the opening fence (contentEditable drops the first
+  newline — probed live), one-line blocks, trailing closes. htmlToMarkdown roundtrips <pre>.
+  12 vitest cases. Verified live in channel.
+- Focus traps: new useFocusTrap hook (Tab/Shift+Tab wrap, initial focus, restore-on-close)
+  wired into all 13 chat-v2 blocking dialogs (EmojiPicker got merged-ref; CreateReminderModal
+  trap releases while stacked LinkInputModal is up). Verified live: 8 Tabs stay inside picker.
+- Thread pane reaction realtime: useThreadMessages now subscribes to the reactions channel
+  (message-channel events miss reaction rows) with cache-scoped invalidation.
+- Silent-catch observability: console.warn breadcrumbs at swallow sites in useChatSearch,
+  useChatPeople, useConversations (×2).
+- INCIDENT + FIX: session-001 governance commit eac985a2f used a JSX comment container for an
+  ads-scanner ignore marker in expression position (ConvertToSubtaskPage:1006) — tsc tolerated,
+  vite/swc rejected → /project-hub convert page dead. Fixed to a plain // comment. LESSON:
+  ignore-markers inside JSX expressions must be // line comments, never {/* */} after `&& (`.
 
 ## What was verified true (baseline reconciliation)
 - CHAT_V2_CONTEXT.md (dated 2026-06-18) is accurate for file map, features, hooks, RLS.

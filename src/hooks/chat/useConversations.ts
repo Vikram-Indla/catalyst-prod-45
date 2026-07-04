@@ -101,6 +101,7 @@ async function fetchDmTitles(
       .select('conversation_id, user_id, profiles:user_id ( full_name, avatar_url )')
       .in('conversation_id', convIds)
       .neq('user_id', userId);
+    if (error) console.warn('[chat] DM title resolution failed — falling back to blank titles:', error);
     if (error || !data) return { dmTitles, groupTitles, groupCounts, avatars, fullNames, memberIds };
     for (const m of data as DmMemberRow[]) {
       // capture the member id regardless of whether a display name resolved
@@ -153,6 +154,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       )
       .eq('user_id', userId);
 
+    if (error) console.warn('[chat] conversation membership fetch failed — sidebar will be empty:', error);
     if (error || !members) return [];
 
     const rows = (members as MemberRow[])

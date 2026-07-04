@@ -179,7 +179,7 @@ function ChatV2Inner() {
   const unreadDMs = useMemo(
     () =>
       conversations.filter(
-        c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0,
+        c => (c.kind === 'dm' || c.kind === 'group_dm') && c.unreadCount > 0 && !c.isMuted,
       ).length,
     [conversations],
   );

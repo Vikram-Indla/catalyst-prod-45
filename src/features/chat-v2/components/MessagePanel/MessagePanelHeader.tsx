@@ -13,6 +13,7 @@ import {
   XIcon,
 } from '../shared/Icon';
 import { SummarizeMenu, type SummarizePreset } from '../Summarize/SummarizeMenu';
+import { useChatSetMute } from '@/hooks/chat/useChatActions';
 import type { ChatConversation } from '@/types/chat';
 
 export type PanelTab = 'messages' | 'pins';
@@ -44,9 +45,10 @@ export function MessagePanelHeader({
   huddleActive,
 }: MessagePanelHeaderProps) {
   const isStarred = !!conversation.isStarred;
-  // Notifications toggle is local UI state — clicking the bell swaps to a
-  // muted bell icon and back. Persistence to the server can be wired later.
-  const [muted, setMuted] = useState(false);
+  // Notifications toggle persists via the chat_set_mute RPC; the optimistic
+  // cache flip in useChatSetMute updates conversation.isMuted immediately.
+  const muted = !!conversation.isMuted;
+  const setMuteMut = useChatSetMute();
   // Summarize menu anchored to the SummarizeIcon trigger.
   const [summarizeAnchor, setSummarizeAnchor] = useState<DOMRect | null>(null);
   const openSummarize = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -152,8 +154,9 @@ export function MessagePanelHeader({
         )}
         <IconButton
           label={muted ? 'Unmute notifications' : 'Mute notifications'}
-          onClick={() => setMuted(v => !v)}
+          onClick={() => setMuteMut.mutate({ convId: conversation.id, muted: !muted })}
           size="md"
+          active={muted}
         >
           {muted ? <BellOffIcon size={16} /> : <BellIcon size={16} />}
         </IconButton>

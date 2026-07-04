@@ -8,6 +8,7 @@ import {
   XIcon,
 } from '../shared/Icon';
 import { buildMonthGrid, isSameDay, MONTH_LABELS, WEEKDAY_LABELS } from '../Schedule/scheduleHelpers';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface JumpToDateModalProps {
   onCancel: () => void;
@@ -21,6 +22,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
   const [view, setView] = useState({ y: today.getFullYear(), m: today.getMonth() });
   const earliest = earliestIso ? new Date(earliestIso) : null;
   const latest = latestIso ? new Date(latestIso) : null;
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -40,6 +42,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Jump to a specific date"

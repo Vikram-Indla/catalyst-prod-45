@@ -34,6 +34,7 @@ import {
   MONTH_LABELS,
   WEEKDAY_LABELS,
 } from '../Schedule/scheduleHelpers';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface CreateReminderModalProps {
   onCancel: () => void;
@@ -63,6 +64,8 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
   const [text, setText] = useState('');
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
+  // Release the trap while the LinkInputModal is stacked on top.
+  const trapRef = useFocusTrap<HTMLDivElement>(!linkModalOpen);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -89,6 +92,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
 
   const modalPortal = createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Add reminder"

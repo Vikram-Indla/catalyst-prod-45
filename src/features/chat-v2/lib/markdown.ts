@@ -9,18 +9,34 @@ function escape(s: string): string {
 
 /**
  * Inline-only markdown → HTML. Supports **bold**, _italic_, ~~strike~~,
- * <u>underline</u>, [text](url), `code`, @mention, ordered/unordered lists,
- * and newlines. Output is escaped first, then markdown tokens are transformed.
+ * <u>underline</u>, [text](url), `code`, ```fenced blocks```, @mention,
+ * ordered/unordered lists, and newlines. Output is escaped first, then
+ * markdown tokens are transformed.
  *
  * Pass selfToken (current user's name with whitespace removed) to colour
  * self-mentions differently from mentions of others.
  */
+const CODE_BLOCK_STYLE = [
+  'font-family:var(--ds-font-family-code,monospace)',
+  'background:var(--cv2-bg-row-active)',
+  'border:1px solid var(--cv2-border)',
+  'border-radius:var(--cv2-radius-sm,4px)',
+  'padding:var(--ds-space-100)',
+  'margin:var(--ds-space-050) 0',
+  'overflow-x:auto',
+  'white-space:pre',
+  'font-size:var(--ds-font-size-100,12px)',
+  'line-height:1.5',
+].join(';');
+
 export function renderMarkdownInline(md: string, selfToken?: string): string {
   if (!md) return '';
   const lines = md.split('\n');
   const out: string[] = [];
   let inUl = false;
   let inOl = false;
+  let inFence = false;
+  let fenceBuf: string[] = [];
   const self = (selfToken ?? '').trim().toLowerCase();
 
   const closeLists = () => {
@@ -34,7 +50,39 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
     }
   };
 
+  // Code is always LTR regardless of the surrounding message direction.
+  const flushFence = () => {
+    out.push(`<pre dir="ltr" style="${CODE_BLOCK_STYLE}"><code>${escape(fenceBuf.join('\n'))}</code></pre>`);
+    fenceBuf = [];
+    inFence = false;
+  };
+
   for (const raw of lines) {
+    if (inFence) {
+      const trailing = /^(.*?)```\s*$/.exec(raw);
+      if (trailing) {
+        if (trailing[1]) fenceBuf.push(trailing[1]);
+        flushFence();
+      } else {
+        fenceBuf.push(raw);
+      }
+      continue;
+    }
+    // Opening fence. Slack-tolerant: content may share the opening line
+    // ("```const x = 1;"), and a short word token is treated as a language
+    // tag (dropped — no highlighting). One-line blocks ("```x = 1```") close
+    // immediately.
+    const open = /^```(.*)$/.exec(raw);
+    if (open) {
+      closeLists();
+      inFence = true;
+      let rest = open[1];
+      const oneLine = /^(.*?)```\s*$/.exec(rest);
+      if (oneLine) rest = oneLine[1];
+      if (rest && !/^[A-Za-z0-9+#-]{1,15}$/.test(rest)) fenceBuf.push(rest);
+      if (oneLine) flushFence();
+      continue;
+    }
     const ulMatch = /^- (.+)$/.exec(raw);
     const olMatch = /^\d+\. (.+)$/.exec(raw);
     if (ulMatch) {
@@ -70,6 +118,9 @@ export function renderMarkdownInline(md: string, selfToken?: string): string {
     }
   }
   closeLists();
+  // Unterminated fence at EOF still renders as a block — a lie-free
+  // best-effort beats silently dropping the user's code.
+  if (inFence) flushFence();
 
   let html = out.join('');
   if (html.endsWith('<br/>')) html = html.slice(0, -5);
@@ -211,7 +262,11 @@ function walk(node: Node): string {
       const href = el.getAttribute('href') ?? '';
       return `[${inner}](${href})`;
     }
+    case 'pre':
+      return inner ? `\`\`\`\n${inner.replace(/\n$/, '')}\n\`\`\`\n` : '';
     case 'code':
+      // <code> inside <pre> is handled by the pre case (inner passes through).
+      if (el.parentElement?.tagName.toLowerCase() === 'pre') return inner;
       return inner ? `\`${inner}\`` : '';
     case 'ul':
       return Array.from(el.children)

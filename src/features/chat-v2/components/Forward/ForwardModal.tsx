@@ -7,6 +7,7 @@ import { ChevronDownIcon, CopyLinkIcon, XIcon } from '../shared/Icon';
 import { ScheduleSendMenu } from '../Schedule/ScheduleSendMenu';
 import { renderMarkdownInline } from '../../lib/markdown';
 import type { ChatMessage } from '@/types/chat';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ForwardModalProps {
   message: ChatMessage;
@@ -72,6 +73,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const scheduleAnchorRef = useRef<HTMLButtonElement>(null);
   const [showSuggest, setShowSuggest] = useState(true);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   const candidates = useForwardCandidates(query);
 
@@ -107,6 +109,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Forward message"
