@@ -56,7 +56,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
     >
       <div
         style={{
-          fontSize: '48px',
+          fontSize: 'var(--ds-font-size-800)',
           opacity: 0.5,
         }}
       >
