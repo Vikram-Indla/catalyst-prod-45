@@ -1,21 +1,17 @@
 /**
  * ConfirmCloneDialog — Jira-parity clone form.
  *
- * Layout:
- *   - Header:            `Clone {issueKey}`
- *   - Subtitle:          `Required fields are marked with an asterisk *`
- *   - Summary *          Textfield, prefilled `CLONE - {originalSummary}`
- *   - Assignee           EditableAssignee (local state)
- *   - Assign to me       link — sets assignee to current user
- *   - Reporter *         EditableReporter (local state)
- *   - Include            checkbox group — only renders when at least one
- *                        cloneable child section has count > 0. Each row
- *                        renders iff its section has ≥1 item.
- *   - Footer:            Cancel · Clone
+ * Extensibility (2026-07-04): supports non-ph_issues entity types (test cases,
+ * test cycles, tasks hub items, business requests). Callers can:
+ *   - Hide the Reporter row via `hideReporter` (test cases, test cycles, BR)
+ *   - Override the Include catalog + counts via `includeCatalog` + `counts`
+ *     props. When both are omitted, the dialog falls back to the built-in
+ *     ph_issues catalog (attachments/childItems/linkedItems/subtasks/links/
+ *     design/comments/testCases) and auto-fetches counts.
  *
- * Pickers run in local mode via `onChange` overrides — no writes to the
- * source issue. Selected values are held in dialog state until Clone is
- * confirmed. Callers consume the patch via `onConfirm(patch)`.
+ * The patch surface stays generic — callers own how the patch maps to their
+ * table columns. `include` is `Record<string, boolean>` so any custom catalog
+ * key works.
  */
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
@@ -27,6 +23,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
+export type CloneInclude = Record<string, boolean>;
+
 export interface ClonePatch {
   summary: string;
   assigneeId: string | null;
@@ -36,65 +34,50 @@ export interface ClonePatch {
   include: CloneInclude;
 }
 
-export interface CloneInclude {
-  attachments: boolean;
-  childItems: boolean;
-  linkedItems: boolean;
-  subtasks: boolean;
-  links: boolean;
-  design: boolean;
-  comments: boolean;
-  testCases: boolean;
+/** Section catalog entry — a checkbox row in the "Include" group. */
+export interface CloneCatalogEntry {
+  key: string;
+  label: string;
 }
-
-interface SectionCounts {
-  attachments: number;
-  childItems: number;
-  linkedItems: number;
-  subtasks: number;
-  links: number;
-  design: number;
-  comments: number;
-  testCases: number;
-}
-
-const ZERO_COUNTS: SectionCounts = {
-  attachments: 0,
-  childItems: 0,
-  linkedItems: 0,
-  subtasks: 0,
-  links: 0,
-  design: 0,
-  comments: 0,
-  testCases: 0,
-};
-
-const DEFAULT_INCLUDE: CloneInclude = {
-  attachments: false,
-  childItems: false,
-  linkedItems: false,
-  subtasks: false,
-  links: false,
-  design: false,
-  comments: false,
-  testCases: false,
-};
 
 const SUBTASK_TYPES = new Set(['sub-task', 'subtask', 'backend', 'frontend', 'integration']);
+
+/** Default catalog for ph_issues detail views (Story, Epic, Feature, etc.). */
+const DEFAULT_PH_CATALOG: CloneCatalogEntry[] = [
+  { key: 'attachments', label: 'Attachments' },
+  { key: 'childItems', label: 'Child work items' },
+  { key: 'linkedItems', label: 'Linked work items' },
+  { key: 'subtasks', label: 'Subtasks' },
+  { key: 'links', label: 'Links' },
+  { key: 'design', label: 'Design' },
+  { key: 'comments', label: 'Comments' },
+  { key: 'testCases', label: 'Test cases' },
+];
 
 interface ConfirmCloneDialogProps {
   isOpen: boolean;
   onClose: () => void;
   issueKey: string | null | undefined;
   issueSummary: string | null | undefined;
-  /** Source issue id — passed through to EditableAssignee/Reporter (unused for writes; onChange bypasses their default mutation). */
+  /** Source issue id — threaded to EditableAssignee/Reporter (unused for writes; onChange bypasses their default mutation). */
   issueId?: string | null;
-  /** Required for member queries in the assignee/reporter pickers. */
+  /** Required for the assignee/reporter pickers' member queries. */
   projectId?: string | null;
   currentAssigneeId?: string | null;
   currentAssigneeName?: string | null;
   currentReporterId?: string | null;
   currentReporterName?: string | null;
+  /** Hide the Reporter row (test cases, test cycles, BR — Assignee-only variant). */
+  hideReporter?: boolean;
+  /** Override the Include catalog. When omitted, defaults to the ph_issues catalog. */
+  includeCatalog?: CloneCatalogEntry[];
+  /** Precomputed section counts keyed by catalog `key`. When provided, disables the internal ph_issues auto-fetch. */
+  counts?: Record<string, number>;
+  /** Populate the Assignee/Reporter pickers from ALL approved profiles instead of
+   *  the passed `projectId`'s project_members shortlist. Defaults to `true` —
+   *  clone modals show every user everywhere (Jira parity). Pass `false` to
+   *  scope the pickers to `project_members` for a specific caller. */
+  useAllProfiles?: boolean;
   /** Fires with the current dialog state so callers can apply the patch. */
   onConfirm: (patch?: ClonePatch) => void;
 }
@@ -137,20 +120,19 @@ function AssignToMeLink({ onClick, disabled }: { onClick: () => void; disabled?:
 }
 
 /**
- * Fetches per-section counts for the source issue. Sections with 0 items are
- * hidden in the "Include" group. Runs only when the dialog is open. Uses
- * `count: 'exact', head: true` so no row payloads are transferred.
+ * Built-in ph_issues section counts. Skipped when the caller passes explicit
+ * `counts` (non-ph_issues variants). Runs only when the dialog is open.
  */
-function useSectionCounts(
-  isOpen: boolean,
+function usePhIssueSectionCounts(
+  enabled: boolean,
   issueId: string | null | undefined,
   issueKey: string | null | undefined,
-): SectionCounts {
+): Record<string, number> {
   const { data } = useQuery({
     queryKey: ['clone-section-counts', issueKey, issueId],
-    enabled: isOpen && !!issueKey,
+    enabled: enabled && !!issueKey,
     staleTime: 60000,
-    queryFn: async (): Promise<SectionCounts> => {
+    queryFn: async (): Promise<Record<string, number>> => {
       const iid = issueId ?? '';
       const ikey = issueKey ?? '';
 
@@ -166,55 +148,12 @@ function useSectionCounts(
         testCases,
         children,
       ] = await Promise.all([
-        iid
-          ? countExact(
-              (supabase as any)
-                .from('ph_attachments')
-                .select('id', { count: 'exact', head: true })
-                .eq('work_item_id', iid),
-            )
-          : Promise.resolve(0),
-        ikey
-          ? countExact(
-              (supabase as any)
-                .from('ph_issue_links')
-                .select('id', { count: 'exact', head: true })
-                .or(`source_id.eq.${ikey},target_id.eq.${ikey}`),
-            )
-          : Promise.resolve(0),
-        iid
-          ? countExact(
-              (supabase as any)
-                .from('ph_web_links')
-                .select('id', { count: 'exact', head: true })
-                .eq('work_item_id', iid),
-            )
-          : Promise.resolve(0),
-        iid
-          ? countExact(
-              (supabase as any)
-                .from('ph_designs')
-                .select('id', { count: 'exact', head: true })
-                .eq('work_item_id', iid),
-            )
-          : Promise.resolve(0),
-        iid
-          ? countExact(
-              (supabase as any)
-                .from('ph_comments')
-                .select('id', { count: 'exact', head: true })
-                .eq('work_item_id', iid),
-            )
-          : Promise.resolve(0),
-        ikey
-          ? countExact(
-              (supabase as any)
-                .from('tm_test_cases')
-                .select('id', { count: 'exact', head: true })
-                .eq('linked_story_key', ikey)
-                .eq('archived', false),
-            )
-          : Promise.resolve(0),
+        iid ? countExact((supabase as any).from('ph_attachments').select('id', { count: 'exact', head: true }).eq('work_item_id', iid)) : Promise.resolve(0),
+        ikey ? countExact((supabase as any).from('ph_issue_links').select('id', { count: 'exact', head: true }).or(`source_id.eq.${ikey},target_id.eq.${ikey}`)) : Promise.resolve(0),
+        iid ? countExact((supabase as any).from('ph_web_links').select('id', { count: 'exact', head: true }).eq('work_item_id', iid)) : Promise.resolve(0),
+        iid ? countExact((supabase as any).from('ph_designs').select('id', { count: 'exact', head: true }).eq('work_item_id', iid)) : Promise.resolve(0),
+        iid ? countExact((supabase as any).from('ph_comments').select('id', { count: 'exact', head: true }).eq('work_item_id', iid)) : Promise.resolve(0),
+        ikey ? countExact((supabase as any).from('tm_test_cases').select('id', { count: 'exact', head: true }).eq('linked_story_key', ikey).eq('archived', false)) : Promise.resolve(0),
         ikey
           ? (supabase as any)
               .from('ph_issues')
@@ -233,20 +172,11 @@ function useSectionCounts(
         else childItems += 1;
       }
 
-      return {
-        attachments,
-        linkedItems,
-        links,
-        design,
-        comments,
-        testCases,
-        subtasks,
-        childItems,
-      };
+      return { attachments, linkedItems, links, design, comments, testCases, subtasks, childItems };
     },
   });
 
-  return data ?? ZERO_COUNTS;
+  return data ?? {};
 }
 
 export function ConfirmCloneDialog({
@@ -260,6 +190,10 @@ export function ConfirmCloneDialog({
   currentAssigneeName,
   currentReporterId,
   currentReporterName,
+  hideReporter,
+  includeCatalog,
+  counts: countsOverride,
+  useAllProfiles = true,
   onConfirm,
 }: ConfirmCloneDialogProps) {
   const { user } = useAuth();
@@ -269,17 +203,20 @@ export function ConfirmCloneDialog({
     [issueSummary],
   );
 
+  const catalog = includeCatalog ?? DEFAULT_PH_CATALOG;
+  const defaultInclude: CloneInclude = useMemo(() => {
+    const out: CloneInclude = {};
+    for (const row of catalog) out[row.key] = false;
+    return out;
+  }, [catalog]);
+
   const [summary, setSummary] = useState(initialSummary);
   const [assigneeId, setAssigneeId] = useState<string | null>(currentAssigneeId ?? null);
   const [assigneeName, setAssigneeName] = useState<string | null>(currentAssigneeName ?? null);
   const [reporterId, setReporterId] = useState<string | null>(currentReporterId ?? null);
   const [reporterName, setReporterName] = useState<string | null>(currentReporterName ?? null);
-  const [include, setInclude] = useState<CloneInclude>(DEFAULT_INCLUDE);
+  const [include, setInclude] = useState<CloneInclude>(defaultInclude);
 
-  // Reset ONLY on open (false → true). Do not depend on the initial-* props
-  // themselves — if any of them change while the dialog is open (parent
-  // re-renders with fresh issue data), state must not blow away the user's
-  // edits (checkbox picks, edited summary, picked assignee/reporter).
   const wasOpen = useRef(false);
   useEffect(() => {
     if (isOpen && !wasOpen.current) {
@@ -288,10 +225,10 @@ export function ConfirmCloneDialog({
       setAssigneeName(currentAssigneeName ?? null);
       setReporterId(currentReporterId ?? null);
       setReporterName(currentReporterName ?? null);
-      setInclude(DEFAULT_INCLUDE);
+      setInclude(defaultInclude);
     }
     wasOpen.current = isOpen;
-  }, [isOpen, initialSummary, currentAssigneeId, currentAssigneeName, currentReporterId, currentReporterName]);
+  }, [isOpen, initialSummary, currentAssigneeId, currentAssigneeName, currentReporterId, currentReporterName, defaultInclude]);
 
   const { data: currentProfile } = useQuery({
     queryKey: ['clone-me-profile', user?.id],
@@ -307,7 +244,12 @@ export function ConfirmCloneDialog({
     },
   });
 
-  const counts = useSectionCounts(isOpen, issueId, issueKey);
+  const autoCounts = usePhIssueSectionCounts(
+    isOpen && !countsOverride && !includeCatalog,
+    issueId,
+    issueKey,
+  );
+  const counts = countsOverride ?? autoCounts;
 
   const handleAssignToMe = () => {
     if (!user) return;
@@ -328,18 +270,11 @@ export function ConfirmCloneDialog({
     onClose();
   };
 
-  const canConfirm = !!summary.trim() && !!reporterId;
+  const canConfirm = !!summary.trim() && (hideReporter || !!reporterId);
 
-  const includeRows: Array<{ key: keyof CloneInclude; label: string; count: number }> = [
-    { key: 'attachments', label: 'Attachments', count: counts.attachments },
-    { key: 'childItems', label: 'Child work items', count: counts.childItems },
-    { key: 'linkedItems', label: 'Linked work items', count: counts.linkedItems },
-    { key: 'subtasks', label: 'Subtasks', count: counts.subtasks },
-    { key: 'links', label: 'Links', count: counts.links },
-    { key: 'design', label: 'Design', count: counts.design },
-    { key: 'comments', label: 'Comments', count: counts.comments },
-    { key: 'testCases', label: 'Test cases', count: counts.testCases },
-  ].filter((r) => r.count > 0);
+  const includeRows = catalog
+    .map((row) => ({ ...row, count: counts[row.key] ?? 0 }))
+    .filter((r) => r.count > 0);
 
   if (!isOpen) return null;
 
@@ -383,27 +318,31 @@ export function ConfirmCloneDialog({
                 setAssigneeName(name);
               }}
               bordered
+              useAllProfiles={useAllProfiles}
             />
             <AssignToMeLink onClick={handleAssignToMe} disabled={!user} />
           </div>
 
-          <div>
-            <label style={labelStyle}>
-              Reporter{asterisk}
-            </label>
-            <EditableReporter
-              issueId={issueId ?? ''}
-              projectId={projectId ?? ''}
-              currentReporterId={reporterId}
-              currentReporterName={reporterName}
-              onUpdate={() => { /* no-op — local state */ }}
-              onChange={(id, name) => {
-                setReporterId(id);
-                setReporterName(name);
-              }}
-              bordered
-            />
-          </div>
+          {!hideReporter && (
+            <div>
+              <label style={labelStyle}>
+                Reporter{asterisk}
+              </label>
+              <EditableReporter
+                issueId={issueId ?? ''}
+                projectId={projectId ?? ''}
+                currentReporterId={reporterId}
+                currentReporterName={reporterName}
+                onUpdate={() => { /* no-op — local state */ }}
+                onChange={(id, name) => {
+                  setReporterId(id);
+                  setReporterName(name);
+                }}
+                bordered
+                useAllProfiles={useAllProfiles}
+              />
+            </div>
+          )}
 
           {includeRows.length > 0 && (
             <div>
@@ -413,7 +352,7 @@ export function ConfirmCloneDialog({
                   <Checkbox
                     key={row.key}
                     label={`${row.label} (${row.count})`}
-                    isChecked={include[row.key]}
+                    isChecked={!!include[row.key]}
                     onChange={() =>
                       setInclude((prev) => ({ ...prev, [row.key]: !prev[row.key] }))
                     }

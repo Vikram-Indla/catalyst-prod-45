@@ -261,6 +261,7 @@ export function EditableAssignee({
   onUpdate,
   onChange,
   bordered,
+  useAllProfiles,
 }: {
   issueId: string;
   issueKey?: string;
@@ -276,6 +277,10 @@ export function EditableAssignee({
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
   /** Render the trigger with a bordered form-field look — used in form modals (e.g. ConfirmCloneDialog). */
   bordered?: boolean;
+  /** When true, ignore `projectId` and fetch ALL approved profiles instead of the project_members
+   *  shortlist. Used by non-ph_issues surfaces (test cases, test cycles, tasks hub, business requests)
+   *  where the passed id does not exist in project_members. */
+  useAllProfiles?: boolean;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   /* 2026-06-21: scope members to the project. Pulls project_members for
@@ -283,9 +288,29 @@ export function EditableAssignee({
      WorkCardAssigneePicker so the left rail and the right panel offer the
      same shortlist. */
   const { data: members = [] } = useQuery({
-    queryKey: ["assignee-project-members", projectId],
-    enabled: !!projectId,
+    queryKey: useAllProfiles
+      ? ["assignee-all-profiles"]
+      : ["assignee-project-members", projectId],
+    enabled: useAllProfiles || !!projectId,
     queryFn: async () => {
+      if (useAllProfiles) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, full_name, email, jira_account_id")
+          .eq("approval_status", "APPROVED");
+        return (profs ?? [])
+          .map((p) => {
+            const full_name = (p as any).full_name ?? (p as any).email ?? "Unknown";
+            return {
+              user_id: (p as any).id,
+              full_name,
+              avatar_url: resolveAvatarUrl(full_name) ?? null,
+              role: null,
+              jira_account_id: (p as any).jira_account_id ?? null,
+            } as ProjectMember;
+          })
+          .sort((a, b) => a.full_name.localeCompare(b.full_name));
+      }
       const { data: pm, error } = await supabase
         .from("project_members")
         .select("user_id, role")
@@ -465,6 +490,7 @@ export function EditableReporter({
   onUpdate,
   onChange,
   bordered,
+  useAllProfiles,
 }: {
   issueId: string;
   projectId: string;
@@ -476,14 +502,37 @@ export function EditableReporter({
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
   /** Render the trigger with a bordered form-field look — used in form modals (e.g. ConfirmCloneDialog). */
   bordered?: boolean;
+  /** When true, ignore `projectId` and fetch ALL approved profiles instead of the project_members
+   *  shortlist. Used by non-ph_issues surfaces where the passed id does not exist in project_members. */
+  useAllProfiles?: boolean;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   /* 2026-06-21: scoped to project_members (same shortlist as the assignee
      picker and the AllWork rail). Cross-project users are not surfaced. */
   const { data: members = [] } = useQuery({
-    queryKey: ["reporter-project-members", projectId],
-    enabled: !!projectId,
+    queryKey: useAllProfiles
+      ? ["reporter-all-profiles"]
+      : ["reporter-project-members", projectId],
+    enabled: useAllProfiles || !!projectId,
     queryFn: async () => {
+      if (useAllProfiles) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, full_name, email, jira_account_id")
+          .eq("approval_status", "APPROVED");
+        return (profs ?? [])
+          .map((p) => {
+            const full_name = (p as any).full_name ?? (p as any).email ?? "Unknown";
+            return {
+              user_id: (p as any).id,
+              full_name,
+              avatar_url: resolveAvatarUrl(full_name) ?? null,
+              role: null,
+              jira_account_id: (p as any).jira_account_id ?? null,
+            } as ProjectMember;
+          })
+          .sort((a, b) => a.full_name.localeCompare(b.full_name));
+      }
       const { data: pm, error } = await supabase
         .from("project_members")
         .select("user_id, role")

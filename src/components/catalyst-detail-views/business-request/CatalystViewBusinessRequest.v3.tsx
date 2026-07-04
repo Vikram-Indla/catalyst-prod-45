@@ -47,7 +47,9 @@ import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/li
 import { ImproveIssueDropdown } from '../improve';
 import { WatchersChip } from '../shared/WatchersChip';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
-import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
+import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import { cloneBusinessRequest, fetchBusinessRequestSectionCounts, BUSINESS_REQUEST_INCLUDE_CATALOG } from '@/lib/cloneBusinessRequest';
 import { BrMoveProductDialog } from './BrMoveProductDialog';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
@@ -301,16 +303,23 @@ export default function CatalystViewBusinessRequestV3({
     [updateField],
   );
 
-  const handleCloneConfirm = useCallback(async () => {
-    if (!resolvedId) return;
-    try {
-      const newReq = await duplicateMutation.mutateAsync(resolvedId);
-      catalystToast.success(`Duplicated as ${newReq?.request_key ?? 'BR'}`);
-      setShowCloneDialog(false);
-    } catch {
-      /* hook surfaces its own error toast */
-    }
-  }, [resolvedId, duplicateMutation]);
+  const { data: cloneCounts = {} } = useQuery({
+    queryKey: ['clone-section-counts-business-request', resolvedId],
+    enabled: showCloneDialog && !!resolvedId,
+    staleTime: 60000,
+    queryFn: () => fetchBusinessRequestSectionCounts(resolvedId as string),
+  });
+
+  const handleCloneConfirm = useCallback((patch?: ClonePatch) => {
+    if (!resolvedId || !request?.request_key) return;
+    void cloneWorkItemWithFlags({
+      sourceKey: request.request_key,
+      entityLabel: 'Business Request',
+      detailUrl: (newKey) => `/product-hub/requests/${newKey}`,
+      cloneFn: (p) => cloneBusinessRequest(resolvedId, p),
+      patch,
+    });
+  }, [resolvedId, request?.request_key]);
 
   const handleDeleteConfirm = useCallback(async () => {
     try {
@@ -451,6 +460,14 @@ export default function CatalystViewBusinessRequestV3({
           // eslint-disable-next-line react-hooks/exhaustive-deps
           [],
         )}
+        flagContext={resolvedId && request?.request_key ? {
+          issueId: resolvedId,
+          issueKey: request.request_key,
+          isFlagged: !!(request as any).is_flagged,
+          issueTitle: request.title ?? undefined,
+          issueType: 'Business Request',
+          tableName: 'business_requests',
+        } : undefined}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
         /* MUST match navigationItems[i].id — which is `request_key` (e.g. "MDT-740"),
@@ -468,6 +485,14 @@ export default function CatalystViewBusinessRequestV3({
         onClose={() => setShowCloneDialog(false)}
         issueKey={request?.request_key}
         issueSummary={request?.title}
+        issueId={resolvedId ?? null}
+        projectId={(request as any)?.product_id ?? null}
+        currentAssigneeId={null}
+        currentAssigneeName={(request as any)?.assignee ?? null}
+        hideReporter
+        useAllProfiles
+        includeCatalog={BUSINESS_REQUEST_INCLUDE_CATALOG}
+        counts={cloneCounts}
         onConfirm={handleCloneConfirm}
       />
       <ConfirmDeleteDialog

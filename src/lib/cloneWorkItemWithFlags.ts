@@ -3,13 +3,15 @@
  *
  * Steps:
  *   1. Fire "Cloning {key}" info flag (2s) — mirrors Jira's async clone hint.
- *   2. Run `cloneIssue(sourceKey, patch)` in the background.
- *   3. On resolve → success flag titled `{WorkType} {sourceKey} cloned` with a
- *      `View cloned {WorkType}` action that opens the new item in a new tab.
+ *   2. Run the clone in the background.
+ *   3. On resolve → success flag titled `{Label} {sourceKey} cloned` with a
+ *      `View cloned {Label}` action that opens the new item in a new tab.
  *   4. On reject → error flag with the underlying message.
  *
- * URL builder is issue-type aware so incidents/business requests route to the
- * right hub instead of the generic project-hub issue page.
+ * Defaults (ph_issues path): uses `cloneIssue` from workItemRepo + a
+ * type-aware URL builder. For non-ph_issues entities (test cases, test
+ * cycles, tasks hub, business requests) callers pass `cloneFn` +
+ * `detailUrl` + `entityLabel` to plug in table-specific logic.
  */
 import { catalystFlag } from './catalystFlag';
 import { cloneIssue, type CloneIssuePatch } from '@/modules/project-work-hub/lib/workItemRepo';
@@ -34,6 +36,8 @@ export function workTypeLabel(issueType: string | null | undefined): string {
   if (lower === 'production incident' || lower === 'incident' || lower === 'business gap') return 'Incident';
   if (lower === 'idea') return 'Idea';
   if (lower === 'change request') return 'Change Request';
+  if (lower === 'test case') return 'Test case';
+  if (lower === 'test cycle') return 'Test cycle';
   return raw;
 }
 
@@ -56,23 +60,37 @@ export function buildDetailUrl(
 
 export interface CloneWithFlagsArgs {
   sourceKey: string;
-  sourceType: string | null | undefined;
-  projectKey: string | null | undefined;
+  sourceType?: string | null;
+  projectKey?: string | null;
   patch?: ClonePatch;
+  /** Override the auto-derived work-type label used in the flag copy + action link. */
+  entityLabel?: string;
+  /**
+   * Custom clone function. Must return the new item's user-visible key
+   * (issue_key / case_key / cycle_key / request_key). When omitted, the
+   * default `cloneIssue` (ph_issues) is used and `sourceType` + `projectKey`
+   * drive URL routing.
+   */
+  cloneFn?: (patch?: ClonePatch) => Promise<string>;
+  /** Custom detail-URL builder. Falls back to the type-aware `buildDetailUrl`. */
+  detailUrl?: (newKey: string) => string;
 }
 
 /**
  * Runs the clone with the info→success/error flag sequence. Returns the new
- * issue_key on success. Callers may await it if they need to refresh state,
- * but the flag UX does not require awaiting.
+ * key on success. Callers may await it if they need to refresh state, but
+ * the flag UX does not require awaiting.
  */
 export async function cloneWorkItemWithFlags({
   sourceKey,
   sourceType,
   projectKey,
   patch,
+  entityLabel,
+  cloneFn,
+  detailUrl,
 }: CloneWithFlagsArgs): Promise<string | null> {
-  const label = workTypeLabel(sourceType);
+  const label = entityLabel ?? workTypeLabel(sourceType);
 
   const infoId = catalystFlag.info(
     {
@@ -93,9 +111,15 @@ export async function cloneWorkItemWithFlags({
       }
     : undefined;
 
+  const runClone = cloneFn
+    ? () => cloneFn(patch)
+    : () => cloneIssue(sourceKey, repoPatch);
+
   try {
-    const newKey = await cloneIssue(sourceKey, repoPatch);
-    const url = buildDetailUrl(sourceType, projectKey, newKey);
+    const newKey = await runClone();
+    const url = detailUrl
+      ? detailUrl(newKey)
+      : buildDetailUrl(sourceType, projectKey, newKey);
 
     catalystFlag.dismiss(infoId);
     catalystFlag.success(
