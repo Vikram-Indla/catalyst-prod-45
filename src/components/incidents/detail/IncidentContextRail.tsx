@@ -137,7 +137,7 @@ const OWNING_TEAM_DEFAULTS = [
 // Severity badge colors - Branded enterprise tones
 const SEVERITY_COLORS: Record<SeverityLevel, string> = {
   SEV1: 'bg-destructive/10 text-destructive border-destructive/30',
-  SEV2: 'bg-orange-500/10 text-orange-600 border-orange-500/30',
+  SEV2: 'bg-[var(--ds-background-warning)]/10 text-[var(--ds-text-warning)] border-[var(--ds-border-warning)]/30',
   SEV3: 'bg-primary/10 text-primary border-primary/30',
   SEV4: 'bg-muted text-muted-foreground border-border',
 };
@@ -145,7 +145,7 @@ const SEVERITY_COLORS: Record<SeverityLevel, string> = {
 // Priority badge colors - Branded enterprise tones
 const PRIORITY_COLORS: Record<PriorityLevel, string> = {
   P1: 'bg-destructive/10 text-destructive border-destructive/30',
-  P2: 'bg-orange-500/10 text-orange-600 border-orange-500/30',
+  P2: 'bg-[var(--ds-background-warning)]/10 text-[var(--ds-text-warning)] border-[var(--ds-border-warning)]/30',
   P3: 'bg-primary/10 text-primary border-primary/30',
   P4: 'bg-muted text-muted-foreground border-border',
 };

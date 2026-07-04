@@ -518,8 +518,8 @@ export function CommitteeModal({
                           <div className={cn(
                             "w-2 h-2 rounded-full",
                             entry.status === 'approved' && "bg-emerald-500",
-                            entry.status === 'rejected' && "bg-rose-500",
-                            entry.status === 'vetoed' && "bg-rose-500",
+                            entry.status === 'rejected' && "bg-[var(--ds-background-danger)]",
+                            entry.status === 'vetoed' && "bg-[var(--ds-background-danger)]",
                             entry.status === 'pending' && "bg-muted-foreground/40"
                           )} />
                         </div>

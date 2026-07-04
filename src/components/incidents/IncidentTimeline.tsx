@@ -43,11 +43,11 @@ const getEventIcon = (type: string) => {
 
 // Sample mention suggestions - using teal for variety per design spec v2
 const mentionSuggestions = [
-  { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-gray-500' },
+  { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-[var(--ds-background-neutral-subtle)]' },
   { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-[var(--ds-chart-teal-bold)]' },
   { id: 'u3', name: 'Nada Alfassam', initials: 'NA', color: 'bg-[var(--ds-chart-teal-bolder)]' },
   { id: 'u4', name: 'Yazeed Daraz', initials: 'YD', color: 'bg-blue-500' },
-  { id: 'u5', name: 'Imran Aslam', initials: 'IA', color: 'bg-gray-400' },
+  { id: 'u5', name: 'Imran Aslam', initials: 'IA', color: 'bg-[var(--ds-background-neutral-subtle)]' },
   { id: 'u6', name: 'Suleiman Ahmad Allawanseh', initials: 'SA', color: 'bg-[var(--ds-chart-teal-bold)]' },
 ];
 

@@ -187,9 +187,9 @@ export function InlineEditCell({
         <button
           onClick={handleCancel}
           disabled={isSaving}
-          className="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-950/30 transition-colors"
+          className="p-1 rounded hover:bg-[var(--ds-background-danger)] dark:hover:bg-[var(--ds-background-danger)] transition-colors"
         >
-          <X className="h-3.5 w-3.5 text-rose-600" />
+          <X className="h-3.5 w-3.5 text-[var(--ds-text-danger)]" />
         </button>
       </div>
     );

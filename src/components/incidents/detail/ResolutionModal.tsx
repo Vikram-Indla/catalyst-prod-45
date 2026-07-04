@@ -91,14 +91,14 @@ export function ResolutionModal({
       <DialogContent className="max-w-md p-0">
         <DialogHeader className="px-4 pt-4 pb-3 border-b border-border">
           <DialogTitle className="text-sm font-semibold flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-amber-500" />
+            <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning)]" />
             Resolution Required
           </DialogTitle>
         </DialogHeader>
         
         <div className="p-4 space-y-4">
-          <div className="p-3 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-            <p className="text-xs text-amber-800 dark:text-amber-300">
+          <div className="p-3 rounded-md bg-[var(--ds-background-warning)] dark:bg-[var(--ds-background-warning)] border border-[var(--ds-border-warning)] dark:border-[var(--ds-border-warning)]">
+            <p className="text-xs text-[var(--ds-text-warning)] dark:text-[var(--ds-text-warning)]">
               Before {targetStatus === 'closed' ? 'closing' : 'resolving'} <strong>{incidentKey}</strong>, 
               please provide resolution details for audit and knowledge purposes.
             </p>

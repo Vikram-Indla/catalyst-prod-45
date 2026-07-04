@@ -17,7 +17,7 @@ const getFileIcon = (name: string) => {
     return <Image className="w-5 h-5 text-blue-500" />;
   }
   if (['txt', 'log', 'md', 'json'].includes(ext || '')) {
-    return <FileText className="w-5 h-5 text-gray-500" />;
+    return <FileText className="w-5 h-5 text-[var(--ds-icon-subtle)]" />;
   }
   return <File className="w-5 h-5 text-[var(--ds-text-subtlest)]" />;
 };
@@ -85,7 +85,7 @@ export function IncidentAttachments({
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-8 w-8 p-0 hover:text-red-500"
+                      className="h-8 w-8 p-0 hover:text-[var(--ds-text-danger)]"
                       onClick={() => onDelete?.(attachment.id)}
                     >
                       <Trash2 className="w-4 h-4" />
