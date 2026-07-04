@@ -39,3 +39,29 @@
 - Don't relock `committee_votes` INSERT to service_role-only without deploying the edge functions — that re-breaks all client voting.
 - Don't call `useTransitionOnApproval` alongside the vote mutations (DB triggers own the cascade).
 - Don't re-add the "Use Default Approvers" button without a real `send-to-committee` backing.
+
+## Addendum — gap #6 cross-check + convergence impact (2026-07-04)
+
+**Gap #6 (STATUS_TRANSITIONS vs DB) — cross-checked, mostly clean, one real finding:**
+- `incident_status` enum = open/triage/to_committee/in_progress/resolved/converted/closed — matches the app `IncidentStatus`.
+- `validate_committee_transition` (BEFORE trigger on incidents): **rejects `status→'to_committee'` unless `committee_id` is set AND the committee has ≥1 `committee_members` row** (raises "Add at least one approver…"). Implication: any committee-creation flow MUST insert ≥1 member before flipping status to `to_committee`. (My deleted gap-#2 fix in `IncidentRoomDetail.handleCreateCommittee` violated this — set to_committee on an empty committee — but that file is now deleted, so it's moot.)
+- `apply_committee_decision_to_incident`: to_committee→in_progress (approved) / →triage (rejected; veto sets committee status='rejected' upstream). Matches app graph. ✓
+- `stamp_incident_sla_milestones`: leaving `open` stamps `response_met_at`; entering `resolved` stamps `resolution_met_at`. Aligns with the app graph (closed only reachable via resolved). Explains why the 137 backfilled-direct-to-closed incidents have no `resolution_met_at`. ✓
+- App-logic smell (not DB drift): `STATUS_TRANSITIONS.in_progress` has "Put On Hold" → `resolved` (on-hold shouldn't resolve). Cosmetic; left as-is.
+
+**MAJOR: concurrent "convergence" session (`e0a49a1ee`) reshaped incident governance mid-session:**
+- **Deleted** the entire legacy `/release/incidents/*` module — 11 pages incl. `IncidentRoomDetail` (where my gap-#2 fix lived → now moot), `IncidentCommandCenter`, `IncidentDetail`, plus the `/release/committee-queue` route.
+- **Added** `committee_id`, `sla_record_id`, `severity`, `incident_key`, `workflow_status_key` columns to `ph_issues` (converging governance onto the ph_issues mirror). `ph_issues.committee_id` exists but is **0-populated** so far — a FUTURE convergence step may switch committee creation to ph_issues, at which point the native-`incidents`-reading queue must be re-pointed.
+
+**What survived + verified working post-convergence:**
+- `/incident-hub/committee-queue` route + `CommitteeQueueDrawer`/`Table`/`Page` + `useCommitteeQueue` — intact, reads native `incidents`.
+- Committee voting fix (`c3d5fc7b7`) — RLS migration + lazy-upsert Approve/Veto — intact.
+- `src/utils/incidentSla.ts` (`311450f8a`) — intact.
+- Native committee schema (`incidents.committee_id` + `incident_committees`/`committee_members`/`committee_votes`) — intact.
+- 3 role holders (Vikram admin, Amadou + Khaled committee_member) — survived.
+- **Surviving committee-creation surface = `IncidentKanbanPage` (modules/incidents/kanban, routed):** drag-to-`to_committee` → CommitteeModal → creates committee/members then sets status. Correctly adds members BEFORE the status flip (passes `validate_committee_transition`), updates native `incidents`. Compatible with the RLS + lazy-voting model.
+- **Cleanup done (`07e16346f`):** removed `IncidentKanbanPage`'s redundant pending-`committee_votes` pre-insert (silently failed for non-self approvers under member-scoped RLS; lazy voting handles it).
+
+**Orphaned dead code (deletion deferred):** `IncidentWorkArea` + `CommitteeCard` (only consumer was the deleted `IncidentRoomDetail`) now have zero live consumers. NOT deleted — `IncidentWorkArea` is in the running SLA-sweep session's file list (`task_0953eade`), so deleting it would collide. Revisit after that session lands.
+
+**Recommendation:** incident-governance is stable on the native model right now, but a convergence step that moves committee creation to `ph_issues.committee_id` would strand the native-reading queue. Re-scope the queue/voting/SLA-util onto whichever committee model wins once convergence settles.
