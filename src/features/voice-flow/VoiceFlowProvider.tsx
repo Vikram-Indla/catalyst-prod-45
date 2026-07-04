@@ -4,6 +4,7 @@ import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget } from './insertTextIntoTarget';
+import { cleanupTranscript } from './cleanupTranscript';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
@@ -276,8 +277,27 @@ export function VoiceFlowProvider({ children }: Props) {
     durationMs: number,
     geminiStart: number,
   ) => {
+    // CatyFlow polish pass (CAT-VOICE-FLOW-20260704-001): register-aware
+    // cleanup raced against a deadline — a late/failed cleanup silently
+    // falls back to the raw transcript, dictation never blocks on it.
+    let finalText = englishText;
+    let rawText: string | undefined;
+    let cleanupProvider: string | undefined;
+    if (VOICE_FLOW_CONFIG.cleanupEnabled) {
+      try {
+        const outcome = await cleanupTranscript(englishText, fieldRef.current);
+        if (outcome && outcome.cleaned !== englishText) {
+          rawText = englishText;
+          finalText = outcome.cleaned;
+          cleanupProvider = outcome.provider;
+        }
+      } catch { /* raw transcript stands */ }
+    }
+
     const voiceResult: VoiceResult = {
-      englishText,
+      englishText: finalText,
+      rawText,
+      cleanupProvider,
       detectedLanguage: detectedLang,
       confidence,
       durationMs,
@@ -302,7 +322,7 @@ export function VoiceFlowProvider({ children }: Props) {
     if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
       setStatusBoth('committing');
       try {
-        insertTextIntoTarget(fieldRef.current, englishText);
+        insertTextIntoTarget(fieldRef.current, finalText);
       } catch (insertErr) {
         console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
       }
