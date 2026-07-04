@@ -21,11 +21,10 @@ import { BlockNoteView } from '@blocknote/mantine';
 import {
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
-  filterSuggestionItems,
   useCreateBlockNote,
   type DefaultReactSuggestionItem,
 } from '@blocknote/react';
-import { insertOrUpdateBlock, type Block, type BlockNoteEditor } from '@blocknote/core';
+import { filterSuggestionItems, type Block, type BlockNoteEditor, type PartialBlock } from '@blocknote/core';
 import { supabase } from '@/integrations/supabase/client';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { wikiSchema } from './wikiSchema';
@@ -173,7 +172,23 @@ export default function WikiEditor({
         group: 'Basic blocks',
         aliases: ['callout', 'note', 'info', 'panel', 'warning'],
         onItemClick: () => {
-          insertOrUpdateBlock(editor as never, { type: 'callout' } as never);
+          // Notion behavior: replace the current empty paragraph, otherwise
+          // insert below and move the caret in.
+          const cursor = editor.getTextCursorPosition();
+          const current = cursor.block as Block;
+          const isEmptyParagraph =
+            current.type === 'paragraph' &&
+            (!Array.isArray(current.content) || current.content.length === 0);
+          if (isEmptyParagraph) {
+            editor.updateBlock(current, { type: 'callout' } as PartialBlock as never);
+          } else {
+            const inserted = editor.insertBlocks(
+              [{ type: 'callout' } as PartialBlock as never],
+              current,
+              'after',
+            );
+            if (inserted[0]) editor.setTextCursorPosition(inserted[0], 'start');
+          }
         },
       };
       return filterSuggestionItems(
