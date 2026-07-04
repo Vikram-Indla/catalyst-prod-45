@@ -105,6 +105,32 @@ weight, out of the TestHub-live mandate, not touched. Fourteen other FKs to lega
 exist across unrelated modules (`features`, `subtasks`, `milestones`, `work_item_versions`,
 etc.) — explicitly out of scope for a TestHub feature, not touched, not audited further here.
 
+## D-021 (2026-07-04, found live during P2-S4 — target already gone, tool caching bit me)
+**P2-S4's cited route (`/release/incidents/reports`, RPT-004) no longer exists at all** —
+confirmed via direct `grep`/`ls` (not the `rtk` proxy — see caveat below): no route registers
+it in `FullAppRoutes.tsx`, and the file it would have rendered
+(`src/pages/release/IncidentReportsPage.tsx`) doesn't exist on disk. It was already deleted,
+most likely by P0-S2's 135-file dead-code sweep, without anyone updating the barrel
+`src/pages/release/index.ts` that still re-exported it. **Asked Vikram to choose
+redirect-vs-delete for a route that turned out to already be gone** — the question itself was
+moot, based on a stale finding (see caveat). Closed it properly instead of just deleting one
+broken export line: the entire `src/pages/release/` folder (`index.ts` +
+`CAPCommitteeQueuePage.tsx`) had **zero live importers anywhere** — 5 of 6 barrel exports
+pointed at already-deleted files, and the barrel itself was never imported by anything (grep
+confirmed). Deleted the whole folder. `tsc`/build clean after; `audit:ads:gate`'s `tokens`
+count dropped 24743→24730 from the dead code's own debt — ratcheted the baseline down per
+CLAUDE.md's "ratchet down when a slice reduces counts" rule.
+
+**Tool-reliability caveat:** the first pass at this slice used `rtk proxy grep` (a token-saving
+CLI proxy this session has been using throughout) and it returned line-numbered matches for the
+dead route in `FullAppRoutes.tsx` that do not exist in the live file — a stale cache, not a
+present fact. Cross-checked with plain `grep`/`ls`/`cat` and the discrepancy was immediate and
+obvious. No other finding this session was sourced from `rtk proxy grep` without a direct
+cross-check, so nothing else is suspected — but any single-sourced `rtk`-only claim from earlier
+in this session that was never independently re-verified via a live SQL probe, `tsc`, or a
+direct `grep` carries a small residual risk and should be spot-checked before being relied on
+again. Flagging this to Vikram directly rather than quietly self-correcting.
+
 ## D-009 (2026-07-03, found live during P1-S10b — self-correction of my own P1-S9 work)
 **The P1-S9 backfill migration (`20260703410000`) set `requirement_id` on its 16 rows but never `external_key`/`external_title`.** Both `TestCoveragePanel.tsx` and (after S10b) `TestCasesSection.tsx` filter `tm_requirement_links` by `external_key`, not `requirement_id` — so all 16 backfilled rows were invisible to both readers despite having a technically-correct FK. Caught by live testing (story BAU-2668 showed "Test cases 2" instead of the expected 18), not by re-reading my own migration SQL. Fixed with a follow-up data-repair migration (`20260703430000`) rather than amending the original — the original already ran and is committed; a second additive migration is the correct fix per the migration-ledger discipline (never alter an applied migration's file after the fact). Lesson: when a migration sets one column that participates in a join/filter used elsewhere, grep every reader's filter column before declaring the backfill's job done — count equality (16=16) on the wrong column silently proves nothing.
 

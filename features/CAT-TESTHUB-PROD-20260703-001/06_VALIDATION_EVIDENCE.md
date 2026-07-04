@@ -355,3 +355,15 @@ D-003 resolved 2026-07-04: Vikram confirmed `ph_releases` as the release id-spac
 | **Deferred** | Light/dark screenshots of the new section — blocked by the same browser-session logout carried forward all session. `useWaiveQualityGate`/`useApproveReadiness` mutations exist and were read (both simple, no bugs found) but not live-exercised this slice — lower-priority secondary actions, can be proven once browser access returns |
 
 **P2-S1…S3 done.** Release id-space corrected, readiness computed live from gates+executions (not stored/stale columns), gate stack mounted on the real `ph_releases` detail page for the first time. Next: **P2-S4** (retire/repoint `/release/incidents/reports`).
+
+## P2-S4 (retire dead incident-reports route)
+
+| Item | Evidence |
+|---|---|
+| Vikram decision | Asked redirect-vs-delete per Plan Lock's "already PLACEHOLDER'd for Vikram" note; answered "redirect (recommended)" — but see finding below, the question turned out to be moot |
+| **D-021 — target already gone, plus a tool-reliability finding** | The cited route (`/release/incidents/reports`) doesn't exist anywhere in `FullAppRoutes.tsx`, and its page file doesn't exist on disk — already removed, most likely by P0-S2's earlier dead-code sweep, without cleaning up the barrel that still referenced it. `rtk proxy grep` returned stale line-numbered matches for this route that don't reflect the live file; cross-checked with plain `grep`/`ls` and the discrepancy was immediate. Full details + caveat in `09_DECISIONS.md` D-021 |
+| Actual fix | Deleted the entire `src/pages/release/` folder (`index.ts` + `CAPCommitteeQueuePage.tsx`) — zero live importers anywhere, 5 of 6 barrel exports already pointed at deleted files |
+| Accept cmd | `npx tsc --noEmit` clean. `grep` confirms zero remaining references to the deleted folder outside the generated (non-authoritative) `usage-map.generated.ts`. `npm run build` → exit 0 |
+| Baseline ratchet | `audit:ads:gate` tokens count dropped 24743→24730 from the deleted dead code — ratcheted down via `node scripts/ads-audit-gate.cjs --update`, per CLAUDE.md's "ratchet down when a slice reduces counts" rule |
+
+**P2-S4 done** — route already retired by an earlier slice; this slice closed out the orphaned dead folder it left behind. Next: **P2-S5…S8** (JUnit XML ingestion).
