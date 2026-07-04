@@ -1,17 +1,17 @@
 /**
- * catyflow-token — mints an ephemeral realtime-transcription session for
- * CatyFlow dictation (CAT-VOICE-FLOW-20260704-001).
+ * catyflow-token — mints an ephemeral Gemini Live API token for CatyFlow
+ * dictation (CAT-VOICE-FLOW-20260704-001).
  *
- * The browser never sees a long-lived AI key: this function verifies the
- * Supabase JWT, then asks the configured AI gateway (OpenAI-compatible
- * Realtime API) for a short-lived client secret the browser uses to open
- * a WebRTC transcription session directly with the provider. Audio never
- * transits Supabase.
+ * The browser never sees the durable key: this function verifies the
+ * Supabase JWT, then asks the Gemini API to mint a short-lived,
+ * single-session ephemeral token constrained to a live transcription
+ * session. The browser uses that token to open a WebSocket straight to
+ * Gemini (BidiGenerateContent) — audio never transits Supabase.
  *
- * Env:
- *   AI_GATEWAY_URL       — OpenAI-compatible base URL (default api.openai.com)
- *   AI_GATEWAY_API_KEY   — gateway key (falls back to OPENAI_API_KEY)
- *   CATYFLOW_ASR_MODEL   — default gpt-4o-mini-transcribe
+ * Gemini-native: powered by the same GEMINI_API_KEY that runs the
+ * cleanup pass. No OpenAI dependency.
+ *
+ * Env: GEMINI_API_KEY, CATYFLOW_LIVE_MODEL (default gemini-2.0-flash-live-001)
  */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
@@ -24,6 +24,11 @@ const corsHeaders = {
   "Access-Control-Max-Age": "86400",
   "Vary": "Origin",
 };
+
+const GEMINI_AUTH_TOKENS_URL =
+  "https://generativelanguage.googleapis.com/v1alpha/auth_tokens";
+const LIVE_WS_URL =
+  "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -47,54 +52,52 @@ serve(async (req) => {
     const { data: userData, error: userErr } = await sb.auth.getUser();
     if (userErr || !userData?.user) return json({ error: "unauthorized" }, 401);
 
-    const gatewayUrl = (Deno.env.get("AI_GATEWAY_URL") ?? "https://api.openai.com").replace(/\/$/, "");
-    const apiKey = Deno.env.get("AI_GATEWAY_API_KEY") ?? Deno.env.get("OPENAI_API_KEY");
-    if (!apiKey) return json({ error: "not_configured", message: "AI gateway key missing" }, 503);
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!apiKey) return json({ error: "not_configured", message: "GEMINI_API_KEY missing" }, 503);
 
-    const model = Deno.env.get("CATYFLOW_ASR_MODEL") ?? "gpt-4o-mini-transcribe";
+    const model = "models/" + (Deno.env.get("CATYFLOW_LIVE_MODEL") ?? "gemini-2.0-flash-live-001");
 
-    // Optional keyterm vocabulary from the caller (personal dictionary)
+    // Optional keyterm vocabulary → nudges recognition of names/jargon.
     let vocabulary: string[] = [];
     try {
       const body = await req.json();
       if (Array.isArray(body?.vocabulary)) {
-        vocabulary = body.vocabulary.filter((t: unknown) => typeof t === "string").slice(0, 80);
+        vocabulary = body.vocabulary.filter((t: unknown) => typeof t === "string").slice(0, 60);
       }
     } catch {
       // empty body is fine
     }
 
-    const prompt = vocabulary.length
-      ? `Vocabulary: ${vocabulary.join(", ")}`
-      : undefined;
-
-    // ---- Mint ephemeral client secret for a realtime transcription session ----
-    const resp = await fetch(`${gatewayUrl}/v1/realtime/client_secrets`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        expires_after: { anchor: "created_at", seconds: 600 },
-        session: {
-          type: "transcription",
-          audio: {
-            input: {
-              transcription: {
-                model,
-                ...(prompt ? { prompt } : {}),
-              },
-              noise_reduction: { type: "near_field" },
-              turn_detection: {
-                type: "server_vad",
-                threshold: 0.5,
-                prefix_padding_ms: 300,
-                silence_duration_ms: 700,
-              },
-            },
+    // Live session config the ephemeral token is LOCKED to (probed against
+    // the v1alpha auth_tokens API — the field is `bidiGenerateContentSetup`).
+    // Transcribe user audio; keep model text output empty.
+    const bidiSetup: Record<string, unknown> = {
+      model,
+      generationConfig: { responseModalities: ["TEXT"] },
+      inputAudioTranscription: {},
+      systemInstruction: {
+        parts: [
+          {
+            text:
+              "You are a silent transcriber. Never produce spoken or text responses. " +
+              "Only the automatic input transcription of the user's speech is used." +
+              (vocabulary.length ? ` Expect these terms: ${vocabulary.join(", ")}.` : ""),
           },
-        },
+        ],
+      },
+    };
+
+    // Ephemeral token: single new session, ~2 min to open + 16 min live
+    // (covers CatyFlow's 15-min max), single-use, model+config locked.
+    const now = Date.now();
+    const resp = await fetch(`${GEMINI_AUTH_TOKENS_URL}?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        uses: 1,
+        expireTime: new Date(now + 16 * 60_000).toISOString(),
+        newSessionExpireTime: new Date(now + 2 * 60_000).toISOString(),
+        bidiGenerateContentSetup: bidiSetup,
       }),
     });
 
@@ -108,11 +111,17 @@ serve(async (req) => {
     }
 
     const data = await resp.json();
+    const tokenName: string | undefined = data?.name; // e.g. "auth_tokens/AQ.xxx"
+    const ephemeral = tokenName?.startsWith("auth_tokens/")
+      ? tokenName.slice("auth_tokens/".length)
+      : tokenName;
+    if (!ephemeral) return json({ error: "mint_failed" }, 502);
+
     return json({
-      client_secret: data?.value ?? data?.client_secret?.value ?? null,
-      expires_at: data?.expires_at ?? data?.client_secret?.expires_at ?? null,
+      provider: "gemini-live",
+      access_token: ephemeral,
+      ws_url: LIVE_WS_URL,
       model,
-      realtime_url: `${gatewayUrl.replace(/^http/, "http")}/v1/realtime`,
     });
   } catch (e) {
     return json({ error: "internal", message: String(e).slice(0, 300) }, 500);
