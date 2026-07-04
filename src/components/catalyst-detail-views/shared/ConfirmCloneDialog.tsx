@@ -382,6 +382,7 @@ export function ConfirmCloneDialog({
                 setAssigneeId(id);
                 setAssigneeName(name);
               }}
+              bordered
             />
             <AssignToMeLink onClick={handleAssignToMe} disabled={!user} />
           </div>
@@ -400,6 +401,7 @@ export function ConfirmCloneDialog({
                 setReporterId(id);
                 setReporterName(name);
               }}
+              bordered
             />
           </div>
 

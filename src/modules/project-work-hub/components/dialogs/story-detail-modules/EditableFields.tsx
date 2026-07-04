@@ -260,6 +260,7 @@ export function EditableAssignee({
   currentStatus,
   onUpdate,
   onChange,
+  bordered,
 }: {
   issueId: string;
   issueKey?: string;
@@ -273,6 +274,8 @@ export function EditableAssignee({
    *  Receives (userId, displayName). Enables non-ph_issues data sources (tasks, business_requests)
    *  to reuse this canonical picker — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
+  /** Render the trigger with a bordered form-field look — used in form modals (e.g. ConfirmCloneDialog). */
+  bordered?: boolean;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   /* 2026-06-21: scope members to the project. Pulls project_members for
@@ -430,6 +433,7 @@ export function EditableAssignee({
         fieldLabel="Assignee"
         disabled={isAssigneeLocked(currentStatus)}
         size={24}
+        bordered={bordered}
       />
     </div>
   );
@@ -460,6 +464,7 @@ export function EditableReporter({
   currentReporterName,
   onUpdate,
   onChange,
+  bordered,
 }: {
   issueId: string;
   projectId: string;
@@ -469,6 +474,8 @@ export function EditableReporter({
   /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation.
    *  Receives (userId, displayName). Enables non-ph_issues data sources to reuse this picker. */
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
+  /** Render the trigger with a bordered form-field look — used in form modals (e.g. ConfirmCloneDialog). */
+  bordered?: boolean;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   /* 2026-06-21: scoped to project_members (same shortlist as the assignee
@@ -613,6 +620,7 @@ export function EditableReporter({
         fieldLabel="Reporter"
         /* Reporter is NOT auto-locked. Field stays editable. */
         size={24}
+        bordered={bordered}
       />
     </div>
   );

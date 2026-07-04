@@ -115,6 +115,14 @@ export interface ProfilePickerProps {
    * fires immediately so the parent can unmount.
    */
   locked?: boolean;
+  /**
+   * When true, the default input trigger renders with a dark-gray border to
+   * match a bordered form field (e.g. inside a form modal). On open the border
+   * is replaced by the focused-ring `boxShadow` — no double border. Only
+   * affects the default input trigger; render-trigger / cell / body-only /
+   * multi paths are untouched.
+   */
+  bordered?: boolean;
 }
 
 export function ProfilePicker({
@@ -134,6 +142,7 @@ export function ProfilePicker({
   anchorRef,
   onClose,
   locked,
+  bordered,
 }: ProfilePickerProps) {
   const bodyOnly = !!anchorRef;
   const multi = !!selectedIds && !!onChangeMulti;
@@ -332,7 +341,14 @@ export function ProfilePicker({
         fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
         width: '100%',
         minWidth: 0,
-        boxShadow: open ? 'inset 0 0 0 2px var(--ds-border-focused)' : 'none',
+        /* Bordered mode: idle shows a 1px --ds-border ring, open shows the 2px
+           focused ring instead — swap prevents a double border. Non-bordered
+           mode keeps the original behaviour (only focus ring, no idle border). */
+        boxShadow: open
+          ? 'inset 0 0 0 2px var(--ds-border-focused)'
+          : bordered
+            ? 'inset 0 0 0 1px var(--ds-border-input)'
+            : 'none',
         transition: 'box-shadow 0.1s',
       }}
     >
