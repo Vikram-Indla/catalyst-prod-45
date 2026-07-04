@@ -103,8 +103,6 @@ const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
 
-const StrategicThemesPage = lazy(() => import("../modules-dormant/strategyhub/StrategicThemesPage"));
-const GoalsKeyResultsPage = lazy(() => import("../modules-dormant/strategyhub/GoalsKeyResultsPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
 const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const RequirementAssistCompose = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/compose")) : () => <FeatureComingSoon title="Requirement Assist" />;
@@ -201,7 +199,6 @@ const DependencyMapsPage = lazy(() => import("../pages/reports/DependencyMapsPag
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
 const StrategyRoom = lazy(() => import("../modules-dormant/strategy/StrategyRoom"));
-const StrategyComingSoon = lazy(() => import("../modules-dormant/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
@@ -592,18 +589,9 @@ export default function FullAppRoutes() {
         {/* ═══ StrategyHub ═══ */}
         <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
         <Route path="/strategyhub/executive-brief" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/themes" element={<MG k="strategyhub" t="StrategyHub"><S><StrategicThemesPage /></S></MG>} />
-        <Route path="/strategyhub/goals" element={<MG k="strategyhub" t="StrategyHub"><S><GoalsKeyResultsPage /></S></MG>} />
         <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategyhub/investment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Investment Allocation" /></S></MG>} />
-        <Route path="/strategyhub/snapshots" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Snapshots" /></S></MG>} />
-        <Route path="/strategyhub/ai-insights" element={<MG k="ai_features" t="AI Insights"><S><StrategyComingSoon title="AI Insights" /></S></MG>} />
-        <Route path="/strategyhub/team-alignment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Team Alignment" /></S></MG>} />
-        <Route path="/strategyhub/settings" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Settings" /></S></MG>} />
         <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
-        <Route path="/strategyhub/risks" element={<S><EnterpriseComingSoon /></S>} />
+        <Route path="/strategyhub/*" element={<Navigate to="/strategyhub" replace />} />
 
         <Route path="/portfolio/:portfolioKey/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
