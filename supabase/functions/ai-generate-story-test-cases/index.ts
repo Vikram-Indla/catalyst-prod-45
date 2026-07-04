@@ -33,16 +33,15 @@ interface GeneratedCase {
   steps: GeneratedStep[];
 }
 
-// P2-S9 (AI-003): the repo-wide `logGovernance()` pattern (used by ~10 other AI
-// edge functions too) inserts into `ai_governance_audit_log` with columns
+// P2-S9 (AI-003): the repo-wide `logGovernance()` pattern (also used by ~10 other
+// AI edge functions) inserted into `ai_governance_audit_log` with columns
 // (payload/status/error_message/source) that don't exist on that table's real
-// schema (id/actor_id/contract_id/action/object_type/object_id/diff) — every
-// call has been silently failing (0 rows, ever) behind the "audit must never
-// block inference" catch. Fixed here for this function only, writing to
-// `tm_ai_usage_log` (the actual usage-ledger table — has user_id/tokens_used/
-// model/feature, exactly the usage-ledger shape this slice needs). The same
-// bug in the other ~10 AI edge functions is out of this feature's scope —
-// flagged separately rather than fixed here.
+// schema (id/actor_id/contract_id/action/object_type/object_id/diff, FK'd to
+// ai_contracts — a contract-approval concept). Every call silently failed
+// (0 rows, ever) behind the "audit must never block inference" catch. This
+// function writes to `tm_ai_usage_log` (TestHub's usage ledger). The other ~10
+// functions were retargeted to the new shared `ai_usage_log` table, which
+// mirrors their existing (source/action/status/error_message/payload) shape.
 async function logUsage(params: {
   userId: string | null;
   projectId: string | null;
