@@ -312,21 +312,11 @@ export default function IncidentKanbanPage() {
           continue;
         }
 
-        // Create vote record for member
-        const { data: member } = await supabase
-          .from('committee_members')
-          .select('id')
-          .eq('committee_id', newCommittee.id)
-          .eq('user_id', userId)
-          .single();
-
-        if (member) {
-          await supabase.from('committee_votes').insert({
-            committee_id: newCommittee.id,
-            member_id: member.id,
-            vote: 'pending',
-          });
-        }
+        // No pending committee_votes row is pre-created. Vote rows are created
+        // lazily on first vote (RLS lets a member write only their OWN vote, so
+        // pre-inserting rows for other approvers here silently fails anyway). A
+        // missing row = "pending" in the vote-count logic. See
+        // src/hooks/useCommitteeQueue.ts (useRecordApproval/useRecordVeto upsert).
       }
 
       // 3. Update incident: link committee and set status
