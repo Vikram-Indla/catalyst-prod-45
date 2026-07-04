@@ -23,7 +23,7 @@ import {
   extractInstruction,
   type Instruction,
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item';
-import { ChevronRight, ChevronDown, FileText, Plus } from '@/lib/atlaskit-icons';
+import { ChevronRight, ChevronDown, FileText, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import type { WikiPageSummary } from '@/hooks/useWiki';
 
 export interface PageTreeMove {
@@ -38,6 +38,7 @@ export interface PageTreeProps {
   onSelect: (page: WikiPageSummary) => void;
   onMove: (move: PageTreeMove) => void;
   onCreateChild: (parentId: string | null) => void;
+  onDelete?: (page: WikiPageSummary) => void;
   emptyHint?: string;
 }
 
@@ -83,6 +84,7 @@ function TreeRow({
   onToggle,
   onSelect,
   onCreateChild,
+  onDelete,
 }: {
   node: TreeNode;
   depth: number;
@@ -91,6 +93,7 @@ function TreeRow({
   onToggle: (id: string) => void;
   onSelect: (page: WikiPageSummary) => void;
   onCreateChild: (parentId: string | null) => void;
+  onDelete?: (page: WikiPageSummary) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [instruction, setInstruction] = useState<Instruction | null>(null);
@@ -256,6 +259,32 @@ function TreeRow({
         >
           <Plus style={{ width: 14, height: 14 }} />
         </button>
+        {onDelete && (
+          <button
+            type="button"
+            aria-label={`Delete ${node.title || 'Untitled'}`}
+            className="wiki-tree-add"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(node);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 20,
+              height: 20,
+              border: 'none',
+              borderRadius: 4,
+              background: 'transparent',
+              color: 'var(--ds-icon-subtle)',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            <Trash2 style={{ width: 13, height: 13 }} />
+          </button>
+        )}
       </div>
       {isOpen &&
         node.children.map((child) => (
@@ -268,13 +297,14 @@ function TreeRow({
             onToggle={onToggle}
             onSelect={onSelect}
             onCreateChild={onCreateChild}
+            onDelete={onDelete}
           />
         ))}
     </Fragment>
   );
 }
 
-export function PageTree({ pages, selectedId, onSelect, onMove, onCreateChild, emptyHint }: PageTreeProps) {
+export function PageTree({ pages, selectedId, onSelect, onMove, onCreateChild, onDelete, emptyHint }: PageTreeProps) {
   const tree = useMemo(() => buildTree(pages), [pages]);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
 
@@ -363,6 +393,7 @@ export function PageTree({ pages, selectedId, onSelect, onMove, onCreateChild, e
             onToggle={toggle}
             onSelect={onSelect}
             onCreateChild={onCreateChild}
+            onDelete={onDelete}
           />
         ))
       )}

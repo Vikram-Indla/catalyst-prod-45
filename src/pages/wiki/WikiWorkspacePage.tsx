@@ -3,16 +3,18 @@
  * (routes /wiki/:workspaceSlug and /wiki/:workspaceSlug/:pageSlug).
  * Confluence layout: tree panel left, page surface right.
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FolderOpen } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageTree, type PageTreeMove } from '@/components/wiki-hub/PageTree';
 import WikiPageSurface from '@/components/wiki-hub/WikiPageSurface';
+import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import { Routes } from '@/lib/routes';
 import { WIKI_TEMPLATES, type WikiTemplate } from '@/components/wiki-hub/templates';
 import {
   useCreateWikiPage,
+  useDeleteWikiPage,
   useMoveWikiPage,
   useWikiPageBySlug,
   useWikiPageTree,
@@ -36,6 +38,8 @@ export default function WikiWorkspacePage() {
 
   const createPage = useCreateWikiPage();
   const movePage = useMoveWikiPage();
+  const deletePage = useDeleteWikiPage();
+  const [deleteTarget, setDeleteTarget] = useState<WikiPageSummary | null>(null);
 
   const handleSelect = useCallback(
     (p: WikiPageSummary) => {
@@ -116,6 +120,20 @@ export default function WikiWorkspacePage() {
     );
   }
 
+  const confirmDelete = () => {
+    if (!deleteTarget || !workspace) return;
+    const wasOpen = page?.id === deleteTarget.id;
+    deletePage.mutate(
+      { id: deleteTarget.id, spaceId: workspace.id },
+      {
+        onSuccess: () => {
+          setDeleteTarget(null);
+          if (wasOpen) navigate(Routes.wiki.workspace(workspace.slug));
+        },
+      },
+    );
+  };
+
   return (
     <div style={{ display: 'flex', minHeight: 'calc(100vh - 56px)', alignItems: 'stretch' }}>
       <aside
@@ -155,6 +173,7 @@ export default function WikiWorkspacePage() {
             onSelect={handleSelect}
             onMove={handleMove}
             onCreateChild={handleCreate}
+            onDelete={setDeleteTarget}
             emptyHint="No pages yet — create the first one."
           />
         )}
@@ -234,6 +253,17 @@ export default function WikiWorkspacePage() {
           </div>
         )}
       </main>
+
+      <DangerConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title={`Delete "${deleteTarget?.title || 'Untitled'}"?`}
+        description="You're about to permanently delete this page, its comments and work-item links. This is irreversible."
+        hint="Child pages are not deleted — they move to the top level of this workspace."
+        skipPhraseGate
+        isLoading={deletePage.isPending}
+      />
     </div>
   );
 }
