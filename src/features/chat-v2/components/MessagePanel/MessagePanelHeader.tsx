@@ -17,6 +17,7 @@ import { SummarizeMenu, type SummarizePreset } from '../Summarize/SummarizeMenu'
 import { useChatSetMute, useChatSetNotificationPref } from '@/hooks/chat/useChatActions';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import type { ChatConversation } from '@/types/chat';
+import type { ConversationMember } from '@/hooks/chat/useConversationMembers';
 
 export type PanelTab = 'messages' | 'pins';
 
@@ -33,6 +34,10 @@ interface MessagePanelHeaderProps {
   onStartHuddle?: () => void;
   /** When true, tints the huddle button to indicate an active huddle. */
   huddleActive?: boolean;
+  /** Conversation roster for the member facepile (channels/group DMs). */
+  members?: ConversationMember[];
+  /** Called when the user clicks the member facepile. */
+  onOpenMembers?: () => void;
 }
 
 export function MessagePanelHeader({
@@ -45,7 +50,14 @@ export function MessagePanelHeader({
   onClose,
   onStartHuddle,
   huddleActive,
+  members = [],
+  onOpenMembers,
 }: MessagePanelHeaderProps) {
+  const showFacepile =
+    (conversation.kind === 'channel' ||
+      conversation.kind === 'custom_channel' ||
+      conversation.kind === 'group_dm') &&
+    members.length > 0;
   const isStarred = !!conversation.isStarred;
   // Notifications: bell opens a Slack-style menu (All / Mentions / Nothing +
   // Mute). Pref persists via chat_set_notification_pref, mute via
@@ -148,6 +160,51 @@ export function MessagePanelHeader({
         </button>
       </div>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        {showFacepile && (
+          <button
+            type="button"
+            aria-label={`${members.length} members — view and add people`}
+            onClick={onOpenMembers}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--ds-space-050)',
+              height: 28,
+              padding: '0 var(--ds-space-100)',
+              background: 'transparent',
+              border: '1px solid var(--cv2-border)',
+              borderRadius: 'var(--cv2-radius-md)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+          >
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}>
+              {members.slice(0, 3).map((m, i) => (
+                <span
+                  key={m.userId}
+                  style={{
+                    display: 'inline-flex',
+                    border: '2px solid var(--cv2-bg-panel)',
+                    borderRadius: '50%',
+                    marginLeft: i === 0 ? 0 : -6,
+                  }}
+                >
+                  <PresenceAvatar name={m.name} size={22} presence={null} />
+                </span>
+              ))}
+            </span>
+            <span
+              style={{
+                font: 'var(--ds-font-body-small)',
+                fontWeight: 600,
+                color: 'var(--cv2-text-muted)',
+              }}
+            >
+              {members.length}
+            </span>
+          </button>
+        )}
         {onStartHuddle && (
           <IconButton
             label={huddleActive ? 'Join huddle' : 'Start huddle'}

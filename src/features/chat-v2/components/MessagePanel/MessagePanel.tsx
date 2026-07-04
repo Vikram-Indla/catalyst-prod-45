@@ -532,6 +532,8 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         }}
         onStartHuddle={() => { void onStartHuddle(); }}
         huddleActive={activeHuddleIds.has(conversation.id)}
+        members={members ?? []}
+        onOpenMembers={() => setAddPeopleOpen(true)}
       />
       {activeTab === 'messages' &&
         (conversation.kind === 'channel' || conversation.kind === 'custom_channel') &&

@@ -675,7 +675,12 @@ function ChatV2Inner() {
           />
         );
       }
-      return <EmptyPanel />;
+      return (
+        <EmptyPanel
+          onNewMessage={handleOpenNewMessagePanel}
+          onNewChannel={() => setShowCreateChannelModal(true)}
+        />
+      );
     }
     if (inLaterMode) {
       if (selectedLaterId && activeConversation) {
@@ -709,7 +714,12 @@ function ChatV2Inner() {
           />
         );
       }
-      return <EmptyPanel />;
+      return (
+        <EmptyPanel
+          onNewMessage={handleOpenNewMessagePanel}
+          onNewChannel={() => setShowCreateChannelModal(true)}
+        />
+      );
     }
     if (showNewMessagePanel) {
       return (
@@ -748,7 +758,12 @@ function ChatV2Inner() {
         />
       );
     }
-    return <EmptyPanel />;
+    return (
+      <EmptyPanel
+        onNewMessage={handleOpenNewMessagePanel}
+        onNewChannel={() => setShowCreateChannelModal(true)}
+      />
+    );
   };
 
   // Right column content. Priority: Search → Summary → Thread (non-wide-mode).
