@@ -22,6 +22,21 @@
 
 import type { SlaRecord, IncidentStatus } from '@/types/incident';
 
+/**
+ * Minimal SLA shape this module reads — the six timestamp/flag fields the view
+ * uses. A full SlaRecord satisfies it structurally, and callers that select
+ * only these columns (e.g. dashboard aggregates) can pass a partial row.
+ */
+export type SlaBreachInput = Pick<
+  SlaRecord,
+  | 'response_due_at'
+  | 'response_met_at'
+  | 'response_breached'
+  | 'resolution_due_at'
+  | 'resolution_met_at'
+  | 'resolution_breached'
+>;
+
 /** Statuses for which SLA breach is no longer live (mirrors the view's filter). */
 const TERMINAL_STATUSES: ReadonlySet<IncidentStatus> = new Set<IncidentStatus>([
   'closed',
@@ -54,7 +69,7 @@ export interface SlaBreachState {
  * render nothing in that case (zero-assumption: no SLA signal → no badge).
  */
 export function computeSlaBreachState(
-  sla: SlaRecord | null | undefined,
+  sla: SlaBreachInput | null | undefined,
   status: IncidentStatus | null | undefined,
 ): SlaBreachState | null {
   if (!sla) return null;
@@ -86,7 +101,7 @@ export type SlaBadgeStatus = 'on_track' | 'breached';
  * render a dash / nothing rather than a misleading "on track".
  */
 export function getIncidentSlaBadgeStatus(
-  sla: SlaRecord | null | undefined,
+  sla: SlaBreachInput | null | undefined,
   status: IncidentStatus | null | undefined,
 ): SlaBadgeStatus | null {
   const state = computeSlaBreachState(sla, status);
