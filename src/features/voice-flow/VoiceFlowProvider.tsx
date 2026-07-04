@@ -6,6 +6,7 @@ import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
 import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
+import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
@@ -313,7 +314,8 @@ export function VoiceFlowProvider({ children }: Props) {
     let cleanupProvider: string | undefined;
     if (VOICE_FLOW_CONFIG.cleanupEnabled) {
       try {
-        const outcome = await cleanupTranscript(englishText, fieldRef.current);
+        const dictionary = await getActiveTerms().catch(() => [] as string[]);
+        const outcome = await cleanupTranscript(englishText, fieldRef.current?.element, { dictionary });
         if (outcome && outcome.cleaned !== englishText) {
           rawText = englishText;
           finalText = outcome.cleaned;
@@ -351,6 +353,9 @@ export function VoiceFlowProvider({ children }: Props) {
       setStatusBoth('committing');
       try {
         insertTextIntoTarget(fieldRef.current, finalText);
+        // Dictionary learning: if the user types over what we inserted,
+        // the correction becomes vocabulary (fires on blur / 45s).
+        armCorrectionLearner(fieldRef.current.element);
       } catch (insertErr) {
         console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
       }
@@ -540,13 +545,22 @@ export function VoiceFlowProvider({ children }: Props) {
           if (!ok || (statusRef.current !== 'listening' && statusRef.current !== 'arming')) return;
           const rt = new RealtimeTranscriber();
           realtimeRef.current = rt;
-          void rt.start(micStream, {
-            onLive: (text) => {
-              if (statusRef.current === 'listening' && text) setPartialText(text);
-            },
-          }).then((started) => {
-            if (!started && realtimeRef.current === rt) realtimeRef.current = null;
-          });
+          void getActiveTerms()
+            .catch(() => [] as string[])
+            .then((vocabulary) =>
+              rt.start(
+                micStream,
+                {
+                  onLive: (text) => {
+                    if (statusRef.current === 'listening' && text) setPartialText(text);
+                  },
+                },
+                vocabulary,
+              ),
+            )
+            .then((started) => {
+              if (!started && realtimeRef.current === rt) realtimeRef.current = null;
+            });
         });
       }
 
