@@ -34,6 +34,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ChatConversation, ChatPerson, ChatPresence } from '@/types/chat';
 import { AtlaskitAvatar } from '@/components/chat/main/AtlaskitAvatar';
 import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
+import Badge from '@atlaskit/badge';
+import Textfield from '@atlaskit/textfield';
 import { NewChannelModal, ChannelCreatedFlag } from './NewChannelModal';
 
 const EXCLUDED_PROJECT_KEYS = new Set(['INV', 'TH-DEFAULT', 'MDT']);
@@ -135,7 +137,7 @@ function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, act
         </svg>
         {label}
         {collapsed && unreadInSection != null && unreadInSection > 0 && (
-          <span className="cc-dir__section-unread">{unreadInSection > 99 ? '99+' : unreadInSection}</span>
+          <Badge appearance="important" max={99}>{unreadInSection}</Badge>
         )}
         {!collapsed && count != null && (
           <span className="cc-dir__section-count">{count}</span>
@@ -218,7 +220,7 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
             <span className="cc-dir__name">
               {titleOverride ?? c.title}
               {c.isMuted && (
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest)" strokeWidth={2} className="cc-dir__muted-icon" aria-label="Muted">
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest)" strokeWidth={2} className="cc-dir__muted-icon" aria-label="Muted">
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                   <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
                   <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14" />
@@ -227,15 +229,17 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
                 </svg>
               )}
             </span>
-            <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>
           </div>
           <div className="cc-dir__preview">
             {previewOverride ?? c.lastMessagePreview ?? 'No messages yet'}
           </div>
         </div>
-        {c.unreadCount > 0 && !hovered && (
-          <span className="cc-dir__unread">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>
-        )}
+        <div className="cc-dir__meta">
+          <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>
+          {c.unreadCount > 0 && !hovered && (
+            <Badge appearance="important" max={99}>{c.unreadCount}</Badge>
+          )}
+        </div>
       </button>
       {hovered && (
         <div className="cc-dir__row-actions">
@@ -593,25 +597,34 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         onOpenChannel={(id) => onSelectConversation(id)}
       />
 
-      {/* Search */}
-      <div className="cc-dir__search">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.5" y2="16.5" strokeLinecap="round" />
-        </svg>
-        <input
+      {/* Search — @atlaskit/textfield (canonical) */}
+      <div style={{ padding: 'var(--ds-space-100) var(--ds-space-150)' }}>
+        <Textfield
           ref={searchRef}
-          type="search"
-          role="searchbox"
-          aria-label="Search conversations, people and channels"
-          className="cc-dir__search-input"
-          placeholder="Search conversations, people, channels"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.currentTarget.value)}
+          placeholder="Search conversations, people, channels"
+          aria-label="Search conversations, people and channels"
+          isCompact
+          elemBeforeInput={
+            <span aria-hidden style={{ display: 'inline-flex', paddingInlineStart: 'var(--ds-space-075)', color: 'var(--ds-icon-subtle)' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.5" y2="16.5" strokeLinecap="round" />
+              </svg>
+            </span>
+          }
+          elemAfterInput={query ? (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              aria-label="Clear search"
+              style={{ display: 'inline-flex', alignItems: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-icon-subtle)', paddingInline: 'var(--ds-space-075)', font: 'var(--ds-font-body)' }}
+            >
+              ×
+            </button>
+          ) : undefined}
         />
-        {query && (
-          <button type="button" className="cc-dir__search-clear" onClick={() => setQuery('')} aria-label="Clear search">×</button>
-        )}
       </div>
 
       {dmError && (
@@ -962,15 +975,17 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                   <div className="cc-dir__body">
                     <div className="cc-dir__top">
                       <span className="cc-dir__name">{p.name || p.key}</span>
-                      {c && <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>}
                     </div>
-                    <div className="cc-dir__preview">{c?.lastMessagePreview ?? 'Project workspace'}</div>
+                    <div className="cc-dir__preview">{c?.lastMessagePreview ?? (p.key || 'Project workspace')}</div>
                   </div>
-                  {c && c.unreadCount > 0 ? (
-                    <span className="cc-dir__unread">{c.unreadCount > 99 ? '99+' : c.unreadCount}</span>
-                  ) : !c ? (
-                    <span className="cc-dir__msg-cta">{busyId === `channel:${p.key}` ? '…' : 'Join'}</span>
-                  ) : null}
+                  <div className="cc-dir__meta">
+                    {c && <span className="cc-dir__time">{relativeShort(c.lastMessageAt)}</span>}
+                    {c && c.unreadCount > 0 ? (
+                      <Badge appearance="important" max={99}>{c.unreadCount}</Badge>
+                    ) : !c ? (
+                      <span className="cc-dir__msg-cta">{busyId === `channel:${p.key}` ? '…' : 'Join'}</span>
+                    ) : null}
+                  </div>
                 </button>
               </div>
             ))}

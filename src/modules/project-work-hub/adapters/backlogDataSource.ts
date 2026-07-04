@@ -224,6 +224,22 @@ export interface BacklogDataSource {
    */
   creatableTypes?: string[];
   defaultCreatableType?: string;
+
+  /**
+   * 2026-07-03 (CAT-AUDIT-1053, risks migration) — optional full override
+   * for row-click handling. When provided, BacklogPage calls this INSTEAD
+   * of opening its own CatalystDetailPanel/modal for the row (no
+   * setPanelItem / setModalItem, no itemType resolution). Required for
+   * adapters whose rows have no matching entry in
+   * CatalystDetailRouter.resolveItemType() and no dedicated detail route —
+   * without this, BacklogPage's default click-through silently mis-renders
+   * BIZ_SOURCE rows as itemType='business_request'. Risks adapter uses
+   * this to open its existing local RiskDetailPanel drawer instead.
+   * Mirrors the existing per-entityKind navigate() short-circuits
+   * (release/test_case/defect) but lets the adapter own the behavior
+   * instead of hardcoding another entityKind branch here.
+   */
+  onRowClick?: (row: { id: string; key: string | null }) => void;
 }
 
 // ─── Mapper ──────────────────────────────────────────────────────────────────

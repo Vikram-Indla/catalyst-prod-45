@@ -23,6 +23,9 @@ import { CreateVersionDialog } from '../components/CreateVersionDialog';
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { useNavigate } from 'react-router-dom';
 import { catalystToast } from '@/lib/catalystToast';
+import { JiraTable, makeAssigneeCell, makeDateCell } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkItem {
   id: string;
@@ -42,14 +45,6 @@ interface WorkItem {
 
 // Empty array - data should come from database queries
 const mockItems: WorkItem[] = [];
-
-const typeColors: Record<string, string> = {
-  Feature: 'bg-[var(--sem-warning)]',
-  Story: 'bg-brand-teal',
-  Task: 'bg-[var(--sem-info)]',
-  Defect: 'bg-[var(--sem-danger)]',
-  Subtask: 'bg-muted-foreground',
-};
 
 // Available columns for configuration
 const availableColumns = [
@@ -230,118 +225,112 @@ export function AllWorkView() {
     }, 0);
   };
 
-  const renderRow = (item: WorkItem, level: number = 0) => {
-    const hasChildren = item.children && item.children.length > 0;
-    const isExpanded = expandedItems.has(item.id);
-    const isSelected = selectedWorkItem?.id === item.id;
-
-    return (
-      <React.Fragment key={item.id}>
-        <tr 
-          className={cn(
-            "hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay)] border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] group cursor-pointer",
-            isSelected && detailModeEnabled && "bg-blue-50"
-          )}
-          onClick={() => handleRowClick(item)}
-        >
-          {/* Checkbox */}
-          <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
-            <Checkbox
-              checked={selectedItems.has(item.id)}
-              onCheckedChange={(checked) => {
-                const newSelected = new Set(selectedItems);
-                if (checked) newSelected.add(item.id);
-                else newSelected.delete(item.id);
-                setSelectedItems(newSelected);
-              }}
-            />
-          </td>
-          {/* Expand/collapse */}
-          <td className="px-1 py-2 w-6" onClick={(e) => e.stopPropagation()}>
-            {showHierarchy && hasChildren ? (
-              <button
-                onClick={() => toggleExpand(item.id)}
-                className="p-0.5 hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] rounded"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-slate-500" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-slate-500" />
-                )}
-              </button>
-            ) : level > 0 ? null : null}
-          </td>
-          {/* Work column - icon + key + summary combined */}
-          <td className="px-2 py-2" style={{ paddingLeft: level > 0 ? `${level * 20}px` : undefined }}>
-            <div className="flex items-center gap-2">
-              <div className={cn('w-4 h-4 rounded flex-shrink-0 flex items-center justify-center', typeColors[item.type])}>
-                {item.type === 'Defect' && <span className="text-white text-[10px]">!</span>}
-                {item.type === 'Story' && <span className="text-white text-[10px]">✓</span>}
-                {item.type === 'Task' && <span className="text-white text-[10px]">□</span>}
-                {item.type === 'Feature' && <span className="text-white text-[10px]">?</span>}
-                {item.type === 'Subtask' && <span className="text-white text-[10px]">◇</span>}
-              </div>
-              <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer whitespace-nowrap">
-                {item.key}
-              </span>
-              <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest)] truncate max-w-[400px]">
-                {item.summary}
-              </span>
-            </div>
-          </td>
-          {/* Reporter */}
-          <td className="px-3 py-2">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center text-[10px] text-white font-medium">
-                {item.reporter.split(' ').map(n => n[0]).join('').slice(0, 2)}
-              </div>
-              <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest)] truncate max-w-[140px]">
-                {item.reporter}
-              </span>
-            </div>
-          </td>
-          {/* Assignee */}
-          <td className="px-3 py-2">
-            {item.assignee ? (
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-[10px] text-white font-medium">
-                  {item.assignee.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-                <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest)]">{item.assignee}</span>
-              </div>
-            ) : (
-              <span className="text-[13px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">Unassigned</span>
-            )}
-          </td>
-          {/* Created */}
-          <td className="px-3 py-2">
-            <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest)] whitespace-nowrap">{item.created}</span>
-          </td>
-          {/* Parent */}
-          <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-            {item.parent ? (
-              <button
-                onClick={() => handleNavigateToParent(item.parent!, item.parentType || 'Feature')}
-                className="text-[13px] text-blue-500 hover:underline flex items-center gap-1"
-              >
-                {item.parent}
-                <ChevronRight className="h-3 w-3" />
-              </button>
-            ) : (
-              <span className="text-[13px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">None</span>
-            )}
-          </td>
-          {/* Actions */}
-          <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
-            <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] rounded">
-              <MoreHorizontal className="h-4 w-4 text-slate-500" />
-            </button>
-          </td>
-        </tr>
-        {showHierarchy && hasChildren && isExpanded && item.children?.map((child) => renderRow(child, level + 1))}
-      </React.Fragment>
-    );
+  // Flatten the tree into a flat list of visible rows, respecting
+  // showHierarchy / expandedItems — JiraTable renders a flat `data` array
+  // and uses getRowDepth/getRowHasChildren/expandedRowIds for hierarchy.
+  const flattenItems = (items: WorkItem[], level: number = 0): Array<{ item: WorkItem; level: number }> => {
+    const rows: Array<{ item: WorkItem; level: number }> = [];
+    for (const item of items) {
+      rows.push({ item, level });
+      const hasChildren = !!(item.children && item.children.length > 0);
+      const isExpanded = expandedItems.has(item.id);
+      if (showHierarchy && hasChildren && isExpanded) {
+        rows.push(...flattenItems(item.children!, level + 1));
+      }
+    }
+    return rows;
   };
+
+  const visibleRows = flattenItems(mockItems);
+  const rowDepthById = new Map(visibleRows.map(({ item, level }) => [item.id, level]));
+
+  const allWorkColumns: Column<WorkItem>[] = [
+    {
+      id: 'work',
+      label: 'Work',
+      flex: true,
+      alwaysVisible: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <JiraIssueTypeIcon type={row.type} size={16} />
+          <span
+            style={{
+              fontWeight: 500,
+              color: 'var(--ds-link)',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            {row.key}
+          </span>
+          <span
+            style={{
+              color: 'var(--ds-text-subtle)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            title={row.summary}
+          >
+            {row.summary}
+          </span>
+        </div>
+      ),
+    },
+    {
+      id: 'reporter',
+      label: 'Reporter',
+      width: 16,
+      cell: makeAssigneeCell((row: WorkItem) => (row.reporter ? { name: row.reporter } : null)),
+    },
+    {
+      id: 'assignee',
+      label: 'Assignee',
+      width: 16,
+      cell: makeAssigneeCell((row: WorkItem) => (row.assignee ? { name: row.assignee } : null)),
+    },
+    {
+      id: 'created',
+      label: 'Created',
+      width: 14,
+      sortable: true,
+      cell: makeDateCell((row: WorkItem) => row.created || null),
+    },
+    {
+      id: 'parent',
+      label: 'Parent',
+      width: 16,
+      cell: ({ row }) => {
+        if (!row.parent) {
+          return <span style={{ color: 'var(--ds-text-subtlest)' }}>None</span>;
+        }
+        return (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNavigateToParent(row.parent!, row.parentType || 'Feature');
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              border: 'none',
+              background: 'transparent',
+              color: 'var(--ds-link)',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: 0,
+            }}
+          >
+            {row.parent}
+            <ChevronRight className="h-3 w-3" />
+          </button>
+        );
+      },
+    },
+  ];
 
   return (
     <div className="h-full flex flex-col" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
@@ -647,94 +636,82 @@ export function AllWorkView() {
           </div>
         ) : (
           /* Regular Table View */
-          <div className="flex-1 overflow-auto bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]">
-            <table className="min-w-full border-collapse">
-              <thead className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] sticky top-0 z-10 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))]">
-                <tr>
-                  <th className="w-8 px-2 py-2">
-                    <Checkbox />
-                  </th>
-                  <th className="w-6 px-1 py-2"></th>
-                  <th className="px-2 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                    Work
-                  </th>
-                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                    Reporter
-                  </th>
-                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                    Assignee
-                  </th>
-                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                    <div className="flex items-center gap-1">
-                      Created
-                      <ChevronDown className="h-3 w-3" />
+          <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]">
+            {/* Column Configuration Popover — sits above the table (JiraTable owns its own header row) */}
+            <div className="flex items-center justify-end px-2 py-1 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))]">
+              <Popover open={columnsOpen} onOpenChange={setColumnsOpen}>
+                <PopoverTrigger asChild>
+                  <button className="p-1 hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] rounded">
+                    <Columns className="h-4 w-4 text-slate-500" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] shadow-lg" align="end">
+                  <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))]">
+                    <Tabs defaultValue="my-defaults" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 h-8">
+                        <TabsTrigger value="my-defaults" className="text-[12px] data-[state=active]:text-blue-600">
+                          My defaults
+                          <RefreshCw className="h-3 w-3 ml-1" />
+                        </TabsTrigger>
+                        <TabsTrigger value="system" className="text-[12px]">System</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+                  <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))]">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Search columns"
+                        value={columnSearch}
+                        onChange={(e) => setColumnSearch(e.target.value)}
+                        className="pl-9 h-8 text-[13px] border-slate-200"
+                      />
                     </div>
-                  </th>
-                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                    Parent
-                  </th>
-                  <th className="w-10 px-2 py-2">
-                    {/* Column Configuration Popover */}
-                    <Popover open={columnsOpen} onOpenChange={setColumnsOpen}>
-                      <PopoverTrigger asChild>
-                        <button className="p-1 hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] rounded">
-                          <Columns className="h-4 w-4 text-slate-500" />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-64 p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] shadow-lg" align="end">
-                        <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))]">
-                          <Tabs defaultValue="my-defaults" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 h-8">
-                              <TabsTrigger value="my-defaults" className="text-[12px] data-[state=active]:text-blue-600">
-                                My defaults
-                                <RefreshCw className="h-3 w-3 ml-1" />
-                              </TabsTrigger>
-                              <TabsTrigger value="system" className="text-[12px]">System</TabsTrigger>
-                            </TabsList>
-                          </Tabs>
-                        </div>
-                        <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))]">
-                          <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                            <Input
-                              placeholder="Search columns"
-                              value={columnSearch}
-                              onChange={(e) => setColumnSearch(e.target.value)}
-                              className="pl-9 h-8 text-[13px] border-slate-200"
-                            />
-                          </div>
-                        </div>
-                        <div className="max-h-64 overflow-y-auto p-2">
-                          {availableColumns
-                            .filter(col => col.name.toLowerCase().includes(columnSearch.toLowerCase()))
-                            .map((column) => (
-                              <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay)] cursor-pointer rounded">
-                                <Checkbox
-                                  checked={enabledColumns.has(column.id)}
-                                  onCheckedChange={(checked) => {
-                                    const newSet = new Set(enabledColumns);
-                                    if (checked) newSet.add(column.id);
-                                    else newSet.delete(column.id);
-                                    setEnabledColumns(newSet);
-                                  }}
-                                />
-                                <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest)]">{column.name}</span>
-                              </label>
-                            ))}
-                        </div>
-                        <div className="p-3 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))] flex justify-between items-center">
-                          <button className="text-[12px] text-blue-600 hover:underline">Create a field</button>
-                          <span className="text-[11px] text-slate-500">{enabledColumns.size} of {availableColumns.length}</span>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockItems.map((item) => renderRow(item))}
-              </tbody>
-            </table>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto p-2">
+                    {availableColumns
+                      .filter(col => col.name.toLowerCase().includes(columnSearch.toLowerCase()))
+                      .map((column) => (
+                        <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay)] cursor-pointer rounded">
+                          <Checkbox
+                            checked={enabledColumns.has(column.id)}
+                            onCheckedChange={(checked) => {
+                              const newSet = new Set(enabledColumns);
+                              if (checked) newSet.add(column.id);
+                              else newSet.delete(column.id);
+                              setEnabledColumns(newSet);
+                            }}
+                          />
+                          <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest)]">{column.name}</span>
+                        </label>
+                      ))}
+                  </div>
+                  <div className="p-3 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))] flex justify-between items-center">
+                    <button className="text-[12px] text-blue-600 hover:underline">Create a field</button>
+                    <span className="text-[11px] text-slate-500">{enabledColumns.size} of {availableColumns.length}</span>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="flex-1 overflow-auto">
+              <JiraTable<WorkItem>
+                columns={allWorkColumns}
+                data={visibleRows.map(({ item }) => item)}
+                getRowId={(row) => row.id}
+                getRowDepth={(row) => rowDepthById.get(row.id) ?? 0}
+                getRowHasChildren={(row) => !!(row.children && row.children.length > 0)}
+                expandedRowIds={expandedItems}
+                onToggleRowExpanded={(rowId) => toggleExpand(rowId)}
+                onRowClick={(row) => handleRowClick(row)}
+                selectable
+                selection={selectedItems}
+                onSelectionChange={setSelectedItems}
+                showRowCount={false}
+                density="compact"
+                ariaLabel="All work"
+              />
+            </div>
           </div>
         )}
       </div>

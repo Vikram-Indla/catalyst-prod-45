@@ -44,6 +44,7 @@ function statusBadge(status: string, isDark = false) {
     draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Not Started' },
     cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Cancelled' },
+    unknown:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1))', textDark: 'var(--ds-text-subtlest)', label: 'Unknown' },
   };
   const s = map[status] || map.draft;
   return (
@@ -54,7 +55,12 @@ function statusBadge(status: string, isDark = false) {
   );
 }
 
-function progressBar(pct: number, height = 6, isDark = false) {
+function progressBar(pct: number | null, height = 6, isDark = false) {
+  if (pct === null) {
+    return (
+      <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }} />
+    );
+  }
   const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return (
     <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
@@ -98,12 +104,20 @@ function getConfidenceLevel(val: number | string | undefined): number {
 function computeThemeStatus(goals: Goal[]): string {
   if (goals.length === 0) return 'draft';
   if (goals.some(g => g.status === 'off_track')) return 'off_track';
-  if (goals.some(g => (g.progress_pct || 0) < 40 && !['draft', 'completed', 'cancelled'].includes(g.status))) return 'off_track';
+  // Only goals with a real, measured progress value can trigger a numeric
+  // off_track/at_risk verdict — a null/unmeasured progress must never be
+  // treated as 0% (that would fabricate a health verdict from missing data).
+  const measuredGoals = goals.filter(g => g.progress_pct != null && !['draft', 'completed', 'cancelled'].includes(g.status));
+  if (measuredGoals.some(g => (g.progress_pct as number) < 40)) return 'off_track';
   if (goals.some(g => g.status === 'at_risk')) return 'at_risk';
-  const avgProgress = goals.reduce((s, g) => s + (g.progress_pct || 0), 0) / goals.length;
-  if (avgProgress < 60 && goals.some(g => !['draft', 'completed', 'cancelled'].includes(g.status))) return 'at_risk';
+  if (measuredGoals.length > 0) {
+    const avgProgress = measuredGoals.reduce((s, g) => s + (g.progress_pct as number), 0) / measuredGoals.length;
+    if (avgProgress < 60) return 'at_risk';
+  }
   if (goals.every(g => g.status === 'completed')) return 'completed';
   if (goals.every(g => g.status === 'draft')) return 'draft';
+  // Active/in-flight goals with no measured progress at all — don't default to on-track.
+  if (measuredGoals.length === 0 && goals.some(g => !['draft', 'completed', 'cancelled'].includes(g.status))) return 'unknown';
   return 'active';
 }
 
@@ -289,13 +303,14 @@ export function GoalsTreeView({
       {filteredThemes.map(theme => {
         const themeGoals = filterGoals(goalsByTheme.get(theme.id) || []);
         const themeExpanded = expandedThemes.has(theme.id) || !!query;
-        const avgProgress = themeGoals.length > 0
-          ? Math.round(themeGoals.reduce((s, g) => s + (g.progress_pct || 0), 0) / themeGoals.length) : 0;
+        const themeGoalsWithProgress = themeGoals.filter(g => g.progress_pct != null);
+        const avgProgress = themeGoalsWithProgress.length > 0
+          ? Math.round(themeGoalsWithProgress.reduce((s, g) => s + (g.progress_pct as number), 0) / themeGoalsWithProgress.length) : null;
         const themeStatus = computeThemeStatus(themeGoals);
         const themeKRCount = themeGoals.reduce((s, g) => s + (krsByGoal.get(g.id)?.length || 0), 0);
         const avgConf = themeGoals.length > 0
           ? Math.round(themeGoals.reduce((s, g) => s + getConfidenceLevel(g.confidence_level), 0) / themeGoals.length) : 0;
-        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, var(--cp-success))' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
+        const progressColor = avgProgress === null ? 'var(--ds-text-subtlest)' : avgProgress >= 60 ? 'var(--ds-text-success, var(--cp-success))' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
 
         return (
           <div key={theme.id}>
@@ -322,7 +337,7 @@ export function GoalsTreeView({
               <div>{statusBadge(themeStatus, isDark)}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {progressBar(avgProgress, 6, isDark)}
-                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: progressColor, minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: progressColor, minWidth: 32, textAlign: 'right' }}>{avgProgress !== null ? `${avgProgress}%` : '—'}</span>
               </div>
               <div><ConfidenceDots level={avgConf} isDark={isDark} /></div>
               <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{themeKRCount}</div>
@@ -335,8 +350,8 @@ export function GoalsTreeView({
               const goalExpanded = expandedGoals.has(goal.id) || !!query;
               const goalKRs = krsByGoal.get(goal.id) || [];
               const confLevel = getConfidenceLevel(goal.confidence_level);
-              const goalPct = Math.round(goal.progress_pct || 0);
-              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : goalPct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
+              const goalPct = goal.progress_pct != null ? Math.round(goal.progress_pct) : null;
+              const goalProgressColor = goalPct === null ? 'var(--ds-text-subtlest)' : goalPct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : goalPct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
               const isLastGoal = gi === themeGoals.length - 1;
 
               return (
@@ -375,7 +390,7 @@ export function GoalsTreeView({
                     <div onClick={e => e.stopPropagation()}>{statusBadge(goal.status, isDark)}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {progressBar(goalPct, 6, isDark)}
-                      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: goalProgressColor, minWidth: 32, textAlign: 'right' }}>{goalPct}%</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: goalProgressColor, minWidth: 32, textAlign: 'right' }}>{goalPct !== null ? `${goalPct}%` : '—'}</span>
                     </div>
                     <div><ConfidenceDots level={confLevel} isDark={isDark} /></div>
                     <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goalKRs.length}</div>

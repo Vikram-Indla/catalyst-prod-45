@@ -115,8 +115,9 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
       </div>
       {sortedGoals.map(goal => {
         const theme = themeMap.get(goal.theme_id);
-        const pct = Math.round(goal.progress_pct || 0);
-        const barColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
+        const hasProgress = goal.progress_pct != null;
+        const pct = hasProgress ? Math.round(goal.progress_pct) : null;
+        const barColor = pct === null ? 'var(--ds-text-subtlest)' : pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
         const initials = goal.owner_name ? goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '';
         const ownerColors = goal.owner_name ? getAvatarColors(goal.owner_name) : null;
         return (
@@ -148,10 +149,12 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
-                <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
+              <div role="progressbar" aria-valuenow={pct ?? undefined} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+                {pct !== null && (
+                  <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
+                )}
               </div>
-              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: barColor }}>{pct}%</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: barColor }}>{pct !== null ? `${pct}%` : '—'}</span>
             </div>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goal.kr_count || 0}</span>
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t3 : 'var(--fg-3)' }}>{goal.fiscal_quarter || '—'}</span>

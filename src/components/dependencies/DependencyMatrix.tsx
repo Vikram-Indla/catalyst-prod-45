@@ -280,7 +280,7 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
                         <Lozenge appearance="default">
                           {dep.dependency_level_v2
                             ? DEPENDENCY_LEVEL_LABELS[dep.dependency_level_v2 as keyof typeof DEPENDENCY_LEVEL_LABELS]?.split(' ')[0]
-                            : dep.type || 'Epic'}
+                            : dep.type ?? '—'}
                         </Lozenge>
                       </TableCell>
                       <TableCell className="text-sm">

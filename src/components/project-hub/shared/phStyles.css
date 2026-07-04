@@ -5,7 +5,7 @@
 }
 
 .ph-skeleton {
-  background: linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 25%, #E8EDF2 37%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 25%, var(--ds-border) 37%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 63%) !important;
   background-size: 200% 100% !important;
   animation: ph-shimmer 1.5s ease-in-out infinite;
 }

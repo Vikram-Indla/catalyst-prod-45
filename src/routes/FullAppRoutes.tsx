@@ -106,8 +106,6 @@ const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
 
-const StrategicThemesPage = lazy(() => import("../modules-dormant/strategyhub/StrategicThemesPage"));
-const GoalsKeyResultsPage = lazy(() => import("../modules-dormant/strategyhub/GoalsKeyResultsPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
 const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const RequirementAssistCompose = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/compose")) : () => <FeatureComingSoon title="Requirement Assist" />;
@@ -144,16 +142,19 @@ const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/Inci
 const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
 const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
-// IncidentHubCommitteeQueuePage deprecated — route removed. /incident-hub/reports is the
 // Production Incident report (CAT-REPORTS-HUB-20260703-001 Phase 2 Lane C).
 const IncidentHubReportPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentReportPage"));
+// Committee Queue — governance workflow (approve/veto) for incidents sent to committee.
+// Revived 2026-07-03: distinct from the read-only Production Incident report above —
+// this is an actionable surface, backed by the incidents/incident_committees/committee_votes
+// extension schema (see incidents_extend_ph_issues migration).
+const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
 // TestHub Admin
 const TestAdminPrioritiesPage   = lazy(() => import("../pages/admin/test/TestPrioritiesPage"));
 const TestAdminCaseTypesPage    = lazy(() => import("../pages/admin/test/TestCaseTypesPage"));
 const TestAdminCaseStatusesPage = lazy(() => import("../pages/admin/test/TestCaseStatusesPage"));
-const TestAdminRunStatusesPage  = lazy(() => import("../pages/admin/test/TestRunStatusesPage"));
 const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPermissionsPage"));
 
 // RBAC Admin — mock-safe mode (schema not yet deployed)
@@ -168,7 +169,6 @@ const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/Rep
 const TestHubBoardPage = lazy(() => import("../pages/testhub/BoardPage"));
 const TestHubFiltersListPage = lazy(() => import("../pages/testhub/FiltersListPage"));
 const TestHubFilterPreviewPage = lazy(() => import("../pages/testhub/FilterPreviewPage"));
-const TestHubFilterDetailPage = lazy(() => import("../pages/testhub/FilterDetailPage"));
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
@@ -180,6 +180,7 @@ const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability
 // Phase 2 Lane A (bodies now live in src/components/testhub/reports/bodies/).
 const TestHubReportsHubPage = lazy(() => import("../pages/testhub/reports/ReportsHubPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
+const TestHubDefectDetailPage = lazy(() => import("../pages/testhub/defects/DefectDetailPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
 
@@ -201,7 +202,6 @@ const DependencyMapsPage = lazy(() => import("../pages/reports/DependencyMapsPag
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
 const StrategyRoom = lazy(() => import("../modules-dormant/strategy/StrategyRoom"));
-const StrategyComingSoon = lazy(() => import("../modules-dormant/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
@@ -344,14 +344,6 @@ const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pa
 const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
-const IncidentDetail = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentDetail })));
-const IncidentsDashboard = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentsDashboard })));
-const CreateIncident = lazy(() => import("../pages/release").then(m => ({ default: m.CreateIncident })));
-const CommitteeQueue = lazy(() => import("../pages/release").then(m => ({ default: m.CommitteeQueue })));
-const IncidentReports = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentReports })));
-const IncidentRoomList = lazy(() => import("../pages/release/IncidentRoomList"));
-const IncidentRoomDetail = lazy(() => import("../pages/release/IncidentRoomDetail"));
-const IncidentCommandCenter = lazy(() => import("../pages/release/IncidentCommandCenter"));
 const IncidentAnalyticsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("../modules/incidents/kanban/pages/IncidentKanbanPage"));
@@ -600,18 +592,9 @@ export default function FullAppRoutes() {
         {/* ═══ StrategyHub ═══ */}
         <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
         <Route path="/strategyhub/executive-brief" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/themes" element={<MG k="strategyhub" t="StrategyHub"><S><StrategicThemesPage /></S></MG>} />
-        <Route path="/strategyhub/goals" element={<MG k="strategyhub" t="StrategyHub"><S><GoalsKeyResultsPage /></S></MG>} />
         <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategyhub/investment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Investment Allocation" /></S></MG>} />
-        <Route path="/strategyhub/snapshots" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Snapshots" /></S></MG>} />
-        <Route path="/strategyhub/ai-insights" element={<MG k="ai_features" t="AI Insights"><S><StrategyComingSoon title="AI Insights" /></S></MG>} />
-        <Route path="/strategyhub/team-alignment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Team Alignment" /></S></MG>} />
-        <Route path="/strategyhub/settings" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Settings" /></S></MG>} />
         <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
-        <Route path="/strategyhub/risks" element={<S><EnterpriseComingSoon /></S>} />
+        <Route path="/strategyhub/*" element={<Navigate to="/strategyhub" replace />} />
 
         <Route path="/portfolio/:portfolioKey/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
@@ -666,40 +649,46 @@ export default function FullAppRoutes() {
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
 
         {/* TestHub */}
+        {/* P1-S16: /testhub/* was completely ungated (ModuleGate infra already
+            existed and is used by every sibling hub — 'testhub' already
+            aliases to feature_flags.module_key 'test_hub', zero new plumbing
+            needed). Wrap every content route; pure redirects are left
+            unwrapped since they only forward to an already-gated destination. */}
         <Route path="/testhub" element={<Navigate to="/testhub/dashboard" replace />} />
-        <Route path="/testhub/dashboard" element={<S><TestHubDashboardPage /></S>} />
-        <Route path="/testhub/my-work" element={<S><TestHubMyWorkPage /></S>} />
-        <Route path="/testhub/board" element={<S><TestHubBoardPage /></S>} />
-        <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
-        <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
-        <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<S><TestHubCycleDetailPage /></S>} />
-        <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<S><TestHubExecutionPage /></S>} />
+        <Route path="/testhub/dashboard" element={<MG k="testhub" t="Test Hub"><S><TestHubDashboardPage /></S></MG>} />
+        <Route path="/testhub/my-work" element={<MG k="testhub" t="Test Hub"><S><TestHubMyWorkPage /></S></MG>} />
+        <Route path="/testhub/board" element={<MG k="testhub" t="Test Hub"><S><TestHubBoardPage /></S></MG>} />
+        <Route path="/testhub/repository" element={<MG k="testhub" t="Test Hub"><S><TestHubRepositoryPage /></S></MG>} />
+        <Route path="/testhub/cycles" element={<MG k="testhub" t="Test Hub"><S><TestHubCyclesPage /></S></MG>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
         {/* Legacy routes without projectKey — backward compat */}
-        <Route path="/testhub/cycles/:cycleKey" element={<S><TestHubCycleDetailPage /></S>} />
-        <Route path="/testhub/cycles/:cycleKey/execute" element={<S><TestHubExecutionPage /></S>} />
-        <Route path="/testhub/timeline" element={<S><TestHubTimelinePage /></S>} />
-        <Route path="/testhub/dependencies" element={<S><TestHubDependenciesPage /></S>} />
-        <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
-        <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
-        <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
-        <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
+        <Route path="/testhub/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
+        <Route path="/testhub/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
+        <Route path="/testhub/timeline" element={<MG k="testhub" t="Test Hub"><S><TestHubTimelinePage /></S></MG>} />
+        <Route path="/testhub/dependencies" element={<MG k="testhub" t="Test Hub"><S><TestHubDependenciesPage /></S></MG>} />
+        <Route path="/testhub/sets" element={<MG k="testhub" t="Test Hub"><S><TestHubSetsPage /></S></MG>} />
+        <Route path="/testhub/sets/:setKey" element={<MG k="testhub" t="Test Hub"><S><TestHubSetDetailPage /></S></MG>} />
+        <Route path="/testhub/traceability" element={<MG k="testhub" t="Test Hub"><S><TestHubTraceabilityPage /></S></MG>} />
+        <Route path="/testhub/defects" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectsPage /></S></MG>} />
+        <Route path="/testhub/defects/:defectKey" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectDetailPage /></S></MG>} />
         {/* Reports hub (CAT-REPORTS-HUB-20260703-001): one surface, :reportSlug
             selects a REPORT_REGISTRY entry. Old report URLs redirect to their
             registry slugs; governance + product-status slugs are unchanged so
             the :reportSlug route serves them directly. */}
         <Route path="/testhub/reports-lab" element={<Navigate to="/testhub/reports/execution-overview" replace />} />
-        <Route path="/testhub/reports" element={<S><TestHubReportsHubPage /></S>} />
+        <Route path="/testhub/reports" element={<MG k="testhub" t="Test Hub"><S><TestHubReportsHubPage /></S></MG>} />
         <Route path="/testhub/reports/project-status" element={<Navigate to="/testhub/reports/project-testing-status" replace />} />
         <Route path="/testhub/reports/sprint-status" element={<Navigate to="/testhub/reports/sprint-testing-status" replace />} />
         <Route path="/testhub/reports/tester-status" element={<Navigate to="/testhub/reports/tester-performance" replace />} />
         <Route path="/testhub/reports/team-status" element={<Navigate to="/testhub/reports/team-performance" replace />} />
         <Route path="/testhub/reports/defects-incidents" element={<Navigate to="/testhub/reports/defect-summary" replace />} />
-        <Route path="/testhub/reports/:reportSlug" element={<S><TestHubReportsHubPage /></S>} />
+        <Route path="/testhub/reports/:reportSlug" element={<MG k="testhub" t="Test Hub"><S><TestHubReportsHubPage /></S></MG>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
-        <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />
-        <Route path="/testhub/filters/create" element={<S><TestHubFilterPreviewPage /></S>} />
-        <Route path="/testhub/filters/:filterId" element={<S><TestHubFilterPreviewPage /></S>} />
+        <Route path="/testhub/filters" element={<MG k="testhub" t="Test Hub"><S><TestHubFiltersListPage /></S></MG>} />
+        <Route path="/testhub/filters/create" element={<MG k="testhub" t="Test Hub"><S><TestHubFilterPreviewPage /></S></MG>} />
+        <Route path="/testhub/filters/:filterId" element={<MG k="testhub" t="Test Hub"><S><TestHubFilterPreviewPage /></S></MG>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
@@ -739,9 +728,9 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
         {/* Production Incident report — incident half of the old TestHub
             defects-incidents report (CAT-REPORTS-HUB-20260703-001 Phase 2
-            Lane C; CRE Grid A: Production Incident → INCIDENT module).
-            /incident-hub/committee-queue stays deprecated — route removed. */}
+            Lane C; CRE Grid A: Production Incident → INCIDENT module). */}
         <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportPage /></S></MG>} />
+        <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
         <Route path="/incident-hub/view/:incidentKey" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
         {/* 2026-06-16: redirect alias — the BacklogPage's default
             "open in full page" pattern was {baseUrl}/backlog/{key} which
@@ -905,20 +894,6 @@ export default function FullAppRoutes() {
         <Route path="/knowledge-hub/spaces/:spaceId" element={<S><KnowledgeHubSpacePage /></S>} />
         <Route path="/knowledge-hub/documents/:documentId" element={<S><KnowledgeHubDocumentPage /></S>} />
 
-        <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
-        <Route path="/release/incidents" element={<S><IncidentRoomList /></S>} />
-        <Route path="/release/incidents/dashboard" element={<S><IncidentsDashboard /></S>} />
-        <Route path="/release/incidents/analytics" element={<S><IncidentAnalyticsPage /></S>} />
-        <Route path="/release/incidents/insights" element={<S><IncidentInsightsPage /></S>} />
-        <Route path="/release/incidents/kanban" element={<S><IncidentKanbanPage /></S>} />
-        <Route path="/release/incidents/create" element={<S><CreateIncident /></S>} />
-        <Route path="/release/incidents/reports" element={<S><IncidentReports /></S>} />
-        <Route path="/release/incidents/:incidentId" element={<S><IncidentRoomDetail /></S>} />
-        <Route path="/release/incident-room" element={<Navigate to="/release/incidents" replace />} />
-        <Route path="/release/incident-room/:incidentId" element={<Navigate to="/release/incidents/:incidentId" replace />} />
-        <Route path="/release/incident-reports" element={<Navigate to="/release/incidents/reports" replace />} />
-        <Route path="/release/incident-command-center" element={<S><IncidentCommandCenter /></S>} />
-        <Route path="/release/committee-queue" element={<S><CommitteeQueue /></S>} />
 
         <Route path="/insights/portfolio" element={<S><EnterpriseComingSoon /></S>} />
         <Route path="/insights/program" element={<S><EnterpriseComingSoon /></S>} />
@@ -986,7 +961,10 @@ export default function FullAppRoutes() {
           <Route path="test/priorities"    element={<S><TestAdminPrioritiesPage /></S>} />
           <Route path="test/case-types"    element={<S><TestAdminCaseTypesPage /></S>} />
           <Route path="test/case-statuses" element={<S><TestAdminCaseStatusesPage /></S>} />
-          <Route path="test/run-statuses"  element={<S><TestAdminRunStatusesPage /></S>} />
+          {/* P1-S16: "Run statuses" removed -- managed a disconnected legacy
+              test_run_statuses table (0 rows, 0 readers anywhere else) with
+              zero bearing on the real tm_execution_status enum that drives
+              execution. See D-016. */}
           <Route path="test/permissions"   element={<S><TestAdminPermissionsPage /></S>} />
           {/* RBAC Admin — mock-safe mode; RBAC_SCHEMA_DEPLOYED=false */}
           <Route path="roles"        element={<S><RolesAdminPageLazy /></S>} />

@@ -190,14 +190,26 @@ export function TestCasesSection({
     navigate(`/testhub/repository?case=${caseId}`);
   };
 
+  // P1-S10b: read via tm_requirement_links (external_key + requirement_type='story'),
+  // the same table+match TestCoveragePanel.tsx already reads — single link model,
+  // not the disconnected tm_test_cases.linked_story_key column (D-009).
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ['storyTestCases', storyKey],
     enabled: !!storyKey,
     queryFn: async (): Promise<StoryTestCaseRow[]> => {
+      const { data: links, error: linksError } = await supabase
+        .from('tm_requirement_links')
+        .select('test_case_id')
+        .eq('external_key', storyKey)
+        .eq('requirement_type', 'story');
+      if (linksError) throw linksError;
+      const caseIds = Array.from(new Set((links ?? []).map((l: { test_case_id: string }) => l.test_case_id)));
+      if (caseIds.length === 0) return [];
+
       const { data, error } = await supabase
         .from('tm_test_cases')
         .select('id, case_key, title, status, priority_id, is_ai_generated')
-        .eq('linked_story_key', storyKey)
+        .in('id', caseIds)
         .eq('archived', false)
         .order('created_at', { ascending: true });
       if (error) throw error;
@@ -252,6 +264,15 @@ export function TestCasesSection({
         : [];
       if (cases.length === 0) throw new Error('AI returned no test cases');
 
+      // 1b. Resolve the story's ph_issues.id once (best-effort — the reader
+      //     only requires external_key, so a miss here doesn't block generation).
+      const { data: storyIssue } = await supabase
+        .from('ph_issues')
+        .select('id')
+        .eq('issue_key', storyKey)
+        .maybeSingle();
+      const storyIssueId = (storyIssue as any)?.id ?? null;
+
       // 2. Insert cases + steps sequentially so each case_key is unique.
       const now = new Date().toISOString();
       let inserted = 0;
@@ -297,6 +318,20 @@ export function TestCasesSection({
             .insert(stepsPayload);
           if (stepErr) throw stepErr;
         }
+
+        // P1-S10b: link into tm_requirement_links (the table the reader now
+        // uses) instead of relying solely on the tm_test_cases.linked_story_key
+        // column set above.
+        const { error: linkErr } = await supabase.rpc('tm_link_requirement', {
+          p_case_id: insertedId,
+          p_requirement_type: 'story',
+          p_requirement_id: storyIssueId,
+          p_external_key: storyKey,
+          p_external_title: storySummary,
+          p_link_type: 'verifies',
+        });
+        if (linkErr) throw linkErr;
+
         inserted += 1;
       }
       return { inserted, firstId: insertedIds[0] ?? null };

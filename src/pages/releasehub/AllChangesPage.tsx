@@ -16,7 +16,7 @@ import { useChangesList, type ChangeListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
@@ -149,7 +149,7 @@ export default function AllChangesPage() {
       id: 'manager', label: 'Manager', width: 11,
       cell: ({ row }) => row.manager ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-          <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
+          <CatalystAvatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
         </div>
       ) : <span style={{ color: T.subtlest }}>—</span>,

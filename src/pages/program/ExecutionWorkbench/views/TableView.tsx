@@ -2,11 +2,17 @@
  * Program Work Tree - Enhanced Table View
  * Features: Compact stats bar, Expand/Collapse All, Density toggle, Column visibility
  * Optimized spacing and visibility per design spec
+ *
+ * Migrated to canonical JiraTable (hand-rolled <table> banned per CLAUDE.md).
+ * Hierarchy (Epic → Feature → Story → Subtask) is expressed via JiraTable's
+ * getRowDepth / getRowHasChildren / expandedRowIds / onToggleRowExpanded —
+ * the tree is flattened to the currently-visible rows and JiraTable renders
+ * indentation + chevron itself.
  */
 
 import React, { useState, useMemo } from 'react';
 import { WorkItem, ItemStatus, ColumnConfig, DEFAULT_COLUMNS, DensityMode, WorkTreeCounts, Owner } from '../types';
-import { ChevronRight, ChevronDown, MoreHorizontal, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye } from '@/lib/atlaskit-icons';
+import { MoreHorizontal, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Lozenge } from '@/components/ads';
@@ -21,6 +27,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { catalystToast } from '@/lib/catalystToast';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 
 interface TableViewProps {
   items: WorkItem[];
@@ -29,13 +37,8 @@ interface TableViewProps {
   overallProgress: number;
 }
 
-// Helper to get owner initials
-function getOwnerInitials(owner: Owner | null | undefined): string {
-  if (!owner?.full_name) return '??';
-  return owner.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-}
-
-// Status badge - compact
+// Status badge - compact (unchanged visual behavior, kept local — this is a
+// domain-specific 4-state pill, not the interactive StatusLozengeDropdown).
 function StatusBadge({ status }: { status: ItemStatus }) {
   const styles: Record<ItemStatus, string> = {
     'Backlog': 'bg-muted text-foreground/70 border-border',
@@ -43,7 +46,7 @@ function StatusBadge({ status }: { status: ItemStatus }) {
     'Done': 'bg-secondary-green/15 text-secondary-green border-secondary-green/30',
     'Blocked': 'bg-destructive/15 text-destructive border-destructive/30',
   };
-  
+
   return (
     <span className={cn("inline-flex items-center px-1.5 py-0 rounded text-[10px] font-medium border", styles[status])}>
       {status}
@@ -54,9 +57,9 @@ function StatusBadge({ status }: { status: ItemStatus }) {
 // Owner avatar - uses canonical component
 function OwnerAvatar({ owner }: { owner: Owner | null | undefined }) {
   if (!owner) return <span className="text-foreground/40 text-[11px]">—</span>;
-  
+
   const firstName = owner.full_name?.split(' ')[0] || '';
-  
+
   return (
     <div className="flex items-center gap-1.5">
       <CatalystOwnerAvatar name={owner.full_name} size="sm" showTooltip={false} />
@@ -68,7 +71,7 @@ function OwnerAvatar({ owner }: { owner: Owner | null | undefined }) {
 // Progress bar - compact
 function ProgressBar({ progress }: { progress: number }) {
   const colorClass = progress >= 100 ? 'bg-secondary-green' : progress > 0 ? 'bg-brand-gold' : 'bg-muted-foreground/30';
-  
+
   return (
     <div className="flex items-center gap-1.5 min-w-[80px]">
       <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
@@ -104,93 +107,24 @@ function StatsBar({ counts, overallProgress }: { counts: WorkTreeCounts; overall
   );
 }
 
-interface TableRowProps {
+// Flattened row = original WorkItem + computed depth. JiraTable renders the
+// tree from this flat, visibility-filtered list (children hidden unless
+// their parent chain is fully expanded).
+interface FlatRow {
   item: WorkItem;
   depth: number;
-  onItemClick: (item: WorkItem) => void;
-  expandedIds: Set<string>;
-  toggleExpand: (id: string) => void;
-  columns: ColumnConfig[];
-  density: DensityMode;
 }
 
-function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns, density }: TableRowProps) {
-  const hasChildren = item.children && item.children.length > 0;
-  const isExpanded = expandedIds.has(item.id);
-  // Compact row heights: comfortable=44px, compact=36px
-  const rowClass = density === 'comfortable' ? 'h-11' : 'h-9';
-  
-  const isVisible = (colId: string) => columns.find(c => c.id === colId)?.visible ?? true;
-
-  const handleCopyKey = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(item.key);
-    catalystToast.success('Key copied to clipboard');
-  };
-
-  return (
-    <>
-      <tr 
-        className={cn(rowClass, "border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors group", depth === 0 && 'bg-surface-tinted')}
-        onClick={() => onItemClick(item)}
-      >
-        {/* Work Item - tighter layout */}
-        <td className="px-3 py-0">
-          <div className="flex items-center gap-1.5" style={{ paddingLeft: `${depth * 16}px` }}>
-            {hasChildren ? (
-              <button onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }} className="w-5 h-5 flex items-center justify-center hover:bg-muted rounded flex-shrink-0">
-                {isExpanded ? <ChevronDown className="h-3.5 w-3.5 text-foreground/50" /> : <ChevronRight className="h-3.5 w-3.5 text-foreground/50" />}
-              </button>
-            ) : (
-              <span className="w-5 flex-shrink-0" />
-            )}
-            {depth > 0 && <div className="w-px h-3 bg-border/60 -ml-1.5 mr-0 flex-shrink-0" />}
-            <WorkItemIcon type={item.type === 'subtask' ? 'task' : item.type} size={18} hideTooltip />
-            <span className="font-mono text-[10px] text-foreground/50 flex-shrink-0">{item.key}</span>
-            <span className={cn("text-[13px] truncate", depth === 0 ? "font-semibold text-foreground" : depth === 1 ? "font-medium text-foreground" : "text-foreground/70")}>{item.title}</span>
-            {/* Epic badges */}
-            {item.type === 'epic' && (
-              <div className="flex items-center gap-1 ml-1.5">
-                {item.team && <Lozenge appearance="default">{item.team}</Lozenge>}
-                {item.businessRequest && <Lozenge appearance="inprogress">BR {item.businessRequest.key}</Lozenge>}
-              </div>
-            )}
-          </div>
-        </td>
-        {isVisible('status') && <td className="px-3 py-0"><StatusBadge status={item.status} /></td>}
-        {isVisible('progress') && <td className="px-3 py-0"><ProgressBar progress={item.progress} /></td>}
-        {isVisible('owner') && <td className="px-3 py-0"><OwnerAvatar owner={item.owner} /></td>}
-        {isVisible('targetDate') && (
-          <td className="px-3 py-0">
-            {item.endDate ? <span className="text-[11px] font-medium text-foreground">{format(new Date(item.endDate), 'dd MMM')}</span> : <span className="text-foreground/40 text-[11px]">No date</span>}
-          </td>
-        )}
-        {isVisible('dependencies') && (
-          <td className="px-3 py-0">
-            {item.dependencyCount > 0 ? <Lozenge appearance="default">{item.dependencyCount}</Lozenge> : <span className="text-foreground/40 text-[11px]">—</span>}
-          </td>
-        )}
-        {isVisible('actions') && (
-          <td className="px-2 py-0 w-8">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="p-0.5 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                  <MoreHorizontal className="h-3.5 w-3.5 text-foreground/50" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-36 bg-popover">
-                <DropdownMenuItem onClick={() => onItemClick(item)} className="text-xs"><Eye className="h-3 w-3 mr-1.5" />View Details</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleCopyKey} className="text-xs"><Copy className="h-3 w-3 mr-1.5" />Copy Key</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </td>
-        )}
-      </tr>
-      {hasChildren && isExpanded && item.children!.map(child => (
-        <TableRow key={child.id} item={child} depth={depth + 1} onItemClick={onItemClick} expandedIds={expandedIds} toggleExpand={toggleExpand} columns={columns} density={density} />
-      ))}
-    </>
-  );
+function flattenVisible(items: WorkItem[], expandedIds: Set<string>, depth = 0): FlatRow[] {
+  const rows: FlatRow[] = [];
+  for (const item of items) {
+    rows.push({ item, depth });
+    const hasChildren = !!item.children && item.children.length > 0;
+    if (hasChildren && expandedIds.has(item.id)) {
+      rows.push(...flattenVisible(item.children!, expandedIds, depth + 1));
+    }
+  }
+  return rows;
 }
 
 export function TableView({ items, onItemClick, counts, overallProgress }: TableViewProps) {
@@ -230,13 +164,134 @@ export function TableView({ items, onItemClick, counts, overallProgress }: Table
 
   const isVisible = (colId: string) => columns.find(c => c.id === colId)?.visible ?? true;
 
+  const flatRows = useMemo(() => flattenVisible(items, expandedIds), [items, expandedIds]);
+
+  const handleCopyKey = (item: WorkItem) => {
+    navigator.clipboard.writeText(item.key);
+    catalystToast.success('Key copied to clipboard');
+  };
+
+  const tableColumns = useMemo<Column<FlatRow>[]>(() => {
+    const cols: Column<FlatRow>[] = [
+      {
+        id: 'workItem',
+        label: 'Work Item',
+        flex: true,
+        alwaysVisible: true,
+        cell: ({ row }) => {
+          const { item } = row;
+          return (
+            <div className="flex items-center gap-1.5">
+              <WorkItemIcon type={item.type === 'subtask' ? 'task' : item.type} size={18} hideTooltip />
+              <span className="font-mono text-[10px] text-foreground/50 flex-shrink-0">{item.key}</span>
+              <span
+                className={cn(
+                  "text-[13px] truncate",
+                  row.depth === 0 ? "font-semibold text-foreground" : row.depth === 1 ? "font-medium text-foreground" : "text-foreground/70"
+                )}
+              >
+                {item.title}
+              </span>
+              {item.type === 'epic' && (
+                <div className="flex items-center gap-1 ml-1.5">
+                  {item.team && <Lozenge appearance="default">{item.team}</Lozenge>}
+                  {item.businessRequest && <Lozenge appearance="inprogress">BR {item.businessRequest.key}</Lozenge>}
+                </div>
+              )}
+            </div>
+          );
+        },
+      },
+    ];
+
+    if (isVisible('status')) {
+      cols.push({
+        id: 'status',
+        label: 'Status',
+        width: 12,
+        cell: ({ row }) => <StatusBadge status={row.item.status} />,
+      });
+    }
+    if (isVisible('progress')) {
+      cols.push({
+        id: 'progress',
+        label: 'Progress',
+        width: 14,
+        cell: ({ row }) => <ProgressBar progress={row.item.progress} />,
+      });
+    }
+    if (isVisible('owner')) {
+      cols.push({
+        id: 'owner',
+        label: 'Owner',
+        width: 14,
+        cell: ({ row }) => <OwnerAvatar owner={row.item.owner} />,
+      });
+    }
+    if (isVisible('targetDate')) {
+      cols.push({
+        id: 'targetDate',
+        label: 'Target Date',
+        width: 12,
+        cell: ({ row }) =>
+          row.item.endDate ? (
+            <span className="text-[11px] font-medium text-foreground">{format(new Date(row.item.endDate), 'dd MMM')}</span>
+          ) : (
+            <span className="text-foreground/40 text-[11px]">No date</span>
+          ),
+      });
+    }
+    if (isVisible('dependencies')) {
+      cols.push({
+        id: 'dependencies',
+        label: 'Deps',
+        width: 7,
+        cell: ({ row }) =>
+          row.item.dependencyCount > 0 ? (
+            <Lozenge appearance="default">{row.item.dependencyCount}</Lozenge>
+          ) : (
+            <span className="text-foreground/40 text-[11px]">—</span>
+          ),
+      });
+    }
+    if (isVisible('actions')) {
+      cols.push({
+        id: 'actions',
+        label: '',
+        width: 4,
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-0.5 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="h-3.5 w-3.5 text-foreground/50" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36 bg-popover">
+              <DropdownMenuItem onClick={() => onItemClick(row.item)} className="text-xs">
+                <Eye className="h-3 w-3 mr-1.5" />View Details
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleCopyKey(row.item)} className="text-xs">
+                <Copy className="h-3 w-3 mr-1.5" />Copy Key
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+      });
+    }
+
+    return cols;
+  }, [columns, onItemClick]);
+
   if (items.length === 0) return null;
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Compact stats bar - 28px */}
       <StatsBar counts={counts} overallProgress={overallProgress} />
-      
+
       {/* Table toolbar - tight spacing */}
       <div className="flex items-center justify-between px-4 py-1.5 border-b border-border bg-card/50">
         <div className="flex items-center gap-0.5">
@@ -249,14 +304,14 @@ export function TableView({ items, onItemClick, counts, overallProgress }: Table
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center p-0.5 rounded bg-muted border border-border">
-            <button 
-              onClick={() => setDensity('comfortable')} 
+            <button
+              onClick={() => setDensity('comfortable')}
               className={cn("px-2 py-0.5 text-[11px] rounded transition-colors", density === 'comfortable' ? 'bg-background shadow-sm text-foreground' : 'text-foreground/60')}
             >
               Comfortable
             </button>
-            <button 
-              onClick={() => setDensity('compact')} 
+            <button
+              onClick={() => setDensity('compact')}
               className={cn("px-2 py-0.5 text-[11px] rounded transition-colors", density === 'compact' ? 'bg-background shadow-sm text-foreground' : 'text-foreground/60')}
             >
               Compact
@@ -283,24 +338,19 @@ export function TableView({ items, onItemClick, counts, overallProgress }: Table
       {/* Table - reduced padding */}
       <div className="overflow-auto flex-1 p-2">
         <div className="rounded-lg border border-border overflow-hidden bg-card">
-          <table className="w-full">
-            <thead>
-              <tr className="h-9 bg-muted/50 border-b border-border">
-                <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70">Work Item</th>
-                {isVisible('status') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-24">Status</th>}
-                {isVisible('progress') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-28">Progress</th>}
-                {isVisible('owner') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-28">Owner</th>}
-                {isVisible('targetDate') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-24">Target Date</th>}
-                {isVisible('dependencies') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-14">Deps</th>}
-                {isVisible('actions') && <th className="px-2 w-8"></th>}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map(item => (
-                <TableRow key={item.id} item={item} depth={0} onItemClick={onItemClick} expandedIds={expandedIds} toggleExpand={toggleExpand} columns={columns} density={density} />
-              ))}
-            </tbody>
-          </table>
+          <JiraTable<FlatRow>
+            columns={tableColumns}
+            data={flatRows}
+            getRowId={(row) => row.item.id}
+            getRowDepth={(row) => row.depth}
+            getRowHasChildren={(row) => !!row.item.children && row.item.children.length > 0}
+            expandedRowIds={expandedIds}
+            onToggleRowExpanded={(rowId) => toggleExpand(rowId)}
+            onRowClick={(row) => onItemClick(row.item)}
+            density={density}
+            showRowCount={false}
+            ariaLabel="Program execution work tree"
+          />
         </div>
       </div>
     </div>

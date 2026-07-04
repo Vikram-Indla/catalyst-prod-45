@@ -461,7 +461,10 @@ interface FeedRow {
   issueStatus?: string;
   projectKey: string;
   commentBody: string;
-  commentCreatedAt: string;
+  /** Null when the source comment has no real timestamp. Never fabricate
+   *  "now" — CLAUDE.md zero-assumption rule. Render nothing for the
+   *  relative-time text when null (see FeedCard). */
+  commentCreatedAt: string | null;
   /** When true, renders a "View thread" button below the meta row.
    *  Jira parity: only "Reply to comments" rows carry this affordance. */
   showViewThread?: boolean;
@@ -678,9 +681,11 @@ function FeedCard({
   // alongside (see git blame for the original implementation).
   // Local avatar files only — Jira/Gravatar CDN URLs are banned (CLAUDE.md §19)
   // and fail to load due to CORS. Priority: local slug match → Atlaskit initials fallback.
-  const relative = formatRelativeTimestamp(row.commentCreatedAt);
+  // Zero-assumption: null commentCreatedAt means no real timestamp exists —
+  // render nothing rather than a fabricated "earlier"/"just now" (CLAUDE.md).
+  const relative = row.commentCreatedAt ? formatRelativeTimestamp(row.commentCreatedAt) : null;
   // G-04 — Absolute timestamp shown as title attribute (Jira parity: "May 17, 2026 at 3:43 PM").
-  const absolute = formatAbsoluteTimestamp(row.commentCreatedAt);
+  const absolute = row.commentCreatedAt ? formatAbsoluteTimestamp(row.commentCreatedAt) : undefined;
 
   return (
     <div
@@ -791,9 +796,15 @@ function FeedCard({
           {row.projectName ? <span>{row.projectName}</span> : null}
           {row.projectName ? <span aria-hidden="true">·</span> : null}
           <span>{row.issueKey}</span>
-          <span aria-hidden="true">·</span>
-          {/* G-04: full relative text ("4 days ago") + absolute tooltip ("May 17, 2026 at 3:43 PM"). */}
-          <span title={absolute}>{relative}</span>
+          {/* G-04: full relative text ("4 days ago") + absolute tooltip ("May 17, 2026 at 3:43 PM").
+              Zero-assumption: when there's no real timestamp, omit the
+              separator + text entirely rather than showing a fabricated value. */}
+          {relative && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span title={absolute}>{relative}</span>
+            </>
+          )}
         </div>
 
         {/* "View thread" link moved into ForYouCardFooter (above the

@@ -57,7 +57,8 @@ export function useApprovalAge() {
       const planIds = [...new Set(approvals.map((a) => a.plan_id).filter(Boolean))] as string[];
       const planNameById = new Map<string, string>();
       if (planIds.length) {
-        const { data: plans } = await supabase.from('tm_test_plans').select('id, name').in('id', planIds);
+        const { data: plans, error: plansError } = await supabase.from('tm_test_plans').select('id, name').in('id', planIds);
+        if (plansError) throw plansError;
         for (const p of (plans ?? []) as { id: string; name: string }[]) planNameById.set(p.id, p.name);
       }
 

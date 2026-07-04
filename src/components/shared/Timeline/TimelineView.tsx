@@ -202,7 +202,7 @@ export default function TimelineView(props: TimelineViewProps) {
   const [panelItem, setPanelItem] = useState<{
     id: string;
     itemType: string;
-    displayType: string;
+    displayType?: string;
   } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
   const openDetail = useCallback(
@@ -216,7 +216,7 @@ export default function TimelineView(props: TimelineViewProps) {
         detailEntityKind === "task" || detailEntityKind === "release" || detailEntityKind === "test_cycle"
           ? issue.id
           : issue.issueKey;
-      setPanelItem({ id, itemType, displayType: issue.issueType ?? "Story" });
+      setPanelItem({ id, itemType, displayType: issue.issueType ?? undefined });
     },
     [resolveItemType, detailEntityKind]
   );

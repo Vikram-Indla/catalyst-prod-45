@@ -56,7 +56,7 @@ export function LinkedItemsPanel({
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-6 w-6 p-0 hover:text-red-500"
+                    className="h-6 w-6 p-0 hover:text-[var(--ds-text-danger)]"
                     onClick={() => onRemoveItem(item.id)}
                   >
                     <X className="w-3.5 h-3.5" />

@@ -12,7 +12,7 @@
  *   - Auth required (Supabase JWT)
  *   - GROQ_API_KEY / GEMINI_API_KEY env-only, never client
  *   - No audio stored
- *   - Audit row → ai_governance_audit_log
+ *   - Audit row → ai_usage_log
  */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
@@ -180,7 +180,7 @@ async function logGovernance(params: {
     const svc = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!url || !svc) return;
     const sb = createClient(url, svc, { auth: { persistSession: false } });
-    await sb.from("ai_governance_audit_log").insert({
+    await sb.from("ai_usage_log").insert({
       action: params.action,
       payload: params.payload,
       status: params.status,

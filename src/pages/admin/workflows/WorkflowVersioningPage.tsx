@@ -117,7 +117,7 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
   task: {
     runtimeReadWired: false, runtimeReadNote: 'task_statuses.workflow_status_key added (A_projection) — read hook not yet wired',
     runtimeWriteWired: true, runtimeWriteNote: 'useUpdatePlannerTask → status_id, reason preflight before write + recordAdvisoryStatusChange',
-    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal on TasksBoardView card menu + TaskListPageV3 inline edit (F3); drag-drop path (useMoveBoardTask) still advisory-only',
+    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal on TasksBoardView card menu, drag-drop (retries via status-only persistStatusChange), + TaskListPageV3 inline edit (F3)',
   },
   sprint: {
     runtimeReadWired: false, runtimeReadNote: 'no canonical read surface — sprint status shown as raw text',

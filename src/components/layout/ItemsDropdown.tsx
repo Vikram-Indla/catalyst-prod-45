@@ -53,7 +53,7 @@ const otherItems = [
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'text-destructive', path: '/programs/:programId/risks', moduleCode: 'ENTERPRISE' },
   { key: 'sprints', label: 'Releases', icon: Calendar, color: 'text-brand-primary', path: '/teams/:teamId/sprints', moduleCode: 'PROGRAM' },
   { key: 'program-increments', label: 'Program Increments', icon: Package, color: 'text-workitem-theme', path: '/programs/:programId/increments', moduleCode: 'PROGRAM' },
-  { key: 'incidents', label: 'Incidents', icon: Siren, color: 'text-destructive', path: '/release/incidents', moduleCode: null },
+  { key: 'incidents', label: 'Incidents', icon: Siren, color: 'text-destructive', path: '/incident-hub', moduleCode: null },
 ];
 
 export function ItemsDropdown({ trigger, onClose }: ItemsDropdownProps) {

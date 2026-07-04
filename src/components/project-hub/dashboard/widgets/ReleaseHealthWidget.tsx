@@ -282,7 +282,7 @@ function KpiCell({
         style={{
           ...H_NUM,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#292A2E'),
+          color: accent ?? token('color.text'),
         }}
       >
         {value}
@@ -368,7 +368,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
             textAlign: 'right',
             color: atRisk
               ? 'var(--ds-text-accent-red-bolder)'
-              : token('color.text', '#292A2E'),
+              : token('color.text'),
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -388,7 +388,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
         }}
       >
         <span>
-          <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
+          <span style={{ fontWeight: 600, color: token('color.text') }}>
             {rel.done}
           </span>{' '}
           of {rel.total} items

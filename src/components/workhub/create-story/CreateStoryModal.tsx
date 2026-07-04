@@ -842,6 +842,9 @@ export function CreateStoryModal({
       if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
       try {
         const descAdf = form.descriptionAdf ?? null;
+        // DEF-012: form.sprintReleases holds ph_jira_sprints.id (sprintOptions.value)
+        // directly — write it to the canonical sprint_id FK, not just the label.
+        const sprintId = (form.sprintReleases ?? [])[0] as string | undefined;
         const sprintName = (form.sprintReleases ?? [])
           .map((id) => sprintOptions.find((o) => o.value === id)?.label)
           .filter(Boolean)[0] as string | undefined;
@@ -869,6 +872,7 @@ export function CreateStoryModal({
           assigned_to: form.assigneeId || undefined,
           parent_key: form.parentId || undefined,
           sprint: sprintName,
+          sprint_id: sprintId,
         });
         flag.success('Defect created');
         onSuccess?.('');

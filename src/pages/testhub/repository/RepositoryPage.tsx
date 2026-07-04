@@ -13,7 +13,6 @@ import {
 import {
   useTestCases,
   useCreateTestCase,
-  useDeleteTestCase,
   useBulkArchiveTestCases,
   useBulkCopyTestCases,
 } from '@/hooks/test-management/useTestCases';
@@ -36,14 +35,13 @@ import {
   Folder,
   FolderOpen,
   Search,
-  Trash2,
+  Archive,
   MoreHorizontal,
   Edit2,
 } from '@/lib/atlaskit-icons';
 import type { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@/types/test-management';
-import { CaseDrawer } from './CaseDrawer';
 // D4 (2026-06-27) — view/edit a case via the canonical CatalystViewBase shell
-// (entityKind='test_case'). Create still uses CaseDrawer (coexist).
+// (entityKind='test_case'). Router wires query params to detail panel.
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 // ── Folder modal (ADS modal-dialog) ──────────────────────────────────────────
@@ -586,14 +584,15 @@ export default function RepositoryPage() {
   const [folderModalParentId, setFolderModalParentId] = useState<string | null>(null);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [copyModalOpen, setCopyModalOpen] = useState(false);
-  const [caseToDelete, setCaseToDelete] = useState<{ id: string; case_key?: string; title?: string } | null>(null);
+  // P1-S4: row-level hard delete replaced with archive (VER-004) — a case
+  // and its history are never destructible from the repository UI.
+  const [caseToArchive, setCaseToArchive] = useState<{ id: string; case_key?: string; title?: string } | null>(null);
   const [aiDialogOpen, setAIDialogOpen] = useState(false);
 
   const createFolder = useCreateFolder();
   const { data: allFolders = [] } = useFolderTree(projectId);
   const archiveCases = useBulkArchiveTestCases();
   const copyCases = useBulkCopyTestCases();
-  const deleteCase = useDeleteTestCase();
   const createCase = useCreateTestCase({ silent: true });
 
   const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
@@ -748,16 +747,16 @@ export default function RepositoryPage() {
         <button
           onClick={e => {
             e.stopPropagation();
-            setCaseToDelete({ id: row.id, case_key: row.case_key, title: row.title });
+            setCaseToArchive({ id: row.id, case_key: row.case_key, title: row.title });
           }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: 'var(--ds-text-subtlest)',
             padding: 4, display: 'flex', alignItems: 'center',
           }}
-          title="Delete case"
+          title="Archive case"
         >
-          <Trash2 size={14} />
+          <Archive size={14} />
         </button>
       ),
     },
@@ -919,16 +918,7 @@ export default function RepositoryPage() {
           )}
         </div>
 
-        {drawerOpen && projectId && (
-          <CaseDrawer
-            projectId={projectId}
-            folderId={activeFolderId}
-            existingCase={editingCase}
-            onClose={() => { setDrawerOpen(false); setEditingCase(null); }}
-          />
-        )}
-
-        {/* D4: canonical detail panel for view/edit (coexists with CaseDrawer). */}
+        {/* D4: canonical detail panel for view/edit. */}
         {selectedCaseId && (
           <CatalystDetailRouter
             entityKind="test_case"
@@ -960,34 +950,34 @@ export default function RepositoryPage() {
         />
       )}
 
-      {caseToDelete && (
-        <ModalDialog onClose={() => setCaseToDelete(null)}>
+      {caseToArchive && (
+        <ModalDialog onClose={() => setCaseToArchive(null)}>
           <ModalHeader>
-            <ModalTitle appearance="danger">Delete test case?</ModalTitle>
+            <ModalTitle>Archive test case?</ModalTitle>
           </ModalHeader>
           <ModalBody>
             <p style={{ margin: 0, color: 'var(--ds-text)' }}>
-              {caseToDelete.case_key ? `${caseToDelete.case_key} · ` : ''}
-              <strong>{caseToDelete.title ?? 'This case'}</strong> and its steps will be permanently
-              deleted. This cannot be undone.
+              {caseToArchive.case_key ? `${caseToArchive.case_key} · ` : ''}
+              <strong>{caseToArchive.title ?? 'This case'}</strong> will be hidden from the repository.
+              Its steps, versions, and execution history are preserved and it can be restored later.
             </p>
           </ModalBody>
           <ModalFooter>
             <button
-              onClick={() => setCaseToDelete(null)}
+              onClick={() => setCaseToArchive(null)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
             >
               Cancel
             </button>
             <button
               onClick={() => {
-                if (projectId && caseToDelete) deleteCase.mutate({ id: caseToDelete.id, project_id: projectId });
-                setCaseToDelete(null);
+                if (projectId && caseToArchive) archiveCases.mutate({ case_ids: [caseToArchive.id], project_id: projectId });
+                setCaseToArchive(null);
               }}
-              disabled={deleteCase.isPending}
-              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '4px 14px', fontWeight: 600 }}
+              disabled={archiveCases.isPending}
+              style={{ background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '4px 14px', fontWeight: 600 }}
             >
-              {deleteCase.isPending ? 'Deleting…' : 'Delete'}
+              {archiveCases.isPending ? 'Archiving…' : 'Archive'}
             </button>
           </ModalFooter>
         </ModalDialog>

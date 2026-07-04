@@ -18,10 +18,10 @@ interface IncidentCommandBarProps {
 }
 
 const VIEW_MODES: { value: ViewMode; label: string; icon: React.ElementType; path: string }[] = [
-  { value: 'list', label: 'List', icon: List, path: '/release/incidents' },
-  { value: 'analytics', label: 'Analytics', icon: BarChart3, path: '/release/incidents/analytics' },
-  { value: 'insights', label: 'Insights', icon: Lightbulb, path: '/release/incidents/insights' },
-  { value: 'kanban', label: 'Kanban', icon: Kanban, path: '/release/incidents/kanban' },
+  { value: 'list', label: 'List', icon: List, path: '/incident-hub' },
+  { value: 'analytics', label: 'Analytics', icon: BarChart3, path: '/incident-hub/analytics' },
+  { value: 'insights', label: 'Insights', icon: Lightbulb, path: '/incident-hub/insights' },
+  { value: 'kanban', label: 'Kanban', icon: Kanban, path: '/incident-hub/board' },
 ];
 
 export function IncidentCommandBar({ onCreateClick, additionalActions }: IncidentCommandBarProps) {

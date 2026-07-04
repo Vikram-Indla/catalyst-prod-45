@@ -32,18 +32,18 @@ export const GUARD_EVIDENCE_REGISTRY: Record<string, { evidence: 'real' | 'missi
   test_coverage:               { evidence: 'real',    blockingSafe: true,  note: 'real count from tm_test_case_links (gateTransition)' },
   child_completion:            { evidence: 'real',    blockingSafe: true,  note: 'child issue completion % from ph_issues' },
   no_open_blocker_critical:    { evidence: 'real',    blockingSafe: true,  note: 'open flagged blocker count from ph_issues' },
-  qa_signoff:                  { evidence: 'missing', blockingSafe: false, note: 'no qa sign-off evidence table — advisory only (passed: null)' },
-  uat_signoff:                 { evidence: 'missing', blockingSafe: false, note: 'no UAT sign-off table — advisory only (passed: null)' },
-  approval:                    { evidence: 'missing', blockingSafe: false, note: 'no approval workflow table — advisory only (passed: null)' },
-  brd_attached:                { evidence: 'missing', blockingSafe: false, note: 'no BRD attachment source — advisory only (passed: null)' },
+  qa_signoff:                  { evidence: 'missing', blockingSafe: false, note: 'no qa sign-off table exists (tm_plan_approvals/tm_release_signoffs are scoped to test plans/TestHub releases, not generic work items — reusing them would check the wrong entity) — advisory only (passed: null)' },
+  uat_signoff:                 { evidence: 'missing', blockingSafe: false, note: 'no UAT sign-off table exists — advisory only (passed: null)' },
+  approval:                    { evidence: 'missing', blockingSafe: false, note: 'transition_approval_configs exists but is config-only (no decision/instance rows, no consuming code, status vocabulary from an unrelated prototype) — advisory only (passed: null)' },
+  brd_attached:                { evidence: 'real',    blockingSafe: true,  note: 'ph_issue_attachments (issue_key-scoped) filename/mime heuristic — pdf/doc/docx or filename containing "brd" (gateTransition)' },
   release_readiness:           { evidence: 'missing', blockingSafe: false, note: 'no release readiness source — advisory only (passed: null)' },
-  deployment_window:           { evidence: 'missing', blockingSafe: false, note: 'no deployment window source — advisory only (passed: null)' },
-  deployment_evidence:         { evidence: 'missing', blockingSafe: false, note: 'no deployment evidence source — advisory only (passed: null)' },
+  deployment_window:           { evidence: 'missing', blockingSafe: false, note: 'deploy_gate/deploy_summaries are CI-pipeline-scoped (global switch / per-CI-run), not per-work-item — advisory only (passed: null)' },
+  deployment_evidence:         { evidence: 'missing', blockingSafe: false, note: 'no per-item deployment evidence source — advisory only (passed: null)' },
   smoke_evidence:              { evidence: 'missing', blockingSafe: false, note: 'no smoke test source — advisory only (passed: null)' },
   rca:                         { evidence: 'missing', blockingSafe: false, note: 'no RCA source — advisory only (passed: null)' },
-  figma_attached:              { evidence: 'missing', blockingSafe: false, note: 'no Figma attachment source — advisory only (passed: null)' },
+  figma_attached:              { evidence: 'real',    blockingSafe: true,  note: 'ph_issue_attachments (issue_key-scoped) filename/content_url match on figma (gateTransition)' },
   required_field:              { evidence: 'missing', blockingSafe: false, note: 'field requirements table not yet evaluated in gate — advisory' },
-  comment_required:            { evidence: 'missing', blockingSafe: false, note: 'no comment evidence source — advisory only (passed: null)' },
+  comment_required:            { evidence: 'real',    blockingSafe: true,  note: 'real count from ph_comments (FK to ph_issues.id, gateTransition)' },
 };
 
 export interface ResolvedVersion {
@@ -305,8 +305,15 @@ export function evaluateGuardsReal(
       }
       case 'approval':
         return { ...base, passed: null, detail: 'no approval workflow evidence source — advisory' };
-      case 'brd_attached':
-        return { ...base, passed: null, detail: 'no BRD attachment evidence source — advisory' };
+      case 'brd_attached': {
+        // Real evidence from ph_issue_attachments (2284 live rows on cyij),
+        // injected by gateTransition. Heuristic: a document-type attachment
+        // (pdf/doc/docx or filename containing "brd") is present.
+        const count = (issueRow as any)?._brdAttachmentCount;
+        if (count == null) return { ...base, passed: null, detail: 'no BRD attachment evidence available' };
+        const has = Number(count) >= 1;
+        return { ...base, passed: has, detail: has ? `${count} BRD-like attachment(s)` : 'no BRD document attached' };
+      }
       case 'release_readiness':
         return { ...base, passed: null, detail: 'no release readiness evidence source — advisory' };
       case 'deployment_window':
@@ -317,12 +324,24 @@ export function evaluateGuardsReal(
         return { ...base, passed: null, detail: 'no smoke test evidence source — advisory' };
       case 'rca':
         return { ...base, passed: null, detail: 'no RCA evidence source — advisory' };
-      case 'figma_attached':
-        return { ...base, passed: null, detail: 'no Figma attachment evidence source — advisory' };
+      case 'figma_attached': {
+        // Real evidence from ph_issue_attachments — matches a Figma URL or
+        // filename, injected by gateTransition.
+        const count = (issueRow as any)?._figmaAttachmentCount;
+        if (count == null) return { ...base, passed: null, detail: 'no Figma attachment evidence available' };
+        const has = Number(count) >= 1;
+        return { ...base, passed: has, detail: has ? `${count} Figma attachment(s)` : 'no Figma link/file attached' };
+      }
       case 'required_field':
         return { ...base, passed: null, detail: 'required field check not configured — advisory' };
-      case 'comment_required':
-        return { ...base, passed: null, detail: 'comment evidence source not available — advisory' };
+      case 'comment_required': {
+        // Real evidence from ph_comments (FK'd to ph_issues.id), injected by
+        // gateTransition.
+        const count = (issueRow as any)?._commentCount;
+        if (count == null) return { ...base, passed: null, detail: 'no comment evidence available' };
+        const has = Number(count) >= 1;
+        return { ...base, passed: has, detail: has ? `${count} comment(s)` : 'no comments on this item' };
+      }
       default:
         return { ...base, passed: null, detail: `guard type '${g.guardType}' has no evidence source — advisory` };
     }
@@ -398,6 +417,38 @@ export async function gateTransition(args: {
           .eq('parent_id', args.issueRow.id)
           .is('deleted_at', null);
         (args.issueRow as any)._openBlockerCount = count ?? 0;
+      } catch { /* leave undefined → advisory */ }
+    }
+    // Real BRD/Figma attachment evidence from ph_issue_attachments
+    // (issue_key-scoped — 2284 live rows on cyij, Jira-synced).
+    if (match?.guards.some((g) => g.guardType === 'brd_attached') && args.issueRow?.issue_key) {
+      try {
+        const { count } = await supabase
+          .from('ph_issue_attachments')
+          .select('id', { count: 'exact', head: true })
+          .eq('issue_key', args.issueRow.issue_key)
+          .or('filename.ilike.%brd%,mime_type.eq.application/pdf,mime_type.ilike.%wordprocessingml%,mime_type.eq.application/msword');
+        (args.issueRow as any)._brdAttachmentCount = count ?? 0;
+      } catch { /* leave undefined → advisory */ }
+    }
+    if (match?.guards.some((g) => g.guardType === 'figma_attached') && args.issueRow?.issue_key) {
+      try {
+        const { count } = await supabase
+          .from('ph_issue_attachments')
+          .select('id', { count: 'exact', head: true })
+          .eq('issue_key', args.issueRow.issue_key)
+          .or('filename.ilike.%figma%,content_url.ilike.%figma.com%');
+        (args.issueRow as any)._figmaAttachmentCount = count ?? 0;
+      } catch { /* leave undefined → advisory */ }
+    }
+    // Real comment evidence from ph_comments (FK'd to ph_issues.id).
+    if (match?.guards.some((g) => g.guardType === 'comment_required') && args.issueRow?.id) {
+      try {
+        const { count } = await supabase
+          .from('ph_comments')
+          .select('id', { count: 'exact', head: true })
+          .eq('work_item_id', args.issueRow.id);
+        (args.issueRow as any)._commentCount = count ?? 0;
       } catch { /* leave undefined → advisory */ }
     }
     const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);

@@ -107,15 +107,15 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
     summary: a.summary,
     phIssueId: a.id,
     mode: 'DEL' as WorkMode,
-    level: a.issue_type,
+    level: a.issue_type ?? '',
     project: a.project_name || a.project_key || '',
     projectKey: a.project_key || '',
     hub: 'ProjectHub' as HubType,
     hubLabel: 'Project',
     issueType: a.issue_type,
-    status: a.status || 'To Do',
+    status: a.status,
     statusCategory: a.status_category || undefined,
-    priority: a.priority || 'Medium',
+    priority: a.priority,
     priorityLevel: 2,
     parentKey: a.parent_key || undefined,
     parentSummary: a.parent_summary || undefined,
@@ -212,7 +212,7 @@ function ArchivedRow({ item }: {
           borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         }}
       >
-        <JiraIssueTypeIcon type={item.issue_type} size={16} />
+        {item.issue_type && <JiraIssueTypeIcon type={item.issue_type} size={16} />}
         <span style={{
           font: 'var(--ds-font-body-small)', fontWeight: 400,
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
@@ -665,7 +665,7 @@ export default function AgeingPanel() {
   const handleOpenDetail = useCallback((item: WorkItem) => {
     useGlobalSearchStore.getState().openDetail({
       id: item.id,
-      itemType: item.issueType,
+      itemType: item.issueType ?? undefined,
       projectKey: item.projectKey,
     });
   }, []);

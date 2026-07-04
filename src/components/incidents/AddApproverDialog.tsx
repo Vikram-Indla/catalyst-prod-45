@@ -80,7 +80,7 @@ export function AddApproverDialog({
           {/* Approver Selection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
-              Select Approver <span className="text-red-500">*</span>
+              Select Approver <span className="text-[var(--ds-text-danger)]">*</span>
             </label>
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-full">
@@ -100,7 +100,7 @@ export function AddApproverDialog({
                         </div>
                         <span>{user.full_name}</span>
                         {user.has_veto_power && (
-                          <span className="text-[10px] text-orange-600">(Veto Power)</span>
+                          <span className="text-[10px] text-[var(--ds-text-warning)]">(Veto Power)</span>
                         )}
                       </div>
                     </SelectItem>
@@ -113,7 +113,7 @@ export function AddApproverDialog({
           {/* Veto Toggle */}
           <div className={cn(
             "flex items-start gap-3 p-3 rounded-lg border",
-            hasVeto ? "bg-orange-50 border-orange-200" : "bg-muted/50 border-border"
+            hasVeto ? "bg-[var(--ds-background-warning)] border-[var(--ds-border-warning)]" : "bg-muted/50 border-border"
           )}>
             <Checkbox
               id="has-veto"
@@ -127,7 +127,7 @@ export function AddApproverDialog({
                 className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2"
               >
                 Grant Veto Power
-                <AlertTriangle className="h-3.5 w-3.5 text-orange-600" />
+                <AlertTriangle className="h-3.5 w-3.5 text-[var(--ds-text-warning)]" />
               </label>
               <p className="text-xs text-muted-foreground mt-1">
                 A veto vote will override all other approvals and reject the conversion request.
@@ -161,7 +161,7 @@ export function AddApproverDialog({
                   <span className="text-xs text-muted-foreground">{selectedUser.email}</span>
                 </div>
                 {hasVeto && (
-                  <span className="ml-auto text-xs font-medium text-orange-600 bg-orange-100 px-2 py-0.5 rounded">
+                  <span className="ml-auto text-xs font-medium text-[var(--ds-text-warning)] bg-[var(--ds-background-warning)] px-2 py-0.5 rounded">
                     VETO
                   </span>
                 )}

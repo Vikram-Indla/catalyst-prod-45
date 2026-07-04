@@ -603,7 +603,6 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
     setActiveId(id);
     setShowPicker(false);
     setMessages([]);
-    setInput('');
     setPendingStories([]);
   };
 

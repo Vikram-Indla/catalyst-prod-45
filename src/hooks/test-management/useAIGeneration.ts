@@ -84,6 +84,10 @@ const VALID_TEST_TYPES = ['functional', 'api', 'performance', 'security'] as con
 export function useAIGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // P2-S10 (AI-004): true when the server rejected the last attempt for
+  // quota_exceeded or cooldown — a visible, distinct block state from a
+  // generic error (dialog can disable the Generate button on this).
+  const [isBlocked, setIsBlocked] = useState(false);
   // Ref-based guard: blocks duplicate in-flight calls even before the
   // isGenerating state update has re-rendered the consumer.
   const inFlightRef = useRef(false);
@@ -96,6 +100,7 @@ export function useAIGeneration() {
     inFlightRef.current = true;
     setIsGenerating(true);
     setError(null);
+    setIsBlocked(false);
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('ai-generate-story-test-cases', {
@@ -120,6 +125,9 @@ export function useAIGeneration() {
           catalystToast.error('Rate limit exceeded. Please wait a moment and try again.');
         } else if (data.error === 'payment_required') {
           catalystToast.error('AI credits exhausted. Please add credits to continue.');
+        } else if (data.error === 'quota_exceeded' || data.error === 'cooldown') {
+          catalystToast.error(message);
+          setIsBlocked(true);
         } else {
           catalystToast.error(message);
         }
@@ -186,12 +194,14 @@ export function useAIGeneration() {
 
   const clearError = useCallback(() => {
     setError(null);
+    setIsBlocked(false);
   }, []);
 
   return {
     generateTestCases,
     isGenerating,
     error,
+    isBlocked,
     clearError,
   };
 }

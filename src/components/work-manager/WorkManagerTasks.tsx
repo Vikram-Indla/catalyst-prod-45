@@ -360,7 +360,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   {/* Type */}
                   <td className="px-4 py-3.5 border-b border-border-subtle">
                     <span className="text-sm text-text-muted">
-                      {task.type || 'Task'}
+                      {task.type ?? '—'}
                     </span>
                   </td>
                   

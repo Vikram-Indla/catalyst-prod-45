@@ -249,21 +249,27 @@ export function useRecordApproval() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      committeeId, 
-      memberId 
-    }: { 
-      committeeId: string; 
+    mutationFn: async ({
+      committeeId,
+      memberId
+    }: {
+      committeeId: string;
       memberId: string;
     }) => {
+      // Upsert: vote rows are created lazily on first vote. RLS allows a member
+      // to insert/update only their OWN vote (member_id → auth.uid()). The
+      // unique (committee_id, member_id) index backs the conflict target.
       const { error } = await supabase
         .from('committee_votes')
-        .update({ 
-          vote: 'approved', 
-          voted_at: new Date().toISOString() 
-        })
-        .eq('committee_id', committeeId)
-        .eq('member_id', memberId);
+        .upsert(
+          {
+            committee_id: committeeId,
+            member_id: memberId,
+            vote: 'approved',
+            voted_at: new Date().toISOString(),
+          },
+          { onConflict: 'committee_id,member_id' },
+        );
 
       if (error) throw error;
     },
@@ -294,15 +300,20 @@ export function useRecordVeto() {
         throw new Error('Comment is required when vetoing');
       }
 
+      // Upsert: see useRecordApproval — vote rows are created lazily, RLS scopes
+      // writes to the voting member's own row.
       const { error } = await supabase
         .from('committee_votes')
-        .update({ 
-          vote: 'vetoed', 
-          voted_at: new Date().toISOString(),
-          comment: comment.trim(),
-        })
-        .eq('committee_id', committeeId)
-        .eq('member_id', memberId);
+        .upsert(
+          {
+            committee_id: committeeId,
+            member_id: memberId,
+            vote: 'vetoed',
+            voted_at: new Date().toISOString(),
+            comment: comment.trim(),
+          },
+          { onConflict: 'committee_id,member_id' },
+        );
 
       if (error) throw error;
     },

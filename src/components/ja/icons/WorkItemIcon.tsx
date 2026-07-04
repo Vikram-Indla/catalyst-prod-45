@@ -113,7 +113,8 @@ export function WorkItemIcon({ type, size = 16, className = '', forceStyle, hide
 // FILLED STYLE - Bold, colored backgrounds with white symbols (Current default)
 // ============================================================================
 function FilledIcon({ type, size, color, className }: { type: string; size: number; color: string; className: string }) {
-  const commonProps = { width: size, height: size, viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", className };
+  // Decorative — the wrapping Tooltip/span carries the accessible name (CAT-AUDIT-1155).
+  const commonProps = { width: size, height: size, viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", className, "aria-hidden": true, focusable: false };
   
   switch (type) {
     case 'theme':
@@ -214,7 +215,8 @@ function FilledIcon({ type, size, color, className }: { type: string; size: numb
 // Works great in both light and dark modes
 // ============================================================================
 function OutlineIcon({ type, size, color, className }: { type: string; size: number; color: string; className: string }) {
-  const commonProps = { width: size, height: size, viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", className };
+  // Decorative — the wrapping Tooltip/span carries the accessible name (CAT-AUDIT-1155).
+  const commonProps = { width: size, height: size, viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", className, "aria-hidden": true, focusable: false };
   const stroke = color;
   const sw = "1.5";
   
@@ -316,7 +318,8 @@ function OutlineIcon({ type, size, color, className }: { type: string; size: num
 // Perfect for dense UIs and professional settings
 // ============================================================================
 function MinimalIcon({ type, size, color, className }: { type: string; size: number; color: string; className: string }) {
-  const commonProps = { width: size, height: size, viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", className };
+  // Decorative — the wrapping Tooltip/span carries the accessible name (CAT-AUDIT-1155).
+  const commonProps = { width: size, height: size, viewBox: "0 0 16 16", fill: "none", xmlns: "http://www.w3.org/2000/svg", className, "aria-hidden": true, focusable: false };
   
   switch (type) {
     case 'theme':

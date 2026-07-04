@@ -80,20 +80,18 @@ function useTraceability(projectId: string | undefined) {
 
       if (projectLinks.length === 0) return [];
 
-      // Latest exec status per case from tm_cycle_scope
+      // P1-S11: latest run status per case, computed by v_tm_requirement_coverage
+      // (TRC-004/009 — one coverage engine, not a client-side reimplementation).
       const caseIds = [...new Set(projectLinks.map((l: any) => l.test_case_id as string))];
-      const { data: scopes, error: scopesError } = await supabase
-        .from('tm_cycle_scope')
-        .select('test_case_id, current_status, updated_at')
-        .in('test_case_id', caseIds)
-        .order('updated_at', { ascending: false });
-      if (scopesError) throw scopesError;
+      const { data: coverage, error: coverageError } = await supabase
+        .from('v_tm_requirement_coverage')
+        .select('test_case_id, latest_run_status')
+        .in('test_case_id', caseIds);
+      if (coverageError) throw coverageError;
 
       const latestByCase = new Map<string, string>();
-      for (const s of (scopes ?? [])) {
-        if (!latestByCase.has(s.test_case_id) && s.current_status) {
-          latestByCase.set(s.test_case_id, s.current_status);
-        }
+      for (const c of (coverage ?? [])) {
+        if (c.latest_run_status) latestByCase.set(c.test_case_id, c.latest_run_status);
       }
 
       return projectLinks.map((l: any) => ({

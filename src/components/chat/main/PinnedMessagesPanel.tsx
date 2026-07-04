@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useConversationPins } from '@/hooks/chat/usePinsBookmarks';
+import { renderMarkdownInline } from '@/features/chat-v2/lib/markdown';
 
 const db = supabase as unknown as { from: (table: string) => any };
 
@@ -215,9 +216,8 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                   }}
-                >
-                  {preview}
-                </span>
+                  dangerouslySetInnerHTML={{ __html: renderMarkdownInline(preview) }}
+                />
               </button>
             );
           })}

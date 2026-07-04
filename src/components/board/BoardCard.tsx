@@ -127,7 +127,7 @@ export function BoardCard({
               ?
             </div>
           )}
-          <span>{feature.total_story_points || 0} SP</span>
+          <span>{feature.total_story_points != null ? `${feature.total_story_points} SP` : '— SP'}</span>
         </div>
         <span>{feature.completed_story_count}/{feature.story_count} Stories</span>
       </div>

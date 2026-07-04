@@ -11619,6 +11619,13 @@ export type Database = {
             foreignKeyName: "incident_attachments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11683,6 +11690,13 @@ export type Database = {
             foreignKeyName: "incident_comments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_comments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11726,6 +11740,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_committees_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "incident_committees_incident_id_fkey"
             columns: ["incident_id"]
@@ -11841,6 +11862,13 @@ export type Database = {
             foreignKeyName: "incident_history_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_history_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11884,6 +11912,13 @@ export type Database = {
           label_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_labels_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "incident_labels_incident_id_fkey"
             columns: ["incident_id"]
@@ -12004,6 +12039,13 @@ export type Database = {
             foreignKeyName: "incident_watchers_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_watchers_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -12045,6 +12087,13 @@ export type Database = {
             foreignKeyName: "incident_work_items_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_work_items_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -12076,6 +12125,7 @@ export type Database = {
           incident_type: string | null
           is_major_incident: boolean | null
           owning_team_id: string | null
+          ph_issue_id: string | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           project_id: string | null
           release_version_id: string | null
@@ -12124,6 +12174,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           owning_team_id?: string | null
+          ph_issue_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -12172,6 +12223,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           owning_team_id?: string | null
+          ph_issue_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -12236,6 +12288,20 @@ export type Database = {
             columns: ["owning_team_id"]
             isOneToOne: false
             referencedRelation: "owning_teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
           {
@@ -18642,35 +18708,14 @@ export type Database = {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_overdue_view"
+            referencedRelation: "ph_issues"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
         ]
@@ -18954,6 +18999,7 @@ export type Database = {
         Row: {
           author_id: string | null
           body: string
+          comment_type: string
           created_at: string | null
           id: string
           updated_at: string | null
@@ -18962,6 +19008,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           body: string
+          comment_type?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -18970,6 +19017,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           body?: string
+          comment_type?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -18988,41 +19036,6 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "workhub_items_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_overdue_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
         ]
@@ -22932,6 +22945,61 @@ export type Database = {
           },
           {
             foreignKeyName: "ph_sprint_dod_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
+          },
+        ]
+      }
+      ph_sprint_status_transitions: {
+        Row: {
+          created_at: string
+          from_status: string | null
+          id: string
+          sprint_id: string
+          to_status: string
+          transitioned_at: string
+          transitioned_by: string | null
+          transitioned_by_avatar: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id: string
+          to_status: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id?: string
+          to_status?: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
             columns: ["sprint_id"]
             isOneToOne: false
             referencedRelation: "vw_sprint_jira_progress"
@@ -33097,6 +33165,7 @@ export type Database = {
           is_starred: boolean | null
           name: string
           query: string | null
+          slug: string
           status: string | null
           type: string | null
           updated_at: string
@@ -33109,6 +33178,7 @@ export type Database = {
           is_starred?: boolean | null
           name: string
           query?: string | null
+          slug: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -33121,6 +33191,7 @@ export type Database = {
           is_starred?: boolean | null
           name?: string
           query?: string | null
+          slug?: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -33391,6 +33462,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "sla_records_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "sla_records_incident_id_fkey"
             columns: ["incident_id"]
@@ -42799,6 +42877,7 @@ export type Database = {
           cycle_id: string
           due_date: string | null
           id: string
+          locked_version: number | null
           priority: string | null
           sort_order: number | null
           test_case_id: string
@@ -42813,6 +42892,7 @@ export type Database = {
           cycle_id: string
           due_date?: string | null
           id?: string
+          locked_version?: number | null
           priority?: string | null
           sort_order?: number | null
           test_case_id: string
@@ -42827,6 +42907,7 @@ export type Database = {
           cycle_id?: string
           due_date?: string | null
           id?: string
+          locked_version?: number | null
           priority?: string | null
           sort_order?: number | null
           test_case_id?: string
@@ -44601,22 +44682,15 @@ export type Database = {
             foreignKeyName: "tm_release_gate_results_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_gate_results_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_gate_results_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44735,22 +44809,15 @@ export type Database = {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_quality_gates_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44912,22 +44979,15 @@ export type Database = {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_readiness_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -45107,6 +45167,7 @@ export type Database = {
           id: string
           link_type: string | null
           notes: string | null
+          project_id: string | null
           requirement_id: string | null
           requirement_type: string
           test_case_id: string
@@ -45122,6 +45183,7 @@ export type Database = {
           id?: string
           link_type?: string | null
           notes?: string | null
+          project_id?: string | null
           requirement_id?: string | null
           requirement_type: string
           test_case_id: string
@@ -45137,6 +45199,7 @@ export type Database = {
           id?: string
           link_type?: string | null
           notes?: string | null
+          project_id?: string | null
           requirement_id?: string | null
           requirement_type?: string
           test_case_id?: string
@@ -45191,6 +45254,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_resource_profile"
             referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_requirement_links_test_case_id_fkey"
@@ -45738,45 +45829,51 @@ export type Database = {
       }
       tm_step_results: {
         Row: {
+          action_snapshot: string | null
           actual_result: string | null
           comment: string | null
           created_at: string | null
           duration_seconds: number | null
           executed_at: string | null
           executed_by: string | null
+          expected_snapshot: string | null
           id: string
           status: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id: string | null
           updated_at: string | null
         }
         Insert: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id?: string
-          test_step_id?: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -46494,22 +46591,15 @@ export type Database = {
             foreignKeyName: "tm_test_cases_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cases_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_version_id_fkey"
@@ -46906,22 +46996,15 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cycles_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cycles_sprint_id_fkey"
@@ -47292,22 +47375,15 @@ export type Database = {
             foreignKeyName: "tm_test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_plans_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_plans_sprint_id_fkey"
@@ -47753,6 +47829,7 @@ export type Database = {
           action: string
           action_html: string | null
           created_at: string | null
+          deleted_at: string | null
           estimated_time_seconds: number | null
           expected_result: string | null
           expected_result_html: string | null
@@ -47770,6 +47847,7 @@ export type Database = {
           action: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -47787,6 +47865,7 @@ export type Database = {
           action?: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -53606,6 +53685,22 @@ export type Database = {
           },
         ]
       }
+      incident_sla_live_status: {
+        Row: {
+          incident_id: string | null
+          incident_key: string | null
+          resolution_breaching: boolean | null
+          resolution_due_at: string | null
+          resolution_met_at: string | null
+          response_breaching: boolean | null
+          response_due_at: string | null
+          response_met_at: string | null
+          severity: Database["public"]["Enums"]["severity_level"] | null
+          status: Database["public"]["Enums"]["incident_status"] | null
+          title: string | null
+        }
+        Relationships: []
+      }
       license_allocation_totals: {
         Row: {
           allocation_status: string | null
@@ -56974,6 +57069,66 @@ export type Database = {
           },
         ]
       }
+      v_tm_requirement_coverage: {
+        Row: {
+          coverage_verdict: string | null
+          external_key: string | null
+          external_title: string | null
+          latest_run_status:
+            | Database["public"]["Enums"]["tm_execution_status"]
+            | null
+          link_id: string | null
+          link_type: string | null
+          project_id: string | null
+          requirement_id: string | null
+          requirement_type: string | null
+          test_case_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_tm_test_cases_full: {
         Row: {
           automation_id: string | null
@@ -57248,22 +57403,15 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cycles_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -58736,6 +58884,10 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
+      compute_sprint_efficiency: {
+        Args: { p_sprint_id: string }
+        Returns: Json
+      }
       convert_idea_to_initiative: {
         Args: { p_idea_id: string; p_user_id?: string }
         Returns: string
@@ -58913,7 +59065,15 @@ export type Database = {
         }
         Returns: Database["public"]["Enums"]["dependency_level_v2"]
       }
+      derive_incident_status_from_ph_issue: {
+        Args: { status_category: string }
+        Returns: Database["public"]["Enums"]["incident_status"]
+      }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
+      derive_severity_from_jira_priority: {
+        Args: { p: string }
+        Returns: Database["public"]["Enums"]["severity_level"]
+      }
       ensure_presence: {
         Args: { conv_uuid: string; heartbeat_interval_seconds?: number }
         Returns: {
@@ -61092,10 +61252,6 @@ export type Database = {
         Args: { p_assignment_id: string; p_notes?: string; p_status: string }
         Returns: Json
       }
-      tm_update_coverage_status: {
-        Args: { p_link_id: string; p_status: string }
-        Returns: boolean
-      }
       tm_update_cycle_milestone: {
         Args: {
           p_description?: string
@@ -61839,14 +61995,7 @@ export type Database = {
         | "assign"
         | "clone"
       tm_case_status: "draft" | "ready" | "approved" | "deprecated"
-      tm_cycle_status:
-        | "planned"
-        | "in_progress"
-        | "completed"
-        | "archived"
-        | "draft"
-        | "active"
-        | "paused"
+      tm_cycle_status: "planned" | "active" | "completed" | "archived"
       tm_defect_severity: "blocker" | "critical" | "major" | "minor" | "trivial"
       tm_defect_status:
         | "open"
@@ -62629,15 +62778,7 @@ export const Constants = {
         "clone",
       ],
       tm_case_status: ["draft", "ready", "approved", "deprecated"],
-      tm_cycle_status: [
-        "planned",
-        "in_progress",
-        "completed",
-        "archived",
-        "draft",
-        "active",
-        "paused",
-      ],
+      tm_cycle_status: ["planned", "active", "completed", "archived"],
       tm_defect_severity: ["blocker", "critical", "major", "minor", "trivial"],
       tm_defect_status: [
         "open",

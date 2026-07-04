@@ -306,6 +306,60 @@ export function useDefect(defectId: string | undefined) {
   });
 }
 
+// P1-S13: by-key lookup for the canonical defect detail route (/testhub/defects/:defectKey).
+export function useDefectByKey(defectKey: string | undefined) {
+  return useQuery({
+    queryKey: ['tm-defect-by-key', defectKey],
+    queryFn: async (): Promise<TMDefect | null> => {
+      if (!defectKey) return null;
+
+      const { data, error } = await supabase
+        .from('tm_defects')
+        .select(`
+          *,
+          assignee:profiles!tm_defects_assignee_id_fkey(id, full_name, avatar_url),
+          reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url)
+        `)
+        .eq('defect_key', defectKey)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return null;
+
+      // Raw enum values alongside the (lossy for 'reopened') mapped TMDefect --
+      // the detail view's status/severity controls write the real db enum,
+      // not statusFromDb's re-labeled display value.
+      return { ...mapDbRowToTMDefect(data), raw_status: data.status, raw_severity: data.severity } as TMDefect & { raw_status: string; raw_severity: string };
+    },
+    enabled: !!defectKey,
+  });
+}
+
+// P1-S13 (DEF-004/010): defect "history" = every test run linked to this
+// defect via tm_defect_links, real tm_test_runs rows — not a dead/legacy
+// table and not a hand-maintained log.
+export function useDefectHistory(defectId: string | undefined) {
+  return useQuery({
+    queryKey: ['tm-defect-history', defectId],
+    queryFn: async () => {
+      if (!defectId) return [];
+
+      const { data, error } = await supabase
+        .from('tm_defect_links')
+        .select(`
+          id, created_at,
+          test_run:tm_test_runs!test_run_id(id, run_number, status, completed_at, executed_by)
+        `)
+        .eq('defect_id', defectId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return (data ?? []).filter((r: any) => r.test_run);
+    },
+    enabled: !!defectId,
+  });
+}
+
 // ============================================================================
 // CREATE DEFECT
 // ============================================================================
@@ -341,6 +395,7 @@ export function useCreateDefect() {
           due_date: input.due_date || null,
           parent_key: input.parent_key || null,
           sprint: input.sprint || null,
+          sprint_id: input.sprint_id || null,
           status: 'open',
           // Canonical Defect workflow initial status (bridged Option A): enum
           // stays 'open' (compat), workflow_status_key starts on the real track.

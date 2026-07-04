@@ -187,7 +187,7 @@ export function CommitteeCard({
                 key={member.id} 
                 className={cn(
                   "flex items-center justify-between p-2.5 rounded-md border border-border bg-background",
-                  isVeto && "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800"
+                  isVeto && "bg-[var(--ds-background-danger)] dark:bg-[var(--ds-background-danger)] border-[var(--ds-border-danger)] dark:border-[var(--ds-border-danger)]"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -195,7 +195,7 @@ export function CommitteeCard({
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{member.user?.full_name || 'Unknown'}</p>
                     {member.has_veto && (
-                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                      <span className="text-[10px] text-[var(--ds-text-warning)] dark:text-[var(--ds-text-warning)] font-medium">
                         Veto Power
                       </span>
                     )}
@@ -245,18 +245,18 @@ export function CommitteeCard({
       {committee?.status === 'pending' && !isConverted && (
         <div className="flex gap-2 pt-2">
           <Button 
-            variant="outline" 
+            variant="outline"
             size="sm"
-            className="flex-1 h-9 text-sm hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200"
+            className="flex-1 h-9 text-sm hover:bg-[var(--ds-background-danger)] hover:text-[var(--ds-text-danger)] hover:border-[var(--ds-border-danger)]"
             onClick={() => onVote('rejected', false, decisionNote)}
             disabled={isVotePending}
           >
             <X className="h-4 w-4 mr-1.5" />
             Reject
           </Button>
-          <Button 
+          <Button
             size="sm"
-            className="flex-1 h-9 text-sm bg-emerald-600 hover:bg-emerald-700"
+            className="flex-1 h-9 text-sm bg-[var(--ds-background-success)] hover:bg-[var(--ds-background-success)]"
             onClick={() => onVote('approved', false, decisionNote)}
             disabled={isVotePending}
           >

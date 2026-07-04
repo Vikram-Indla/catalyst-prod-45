@@ -51,6 +51,7 @@ export function ReasonCaptureModal(props: ReasonCaptureModalProps) {
     <div
       role="dialog"
       aria-modal="true"
+      aria-label="Reason required for transition"
       style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-blanket, rgba(9,30,66,0.54))' }}
       onMouseDown={(e) => { if (e.target === e.currentTarget) props.onCancel(); }}
     >

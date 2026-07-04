@@ -27,6 +27,8 @@ import { TMCycleScope, RunStatus } from '@/types/test-management';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 
 export default function CycleDetailPage() {
   const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
@@ -51,6 +53,74 @@ export default function CycleDetailPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'scope' | 'planning'>('scope');
+
+  // JiraTable columns for scope view
+  const scopeTableColumns: Column<TMCycleScope>[] = [
+    {
+      id: 'key',
+      label: 'Key',
+      width: 10,
+      cell: ({ row }) => (
+        <div style={{ fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
+          {row.test_case?.key ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'title',
+      label: 'Title',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)' }}>
+          {row.test_case?.title ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => <RunStatusPill status={row.status} />,
+    },
+    {
+      id: 'assignee',
+      label: 'Assignee',
+      width: 15,
+      cell: ({ row }) => <AssigneeCell scopeId={row.id} cycleId={cycleId ?? ''} assignee={row.assignee ?? null} />,
+    },
+    {
+      id: 'dueDate',
+      label: 'Due Date',
+      width: 14,
+      cell: ({ row }) => <DueDateCell scopeId={row.id} cycleId={cycleId ?? ''} dueDate={row.due_date} />,
+    },
+    {
+      id: 'actions',
+      label: 'Actions',
+      width: 11,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', gap: 4 }}>
+          {['🐛', '📝', '📎'].map((emoji, idx) => (
+            <PanelButton key={idx} emoji={emoji} />
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: 'remove',
+      label: '',
+      width: 6,
+      cell: ({ row }) => (
+        <button
+          onClick={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [row.id] })}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', padding: 4 }}
+          title="Remove from scope"
+        >
+          <Trash2 size={13} />
+        </button>
+      ),
+    },
+  ];
 
   const { data: teamMembers = [] } = useQuery({
     queryKey: ['team-members'],
@@ -420,42 +490,17 @@ export default function CycleDetailPage() {
           No cases match the selected status filter.
         </div>
       ) : (
-        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-            <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                <th style={{ ...thStyle, width: 36 }}>
-                  <input
-                    type="checkbox"
-                    checked={allSelected}
-                    onChange={toggleAll}
-                    style={{ width: 16, height: 16, cursor: 'pointer' }}
-                    title={allSelected ? 'Deselect all' : 'Select all'}
-                  />
-                </th>
-                <th style={thStyle}>Key</th>
-                <th style={thStyle}>Title</th>
-                <th style={thStyle}>Status</th>
-                <th style={{ ...thStyle, minWidth: 130 }}>Assignee</th>
-                <th style={{ ...thStyle, minWidth: 120 }}>Due Date</th>
-                <th style={{ ...thStyle, width: 96 }}>Actions</th>
-                <th style={{ ...thStyle, width: 40 }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.map(item => (
-                <ScopeRow
-                  key={item.id}
-                  item={item}
-                  cycleId={cycleId ?? ''}
-                  onRemove={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [item.id] })}
-                  selected={selectedIds.has(item.id)}
-                  onToggle={() => toggleOne(item.id)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <JiraTable
+          columns={scopeTableColumns}
+          data={filteredItems}
+          getRowId={(row) => row.id}
+          selectable
+          selection={selectedIds}
+          onSelectionChange={setSelectedIds}
+          onRowClick={(item) => {
+            // Placeholder for potential detail view
+          }}
+        />
       )}
 
       {showAddCases && cycleId && projectId && (
@@ -473,78 +518,30 @@ export default function CycleDetailPage() {
 
 type ScopePanel = 'defect' | 'comments' | 'evidence' | null;
 
-function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
-  item: TMCycleScope;
-  cycleId: string;
-  onRemove: () => void;
-  selected?: boolean;
-  onToggle?: () => void;
-}) {
+function PanelButton({ emoji }: { emoji: string }) {
   const [panel, setPanel] = useState<ScopePanel>(null);
-  const toggle = (p: ScopePanel) => setPanel(prev => prev === p ? null : p);
 
-  const iconBtn = (label: string, emoji: string, p: ScopePanel) => (
+  const labelMap: Record<string, { label: string; panelType: ScopePanel }> = {
+    '🐛': { label: 'Log defect', panelType: 'defect' },
+    '📝': { label: 'Comments', panelType: 'comments' },
+    '📎': { label: 'Evidence', panelType: 'evidence' },
+  };
+
+  const { label, panelType } = labelMap[emoji] || { label: '', panelType: null };
+
+  return (
     <button
-      onClick={() => toggle(p)}
+      onClick={() => setPanel(prev => prev === panelType ? null : panelType)}
       title={label}
       style={{
-        background: panel === p ? 'var(--ds-background-selected)' : 'none',
+        background: panel ? 'var(--ds-background-selected)' : 'none',
         border: '1px solid var(--ds-border)',
         borderRadius: 4, cursor: 'pointer', padding: '0px 6px',
-        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel === p ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
+        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
       }}
     >
       {emoji}
     </button>
-  );
-
-  return (
-    <>
-      <tr style={{ borderBottom: '1px solid var(--ds-border)', background: selected ? 'var(--ds-background-selected)' : undefined }}>
-        <td style={{ ...tdStyle, width: 36 }}>
-          <input
-            type="checkbox"
-            checked={!!selected}
-            onChange={onToggle}
-            style={{ width: 16, height: 16, cursor: 'pointer' }}
-          />
-        </td>
-        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
-          {item.test_case?.key ?? '—'}
-        </td>
-        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
-          {item.test_case?.title ?? '—'}
-        </td>
-        <td style={tdStyle}>
-          <RunStatusPill status={item.status} />
-        </td>
-        <td style={tdStyle}>
-          <AssigneeCell scopeId={item.id} cycleId={cycleId} assignee={item.assignee ?? null} />
-        </td>
-        <td style={tdStyle}>
-          <DueDateCell scopeId={item.id} cycleId={cycleId} dueDate={item.due_date} />
-        </td>
-        <td style={tdStyle}>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {iconBtn('Log defect', '🐛', 'defect')}
-            {iconBtn('Comments', '📝', 'comments')}
-            {iconBtn('Evidence', '📎', 'evidence')}
-          </div>
-        </td>
-        <td style={tdStyle}>
-          <button
-            onClick={onRemove}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', padding: 4 }}
-            title="Remove from scope"
-          >
-            <Trash2 size={13} />
-          </button>
-        </td>
-      </tr>
-      {panel === 'defect' && <DefectPanel item={item} cycleId={cycleId} onClose={() => setPanel(null)} />}
-      {panel === 'comments' && <CommentsPanel item={item} onClose={() => setPanel(null)} />}
-      {panel === 'evidence' && <EvidencePanel item={item} onClose={() => setPanel(null)} />}
-    </>
   );
 }
 
@@ -572,6 +569,26 @@ function AssigneeCell({ scopeId, cycleId, assignee }: {
     setSaving(false);
     if (error) { catalystToast.error('Failed to assign'); return; }
     qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+    // G14 COL-005/COL-019: first real TestHub notification event — the
+    // registry event (test_cycle "tester_assigned") was defined but never
+    // fired anywhere (confirmed via grep before writing this). Written
+    // against the real `notifications` schema (recipient_user_id/
+    // notification_type/hub_source/entity_type/entity_id, all uuid/text as
+    // confirmed live) — NOT the pattern in workItemRepo.ts's addComment-
+    // adjacent notification insert, which uses column names
+    // (user_id/type/title/body/is_read) that don't exist on this table.
+    if (userId) {
+      const { data: { user: actor } } = await supabase.auth.getUser();
+      await supabase.from('notifications').insert({
+        recipient_user_id: userId,
+        actor_user_id: actor?.id ?? null,
+        notification_type: 'assigned',
+        entity_type: 'test_cycle_scope',
+        entity_id: scopeId,
+        hub_source: 'TestHub',
+        tab: 'direct',
+      } as any);
+    }
   }, [scopeId, cycleId, qc]);
 
   return (
@@ -805,19 +822,24 @@ function DefectPanel({ item, cycleId, onClose }: { item: TMCycleScope; cycleId: 
 }
 
 // ── Comments panel ──────────────────────────────────────────────────────────
-function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => void }) {
+// G14 COL-004: this used to key ONLY on the scope item's last run (entity_type
+// 'run'), so planning-phase discussion was impossible until the item had been
+// executed at least once (NO_RUN_MSG). Fixed: scope-level thread
+// (entity_type='cycle_scope', entity_id=item.id) is always available; the
+// run-level thread (entity_type='run') renders as a separate section below it
+// once a run exists — both streams shown, neither blocks the other.
+function CommentThreadBlock({ entityType, entityId, label }: { entityType: string; entityId: string; label: string }) {
   const qc = useQueryClient();
-  const runId = item.last_run_id;
+  const queryKey = ['scope-comments', entityType, entityId];
 
   const { data: comments = [], isLoading } = useQuery({
-    queryKey: ['scope-comments', runId],
-    enabled: !!runId,
+    queryKey,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_comments')
         .select('id, content, created_at, author:profiles!tm_comments_author_id_fkey(full_name)')
-        .eq('entity_type', 'run')
-        .eq('entity_id', runId!)
+        .eq('entity_type', entityType)
+        .eq('entity_id', entityId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data ?? [];
@@ -828,19 +850,19 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
   const [posting, setPosting] = useState(false);
 
   const handlePost = async () => {
-    if (!text.trim() || !runId) return;
+    if (!text.trim()) return;
     setPosting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { error } = await supabase.from('tm_comments').insert({
-        entity_type: 'run',
-        entity_id: runId,
+        entity_type: entityType,
+        entity_id: entityId,
         content: text.trim(),
         author_id: user.id,
       });
       if (error) throw error;
-      qc.invalidateQueries({ queryKey: ['scope-comments', runId] });
+      qc.invalidateQueries({ queryKey });
       setText('');
     } catch (e: unknown) {
       catalystToast.error(e instanceof Error ? e.message : 'Failed');
@@ -850,50 +872,59 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
   };
 
   return (
-    <RightPanel title="Comments" subtitle={item.test_case?.title ?? item.case_id} onClose={onClose}>
-      {!runId ? NO_RUN_MSG : (
-        <>
-          {isLoading ? <Spinner size="small" /> : comments.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
-              {comments.map((c: { id: string; content: string; created_at: string; author: { full_name: string } | null }) => (
-                <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle)', paddingBottom: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)' }}>
-                      {c.author?.full_name ?? 'Unknown'}
-                    </span>
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
-                      {new Date(c.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{c.content}</p>
-                </div>
-              ))}
+    <div style={{ marginBottom: 20 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', margin: '0 0 8px' }}>
+        {label}
+      </p>
+      {isLoading ? <Spinner size="small" /> : comments.length === 0 ? (
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+          {comments.map((c: { id: string; content: string; created_at: string; author: { full_name: string } | null }) => (
+            <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle)', paddingBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)' }}>
+                  {c.author?.full_name ?? 'Unknown'}
+                </span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+                  {new Date(c.created_at).toLocaleString()}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{c.content}</p>
             </div>
-          )}
-          <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
-            <Textarea
-              value={text}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
-              placeholder="Add a comment…"
-              minimumRows={3}
-            />
-            <button
-              onClick={handlePost}
-              disabled={!text.trim() || posting}
-              style={{
-                marginTop: 8, padding: '8px 14px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
-                cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
-                fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
-              }}
-            >
-              {posting ? 'Posting…' : 'Post comment'}
-            </button>
-          </div>
-        </>
+          ))}
+        </div>
       )}
+      <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
+        <Textarea
+          value={text}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
+          placeholder="Add a comment…"
+          minimumRows={3}
+        />
+        <button
+          onClick={handlePost}
+          disabled={!text.trim() || posting}
+          style={{
+            marginTop: 8, padding: '8px 12px', borderRadius: 4, border: 'none',
+            background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
+            cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
+          }}
+        >
+          {posting ? 'Posting…' : 'Post comment'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => void }) {
+  const runId = item.last_run_id;
+  return (
+    <RightPanel title="Comments" subtitle={item.test_case?.title ?? item.case_id} onClose={onClose}>
+      <CommentThreadBlock entityType="cycle_scope" entityId={item.id} label="Scope discussion" />
+      {runId && <CommentThreadBlock entityType="run" entityId={runId} label="Latest run" />}
     </RightPanel>
   );
 }

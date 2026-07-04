@@ -20,8 +20,8 @@ import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 import { HuddleFab } from "./HuddleFab";
-import { HuddleIncoming } from "./HuddleIncoming";
 import { HuddleWindow } from "./HuddleWindow";
+import { IncomingHuddleFab } from "@/components/chat/IncomingHuddleFab";
 import { HuddleAutoFilters } from "./HuddleAutoFilters";
 
 /**
@@ -879,8 +879,8 @@ function CatalystShellContent() {
         )}
       </div>
       <HuddleFab />
-      <HuddleIncoming />
       <HuddleWindow />
+      <IncomingHuddleFab />
       <HuddleAutoFilters />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}

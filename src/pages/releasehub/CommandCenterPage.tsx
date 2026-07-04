@@ -28,7 +28,7 @@ import { RH } from '@/constants/releasehub.design';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Heading from '@atlaskit/heading';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
@@ -248,7 +248,7 @@ export default function CommandCenterPage() {
             </div>
           ) : approvals.slice(0, 5).map((a: PendingApproval) => (
             <div key={a.id} style={rowStyleClickable()}>
-              <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="small" />
+              <CatalystAvatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="small" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.approverName ?? 'Unassigned'}</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.changeTitle ?? '—'}</p>

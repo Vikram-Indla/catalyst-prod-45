@@ -28,6 +28,7 @@ import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialo
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
 import { cloneTestCycle, fetchTestCycleSectionCounts, TEST_CYCLE_INCLUDE_CATALOG } from '@/lib/cloneTestCycle';
+import { TmCommentsSection } from '@/components/testhub/TmCommentsSection';
 
 /* Cycle lifecycle (TMCycle enum) → display + lozenge category. Zero-assumption:
    unknown status → null category, never a typed default. */
@@ -199,6 +200,13 @@ export default function CatalystViewTestCycle({
           <Description issue={pseudoIssue} saveOverride={handleDescriptionSave} />
         }
       />
+      {/* G14 COL-002: cycle detail had zero collaboration surface. */}
+      <div style={{ marginTop: 16, borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>
+          Comments
+        </p>
+        <TmCommentsSection entityType="cycle" entityId={itemId} />
+      </div>
     </div>
   );
 

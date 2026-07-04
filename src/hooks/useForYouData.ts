@@ -80,12 +80,17 @@ export interface WorkItem {
   assignee: WorkItemAssignee;
   reporter?: string;
   reporterAvatarUrl?: string;
-  issueType: string;
+  /** Null when the source row carries no issue type. CLAUDE.md zero-assumption
+   *  rule — never default to 'Task', render nothing instead. */
+  issueType: string | null;
   group: WorkGroup;
   starred?: boolean;
-  status: string;
-  priority: string;
-  priorityLevel: number;
+  /** Null when the source row carries no status. Never default to 'To Do'. */
+  status: string | null;
+  /** Null when the source row carries no priority. Never default to 'Medium'. */
+  priority: string | null;
+  /** Null when priority is null — do not render a priority indicator for it. */
+  priorityLevel: number | null;
   sprint?: string;
   storyPoints?: number;
   labels?: string[];
@@ -110,7 +115,9 @@ export interface RecommendedMention {
    */
   phCommentId: string | null;
   commentBody: string;
-  commentCreatedAt: string;
+  /** Null when the source comment row carries no real timestamp. Never
+   *  fabricate "now" — CLAUDE.md zero-assumption rule. */
+  commentCreatedAt: string | null;
   issueKey: string;
   issueId: string;
   issueSummary: string;
@@ -131,7 +138,9 @@ export interface RecommendedComment {
   /** UUID of matching ph_comments row — see RecommendedMention.phCommentId. */
   phCommentId: string | null;
   commentBody: string;
-  commentCreatedAt: string;
+  /** Null when the source comment row carries no real timestamp. Never
+   *  fabricate "now" — CLAUDE.md zero-assumption rule. */
+  commentCreatedAt: string | null;
   issueKey: string;
   issueId: string;
   issueSummary: string;
@@ -242,14 +251,15 @@ const HUB_LABEL_MAP: Record<HubType, string> = {
   StrategyHub: 'Strategy', PlanHub: 'Plan',
 };
 
-function priorityToLevel(priority: string): number {
-  const p = (priority || '').toLowerCase();
+function priorityToLevel(priority: string | null): number | null {
+  if (!priority) return null;
+  const p = priority.toLowerCase();
   if (p === 'lowest') return 1;
   if (p === 'low') return 2;
   if (p === 'medium') return 3;
   if (p === 'high') return 4;
   if (p === 'highest') return 5;
-  return 3;
+  return null;
 }
 
 // ─── Mapper functions ─────────────────────────────────────────────────────────
@@ -266,7 +276,7 @@ function mapPlannerTaskToIssueRow(row: any) {
     assignee_account_id: row.assignee_id,
     assignee_display_name: row.assignee_name || 'Unassigned',
     reporter_display_name: row.reporter_name || null,
-    priority: row.priority || 'Medium',
+    priority: row.priority ?? null,
     jira_updated_at: row.updated_at,
     jira_created_at: row.created_at || row.updated_at,
     parent_key: null,
@@ -296,7 +306,7 @@ function mapStoryToIssueRow(row: any, assigneeName: string, projectName: string,
     assignee_account_id: row.assignee_id,
     assignee_display_name: assigneeName,
     reporter_display_name: null,
-    priority: row.priority || 'Medium',
+    priority: row.priority ?? null,
     jira_updated_at: row.updated_at,
     jira_created_at: row.created_at || row.updated_at,
     parent_key: row.feature?.display_id || null,
@@ -326,7 +336,7 @@ function mapFeatureToIssueRow(row: any, assigneeName: string, projectName: strin
     assignee_account_id: row.assignee_id,
     assignee_display_name: assigneeName,
     reporter_display_name: null,
-    priority: row.priority || 'Medium',
+    priority: row.priority ?? null,
     jira_updated_at: row.updated_at,
     jira_created_at: row.created_at || row.updated_at,
     parent_key: row.epic?.epic_key || null,
@@ -386,7 +396,7 @@ function mapIncidentToIssueRow(row: any, assigneeName: string, projectName: stri
     assignee_account_id: row.assignee_id,
     assignee_display_name: assigneeName,
     reporter_display_name: row.reporter_name || null,
-    priority: row.priority || row.severity || 'Medium',
+    priority: row.priority || row.severity || null,
     jira_updated_at: row.updated_at,
     jira_created_at: row.created_at || row.updated_at,
     parent_key: null,
@@ -412,9 +422,9 @@ function mapIssueToWorkItem(
 ): WorkItem {
   const assigneeName = row.assignee_display_name || 'Unassigned';
   const projectKey = row.project_key || '';
-  const issueType = row.issue_type || 'Task';
-  const hub = inferHub(issueType, projectKey);
-  const priority = row.priority || 'Medium';
+  const issueType = row.issue_type ?? null;
+  const hub = inferHub(issueType ?? '', projectKey);
+  const priority = row.priority ?? null;
 
   let labels: string[] = [];
   if (Array.isArray(row.labels)) labels = row.labels;
@@ -450,8 +460,8 @@ function mapIssueToWorkItem(
     phIssueId: row.id || undefined,
     projectId: row.project_id || undefined,
     projectAvatarUrl: resolvedAvatar || undefined,
-    mode: inferMode(projectKey, issueType),
-    level: issueType,
+    mode: inferMode(projectKey, issueType ?? ''),
+    level: issueType ?? '',
     project: row.workstream_name || row.project_name || projectNameMap.get(projectKey) || projectKey,
     projectKey,
     projectName: row.project_name || projectNameMap.get(projectKey) || projectKey, // Jira project name for breadcrumb
@@ -460,7 +470,7 @@ function mapIssueToWorkItem(
     hub,
     hubLabel: HUB_LABEL_MAP[hub],
     issueType,
-    status: row.status || 'To Do',
+    status: row.status ?? null,
     statusCategory: row.status_category || undefined,
     priority,
     priorityLevel: priorityToLevel(priority),
@@ -851,7 +861,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       commentId: row.jira_comment_id,
       phCommentId: phCommentIdByJiraCommentId.get(row.jira_comment_id) ?? null,
       commentBody: row.body || '',
-      commentCreatedAt: row.jira_created_at || new Date().toISOString(),
+      commentCreatedAt: row.jira_created_at ?? null,
       issueKey: row.issue_key,
       issueId: issue?.id || row.issue_key,
       issueSummary: issue?.summary || row.issue_key,
@@ -922,7 +932,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
       commentId: row.jira_comment_id,
       phCommentId: phCommentIdByJiraCommentId.get(row.jira_comment_id) ?? null,
       commentBody: row.body || '',
-      commentCreatedAt: row.jira_created_at || new Date().toISOString(),
+      commentCreatedAt: row.jira_created_at ?? null,
       issueKey: row.issue_key,
       issueId: issue?.id || row.issue_key,
       issueSummary: issue?.summary || row.issue_key,

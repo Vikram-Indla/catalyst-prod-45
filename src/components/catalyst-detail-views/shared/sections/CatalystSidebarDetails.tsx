@@ -236,33 +236,10 @@ import {
   CatalystIRDemoApprovedDisplay,
 } from './CatalystReadOnlyCustomFields';
 
-/**
- * Normalize a ph_issues.issue_type string to a canonical bucket.
- * Mirrors resolveItemType() in CatalystDetailRouter.tsx — kept inline
- * to avoid pulling in the router (which lazy-imports every CatalystView*).
- *
- * Source of truth for the BAU-project mappings:
- *   defect   ← bug | defect | qa bug
- *   incident ← *incident* | production incident | business gap
- *   task     ← task
- *   feature  ← feature | new feature
- *   epic     ← epic
- */
-function normalizeIssueTypeBucket(raw: string | undefined | null):
-  | 'epic' | 'feature' | 'defect' | 'incident' | 'task'
-  | 'story' | 'subtask' | 'business_request' | null {
-  if (!raw) return null;
-  const t = raw.toLowerCase().trim();
-  if (t === 'epic') return 'epic';
-  if (t === 'feature' || t === 'new feature') return 'feature';
-  if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'defect';
-  if (t.includes('incident') || t === 'production incident' || t === 'business gap') return 'incident';
-  if (t === 'task') return 'task';
-  if (t === 'business request' || t === 'business_request' || t === 'demand') return 'business_request';
-  if (t === 'sub-task' || t === 'subtask' || t === 'backend' || t === 'frontend' || t === 'figma' || t === 'entity figma' || t === 'integration') return 'subtask';
-  if (t === 'story' || t === 'improvement') return 'story';
-  return null;
-}
+// normalizeIssueTypeBucket now lives in the shared normalization boundary
+// (src/lib/date-pulse/normalize.ts) so the date-pulse mappers reuse the exact
+// same Title-Case → bucket mapping. Imported below.
+import { normalizeIssueTypeBucket } from '@/lib/date-pulse/normalize';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';

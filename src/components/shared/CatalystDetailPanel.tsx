@@ -232,7 +232,7 @@ function PhIssuePanelBody({
 
   const issueKeyShown = issue?.issue_key || itemId;
   const projectName = (issue as any)?.project_name || projectKey;
-  const effectiveType = issue?.issue_type || itemType || typeIconLabel || 'Story';
+  const effectiveType = issue?.issue_type || itemType || typeIconLabel || null;
 
   // Attachments — mirror CatalystViewStory's source-aware fetch so
   // Catalyst-native items route to catalyst_attachments and Jira-synced
@@ -522,7 +522,7 @@ function PhIssuePanelBody({
                 storyKey={issue.issue_key}
                 storyId={issue.id}
                 projectKey={issue.project_key || projectKey || ''}
-                parentIssueType={issue.issue_type || effectiveType || 'Story'}
+                parentIssueType={issue.issue_type || effectiveType || undefined}
                 parentSummary={issue.summary || ''}
                 parentSource={workItemSource}
                 parentProjectId={projectId ?? null}
@@ -657,7 +657,7 @@ function TaskPanelBody({
   return (
     <>
       <ChromeRow
-        type={typeIconLabel || itemType || 'Task'}
+        type={typeIconLabel || itemType || undefined}
         onClose={onClose}
         onOpenFullPage={onOpenFullPage}
       />

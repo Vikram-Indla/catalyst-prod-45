@@ -2378,9 +2378,17 @@ function ClauseChip({
       {hover && (
         <span
           role="button"
+          tabIndex={0}
           aria-label="Remove clause"
           title="Remove clause"
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }
+          }}
           style={{
             display: 'inline-flex', alignItems: 'center',
             color: textSubtle, padding: 0, borderRadius: 3,

@@ -44,6 +44,7 @@ const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered)';
 
 import { sprintStatusToReleaseBucket, isSprintStatus, SPRINT_STATUS_LABEL, SPRINT_STATUS_TRANSITIONS, type SprintStatus } from '@/lib/sprints/sprintStatus';
 import { DefinitionOfDoneCard } from '@/components/sprints/DefinitionOfDoneCard';
+import { SprintEfficiencyCard } from '@/components/sprints/SprintEfficiencyCard';
 
 type DBStatus = 'planning' | 'in_progress' | 'released' | 'archived';
 const fromDBStatus = (s: string | null | undefined): ReleaseStatus => {
@@ -272,6 +273,10 @@ export function ReleaseSidePanel(props: Props) {
           per-type status catalogs (see DefinitionOfDoneCard header comment). */}
       {config.kind === 'sprint' && <DefinitionOfDoneCard sprintId={releaseId} />}
 
+      {/* Phase 3 Slice 4b: efficiency score — sprint-kind only, zero-assumption
+          gated (see SprintEfficiencyCard header comment). */}
+      {config.kind === 'sprint' && <SprintEfficiencyCard sprintId={releaseId} />}
+
       {/* ApproversCard is config-aware (ph_release_approvers vs
           ph_sprint_approvers, FK column, profile embed alias). entityStatus
           only matters for sprints (S2.2/2.3 approve/reject gating). */}
@@ -356,7 +361,7 @@ function ApproversCard({
   const approvers: Approver[] = useMemo(() => rows.map((r) => ({
     rowId: r.id,
     userId: r.user_id,
-    name: r.profile?.full_name || 'Unknown',
+    name: r.profile?.full_name || '—',
     avatarUrl: r.profile?.avatar_url ?? null,
     status: r.status,
     description: r.description ?? '',
@@ -962,7 +967,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
               >
                 <CatalystAvatar size="small" name={u.full_name || undefined} src={resolveAvatarUrl(u.full_name) ?? u.avatar_url ?? undefined} />
                 <span style={{ fontSize: 'var(--ds-font-size-400)', color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {u.full_name || 'Unknown'}
+                  {u.full_name || '—'}
                 </span>
               </button>
             );

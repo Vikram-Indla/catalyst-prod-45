@@ -76,7 +76,7 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess, confi
               Cancel
             </Button>
             <Button
-              appearance="primary"
+              appearance="danger"
               isDisabled={!canDelete || mutation.isPending}
               isLoading={mutation.isPending}
               onClick={() => mutation.mutate()}

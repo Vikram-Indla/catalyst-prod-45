@@ -178,7 +178,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                   <Archive className="w-4 h-4 mr-2 text-[var(--ds-text-subtle)]" />
                   Archive
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('delete')} className="text-red-600 hover:bg-red-50">
+                <DropdownMenuItem onClick={() => handleMenuAction('delete')} className="text-[var(--ds-text-danger)] hover:bg-[var(--ds-background-danger)]">
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>

@@ -20,6 +20,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCases, useUpdateTestCase, useDeleteTestCase, useCreateTestCase } from '@/hooks/test-management/useTestCases';
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
@@ -168,7 +169,10 @@ export function useTestCasesSource(): BacklogDataSource | null {
          BIZ_SOURCE row. Override returns 'Test Case' so JiraIssueTypeIcon
          resolves to the flask icon registered above. */
       resolveItemType: () => 'Test Case',
-      creatableTypes: ['Test Case'],
+      // CRE chokepoint (P1-S19, E4): TestHub owns 'Test Case' per Grid A
+      // (MODULE_OWNED_TYPES.TESTHUB) — route through the filter rather than
+      // hardcoding, so ownership drift is caught automatically.
+      creatableTypes: filterCreatableTypes(['Test Case'], 'TESTHUB'),
       defaultCreatableType: 'Test Case',
     };
   }, [

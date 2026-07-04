@@ -25,6 +25,7 @@ interface MemberRow {
   last_read_at: string | null;
   is_pinned: boolean | null;
   is_starred: boolean | null;
+  is_muted: boolean | null;
   chat_conversations: ConversationRow | ConversationRow[] | null;
 }
 
@@ -144,7 +145,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
     const { data: members, error } = await db
       .from('chat_conversation_members')
       .select(
-        `conversation_id, last_read_at, is_pinned, is_starred,
+        `conversation_id, last_read_at, is_pinned, is_starred, is_muted,
          chat_conversations:conversation_id (
            id, kind, ticket_key, project_key, title, description, is_archived, is_private,
            last_message_at, last_message_preview
@@ -217,6 +218,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         isPrivate: !!conv.is_private,
         isPinned: !!member.is_pinned,
         isStarred: !!member.is_starred,
+        isMuted: !!member.is_muted,
         lastMessageAt: conv.last_message_at ?? null,
         lastMessagePreview: conv.last_message_preview ?? null,
         unreadCount,

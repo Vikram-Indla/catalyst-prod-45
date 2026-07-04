@@ -200,7 +200,7 @@ function buildImproveDescriptionPrompt(
 }
 
 // Best-effort audit logger. Never throws — a logging failure must not fail
-// the request. Scoped to the deployed ai_governance_audit_log table.
+// the request. Scoped to the deployed ai_usage_log table.
 async function logGovernance(params: {
   admin_jwt: string | null;
   action: string;
@@ -213,7 +213,7 @@ async function logGovernance(params: {
     const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!url || !service) return;
     const sb = createClient(url, service, { auth: { persistSession: false } });
-    await sb.from("ai_governance_audit_log").insert({
+    await sb.from("ai_usage_log").insert({
       action: params.action,
       payload: params.payload,
       status: params.status,

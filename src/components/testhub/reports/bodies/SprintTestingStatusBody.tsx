@@ -15,6 +15,7 @@ import { Heading } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useReportPickerDefault, rememberReportPick, REPORTS_LAST_SPRINT_KEY } from '@/components/testhub/reports/useReportPickerDefault';
 import { useSprintTestingStatus } from '@/components/testhub/reports/hooks/useSprintTestingStatus';
+import { fetchAllSprintReleaseRows } from '@/components/testhub/reports/hooks/usePointsBurndown';
 import ReportExportMenu from '@/components/testhub/reports/ReportExportMenu';
 import ReportInsightCard from '@/components/testhub/reports/ReportInsightCard';
 import type { ExportColumn, ExportRow } from '@/components/testhub/reports/reportExportRows';
@@ -28,15 +29,45 @@ interface SprintOption {
   status: string | null;
 }
 
+/**
+ * Sprints that actually have work items (same rationale as PointsBurndownBody:
+ * ph_jira_sprints carries archived duplicates no issue references — a picker
+ * built from it can default to a scope-less sprint). Scope truth = the
+ * sprint_release JSONB; ph_jira_sprints only enriches status/order.
+ */
 function useSprints() {
   return useQuery({
-    queryKey: ['ph-jira-sprints-list'],
+    queryKey: ['ph-sprints-with-scope-status'],
     queryFn: async (): Promise<SprintOption[]> => {
-      const { data } = await supabase
-        .from('ph_jira_sprints')
-        .select('name, status, sort_order')
-        .order('sort_order', { ascending: true });
-      return (data ?? []).map((s: { name: string; status: string | null }) => ({ label: s.name, value: s.name, status: s.status }));
+      const [issues, { data: sprints }] = await Promise.all([
+        fetchAllSprintReleaseRows<{ sprint_release: unknown }>('sprint_release'),
+        supabase.from('ph_jira_sprints').select('name, status, sort_order').order('sort_order', { ascending: true }),
+      ]);
+      const counts = new Map<string, number>();
+      for (const row of issues) {
+        if (!Array.isArray(row.sprint_release)) continue;
+        for (const entry of row.sprint_release as { name?: string }[]) {
+          if (entry?.name) counts.set(entry.name, (counts.get(entry.name) ?? 0) + 1);
+        }
+      }
+      const meta = new Map(
+        ((sprints ?? []) as { name: string; status: string | null; sort_order: number | null }[])
+          .map((s, i) => [s.name, { status: s.status, order: s.sort_order ?? i }]),
+      );
+      return [...counts.entries()]
+        .map(([name, count]) => ({
+          label: `${name} (${count} items)`,
+          value: name,
+          status: meta.get(name)?.status ?? null,
+        }))
+        .sort((a, b) => {
+          const ao = meta.get(a.value)?.order;
+          const bo = meta.get(b.value)?.order;
+          if (ao !== undefined && bo !== undefined) return bo - ao; // recent sprints first
+          if (ao !== undefined) return -1;
+          if (bo !== undefined) return 1;
+          return b.value.localeCompare(a.value);
+        });
     },
     staleTime: 5 * 60 * 1000,
   });

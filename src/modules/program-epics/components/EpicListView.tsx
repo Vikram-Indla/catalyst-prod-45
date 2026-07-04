@@ -3,28 +3,28 @@
  * Jira-style list view for epics in Program Room, replicating work-hub ListView structure.
  * Uses canonical EpicDetailsPanel drawer when clicking an epic.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  Search, ChevronRight, ChevronDown, 
-  MessageSquare, Minus, ArrowUp, ArrowDown, ChevronsUp, ChevronsDown,
-  Settings2, GripVertical, Plus, MoreHorizontal, Square
+import {
+  Search, Settings2, Plus, MoreHorizontal, Square,
 } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { catalystToast } from '@/lib/catalystToast';
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
+import {
+  JiraTable,
+  makeStatusEditCellAkPopup,
+  type StatusOption,
+  type LozengeAppearance,
+  type Column,
+  type SortOrder,
+} from '@/components/shared/JiraTable';
 
 interface Epic {
   id: string;
@@ -44,78 +44,49 @@ interface Epic {
   end_date: string | null;
 }
 
-// State styles
-const stateStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'not_started': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'NOT STARTED' },
-  'in_progress': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'IN PROGRESS' },
-  'done': { bg: 'bg-green-100', text: 'text-green-800', label: 'DONE' },
-  'blocked': { bg: 'bg-red-100', text: 'text-red-700', label: 'BLOCKED' },
-  'cancelled': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-400', label: 'CANCELLED' },
+// State options wired into JiraTable's canonical status edit-popup cell.
+// appearance follows Atlaskit Lozenge's vocabulary (LozengeAppearance).
+const STATE_APPEARANCE: Record<string, LozengeAppearance> = {
+  'not_started': 'default',
+  'in_progress': 'inprogress',
+  'done': 'success',
+  'blocked': 'removed',
+  'cancelled': 'default',
 };
 
-const stateOptions = ['not_started', 'in_progress', 'done', 'blocked', 'cancelled'];
-
-// Health styles
-const healthStyles: Record<string, { bg: string; text: string }> = {
-  'green': { bg: 'bg-green-500', text: 'text-white' },
-  'yellow': { bg: 'bg-amber-500', text: 'text-white' },
-  'red': { bg: 'bg-red-500', text: 'text-white' },
+const STATE_LABELS: Record<string, string> = {
+  'not_started': 'NOT STARTED',
+  'in_progress': 'IN PROGRESS',
+  'done': 'DONE',
+  'blocked': 'BLOCKED',
+  'cancelled': 'CANCELLED',
 };
+
+const STATE_OPTIONS: StatusOption[] = Object.keys(STATE_LABELS).map((value) => ({
+  value,
+  label: STATE_LABELS[value],
+  appearance: STATE_APPEARANCE[value],
+}));
+
+// Health dot colors — ADS tokens only (no bare hex / Tailwind color utilities).
+const HEALTH_DOT_TOKEN: Record<string, string> = {
+  'green': token('color.icon.success', 'var(--ds-icon-success)'),
+  'yellow': token('color.icon.warning', 'var(--ds-icon-warning)'),
+  'red': token('color.icon.danger', 'var(--ds-icon-danger)'),
+};
+
+function HealthDot({ health }: { health: string | null }) {
+  const dot = HEALTH_DOT_TOKEN[health || 'green'] || HEALTH_DOT_TOKEN['green'];
+  return (
+    <span
+      style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: dot }}
+      title={health || 'green'}
+    />
+  );
+}
 
 type SortField = string;
 type SortDirection = 'asc' | 'desc';
-
-// Status lozenge
-function StateLozenge({ state, onStateChange }: { state: string | null; onStateChange: (state: string) => void }) {
-  const style = stateStyles[state || 'not_started'] || stateStyles['not_started'];
-  
-  return (
-    <Popover>
-      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1 rounded">
-          <span className={cn(
-            "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase cursor-pointer whitespace-nowrap",
-            style.bg, style.text
-          )}>
-            {style.label}
-          </span>
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-44 p-1 bg-popover border border-border shadow-lg" align="start">
-        <div className="flex flex-col">
-          {stateOptions.map((opt) => {
-            const optStyle = stateStyles[opt] || stateStyles['not_started'];
-            return (
-              <button
-                key={opt}
-                className={cn(
-                  "text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors",
-                  state === opt && "bg-muted"
-                )}
-                onClick={() => onStateChange(opt)}
-              >
-                <span className={cn(
-                  "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase",
-                  optStyle.bg, optStyle.text
-                )}>
-                  {optStyle.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-// Health dot
-function HealthDot({ health }: { health: string | null }) {
-  const style = healthStyles[health || 'green'] || healthStyles['green'];
-  return (
-    <span className={cn("inline-block w-3 h-3 rounded-full", style.bg)} title={health || 'green'} />
-  );
-}
 
 interface EpicListViewProps {
   programId?: string;
@@ -127,7 +98,6 @@ export function EpicListView({ programId }: EpicListViewProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null);
   const queryClient = useQueryClient();
 
@@ -205,34 +175,6 @@ export function EpicListView({ programId }: EpicListViewProps) {
     }
   }, [epicIdFromUrl, epics, searchParams, setSearchParams]);
 
-  const handleSort = (field: SortField, direction: SortDirection) => {
-    setSortField(field);
-    setSortDirection(direction);
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedItems(new Set(epics.map(item => item.id)));
-    } else {
-      setSelectedItems(new Set());
-    }
-  };
-
-  const handleSelectItem = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedItems);
-    if (checked) {
-      newSelected.add(id);
-    } else {
-      newSelected.delete(id);
-    }
-    setSelectedItems(newSelected);
-  };
-
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    catalystToast.success(`Epic reordered`);
-  };
-
   const handleRowClick = (epic: Epic) => {
     setSelectedEpic(epic);
   };
@@ -251,7 +193,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
     (item.epic_key || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const sortedItems = sortField 
+  const sortedItems = sortField
     ? [...filteredItems].sort((a, b) => {
         const aValue = (a as any)[sortField];
         const bValue = (b as any)[sortField];
@@ -264,37 +206,102 @@ export function EpicListView({ programId }: EpicListViewProps) {
       })
     : filteredItems;
 
-  const getAvatarColor = (name: string) => {
-    // Catalyst V5 avatar colors (Blue, Teal, Gray only)
-    const colors = ['bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]', 'bg-[var(--ds-icon-information)]', 'bg-[var(--ds-text-subtlest)]'];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
+  const columns: Column<Epic>[] = useMemo(() => [
+    {
+      id: 'epic_key',
+      label: 'Epic Number',
+      width: 12,
+      sortable: true,
+      alwaysVisible: true,
+      accessor: (row) => row.epic_key,
+      cell: ({ row }) => (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Square style={{ height: 16, width: 16, color: token('color.text.brand', 'var(--ds-text-brand)') }} />
+          <span
+            style={{
+              color: token('color.text.brand', 'var(--ds-text-brand)'),
+              fontWeight: 500,
+              fontFamily: 'monospace',
+              fontSize: 13,
+            }}
+          >
+            {row.epic_key || '—'}
+          </span>
+        </span>
+      ),
+    },
+    {
+      id: 'name',
+      label: 'Name',
+      flex: true,
+      sortable: true,
+      alwaysVisible: true,
+      accessor: (row) => row.name,
+      cell: ({ row }) => (
+        <span style={{ color: token('color.text', 'var(--ds-text)') }}>{row.name}</span>
+      ),
+    },
+    {
+      id: 'state',
+      label: 'State',
+      width: 16,
+      sortable: true,
+      accessor: (row) => row.state,
+      cell: makeStatusEditCellAkPopup<Epic>({
+        getStatus: (row) => row.state,
+        appearanceFor: (s) => STATE_APPEARANCE[s || 'not_started'] || 'default',
+        labelFor: (s) => STATE_LABELS[s || 'not_started'] || (s ?? '—'),
+        options: STATE_OPTIONS,
+        lockWhenDone: false,
+        onChange: (row, next) => updateStateMutation.mutate({ epicId: row.id, state: next }),
+      }),
+    },
+    {
+      id: 'health',
+      label: 'Health',
+      width: 8,
+      accessor: (row) => row.health,
+      cell: ({ row }) => <HealthDot health={row.health} />,
+    },
+    {
+      id: 'points_estimate',
+      label: 'Estimate',
+      width: 10,
+      sortable: true,
+      accessor: (row) => row.points_estimate,
+      cell: ({ row }) => (
+        <span style={{ color: token('color.text', 'var(--ds-text)') }}>
+          {row.points_estimate ? `${row.points_estimate} pts` : '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'start_date',
+      label: 'Start Date',
+      width: 12,
+      sortable: true,
+      accessor: (row) => row.start_date,
+      cell: ({ row }) => (
+        <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle)'), fontSize: 13 }}>
+          {formatDate(row.start_date)}
+        </span>
+      ),
+    },
+    {
+      id: 'end_date',
+      label: 'End Date',
+      width: 12,
+      sortable: true,
+      accessor: (row) => row.end_date,
+      cell: ({ row }) => (
+        <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle)'), fontSize: 13 }}>
+          {formatDate(row.end_date)}
+        </span>
+      ),
+    },
+  ], [updateStateMutation]);
 
-  // Table header cell component
-  const TableHeader = ({ children, className }: { children?: React.ReactNode; className?: string }) => (
-    <th 
-      scope="col"
-      className={cn(
-        "px-3 py-2 text-left text-xs font-medium text-muted-foreground bg-muted/50 border-b border-r border-border last:border-r-0 whitespace-nowrap",
-        className
-      )}
-    >
-      {children}
-    </th>
-  );
-
-  // Table cell component
-  const TableCell = ({ children, className, onClick }: { children?: React.ReactNode; className?: string; onClick?: (e: React.MouseEvent) => void }) => (
-    <td 
-      className={cn(
-        "px-3 py-2.5 text-sm text-foreground border-b border-r border-border last:border-r-0",
-        className
-      )}
-      onClick={onClick}
-    >
-      {children}
-    </td>
-  );
+  const sortOrder: SortOrder = sortDirection === 'asc' ? 'ASC' : 'DESC';
 
   return (
     <div className="h-full flex bg-background" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}>
@@ -328,137 +335,30 @@ export function EpicListView({ programId }: EpicListViewProps) {
           <div className="h-full flex flex-col rounded-lg border border-border bg-card overflow-hidden">
             {/* Table container with horizontal scroll */}
             <div className="flex-1 overflow-auto">
-              <table className="w-full border-collapse" style={{ minWidth: '900px' }}>
-                <thead className="sticky top-0 z-10">
-                  <tr>
-                    {/* Checkbox column */}
-                    <th scope="col" className="w-10 px-2 py-2 bg-muted/50 border-b border-r border-border text-center">
-                      <div className="flex justify-center">
-                        <Checkbox
-                          checked={selectedItems.size === epics.length && epics.length > 0}
-                          onCheckedChange={handleSelectAll}
-                          className="rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
-                        />
-                      </div>
-                    </th>
-                    <TableHeader className="w-24">Epic Number</TableHeader>
-                    <TableHeader className="min-w-[280px]">Name</TableHeader>
-                    <TableHeader className="w-36">State</TableHeader>
-                    <TableHeader className="w-20">Health</TableHeader>
-                    <TableHeader className="w-24">Estimate</TableHeader>
-                    <TableHeader className="w-28">Start Date</TableHeader>
-                    <TableHeader className="w-28">End Date</TableHeader>
-                    <th scope="col" className="w-10 px-2 py-2 bg-muted/50 border-b border-border" />
-                  </tr>
-                </thead>
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="epics-list">
-                    {(provided) => (
-                      <tbody ref={provided.innerRef} {...provided.droppableProps}>
-                        {sortedItems.map((epic, index) => {
-                          const isHovered = hoveredRow === epic.id;
-                          const isSelected = selectedItems.has(epic.id);
-                          const isDetailOpen = selectedEpic?.id === epic.id;
-                          
-                          return (
-                            <Draggable key={epic.id} draggableId={epic.id} index={index}>
-                              {(provided, snapshot) => (
-                                <tr
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  className={cn(
-                                    "transition-colors cursor-pointer",
-                                    isHovered && !isSelected && !isDetailOpen && "bg-muted/50",
-                                    isSelected && "bg-[var(--row-selected)]",
-                                    isDetailOpen && "bg-[var(--row-selected)]",
-                                    snapshot.isDragging && "bg-[var(--row-active)] shadow-lg"
-                                  )}
-                                  onClick={() => handleRowClick(epic)}
-                                  onMouseEnter={() => setHoveredRow(epic.id)}
-                                  onMouseLeave={() => setHoveredRow(null)}
-                                >
-                                  {/* Checkbox + drag handle */}
-                                  <TableCell className="w-10 px-2 text-center" onClick={(e) => e.stopPropagation()}>
-                                    <div className="flex items-center justify-center gap-0.5">
-                                      <div
-                                        {...provided.dragHandleProps}
-                                        className={cn(
-                                          "cursor-grab active:cursor-grabbing",
-                                          !isHovered && !snapshot.isDragging && "opacity-0"
-                                        )}
-                                      >
-                                        <GripVertical className="h-4 w-4 text-muted-foreground" />
-                                      </div>
-                                      <Checkbox
-                                        checked={isSelected}
-                                        onCheckedChange={(checked) => handleSelectItem(epic.id, !!checked)}
-                                        className="rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
-                                      />
-                                    </div>
-                                  </TableCell>
-                                  
-                                  {/* Epic Number */}
-                                  <TableCell className="w-24">
-                                    <div className="flex items-center gap-1.5">
-                                      <Square className="h-4 w-4 text-brand-primary" />
-                                      <span className="text-brand-primary font-medium font-mono text-[13px]">
-                                        {epic.epic_key || '—'}
-                                      </span>
-                                    </div>
-                                  </TableCell>
-                                  
-                                  {/* Name */}
-                                  <TableCell className="min-w-[280px]">
-                                    <span className="text-foreground">{epic.name}</span>
-                                  </TableCell>
-                                  
-                                  {/* State */}
-                                  <TableCell className="w-36" onClick={(e) => e.stopPropagation()}>
-                                    <StateLozenge 
-                                      state={epic.state} 
-                                      onStateChange={(state) => updateStateMutation.mutate({ epicId: epic.id, state })} 
-                                    />
-                                  </TableCell>
-                                  
-                                  {/* Health */}
-                                  <TableCell className="w-20">
-                                    <HealthDot health={epic.health} />
-                                  </TableCell>
-                                  
-                                  {/* Estimate */}
-                                  <TableCell className="w-24">
-                                    {epic.points_estimate ? `${epic.points_estimate} pts` : '—'}
-                                  </TableCell>
-                                  
-                                  {/* Start Date */}
-                                  <TableCell className="w-28 text-muted-foreground text-[13px]">
-                                    {formatDate(epic.start_date)}
-                                  </TableCell>
-                                  
-                                  {/* End Date */}
-                                  <TableCell className="w-28 text-muted-foreground text-[13px]">
-                                    {formatDate(epic.end_date)}
-                                  </TableCell>
-                                  
-                                  {/* Actions */}
-                                  <TableCell className="w-10" />
-                                </tr>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
-                      </tbody>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              </table>
+              <JiraTable<Epic>
+                columns={columns}
+                data={sortedItems}
+                getRowId={(row) => row.id}
+                onRowClick={handleRowClick}
+                selectable
+                selection={selectedItems}
+                onSelectionChange={setSelectedItems}
+                sortKey={sortField ?? undefined}
+                sortOrder={sortOrder}
+                onSortChange={(key, order) => {
+                  setSortField(key);
+                  setSortDirection(order === 'ASC' ? 'asc' : 'desc');
+                }}
+                showRowCount={false}
+                density="compact"
+                ariaLabel="Program epics"
+              />
             </div>
 
             {/* Footer inside card */}
             <div className="border-t border-border flex items-center justify-between px-4 py-2 bg-card flex-shrink-0">
               <span className="text-sm text-muted-foreground">
-                {selectedItems.size > 0 
+                {selectedItems.size > 0
                   ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`
                   : `Showing ${sortedItems.length} of ${epics.length} epics`
                 }

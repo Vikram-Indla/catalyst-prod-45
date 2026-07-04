@@ -217,7 +217,7 @@ export default function ReleaseConfidenceWidget({
                   style={{
                     ...H_NUM,
                     lineHeight: 1.1,
-                    color: cell.accent ?? token('color.text', '#292A2E'),
+                    color: cell.accent ?? token('color.text'),
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >

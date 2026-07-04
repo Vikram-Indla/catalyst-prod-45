@@ -24,6 +24,10 @@ import { AddPeopleModal } from './AddPeopleModal';
 import { RosterPanel } from './RosterPanel';
 import { PinnedMessagesPanel } from './PinnedMessagesPanel';
 import ProjectIcon from '@/components/shared/ProjectIcon';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+
+const memberDb = supabase as unknown as { from: (t: string) => any };
 
 export interface ConversationHeaderProps {
   conversation: ChatConversation | null;
@@ -98,6 +102,23 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
   const leave = useChatLeave();
   const markRead = useChatMarkRead();
   const setNotifPref = useChatSetNotificationPref();
+  const { user } = useAuth();
+
+  // Ticket conversations are viewable without joining, so a viewer often has no
+  // chat_conversation_members row. That makes the header's member-scoped actions
+  // (notification pref, mute, star, archive, leave) update ZERO rows — they look
+  // broken. Ensure the viewer has a member row on open so those actions apply.
+  useEffect(() => {
+    if (!conversation || !user?.id) return;
+    if (conversation.kind !== 'ticket') return;
+    void memberDb
+      .from('chat_conversation_members')
+      .upsert(
+        { conversation_id: conversation.id, user_id: user.id, role: 'member' },
+        { onConflict: 'conversation_id,user_id', ignoreDuplicates: true },
+      )
+      .then(() => { /* best-effort */ });
+  }, [conversation?.id, conversation?.kind, user?.id]);
 
   // Self-rolled click-outside for the kebab menu. The previous
   // @atlaskit/dropdown-menu lost positioning when mounted inside the
@@ -307,9 +328,10 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             <line x1="1" y1="1" x2="23" y2="23" />
           </svg>
         ) : (
-          /* Filled bell = notifications on */
-          <svg viewBox="0 0 24 24" width={16} height={16} fill="currentColor" stroke="none">
-            <path d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 0 1-3.46 0H13.73z" />
+          /* Outline bell = notifications on */
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
         )}
       </button>

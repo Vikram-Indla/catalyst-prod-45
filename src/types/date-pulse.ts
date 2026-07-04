@@ -42,9 +42,13 @@ export type ViolationSeverity = 'advisory' | 'warning' | 'critical';
 export type RuleCategory = 'missing' | 'conflict' | 'scope_creep' | 'status' | 'alignment';
 
 /**
- * Work item type for violation tracking
+ * Work item type for violation tracking.
+ * Aliased to the canonical normalization bucket so the engines and the
+ * normalization boundary share one vocabulary (no casing casts).
  */
-export type WorkItemType = 'story' | 'defect' | 'task' | 'epic' | 'incident' | null;
+export type { IssueTypeBucket, WorkStatusBucket } from '@/lib/date-pulse/normalize';
+import type { IssueTypeBucket, WorkStatusBucket } from '@/lib/date-pulse/normalize';
+export type WorkItemType = IssueTypeBucket;
 
 /**
  * Individual date pulse violation
@@ -300,9 +304,17 @@ export interface BusinessRequest {
 export interface WorkItem {
   id: string;
   issue_key: string;
-  issue_type: string;
+  /** Normalized lowercase bucket (see normalizeIssueTypeBucket). Null when the
+   *  source row carries no / an unrecognized issue type. Never default to
+   *  'Story' (CLAUDE.md zero-assumption rule). */
+  issue_type: WorkItemType;
   project_key: string;
-  status: string;
+  /** Normalized lowercase bucket (see normalizeWorkStatus): the engines compare
+   *  against these, NOT the Title-Case display string. Null when the source row
+   *  carries no / an unrecognized status — treated as "unscorable" by
+   *  HealthStatusEngine (excluded from in-progress/done/blocked bucketing
+   *  rather than assumed to be 'todo', CLAUDE.md zero-assumption rule). */
+  status: WorkStatusBucket;
   due_date: string | null;
   severity?: string;
   parent_key?: string | null;

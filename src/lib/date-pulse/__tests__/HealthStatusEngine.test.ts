@@ -1,6 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { computeHealthStatus } from '../HealthStatusEngine';
 import type { BusinessRequest, WorkItem, DatePulseViolation } from '@/types/date-pulse';
+
+// Pin "now" so deadline-relative states (At Risk) evaluate deterministically.
+const NOW = '2026-06-15T12:00:00Z';
+const daysFromNow = (n: number) =>
+  new Date(Date.parse(NOW) + n * 86_400_000).toISOString().split('T')[0];
+beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date(NOW)); });
+afterEach(() => { vi.useRealTimers(); });
 
 const BASE_BR: BusinessRequest = {
   id: 'br-uuid-1',
@@ -46,6 +53,12 @@ const WARNING_VIOLATION: DatePulseViolation = {
 
 const CRITICAL_VIOLATION: DatePulseViolation = { ...WARNING_VIOLATION, id: 'v2', severity: 'critical', rule_id: 'B1' };
 
+// At Risk fires when an expectation is set and a deadline is near (<14 days),
+// but no work has left the backlog (no delivery engagement). A dated backlog
+// item satisfies "has dates" without counting as in-progress.
+const NEAR_BR: BusinessRequest = { ...BASE_BR, end_date: daysFromNow(7) };
+const BACKLOG_DATED_WORK: WorkItem = { ...IN_PROGRESS_WORK, status: 'backlog', due_date: daysFromNow(5) };
+
 // ── 7 State Tests ─────────────────────────────────────────────────────────────
 
 describe('HealthStatusEngine — 7 states', () => {
@@ -69,9 +82,11 @@ describe('HealthStatusEngine — 7 states', () => {
   });
 
   describe('Committed', () => {
-    it('returns Committed when work linked with dates and no violations', () => {
+    it('surfaces a committed BR (work + dates + no violations) as On Track', () => {
+      // 'Committed' is an internal base state; the engine surfaces it as
+      // 'On Track' when there are no violations, 'Delayed' when there are.
       const status = computeHealthStatus(BASE_BR, [IN_PROGRESS_WORK], []);
-      expect(status).toBe('Committed');
+      expect(status).toBe('On Track');
     });
   });
 
@@ -91,8 +106,8 @@ describe('HealthStatusEngine — 7 states', () => {
   });
 
   describe('At Risk', () => {
-    it('returns At Risk when there are critical violations', () => {
-      const status = computeHealthStatus(BASE_BR, [IN_PROGRESS_WORK], [CRITICAL_VIOLATION]);
+    it('returns At Risk when deadline is near and no work has started', () => {
+      const status = computeHealthStatus(NEAR_BR, [BACKLOG_DATED_WORK], []);
       expect(status).toBe('At Risk');
     });
   });
@@ -133,7 +148,9 @@ describe('HealthStatusEngine — priority ordering', () => {
   });
 
   it('At Risk takes priority over Delayed', () => {
-    const status = computeHealthStatus(BASE_BR, [IN_PROGRESS_WORK], [CRITICAL_VIOLATION, WARNING_VIOLATION]);
+    // Near deadline + no engagement → At Risk (step 5) wins over the
+    // violations that would otherwise yield Delayed (step 7).
+    const status = computeHealthStatus(NEAR_BR, [BACKLOG_DATED_WORK], [CRITICAL_VIOLATION, WARNING_VIOLATION]);
     expect(status).toBe('At Risk');
   });
 });

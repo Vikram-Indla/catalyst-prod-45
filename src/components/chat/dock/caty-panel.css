@@ -51,7 +51,7 @@
 }
 
 .cp-assistant-trigger__label {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   color: var(--ds-text);
   white-space: nowrap;
@@ -60,7 +60,7 @@
 }
 
 .cp-assistant-trigger__sub {
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   font-weight: 400;
   color: var(--ds-text-subtle);
   white-space: nowrap;
@@ -118,7 +118,7 @@
 
 /* "How can I help, Vikram?" */
 .cp-greeting {
-  font-size: 20px;
+  font: var(--ds-font-heading-medium);
   font-weight: 700;
   color: var(--ds-text);
   text-align: center;
@@ -168,7 +168,7 @@
   display: inline-block;
   background: var(--ds-background-accent-purple-bold);
   color: var(--ds-text-inverse);
-  font-size: 9px;
+  font: var(--ds-font-body-small);
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -179,7 +179,7 @@
 }
 
 .cp-potd__text {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 400;
   color: var(--ds-text);
   line-height: 1.4;
@@ -223,7 +223,7 @@
 }
 
 .cp-suggestion__text {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 400;
   color: var(--ds-text);
   line-height: 1.4;
@@ -261,7 +261,7 @@
   color: var(--ds-text-inverse);
   padding: 8px 12px;
   border-radius: 16px 16px 4px 16px;
-  font-size: 14px;
+  font: var(--ds-font-body);
   font-weight: 400;
   line-height: 1.5;
   word-break: break-word;
@@ -283,7 +283,7 @@
 }
 
 .cp-msg__bubble--ai {
-  font-size: 14px;
+  font: var(--ds-font-body);
   font-weight: 400;
   color: var(--ds-text);
   line-height: 1.6;
@@ -340,14 +340,14 @@
 }
 
 .cp-story-card__title {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   color: var(--ds-text);
   margin-bottom: 4px;
 }
 
 .cp-story-card__body {
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
   line-height: 1.4;
   margin-bottom: 8px;
@@ -367,7 +367,7 @@
   color: var(--ds-text-inverse);
   border: none;
   border-radius: 4px;
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   cursor: pointer;
   width: 100%;
@@ -391,13 +391,13 @@
 }
 
 .cp-epic-prompt__label {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   color: var(--ds-text);
 }
 
 .cp-epic-prompt__hint {
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
 }
 
@@ -411,7 +411,7 @@
   border: 1px solid var(--ds-border);
   border-radius: 4px;
   padding: 4px 10px;
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   background: var(--ds-surface);
   color: var(--ds-text);
   outline: none;
@@ -432,7 +432,7 @@
   color: var(--ds-text-inverse);
   border: none;
   border-radius: 4px;
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   cursor: pointer;
   flex: 0 0 auto;
@@ -473,7 +473,7 @@
   outline: none;
   background: transparent;
   resize: none;
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-family: inherit;
   color: var(--ds-text);
   line-height: 1.5;
@@ -528,7 +528,7 @@
 /* Footer trust line */
 .cp-footer {
   text-align: center;
-  font-size: 11px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtlest);
   padding: 0 12px 10px;
   line-height: 1.4;
@@ -548,18 +548,18 @@
 }
 
 .cp-locked__icon {
-  font-size: 32px;
+  font: var(--ds-font-heading-xxlarge);
   color: var(--ds-text-subtlest);
 }
 
 .cp-locked__title {
-  font-size: 14px;
+  font: var(--ds-font-body);
   font-weight: 600;
   color: var(--ds-text);
 }
 
 .cp-locked__body {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
   line-height: 1.5;
 }
@@ -600,7 +600,7 @@
 }
 
 .cp-thinking__title {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 400;
   color: var(--ds-text-subtle);
   flex: 1;
@@ -673,14 +673,14 @@
 }
 
 .cp-step__title {
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   font-weight: 400;
   color: var(--ds-text);
   line-height: 1.4;
 }
 
 .cp-step__sub {
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
   line-height: 1.4;
   white-space: nowrap;
@@ -693,7 +693,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
   background: transparent;
   border: none;
@@ -715,7 +715,7 @@
 
 /* ── Structured response renderer ─────────────────────────── */
 .cp-ai-content {
-  font-size: 14px;
+  font: var(--ds-font-body);
   color: var(--ds-text);
   line-height: 1.6;
 }
@@ -761,12 +761,12 @@
 .cp-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font: var(--ds-font-body-small);
 }
 
 .cp-table thead th {
   background: var(--ds-background-neutral-subtle);
-  font-size: 11px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   color: var(--ds-text-subtle);
   text-align: left;
@@ -805,7 +805,7 @@
   /* ads-scanner:ignore-next-line */
   border-top: 0px solid var(--ds-border);
   flex: 0 0 auto;
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text-subtle);
 }
 
@@ -827,7 +827,7 @@
   border: 1px solid var(--ds-border);
   border-radius: 4px;
   padding: 0px 6px;
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   font-weight: 500;
   color: var(--ds-link);
   flex: 1;
@@ -896,7 +896,7 @@
 }
 
 .cp-view-menu__header {
-  font-size: 12px;
+  font: var(--ds-font-body-small);
   font-weight: 600;
   color: var(--ds-text-subtle);
   padding: 4px 8px 8px;
@@ -912,7 +912,7 @@
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 13px;
+  font: var(--ds-font-body-small);
   color: var(--ds-text);
   text-align: left;
 }
@@ -954,7 +954,7 @@
   border-radius: 10px;
   background: var(--ds-background-neutral);
   color: var(--ds-text-subtle);
-  font-size: 11px;
+  font: var(--ds-font-body-small);
   font-weight: 500;
   flex: 0 0 auto;
 }

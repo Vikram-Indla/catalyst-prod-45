@@ -5,6 +5,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
+import type { IncidentStatus } from '@/types/incident';
+import { computeSlaBreachState } from '@/utils/incidentSla';
 
 // ============================================
 // TYPES
@@ -67,10 +69,13 @@ export function useHomeOperationsSummary(userId?: string) {
 
       if (incidentsError) throw incidentsError;
 
-      // Fetch SLA records
+      // Fetch SLA records. Include *_met_at — breach is computed live via the
+      // authoritative logic (see src/utils/incidentSla.ts), NOT read from the
+      // *_breached flags (which default false until *_met_at is stamped and so
+      // under-report live breaches).
       const { data: slaRecords, error: slaError } = await supabase
         .from('sla_records')
-        .select('incident_id, response_breached, resolution_breached, response_due_at, resolution_due_at');
+        .select('incident_id, response_breached, resolution_breached, response_due_at, response_met_at, resolution_due_at, resolution_met_at');
 
       if (slaError) throw slaError;
 
@@ -91,15 +96,21 @@ export function useHomeOperationsSummary(userId?: string) {
         i.is_major_incident || i.severity === 'SEV1' || i.severity === 'SEV2'
       );
       
-      // SLA breaches
-      const breachedCount = slaList.filter(sla => 
-        sla.response_breached === true || sla.resolution_breached === true
-      ).length;
+      // SLA breaches — live breach state per the authoritative computation,
+      // scoped to each incident's status (terminal incidents are not "live
+      // breaching"). See src/utils/incidentSla.ts.
+      const statusByIncidentId = new Map<string, IncidentStatus>(
+        incidentList.map(i => [i.id, i.status as IncidentStatus]),
+      );
+      const isBreaching = (sla: (typeof slaList)[number]) =>
+        computeSlaBreachState(sla, statusByIncidentId.get(sla.incident_id))?.anyBreaching ?? false;
 
-      // At risk (due within 4 hours)
+      const breachedCount = slaList.filter(isBreaching).length;
+
+      // At risk (not breaching, resolution due within 4 hours)
       const now = new Date();
       const atRiskCount = slaList.filter(sla => {
-        if (sla.response_breached || sla.resolution_breached) return false;
+        if (isBreaching(sla)) return false;
         const dueAt = sla.resolution_due_at ? new Date(sla.resolution_due_at) : null;
         if (!dueAt) return false;
         const hoursUntilDue = (dueAt.getTime() - now.getTime()) / (1000 * 60 * 60);

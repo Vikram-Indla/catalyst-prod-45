@@ -146,7 +146,7 @@ function useR360ProfileWorkItems(resourceId: string) {
           id: item.issue_key,
           item_key: item.issue_key,
           title: item.summary || '',
-          work_item_type: item.issue_type || 'Task',
+          work_item_type: item.issue_type ?? null,
           status: item.status,
           status_category: st.category,
           source_hub: (item.project_key || '').toLowerCase().includes('inc') ? 'incident' : 'BAU',

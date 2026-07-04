@@ -244,6 +244,9 @@ export interface TMCycleScope {
   last_run_id: string | null;
   last_run_at: string | null;
   created_at: string;
+  /** tm_test_cases.version pinned at scope-add time (P1-S2). Null for scope
+   * rows added before this column existed — runner falls back to live steps. */
+  locked_version: number | null;
   test_case?: TMTestCase;
   assignee?: { id: string; full_name: string; avatar_url?: string };
   last_run?: TMRun;
@@ -417,6 +420,8 @@ export interface CreateDefectInput {
   due_date?: string;
   parent_key?: string;
   sprint?: string;
+  /** ph_jira_sprints.id — canonical FK, write alongside `sprint` (DEF-012, dual-write window). */
+  sprint_id?: string;
   assigned_to?: string;
   case_id?: string;
   run_id?: string;

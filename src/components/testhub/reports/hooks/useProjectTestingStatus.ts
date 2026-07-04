@@ -71,18 +71,20 @@ export function useProjectTestingStatus(projectId?: string, projectName?: string
       );
 
       // 2) Covered story keys (test side) — requirement links for this project's cases
-      const { data: linkData } = await supabase
+      const { data: linkData, error: linkError } = await supabase
         .from('tm_requirement_links')
         .select('external_key, tm_test_cases!inner(project_id)')
         .eq('requirement_type', 'story')
         .eq('tm_test_cases.project_id', projectId!);
+      if (linkError) throw linkError;
       const coveredKeys = new Set<string>((linkData ?? []).map((l: { external_key: string }) => l.external_key));
 
       // 3) Execution distribution
-      const { data: scopeData } = await supabase
+      const { data: scopeData, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select('current_status, tm_test_cases!inner(project_id)')
         .eq('tm_test_cases.project_id', projectId!);
+      if (scopeError) throw scopeError;
       const exec: ExecBreakdown = { ...EMPTY_EXEC };
       for (const s of scopeData ?? []) {
         const k = (s as { current_status: string }).current_status as keyof ExecBreakdown;
@@ -91,11 +93,12 @@ export function useProjectTestingStatus(projectId?: string, projectName?: string
       }
 
       // 4) Governance mismatches: failed test on a story whose status_category = 'Done'
-      const { data: failedData } = await supabase
+      const { data: failedData, error: failedError } = await supabase
         .from('tm_cycle_scope')
         .select('current_status, tm_test_cases!inner(case_key, project_id, tm_requirement_links(external_key, requirement_type))')
         .eq('tm_test_cases.project_id', projectId!)
         .eq('current_status', 'failed');
+      if (failedError) throw failedError;
       const storyByKey = new Map(stories.map((s) => [s.issue_key, s]));
       const mismatches: MismatchRow[] = [];
       for (const row of failedData ?? []) {
@@ -120,12 +123,15 @@ export function useProjectTestingStatus(projectId?: string, projectName?: string
       const qaBugs = await supabase
         .from('ph_issues').select('issue_key', { count: 'exact', head: true })
         .eq('project_name', projectName!).eq('issue_type', 'QA Bug');
+      if (qaBugs.error) throw qaBugs.error;
       const incidents = await supabase
         .from('ph_issues').select('issue_key', { count: 'exact', head: true })
         .eq('project_name', projectName!).eq('issue_type', 'Production Incident');
+      if (incidents.error) throw incidents.error;
       const tmDefects = await supabase
         .from('tm_defects').select('id', { count: 'exact', head: true })
         .eq('project_id', projectId!);
+      if (tmDefects.error) throw tmDefects.error;
 
       const totalStories = stories.length;
       const coveredStories = stories.filter((s) => coveredKeys.has(s.issue_key)).length;

@@ -547,7 +547,7 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
-                fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', '#97A0AF'),
+                fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest'),
                 fontStyle: 'italic',
               }}
             >
@@ -808,9 +808,18 @@ function MultiSelectGeneric({
               {labelMap.get(v) ?? v}
               <span
                 role="button"
+                tabIndex={0}
+                aria-label={`Remove ${labelMap.get(v) ?? v}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange(value.filter((x) => x !== v));
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onChange(value.filter((x) => x !== v));
+                  }
                 }}
                 style={{ cursor: 'pointer', color: 'var(--ds-text-subtlest)' }}
               >
@@ -971,9 +980,18 @@ function MultiSelectStatus({
                 {v}
                 <span
                   role="button"
+                  tabIndex={0}
+                  aria-label={`Remove ${v}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onChange(value.filter((x) => x !== v));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onChange(value.filter((x) => x !== v));
+                    }
                   }}
                   style={{ cursor: 'pointer' }}
                 >

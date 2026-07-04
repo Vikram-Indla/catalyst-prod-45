@@ -69,6 +69,11 @@ jobs:
         # not block; regressions do. CAT-ADS-COMPLIANCE-20260627-001.
         run: npm run lint:colors:gate
 
+      - name: ADS fallback-hex ratchet (blocks on NEW var(--ds-*, #hex) / token('x','#hex'))
+        # lint:colors:gate whitelists this pattern; CAT-AUDIT-0100 tracks it
+        # separately so the gate can't be gamed via var()/token() fallbacks.
+        run: npm run lint:fallback-hex:gate
+
       - name: ADS audit ratchet (blocks on NEW tokens/typography/spacing violations)
         # Per-category fail-on-increase over the design-governance audit vs
         # design-governance/audit-baseline.json. CAT-ADS-COMPLIANCE-20260627-001.
@@ -78,6 +83,11 @@ jobs:
         # Fails when a known chokepoint stops importing @/lib/catalyst-rules —
         # see .claude/skills/cre/SKILL.md and src/lib/catalyst-rules/RULE_TABLE.md.
         run: npm run lint:cre
+
+      - name: TestHub strict color gate (zero-tolerance, no ratchet)
+        # P1-S19, CAT-TESTHUB-PROD-20260703-001 — src/pages/testhub + src/components/testhub
+        # must stay color-pure; no baseline, any bare color or dark: twin fails the build.
+        run: npm run lint:colors:testhub
 
       - name: Build
         run: npx vite build

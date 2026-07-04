@@ -47,7 +47,7 @@ export default function CatalystViewDefect({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const navigate = useNavigate();
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
-  const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const priorityStyle = issue?.priority ? PRIORITY_STYLES[issue.priority] ?? null : null;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);

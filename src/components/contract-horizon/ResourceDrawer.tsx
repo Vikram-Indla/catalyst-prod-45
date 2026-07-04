@@ -128,7 +128,7 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
             <div className="grid grid-cols-2 gap-3">
               <DetailBox label="Department" value={resource.department} />
               <DetailBox label="Vendor" value={resource.vendor} />
-              <DetailBox label="Country" value={resource.country || 'Unknown'} />
+              <DetailBox label="Country" value={resource.country ?? null} />
               <DetailBox label="Location" value={resource.location || 'On-site'} />
             </div>
           </div>
@@ -151,10 +151,12 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
                 label={resource.location || 'On-site'} 
                 color="var(--ds-chart-teal-bolder)"
               />
-              <AttributePill 
-                label={resource.country || 'Unknown'} 
-                color="var(--ds-text-danger)"
-              />
+              {resource.country && (
+                <AttributePill
+                  label={resource.country}
+                  color="var(--ds-text-danger)"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -163,14 +165,14 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
   );
 }
 
-function DetailBox({ label, value }: { label: string; value: string }) {
+function DetailBox({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="p-3.5 rounded-[10px] bg-muted/50 border border-border">
       <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.06em] mb-1">
         {label}
       </div>
       <div className="text-[14px] font-bold text-foreground">
-        {value}
+        {value ?? '—'}
       </div>
     </div>
   );

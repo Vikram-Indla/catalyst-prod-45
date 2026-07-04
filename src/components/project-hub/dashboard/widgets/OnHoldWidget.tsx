@@ -298,7 +298,7 @@ function KpiCell({
         style={{
           ...H_NUM,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#292A2E'),
+          color: accent ?? token('color.text'),
         }}
       >
         {value}

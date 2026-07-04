@@ -145,7 +145,7 @@ export default function StoryDetailPage() {
         <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>Work item not found</span>
         <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>itemId {itemId} could not be found or has been deleted.</span>
         {debugInfo && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-background-danger-bold)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-background-danger-bold)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger-subtle)', border: '1px solid var(--ds-border-danger)', borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}

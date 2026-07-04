@@ -170,12 +170,14 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const mentionableUsers: CdsUser[] = profiles.map((p: any) => ({
-    id: p.id,
-    name: p.full_name || p.email || 'Unknown',
-    avatarUrl: p.avatar_url,
-    email: p.email,
-  }));
+  const mentionableUsers: CdsUser[] = profiles
+    .filter((p: any) => p.full_name || p.email)
+    .map((p: any) => ({
+      id: p.id,
+      name: p.full_name || p.email,
+      avatarUrl: p.avatar_url,
+      email: p.email,
+    }));
 
   // Jira accountId -> display name map, used to render [~accountid:xxx] mentions
   // in historical descriptions / summaries as @Name.

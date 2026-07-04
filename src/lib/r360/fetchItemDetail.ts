@@ -5,7 +5,7 @@ export interface ItemDetailFull {
   key: string;
   title: string;
   status: string;
-  statusCategory: string;
+  statusCategory: string | null;
   priority: string;
   type: string;
   projectName: string;
@@ -73,7 +73,7 @@ export async function fetchItemDetail(issueKey: string): Promise<ItemDetailFull 
     key: data.issue_key,
     title: data.summary,
     status: data.status,
-    statusCategory: data.status_category ?? 'To Do',
+    statusCategory: data.status_category ?? null,
     priority: data.priority ?? '—',
     type: data.issue_type,
     projectName: data.project_name ?? '—',
