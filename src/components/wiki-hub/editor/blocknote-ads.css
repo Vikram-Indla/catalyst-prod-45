@@ -74,3 +74,24 @@
 .wiki-bn .mantine-Menu-dropdown {
   border: 1px solid var(--ds-border);
 }
+
+/* Print / save-as-PDF: only the page article renders (exportPage.printPage) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .wiki-print-root,
+  .wiki-print-root * {
+    visibility: visible;
+  }
+  .wiki-print-root {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+  .wiki-no-print,
+  .wiki-no-print * {
+    visibility: hidden !important;
+    display: none !important;
+  }
+}

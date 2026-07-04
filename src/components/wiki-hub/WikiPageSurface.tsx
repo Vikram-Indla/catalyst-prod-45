@@ -21,6 +21,10 @@ import {
 import { blocksToText } from './editor/blocksToText';
 import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
+import { DropdownMenu } from '@/components/ads';
+import { Input } from '@/components/ui/input';
+import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
+import { catalystToast } from '@/lib/catalystToast';
 
 const WikiEditor = lazy(() => import('./editor/WikiEditor'));
 const AtlaskitRenderer = lazy(() => import('@/components/shared/AtlaskitRenderer'));
@@ -120,13 +124,65 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
 
   const isLegacyAdf = page.content_format === 'adf';
 
+  // ---- Exports (markdown / HTML free-core serializers; print for PDF) ----
+  const currentBlocks = useCallback(
+    (): Block[] => (pendingDoc.current ?? (page.content as Block[]) ?? []) as Block[],
+    [page.content],
+  );
+
+  const runExport = useCallback(
+    (kind: 'md' | 'html' | 'print') => {
+      flush();
+      if (kind === 'print') return printPage();
+      const task =
+        kind === 'md'
+          ? exportPageMarkdown(page.title, currentBlocks())
+          : exportPageHtml(page.title, currentBlocks());
+      void task.catch(() => catalystToast.error('Export failed'));
+    },
+    [flush, page.title, currentBlocks],
+  );
+
+  // ---- Icon picker (emoji) ----
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [iconDraft, setIconDraft] = useState('');
+  const commitIcon = useCallback(
+    (value: string | null) => {
+      updatePage.mutate({ id: page.id, spaceId: page.space_id, patch: { icon: value } });
+      setIconPickerOpen(false);
+      setIconDraft('');
+    },
+    [page.id, page.space_id, updatePage],
+  );
+
   return (
-    <article style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '12px 40px 0' }}>
-        <Breadcrumbs
-          items={crumbs}
-          LinkComponent={Link as never}
-          aria-label="Page location"
+    <article className="wiki-print-root" style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div
+        className="wiki-no-print"
+        style={{ padding: '12px 40px 0', display: 'flex', alignItems: 'center', gap: 12 }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Breadcrumbs
+            items={crumbs}
+            LinkComponent={Link as never}
+            aria-label="Page location"
+          />
+        </div>
+        <DropdownMenu
+          aria-label="Page actions"
+          placement="bottom-end"
+          trigger="Export"
+          groups={[
+            {
+              key: 'export',
+              title: 'Export',
+              items: [
+                { key: 'md', label: 'Markdown (.md)', onClick: () => runExport('md') },
+                { key: 'html', label: 'HTML (.html)', onClick: () => runExport('html') },
+                { key: 'pdf', label: 'Print or save as PDF', onClick: () => runExport('print') },
+              ],
+            },
+          ]}
         />
       </div>
 
@@ -144,21 +200,101 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       ) : null}
 
       <div style={{ maxWidth: 860, width: '100%', margin: '0 auto', padding: '0 40px 80px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: page.cover_url ? -24 : 28 }}>
-          {page.icon ? (
-            <span
-              aria-hidden
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            marginTop: page.cover_url ? -24 : 28,
+            position: 'relative',
+          }}
+        >
+          <button
+            type="button"
+            aria-label={page.icon ? 'Change page icon' : 'Add page icon'}
+            onClick={() => {
+              setIconDraft(page.icon ?? '');
+              setIconPickerOpen((v) => !v);
+            }}
+            className="wiki-no-print"
+            style={{
+              border: 'none',
+              background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
+              borderRadius: 8,
+              padding: page.cover_url ? 6 : 0,
+              cursor: 'pointer',
+              fontSize: page.icon ? 34 : undefined,
+              lineHeight: 1,
+              color: 'var(--ds-text-subtlest)',
+              font: page.icon ? undefined : 'var(--ds-font-body-small)',
+            }}
+          >
+            {page.icon ?? 'Add icon'}
+          </button>
+          {iconPickerOpen && (
+            <div
+              role="dialog"
+              aria-label="Page icon"
               style={{
-                fontSize: 34,
-                lineHeight: 1,
-                background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
+                position: 'absolute',
+                top: '100%',
+                insetInlineStart: 0,
+                zIndex: 20,
+                marginTop: 6,
+                padding: 10,
                 borderRadius: 8,
-                padding: page.cover_url ? 6 : 0,
+                border: '1px solid var(--ds-border)',
+                background: 'var(--ds-surface-raised)',
+                boxShadow: 'var(--ds-shadow-overlay)',
+                display: 'flex',
+                gap: 8,
+                alignItems: 'center',
               }}
             >
-              {page.icon}
-            </span>
-          ) : null}
+              <Input
+                autoFocus
+                value={iconDraft}
+                onChange={(e) => setIconDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') commitIcon(iconDraft.trim() || null);
+                  if (e.key === 'Escape') setIconPickerOpen(false);
+                }}
+                placeholder="Paste or type an emoji"
+                aria-label="Page icon emoji"
+                style={{ width: 190 }}
+              />
+              <button
+                type="button"
+                onClick={() => commitIcon(iconDraft.trim() || null)}
+                style={{
+                  border: '1px solid var(--ds-border)',
+                  borderRadius: 4,
+                  background: 'transparent',
+                  color: 'var(--ds-text)',
+                  font: 'var(--ds-font-body-small)',
+                  padding: '5px 10px',
+                  cursor: 'pointer',
+                }}
+              >
+                Set
+              </button>
+              {page.icon && (
+                <button
+                  type="button"
+                  onClick={() => commitIcon(null)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--ds-text-subtle)',
+                    font: 'var(--ds-font-body-small)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <input
