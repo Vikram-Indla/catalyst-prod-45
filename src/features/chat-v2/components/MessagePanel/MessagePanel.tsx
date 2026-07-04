@@ -10,6 +10,7 @@ import { UploadProgressBanner } from '../Attachments/UploadProgressBanner';
 import { ChannelEmptyState } from './ChannelEmptyState';
 import { AddPeopleModal } from '../CreateChannel/AddPeopleModal';
 import { EditDescriptionModal } from '../CreateChannel/EditDescriptionModal';
+import { computeSeenCaption } from './seenReceipts';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useChatMessageActions } from '@/hooks/chat/useChatMessageActions';
 import { useChatToggleStar } from '@/hooks/chat/useChatActions';
@@ -483,6 +484,13 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
     [messages, pinnedIds],
   );
 
+  // WhatsApp-style "Seen" receipt under my last message — DMs/group DMs only.
+  // Live updates ride the existing members-query invalidations; no new subscriptions.
+  const seenCaption = useMemo(
+    () => computeSeenCaption(messages, members ?? [], user?.id ?? null, conversation.kind),
+    [messages, members, user?.id, conversation.kind],
+  );
+
   const handleOpenPinned = useCallback(
     (messageId: string) => {
       setActiveTab('messages');
@@ -582,6 +590,7 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         attachmentsByMessage={attachmentsByMessage}
         removingIds={removingIds}
         jumpHighlightId={jumpHighlightId}
+        seenCaption={seenCaption}
         onOpenThread={onOpenThread}
         onToggleReaction={(id, emoji) => {
           void toggleReaction(id, emoji);

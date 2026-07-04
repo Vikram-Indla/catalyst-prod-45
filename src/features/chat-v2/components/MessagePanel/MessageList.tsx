@@ -3,6 +3,7 @@ import { MessageBubble } from './MessageBubble';
 import { DateSeparator } from './DateSeparator';
 import { HuddleEventRow } from './HuddleEventRow';
 import { dayKey } from '../../lib/formatTimestamp';
+import type { SeenCaption } from './seenReceipts';
 import type { ChatMessage } from '@/types/chat';
 import type { AttachmentMap } from '../../hooks/useMessageAttachments';
 
@@ -19,6 +20,9 @@ interface MessageListProps {
   attachmentsByMessage?: AttachmentMap;
   removingIds?: Set<string>;
   jumpHighlightId?: string | null;
+  /** "Seen" receipt caption rendered directly under the matching message
+   *  (DM/group-DM only — computed by the parent via computeSeenCaption). */
+  seenCaption?: SeenCaption | null;
   onOpenThread: (messageId: string) => void;
   onToggleReaction: (messageId: string, emoji: string) => void;
   onJumpTo?: (messageId: string) => void;
@@ -108,6 +112,7 @@ export function MessageList({
   attachmentsByMessage,
   removingIds,
   jumpHighlightId,
+  seenCaption,
   onOpenThread,
   onToggleReaction,
   onJumpTo,
@@ -235,28 +240,46 @@ export function MessageList({
           ) : item.message!.eventType === 'huddle_summary' || item.message!.eventType === 'huddle_live' ? (
             <HuddleEventRow key={item.key} message={item.message!} onOpenThread={onOpenThread} />
           ) : (
-            <MessageBubble
-              key={item.key}
-              message={item.message!}
-              showHeader={!!item.showHeader}
-              isSaved={savedIds?.has(item.message!.id)}
-              isPinned={pinnedIds?.has(item.message!.id)}
-              pinnedByName={pinnedByMap?.[item.message!.id]?.name ?? null}
-              pinnedByMe={pinnedByMap?.[item.message!.id]?.isMe ?? false}
-              attachments={attachmentsByMessage?.get(item.message!.id)}
-              removing={removingIds?.has(item.message!.id)}
-              jumpHighlight={jumpHighlightId === item.message!.id}
-              onOpenThread={onOpenThread}
-              onToggleReaction={onToggleReaction}
-              onSaveLater={onSaveLater}
-              onShare={onShare}
-              onEdit={onEdit}
-              onRequestDelete={onRequestDelete}
-              onTogglePin={onTogglePin}
-              onCopyLink={onCopyLink}
-              onMarkUnread={onMarkUnread}
-              onOpenForwardSource={onOpenForwardSource}
-            />
+            <React.Fragment key={item.key}>
+              <MessageBubble
+                message={item.message!}
+                showHeader={!!item.showHeader}
+                isSaved={savedIds?.has(item.message!.id)}
+                isPinned={pinnedIds?.has(item.message!.id)}
+                pinnedByName={pinnedByMap?.[item.message!.id]?.name ?? null}
+                pinnedByMe={pinnedByMap?.[item.message!.id]?.isMe ?? false}
+                attachments={attachmentsByMessage?.get(item.message!.id)}
+                removing={removingIds?.has(item.message!.id)}
+                jumpHighlight={jumpHighlightId === item.message!.id}
+                onOpenThread={onOpenThread}
+                onToggleReaction={onToggleReaction}
+                onSaveLater={onSaveLater}
+                onShare={onShare}
+                onEdit={onEdit}
+                onRequestDelete={onRequestDelete}
+                onTogglePin={onTogglePin}
+                onCopyLink={onCopyLink}
+                onMarkUnread={onMarkUnread}
+                onOpenForwardSource={onOpenForwardSource}
+              />
+              {seenCaption?.messageId === item.message!.id && (
+                <div
+                  aria-label={seenCaption.text}
+                  data-cv2-seen-caption
+                  style={{
+                    // Align with the message body: MessageBubble's 3px transparent
+                    // borderLeft + 16px paddingLeft + 44px avatar column + 8px columnGap.
+                    // ads-scanner:ignore-next-line — 71px gutter alignment derived from MessageBubble geometry (2026-07-05)
+                    paddingLeft: 3 + 16 + 44 + 8,
+                    marginTop: 'var(--ds-space-025)',
+                    font: 'var(--ds-font-body-small)',
+                    color: 'var(--cv2-text-muted)',
+                  }}
+                >
+                  {seenCaption.text}
+                </div>
+              )}
+            </React.Fragment>
           ),
         )
       )}
