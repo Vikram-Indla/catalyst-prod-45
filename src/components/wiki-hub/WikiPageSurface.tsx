@@ -19,6 +19,8 @@ import {
   type WikiWorkspace,
 } from '@/hooks/useWiki';
 import { blocksToText } from './editor/blocksToText';
+import { syncMentionLinks } from './editor/syncMentionLinks';
+import { BacklinksPanel } from './BacklinksPanel';
 
 const WikiEditor = lazy(() => import('./editor/WikiEditor'));
 const AtlaskitRenderer = lazy(() => import('@/components/shared/AtlaskitRenderer'));
@@ -66,6 +68,11 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       spaceId: page.space_id,
       patch: { content: doc, content_text: blocksToText(doc), content_format: 'blocknote' },
     });
+    // Mirror @-mention chips into kb_document_links / kb_page_links.
+    // Fire-and-forget: link sync must never block or fail the autosave.
+    void syncMentionLinks(page.id, doc).catch((e) =>
+      console.warn('[wiki] mention link sync failed', e),
+    );
   }, [page.id, page.space_id, updatePage]);
 
   const handleEditorChange = useCallback(
@@ -206,9 +213,13 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
               initialContent={(page.content as Block[]) ?? undefined}
               onChange={handleEditorChange}
               dictationStyle="brd-page"
+              workspaceId={workspace.id}
+              workspaceSlug={workspace.slug}
             />
           </Suspense>
         )}
+
+        <BacklinksPanel pageId={page.id} />
       </div>
     </article>
   );
