@@ -14,6 +14,7 @@
  * across the Catalyst views.
  */
 import React, { useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -54,6 +55,7 @@ export default function CatalystViewStory({
 
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const navigate = useNavigate();
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -255,7 +257,13 @@ export default function CatalystViewStory({
         }}
         /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
         moreMenuItems={useMemo(() => [
-          { label: 'Convert to Subtask', onClick: () => catalystToast.info('Coming soon') },
+          { label: 'Convert to Subtask', onClick: () => {
+            const pk = issue?.project_key ?? projectKey;
+            const ik = issue?.issue_key;
+            if (!pk || !ik) return;
+            onClose?.();
+            navigate(`/project-hub/${pk}/issue/${ik}/convert-to-subtask`);
+          } },
           { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
           { label: 'Move', onClick: () => setShowMoveDialog(true) },
           { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },

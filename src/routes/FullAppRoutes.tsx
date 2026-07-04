@@ -59,6 +59,8 @@ const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/Ro
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
+const ConvertToSubtaskPageLazy = lazy(() => import("../pages/project-hub/ConvertToSubtaskPage"));
+const IssueSelectorPopupPageLazy = lazy(() => import("../pages/project-hub/convert-to-subtask/IssueSelectorPopupPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
 const ReleasesPageWrapperLazy = lazy(() => import("../pages/project-hub/ReleasesPageWrapper").then(m => ({ default: m.ReleasesPageWrapper })));
@@ -1040,6 +1042,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/story-backlog" element={<LegacyBacklogRedirect />} />
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
+        <Route path="/project-hub/:key/issue/:issueKey/convert-to-subtask" element={<S><ConvertToSubtaskPageLazy /></S>} />
+        <Route path="/project-hub/:key/issue-selector" element={<S><IssueSelectorPopupPageLazy /></S>} />
         <Route path="/project-hub/:key/board" element={<S><KanbanFeaturePageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardSlug/map-statuses" element={<S><MapStatusesPageLazy /></S>} />

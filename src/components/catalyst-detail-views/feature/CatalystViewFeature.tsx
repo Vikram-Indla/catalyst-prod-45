@@ -129,7 +129,9 @@ export default function CatalystViewFeature({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={useMemo(() => [
-        { label: 'Convert to Subtask', onClick: () => catalystToast.info('Coming soon') },
+        /* "Convert to Subtask" intentionally omitted — Feature is a higher-hierarchy
+           work item (parent of Story). Jira strict-hierarchy rule: only base items
+           (Story / Task / Bug / Defect) may be converted to Sub-task. */
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },

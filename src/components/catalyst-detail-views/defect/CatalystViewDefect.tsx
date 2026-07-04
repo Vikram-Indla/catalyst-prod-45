@@ -6,6 +6,7 @@
  * Defect-unique: Priority + type badge row in left panel.
  */
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { catalystToast } from '@/lib/catalystToast';
 import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
@@ -44,6 +45,7 @@ export default function CatalystViewDefect({
 
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const navigate = useNavigate();
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -199,7 +201,13 @@ export default function CatalystViewDefect({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={useMemo(() => [
-        { label: 'Convert to Subtask', onClick: () => catalystToast.info('Coming soon') },
+        { label: 'Convert to Subtask', onClick: () => {
+          const pk = issue?.project_key ?? projectKey;
+          const ik = issue?.issue_key;
+          if (!pk || !ik) return;
+          onClose?.();
+          navigate(`/project-hub/${pk}/issue/${ik}/convert-to-subtask`);
+        } },
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
         { label: 'Move', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
