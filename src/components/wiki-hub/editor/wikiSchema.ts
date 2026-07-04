@@ -1,11 +1,17 @@
 /**
  * wikiSchema — the Catalyst Wiki's BlockNote schema: default blocks/styles
- * plus custom inline content (work-item mentions, page links).
+ * plus custom blocks (callout) and inline content (work-item mentions,
+ * page links).
  */
-import { BlockNoteSchema, defaultInlineContentSpecs } from '@blocknote/core';
+import { BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs } from '@blocknote/core';
+import { callout } from './CalloutBlock';
 import { pageLink, workItemMention } from './inlineSpecs';
 
 export const wikiSchema = BlockNoteSchema.create({
+  blockSpecs: {
+    ...defaultBlockSpecs,
+    callout,
+  },
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,
     workItemMention,

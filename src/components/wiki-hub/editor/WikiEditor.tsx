@@ -20,10 +20,12 @@ import { useCallback, useMemo } from 'react';
 import { BlockNoteView } from '@blocknote/mantine';
 import {
   SuggestionMenuController,
+  getDefaultReactSlashMenuItems,
+  filterSuggestionItems,
   useCreateBlockNote,
   type DefaultReactSuggestionItem,
 } from '@blocknote/react';
-import type { Block, BlockNoteEditor } from '@blocknote/core';
+import { insertOrUpdateBlock, type Block, type BlockNoteEditor } from '@blocknote/core';
 import { supabase } from '@/integrations/supabase/client';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { wikiSchema } from './wikiSchema';
@@ -162,14 +164,36 @@ export default function WikiEditor({
     [editor, workspaceId, workspaceSlug],
   );
 
+  // `/` menu — default blocks + Callout.
+  const getSlashItems = useCallback(
+    async (query: string): Promise<DefaultReactSuggestionItem[]> => {
+      const calloutItem: DefaultReactSuggestionItem = {
+        title: 'Callout',
+        subtext: 'Highlight important information',
+        group: 'Basic blocks',
+        aliases: ['callout', 'note', 'info', 'panel', 'warning'],
+        onItemClick: () => {
+          insertOrUpdateBlock(editor as never, { type: 'callout' } as never);
+        },
+      };
+      return filterSuggestionItems(
+        [...getDefaultReactSlashMenuItems(editor as never), calloutItem],
+        query,
+      );
+    },
+    [editor],
+  );
+
   return (
     <div className="wiki-bn" data-dictation-style={dictationStyle} dir="auto">
       <BlockNoteView
         editor={editor}
         editable={editable}
         theme={resolvedTheme}
+        slashMenu={false}
         onChange={() => onChange?.(editor as unknown as BlockNoteEditor)}
       >
+        <SuggestionMenuController triggerCharacter="/" getItems={getSlashItems} />
         <SuggestionMenuController triggerCharacter="@" getItems={getMentionItems} />
       </BlockNoteView>
     </div>

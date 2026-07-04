@@ -25,6 +25,7 @@ import { DropdownMenu } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
 import { catalystToast } from '@/lib/catalystToast';
+import { WikiTranslateBar } from './WikiTranslateBar';
 
 const WikiEditor = lazy(() => import('./editor/WikiEditor'));
 const AtlaskitRenderer = lazy(() => import('@/components/shared/AtlaskitRenderer'));
@@ -168,6 +169,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             aria-label="Page location"
           />
         </div>
+        <WikiTranslateBar title={page.title} getBlocks={currentBlocks} />
         <DropdownMenu
           aria-label="Page actions"
           placement="bottom-end"
