@@ -1,7 +1,7 @@
 // Incident Lifecycle Business Rules
 // Source of truth: 05-BUSINESS-RULES.md
 
-import type { IncidentStatus, SeverityLevel, ImpactLevel, UrgencyLevel, PriorityLevel, SupportLevel } from '@/types/incident';
+import type { IncidentStatus, SeverityLevel, ImpactLevel, UrgencyLevel, SupportLevel } from '@/types/incident';
 
 // ============================================
 // 1. STATUS STATE MACHINE
@@ -98,64 +98,12 @@ export function getAllowedTransitions(
 // ============================================
 // 2. PRIORITY CALCULATION
 // ============================================
-
-const SEVERITY_SCORES: Record<SeverityLevel, number> = {
-  SEV1: 4,
-  SEV2: 3,
-  SEV3: 2,
-  SEV4: 1,
-};
-
-const IMPACT_SCORES: Record<ImpactLevel, number> = {
-  high: 3,
-  medium: 2,
-  low: 1,
-};
-
-const URGENCY_SCORES: Record<UrgencyLevel, number> = {
-  high: 3,
-  medium: 2,
-  low: 1,
-};
-
-/**
- * Calculate priority from severity, impact, and urgency
- * Formula: Score = SeverityScore + ImpactScore + UrgencyScore
- * 
- * Priority mapping:
- * - Score >= 9 → P1
- * - Score >= 7 → P2  
- * - Score >= 5 → P3
- * - Score < 5  → P4
- */
-export function calculatePriority(
-  severity: SeverityLevel,
-  impact: ImpactLevel,
-  urgency: UrgencyLevel
-): PriorityLevel {
-  const score = SEVERITY_SCORES[severity] + IMPACT_SCORES[impact] + URGENCY_SCORES[urgency];
-  
-  if (score >= 9) return 'P1';
-  if (score >= 7) return 'P2';
-  if (score >= 5) return 'P3';
-  return 'P4';
-}
-
-/**
- * Get the priority score breakdown for display
- */
-export function getPriorityBreakdown(
-  severity: SeverityLevel,
-  impact: ImpactLevel,
-  urgency: UrgencyLevel
-): { severityScore: number; impactScore: number; urgencyScore: number; total: number } {
-  return {
-    severityScore: SEVERITY_SCORES[severity],
-    impactScore: IMPACT_SCORES[impact],
-    urgencyScore: URGENCY_SCORES[urgency],
-    total: SEVERITY_SCORES[severity] + IMPACT_SCORES[impact] + URGENCY_SCORES[urgency],
-  };
-}
+//
+// Priority is derived server-side by the derive_incident_priority() DB trigger
+// (impact x urgency matrix, severity not a factor). No client-side calculator here —
+// a prior version of this file computed priority from a severity+impact+urgency score
+// sum that never matched the DB and was never imported by any component. Read
+// `incident.priority` from the row; don't recompute it client-side.
 
 // ============================================
 // 3. CAP COMMITTEE RULES
@@ -238,12 +186,11 @@ export function shouldBeMajorIncident(
 }
 
 // ============================================
-// 5. SLA TARGETS (reference only, actual calc in backend)
+// 5. SLA TARGETS
 // ============================================
-
-export const SLA_TARGETS: Record<SeverityLevel, { responseMinutes: number; resolutionMinutes: number }> = {
-  SEV1: { responseMinutes: 15, resolutionMinutes: 60 },
-  SEV2: { responseMinutes: 30, resolutionMinutes: 240 },
-  SEV3: { responseMinutes: 60, resolutionMinutes: 480 },
-  SEV4: { responseMinutes: 120, resolutionMinutes: 1440 },
-};
+//
+// SLA minutes live in the `sla_configs` table (source of truth for
+// create_incident_sla_record() / recalc_incident_sla_on_severity_change()).
+// No client-side constant here — a prior version of this file hardcoded
+// different minutes than the DB table and was never imported anywhere.
+// Query `sla_configs` (or read `sla_records` due dates) instead of hardcoding.

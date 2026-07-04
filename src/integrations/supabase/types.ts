@@ -12,33 +12,26 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
+      _ph_jira_sprints_status_migration_20260703: {
+        Row: {
+          captured_at: string | null
+          id: string | null
+          old_status: string | null
+        }
+        Insert: {
+          captured_at?: string | null
+          id?: string | null
+          old_status?: string | null
+        }
+        Update: {
+          captured_at?: string | null
+          id?: string | null
+          old_status?: string | null
+        }
+        Relationships: []
+      }
       acceptance_criteria: {
         Row: {
           content: string
@@ -2845,6 +2838,33 @@ export type Database = {
           },
         ]
       }
+      business_request_relations: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          link_type: string
+          source_key: string
+          target_key: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          link_type: string
+          source_key: string
+          target_key: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          link_type?: string
+          source_key?: string
+          target_key?: string
+        }
+        Relationships: []
+      }
       business_requests: {
         Row: {
           _deprecated_planned_quarter: string | null
@@ -2926,6 +2946,7 @@ export type Database = {
           on_hold_comment: string | null
           on_hold_reason: string | null
           outcome_summary: string | null
+          parent_request_id: string | null
           planned_external_spend_sar: number | null
           planned_quarter: string[] | null
           platform: string | null
@@ -2959,6 +2980,7 @@ export type Database = {
           start_date: string | null
           support_owner: string | null
           support_remarks: string | null
+          tags: string[] | null
           targeted_feature: boolean
           technical_validator: string | null
           theme: string | null
@@ -3048,6 +3070,7 @@ export type Database = {
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
+          parent_request_id?: string | null
           planned_external_spend_sar?: number | null
           planned_quarter?: string[] | null
           platform?: string | null
@@ -3081,6 +3104,7 @@ export type Database = {
           start_date?: string | null
           support_owner?: string | null
           support_remarks?: string | null
+          tags?: string[] | null
           targeted_feature?: boolean
           technical_validator?: string | null
           theme?: string | null
@@ -3170,6 +3194,7 @@ export type Database = {
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
+          parent_request_id?: string | null
           planned_external_spend_sar?: number | null
           planned_quarter?: string[] | null
           platform?: string | null
@@ -3203,6 +3228,7 @@ export type Database = {
           start_date?: string | null
           support_owner?: string | null
           support_remarks?: string | null
+          tags?: string[] | null
           targeted_feature?: boolean
           technical_validator?: string | null
           theme?: string | null
@@ -3225,6 +3251,20 @@ export type Database = {
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_requests_parent_request_id_fkey"
+            columns: ["parent_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_requests_parent_request_id_fkey"
+            columns: ["parent_request_id"]
+            isOneToOne: false
+            referencedRelation: "v_business_request_with_milestones"
             referencedColumns: ["id"]
           },
           {
@@ -11579,6 +11619,13 @@ export type Database = {
             foreignKeyName: "incident_attachments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11643,6 +11690,13 @@ export type Database = {
             foreignKeyName: "incident_comments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_comments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11686,6 +11740,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_committees_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "incident_committees_incident_id_fkey"
             columns: ["incident_id"]
@@ -11801,6 +11862,13 @@ export type Database = {
             foreignKeyName: "incident_history_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_history_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11844,6 +11912,13 @@ export type Database = {
           label_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_labels_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "incident_labels_incident_id_fkey"
             columns: ["incident_id"]
@@ -11964,6 +12039,13 @@ export type Database = {
             foreignKeyName: "incident_watchers_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_watchers_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -12005,6 +12087,13 @@ export type Database = {
             foreignKeyName: "incident_work_items_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_work_items_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -12036,6 +12125,7 @@ export type Database = {
           incident_type: string | null
           is_major_incident: boolean | null
           owning_team_id: string | null
+          ph_issue_id: string | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           project_id: string | null
           release_version_id: string | null
@@ -12084,6 +12174,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           owning_team_id?: string | null
+          ph_issue_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -12132,6 +12223,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           owning_team_id?: string | null
+          ph_issue_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -12196,6 +12288,20 @@ export type Database = {
             columns: ["owning_team_id"]
             isOneToOne: false
             referencedRelation: "owning_teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
           {
@@ -18602,35 +18708,14 @@ export type Database = {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_overdue_view"
+            referencedRelation: "ph_issues"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "ph_activity_log_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
         ]
@@ -18914,6 +18999,7 @@ export type Database = {
         Row: {
           author_id: string | null
           body: string
+          comment_type: string
           created_at: string | null
           id: string
           updated_at: string | null
@@ -18922,6 +19008,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           body: string
+          comment_type?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -18930,6 +19017,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           body?: string
+          comment_type?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -18948,41 +19036,6 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "workhub_items_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_overdue_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
         ]
@@ -19424,6 +19477,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_hierarchy_levels: {
+        Row: {
+          color_token: string | null
+          created_at: string
+          icon: string | null
+          id: string
+          is_enabled: boolean
+          level_rank: number
+          name: string
+          org_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          color_token?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_enabled?: boolean
+          level_rank: number
+          name: string
+          org_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          color_token?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_enabled?: boolean
+          level_rank?: number
+          name?: string
+          org_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ph_hierarchy_overrides: {
         Row: {
           created_at: string
@@ -19456,6 +19545,45 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      ph_hierarchy_parent_rules: {
+        Row: {
+          child_type_id: string
+          created_at: string
+          id: string
+          is_required: boolean
+          parent_type_id: string | null
+        }
+        Insert: {
+          child_type_id: string
+          created_at?: string
+          id?: string
+          is_required?: boolean
+          parent_type_id?: string | null
+        }
+        Update: {
+          child_type_id?: string
+          created_at?: string
+          id?: string
+          is_required?: boolean
+          parent_type_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_hierarchy_parent_rules_child_type_id_fkey"
+            columns: ["child_type_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_item_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_hierarchy_parent_rules_parent_type_id_fkey"
+            columns: ["parent_type_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_item_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ph_idea_audit_log: {
         Row: {
@@ -21146,6 +21274,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_issue_status_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          from_status: string | null
+          from_status_category: string | null
+          id: string
+          issue_id: string
+          issue_key: string | null
+          issue_type: string | null
+          project_key: string | null
+          source: string
+          to_status: string
+          to_status_category: string | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          from_status?: string | null
+          from_status_category?: string | null
+          id?: string
+          issue_id: string
+          issue_key?: string | null
+          issue_type?: string | null
+          project_key?: string | null
+          source?: string
+          to_status: string
+          to_status_category?: string | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          from_status?: string | null
+          from_status_category?: string | null
+          id?: string
+          issue_id?: string
+          issue_key?: string | null
+          issue_type?: string | null
+          project_key?: string | null
+          source?: string
+          to_status?: string
+          to_status_category?: string | null
+        }
+        Relationships: []
+      }
       ph_issue_translations: {
         Row: {
           created_at: string
@@ -21300,6 +21473,7 @@ export type Database = {
           synced_at: string | null
           theme_id: string | null
           type_icon_url: string | null
+          type_id: string | null
         }
         Insert: {
           archived_at?: string | null
@@ -21358,6 +21532,7 @@ export type Database = {
           synced_at?: string | null
           theme_id?: string | null
           type_icon_url?: string | null
+          type_id?: string | null
         }
         Update: {
           archived_at?: string | null
@@ -21416,6 +21591,7 @@ export type Database = {
           synced_at?: string | null
           theme_id?: string | null
           type_icon_url?: string | null
+          type_id?: string | null
         }
         Relationships: [
           {
@@ -21438,6 +21614,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_sprint_jira_progress"
             referencedColumns: ["sprint_id"]
+          },
+          {
+            foreignKeyName: "ph_issues_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_item_types"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_issues_theme_id_fkey"
@@ -21590,6 +21773,7 @@ export type Database = {
           owner_user_id: string | null
           project_id: string | null
           release_date: string | null
+          release_id: string | null
           section_description_adf: Json | null
           section_name: string | null
           slug: string
@@ -21617,6 +21801,7 @@ export type Database = {
           owner_user_id?: string | null
           project_id?: string | null
           release_date?: string | null
+          release_id?: string | null
           section_description_adf?: Json | null
           section_name?: string | null
           slug: string
@@ -21644,6 +21829,7 @@ export type Database = {
           owner_user_id?: string | null
           project_id?: string | null
           release_date?: string | null
+          release_id?: string | null
           section_description_adf?: Json | null
           section_name?: string | null
           slug?: string
@@ -21668,6 +21854,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "project_sync_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ph_jira_sprints_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_jira_sprints_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -22597,6 +22797,8 @@ export type Database = {
         Row: {
           added_by: string | null
           created_at: string
+          decided_at: string | null
+          decision_note: string | null
           description: string | null
           id: string
           sprint_id: string
@@ -22607,6 +22809,8 @@ export type Database = {
         Insert: {
           added_by?: string | null
           created_at?: string
+          decided_at?: string | null
+          decision_note?: string | null
           description?: string | null
           id?: string
           sprint_id: string
@@ -22617,6 +22821,8 @@ export type Database = {
         Update: {
           added_by?: string | null
           created_at?: string
+          decided_at?: string | null
+          decision_note?: string | null
           description?: string | null
           id?: string
           sprint_id?: string
@@ -22694,6 +22900,110 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_resource_profile"
             referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      ph_sprint_dod: {
+        Row: {
+          created_at: string | null
+          done_status: string
+          id: string
+          sprint_id: string
+          updated_at: string | null
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          done_status: string
+          id?: string
+          sprint_id: string
+          updated_at?: string | null
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string | null
+          done_status?: string
+          id?: string
+          sprint_id?: string
+          updated_at?: string | null
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_sprint_dod_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_dod_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_dod_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
+          },
+        ]
+      }
+      ph_sprint_status_transitions: {
+        Row: {
+          created_at: string
+          from_status: string | null
+          id: string
+          sprint_id: string
+          to_status: string
+          transitioned_at: string
+          transitioned_by: string | null
+          transitioned_by_avatar: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id: string
+          to_status: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          sprint_id?: string
+          to_status?: string
+          transitioned_at?: string
+          transitioned_by?: string | null
+          transitioned_by_avatar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sprint_status_transitions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
           },
         ]
       }
@@ -24088,6 +24398,7 @@ export type Database = {
           effective_at: string | null
           entity_key: string
           id: string
+          layout: Json | null
           lifecycle: string
           notes: string | null
           published_at: string | null
@@ -24102,6 +24413,7 @@ export type Database = {
           effective_at?: string | null
           entity_key: string
           id?: string
+          layout?: Json | null
           lifecycle?: string
           notes?: string | null
           published_at?: string | null
@@ -24116,6 +24428,7 @@ export type Database = {
           effective_at?: string | null
           entity_key?: string
           id?: string
+          layout?: Json | null
           lifecycle?: string
           notes?: string | null
           published_at?: string | null
@@ -24286,6 +24599,136 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_work_item_types: {
+        Row: {
+          archived_at: string | null
+          color_token: string
+          created_at: string
+          created_by: string | null
+          default_wf_template_id: string | null
+          description: string | null
+          display_name: string
+          entity_key: string | null
+          group_key: string
+          hierarchy_level_id: string | null
+          icon: string
+          id: string
+          is_enabled: boolean
+          is_system: boolean
+          kind: string
+          org_id: string | null
+          sort_order: number
+          type_key: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          color_token?: string
+          created_at?: string
+          created_by?: string | null
+          default_wf_template_id?: string | null
+          description?: string | null
+          display_name: string
+          entity_key?: string | null
+          group_key?: string
+          hierarchy_level_id?: string | null
+          icon?: string
+          id?: string
+          is_enabled?: boolean
+          is_system?: boolean
+          kind?: string
+          org_id?: string | null
+          sort_order?: number
+          type_key: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          color_token?: string
+          created_at?: string
+          created_by?: string | null
+          default_wf_template_id?: string | null
+          description?: string | null
+          display_name?: string
+          entity_key?: string | null
+          group_key?: string
+          hierarchy_level_id?: string | null
+          icon?: string
+          id?: string
+          is_enabled?: boolean
+          is_system?: boolean
+          kind?: string
+          org_id?: string | null
+          sort_order?: number
+          type_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_default_wf_template_id_fkey"
+            columns: ["default_wf_template_id"]
+            isOneToOne: false
+            referencedRelation: "ph_workflow_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_types_hierarchy_level_id_fkey"
+            columns: ["hierarchy_level_id"]
+            isOneToOne: false
+            referencedRelation: "ph_hierarchy_levels"
             referencedColumns: ["id"]
           },
         ]
@@ -24679,6 +25122,7 @@ export type Database = {
       }
       ph_workflow_statuses: {
         Row: {
+          archived_at: string | null
           category: string
           color: string
           created_at: string | null
@@ -24689,6 +25133,7 @@ export type Database = {
           project_id: string
         }
         Insert: {
+          archived_at?: string | null
           category: string
           color?: string
           created_at?: string | null
@@ -24699,6 +25144,7 @@ export type Database = {
           project_id: string
         }
         Update: {
+          archived_at?: string | null
           category?: string
           color?: string
           created_at?: string | null
@@ -24828,7 +25274,36 @@ export type Database = {
           to_status_id?: string
           work_item_type?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ph_workflow_transitions_from_status_id_fkey"
+            columns: ["from_status_id"]
+            isOneToOne: false
+            referencedRelation: "ph_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_workflow_transitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_workflow_transitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ph_workflow_transitions_to_status_id_fkey"
+            columns: ["to_status_id"]
+            isOneToOne: false
+            referencedRelation: "ph_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ph_workflow_type_statuses: {
         Row: {
@@ -24855,7 +25330,29 @@ export type Database = {
           status_id?: string
           work_item_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ph_workflow_type_statuses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_workflow_type_statuses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ph_workflow_type_statuses_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "ph_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pi_objectives: {
         Row: {
@@ -32668,6 +33165,7 @@ export type Database = {
           is_starred: boolean | null
           name: string
           query: string | null
+          slug: string
           status: string | null
           type: string | null
           updated_at: string
@@ -32680,6 +33178,7 @@ export type Database = {
           is_starred?: boolean | null
           name: string
           query?: string | null
+          slug: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -32692,6 +33191,7 @@ export type Database = {
           is_starred?: boolean | null
           name?: string
           query?: string | null
+          slug?: string
           status?: string | null
           type?: string | null
           updated_at?: string
@@ -32962,6 +33462,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "sla_records_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_sla_live_status"
+            referencedColumns: ["incident_id"]
+          },
           {
             foreignKeyName: "sla_records_incident_id_fkey"
             columns: ["incident_id"]
@@ -33700,6 +34207,55 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "space_categories"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      sprint_insight_cache: {
+        Row: {
+          created_at: string
+          data_hash: string
+          id: string
+          sprint_id: string
+          summary_text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_hash: string
+          id?: string
+          sprint_id: string
+          summary_text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_hash?: string
+          id?: string
+          sprint_id?: string
+          summary_text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprint_insight_cache_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprint_insight_cache_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprint_insight_cache_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sprint_jira_progress"
+            referencedColumns: ["sprint_id"]
           },
         ]
       }
@@ -41274,6 +41830,106 @@ export type Database = {
         }
         Relationships: []
       }
+      tm_ai_usage_log: {
+        Row: {
+          created_at: string | null
+          feature: string
+          id: string
+          model: string | null
+          project_id: string | null
+          request_data: Json | null
+          response_summary: string | null
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feature: string
+          id?: string
+          model?: string | null
+          project_id?: string | null
+          request_data?: Json | null
+          response_summary?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feature?: string
+          id?: string
+          model?: string | null
+          project_id?: string | null
+          request_data?: Json | null
+          response_summary?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_ai_usage_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       tm_attachments: {
         Row: {
           created_at: string | null
@@ -42221,6 +42877,7 @@ export type Database = {
           cycle_id: string
           due_date: string | null
           id: string
+          locked_version: number | null
           priority: string | null
           sort_order: number | null
           test_case_id: string
@@ -42235,6 +42892,7 @@ export type Database = {
           cycle_id: string
           due_date?: string | null
           id?: string
+          locked_version?: number | null
           priority?: string | null
           sort_order?: number | null
           test_case_id: string
@@ -42249,6 +42907,7 @@ export type Database = {
           cycle_id?: string
           due_date?: string | null
           id?: string
+          locked_version?: number | null
           priority?: string | null
           sort_order?: number | null
           test_case_id?: string
@@ -42355,13 +43014,133 @@ export type Database = {
           },
         ]
       }
+      tm_cycle_sets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          cycle_id: string
+          id: string
+          set_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          cycle_id: string
+          id?: string
+          set_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          cycle_id?: string
+          id?: string
+          set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_sets_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_defect_links: {
         Row: {
           attachment_id: string | null
           created_at: string | null
           created_by: string | null
           defect_id: string
+          entity_label: string | null
           id: string
+          link_source: string | null
+          link_type: string | null
+          linked_id: string | null
           step_result_id: string | null
           test_run_id: string | null
         }
@@ -42370,7 +43149,11 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           defect_id: string
+          entity_label?: string | null
           id?: string
+          link_source?: string | null
+          link_type?: string | null
+          linked_id?: string | null
           step_result_id?: string | null
           test_run_id?: string | null
         }
@@ -42379,7 +43162,11 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           defect_id?: string
+          entity_label?: string | null
           id?: string
+          link_source?: string | null
+          link_type?: string | null
+          linked_id?: string | null
           step_result_id?: string | null
           test_run_id?: string | null
         }
@@ -43895,22 +44682,15 @@ export type Database = {
             foreignKeyName: "tm_release_gate_results_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_gate_results_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_gate_results_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44029,22 +44809,15 @@ export type Database = {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_quality_gates_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44206,22 +44979,15 @@ export type Database = {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_release_readiness_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -44401,6 +45167,7 @@ export type Database = {
           id: string
           link_type: string | null
           notes: string | null
+          project_id: string | null
           requirement_id: string | null
           requirement_type: string
           test_case_id: string
@@ -44416,6 +45183,7 @@ export type Database = {
           id?: string
           link_type?: string | null
           notes?: string | null
+          project_id?: string | null
           requirement_id?: string | null
           requirement_type: string
           test_case_id: string
@@ -44431,6 +45199,7 @@ export type Database = {
           id?: string
           link_type?: string | null
           notes?: string | null
+          project_id?: string | null
           requirement_id?: string | null
           requirement_type?: string
           test_case_id?: string
@@ -44485,6 +45254,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_resource_profile"
             referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_requirement_links_test_case_id_fkey"
@@ -45032,45 +45829,51 @@ export type Database = {
       }
       tm_step_results: {
         Row: {
+          action_snapshot: string | null
           actual_result: string | null
           comment: string | null
           created_at: string | null
           duration_seconds: number | null
           executed_at: string | null
           executed_by: string | null
+          expected_snapshot: string | null
           id: string
           status: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id: string | null
           updated_at: string | null
         }
         Insert: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id: string
-          test_step_id: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          action_snapshot?: string | null
           actual_result?: string | null
           comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
+          expected_snapshot?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
           step_number?: number | null
           test_run_id?: string
-          test_step_id?: string
+          test_step_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -45502,6 +46305,7 @@ export type Database = {
           is_latest_version: boolean | null
           is_template: boolean | null
           labels: string[]
+          linked_story_key: string | null
           parent_case_id: string | null
           postconditions_html: string | null
           preconditions: string | null
@@ -45549,6 +46353,7 @@ export type Database = {
           is_latest_version?: boolean | null
           is_template?: boolean | null
           labels?: string[]
+          linked_story_key?: string | null
           parent_case_id?: string | null
           postconditions_html?: string | null
           preconditions?: string | null
@@ -45596,6 +46401,7 @@ export type Database = {
           is_latest_version?: boolean | null
           is_template?: boolean | null
           labels?: string[]
+          linked_story_key?: string | null
           parent_case_id?: string | null
           postconditions_html?: string | null
           preconditions?: string | null
@@ -45785,22 +46591,15 @@ export type Database = {
             foreignKeyName: "tm_test_cases_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cases_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_version_id_fkey"
@@ -46197,22 +46996,15 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cycles_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cycles_sprint_id_fkey"
@@ -46583,22 +47375,15 @@ export type Database = {
             foreignKeyName: "tm_test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_plans_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_plans_sprint_id_fkey"
@@ -47044,6 +47829,7 @@ export type Database = {
           action: string
           action_html: string | null
           created_at: string | null
+          deleted_at: string | null
           estimated_time_seconds: number | null
           expected_result: string | null
           expected_result_html: string | null
@@ -47061,6 +47847,7 @@ export type Database = {
           action: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -47078,6 +47865,7 @@ export type Database = {
           action?: string
           action_html?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
           expected_result_html?: string | null
@@ -52462,6 +53250,95 @@ export type Database = {
           },
         ]
       }
+      workflow_generation_cache: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          entity_key: string | null
+          expires_at: string
+          hit_count: number
+          id: string
+          model: string
+          prompt_hash: string
+          request: Json
+          response: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          entity_key?: string | null
+          expires_at?: string
+          hit_count?: number
+          id?: string
+          model: string
+          prompt_hash: string
+          request: Json
+          response: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          entity_key?: string | null
+          expires_at?: string
+          hit_count?: number
+          id?: string
+          model?: string
+          prompt_hash?: string
+          request?: Json
+          response?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_generation_cache_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       workgroups: {
         Row: {
           code: string
@@ -52807,6 +53684,22 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      incident_sla_live_status: {
+        Row: {
+          incident_id: string | null
+          incident_key: string | null
+          resolution_breaching: boolean | null
+          resolution_due_at: string | null
+          resolution_met_at: string | null
+          response_breaching: boolean | null
+          response_due_at: string | null
+          response_met_at: string | null
+          severity: Database["public"]["Enums"]["severity_level"] | null
+          status: Database["public"]["Enums"]["incident_status"] | null
+          title: string | null
+        }
+        Relationships: []
       }
       license_allocation_totals: {
         Row: {
@@ -56176,6 +57069,66 @@ export type Database = {
           },
         ]
       }
+      v_tm_requirement_coverage: {
+        Row: {
+          coverage_verdict: string | null
+          external_key: string | null
+          external_title: string | null
+          latest_run_status:
+            | Database["public"]["Enums"]["tm_execution_status"]
+            | null
+          link_id: string | null
+          link_type: string | null
+          project_id: string | null
+          requirement_id: string | null
+          requirement_type: string | null
+          test_case_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_tm_test_cases_full: {
         Row: {
           automation_id: string | null
@@ -56450,22 +57403,15 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "releases"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "v_release_with_artifacts"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cycles_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -57938,6 +58884,10 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
+      compute_sprint_efficiency: {
+        Args: { p_sprint_id: string }
+        Returns: Json
+      }
       convert_idea_to_initiative: {
         Args: { p_idea_id: string; p_user_id?: string }
         Returns: string
@@ -58115,7 +59065,15 @@ export type Database = {
         }
         Returns: Database["public"]["Enums"]["dependency_level_v2"]
       }
+      derive_incident_status_from_ph_issue: {
+        Args: { status_category: string }
+        Returns: Database["public"]["Enums"]["incident_status"]
+      }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
+      derive_severity_from_jira_priority: {
+        Args: { p: string }
+        Returns: Database["public"]["Enums"]["severity_level"]
+      }
       ensure_presence: {
         Args: { conv_uuid: string; heartbeat_interval_seconds?: number }
         Returns: {
@@ -59044,6 +60002,11 @@ export type Database = {
           updated_at: string
         }[]
       }
+      hi_set_parent_rules: {
+        Args: { p_child_type_id: string; p_parent_type_ids: Json }
+        Returns: number
+      }
+      hi_upsert_level: { Args: { p_level: Json }; Returns: string }
       hi_validate_hierarchy_move: {
         Args: { p_new_parent_id: string; p_node_id: string }
         Returns: boolean
@@ -59324,7 +60287,50 @@ export type Database = {
         Args: { p_project_id: string }
         Returns: undefined
       }
+      ph_wf_admin_log: {
+        Args: {
+          p_action: string
+          p_diff: Json
+          p_target_ids: string[]
+          p_target_kind: string
+        }
+        Returns: undefined
+      }
+      ph_wf_apply_scheme: {
+        Args: { p_project_id: string; p_scheme_id: string }
+        Returns: undefined
+      }
+      ph_wf_assert_admin: { Args: never; Returns: undefined }
+      ph_wf_create_draft: {
+        Args: { p_entity_key: string; p_from_version_id?: string }
+        Returns: string
+      }
+      ph_wf_delete_draft_status: {
+        Args: {
+          p_rewire_to?: string
+          p_status_key: string
+          p_version_id: string
+        }
+        Returns: number
+      }
+      ph_wf_delete_draft_transition: {
+        Args: { p_transition_id: string }
+        Returns: undefined
+      }
+      ph_wf_discard_draft: {
+        Args: { p_version_id: string }
+        Returns: undefined
+      }
+      ph_wf_entity_issue_types: {
+        Args: { p_entity_key: string }
+        Returns: string[]
+      }
+      ph_wf_import_generated: {
+        Args: { p_cache_id: string; p_entity_key?: string }
+        Returns: string
+      }
       ph_wf_is_admin: { Args: never; Returns: boolean }
+      ph_wf_is_privileged_ctx: { Args: never; Returns: boolean }
       ph_wf_migration_preview: {
         Args: { p_entity: string }
         Returns: {
@@ -59334,6 +60340,44 @@ export type Database = {
           proposed_key: string
         }[]
       }
+      ph_wf_publish_version: {
+        Args: { p_remaps?: Json; p_version_id: string }
+        Returns: Json
+      }
+      ph_wf_reassign_statuses: {
+        Args: {
+          p_entity_key: string
+          p_from_status: string
+          p_project_id?: string
+          p_to_status_key: string
+        }
+        Returns: number
+      }
+      ph_wf_require_draft: {
+        Args: { p_version_id: string }
+        Returns: undefined
+      }
+      ph_wf_set_field_requirements: {
+        Args: { p_reqs: Json; p_version_id: string }
+        Returns: number
+      }
+      ph_wf_set_transition_guards: {
+        Args: { p_guards: Json; p_transition_id: string }
+        Returns: number
+      }
+      ph_wf_set_transition_roles: {
+        Args: { p_roles: Json; p_transition_id: string }
+        Returns: number
+      }
+      ph_wf_upsert_draft_status: {
+        Args: { p_status: Json; p_version_id: string }
+        Returns: string
+      }
+      ph_wf_upsert_draft_transition: {
+        Args: { p_transition: Json; p_version_id: string }
+        Returns: string
+      }
+      ph_wf_validate_draft: { Args: { p_version_id: string }; Returns: Json }
       ph_wf_write_audit: { Args: { payload: Json }; Returns: string }
       planhub_create_version: {
         Args: {
@@ -59616,6 +60660,10 @@ export type Database = {
         Returns: number
       }
       sort_queue_by_priority: { Args: { p_run_id: string }; Returns: Json }
+      sprint_autoname: {
+        Args: { p_length_weeks: number; p_project_key: string; p_start: string }
+        Returns: string
+      }
       start_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
@@ -60204,10 +61252,6 @@ export type Database = {
         Args: { p_assignment_id: string; p_notes?: string; p_status: string }
         Returns: Json
       }
-      tm_update_coverage_status: {
-        Args: { p_link_id: string; p_status: string }
-        Returns: boolean
-      }
       tm_update_cycle_milestone: {
         Args: {
           p_description?: string
@@ -60402,6 +61446,11 @@ export type Database = {
         Returns: string
       }
       worker_heartbeat: { Args: { p_worker_id: string }; Returns: Json }
+      wt_archive_work_item_type: {
+        Args: { p_type_id: string }
+        Returns: undefined
+      }
+      wt_upsert_work_item_type: { Args: { p_type: Json }; Returns: string }
     }
     Enums: {
       alignment_type: "direct" | "inherited"
@@ -60946,14 +61995,7 @@ export type Database = {
         | "assign"
         | "clone"
       tm_case_status: "draft" | "ready" | "approved" | "deprecated"
-      tm_cycle_status:
-        | "planned"
-        | "in_progress"
-        | "completed"
-        | "archived"
-        | "draft"
-        | "active"
-        | "paused"
+      tm_cycle_status: "planned" | "active" | "completed" | "archived"
       tm_defect_severity: "blocker" | "critical" | "major" | "minor" | "trivial"
       tm_defect_status:
         | "open"
@@ -61138,9 +62180,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       alignment_type: ["direct", "inherited"],
@@ -61739,15 +62778,7 @@ export const Constants = {
         "clone",
       ],
       tm_case_status: ["draft", "ready", "approved", "deprecated"],
-      tm_cycle_status: [
-        "planned",
-        "in_progress",
-        "completed",
-        "archived",
-        "draft",
-        "active",
-        "paused",
-      ],
+      tm_cycle_status: ["planned", "active", "completed", "archived"],
       tm_defect_severity: ["blocker", "critical", "major", "minor", "trivial"],
       tm_defect_status: [
         "open",

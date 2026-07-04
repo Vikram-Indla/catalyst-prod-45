@@ -25,7 +25,6 @@
  */
 import React, { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CloseIcon from '@atlaskit/icon/core/close';
@@ -46,15 +45,19 @@ import {
   Description,
   CatalystActivitySection,
   CatalystKeyDetails,
+  CatalystSidebarDetails,
   StatusLozengeDropdown,
 } from '@/components/catalyst-detail-views/shared/sections';
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
-import {
-  EditableAssignee,
-  EditableReporter,
-  EditableSprintReleases as EditableSprintRelease,
-} from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { AttachmentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
@@ -214,17 +217,34 @@ function PhIssuePanelBody({
   onClose: () => void;
   onOpenFullPage?: () => void;
 }) {
-  const queryClient = useQueryClient();
   const { data: issue, isLoading } = useCatalystIssue(itemId, true);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
-
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });
+  const { user } = useAuth();
 
   const issueKeyShown = issue?.issue_key || itemId;
   const projectName = (issue as any)?.project_name || projectKey;
-  const effectiveType = issue?.issue_type || itemType || typeIconLabel || 'Story';
+  const effectiveType = issue?.issue_type || itemType || typeIconLabel || null;
+
+  // Attachments — mirror CatalystViewStory's source-aware fetch so
+  // Catalyst-native items route to catalyst_attachments and Jira-synced
+  // items route to ph_attachments (Vikram 2026-07-02).
+  const workItemSource: 'jira' | 'catalyst' =
+    (issue as any)?.__catalyst_source ? 'catalyst' : 'jira';
+  const attachmentsTable =
+    workItemSource === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
+  const { data: attachments = [] } = useQuery({
+    queryKey: ['ph-attachments', issue?.id, workItemSource],
+    enabled: !!issue?.id,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from(attachmentsTable)
+        .select('*')
+        .eq('work_item_id', issue!.id)
+        .order('created_at', { ascending: false });
+      return (data ?? []) as PhAttachment[];
+    },
+  });
 
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -392,38 +412,7 @@ function PhIssuePanelBody({
               {issue.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
             </div>
 
-            <CatalystQuickActions />
-
-            <div style={{ marginBottom: 16 }}>
-              {issue.issue_type !== 'Feature' && (
-                <FieldRow label="Sprint/Iteration">
-                  <EditableSprintRelease
-                    issueId={issue.id}
-                    currentSprintRelease={issue.sprint_release}
-                    projectKey={issue.project_key}
-                    onUpdate={invalidate}
-                  />
-                </FieldRow>
-              )}
-              <FieldRow label="Assignee">
-                <EditableAssignee
-                  issueId={issue.id}
-                  projectId={projectId || ''}
-                  currentAssigneeId={issue.assignee_account_id}
-                  currentAssigneeName={issue.assignee_display_name}
-                  onUpdate={invalidate}
-                />
-              </FieldRow>
-              <FieldRow label="Reporter">
-                <EditableReporter
-                  issueId={issue.id}
-                  projectId={projectId || ''}
-                  currentReporterId={issue.reporter_account_id}
-                  currentReporterName={issue.reporter_display_name}
-                  onUpdate={invalidate}
-                />
-              </FieldRow>
-            </div>
+            <CatalystQuickActions itemType={effectiveType} />
 
             <CatalystKeyDetails
               issue={issue}
@@ -435,19 +424,93 @@ function PhIssuePanelBody({
               afterBody={<Description issue={issue} />}
             />
 
-            <CatalystActivitySection itemId={itemId} isOpen={true} />
+            {/* Content sections — Jira-parity right-side panel (Vikram
+                2026-07-02). Order: Attachments → Design → SubtasksPanel
+                (renders as "Child work items" for grandparents /
+                "Subtasks" for fathers) → Linked work items. All sit
+                ABOVE the Details card so the user sees the work-related
+                context before the meta fields. */}
+            {issue?.id && user?.id && (
+              <AttachmentsSection
+                attachments={attachments}
+                itemId={issue.id}
+                userId={user.id}
+                projectKey={issue.project_key || projectKey}
+                source={workItemSource}
+              />
+            )}
 
-            <div style={{ marginTop: 24, paddingTop: 12 }}>
-              {issue.jira_created_at && (
-                <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-200)', color: SUBTLE }} title={issue.jira_created_at}>
-                  Created {fmtAbs(issue.jira_created_at)}
-                </div>
-              )}
-              {issue.jira_updated_at && (
-                <div style={{ fontSize: 'var(--ds-font-size-200)', color: SUBTLE }} title={issue.jira_updated_at}>
-                  Updated {fmtRel(issue.jira_updated_at)}
-                </div>
-              )}
+            {/* Design section removed here — LinkedWorkItemsSection
+                already mounts DesignsSection internally, and double-
+                mounting created conflicting useDesigns hooks (blank
+                screen). LinkedWorkItemsSection renders Design ABOVE
+                its own linked list, so the visible order below is:
+                Attachments → SubtasksPanel → (Design + Linked). */}
+
+            {issue?.issue_key && (
+              <SubtasksPanel
+                storyKey={issue.issue_key}
+                storyId={issue.id}
+                projectKey={issue.project_key || projectKey || ''}
+                parentIssueType={issue.issue_type || effectiveType || undefined}
+                parentSummary={issue.summary || ''}
+                parentSource={workItemSource}
+                parentProjectId={projectId ?? null}
+              />
+            )}
+
+            <LinkedWorkItemsSection
+              issueId={itemId}
+              issueKey={issue?.issue_key ?? ''}
+              projectKey={issue?.project_key || projectKey}
+            />
+
+            {/* Story-scoped AI-generated test cases — same section that lives
+                on CatalystViewStory. Sits below Linked work items so the
+                side-panel order (Attachments → Subtasks → Linked → Tests)
+                matches the full detail view (2026-07-02 Vikram). */}
+            {issue?.issue_type === 'Story' && issue?.issue_key && (issue?.project_key || projectKey) && (
+              <TestCasesSection
+                storyKey={issue.issue_key}
+                storySummary={issue.summary ?? ''}
+                storyDescription={
+                  typeof issue.description === 'string'
+                    ? issue.description
+                    : issue.description
+                      ? JSON.stringify(issue.description)
+                      : ''
+                }
+                acceptanceCriteria={(issue as any)?.acceptance_criteria ?? ''}
+                projectKey={issue.project_key || projectKey || ''}
+                projectName={issue.project_name ?? undefined}
+              />
+            )}
+
+            {/* Bordered "Details" card + Created/Updated timestamps + Activity.
+                Left edge (Details card border, Created text, Activity heading)
+                aligns with the chevrons of the collapsible sections above
+                (Attachments / Subtasks / Linked / Tests) — all sit at the
+                scroll container's left inset. Consistent vertical rhythm
+                (`marginTop: 16`) between sections is owned by each section
+                root (`.tcs-root`, `.lwi-root`, etc.); the wrapper here just
+                adds the same 16px gap above the Details card so the sequence
+                stays even (Vikram 2026-07-02). */}
+            <div style={{ marginTop: 16 }}>
+              <CatalystSidebarDetails
+                issue={issue}
+                itemId={itemId}
+                projectId={projectId}
+                projectKey={projectKey}
+                onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+                onClose={onClose}
+                onDelete={() => mutations.deleteIssue.mutate()}
+                typeLabel={(effectiveType || 'item').toLowerCase()}
+                hideDiscuss={true}
+              />
+
+              <div style={{ marginTop: 16 }}>
+                <CatalystActivitySection itemId={itemId} isOpen={true} />
+              </div>
             </div>
           </>
         )}
@@ -529,7 +592,7 @@ function TaskPanelBody({
   return (
     <>
       <ChromeRow
-        type={typeIconLabel || itemType || 'Task'}
+        type={typeIconLabel || itemType || undefined}
         onClose={onClose}
         onOpenFullPage={onOpenFullPage}
       />

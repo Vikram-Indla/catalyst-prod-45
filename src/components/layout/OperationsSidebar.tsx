@@ -16,13 +16,13 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: Operations
     label: 'Incidents',
     items: [
       // Incidents section
-      { 
-        id: 'incidents', 
-        title: 'Incident List', 
-        path: '/release/incidents', 
-        icon: List, 
-        exact: true, 
-        badge: openIncidentCount 
+      {
+        id: 'incidents',
+        title: 'Incident List',
+        path: '/incident-hub',
+        icon: List,
+        exact: true,
+        badge: openIncidentCount
       },
       { 
         id: 'incident-reports', 

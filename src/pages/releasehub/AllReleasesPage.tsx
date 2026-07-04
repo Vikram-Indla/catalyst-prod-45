@@ -18,7 +18,7 @@ import { useReleasesList, useUpdateReleaseStatus, type ReleaseListRow } from '@/
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { Package, Search } from '@/lib/atlaskit-icons';
@@ -212,7 +212,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
         if (!row.manager) return <span style={{ color: T.subtlest }}>—</span>;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
+            <CatalystAvatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
           </div>
         );

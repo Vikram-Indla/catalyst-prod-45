@@ -296,6 +296,18 @@ export function CapacityAnalyticsView({
                 setShowBreakdown(true);
               }
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (activeCategory === 'insourced') {
+                  setActiveCategory(null);
+                  setShowBreakdown(false);
+                } else {
+                  setActiveCategory('insourced');
+                  setShowBreakdown(true);
+                }
+              }
+            }}
             role="button"
             tabIndex={0}
           >
@@ -321,6 +333,18 @@ export function CapacityAnalyticsView({
                 setShowBreakdown(true);
               }
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (activeCategory === 'cosourced') {
+                  setActiveCategory(null);
+                  setShowBreakdown(false);
+                } else {
+                  setActiveCategory('cosourced');
+                  setShowBreakdown(true);
+                }
+              }
+            }}
             role="button"
             tabIndex={0}
           >
@@ -343,6 +367,18 @@ export function CapacityAnalyticsView({
               } else {
                 setActiveCategory('outsourced');
                 setShowBreakdown(true);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (activeCategory === 'outsourced') {
+                  setActiveCategory(null);
+                  setShowBreakdown(false);
+                } else {
+                  setActiveCategory('outsourced');
+                  setShowBreakdown(true);
+                }
               }
             }}
             role="button"
@@ -384,6 +420,13 @@ export function CapacityAnalyticsView({
             onClick={() => {
               setActiveCategory(activeCategory === 'licenses' ? null : 'licenses');
               setShowBreakdown(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveCategory(activeCategory === 'licenses' ? null : 'licenses');
+                setShowBreakdown(false);
+              }
             }}
             role="button"
             tabIndex={0}
@@ -649,6 +692,12 @@ export function CapacityAnalyticsView({
             <div 
               className={cn("ct-runrate-card", departmentFilter === 'all' && "active")}
               onClick={() => onDepartmentChange?.('all')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onDepartmentChange?.('all');
+                }
+              }}
               role="button"
               tabIndex={0}
             >
@@ -673,6 +722,12 @@ export function CapacityAnalyticsView({
                 key={department} 
                 className={cn("ct-runrate-card", departmentFilter.toLowerCase() === department.toLowerCase() && "active")}
                 onClick={() => onDepartmentChange?.(department.toLowerCase())}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onDepartmentChange?.(department.toLowerCase());
+                  }
+                }}
                 role="button"
                 tabIndex={0}
               >

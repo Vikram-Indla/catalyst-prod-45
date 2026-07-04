@@ -4,10 +4,13 @@
  * both entity kinds via EntityConfig (src/lib/entity-hub/config.ts). Same
  * unification applies here: one adapter, config-driven.
  *
- * Issue association matches WorkItemsSection.tsx's proven approach: match by
- * ph_issues.sprint_release JSONB contains {name: entityName}, NOT by the
- * sprint_name text column (documented there as unreliable — jira-sync
- * overwrites it). Reuses computeInsights (useBoardInsights.ts) unchanged.
+ * Issue association mirrors WorkItemsSection.tsx's proven approach:
+ * - config.matchIssueByFk set (sprint): match ph_issues.<fk column> = entityId
+ *   (S0.2b/D-002 — the sprint_release JSONB name-match is dead for sprints).
+ * - otherwise (release): match ph_issues.sprint_release JSONB contains
+ *   {name: entityName}, NOT the sprint_name text column (documented there as
+ *   unreliable — jira-sync overwrites it).
+ * Reuses computeInsights (useBoardInsights.ts) unchanged.
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -59,10 +62,20 @@ export function useEntityHealthAdapter(config: EntityConfig, entityId: string | 
     enabled: !!entityId && !!entityName,
     staleTime: 2 * 60 * 1000,
     queryFn: async () => {
+      const select = `${INSIGHTS_SELECT}, sprint_release`;
+
+      if (config.matchIssueByFk) {
+        const { data, error: fkErr } = await supabase
+          .from('ph_issues')
+          .select(select)
+          .eq(config.matchIssueByFk, entityId as string)
+          .limit(2000);
+        if (fkErr) throw new Error(fkErr.message);
+        return (data ?? []) as unknown as RawIssue[];
+      }
+
       const target = (entityName ?? '').trim();
       if (!target) return [];
-
-      const select = `${INSIGHTS_SELECT}, sprint_release`;
 
       const containsResult = await supabase
         .from('ph_issues')

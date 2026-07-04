@@ -12,11 +12,13 @@
  *   5. Route param contract — isValidRouteParam (Grid F)
  *   6. Avatar contract    — validateAvatarImport, validateAvatarSrc (Grid G)
  *   7. Row typography contract — CANONICAL_ROW_TYPOGRAPHY, containsHardcodedLineHeight (Grid H)
+ *   8. Backlog/All-Work view eligibility — isEligibleForBacklogView (Grid I)
  *
  * ALL surfaces that create, link, or parent work items MUST query this engine.
  * No surface may hardcode type lists or module mappings.
  *
  * Confirmed by Vikram: 2026-07-01 (Grids A–G) · 2026-07-02 (Grid H, pending confirmation)
+ * · 2026-07-03 (Grid I)
  * Council session: CRE design + opportunity analysis
  */
 
@@ -160,23 +162,64 @@ export function normalizeType(raw: string | null | undefined): string {
 // ─── QUERY API ────────────────────────────────────────────────────────────────
 
 /**
+ * Cross-module creation rights (Grid D exceptions) — types creatable in a
+ * module that does NOT own them. Grid A ownership is unchanged, so hierarchy
+ * (Grid B), links (Grid C), and getOwningModule() are unaffected.
+ * D7 (2026-07-03): TEAM surfaces (Backlog inline create) may create Epic.
+ */
+const EXTRA_CREATE_RIGHTS: Record<string, readonly string[]> = {
+  TEAM: ['Epic'],
+};
+
+/**
  * Returns true if typeName may be created inside moduleCode.
  * Subtask family types are permitted in every module (Grid A10).
+ * Cross-module creation rights (Grid D7+) are honoured after ownership.
  */
 export function canCreateInModule(typeName: string, moduleCode: string): boolean {
   const canonical = normalizeType(typeName);
   if (isSubtaskFamily(canonical) || SUBTASK_FAMILY.includes(canonical)) return true;
+  if ((EXTRA_CREATE_RIGHTS[moduleCode] ?? []).includes(canonical)) return true;
   const ownedTypes = MODULE_OWNED_TYPES[moduleCode as CREModule] ?? [];
   return ownedTypes.includes(canonical);
 }
 
 /**
  * Returns all type names permitted for creation in a given module.
- * Includes subtask family in the result.
+ * Includes cross-module creation rights (Grid D7+) and subtask family.
  */
 export function getAllowedTypesForModule(moduleCode: string): string[] {
   const owned = MODULE_OWNED_TYPES[moduleCode as CREModule] ?? [];
-  return [...owned, ...SUBTASK_FAMILY];
+  return [...owned, ...(EXTRA_CREATE_RIGHTS[moduleCode] ?? []), ...SUBTASK_FAMILY];
+}
+
+/**
+ * Returns true if CRE governs this type name (Grid A ownership ∪ subtask
+ * family). Types outside this set are Studio-registry custom types
+ * (ph_work_item_types) — the registry, not CRE, is authoritative for them
+ * (ph_hierarchy_parent_rules mirrors Grid B for system types only,
+ * migration 20260703130000).
+ */
+export function isCREGovernedType(typeName: string): boolean {
+  const canonical = normalizeType(typeName);
+  if (isSubtaskFamily(canonical) || SUBTASK_FAMILY.includes(canonical)) return true;
+  return Object.values(MODULE_OWNED_TYPES).some(types => types.includes(canonical));
+}
+
+/**
+ * Chokepoint filter for create-surface type catalogues (Grids A + D).
+ * Keeps a candidate type when either:
+ *   — CRE governs it and canCreateInModule() allows it in moduleCode, or
+ *   — CRE does not govern it (Studio-registry custom type — the registry
+ *     is authoritative for custom types, so CRE passes them through).
+ * Every type picker on a create surface MUST run its catalogue through
+ * this before render (enforced by scripts/cre-chokepoint-gate.cjs).
+ */
+export function filterCreatableTypes(
+  types: readonly string[],
+  moduleCode: string,
+): string[] {
+  return types.filter(t => !isCREGovernedType(t) || canCreateInModule(t, moduleCode));
 }
 
 /**
@@ -204,6 +247,66 @@ export function canBeChildOf(childType: string, parentType: string): boolean {
   if (isSubtaskFamily(parent) || SUBTASK_FAMILY.includes(parent)) return false;
   const allowed = getAllowedChildTypes(parent);
   return allowed.some(t => normalizeType(t) === child);
+}
+
+// ─── GRID B + STUDIO REGISTRY — CHILD TYPES WITH CUSTOM-TYPE FALLBACK ───────
+
+/** Structural subset of ph_work_item_types rows (useWorkItemTypes). */
+export interface RegistryWorkItemType {
+  id: string;
+  type_key: string;
+  display_name: string;
+  is_system: boolean;
+  is_enabled: boolean;
+}
+
+/** Structural subset of ph_hierarchy_parent_rules rows (useParentRules). */
+export interface RegistryParentRule {
+  child_type_id: string;
+  parent_type_id: string | null;
+}
+
+/**
+ * getAllowedChildTypes with Studio-registry fallback.
+ *
+ * Authority split (RULE_TABLE.md Grid B + migration 20260703130000):
+ *   — System (CRE-governed) parent: static Grid B list is authoritative.
+ *     Registry rows for system children merely mirror Grid B, so only
+ *     CUSTOM (is_system = false) registry children are appended.
+ *   — Custom (non-CRE) parent: the registry is the only authority — its
+ *     child rows are returned verbatim (static lookup would yield []).
+ *
+ * Pure function — callers pass registry rows in (useWorkItemTypes +
+ * useParentRules); with no registry data it degrades to the static Grid B
+ * lookup, so existing call sites are unaffected.
+ */
+export function getAllowedChildTypesWithRegistry(
+  parentType: string | null | undefined,
+  registryTypes?: readonly RegistryWorkItemType[] | null,
+  parentRules?: readonly RegistryParentRule[] | null,
+): string[] {
+  const base = getAllowedChildTypes(parentType ?? '');
+  if (!parentType || !registryTypes?.length || !parentRules?.length) return base;
+
+  const norm = (s: string) => normalizeType(s).toLowerCase();
+  const parentRow = registryTypes.find(
+    t => norm(t.display_name) === norm(parentType) || t.type_key.toLowerCase() === norm(parentType),
+  );
+  if (!parentRow) return base;
+
+  const childIds = new Set(
+    parentRules.filter(r => r.parent_type_id === parentRow.id).map(r => r.child_type_id),
+  );
+  const registryChildren = registryTypes.filter(t => childIds.has(t.id) && t.is_enabled);
+
+  if (isCREGovernedType(parentType)) {
+    const customChildren = registryChildren
+      .filter(t => !t.is_system)
+      .map(t => t.display_name)
+      .filter(name => !base.some(b => norm(b) === norm(name)));
+    return [...base, ...customChildren];
+  }
+  return registryChildren.map(t => t.display_name);
 }
 
 /**
@@ -596,5 +699,27 @@ export const ROW_TYPOGRAPHY_CONTRACT_CHECKLIST = [
   'No hardcoded lineHeight: 1 / 1.4 / 1.5 or Tailwind leading-[...] in row cell components',
   'Reuse JiraTable/cells.tsx or JiraTable/editors.tsx — do not hand-roll a new row renderer',
 ] as const;
+
+// ─── GRID I — BACKLOG / ALL-WORK VIEW ELIGIBILITY ────────────────────────────
+
+/**
+ * Types banned from appearing as standalone rows in the Backlog and All Work
+ * views. Rules I1–I2. QA Bug moved to TESTHUB and Production Incident moved
+ * to INCIDENT (Grid A4/A5, 2026-07-01) — they no longer belong in the Team
+ * Backlog/All-Work row list, though they remain valid children of an Epic
+ * (Grid B2 unaffected — this only governs standalone row visibility, not
+ * hierarchy) and are still reachable via TestHub / Incident Hub.
+ * Confirmed by Vikram: 2026-07-03.
+ */
+const BACKLOG_VIEW_EXCLUDED_TYPES: readonly string[] = ['QA Bug', 'Production Incident'];
+
+/**
+ * Returns true if typeName may appear as a standalone row in the Backlog
+ * or All Work view. Rules I1 (Backlog), I2 (All Work).
+ */
+export function isEligibleForBacklogView(typeName: string): boolean {
+  const canonical = normalizeType(typeName);
+  return !BACKLOG_VIEW_EXCLUDED_TYPES.includes(canonical);
+}
 
 export type AvatarContractItem = typeof AVATAR_CONTRACT_CHECKLIST[number];

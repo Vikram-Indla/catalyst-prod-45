@@ -227,17 +227,19 @@ export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
 
   // ==================== TAB CONFIG ====================
 
+  // No synthetic "Task created" entry when there's no real history record —
+  // fabricating one with a placeholder timestamp would misrepresent an
+  // unknown creation event as a real logged activity (CLAUDE.md
+  // zero-assumption data rendering).
+  const history = editedTask.history ?? [];
+
   const tabs: Tab[] = [
     { id: 'description', label: 'Description' },
     { id: 'notes', label: 'Notes' },
     { id: 'checklist', label: 'Checklist' },
     { id: 'links', label: 'Links' },
     { id: 'files', label: 'Files' },
-    { id: 'activity', label: 'Activity', badge: (editedTask.comments?.length || 0) + (editedTask.history?.length || 1) }
-  ];
-
-  const history = editedTask.history || [
-    { id: '1', action: 'Task created', author: 'System', timestamp: editedTask.createdAt || 'Unknown' }
+    { id: 'activity', label: 'Activity', badge: (editedTask.comments?.length || 0) + history.length }
   ];
 
   // ==================== RENDER TAB CONTENT ====================

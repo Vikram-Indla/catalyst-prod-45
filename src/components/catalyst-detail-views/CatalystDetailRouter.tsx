@@ -39,6 +39,12 @@ const CatalystViewTestCase = lazy(() => import('./test-case/CatalystViewTestCase
 // the test_case short-circuit. 2026-06-28.
 const CatalystViewTestCycle = lazy(() => import('./test-cycle/CatalystViewTestCycle'));
 
+// P1-S13 (2026-07-03) — Test Hub defect detail. Reads from tm_defects (keyed
+// by defect_key) — NOT ph_issues. Routed when callers pass entityKind='tm_defect'.
+// Same REUSE-FIRST pattern as CatalystViewTestCase (no fork of the
+// ph_issues-based CatalystViewDefect, which cannot render a tm_defects row).
+const CatalystViewTmDefect = lazy(() => import('./defect/CatalystViewTmDefect'));
+
 /** Normalize various issue_type strings to a canonical CatalystItemType */
 function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask' | 'idea' | null {
   if (!raw) return null;
@@ -85,12 +91,15 @@ export default function CatalystDetailRouter({
     queryKey: ['cv-item-type-lookup', itemId],
     enabled: !!itemId && isOpen && !itemType && !entityKind,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_issues')
         .select('issue_type')
         .eq('issue_key', itemId)
         .is('deleted_at', null)
         .maybeSingle();
+      // CAT-DETAIL-MODAL-404-20260702-001: don't let a swallowed error
+      // masquerade as "no such issue" — see useCatalystIssue.ts.
+      if (error) throw error;
       return data?.issue_type ?? null;
     },
     staleTime: 120000,
@@ -153,6 +162,30 @@ export default function CatalystDetailRouter({
     return (
       <Suspense fallback={null}>
         <CatalystViewTestCycle
+          isOpen={isOpen}
+          onClose={onClose}
+          itemId={itemId}
+          projectId={projectId}
+          projectKey={projectKey}
+          onOpenItem={onOpenItem}
+          panelMode={panelMode}
+          fullPageMode={fullPageMode}
+          onTogglePanelMode={onTogglePanelMode}
+          navigationItems={navigationItems}
+          onNavigate={onNavigate}
+          hideSidebar={hideSidebar}
+        />
+      </Suspense>
+    );
+  }
+
+  // P1-S13 — short-circuit for Test Hub defects. tm_defects is a separate
+  // table keyed by defect_key; no itemType lookup needed (route is unambiguous).
+  if (entityKind === 'tm_defect') {
+    if (!isOpen) return null;
+    return (
+      <Suspense fallback={null}>
+        <CatalystViewTmDefect
           isOpen={isOpen}
           onClose={onClose}
           itemId={itemId}

@@ -3,6 +3,7 @@
  * Adapted to ph_issues schema: issue_key, summary, issue_type, jira_updated_at, jira_created_at.
  */
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import type { UserContext } from './hooks/useUserContext';
 
 export interface QueryResult {
@@ -179,14 +180,18 @@ async function fetchMyBlocked(ctx: UserContext): Promise<QueryResult> {
   };
 
   const items = data.map(item => {
-    const days = Math.ceil((Date.now() - new Date(item.jira_updated_at || item.jira_created_at || Date.now()).getTime()) / 86400000);
+    // Zero-assumption: only compute "Blocked Nd" when a real date exists.
+    // Never fabricate "now" as the source date (CLAUDE.md).
+    const sourceDate = item.jira_updated_at || item.jira_created_at;
+    const days = sourceDate ? Math.ceil((Date.now() - new Date(sourceDate).getTime()) / 86400000) : null;
     const isAssignee = item.assignee_display_name === ctx.displayName;
     const isReporter = item.reporter_display_name === ctx.displayName;
+    const blockedSuffix = days != null ? ` · Blocked ${days}d` : '';
     return {
       ...item,
-      reason: isAssignee ? `Assigned to you · Blocked ${days}d` :
-              isReporter ? `You reported this · Blocked ${days}d` :
-              `In ${item.project_key} · Blocked ${days}d`,
+      reason: isAssignee ? `Assigned to you${blockedSuffix}` :
+              isReporter ? `You reported this${blockedSuffix}` :
+              `In ${item.project_key}${blockedSuffix}`,
     };
   });
 
@@ -199,19 +204,23 @@ async function fetchMyBlocked(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchTeamWorkload(ctx: UserContext): Promise<QueryResult> {
-  const { data, error } = await supabase
-    .from('ph_issues')
-    .select('assignee_display_name, status, project_key')
-    .in('project_key', ctx.projectKeys)
-    .is('jira_removed_at', null)
-    .not('assignee_display_name', 'is', null)
-    .not('status', 'ilike', '%done%')
-    .not('status', 'ilike', '%closed%')
-    .not('status', 'ilike', '%resolved%')
-    .limit(500);
-  if (error) throw error;
+  // Per-member counts must see every open row — a flat limit (clamped to
+  // max_rows anyway) skews the workload stats once matches exceed the cap.
+  const data = await fetchAllPages((from, to) =>
+    supabase
+      .from('ph_issues')
+      .select('assignee_display_name, status, project_key')
+      .in('project_key', ctx.projectKeys)
+      .is('jira_removed_at', null)
+      .not('assignee_display_name', 'is', null)
+      .not('status', 'ilike', '%done%')
+      .not('status', 'ilike', '%closed%')
+      .not('status', 'ilike', '%resolved%')
+      .order('id')
+      .range(from, to),
+  );
 
-  if (!data?.length) return {
+  if (!data.length) return {
     type: 'narrative', title: 'No open items', message: 'No open items found in your projects.',
   };
 
@@ -282,10 +291,18 @@ async function fetchAging(ctx: UserContext): Promise<QueryResult> {
     followUp: ['My blocked items', 'Team workload', 'Release readiness'],
   };
 
-  const items = data.map(item => ({
-    ...item,
-    reason: `${Math.ceil((Date.now() - new Date(item.jira_updated_at || Date.now()).getTime()) / 86400000)} days without update`,
-  }));
+  const items = data.map(item => {
+    // Zero-assumption: only compute "days without update" when jira_updated_at
+    // is real. Never fabricate "now" as the source date (CLAUDE.md) — that
+    // would assert "0 days without update" for an item with no real date.
+    const days = item.jira_updated_at
+      ? Math.ceil((Date.now() - new Date(item.jira_updated_at).getTime()) / 86400000)
+      : null;
+    return {
+      ...item,
+      reason: days != null ? `${days} days without update` : '',
+    };
+  });
 
   return {
     type: 'items',
@@ -314,11 +331,22 @@ async function fetchUnassigned(ctx: UserContext): Promise<QueryResult> {
     followUp: ['Team workload', 'My blocked items', 'Release readiness'],
   };
 
-  const items = data.map(item => ({
-    ...item,
-    assignee_display_name: null,
-    reason: `Created ${Math.ceil((Date.now() - new Date(item.jira_created_at || Date.now()).getTime()) / 86400000)}d ago · ${item.priority || 'Medium'} priority`,
-  }));
+  const items = data.map(item => {
+    // Zero-assumption: only compute "Created Nd ago" from a real timestamp,
+    // and only append the priority clause when a real priority exists
+    // (CLAUDE.md — never fabricate "now" or default to "Medium").
+    const createdDays = item.jira_created_at
+      ? Math.ceil((Date.now() - new Date(item.jira_created_at).getTime()) / 86400000)
+      : null;
+    const createdClause = createdDays != null ? `Created ${createdDays}d ago` : '';
+    const priorityClause = item.priority ? `${item.priority} priority` : '';
+    const reason = [createdClause, priorityClause].filter(Boolean).join(' · ');
+    return {
+      ...item,
+      assignee_display_name: null,
+      reason,
+    };
+  });
 
   return {
     type: 'items',
@@ -347,10 +375,14 @@ async function fetchMyOpen(ctx: UserContext): Promise<QueryResult> {
     followUp: ['Team workload', 'Project summary', 'Unassigned items'],
   };
 
-  const items = data.map(item => ({
-    ...item,
-    reason: item.due_date ? `Due ${item.due_date} · ${item.priority || 'Medium'}` : `${item.priority || 'Medium'} priority`,
-  }));
+  const items = data.map(item => {
+    // Zero-assumption: only include the priority clause when a real
+    // priority exists — never default to 'Medium' (CLAUDE.md).
+    const reason = item.due_date
+      ? (item.priority ? `Due ${item.due_date} · ${item.priority}` : `Due ${item.due_date}`)
+      : (item.priority ? `${item.priority} priority` : '');
+    return { ...item, reason };
+  });
 
   return {
     type: 'items',
@@ -442,7 +474,7 @@ async function fetchMyBugs(ctx: UserContext): Promise<QueryResult> {
   return {
     type: 'items',
     title: `${data.length} open defects in your projects`,
-    items: data.map(item => ({ ...item, reason: `${item.priority || 'Medium'} priority` })),
+    items: data.map(item => ({ ...item, reason: item.priority ? `${item.priority} priority` : '' })),
     followUp: ['My open items', 'Team workload', 'Release readiness'],
   };
 }
@@ -505,16 +537,20 @@ async function fetchReopened(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchReleaseReadiness(ctx: UserContext): Promise<QueryResult> {
-  const { data, error } = await supabase
-    .from('ph_issues')
-    .select('project_key, status, status_category')
-    .in('project_key', ctx.projectKeys)
-    .is('jira_removed_at', null)
-    .not('status', 'ilike', '%cancelled%')
-    .limit(500);
-  if (error) throw error;
+  // Per-project done/blocked ratios need the full row set — a flat limit
+  // (clamped to max_rows anyway) misreports release health past the cap.
+  const data = await fetchAllPages((from, to) =>
+    supabase
+      .from('ph_issues')
+      .select('project_key, status, status_category')
+      .in('project_key', ctx.projectKeys)
+      .is('jira_removed_at', null)
+      .not('status', 'ilike', '%cancelled%')
+      .order('id')
+      .range(from, to),
+  );
 
-  if (!data?.length) return {
+  if (!data.length) return {
     type: 'narrative', title: 'No release data', message: 'No items found for release analysis.',
   };
 
@@ -620,7 +656,7 @@ async function fetchPersonItems(name: string, ctx: UserContext): Promise<QueryRe
   return {
     type: 'items',
     title: `${data.length} open items assigned to ${assigneeName}`,
-    items: data.map(item => ({ ...item, reason: `${item.priority || 'Medium'} · ${item.project_key}` })),
+    items: data.map(item => ({ ...item, reason: item.priority ? `${item.priority} · ${item.project_key}` : item.project_key })),
     followUp: [`Is ${assigneeName} overloaded?`, 'Team workload'],
   };
 }

@@ -135,8 +135,8 @@ function mapPhIssue(row: any): WorkItem {
     commentsCount: countComments(row.comments),
     childCount: 0,
     description: row.description_text ?? null,
-    createdAt: row.jira_created_at ?? new Date().toISOString(),
-    updatedAt: row.jira_updated_at ?? new Date().toISOString(),
+    createdAt: row.jira_created_at ?? null,
+    updatedAt: row.jira_updated_at ?? null,
     createdBy: null,
     parentSummary: row.parent_summary ?? null,
     storyPoints: row.story_points ?? null,
@@ -289,6 +289,8 @@ export interface AllWorkPaginationState {
   fetchPrevPage: () => void;
   isLoading: boolean;
   error: Error | null;
+  /** Retry the items query after an error (count query refetches on its own). */
+  refetch: () => void;
   /** Total rows matching the current filters (across all pages), not just the
    *  current page. Null while loading. Used by the footer to show the real size
    *  instead of implying the 25-row page is the whole list. */
@@ -333,7 +335,7 @@ export function useProjectAllWorkItems(
     setPageState(1);
   }, []);
 
-  const { data = [], isLoading, error } = useQuery({
+  const { data = [], isLoading, error, refetch } = useQuery({
     queryKey: ['project-all-work-items-offset', projectKey, page, rowsPerPage, filterKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
@@ -446,6 +448,7 @@ export function useProjectAllWorkItems(
     fetchPrevPage,
     isLoading,
     error: error ?? null,
+    refetch,
     totalCount,
     page,
     setPage,

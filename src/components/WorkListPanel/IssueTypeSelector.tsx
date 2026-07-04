@@ -7,18 +7,25 @@
 import React, { memo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+// CRE chokepoint (Grids A + D): this create-modal picker serves a TEAM
+// surface, so the catalogue must pass the Catalyst Rules Engine filter
+// before render. See RULE_TABLE.md.
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
 
-export const CREATABLE_TYPES = [
-  'Story',
-  'Task',
-  'Feature',
-  'Defect',
-  'Production Incident',
-  'Change Request',
-  'Business Gap',
-  'Backend Task',
-  'API Request',
-];
+export const CREATABLE_TYPES = filterCreatableTypes(
+  [
+    'Story',
+    'Task',
+    'Feature',
+    'Defect',
+    'Production Incident',
+    'Change Request',
+    'Business Gap',
+    'Backend Task',
+    'API Request',
+  ],
+  'TEAM',
+);
 
 export interface IssuTypeSelectorProps {
   value: string | null;

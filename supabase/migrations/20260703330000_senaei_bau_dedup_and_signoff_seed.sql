@@ -1,0 +1,15 @@
+-- CAT-REPORTS-HUB-20260703-001 gap-closure follow-up ("go" sweep).
+-- ENVIRONMENT-SPECIFIC DATA REPAIR + SEED (staging cyij only) — intentional no-op
+-- here so the ledger stays 1:1 with committed files without replaying elsewhere.
+--
+-- Applied out-of-band on cyij 2026-07-03:
+-- 1) Senaei BAU tm_projects dedup: stale duplicate 748f80ae (16 TC-00xx cases +
+--    1 key_sequence, zero cycles/defects/links) merged into canonical 84f91caf
+--    (UPDATE tm_test_cases.project_id, DELETE stale key_sequence + project row).
+--    No case_key collision (unique is per project; canonical holds RVTC-*).
+-- 2) Release-signoff chain seed (REVAMP-DEMO-20260703): release_vehicles
+--    'Senaei BAU release train (seed)' → releases 'Senaei BAU 2026.07 (seed)'
+--    (slug senaei-bau-2026-07-seed) → 3 tm_release_signoffs
+--    (approve / pending / reject) so the approval-age report exercises both
+--    sources. Cleanup: delete by the seed slug / seed names.
+SELECT 1;

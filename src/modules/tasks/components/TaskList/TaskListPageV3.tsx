@@ -23,6 +23,7 @@ import {
   Radio,
 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -263,10 +264,35 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
     setColumnWidths(prev => ({ ...prev, [columnId]: width }));
   }, []);
 
-  const handleTaskUpdate = useCallback((taskId: string, field: string, value: any) => {
-    updateTask.mutate({ id: taskId, updates: { [field]: value } }, {
+  // F3: workflow-gated status changes surface ReasonCaptureModal, then retry.
+  const [reasonRetry, setReasonRetry] = useState<{
+    taskId: string;
+    field: string;
+    value: any;
+    ctx: { entityType: string; from: string | null; to: string };
+  } | null>(null);
+
+  const handleTaskUpdate = useCallback((
+    taskId: string,
+    field: string,
+    value: any,
+    reason?: { code: string | null; text: string | null },
+  ) => {
+    updateTask.mutate({
+      id: taskId,
+      updates: {
+        [field]: value,
+        ...(reason ? { reasonCode: reason.code, reasonText: reason.text } : {}),
+      } as never,
+    }, {
       onSuccess: () => catalystToast.success('Task updated'),
-      onError: () => catalystToast.error('Failed to update task'),
+      onError: (e) => {
+        if ((e as any)?.code === 'WF_REASON_REQUIRED') {
+          setReasonRetry({ taskId, field, value, ctx: (e as any).ctx });
+          return;
+        }
+        catalystToast.error('Failed to update task');
+      },
     });
   }, [updateTask]);
 
@@ -665,6 +691,21 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
         selectedCount={selectedIds.size}
         onClearSelection={handleClearSelection}
       />
+
+      {/* F3: reason capture for workflow-gated status changes. */}
+      {reasonRetry && (
+        <ReasonCaptureModal
+          entityType={reasonRetry.ctx.entityType}
+          fromStatus={reasonRetry.ctx.from}
+          toStatus={reasonRetry.ctx.to}
+          onSubmit={(reason) => {
+            const { taskId, field, value } = reasonRetry;
+            setReasonRetry(null);
+            handleTaskUpdate(taskId, field, value, reason);
+          }}
+          onCancel={() => setReasonRetry(null)}
+        />
+      )}
     </div>
   );
 }

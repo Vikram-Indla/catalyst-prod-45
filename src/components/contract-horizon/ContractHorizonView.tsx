@@ -41,10 +41,10 @@ export function ContractHorizonView() {
       initials: resource.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
       role: resource.role || 'Resource',
       department: resource.department || 'Delivery',
-      vendor: resource.vendor || 'Unknown',
+      vendor: resource.vendor ?? null,
       country: resource.country || 'Saudi Arabia',
       location: resource.location || 'On-site',
-      contractStart: resource.contractStart || new Date().toISOString().split('T')[0],
+      contractStart: resource.contractStart ?? null,
       contractEnd: resource.contractEnd,
       forecastBoundary: resource.forecastBoundary || '',
     };

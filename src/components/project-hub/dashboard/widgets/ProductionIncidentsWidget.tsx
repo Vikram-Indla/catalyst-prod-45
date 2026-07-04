@@ -108,7 +108,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
-        color: token('color.text', '#292A2E'),
+        color: token('color.text'),
       }}
     >
       {label}

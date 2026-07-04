@@ -9,7 +9,7 @@
  *
  * Canonical ADS components + tokens only. Mirrors WorkflowVersioningPage style.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
@@ -17,12 +17,18 @@ import DynamicTable from '@atlaskit/dynamic-table';
 import Lozenge from '@atlaskit/lozenge';
 import SectionMessage from '@atlaskit/section-message';
 import Spinner from '@atlaskit/spinner';
+import Select from '@atlaskit/select';
+import Button from '@atlaskit/button/new';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { supabase } from '@/integrations/supabase/client';
 import {
   useWfVersions, useWfVersionStatuses, useWfVersionTransitions, useMigrationPreview,
 } from '@/hooks/workflow-v2/useWorkflowFoundation';
 import { DOMAIN_ADAPTER_CONFIGS } from '@/lib/workflow/canonical/adapters';
+import { useProjects } from '@/hooks/test-management/useProjects';
+import {
+  useTmRoles, useTmUserRoles, useAssignTmUserRole, useRemoveTmUserRole,
+} from '@/hooks/test-management/useTmUserRoles';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -192,6 +198,118 @@ function GuardSummaryTab() {
   );
 }
 
+// ── E. Team & roles ─────────────────────────────────────────────────────────
+// P2-S19: tm_user_roles had zero live consumers (0 rows on staging) while the
+// RLS layer that reads it falls back permissively when no rows exist for a
+// project — this tab is the first real assignment surface, and
+// tm_approve_release_readiness (fixed in this same slice) is the first
+// consumer path that actually checks it.
+function useApprovedProfiles() {
+  return useQuery({
+    queryKey: ['approved-profiles-for-role-assign'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles').select('id, full_name, email')
+        .eq('approval_status', 'APPROVED').order('full_name');
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+function TeamRolesTab() {
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const activeProjectId = projectId ?? projects[0]?.id ?? null;
+
+  const { data: roles = [] } = useTmRoles();
+  const { data: profiles = [] } = useApprovedProfiles();
+  const { data: assignments = [], isLoading: assignmentsLoading, isError } = useTmUserRoles(activeProjectId ?? undefined);
+  const assign = useAssignTmUserRole();
+  const remove = useRemoveTmUserRole();
+
+  const [pendingUser, setPendingUser] = useState<{ label: string; value: string } | null>(null);
+  const [pendingRole, setPendingRole] = useState<{ label: string; value: string } | null>(null);
+
+  if (projectsLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'u', content: 'User' }, { key: 'r', content: 'Role' },
+    { key: 'a', content: 'Assigned' }, { key: 'x', content: '' } ] };
+  const rows = assignments.map((a) => ({ key: a.id, cells: [
+    { key: 'u', content: a.user?.full_name ?? a.user?.email ?? '—' },
+    { key: 'r', content: <Lozenge appearance="inprogress">{a.role?.name ?? '—'}</Lozenge> },
+    { key: 'a', content: new Date(a.assigned_at).toLocaleDateString() },
+    { key: 'x', content: (
+      <Button appearance="subtle" spacing="compact" onClick={() => remove.mutate({ id: a.id, projectId: activeProjectId! })}>
+        Remove
+      </Button>
+    ) } ] }));
+
+  return (
+    <Panel>
+      <H>Team &amp; roles</H>
+      <Note>
+        Assigns rows in <code>tm_user_roles</code> — the table every TestHub RLS policy consults
+        first. Release-readiness approval (Release Hub) is the first action that actually enforces
+        one of these roles (admin / test_lead); everything else in the RLS layer still falls back
+        permissively when a project has no assignments yet (see ADM-007 note).
+      </Note>
+      <div style={{ maxWidth: 320, marginBottom: 16 }}>
+        <Select
+          inputId="testops-role-project-select"
+          options={projects.map((p: any) => ({ label: p.name, value: p.id }))}
+          value={activeProjectId ? { label: projects.find((p: any) => p.id === activeProjectId)?.name, value: activeProjectId } : null}
+          onChange={(opt: any) => setProjectId(opt?.value ?? null)}
+          placeholder="Select project"
+        />
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
+        <div style={{ width: 240 }}>
+          <Select
+            inputId="testops-role-user-select"
+            options={profiles.map((p: any) => ({ label: p.full_name ?? p.email, value: p.id }))}
+            value={pendingUser}
+            onChange={(opt: any) => setPendingUser(opt)}
+            placeholder="User"
+          />
+        </div>
+        <div style={{ width: 160 }}>
+          <Select
+            inputId="testops-role-select"
+            options={roles.map((r) => ({ label: r.name, value: r.id }))}
+            value={pendingRole}
+            onChange={(opt: any) => setPendingRole(opt)}
+            placeholder="Role"
+          />
+        </div>
+        <Button
+          appearance="primary"
+          isDisabled={!pendingUser || !pendingRole || !activeProjectId || assign.isPending}
+          onClick={() => {
+            if (!pendingUser || !pendingRole || !activeProjectId) return;
+            assign.mutate(
+              { projectId: activeProjectId, userId: pendingUser.value, roleId: pendingRole.value },
+              { onSuccess: () => { setPendingUser(null); setPendingRole(null); } },
+            );
+          }}
+        >
+          Assign
+        </Button>
+      </div>
+
+      {assignmentsLoading ? <Loading /> : isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load role assignments.</p></SectionMessage>
+      ) : assignments.length === 0 ? (
+        <Note>No roles assigned for this project yet.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
 export default function TestOpsPage() {
   return (
     <AdminGuard>
@@ -206,11 +324,13 @@ export default function TestOpsPage() {
             <Tab>Failed test → Defect</Tab>
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
+            <Tab>Team &amp; roles</Tab>
           </TabList>
           <TabPanel><CoverageTab /></TabPanel>
           <TabPanel><FailedTestDefectTab /></TabPanel>
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
+          <TabPanel><TeamRolesTab /></TabPanel>
         </Tabs>
       </div>
     </AdminGuard>

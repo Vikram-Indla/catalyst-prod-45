@@ -300,13 +300,19 @@ export function useReleasesSource(): BacklogDataSource | null {
         if (!reasonText) {
           const preflight = await checkReasonRequired('release', null, prevStatus, canonicalKey);
           if (preflight.reasonRequired) {
-            throw new Error('This release transition requires a reason. Open the release detail to provide one.');
+            // Typed refusal: the table layer catches WF_REASON_REQUIRED, opens
+            // ReasonCaptureModal, and retries the same patch with the reason.
+            const err = new Error('This transition requires a reason.');
+            (err as any).code = 'WF_REASON_REQUIRED';
+            (err as any).ctx = { entityType: 'Release', from: prevStatus, to: canonicalKey };
+            throw err;
           }
         }
         await recordAdvisoryStatusChange({
           entityKey: 'release', entityId: id, projectKey: null,
           fromStatusRaw: prevStatus, toStatusRaw: canonicalKey, sourceSurface: 'release_list',
           reasonText,
+          reasonCode: typeof patch.reasonCode === 'string' ? patch.reasonCode : null,
         } as any);
       }
     },

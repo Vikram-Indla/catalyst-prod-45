@@ -29,7 +29,8 @@ import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 
 function resolveItemType(issue: TimelineIssue): string {
-  const rawType = (issue.issueType ?? 'Story').toLowerCase();
+  if (!issue.issueType) return '';
+  const rawType = issue.issueType.toLowerCase();
   return rawType === 'qa bug' || rawType === 'defect' ? 'defect'
     : rawType === 'production incident' ? 'incident'
     : rawType === 'business request' ? 'business_request'

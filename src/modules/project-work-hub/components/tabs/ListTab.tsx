@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Filter, ChevronDown, ChevronRight, MessageSquare, Settings2 } from '@/lib/atlaskit-icons';
+import React, { useMemo, useState } from 'react';
+import { Search, Filter, ChevronDown, Settings2, MessageSquare } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar } from '@/components/ads';
 import {
   DropdownMenu,
@@ -10,13 +9,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 import { useWorkItemsHierarchy } from '../../hooks/useWorkItems';
 import { WorkItemWithChildren, WorkItem, ListViewMode } from '../../types';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { PriorityIcon } from '../PriorityIcon';
 import { StatusLozenge } from '../StatusLozenge';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 interface ListTabProps {
   projectId: string;
@@ -24,13 +24,36 @@ interface ListTabProps {
   onFilterClick: () => void;
 }
 
+// A row as rendered by JiraTable — either a hierarchy node (with depth +
+// hasChildren) or a flat WorkItem, normalized to the same shape so the same
+// column set can render both view modes.
+type ListRow = WorkItem & { depth: number; hasChildren: boolean };
+
+// Flatten the hierarchy tree into a list of visible rows (respecting which
+// parents are expanded), attaching depth for JiraTable's indent rendering.
+function flattenHierarchy(
+  items: WorkItemWithChildren[] | undefined,
+  expandedRows: Set<string>,
+  depth = 0,
+): ListRow[] {
+  if (!items) return [];
+  const rows: ListRow[] = [];
+  for (const item of items) {
+    rows.push({ ...item, depth, hasChildren: item.hasChildren });
+    if (item.hasChildren && expandedRows.has(item.id)) {
+      rows.push(...flattenHierarchy(item.children, expandedRows, depth + 1));
+    }
+  }
+  return rows;
+}
+
 export const ListTab: React.FC<ListTabProps> = ({ projectId, onItemClick, onFilterClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<ListViewMode>('HIERARCHY');
+  const [viewMode] = useState<ListViewMode>('HIERARCHY');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [groupBy, setGroupBy] = useState<string>('none');
-  
+
   const { data: hierarchyData, flat: flatData, isLoading } = useWorkItemsHierarchy(projectId);
 
   const toggleRow = (id: string) => {
@@ -43,18 +66,110 @@ export const ListTab: React.FC<ListTabProps> = ({ projectId, onItemClick, onFilt
     setExpandedRows(next);
   };
 
-  const toggleSelect = (id: string) => {
-    const next = new Set(selectedRows);
-    if (next.has(id)) {
-      next.delete(id);
-    } else {
-      next.add(id);
-    }
-    setSelectedRows(next);
-  };
-
   // Get unique assignees for avatar group
   const assignees = [...new Map(flatData?.filter(i => i.assigneeAvatar).map(i => [i.assigneeName, i]) || []).values()].slice(0, 4);
+
+  const rows: ListRow[] = useMemo(() => {
+    if (viewMode === 'HIERARCHY') {
+      return flattenHierarchy(hierarchyData, expandedRows);
+    }
+    return (flatData || []).map((item) => ({ ...item, depth: 0, hasChildren: false }));
+  }, [viewMode, hierarchyData, flatData, expandedRows]);
+
+  const columns: Column<ListRow>[] = useMemo(
+    () => [
+      {
+        id: 'type',
+        label: 'Type',
+        width: 6,
+        alwaysVisible: true,
+        cell: ({ row }) => <WorkTypeIcon type={row.type} />,
+      },
+      {
+        id: 'key',
+        label: 'Key',
+        width: 10,
+        alwaysVisible: true,
+        cell: ({ row }) => (
+          <a href="#" className="text-primary hover:underline text-sm">{row.key}</a>
+        ),
+      },
+      {
+        id: 'summary',
+        label: 'Summary',
+        flex: true,
+        alwaysVisible: true,
+        cell: ({ row }) => <span className="text-sm text-foreground">{row.summary}</span>,
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        width: 12,
+        cell: ({ row }) => <StatusLozenge status={row.status} statusCategory={row.statusCategory} />,
+      },
+      {
+        id: 'comments',
+        label: 'Comments',
+        width: 10,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-1 text-muted-foreground text-sm">
+            <MessageSquare className="h-3.5 w-3.5" />
+            {row.commentsCount > 0 ? `${row.commentsCount}` : 'Add'}
+          </div>
+        ),
+      },
+      {
+        id: 'assignee',
+        label: 'Assignee',
+        width: 15,
+        cell: ({ row }) => (
+          row.assigneeName ? (
+            <div className="flex items-center gap-2">
+              <Avatar src={row.assigneeAvatar} name={row.assigneeName} size="xxsmall" />
+              <span className="text-sm text-foreground truncate">{row.assigneeName}</span>
+            </div>
+          ) : null
+        ),
+      },
+      {
+        id: 'dueDate',
+        label: 'Due date',
+        width: 10,
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {row.dueDate ? format(new Date(row.dueDate), 'MMM d, yyyy') : ''}
+          </span>
+        ),
+      },
+      {
+        id: 'priority',
+        label: 'Priority',
+        width: 8,
+        cell: ({ row }) => <PriorityIcon priority={row.priority} showLabel />,
+      },
+      {
+        id: 'createdAt',
+        label: 'Created',
+        width: 12,
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {format(new Date(row.createdAt), 'MMM d, yyyy')}
+          </span>
+        ),
+      },
+      {
+        id: 'updatedAt',
+        label: 'Updated',
+        width: 12,
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {format(new Date(row.updatedAt), 'MMM d, yyyy')}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -121,194 +236,24 @@ export const ListTab: React.FC<ListTabProps> = ({ projectId, onItemClick, onFilt
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b-2 border-border">
-              <th className="w-10 p-2">
-                <Checkbox />
-              </th>
-              <th className="w-14 p-2 text-left text-xs font-medium text-muted-foreground">Type</th>
-              <th className="w-24 p-2 text-left text-xs font-medium text-muted-foreground">Key</th>
-              <th className="p-2 text-left text-xs font-medium text-muted-foreground">Summary</th>
-              <th className="w-28 p-2 text-left text-xs font-medium text-muted-foreground">Status</th>
-              <th className="w-24 p-2 text-left text-xs font-medium text-muted-foreground">Comments</th>
-              <th className="w-36 p-2 text-left text-xs font-medium text-muted-foreground">Assignee</th>
-              <th className="w-24 p-2 text-left text-xs font-medium text-muted-foreground">Due date</th>
-              <th className="w-20 p-2 text-left text-xs font-medium text-muted-foreground">Priority</th>
-              <th className="w-28 p-2 text-left text-xs font-medium text-muted-foreground">Created</th>
-              <th className="w-28 p-2 text-left text-xs font-medium text-muted-foreground">Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {viewMode === 'HIERARCHY' 
-              ? hierarchyData?.map((item) => (
-                  <HierarchyRow
-                    key={item.id}
-                    item={item}
-                    level={0}
-                    expandedRows={expandedRows}
-                    selectedRows={selectedRows}
-                    onToggle={toggleRow}
-                    onSelect={toggleSelect}
-                    onClick={onItemClick}
-                  />
-                ))
-              : flatData?.map((item) => (
-                  <FlatRow
-                    key={item.id}
-                    item={item}
-                    selected={selectedRows.has(item.id)}
-                    onSelect={() => toggleSelect(item.id)}
-                    onClick={() => onItemClick(item)}
-                  />
-                ))
-            }
-          </tbody>
-        </table>
+        <JiraTable<ListRow>
+          columns={columns}
+          data={rows}
+          getRowId={(row) => row.id}
+          getRowDepth={viewMode === 'HIERARCHY' ? (row) => row.depth : undefined}
+          getRowHasChildren={viewMode === 'HIERARCHY' ? (row) => row.hasChildren : undefined}
+          expandedRowIds={expandedRows}
+          onToggleRowExpanded={toggleRow}
+          onRowClick={(row) => onItemClick(row)}
+          selectable
+          selection={selectedRows}
+          onSelectionChange={setSelectedRows}
+          showRowCount={false}
+          density="compact"
+          ariaLabel="Work item list"
+          isLoading={isLoading}
+        />
       </div>
     </div>
-  );
-};
-
-// Hierarchy Row Component
-const HierarchyRow: React.FC<{
-  item: WorkItemWithChildren;
-  level: number;
-  expandedRows: Set<string>;
-  selectedRows: Set<string>;
-  onToggle: (id: string) => void;
-  onSelect: (id: string) => void;
-  onClick: (item: WorkItem) => void;
-}> = ({ item, level, expandedRows, selectedRows, onToggle, onSelect, onClick }) => {
-  const isExpanded = expandedRows.has(item.id);
-  const isSelected = selectedRows.has(item.id);
-
-  return (
-    <>
-      <tr 
-        className="border-b border-border hover:bg-muted/50 cursor-pointer"
-        onClick={() => onClick(item)}
-      >
-        <td className="p-2" onClick={(e) => e.stopPropagation()}>
-          <Checkbox 
-            checked={isSelected}
-            onCheckedChange={() => onSelect(item.id)}
-          />
-        </td>
-        <td className="p-2">
-          <div className="flex items-center" style={{ paddingLeft: level * 24 }}>
-            {item.hasChildren && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onToggle(item.id); }}
-                className="p-0.5 hover:bg-muted rounded mr-1"
-              >
-                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </button>
-            )}
-            <WorkTypeIcon type={item.type} />
-          </div>
-        </td>
-        <td className="p-2">
-          <a href="#" className="text-primary hover:underline text-sm">{item.key}</a>
-        </td>
-        <td className="p-2 text-sm text-foreground">{item.summary}</td>
-        <td className="p-2">
-          <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
-        </td>
-        <td className="p-2">
-          <div className="flex items-center gap-1 text-muted-foreground text-sm">
-            <MessageSquare className="h-3.5 w-3.5" />
-            {item.commentsCount > 0 ? `${item.commentsCount}` : 'Add'}
-          </div>
-        </td>
-        <td className="p-2">
-          {item.assigneeName && (
-            <div className="flex items-center gap-2">
-              <Avatar src={item.assigneeAvatar} name={item.assigneeName} size="xxsmall" />
-              <span className="text-sm text-foreground truncate">{item.assigneeName}</span>
-            </div>
-          )}
-        </td>
-        <td className="p-2 text-sm text-muted-foreground">
-          {item.dueDate ? format(new Date(item.dueDate), 'MMM d, yyyy') : ''}
-        </td>
-        <td className="p-2">
-          <PriorityIcon priority={item.priority} showLabel />
-        </td>
-        <td className="p-2 text-sm text-muted-foreground">
-          {format(new Date(item.createdAt), 'MMM d, yyyy')}
-        </td>
-        <td className="p-2 text-sm text-muted-foreground">
-          {format(new Date(item.updatedAt), 'MMM d, yyyy')}
-        </td>
-      </tr>
-      {isExpanded && item.children.map((child) => (
-        <HierarchyRow
-          key={child.id}
-          item={child}
-          level={level + 1}
-          expandedRows={expandedRows}
-          selectedRows={selectedRows}
-          onToggle={onToggle}
-          onSelect={onSelect}
-          onClick={onClick}
-        />
-      ))}
-    </>
-  );
-};
-
-// Flat Row Component
-const FlatRow: React.FC<{
-  item: WorkItem;
-  selected: boolean;
-  onSelect: () => void;
-  onClick: () => void;
-}> = ({ item, selected, onSelect, onClick }) => {
-  return (
-    <tr 
-      className="border-b border-border hover:bg-muted/50 cursor-pointer"
-      onClick={onClick}
-    >
-      <td className="p-2" onClick={(e) => e.stopPropagation()}>
-        <Checkbox checked={selected} onCheckedChange={onSelect} />
-      </td>
-      <td className="p-2">
-        <WorkTypeIcon type={item.type} />
-      </td>
-      <td className="p-2">
-        <a href="#" className="text-primary hover:underline text-sm">{item.key}</a>
-      </td>
-      <td className="p-2 text-sm text-foreground">{item.summary}</td>
-      <td className="p-2">
-        <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
-      </td>
-      <td className="p-2 text-muted-foreground text-sm">
-        <div className="flex items-center gap-1">
-          <MessageSquare className="h-3.5 w-3.5" />
-          {item.commentsCount > 0 ? `${item.commentsCount}` : 'Add'}
-        </div>
-      </td>
-      <td className="p-2">
-        {item.assigneeName && (
-          <div className="flex items-center gap-2">
-            <Avatar src={item.assigneeAvatar} name={item.assigneeName} size="xxsmall" />
-            <span className="text-sm">{item.assigneeName}</span>
-          </div>
-        )}
-      </td>
-      <td className="p-2 text-sm text-muted-foreground">
-        {item.dueDate ? format(new Date(item.dueDate), 'MMM d') : ''}
-      </td>
-      <td className="p-2">
-        <PriorityIcon priority={item.priority} />
-      </td>
-      <td className="p-2 text-sm text-muted-foreground">
-        {format(new Date(item.createdAt), 'MMM d, yyyy')}
-      </td>
-      <td className="p-2 text-sm text-muted-foreground">
-        {format(new Date(item.updatedAt), 'MMM d')}
-      </td>
-    </tr>
   );
 };

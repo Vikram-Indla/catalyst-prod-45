@@ -122,8 +122,9 @@ export function useCompareMetrics(releaseIds: string[]) {
         const runs = runsByRelease[release.id] || { passed: 0, failed: 0, blocked: 0, notRun: 0, total: 0 };
         const defs = defectsByRelease[release.id] || { blocker: 0, critical: 0, major: 0, minor: 0 };
 
-        const targetDate = release.target_date ? new Date(release.target_date) : new Date();
-        const daysRemaining = Math.max(0, Math.ceil((targetDate.getTime() - Date.now()) / 86400000));
+        const daysRemaining = release.target_date
+          ? Math.max(0, Math.ceil((new Date(release.target_date).getTime() - Date.now()) / 86400000))
+          : null;
         const testProgress = runs.total > 0 ? Math.round((runs.passed + runs.failed) / runs.total * 100) : 0;
         const passRate = (runs.passed + runs.failed) > 0 ? Math.round(runs.passed / (runs.passed + runs.failed) * 100) : 0;
         const healthScore = Math.max(0, Math.min(100, Math.round((passRate * 0.4) + (testProgress * 0.3) + 30)));
@@ -133,7 +134,7 @@ export function useCompareMetrics(releaseIds: string[]) {
           version: release.version || release.name,
           name: release.name,
           status: mapStatus(release.status),
-          targetDate: release.target_date || new Date().toISOString(),
+          targetDate: release.target_date ?? null,
           daysRemaining,
           metrics: {
             healthScore,

@@ -1,6 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { computeDatePulseViolations } from '../DatePulseEngine';
 import type { BusinessRequest, WorkItem, Release } from '@/types/date-pulse';
+
+// Pin "now" so date-relative rules (D2 overdue, D4 blocked-past-due, D1 stale)
+// evaluate deterministically. Without this, fixtures with absolute dates drift
+// into/out of "past due" as real time passes and the suite rots.
+const NOW = '2026-06-15T12:00:00Z';
+beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date(NOW)); });
+afterEach(() => { vi.useRealTimers(); });
 
 const BASE_BR: BusinessRequest = {
   id: 'br-uuid-1',
@@ -97,55 +104,56 @@ describe('Rule B1 — Story Due After Release', () => {
   });
 });
 
-describe('Rule B2 — Story Due After BR Target', () => {
+describe('Rule B3 — Story After BR Target', () => {
   it('fires warning when story due_date exceeds BR end_date', () => {
     const work = { ...BASE_WORK, due_date: '2027-01-15' }; // after BR end 2026-12-31
     const violations = computeDatePulseViolations(BASE_BR, [work], null);
-    const b2 = violations.find(v => v.rule_id === 'B2');
-    expect(b2).toBeDefined();
-    expect(b2?.severity).toBe('warning');
+    const b3 = violations.find(v => v.rule_id === 'B3');
+    expect(b3).toBeDefined();
+    expect(b3?.severity).toBe('warning');
   });
 });
 
 // ── C: Scope Creep Rules ─────────────────────────────────────────────────────
 
-describe('Rule C1 — Defect Added After Commitment', () => {
-  it('fires advisory for defect added after BR created', () => {
+describe('Rule C1 — New Work Added After Target', () => {
+  it('fires when work is added after the BR target with a release committed', () => {
+    const br = { ...BASE_BR, release_id: 'rel-1' };
     const work = {
       ...BASE_WORK,
       issue_type: 'defect',
-      created_at: '2026-06-01T00:00:00Z', // after BR created_at 2026-01-01
+      created_at: '2027-02-01T00:00:00Z', // after BR target 2026-12-31
     };
-    const violations = computeDatePulseViolations(BASE_BR, [work], null);
+    const violations = computeDatePulseViolations(br, [work], null);
     expect(violations.some(v => v.rule_id === 'C1')).toBe(true);
   });
 });
 
 // ── D: Status Rules ──────────────────────────────────────────────────────────
 
-describe('Rule D1 — Overdue Work Items', () => {
+describe('Rule D2 — Overdue Work Items', () => {
   it('fires critical for work item with past due_date not done', () => {
     const work = { ...BASE_WORK, due_date: '2026-01-01', status: 'in_progress' };
     const violations = computeDatePulseViolations(BASE_BR, [work], null);
-    const d1 = violations.find(v => v.rule_id === 'D1');
-    expect(d1).toBeDefined();
-    expect(d1?.severity).toBe('critical');
+    const d2 = violations.find(v => v.rule_id === 'D2');
+    expect(d2).toBeDefined();
+    expect(d2?.severity).toBe('critical');
   });
 
   it('does not fire for done work items', () => {
     const work = { ...BASE_WORK, due_date: '2026-01-01', status: 'done' };
     const violations = computeDatePulseViolations(BASE_BR, [work], null);
-    expect(violations.some(v => v.rule_id === 'D1')).toBe(false);
+    expect(violations.some(v => v.rule_id === 'D2')).toBe(false);
   });
 });
 
-describe('Rule D2 — Blocked Work Items', () => {
-  it('fires warning for blocked work item', () => {
-    const work = { ...BASE_WORK, status: 'blocked' };
+describe('Rule D4 — Blocked Past-Due Items', () => {
+  it('fires critical for a blocked work item that is past due', () => {
+    const work = { ...BASE_WORK, status: 'blocked', due_date: '2026-01-01' };
     const violations = computeDatePulseViolations(BASE_BR, [work], null);
-    const d2 = violations.find(v => v.rule_id === 'D2');
-    expect(d2).toBeDefined();
-    expect(d2?.severity).toBe('warning');
+    const d4 = violations.find(v => v.rule_id === 'D4');
+    expect(d4).toBeDefined();
+    expect(d4?.severity).toBe('critical');
   });
 });
 

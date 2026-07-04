@@ -9,7 +9,7 @@
  * 5. Enhanced metric card visual weight
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, type CSSProperties } from 'react';
 import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users, Pencil, AlertCircle, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -164,22 +164,22 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
     return periodLabels[period];
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'bg-emerald-500';
-    if (score >= 50) return 'bg-amber-500';
-    return 'bg-red-500';
+  const getScoreColor = (score: number): CSSProperties => {
+    if (score >= 80) return { backgroundColor: 'var(--ds-background-success-bold)' };
+    if (score >= 50) return { backgroundColor: 'var(--ds-background-warning-bold)' };
+    return { backgroundColor: 'var(--ds-background-danger-bold)' };
   };
 
-  const getScoreTextColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-600 dark:text-emerald-400';
-    if (score >= 50) return 'text-amber-600 dark:text-amber-400';
-    return 'text-red-600 dark:text-red-400';
+  const getScoreTextStyle = (score: number): CSSProperties => {
+    if (score >= 80) return { color: 'var(--ds-text-success)' };
+    if (score >= 50) return { color: 'var(--ds-text-warning)' };
+    return { color: 'var(--ds-text-danger)' };
   };
 
-  const getBadgeClass = (coverage: number) => {
-    if (coverage >= 80) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
-    if (coverage >= 50) return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
-    return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+  const getBadgeStyle = (coverage: number): CSSProperties => {
+    if (coverage >= 80) return { backgroundColor: 'var(--ds-background-success)', color: 'var(--ds-text-success)' };
+    if (coverage >= 50) return { backgroundColor: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' };
+    return { backgroundColor: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' };
   };
 
   const toggleExpand = (deptName: string) => {
@@ -324,8 +324,9 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
           onPeriodChange={onPeriodChange} 
         />
 
-        <div 
-          className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-border rounded-xl"
+        <div
+          className="flex items-center gap-3 px-4 py-2.5 border border-border rounded-xl"
+          style={{ backgroundColor: 'var(--ds-surface-sunken)' }}
           aria-label={`Current period: ${getPeriodLabel()}, Total budget: ${formatCurrency(totalBudget)} SAR`}
         >
           <Calendar className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
@@ -353,23 +354,24 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             type="button"
             onClick={() => setShowTotalModal(true)}
             aria-label={`Total Resources: ${qualityMetrics.total}. Click to view details.`}
+            style={{ borderLeftColor: 'var(--ds-border-bold)' }}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 text-left",
-              "border-l-4 border-l-slate-400 dark:border-l-slate-500",
+              "relative bg-card border border-border rounded-xl p-5 text-left",
+              "border-l-4",
               "cursor-pointer transition-all duration-200",
-              "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-slate-500 dark:hover:border-l-slate-400",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2",
+              "hover:shadow-lg hover:-translate-y-0.5",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
               "group"
             )}
           >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Total Resources
             </div>
-            <div className="text-[32px] font-bold text-slate-800 dark:text-slate-100 font-mono leading-none mb-1">
+            <div className="text-[32px] font-bold text-foreground font-mono leading-none mb-1">
               {qualityMetrics.total}
             </div>
-            <div className="text-[13px] text-slate-500 dark:text-slate-400">In resource inventory</div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+            <div className="text-[13px] text-muted-foreground">In resource inventory</div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
           </button>
 
           {/* Complete Records - CLICKABLE with A11Y */}
@@ -377,23 +379,24 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             type="button"
             onClick={() => setShowCompleteModal(true)}
             aria-label={`Complete Records: ${qualityMetrics.complete}. Click to view details.`}
+            style={{ borderLeftColor: 'var(--ds-border-information)' }}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 text-left",
-              "border-l-4 border-l-blue-500",
+              "relative bg-card border border-border rounded-xl p-5 text-left",
+              "border-l-4",
               "cursor-pointer transition-all duration-200",
-              "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-blue-600",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+              "hover:shadow-lg hover:-translate-y-0.5",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
               "group"
             )}
           >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Complete Records
             </div>
-            <div className="text-[32px] font-bold text-blue-600 dark:text-blue-400 font-mono leading-none mb-1">
+            <div className="text-[32px] font-bold font-mono leading-none mb-1" style={{ color: 'var(--ds-text-information)' }}>
               {qualityMetrics.complete}
             </div>
-            <div className="text-[13px] text-slate-500 dark:text-slate-400">With CTC data</div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-blue-300 dark:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+            <div className="text-[13px] text-muted-foreground">With CTC data</div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
           </button>
 
           {/* Missing CTC - CLICKABLE with A11Y */}
@@ -401,23 +404,24 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             type="button"
             onClick={() => setShowMissingModal(true)}
             aria-label={`Missing CTC: ${qualityMetrics.missing}. Click to view details.`}
+            style={{ borderLeftColor: 'var(--ds-border-warning)' }}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 text-left",
-              "border-l-4 border-l-amber-500",
+              "relative bg-card border border-border rounded-xl p-5 text-left",
+              "border-l-4",
               "cursor-pointer transition-all duration-200",
-              "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-amber-600",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2",
+              "hover:shadow-lg hover:-translate-y-0.5",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
               "group"
             )}
           >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Missing CTC
             </div>
-            <div className="text-[32px] font-bold text-amber-600 dark:text-amber-400 font-mono leading-none mb-1">
+            <div className="text-[32px] font-bold font-mono leading-none mb-1" style={{ color: 'var(--ds-text-warning)' }}>
               {qualityMetrics.missing}
             </div>
-            <div className="text-[13px] text-slate-500 dark:text-slate-400">Need compensation data</div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-amber-300 dark:text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+            <div className="text-[13px] text-muted-foreground">Need compensation data</div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
           </button>
 
           {/* Quality Score - CLICKABLE with A11Y */}
@@ -425,40 +429,37 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             type="button"
             onClick={() => setShowQualityModal(true)}
             aria-label={`Data Quality: ${qualityMetrics.score}% completeness score. Click to view breakdown.`}
+            style={{
+              borderLeftColor: qualityMetrics.score >= 80
+                ? 'var(--ds-border-success)'
+                : qualityMetrics.score >= 50
+                ? 'var(--ds-border-warning)'
+                : 'var(--ds-border-danger)',
+            }}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 overflow-hidden text-left",
+              "relative bg-card border border-border rounded-xl p-5 overflow-hidden text-left",
               "border-l-4",
-              qualityMetrics.score >= 80 
-                ? "border-l-emerald-500" 
-                : qualityMetrics.score >= 50 
-                ? "border-l-amber-500" 
-                : "border-l-red-500",
               "cursor-pointer transition-all duration-200",
               "hover:shadow-lg hover:-translate-y-0.5",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-              qualityMetrics.score >= 80 
-                ? "focus-visible:ring-emerald-500" 
-                : qualityMetrics.score >= 50 
-                ? "focus-visible:ring-amber-500" 
-                : "focus-visible:ring-red-500",
               "group"
             )}
           >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Data Quality
             </div>
-            <div className={cn('text-[32px] font-bold font-mono leading-none mb-1', getScoreTextColor(qualityMetrics.score))}>
+            <div className="text-[32px] font-bold font-mono leading-none mb-1" style={getScoreTextStyle(qualityMetrics.score)}>
               {qualityMetrics.score}%
             </div>
-            <div className="text-[13px] text-slate-500 dark:text-slate-400">Completeness score</div>
+            <div className="text-[13px] text-muted-foreground">Completeness score</div>
             {/* Progress bar at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-700" aria-hidden="true">
+            <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: 'var(--ds-background-neutral)' }} aria-hidden="true">
               <div
-                className={cn('h-full transition-all duration-500', getScoreColor(qualityMetrics.score))}
-                style={{ width: `${qualityMetrics.score}%` }}
+                className="h-full transition-all duration-500"
+                style={{ width: `${qualityMetrics.score}%`, ...getScoreColor(qualityMetrics.score) }}
               />
             </div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
           </button>
         </div>
       </section>
@@ -491,43 +492,43 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border bg-slate-50 dark:bg-slate-800/50">
-                <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <tr className="border-b border-border" style={{ backgroundColor: 'var(--ds-surface-sunken)' }}>
+                <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Department
                 </th>
-                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Total
                 </th>
-                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Complete
                 </th>
-                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Missing
                 </th>
-                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Quality
                 </th>
-                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-border">
               {departmentQuality.map(dept => (
-                <tr key={dept.name} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                  <td className="px-5 py-4 font-semibold text-slate-800 dark:text-slate-200">{dept.name}</td>
-                  <td className="px-5 py-4 text-center text-slate-600 dark:text-slate-400 font-mono font-medium">{dept.totalResources}</td>
-                  <td className="px-5 py-4 text-center text-slate-600 dark:text-slate-400 font-mono font-medium">{dept.withCTC}</td>
+                <tr key={dept.name} className="hover:bg-muted/30 transition-colors">
+                  <td className="px-5 py-4 font-semibold text-foreground">{dept.name}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground font-mono font-medium">{dept.totalResources}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground font-mono font-medium">{dept.withCTC}</td>
                   <td className="px-5 py-4 text-center">
-                    <span className={cn(
-                      'font-mono font-semibold',
-                      dept.missingCTC > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-400'
-                    )}>
+                    <span
+                      className="font-mono font-semibold"
+                      style={{ color: dept.missingCTC > 0 ? 'var(--ds-text-danger)' : 'var(--ds-text-subtlest)' }}
+                    >
                       {dept.missingCTC}
                     </span>
                   </td>
                   <td className="px-5 py-4 text-center">
-                    <span className={cn('px-2.5 py-1 rounded-full text-xs font-semibold', getBadgeClass(dept.coverage))}>
+                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold" style={getBadgeStyle(dept.coverage)}>
                       {dept.coverage}%
                     </span>
                   </td>
@@ -535,13 +536,14 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                     {dept.missingCTC > 0 ? (
                       <button
                         onClick={() => handleFixAllDept(dept)}
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors hover:underline"
+                        className="inline-flex items-center gap-1 text-sm font-semibold transition-colors hover:underline"
+                        style={{ color: 'var(--ds-text-brand)' }}
                       >
                         Fix {dept.missingCTC}
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                      <span className="inline-flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--ds-text-success)' }}>
                         <Check className="w-4 h-4" />
                         Complete
                       </span>
@@ -551,13 +553,13 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               ))}
             </tbody>
             <tfoot>
-              <tr className="bg-slate-100 dark:bg-slate-800/70 border-t-2 border-slate-200 dark:border-slate-600">
-                <td className="px-5 py-4 font-bold text-slate-900 dark:text-slate-100">TOTAL</td>
-                <td className="px-5 py-4 text-center font-bold font-mono text-slate-900 dark:text-slate-100">{totals.total}</td>
-                <td className="px-5 py-4 text-center font-bold font-mono text-slate-900 dark:text-slate-100">{totals.complete}</td>
-                <td className="px-5 py-4 text-center font-bold font-mono text-red-600 dark:text-red-400">{totals.missing}</td>
+              <tr className="border-t-2 border-border" style={{ backgroundColor: 'var(--ds-background-neutral)' }}>
+                <td className="px-5 py-4 font-bold text-foreground">TOTAL</td>
+                <td className="px-5 py-4 text-center font-bold font-mono text-foreground">{totals.total}</td>
+                <td className="px-5 py-4 text-center font-bold font-mono text-foreground">{totals.complete}</td>
+                <td className="px-5 py-4 text-center font-bold font-mono" style={{ color: 'var(--ds-text-danger)' }}>{totals.missing}</td>
                 <td className="px-5 py-4 text-center">
-                  <span className={cn('px-2.5 py-1 rounded-full text-xs font-semibold', getBadgeClass(qualityMetrics.score))}>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold" style={getBadgeStyle(qualityMetrics.score)}>
                     {qualityMetrics.score}%
                   </span>
                 </td>
@@ -584,7 +586,8 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             <div key={dept.name} className="bg-card border border-border rounded-xl overflow-hidden">
               {/* Header */}
               <div
-                className="flex items-center gap-3 px-5 py-3.5 cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-3 px-5 py-3.5 cursor-pointer hover:bg-muted/50 transition-colors"
+                style={{ backgroundColor: 'var(--ds-surface-sunken)' }}
                 onClick={() => toggleExpand(dept.name)}
               >
                 {expandedDepts.has(dept.name) ? (
@@ -592,10 +595,10 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                 ) : (
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 )}
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 flex-1">
+                <span className="text-sm font-bold text-foreground flex-1">
                   {dept.name}
                 </span>
-                <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{dept.missingCTC} missing</span>
+                <span className="text-xs font-semibold" style={{ color: 'var(--ds-text-warning)' }}>{dept.missingCTC} missing</span>
                 <Button
                   variant="default"
                   size="sm"
@@ -614,43 +617,43 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               {expandedDepts.has(dept.name) && (
                 <div className="border-t border-border">
                   <table className="w-full text-sm">
-                    <thead className="bg-slate-50/50 dark:bg-slate-800/30">
+                    <thead style={{ backgroundColor: 'var(--ds-surface-sunken)' }}>
                       <tr>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           RID
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Name
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Role
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Vendor
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Contract End
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           CTC Status
                         </th>
-                        <th className="px-4 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th className="px-4 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Action
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    <tbody className="divide-y divide-border">
                       {dept.missingResources.map(r => (
-                        <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                          <td className="px-4 py-3 font-mono text-xs text-slate-600 dark:text-slate-400">
+                        <tr key={r.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                             {r.rid?.padStart(3, '0') || '—'}
                           </td>
-                          <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{r.name}</td>
-                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{r.role || '—'}</td>
-                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{r.vendorName || '—'}</td>
-                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{formatDate(r.contractEnd)}</td>
+                          <td className="px-4 py-3 font-medium text-foreground">{r.name}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{r.role || '—'}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{r.vendorName || '—'}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{formatDate(r.contractEnd)}</td>
                           <td className="px-4 py-3">
-                            <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium text-xs">
+                            <span className="inline-flex items-center gap-1 font-medium text-xs" style={{ color: 'var(--ds-text-warning)' }}>
                               <AlertCircle className="w-3.5 h-3.5" />
                               Missing
                             </span>
@@ -662,13 +665,12 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                                 e.stopPropagation();
                                 handleEditSingleResource(r);
                               }}
-                              className={cn(
-                                "inline-flex items-center gap-1.5 px-3 py-1.5",
-                                "text-xs font-medium rounded-md transition-all",
-                                "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
-                                "hover:bg-blue-100 dark:hover:bg-blue-900/50",
-                                "border border-blue-200 dark:border-blue-800"
-                              )}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all border"
+                              style={{
+                                color: 'var(--ds-text-brand)',
+                                backgroundColor: 'var(--ds-background-information)',
+                                borderColor: 'var(--ds-border-information)',
+                              }}
                             >
                               <Pencil className="w-3 h-3" />
                               Add CTC
@@ -685,8 +687,8 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
 
           {departmentQuality.filter(d => d.missingCTC > 0).length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
-                <Check className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--ds-background-success)' }}>
+                <Check className="w-6 h-6" style={{ color: 'var(--ds-text-success)' }} />
               </div>
               <h3 className="font-semibold text-lg text-foreground mb-1">All Data Complete</h3>
               <p className="text-sm text-muted-foreground">

@@ -69,7 +69,7 @@ export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
       'risks': '/roam',
       'sprints': '/sprints',
       'program-increments': '/pis',
-      'incidents': '/release/incidents',
+      'incidents': '/incident-hub',
     };
     
     const route = routeMap[itemKey];

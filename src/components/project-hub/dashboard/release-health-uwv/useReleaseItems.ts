@@ -17,7 +17,9 @@ export interface ReleaseItem {
   id: string;
   key: string;
   summary: string;
-  issueType: string;
+  /** Null when the source row carries no issue type. Never default to
+   *  'Story' (CLAUDE.md zero-assumption rule). */
+  issueType: string | null;
   status: string;
   statusCategory: string;
   assigneeId: string | null;
@@ -33,7 +35,7 @@ function mapRow(r: any): ReleaseItem {
     id: r.issue_key,
     key: r.issue_key,
     summary: r.summary ?? '',
-    issueType: r.issue_type ?? 'Story',
+    issueType: r.issue_type ?? null,
     status: r.status ?? '',
     statusCategory: (r.status_category ?? '').toString(),
     assigneeId: r.assignee_user_id ?? null,

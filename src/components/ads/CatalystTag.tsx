@@ -3,7 +3,7 @@
  * Replaces hand-rolled label pills in sidebar details + table cells.
  * Uses @atlaskit/tag with Catalyst-specific color presets.
  */
-import Tag from '@atlaskit/tag';
+import Tag, { SimpleTag } from '@atlaskit/tag';
 
 export type CatalystTagColor = 'standard' | 'blue' | 'green' | 'teal' | 'purple' | 'red' | 'yellow' | 'grey';
 
@@ -15,11 +15,16 @@ interface CatalystTagProps {
 }
 
 export function CatalystTag({ text, color = 'standard', onRemove, href }: CatalystTagProps) {
+  // Atlaskit's removable Tag always renders the × affordance — a read-only
+  // label must use SimpleTag or it advertises a remove that does nothing (H5).
+  if (!onRemove) {
+    return <SimpleTag text={text} color={color} href={href} />;
+  }
   return (
     <Tag
       text={text}
       color={color}
-      removeButtonLabel={onRemove ? `Remove ${text}` : undefined}
+      removeButtonLabel={`Remove ${text}`}
       onAfterRemoveAction={onRemove}
       href={href}
     />

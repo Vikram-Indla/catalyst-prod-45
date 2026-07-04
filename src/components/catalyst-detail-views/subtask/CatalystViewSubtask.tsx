@@ -30,7 +30,7 @@ export default function CatalystViewSubtask({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -87,7 +87,7 @@ export default function CatalystViewSubtask({
 
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Sub-task'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare Phase 3 (2026-05-02): KeyDetails section removed.
           Sub-task has no extraRows; Parent is shown in the parent-banner
@@ -131,7 +131,7 @@ export default function CatalystViewSubtask({
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Sub-task'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
-      parentKey={issue?.parent_key} parentType={parentIssue?.issue_type || 'Story'}
+      parentKey={issue?.parent_key} parentType={parentIssue?.issue_type ?? null}
       onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.issue_key) : undefined}
       /* Canonical Add-parent (Jira parity): Sub-task → Story parent. */
       parentSource="story"
@@ -156,6 +156,7 @@ export default function CatalystViewSubtask({
       coverItemTable="ph_issues"
       onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
       isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      isError={isError} error={error} onRetry={refetch}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

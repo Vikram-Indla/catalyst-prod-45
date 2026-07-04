@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { X, Info, ArrowRight, Users, Calendar, Download } from '@/lib/atlaskit-icons';
 import { formatCurrency } from '@/lib/currencyConfig';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 export interface ScenarioResource {
   resourceName: string;
@@ -151,10 +150,10 @@ export function ScenarioDetailsModal({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-lg p-0 gap-0 overflow-hidden">
           {/* Header */}
-          <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 pr-14">
+          <div className="flex items-start justify-between px-6 py-4 border-b border-border pr-14">
             <div>
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{scenario.name}</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{scenario.description || 'Current portfolio state'}</p>
+              <h2 className="text-lg font-semibold text-foreground">{scenario.name}</h2>
+              <p className="text-sm text-muted-foreground">{scenario.description || 'Current portfolio state'}</p>
             </div>
             {/* Close button provided by DialogContent */}
           </div>
@@ -163,10 +162,10 @@ export function ScenarioDetailsModal({
           <div className="p-6">
             {/* Total */}
             <div className="flex items-center justify-between mb-6">
-              <span className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 Current Portfolio
               </span>
-              <span className="text-2xl font-bold font-mono text-slate-800 dark:text-slate-100">
+              <span className="text-2xl font-bold font-mono text-foreground">
                 {formatCurrency(total)}
               </span>
             </div>
@@ -181,17 +180,17 @@ export function ScenarioDetailsModal({
                       {cat.name}
                     </span>
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      <span className="font-mono text-sm font-semibold text-foreground">
                         {formatCurrency(cat.value)}
                       </span>
-                      <span className="text-xs text-slate-400 w-10 text-right">
+                      <span className="text-xs text-muted-foreground w-10 text-right">
                         {cat.percent.toFixed(0)}%
                       </span>
                     </div>
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -205,14 +204,14 @@ export function ScenarioDetailsModal({
             </div>
 
             {/* Info Box */}
-            <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg">
+            <div className="mt-6 p-4 bg-muted/50 border border-border rounded-lg">
               <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-slate-400 mt-0.5 flex-shrink-0" />
+                <Info className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                  <p className="text-sm text-muted-foreground">
                     This is the current state with no extensions applied.
                   </p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Select a different scenario to see budget impact, or create a new scenario.
                   </p>
                 </div>
@@ -221,11 +220,11 @@ export function ScenarioDetailsModal({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted/30">
             <Button variant="ghost" onClick={() => onClose()}>
               Close
             </Button>
-            <Button onClick={onCompare} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button onClick={onCompare} style={{ backgroundColor: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}>
               Compare Scenarios
             </Button>
           </div>
@@ -239,74 +238,77 @@ export function ScenarioDetailsModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 pr-14">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-border pr-14">
           <div className="flex items-center gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{scenario.name}</h2>
-                <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-slate-700 text-white rounded">
+                <h2 className="text-lg font-semibold text-foreground">{scenario.name}</h2>
+                <span
+                  className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded"
+                  style={{ backgroundColor: 'var(--ds-background-neutral-bold)', color: 'var(--ds-text-inverse)' }}
+                >
                   {scenario.type}
                 </span>
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{scenario.description || 'Scenario details'}</p>
+              <p className="text-sm text-muted-foreground">{scenario.description || 'Scenario details'}</p>
             </div>
           </div>
           {/* Close button provided by DialogContent */}
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-700">
+        <div className="grid grid-cols-4 gap-3 px-6 py-4 bg-muted/30 border-b border-border">
           {/* Baseline */}
           <div className="text-center">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
               Baseline
             </div>
-            <div className="font-mono text-lg font-semibold text-slate-600 dark:text-slate-400">
+            <div className="font-mono text-lg font-semibold text-muted-foreground">
               {formatCurrency(total - scenario.deltaFromBaseline)}
             </div>
           </div>
 
           {/* Arrow */}
           <div className="flex items-center justify-center">
-            <ArrowRight className="w-5 h-5 text-slate-400" />
+            <ArrowRight className="w-5 h-5 text-muted-foreground" />
           </div>
 
           {/* Projected */}
           <div className="text-center">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
               Projected
             </div>
-            <div className="font-mono text-lg font-bold text-slate-800 dark:text-slate-100">
+            <div className="font-mono text-lg font-bold text-foreground">
               {formatCurrency(total)}
             </div>
           </div>
 
           {/* Delta */}
           <div className="text-center">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
               Delta
             </div>
-            <div className={cn(
-              "font-mono text-lg font-bold",
-              scenario.deltaFromBaseline > 0 ? "text-green-600" : "text-slate-400"
-            )}>
+            <div
+              className="font-mono text-lg font-bold"
+              style={{ color: scenario.deltaFromBaseline > 0 ? 'var(--ds-text-success)' : 'var(--ds-text-subtlest)' }}
+            >
               {scenario.deltaFromBaseline > 0 ? '+' : ''}{formatCurrency(scenario.deltaFromBaseline)}
             </div>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="flex items-center justify-center gap-8 px-6 py-3 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-center gap-8 px-6 py-3 border-b border-border">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-slate-600 dark:text-slate-300">
+            <Users className="w-4 h-4" style={{ color: 'var(--ds-icon-brand)' }} />
+            <span className="text-sm text-muted-foreground">
               <span className="font-semibold">{scenario.resourceCount}</span> resources extended
             </span>
           </div>
-          <div className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
+          <div className="w-px h-4 bg-border" />
           <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-slate-600 dark:text-slate-300">
+            <Calendar className="w-4 h-4" style={{ color: 'var(--ds-icon-brand)' }} />
+            <span className="text-sm text-muted-foreground">
               Avg <span className="font-semibold">{scenario.avgExtensionMonths.toFixed(0)}</span> months
             </span>
           </div>
@@ -316,46 +318,46 @@ export function ScenarioDetailsModal({
         <div className="flex-1 overflow-y-auto p-6">
           {/* Budget Impact by Category */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">
               Budget Impact by Category
             </h3>
-            <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            <div className="border border-border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-800/50">
+                <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase">Category</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold text-slate-500 uppercase">Before</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase w-10"></th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold text-slate-500 uppercase">After</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold text-slate-500 uppercase">Delta</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-muted-foreground uppercase">Category</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold text-muted-foreground uppercase">Before</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-muted-foreground uppercase w-10"></th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold text-muted-foreground uppercase">After</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold text-muted-foreground uppercase">Delta</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-border">
                   {categoryBreakdown.map((cat) => (
-                    <tr key={cat.key} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <tr key={cat.key} className="hover:bg-muted/50">
                       <td className="px-4 py-3">
                         <span className="font-medium" style={{ color: cat.color }}>
                           {cat.name}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-slate-500">
+                      <td className="px-4 py-3 text-right font-mono text-muted-foreground">
                         {formatCurrency(cat.before)}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {cat.delta > 0 ? (
-                          <ArrowRight className="w-4 h-4 text-green-500 mx-auto" />
+                          <ArrowRight className="w-4 h-4 mx-auto" style={{ color: 'var(--ds-icon-success)' }} />
                         ) : (
-                          <span className="text-slate-300 dark:text-slate-600">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700 dark:text-slate-300">
+                      <td className="px-4 py-3 text-right font-mono font-semibold text-foreground">
                         {formatCurrency(cat.after)}
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-semibold">
                         {cat.delta > 0 ? (
-                          <span className="text-green-600">+{formatCurrency(cat.delta)}</span>
+                          <span style={{ color: 'var(--ds-text-success)' }}>+{formatCurrency(cat.delta)}</span>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
                     </tr>
@@ -368,44 +370,47 @@ export function ScenarioDetailsModal({
           {/* Resources Extended */}
           {scenario.scenarioData.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">
                 Resources Extended ({scenario.scenarioData.length})
               </h3>
-              <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+              <div className="border border-border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 dark:bg-slate-800/50">
+                  <thead className="bg-muted/50">
                     <tr>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase">Resource</th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase">Dept</th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase">Current End</th>
-                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase">Extension</th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-slate-500 uppercase">Cost Impact</th>
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-muted-foreground uppercase">Resource</th>
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-muted-foreground uppercase">Dept</th>
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-muted-foreground uppercase">Current End</th>
+                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-muted-foreground uppercase">Extension</th>
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-muted-foreground uppercase">Cost Impact</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tbody className="divide-y divide-border">
                     {scenario.scenarioData.map((resource, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                      <tr key={idx} className="hover:bg-muted/50">
                         <td className="px-4 py-3">
-                          <div className="font-medium text-slate-800 dark:text-slate-200">{resource.resourceName}</div>
+                          <div className="font-medium text-foreground">{resource.resourceName}</div>
                           {resource.rid && (
-                            <div className="text-xs text-slate-500 font-mono">{resource.rid}</div>
+                            <div className="text-xs text-muted-foreground font-mono">{resource.rid}</div>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-muted-foreground">
                           {resource.department}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-red-600 dark:text-red-400 font-medium font-mono text-xs">
+                          <span className="font-medium font-mono text-xs" style={{ color: 'var(--ds-text-danger)' }}>
                             {formatDateDisplay(resource.originalEnd)}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded">
+                          <span
+                            className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded"
+                            style={{ backgroundColor: 'var(--ds-background-information)', color: 'var(--ds-text-information)' }}
+                          >
                             +{resource.extensionMonths} mo
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <span className="font-mono font-semibold text-green-600">
+                          <span className="font-mono font-semibold" style={{ color: 'var(--ds-text-success)' }}>
                             +{formatCurrency(resource.deltaCost)}
                           </span>
                         </td>
@@ -413,12 +418,12 @@ export function ScenarioDetailsModal({
                     ))}
                   </tbody>
                   {/* Total Row */}
-                  <tfoot className="bg-slate-100 dark:bg-slate-800">
+                  <tfoot className="bg-muted">
                     <tr>
-                      <td colSpan={4} className="px-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">
+                      <td colSpan={4} className="px-4 py-3 text-right font-semibold text-foreground">
                         Total Extension Cost:
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-bold text-green-600">
+                      <td className="px-4 py-3 text-right font-mono font-bold" style={{ color: 'var(--ds-text-success)' }}>
                         +{formatCurrency(scenario.deltaFromBaseline)}
                       </td>
                     </tr>
@@ -430,7 +435,7 @@ export function ScenarioDetailsModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/30">
           <Button 
             variant="ghost" 
             onClick={onExport}
@@ -443,7 +448,7 @@ export function ScenarioDetailsModal({
             <Button variant="ghost" onClick={() => onClose()}>
               Close
             </Button>
-            <Button onClick={onCompare} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button onClick={onCompare} style={{ backgroundColor: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}>
               Compare Scenarios
             </Button>
           </div>

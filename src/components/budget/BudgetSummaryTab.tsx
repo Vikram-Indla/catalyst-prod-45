@@ -195,12 +195,12 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
         <div className="grid grid-cols-4 gap-4">
           {/* Total Budget - NOT clickable */}
           <div className="bg-card rounded-xl border border-border p-5 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-slate-400 to-slate-500" />
+            <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: 'var(--ds-background-neutral-bold)' }} />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Total Budget
             </div>
             {/* DS-4 FIX: Standardized font size to text-2xl (24px) */}
-            <div className="font-mono text-2xl font-bold text-slate-700 dark:text-slate-300 mb-2">
+            <div className="font-mono text-2xl font-bold text-foreground mb-2">
               {formatCurrency(budget.total)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -209,17 +209,17 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           </div>
 
           {/* Insourced - Clickable with enhanced hover (DS-1 FIX: Use Tailwind tokens) */}
-          <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300"
+          <div
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-[var(--ds-border-information)]"
             onClick={() => setActiveModal('insourced')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-blue-500" />
+            <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: 'var(--ds-background-information-bold)' }} />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" style={{ backgroundColor: 'var(--ds-background-information-bold)' }} />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Insourced
             </div>
-            <div className="font-mono text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+            <div className="font-mono text-2xl font-bold mb-2" style={{ color: 'var(--ds-text-information)' }}>
               {formatCurrency(budget.insourced)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -228,17 +228,17 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           </div>
 
           {/* Fixed Contracts - Clickable with enhanced hover */}
-          <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-amber-300"
+          <div
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-[var(--ds-border-warning)]"
             onClick={() => setActiveModal('fixed')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-600 to-amber-500" />
+            <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: 'var(--ds-background-warning-bold)' }} />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-amber-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" style={{ backgroundColor: 'var(--ds-background-warning-bold)' }} />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Fixed Contracts
             </div>
-            <div className="font-mono text-2xl font-bold text-amber-600 dark:text-amber-400 mb-2">
+            <div className="font-mono text-2xl font-bold mb-2" style={{ color: 'var(--ds-text-warning)' }}>
               {formatCurrency(fixedTotal)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -247,17 +247,17 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           </div>
 
           {/* Licenses - Clickable with enhanced hover */}
-          <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300"
+          <div
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-[var(--ds-border-information)]"
             onClick={() => setActiveModal('licenses')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-blue-500" />
+            <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: 'var(--ds-background-information-bold)' }} />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" style={{ backgroundColor: 'var(--ds-background-information-bold)' }} />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Licenses
             </div>
-            <div className="font-mono text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+            <div className="font-mono text-2xl font-bold mb-2" style={{ color: 'var(--ds-text-information)' }}>
               {formatCurrency(budget.licenses)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -321,21 +321,21 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                           <div className="w-1/4 border-r-2 border-dashed border-border/50" />
                           <div className="w-1/4" />
                         </div>
-                        {/* Actual budget bar (DS-1 FIX: Use Tailwind token) */}
-                        <div 
-                          className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500"
-                          style={{ width: `${Math.min(barWidth, 100)}%` }}
+                        {/* Actual budget bar (DS-1 FIX: Use ADS token) */}
+                        <div
+                          className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min(barWidth, 100)}%`, backgroundColor: 'var(--ds-background-information-bold)' }}
                         />
                       </div>
                     ) : (
                       /* Empty/incomplete state with dashed pattern */
-                      <div className="relative h-6 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-dashed border-slate-300 dark:border-slate-600">
+                      <div className="relative h-6 rounded-full overflow-hidden border border-dashed border-border" style={{ backgroundColor: 'var(--ds-surface-sunken)' }}>
                         <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,var(--ds-shadow-raised, rgba(0,0,0,0.03))_4px,var(--ds-shadow-raised, rgba(0,0,0,0.03))_8px)]" />
                         {/* Quarter dividers */}
                         <div className="absolute inset-0 flex pointer-events-none">
-                          <div className="w-1/4 border-r-2 border-dashed border-slate-300/50 dark:border-slate-600/50" />
-                          <div className="w-1/4 border-r-2 border-dashed border-slate-300/50 dark:border-slate-600/50" />
-                          <div className="w-1/4 border-r-2 border-dashed border-slate-300/50 dark:border-slate-600/50" />
+                          <div className="w-1/4 border-r-2 border-dashed border-border" />
+                          <div className="w-1/4 border-r-2 border-dashed border-border" />
+                          <div className="w-1/4 border-r-2 border-dashed border-border" />
                           <div className="w-1/4" />
                         </div>
                       </div>
@@ -370,7 +370,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                         </div>
                       </>
                     ) : (
-                      <div className="flex items-center justify-end gap-1.5 text-amber-600">
+                      <div className="flex items-center justify-end gap-1.5" style={{ color: 'var(--ds-text-warning)' }}>
                         <AlertTriangle className="w-3.5 h-3.5" />
                         <span className="text-sm font-medium">Δ{missingCount} missing CTC</span>
                       </div>
@@ -433,68 +433,84 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     >
                       {/* Assignment Name — Semibold */}
                       <td className="px-5 py-2.5">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <span className="font-semibold text-foreground group-hover:text-[var(--ds-text-brand)] transition-colors">
                           {a.name}
                         </span>
                       </td>
-                      
+
                       {/* Department — FULL NAME */}
-                      <td className="px-4 py-2.5 text-sm text-slate-600 dark:text-slate-400">
+                      <td className="px-4 py-2.5 text-sm text-muted-foreground">
                         {a.department}
                       </td>
-                      
+
                       {/* Type Badge — Centered */}
                       <td className="px-4 py-2.5 text-center">
-                        <span className={cn(
-                          "inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-semibold min-w-[80px]",
-                          a.type === 'Insourced' && "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-                          a.type === 'Cosourced' && "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400",
-                          a.type === 'Outsourced' && "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
-                        )}>
+                        <span
+                          className="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-semibold min-w-[80px]"
+                          style={
+                            a.type === 'Insourced' ? { backgroundColor: 'var(--ds-background-information)', color: 'var(--ds-text-information)' } :
+                            a.type === 'Cosourced' ? { backgroundColor: 'var(--ds-background-success)', color: 'var(--ds-text-success)' } :
+                            a.type === 'Outsourced' ? { backgroundColor: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' } :
+                            undefined
+                          }
+                        >
                           {a.type}
                         </span>
                       </td>
-                      
+
                       {/* Period — Consistent Format */}
                       <td className="px-4 py-2.5">
-                        <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                        <span className="text-sm font-mono text-muted-foreground">
                           {formatPeriod(a.startDate, a.endDate)}
                         </span>
                       </td>
-                      
+
                       {/* Resources — Styled N/A */}
                       <td className="px-3 py-2.5 text-center">
                         {a.type === 'Outsourced' ? (
-                          <span className="text-xs text-slate-400 dark:text-slate-500">N/A</span>
+                          <span className="text-xs text-muted-foreground">N/A</span>
                         ) : (
-                          <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="font-mono font-semibold text-foreground">
                             {a.resourceCount || 0}
                           </span>
                         )}
                       </td>
-                      
+
                       {/* Budget — Color by Type */}
                       <td className="px-5 py-2.5 text-right">
-                        <span className={cn(
-                          "font-mono font-semibold tabular-nums",
-                          isUnpaid && "text-red-600 dark:text-red-400",
-                          !isUnpaid && a.type === 'Insourced' && "text-blue-600 dark:text-blue-400",
-                          !isUnpaid && a.type === 'Cosourced' && "text-teal-600 dark:text-teal-400",
-                          !isUnpaid && a.type === 'Outsourced' && "text-amber-600 dark:text-amber-400"
-                        )}>
+                        <span
+                          className="font-mono font-semibold tabular-nums"
+                          style={{
+                            color: isUnpaid
+                              ? 'var(--ds-text-danger)'
+                              : a.type === 'Insourced'
+                              ? 'var(--ds-text-information)'
+                              : a.type === 'Cosourced'
+                              ? 'var(--ds-text-success)'
+                              : a.type === 'Outsourced'
+                              ? 'var(--ds-text-warning)'
+                              : undefined,
+                          }}
+                        >
                           {formatFull(a.budget)}
                         </span>
                       </td>
-                      
+
                       {/* Status — Clean */}
                       <td className="px-4 py-2.5 text-center">
                         {a.type !== 'Insourced' && isUnpaid ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold">
+                          <span
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
+                            style={{ backgroundColor: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' }}
+                          >
                             <AlertTriangle className="w-3 h-3" />
                             UNPAID
                           </span>
                         ) : a.type !== 'Insourced' && (a.paymentStatus === 'on_track' || a.paymentStatus === 'paid') ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold">
+                          <span
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
+                            style={{ backgroundColor: 'var(--ds-background-success)', color: 'var(--ds-text-success)' }}
+                          >
                             <Check className="w-3 h-3" />
                             Paid
                           </span>
@@ -508,9 +524,10 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           
           {data.assignments.length > 10 && (
             <div className="px-5 py-3 bg-muted/30 border-t border-border text-center">
-              <button 
+              <button
                 onClick={() => onTabChange?.('budget')}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                className="text-sm font-medium hover:underline"
+                style={{ color: 'var(--ds-text-brand)' }}
               >
                 Show {data.assignments.length - 10} more assignments →
               </button>
@@ -528,11 +545,18 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
         <div className="space-y-3">
           {/* Critical Resources Expiring - severity: critical (red) */}
           {criticalResources.length > 0 && (
-            <div className="bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-800 border-l-4 border-l-red-500 p-5">
+            <div
+              className="rounded-xl border border-l-4 p-5"
+              style={{
+                backgroundColor: 'var(--ds-background-danger)',
+                borderColor: 'var(--ds-border-danger)',
+                borderLeftColor: 'var(--ds-border-danger)',
+              }}
+            >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   {/* SUM-5 FIX: Dynamic department label from resource data */}
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                     {criticalResources[0]?.department || 'Multiple'} Department
                   </div>
                   <h4 className="font-semibold text-foreground mb-1">
@@ -540,7 +564,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                   </h4>
                   <p className="text-sm text-muted-foreground">
                     {criticalResources.slice(0, 5).map((r, i) => {
-                      const month = r.contractEnd 
+                      const month = r.contractEnd
                         ? new Date(r.contractEnd).toLocaleDateString('en-US', { month: 'short' })
                         : '';
                       return `${r.name} (${month})`;
@@ -551,11 +575,12 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                 </div>
                 <div className="text-right shrink-0 ml-6">
                   <div className="text-xs text-muted-foreground mb-1">Extension Cost (+3mo)</div>
-                  <div className="font-mono font-bold text-red-600 mb-2">
+                  <div className="font-mono font-bold mb-2" style={{ color: 'var(--ds-text-danger)' }}>
                     +{formatCurrency(extensionCost)} SAR
                   </div>
-                  <button 
-                    className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-1"
+                  <button
+                    className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                    style={{ backgroundColor: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)' }}
                     onClick={(e) => {
                       e.stopPropagation();
                       navigateToScenario('critical3mo');
@@ -570,11 +595,18 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
 
           {/* Outstanding Payments - severity: warning (amber) */}
           {unpaidAssignments.length > 0 && (
-            <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800 border-l-4 border-l-amber-500 p-5">
+            <div
+              className="rounded-xl border border-l-4 p-5"
+              style={{
+                backgroundColor: 'var(--ds-background-warning)',
+                borderColor: 'var(--ds-border-warning)',
+                borderLeftColor: 'var(--ds-border-warning)',
+              }}
+            >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   {/* SUM-5 FIX: Dynamic department from unpaid assignments */}
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                     {unpaidAssignments[0]?.department || 'Multiple'} Department
                   </div>
                   <h4 className="font-semibold text-foreground mb-1">
@@ -586,11 +618,11 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                 </div>
                 <div className="text-right shrink-0 ml-6">
                   <div className="text-xs text-muted-foreground mb-1">Total Outstanding</div>
-                  <div className="font-mono font-bold text-amber-600 mb-2">
+                  <div className="font-mono font-bold mb-2" style={{ color: 'var(--ds-text-warning)' }}>
                     {formatCurrency(unpaidTotal)} SAR
                   </div>
-                  <button 
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400"
+                  <button
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all border border-border bg-card hover:bg-muted/30"
                     onClick={(e) => {
                       e.stopPropagation();
                       setActiveModal('fixed');
@@ -608,10 +640,18 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
             .filter(([_, count]) => count > 0)
             .sort((a, b) => b[1] - a[1])
             .map(([dept, count]) => (
-              <div key={dept} className="bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800 border-l-4 border-l-blue-500 p-5">
+              <div
+                key={dept}
+                className="rounded-xl border border-l-4 p-5"
+                style={{
+                  backgroundColor: 'var(--ds-background-information)',
+                  borderColor: 'var(--ds-border-information)',
+                  borderLeftColor: 'var(--ds-border-information)',
+                }}
+              >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                    <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                       {dept} Department
                     </div>
                     <h4 className="font-semibold text-foreground mb-1">
@@ -623,8 +663,9 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                   </div>
                   <div className="text-right shrink-0 ml-6">
                     <div className="text-xs text-muted-foreground mb-1">Action Required</div>
-                    <button 
-                      className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1"
+                    <button
+                      className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                      style={{ backgroundColor: 'var(--ds-background-information-bold)', color: 'var(--ds-text-inverse)' }}
                       onClick={(e) => {
                         e.stopPropagation();
                         openFixCTCModal(dept);
@@ -681,14 +722,11 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                   <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{r.rid || '—'}</td>
                   <td className="px-3 py-2 text-muted-foreground">{deptAbbrev[r.department] || r.department}</td>
                   <td className="px-3 py-2">
-                    <span className={cn(
-                      "inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium",
-                      r.resourceType === 'Variable' ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" : 
-                      "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                    )}>
-                      <span className={cn("w-1.5 h-1.5 rounded-full", 
-                        r.resourceType === 'Variable' ? "bg-blue-500" : "bg-blue-500"
-                      )} />
+                    <span
+                      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium"
+                      style={{ backgroundColor: 'var(--ds-background-information)', color: 'var(--ds-text-information)' }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--ds-background-information-bold)' }} />
                       {r.resourceType}
                     </span>
                   </td>
@@ -715,23 +753,27 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
             {/* Cosourced */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-bold text-teal-700 dark:text-teal-400">COSOURCED</h4>
-                <span className="font-mono font-semibold text-teal-700 dark:text-teal-400">
+                <h4 className="text-sm font-bold" style={{ color: 'var(--ds-text-success)' }}>COSOURCED</h4>
+                <span className="font-mono font-semibold" style={{ color: 'var(--ds-text-success)' }}>
                   Total: {formatCurrency(budget.cosourced)}
                 </span>
               </div>
               <div className="space-y-2">
                 {data.assignments.filter(a => a.type === 'Cosourced').map(a => (
-                  <div key={a.id} className="flex justify-between items-center p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                  <div
+                    key={a.id}
+                    className="flex justify-between items-center p-3 rounded-lg border"
+                    style={{ backgroundColor: 'var(--ds-background-success)', borderColor: 'var(--ds-border-success)' }}
+                  >
                     <div>
                       <div className="font-medium text-foreground">{a.name}</div>
                       <div className="text-xs text-muted-foreground">{a.vendor}</div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-mono font-semibold text-teal-700 dark:text-teal-400">
+                      <span className="font-mono font-semibold" style={{ color: 'var(--ds-text-success)' }}>
                         {formatFull(a.budget)}
                       </span>
-                      <span className="text-sm text-emerald-600 font-medium">✓ On Track</span>
+                      <span className="text-sm font-medium" style={{ color: 'var(--ds-text-success)' }}>✓ On Track</span>
                     </div>
                   </div>
                 ))}
@@ -743,32 +785,38 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
             {/* Outsourced */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-bold text-amber-700 dark:text-amber-400">OUTSOURCED</h4>
-                <span className="font-mono font-semibold text-amber-700 dark:text-amber-400">
+                <h4 className="text-sm font-bold" style={{ color: 'var(--ds-text-warning)' }}>OUTSOURCED</h4>
+                <span className="font-mono font-semibold" style={{ color: 'var(--ds-text-warning)' }}>
                   Total: {formatCurrency(budget.outsourced)}
                 </span>
               </div>
               <div className="space-y-2">
                 {data.assignments.filter(a => a.type === 'Outsourced').map(a => (
-                  <div key={a.id} className={cn(
-                    "flex justify-between items-center p-3 rounded-lg border",
-                    a.paymentStatus === 'unpaid' 
-                      ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800" 
-                      : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
-                  )}>
+                  <div
+                    key={a.id}
+                    className="flex justify-between items-center p-3 rounded-lg border"
+                    style={
+                      a.paymentStatus === 'unpaid'
+                        ? { backgroundColor: 'var(--ds-background-danger)', borderColor: 'var(--ds-border-danger)' }
+                        : { backgroundColor: 'var(--ds-background-warning)', borderColor: 'var(--ds-border-warning)' }
+                    }
+                  >
                     <div>
                       <div className="font-medium text-foreground">{a.name}</div>
                       <div className="text-xs text-muted-foreground">{a.vendor}</div>
                     </div>
                     <div className="text-right flex items-center gap-4">
-                      <span className={cn(
-                        "font-mono font-semibold",
-                        a.paymentStatus === 'unpaid' ? "text-red-600" : "text-amber-700 dark:text-amber-400"
-                      )}>
+                      <span
+                        className="font-mono font-semibold"
+                        style={{ color: a.paymentStatus === 'unpaid' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)' }}
+                      >
                         {formatFull(a.budget)}
                       </span>
                       {a.paymentStatus === 'unpaid' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400 text-xs font-bold">
+                        <span
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold"
+                          style={{ backgroundColor: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' }}
+                        >
                           <AlertTriangle className="w-3 h-3" />
                           UNPAID
                         </span>
@@ -781,10 +829,13 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                 )}
               </div>
             </div>
-            
+
             {/* Warning banner */}
             {unpaidAssignments.length > 0 && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+              <div
+                className="flex items-center gap-2 p-3 border rounded-lg"
+                style={{ backgroundColor: 'var(--ds-background-danger)', borderColor: 'var(--ds-border-danger)', color: 'var(--ds-text-danger)' }}
+              >
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span className="text-sm font-medium">
                   {unpaidAssignments.length} contracts with outstanding payments totaling {formatCurrency(unpaidTotal)} SAR
@@ -831,22 +882,25 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     <td className="px-3 py-2 text-center text-muted-foreground">{l.userCount || '—'}</td>
                     <td className="px-3 py-2 text-right font-mono text-muted-foreground">{formatFull(l.monthlyCost)}</td>
                     <td className="px-3 py-2 text-right font-mono font-semibold" style={{ color: 'var(--ds-text-discovery)' }}>{formatFull(l.annualCost)}</td>
-                    <td className={cn(
-                      "px-3 py-2 text-center text-sm",
-                      isRenewingSoon ? "text-amber-600 font-medium" : "text-muted-foreground"
-                    )}>
+                    <td
+                      className="px-3 py-2 text-center text-sm"
+                      style={isRenewingSoon ? { color: 'var(--ds-text-warning)', fontWeight: 500 } : undefined}
+                    >
                       {l.renewalDate ? new Date(l.renewalDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                     </td>
                   </tr>
                 );
               })}
             </tbody>
-            <tfoot className="bg-blue-50 dark:bg-blue-900/20 border-t-2 border-blue-200 dark:border-blue-800">
+            <tfoot
+              className="border-t-2"
+              style={{ backgroundColor: 'var(--ds-background-information)', borderColor: 'var(--ds-border-information)' }}
+            >
               <tr>
-                <td className="px-3 py-3 font-bold text-[var(--ds-background-discovery-bold)]">Total</td>
+                <td className="px-3 py-3 font-bold" style={{ color: 'var(--ds-text-information)' }}>Total</td>
                 <td></td>
-                <td className="px-3 py-3 text-right font-mono font-bold text-[var(--ds-background-discovery-bold)]">{formatFull(data.monthlyLicenseCost)}</td>
-                <td className="px-3 py-3 text-right font-mono font-bold text-[var(--ds-background-discovery-bold)]">{formatFull(budget.licenses)}</td>
+                <td className="px-3 py-3 text-right font-mono font-bold" style={{ color: 'var(--ds-text-information)' }}>{formatFull(data.monthlyLicenseCost)}</td>
+                <td className="px-3 py-3 text-right font-mono font-bold" style={{ color: 'var(--ds-text-information)' }}>{formatFull(budget.licenses)}</td>
                 <td></td>
               </tr>
             </tfoot>
@@ -919,15 +973,19 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
               </div>
               
               {(missingCTCByDept[selectedDept] || 0) > 0 && (
-                <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                  <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+                <div
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                  style={{ backgroundColor: 'var(--ds-background-warning)', borderColor: 'var(--ds-border-warning)' }}
+                >
+                  <div className="flex items-center gap-2" style={{ color: 'var(--ds-text-warning)' }}>
                     <AlertTriangle className="w-4 h-4" />
                     <span className="text-sm font-medium">
                       {missingCTCByDept[selectedDept]} resources missing CTC data
                     </span>
                   </div>
-                  <button 
-                    className="px-3 py-1.5 rounded-md bg-amber-600 text-white text-sm font-medium hover:bg-amber-700 transition-colors flex items-center gap-1"
+                  <button
+                    className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                    style={{ backgroundColor: 'var(--ds-background-warning-bold)', color: 'var(--ds-text-inverse)' }}
                     onClick={() => {
                       setActiveModal(null);
                       setSelectedDept(null);
@@ -954,12 +1012,15 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Type:</span>{' '}
-                  <span className={cn(
-                    "inline-block px-2 py-0.5 rounded text-xs font-medium ml-1",
-                    selectedAssignment.type === 'Insourced' && "bg-blue-100 text-blue-700",
-                    selectedAssignment.type === 'Cosourced' && "bg-teal-100 text-teal-700",
-                    selectedAssignment.type === 'Outsourced' && "bg-amber-100 text-amber-700",
-                  )}>
+                  <span
+                    className="inline-block px-2 py-0.5 rounded text-xs font-medium ml-1"
+                    style={
+                      selectedAssignment.type === 'Insourced' ? { backgroundColor: 'var(--ds-background-information)', color: 'var(--ds-text-information)' } :
+                      selectedAssignment.type === 'Cosourced' ? { backgroundColor: 'var(--ds-background-success)', color: 'var(--ds-text-success)' } :
+                      selectedAssignment.type === 'Outsourced' ? { backgroundColor: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' } :
+                      undefined
+                    }
+                  >
                     {selectedAssignment.type}
                   </span>
                 </div>
@@ -979,12 +1040,16 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                 <div>
                   <span className="text-muted-foreground">Budget:</span>{' '}
                   {/* SUM-6 FIX: Budget value color matches assignment type */}
-                  <span className={cn(
-                    "font-mono font-semibold",
-                    selectedAssignment.type === 'Insourced' && "text-blue-600 dark:text-blue-400",
-                    selectedAssignment.type === 'Cosourced' && "text-teal-600 dark:text-teal-400",
-                    selectedAssignment.type === 'Outsourced' && "text-amber-600 dark:text-amber-400"
-                  )}>{formatFull(selectedAssignment.budget)} SAR</span>
+                  <span
+                    className="font-mono font-semibold"
+                    style={{
+                      color:
+                        selectedAssignment.type === 'Insourced' ? 'var(--ds-text-information)' :
+                        selectedAssignment.type === 'Cosourced' ? 'var(--ds-text-success)' :
+                        selectedAssignment.type === 'Outsourced' ? 'var(--ds-text-warning)' :
+                        undefined,
+                    }}
+                  >{formatFull(selectedAssignment.budget)} SAR</span>
                   {selectedAssignment.type === 'Insourced' && (
                     <span className="text-xs text-muted-foreground ml-1">(calculated from {assignmentResources.length} resources)</span>
                   )}
@@ -1009,7 +1074,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                           <td className="px-3 py-2 font-medium text-foreground">{r.name}</td>
                           <td className="px-3 py-2 text-muted-foreground">{r.role}</td>
                           <td className="px-3 py-2 text-right font-mono text-foreground">
-                            {r.ctc ? formatFull(r.ctc) : <span className="text-red-500">Missing</span>}
+                            {r.ctc ? formatFull(r.ctc) : <span style={{ color: 'var(--ds-text-danger)' }}>Missing</span>}
                           </td>
                           <td className="px-3 py-2 text-muted-foreground">
                             {r.contractEnd ? formatDate(r.contractEnd) : '—'}

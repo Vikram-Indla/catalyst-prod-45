@@ -29,6 +29,12 @@ export function computeHealthStatus(
   violations: DatePulseViolation[],
 ): HealthStatus {
   // ── Step 1: Gather Snapshots ────────────────────────────────────────
+  // Zero-assumption: items with a null status are "unscorable" — they are
+  // excluded from every status-derived bucket below (in-progress, done,
+  // blocked) rather than being treated as 'todo'/not-started. A fabricated
+  // 'todo' would silently count toward "no engagement yet" and skew the
+  // BR toward Uncommitted/At Risk even though the item's real status is
+  // simply unknown (CLAUDE.md zero-assumption rule).
   const workWithDates = linkedWork.filter(w => w.due_date !== null && w.due_date !== undefined);
   const inProgressWork = linkedWork.filter(
     w => w.status && w.status !== 'backlog' && w.status !== 'todo' && w.status !== 'done',

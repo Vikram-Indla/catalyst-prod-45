@@ -253,6 +253,7 @@ export default function ForYouPage() {
       }
       if (af.status?.length && !af.status.includes(item.status)) return false;
       if (af.priority?.length) {
+        if (!item.priority) return false;
         const normPri = item.priority.charAt(0).toUpperCase() + item.priority.slice(1).toLowerCase();
         if (!af.priority.includes(item.priority) && !af.priority.includes(normPri)) return false;
       }
@@ -287,7 +288,7 @@ export default function ForYouPage() {
   const handleKeyClick = useCallback((key: string, type: string) => {
     setIsAIPanelOpen(false);
     switch (type) {
-      case 'incident': navigate(`/release/incidents?selected=${key}`); break;
+      case 'incident': navigate(`/incident-hub/view/${key}`); break;
       case 'feature': navigate(`/program/features?selected=${key}`); break;
       case 'story': navigate(`/project/stories?selected=${key}`); break;
       case 'defect': navigate(`/project/defects?selected=${key}`); break;

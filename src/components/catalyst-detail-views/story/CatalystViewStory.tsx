@@ -32,6 +32,7 @@ import {
 import { Description } from '../shared/sections/Description';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
   AttachmentsSection,
@@ -42,7 +43,6 @@ import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
-import { TestCoveragePanel } from './TestCoveragePanel';
 
 export default function CatalystViewStory({
   isOpen, onClose, itemId, projectId, projectKey,
@@ -50,7 +50,7 @@ export default function CatalystViewStory({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
@@ -128,7 +128,7 @@ export default function CatalystViewStory({
           Jira renders a 32px status button immediately under the title
           (testid issue-field-status.ui.status-view.status-button). */}
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Story'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare 2026-05-04 (D5 — Vikram approved): Key details section
           re-added to Story left body. DOM-probed Jira BAU-5609 (Story):
@@ -181,9 +181,24 @@ export default function CatalystViewStory({
         projectKey={issue?.project_key || projectKey}
       />
 
-      {/* Test coverage / Trace-From (CAT-TESTHUB-REPORT-REVAMP, G-002) — stories only */}
-      {issue?.issue_type === 'Story' && issue?.issue_key && (
-        <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} />
+      {/* Story-scoped AI-generated test cases — max 10, 100% coverage.
+          Uses projectKey so the section can resolve (or auto-create) the
+          matching tm_projects row test cases FK to. */}
+      {issue?.issue_type === 'Story' && issue?.issue_key && (issue?.project_key || projectKey) && (
+        <TestCasesSection
+          storyKey={issue.issue_key}
+          storySummary={issue.summary ?? ''}
+          storyDescription={
+            typeof issue.description === 'string'
+              ? issue.description
+              : issue.description
+                ? JSON.stringify(issue.description)
+                : ''
+          }
+          acceptanceCriteria={(issue as any)?.acceptance_criteria ?? ''}
+          projectKey={issue.project_key || projectKey || ''}
+          projectName={issue.project_name ?? undefined}
+        />
       )}
 
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
@@ -262,6 +277,7 @@ export default function CatalystViewStory({
         }
         isLoading={isLoading}
         isNotFound={!isLoading && issue === null}
+        isError={isError} error={error} onRetry={refetch}
       />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

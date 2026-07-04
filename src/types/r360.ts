@@ -14,7 +14,7 @@ export interface R360WorkItem {
   id: string;
   item_key: string;
   title: string;
-  item_type: string;
+  item_type: string | null;
   priority: string;
   status: string;
   status_category: string;

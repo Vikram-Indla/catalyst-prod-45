@@ -236,33 +236,10 @@ import {
   CatalystIRDemoApprovedDisplay,
 } from './CatalystReadOnlyCustomFields';
 
-/**
- * Normalize a ph_issues.issue_type string to a canonical bucket.
- * Mirrors resolveItemType() in CatalystDetailRouter.tsx — kept inline
- * to avoid pulling in the router (which lazy-imports every CatalystView*).
- *
- * Source of truth for the BAU-project mappings:
- *   defect   ← bug | defect | qa bug
- *   incident ← *incident* | production incident | business gap
- *   task     ← task
- *   feature  ← feature | new feature
- *   epic     ← epic
- */
-function normalizeIssueTypeBucket(raw: string | undefined | null):
-  | 'epic' | 'feature' | 'defect' | 'incident' | 'task'
-  | 'story' | 'subtask' | 'business_request' | null {
-  if (!raw) return null;
-  const t = raw.toLowerCase().trim();
-  if (t === 'epic') return 'epic';
-  if (t === 'feature' || t === 'new feature') return 'feature';
-  if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'defect';
-  if (t.includes('incident') || t === 'production incident' || t === 'business gap') return 'incident';
-  if (t === 'task') return 'task';
-  if (t === 'business request' || t === 'business_request' || t === 'demand') return 'business_request';
-  if (t === 'sub-task' || t === 'subtask' || t === 'backend' || t === 'frontend' || t === 'figma' || t === 'entity figma' || t === 'integration') return 'subtask';
-  if (t === 'story' || t === 'improvement') return 'story';
-  return null;
-}
+// normalizeIssueTypeBucket now lives in the shared normalization boundary
+// (src/lib/date-pulse/normalize.ts) so the date-pulse mappers reuse the exact
+// same Title-Case → bucket mapping. Imported below.
+import { normalizeIssueTypeBucket } from '@/lib/date-pulse/normalize';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -644,7 +621,7 @@ export function CatalystSidebarDetails({
             transition: 'background-color 150ms ease',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, minWidth: 0, flex: 1 }}>
             <Tooltip content={detailsCollapsed ? 'Expand' : 'Collapse'} position="bottom">
               <button
                 type="button"
@@ -668,10 +645,47 @@ export function CatalystSidebarDetails({
             {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
                 Key details, Subtasks, LWI, Activity. All section headers share the same spec. */}
             <h2
-              style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text)' }}
+              style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text)', flexShrink: 0 }}
             >
               Details
             </h2>
+            {/* Collapsed preview: single-line comma-separated field labels for
+                the current issue type, ellipsis-truncated. Jira parity — matches
+                right-rail Details card behaviour on collapse (2026-07-02). */}
+            {detailsCollapsed && (() => {
+              const bucket = normalizeIssueTypeBucket(issue?.issue_type);
+              const labels: string[] = [];
+              if (issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request') labels.push('Sprint/Iteration');
+              labels.push('Assignee');
+              if (issue?.issue_type === 'Epic') labels.push('Priority');
+              labels.push('Reporter');
+              if (issue?.issue_type === 'Task' || issue?.issue_type === 'Story') labels.push('Labels');
+              if (
+                issue?.issue_type !== 'Epic' &&
+                (bucket === 'subtask' || issue?.issue_type === 'Production Incident' ||
+                 issue?.issue_type === 'Change Request' || dataSource?.onDueDateChange)
+              ) labels.push('Due date');
+              if (issue?.issue_type === 'Epic') {
+                labels.push('Due date');
+                labels.push('Actual start');
+                labels.push('Actual end');
+              }
+              if (bucket === 'feature') {
+                labels.push('IR Demo Date');
+                labels.push('IR Figma Approved');
+                labels.push('IR Demo Approved');
+              }
+              return (
+                <span style={{
+                  marginLeft: 8, flex: 1, minWidth: 0,
+                  fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
+                  color: 'var(--ds-text-subtle)', lineHeight: '20px',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {labels.join(', ')}
+                </span>
+              );
+            })()}
           </div>
         </div>
 

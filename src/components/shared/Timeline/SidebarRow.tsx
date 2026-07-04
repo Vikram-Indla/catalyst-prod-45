@@ -324,7 +324,7 @@ export function SidebarRow({
   }, [canDragRow, issue.issueKey, issue.parentKey]);
   const [editDatesOpen, setEditDatesOpen] = useState(false);
   const [inlineCreateOpen, setInlineCreateOpen] = useState(false);
-  const [inlineCreateType, setInlineCreateType] = useState("Story");
+  const [inlineCreateType, setInlineCreateType] = useState<string | null>("Story");
   const [inlineCreateSummary, setInlineCreateSummary] = useState("");
   const [inlineCreateSibling, setInlineCreateSibling] = useState(false);
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
@@ -347,7 +347,7 @@ export function SidebarRow({
     setDividerHover(false);
     setInlineCreateSibling(true);
     setInlineCreateType(
-      depth === 0 ? topLevelType : childTypesOverride?.[0] ?? "Story"
+      depth === 0 ? topLevelType : childTypesOverride?.[0] ?? null
     );
     setInlineCreateOpen(true);
   };
@@ -503,6 +503,7 @@ export function SidebarRow({
     const summary = inlineCreateSummary.trim();
     if (!summary) return;
     const type = inlineCreateType;
+    if (!type) return;
     // Divider insert → create a SIBLING (same parent as this row); the row's
     // own "+" → create a CHILD (under this row).
     if (inlineCreateSibling) {
@@ -2097,7 +2098,7 @@ export function SidebarRow({
                   aria-haspopup="listbox"
                   aria-expanded={showTypeDropdown}
                 >
-                  <JiraIssueTypeIcon type={inlineCreateType} size={16} />
+                  {inlineCreateType && <JiraIssueTypeIcon type={inlineCreateType} size={16} />}
                   <svg
                     width="16"
                     height="16"

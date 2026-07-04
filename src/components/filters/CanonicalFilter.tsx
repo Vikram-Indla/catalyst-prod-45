@@ -2378,9 +2378,17 @@ function ClauseChip({
       {hover && (
         <span
           role="button"
+          tabIndex={0}
           aria-label="Remove clause"
           title="Remove clause"
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }
+          }}
           style={{
             display: 'inline-flex', alignItems: 'center',
             color: textSubtle, padding: 0, borderRadius: 3,
@@ -2775,7 +2783,13 @@ function JqlTabBody({
   // what a Catalyst user would naturally type. ORDER BY → table sort
   // application is a future phase; for now this is a cosmetic seed.
   const ORDER_SUFFIX = ' ORDER BY rank ASC';
-  const canonicalJql = canonicalFilterValueToJql(value, { projectKey: scopeKey });
+  let canonicalJql = '';
+  try {
+    canonicalJql = canonicalFilterValueToJql(value, { projectKey: scopeKey });
+  } catch {
+    // Malformed canonical value (e.g. from a bad JQL round-trip) — fall back
+    // to an empty seed rather than crashing this render.
+  }
   const initial =
     (canonicalJql || (scopeKey ? `project = "${scopeKey}"` : ''))
     + ORDER_SUFFIX;

@@ -76,6 +76,13 @@ export function TitleTranslateWrapper({
   const hasText = value.trim().length > 0;
   const langLabel = target === "ar" ? "EN → AR" : "AR → EN";
   const translateLabel = target === "ar" ? "Translate to Arabic" : "Translate to English";
+  // Only render the action row when there's actually something to show —
+  // otherwise an empty div takes vertical space and makes the input
+  // container appear taller as soon as the user starts typing English
+  // (2026-07-02 Vikram).
+  const hasActionRowContent = hasText && (
+    isTranslating || failed || (isArabic && !showingTranslation)
+  );
 
   return (
     <div
@@ -83,7 +90,7 @@ export function TitleTranslateWrapper({
       data-dir={dir}
     >
       {children({ dir })}
-      {hasText && (
+      {hasActionRowContent && (
         <div className="ttw-action-row">
           {isTranslating ? (
             <span

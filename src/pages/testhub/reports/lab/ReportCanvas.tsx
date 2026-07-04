@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import {
-  LineChart, Line, BarChart, Bar, AreaChart, Area,
-  PieChart, Pie, Cell, ComposedChart,
+  ComposedChart, Line, Area,
   XAxis, YAxis, CartesianGrid, Tooltip as RechartTooltip,
   Legend, ResponsiveContainer,
 } from 'recharts';
@@ -10,34 +9,39 @@ import { REPORT_DEFS } from './reportDefinitions';
 import ReportEmptyState from './ReportEmptyState';
 import { passRateStr, sharePercent, cycleDeltaStr, coveragePercent } from './reportCalculations';
 import {
-  SeededData,
+  ReportData,
   computeExecutionOverview, computeExecutionSummary,
   computeBurndown, computeBurnup, computeDistribution, computeExecutionHistory,
   computeCaseDistribution, computeCaseUsage,
   computeDefectSummary, computeDefectImpact, computeDefectTrend,
-  computeMultiCycleComparison, computeMultiCycleDetail,
-  computeProjectMetrics, computeTraceabilitySummary, computeTraceabilityDetail,
-} from './useSeededTestReportData';
+  computeMultiCycleComparison, computeMultiCycleDetail, computeMultiCycleDistribution,
+  computeTraceabilitySummary, computeTraceabilityDetail,
+} from './reportData';
 import { FilterState } from './ReportFilterBar';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
+import { CANONICAL_ROW_TYPOGRAPHY } from '@/lib/catalyst-rules/CatalystRules';
+import { ADS_SERIES, ADS_CHART } from '@/lib/charts/adsChartTheme';
+import {
+  ReportLineChart, ReportBarChart, ReportAreaChart, ReportPieChart,
+  ADS_AXIS_TICK, ADS_TOOLTIP_CONTENT_STYLE,
+} from '@/components/testhub/reports/charts/ReportChart';
 
-// ── tokens ─────────────────────────────────────────────────────────────────────
+// ── chart colors — ADS tokens only (S1.4) ─────────────────────────────────────
 
-const C = {
-  passed: 'var(--ds-text-success)',
-  failed: 'var(--ds-text-danger)',
-  blocked: 'var(--ds-text-warning)',
-  not_run: 'var(--ds-text-subtlest)',
-  skipped: 'var(--ds-text-subtlest)',
-  brand: 'var(--ds-background-brand-bold)',
-  info: 'var(--ds-text-information)',
+/** Semantic status → ADS chart token. Non-status categories fall back to ADS_SERIES. */
+const STATUS_CHART_COLOR: Record<string, string> = {
+  passed: ADS_CHART.success,
+  failed: ADS_CHART.danger,
+  blocked: ADS_CHART.warning,
+  in_progress: ADS_CHART.information,
+  not_run: ADS_CHART.neutral,
+  skipped: ADS_CHART.neutral,
 };
 
-// recharts SVG fill/stroke cannot accept CSS variables — SVG engine resolves
-// attributes before the cascade. All hex values below are the canonical
-// Atlassian brand palette. ads-scanner:ignore-next-line
-// prettier-ignore
-const P = { blue:'#0052CC', green:'#36B37E', red:'#FF5630', yellow:'#FFAB00', purple:'#6554C0', teal:'#00B8D9', grey:'#97A0AF', greenFill:'#E3FCEF', blueFill:'#E9F2FE', redFill:'#FFEBE6' }; // ads-scanner:ignore-line
-const CHART_COLORS = [P.blue, P.green, P.red, P.yellow, P.purple, P.teal];
+function statusChartColor(status: string, i: number): string {
+  return STATUS_CHART_COLOR[status] ?? ADS_SERIES[i % ADS_SERIES.length];
+}
 
 const STATUS_APPEARANCE: Record<string, 'success' | 'removed' | 'moved' | 'default' | 'inprogress' | 'new'> = {
   passed: 'success',
@@ -49,6 +53,8 @@ const STATUS_APPEARANCE: Record<string, 'success' | 'removed' | 'moved' | 'defau
   open: 'removed',
   fixed: 'success',
   verified: 'success',
+  resolved: 'success',
+  reopened: 'removed',
   closed: 'default',
   active: 'inprogress',
   completed: 'success',
@@ -60,75 +66,93 @@ const STATUS_APPEARANCE: Record<string, 'success' | 'removed' | 'moved' | 'defau
 
 // ── shared primitives ──────────────────────────────────────────────────────────
 
-const TH: React.CSSProperties = {
-  padding: '8px 14px',
-  fontSize: 'var(--ds-font-size-100)',
-  fontWeight: 700,
-  color: 'var(--ds-text-subtlest)',
-  textAlign: 'left',
-  borderBottom: '2px solid var(--ds-border)',
-  whiteSpace: 'nowrap',
-  letterSpacing: '0.04em',
-  textTransform: 'uppercase',
-  background: 'var(--ds-surface-sunken)',
-  position: 'sticky',
-  top: 0,
-};
+/** Key-like cell text — CRE Grid H canonical row typography (key). */
+function KeyText({ children, color = 'var(--ds-text-brand)' }: { children: React.ReactNode; color?: string }) {
+  return (
+    <code
+      style={{
+        fontSize: CANONICAL_ROW_TYPOGRAPHY.key.fontSize,
+        lineHeight: CANONICAL_ROW_TYPOGRAPHY.key.lineHeight,
+        color,
+      }}
+    >
+      {children}
+    </code>
+  );
+}
 
-const TD: React.CSSProperties = {
-  padding: '8px 14px',
-  fontSize: 'var(--ds-font-size-300)',
-  color: 'var(--ds-text)',
-  borderBottom: '1px solid var(--ds-border)',
-  verticalAlign: 'middle',
-};
+/** Title-like cell text — CRE Grid H canonical row typography (title). */
+function TitleText({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      style={{
+        fontSize: CANONICAL_ROW_TYPOGRAPHY.title.fontSize,
+        lineHeight: CANONICAL_ROW_TYPOGRAPHY.title.lineHeight,
+        color: 'var(--ds-text)',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
 
-const TD_R: React.CSSProperties = { ...TD, textAlign: 'right', fontVariantNumeric: 'tabular-nums' };
-const TD_C: React.CSSProperties = { ...TD, textAlign: 'center' };
+interface DataTableHeader {
+  label: string;
+  align?: 'left' | 'right' | 'center';
+  width?: string;
+}
 
+interface DataTableRowShape {
+  __id: string;
+  cells: React.ReactNode[];
+}
+
+/**
+ * Canonical tabular surface for report views — JiraTable-backed (S1.3).
+ * Headers form the column schema; each row is an array of pre-rendered cells.
+ */
 function DataTable({
   headers,
   rows,
   empty,
 }: {
-  headers: { label: string; align?: 'left' | 'right' | 'center'; width?: string }[];
+  headers: DataTableHeader[];
   rows: React.ReactNode[][];
   empty?: string;
 }) {
+  const data = useMemo<DataTableRowShape[]>(
+    () => rows.map((cells, i) => ({ __id: String(i), cells })),
+    [rows],
+  );
+  const columns = useMemo<Column<DataTableRowShape>[]>(
+    () =>
+      headers.map((h, ci) => ({
+        id: `c${ci}`,
+        label: h.label,
+        width: h.width ? parseFloat(h.width) : undefined,
+        align: h.align === 'right' ? 'end' : h.align === 'center' ? 'center' : 'start',
+        accessor: (row: DataTableRowShape) => row.cells[ci],
+        cell: ({ row }: { row: DataTableRowShape }) => <>{row.cells[ci]}</>,
+      })),
+    [headers],
+  );
   if (rows.length === 0) return <ReportEmptyState message={empty} />;
   return (
-    <div style={{ overflowX: 'auto', maxHeight: 400, overflowY: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            {headers.map((h, i) => (
-              <th key={i} style={{ ...TH, textAlign: h.align ?? 'left', width: h.width }}>
-                {h.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, ri) => (
-            <tr
-              key={ri}
-              onMouseEnter={e => ((e.currentTarget as HTMLTableRowElement).style.background = 'var(--ds-background-neutral-subtle)')}
-              onMouseLeave={e => ((e.currentTarget as HTMLTableRowElement).style.background = '')}
-            >
-              {row.map((cell, ci) => {
-                const align = headers[ci]?.align ?? 'left';
-                const style = align === 'right' ? TD_R : align === 'center' ? TD_C : TD;
-                return <td key={ci} style={style}>{cell}</td>;
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ maxHeight: 480, overflowY: 'auto' }}>
+      <JiraTable<DataTableRowShape>
+        columns={columns}
+        data={data}
+        getRowId={(r) => r.__id}
+        density="compact"
+        ariaLabel="Report data table"
+      />
     </div>
   );
 }
 
-function ChartWrap({ title, children, height = 260 }: { title?: string; children: React.ReactNode; height?: number }) {
+function ChartWrap({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 16 }}>
       {title && (
@@ -136,10 +160,8 @@ function ChartWrap({ title, children, height = 260 }: { title?: string; children
           {title}
         </p>
       )}
-      <div style={{ height }} role="img" aria-label={title ?? 'Report chart'}>
-        <ResponsiveContainer width="100%" height="100%">
-          {children as React.ReactElement}
-        </ResponsiveContainer>
+      <div role="img" aria-label={title ?? 'Report chart'}>
+        {children}
       </div>
     </div>
   );
@@ -163,14 +185,17 @@ function PassRateBar({ rate }: { rate: number }) {
   );
 }
 
-function formatDate(iso: string) {
+/** Zero-assumption date cell: unknown date renders a dash, never a fake date. */
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return '—';
   return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
 // ── report renderers ───────────────────────────────────────────────────────────
 
-function ExecutionOverview({ data }: { data: SeededData }) {
+function ExecutionOverview({ data }: { data: ReportData }) {
   const { byStatus, total, passed } = useMemo(() => computeExecutionOverview(data), [data]);
+  if (total === 0) return <ReportEmptyState message="No test runs recorded" hint="Execute tests in a cycle to populate this report." />;
   const pieData = Object.entries(byStatus).map(([name, value]) => ({ name, value }));
   const tableRows = Object.entries(byStatus)
     .sort((a, b) => b[1] - a[1])
@@ -185,12 +210,10 @@ function ExecutionOverview({ data }: { data: SeededData }) {
     <>
       <Section>
         <ChartWrap title="Execution status distribution">
-          <PieChart>
-            <Pie data={pieData} cx="50%" cy="50%" outerRadius={100} dataKey="value" label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}>
-              {pieData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-            </Pie>
-            <RechartTooltip />
-          </PieChart>
+          <ReportPieChart
+            data={pieData}
+            getColor={(d, i) => statusChartColor(String(d.name), i)}
+          />
         </ChartWrap>
       </Section>
       <Section>
@@ -203,7 +226,7 @@ function ExecutionOverview({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionSummary({ data }: { data: SeededData }) {
+function ExecutionSummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeExecutionSummary(data), [data]);
   const chartData = rows.map(r => ({ name: r.cycleName.split(' — ')[0], passed: r.passed, failed: r.failed, blocked: r.blocked }));
 
@@ -211,16 +234,15 @@ function ExecutionSummary({ data }: { data: SeededData }) {
     <>
       <Section>
         <ChartWrap title="Pass / Fail / Blocked per cycle">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip />
-            <Legend />
-            <Bar dataKey="passed" stackId="a" fill={P.green} name="Passed" />
-            <Bar dataKey="failed" stackId="a" fill={P.red} name="Failed" />
-            <Bar dataKey="blocked" stackId="a" fill={P.yellow} name="Blocked" />
-          </BarChart>
+          <ReportBarChart
+            data={chartData}
+            xKey="name"
+            series={[
+              { dataKey: 'passed', name: 'Passed', color: ADS_CHART.success, stackId: 'a' },
+              { dataKey: 'failed', name: 'Failed', color: ADS_CHART.danger, stackId: 'a' },
+              { dataKey: 'blocked', name: 'Blocked', color: ADS_CHART.warning, stackId: 'a' },
+            ]}
+          />
         </ChartWrap>
       </Section>
       <Section>
@@ -247,49 +269,68 @@ function ExecutionSummary({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionBurndown({ data }: { data: SeededData }) {
-  const chartData = useMemo(() => computeBurndown(data), [data]);
+function ExecutionBurndown({ data }: { data: ReportData }) {
+  const { cycleName, points } = useMemo(() => computeBurndown(data), [data]);
+  if (points.length === 0) {
+    return <ReportEmptyState message="No dated executions" hint="Burndown needs runs with a recorded execution date." />;
+  }
+  const hasIdeal = points.some((p) => p.ideal !== null);
   return (
     <>
       <Section>
-        <ChartWrap title="Remaining vs Ideal (Sprint 16 — Release Candidate)">
-          <ComposedChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip labelFormatter={formatDate} />
-            <Legend />
-            <Line type="monotone" dataKey="ideal" stroke={P.blue} strokeDasharray="6 3" name="Ideal remaining" dot={false} />
-            <Area type="monotone" dataKey="remaining" fill={P.blueFill} stroke={P.blue} name="Actual remaining" />
-          </ComposedChart>
+        <ChartWrap title={cycleName ? `Remaining vs Ideal (${cycleName}) — count-based` : 'Remaining vs Ideal — count-based'}>
+          <div style={{ height: 260 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={points}>
+                <CartesianGrid strokeDasharray="3 3" stroke={ADS_CHART.grid} />
+                <XAxis dataKey="date" tickFormatter={formatDate} tick={ADS_AXIS_TICK} />
+                <YAxis tick={ADS_AXIS_TICK} />
+                <RechartTooltip labelFormatter={formatDate} contentStyle={ADS_TOOLTIP_CONTENT_STYLE} />
+                <Legend />
+                {hasIdeal && (
+                  <Line type="monotone" dataKey="ideal" stroke={ADS_SERIES[0]} strokeDasharray="6 3" name="Ideal remaining" dot={false} isAnimationActive={false} />
+                )}
+                <Area type="monotone" dataKey="remaining" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Actual remaining" isAnimationActive={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </ChartWrap>
+        {!hasIdeal && (
+          <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
+            Ideal line omitted — this cycle has no recorded start/end dates.
+          </p>
+        )}
       </Section>
       <Section>
         <DataTable
           headers={[{ label: 'Date' }, { label: 'Executed', align: 'right' }, { label: 'Remaining', align: 'right' }, { label: 'Ideal', align: 'right' }]}
-          rows={chartData.map(d => [formatDate(d.date), d.executed, d.remaining, d.ideal])}
+          rows={points.map(d => [formatDate(d.date), d.executed, d.remaining, d.ideal ?? '—'])}
         />
       </Section>
     </>
   );
 }
 
-function ExecutionBurnup({ data }: { data: SeededData }) {
+function ExecutionBurnup({ data }: { data: ReportData }) {
   const chartData = useMemo(() => computeBurnup(data), [data]);
   return (
     <>
       <Section>
         <ChartWrap title="Cumulative executed and passed over time">
-          <ComposedChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip labelFormatter={formatDate} />
-            <Legend />
-            <Line type="monotone" dataKey="scope" stroke="var(--ds-border-bold)" strokeDasharray="6 3" name="Total scope" dot={false} />
-            <Area type="monotone" dataKey="cumTotal" fill={P.blueFill} stroke={P.blue} name="Cumulative executed" />
-            <Area type="monotone" dataKey="cumPassed" fill={P.greenFill} stroke={P.green} name="Cumulative passed" />
-          </ComposedChart>
+          <div style={{ height: 260 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={ADS_CHART.grid} />
+                <XAxis dataKey="date" tickFormatter={formatDate} tick={ADS_AXIS_TICK} />
+                <YAxis tick={ADS_AXIS_TICK} />
+                <RechartTooltip labelFormatter={formatDate} contentStyle={ADS_TOOLTIP_CONTENT_STYLE} />
+                <Legend />
+                <Line type="monotone" dataKey="scope" stroke="var(--ds-border-bold)" strokeDasharray="6 3" name="Total scope" dot={false} isAnimationActive={false} />
+                <Area type="monotone" dataKey="cumTotal" fill={ADS_SERIES[0]} fillOpacity={0.2} stroke={ADS_SERIES[0]} name="Cumulative executed" isAnimationActive={false} />
+                <Area type="monotone" dataKey="cumPassed" fill={ADS_CHART.success} fillOpacity={0.2} stroke={ADS_CHART.success} name="Cumulative passed" isAnimationActive={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </ChartWrap>
       </Section>
       <Section>
@@ -302,21 +343,20 @@ function ExecutionBurnup({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionDistribution({ data }: { data: SeededData }) {
+function ExecutionDistribution({ data }: { data: ReportData }) {
   const dist = useMemo(() => computeDistribution(data), [data]);
   return (
     <>
       <Section>
         <ChartWrap title="Run count by status">
-          <BarChart data={dist} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis type="number" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis dataKey="status" type="category" tick={{ fontSize: 'var(--ds-font-size-100)' }} width={80} />
-            <RechartTooltip />
-            <Bar dataKey="count" name="Runs">
-              {dist.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-            </Bar>
-          </BarChart>
+          <ReportBarChart
+            data={dist}
+            xKey="status"
+            layout="vertical"
+            series={[{ dataKey: 'count', name: 'Runs' }]}
+            getBarColor={(d, i) => statusChartColor(String(d.status), i)}
+            showLegend={false}
+          />
         </ChartWrap>
       </Section>
       <Section>
@@ -333,7 +373,7 @@ function ExecutionDistribution({ data }: { data: SeededData }) {
   );
 }
 
-function ExecutionHistory({ data }: { data: SeededData }) {
+function ExecutionHistory({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeExecutionHistory(data), [data]);
   return (
     <Section>
@@ -348,8 +388,8 @@ function ExecutionHistory({ data }: { data: SeededData }) {
         ]}
         rows={rows.map(r => [
           <span key={r.date} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
-          <code key={r.caseKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.caseKey}</code>,
-          r.caseTitle,
+          <KeyText key={r.caseKey}>{r.caseKey}</KeyText>,
+          <TitleText key={r.caseTitle}>{r.caseTitle}</TitleText>,
           r.executor,
           <span key={r.cycleName} style={{ fontSize: 'var(--ds-font-size-200)' }}>{r.cycleName}</span>,
           <Lozenge key={r.status} appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status.replace(/_/g, ' ')}</Lozenge>,
@@ -359,7 +399,7 @@ function ExecutionHistory({ data }: { data: SeededData }) {
   );
 }
 
-function CaseDistribution({ data }: { data: SeededData }) {
+function CaseDistribution({ data }: { data: ReportData }) {
   const { byStatus, byPriority, byType, total } = useMemo(() => computeCaseDistribution(data), [data]);
   const statusData = Object.entries(byStatus).map(([name, value]) => ({ name, value }));
   const priorityData = Object.entries(byPriority).map(([name, value]) => ({ name, value }));
@@ -369,23 +409,20 @@ function CaseDistribution({ data }: { data: SeededData }) {
       <Section>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <ChartWrap title="By status">
-            <PieChart>
-              <Pie data={statusData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}>
-                {statusData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-              </Pie>
-              <RechartTooltip />
-            </PieChart>
+            <ReportPieChart
+              data={statusData}
+              outerRadius={90}
+              getColor={(d, i) => statusChartColor(String(d.name), i)}
+            />
           </ChartWrap>
           <ChartWrap title="By priority">
-            <BarChart data={priorityData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-              <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-              <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-              <RechartTooltip />
-              <Bar dataKey="value" name="Cases">
-                {priorityData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-              </Bar>
-            </BarChart>
+            <ReportBarChart
+              data={priorityData}
+              xKey="name"
+              series={[{ dataKey: 'value', name: 'Cases' }]}
+              getBarColor={(_, i) => ADS_SERIES[i % ADS_SERIES.length]}
+              showLegend={false}
+            />
           </ChartWrap>
         </div>
       </Section>
@@ -399,7 +436,7 @@ function CaseDistribution({ data }: { data: SeededData }) {
   );
 }
 
-function CaseUsage({ data }: { data: SeededData }) {
+function CaseUsage({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeCaseUsage(data), [data]);
   return (
     <Section>
@@ -413,9 +450,9 @@ function CaseUsage({ data }: { data: SeededData }) {
           { label: 'State', width: '10%', align: 'center' },
         ]}
         rows={rows.map(r => [
-          <code key={r.caseKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.caseKey}</code>,
-          r.title,
-          r.folder,
+          <KeyText key={r.caseKey}>{r.caseKey}</KeyText>,
+          <TitleText key={r.title}>{r.title}</TitleText>,
+          r.folder ?? <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           r.cycleCount,
           r.lastExecuted ? formatDate(r.lastExecuted) : <span style={{ color: 'var(--ds-text-subtlest)' }}>Never</span>,
           r.isStale
@@ -429,7 +466,7 @@ function CaseUsage({ data }: { data: SeededData }) {
   );
 }
 
-function DefectSummary({ data }: { data: SeededData }) {
+function DefectSummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeDefectSummary(data), [data]);
   const chartData = rows.map(r => ({ name: r.severity, total: r.total }));
 
@@ -437,15 +474,13 @@ function DefectSummary({ data }: { data: SeededData }) {
     <>
       <Section>
         <ChartWrap title="Defects by severity">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip />
-            <Bar dataKey="total" name="Defects">
-              {chartData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-            </Bar>
-          </BarChart>
+          <ReportBarChart
+            data={chartData}
+            xKey="name"
+            series={[{ dataKey: 'total', name: 'Defects' }]}
+            getBarColor={(_, i) => ADS_SERIES[i % ADS_SERIES.length]}
+            showLegend={false}
+          />
         </ChartWrap>
       </Section>
       <Section>
@@ -455,7 +490,7 @@ function DefectSummary({ data }: { data: SeededData }) {
             <Lozenge key={r.severity} appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>,
             r.total,
             Object.entries(r.statuses).map(([s, c]) => `${s}: ${c}`).join(' · '),
-            `${r.agingDays}d`,
+            r.agingDays !== null ? `${r.agingDays}d` : '—',
           ])}
         />
       </Section>
@@ -463,50 +498,68 @@ function DefectSummary({ data }: { data: SeededData }) {
   );
 }
 
-function DefectImpact({ data }: { data: SeededData }) {
+function DefectImpact({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeDefectImpact(data), [data]);
   return (
     <Section>
       <DataTable
         headers={[
-          { label: 'Key', width: '10%' },
-          { label: 'Defect Title', width: '35%' },
-          { label: 'Severity', width: '10%' },
-          { label: 'Status', width: '10%' },
-          { label: 'Impact', align: 'right', width: '8%' },
-          { label: 'Age', align: 'right', width: '8%' },
-          { label: 'Linked Cases', width: '19%' },
+          { label: 'Key', width: '9%' },
+          { label: 'Defect Title', width: '26%' },
+          { label: 'Severity', width: '9%' },
+          { label: 'Status', width: '9%' },
+          { label: 'Impact', align: 'right', width: '7%' },
+          { label: 'Age', align: 'right', width: '7%' },
+          { label: 'Linked Cases', width: '13%' },
+          { label: 'Parent Issue', width: '20%' },
         ]}
         rows={rows.map(r => [
-          <code key={r.defectKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.defectKey}</code>,
-          r.title,
-          <Lozenge key={r.severity} appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>,
-          <Lozenge key={r.status} appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status}</Lozenge>,
+          <KeyText key={r.defectKey}>{r.defectKey}</KeyText>,
+          <TitleText key={r.title}>{r.title}</TitleText>,
+          r.severity
+            ? <Lozenge key="sev" appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>
+            : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          r.status
+            ? <Lozenge key="st" appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status}</Lozenge>
+            : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           <strong key="score">{r.impactScore}</strong>,
-          `${r.agingDays}d`,
+          r.agingDays !== null ? `${r.agingDays}d` : '—',
           r.linkedCases.join(', ') || '—',
+          r.parentKey ? (
+            <span key="parent" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+              <KeyText>{r.parentKey}</KeyText>
+              {r.parentSummary && (
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {r.parentSummary}
+                </span>
+              )}
+            </span>
+          ) : (
+            <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>
+          ),
         ])}
       />
     </Section>
   );
 }
 
-function DefectTrend({ data }: { data: SeededData }) {
+function DefectTrend({ data }: { data: ReportData }) {
   const chartData = useMemo(() => computeDefectTrend(data), [data]);
   return (
     <>
       <Section>
         <ChartWrap title="Defects created per day">
-          <AreaChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip labelFormatter={formatDate} />
-            <Area type="monotone" dataKey="count" fill={P.redFill} stroke={P.red} name="Created" />
-          </AreaChart>
+          <ReportAreaChart
+            data={chartData}
+            xKey="date"
+            series={[{ dataKey: 'count', name: 'Created', color: ADS_CHART.danger }]}
+            xTickFormatter={formatDate}
+            tooltipLabelFormatter={formatDate}
+            showLegend={false}
+          />
         </ChartWrap>
         <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
-          Closure trend available after resolved_at field confirmation (Phase 8).
+          Created series only — no closure series is shown because no reliable closure date exists in the data.
         </p>
       </Section>
       <Section>
@@ -519,7 +572,7 @@ function DefectTrend({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleComparison({ data }: { data: SeededData }) {
+function MultiCycleComparison({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeMultiCycleComparison(data), [data]);
   const chartData = rows.map(r => ({ name: r.cycleName.split(' — ')[0], passRate: r.passRate }));
 
@@ -527,13 +580,15 @@ function MultiCycleComparison({ data }: { data: SeededData }) {
     <>
       <Section>
         <ChartWrap title="Pass rate trend across cycles">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-100)' }} unit="%" />
-            <RechartTooltip formatter={(v) => [`${v}%`, 'Pass rate']} />
-            <Line type="monotone" dataKey="passRate" stroke={P.blue} strokeWidth={2} dot={{ r: 4 }} name="Pass rate" />
-          </LineChart>
+          <ReportLineChart
+            data={chartData}
+            xKey="name"
+            series={[{ dataKey: 'passRate', name: 'Pass rate' }]}
+            yDomain={[0, 100]}
+            yUnit="%"
+            tooltipFormatter={(v) => [`${v}%`, 'Pass rate']}
+            showLegend={false}
+          />
         </ChartWrap>
       </Section>
       <Section>
@@ -564,7 +619,7 @@ function MultiCycleComparison({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleSummary({ data }: { data: SeededData }) {
+function MultiCycleSummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeMultiCycleComparison(data), [data]);
   return (
     <Section>
@@ -580,7 +635,9 @@ function MultiCycleSummary({ data }: { data: SeededData }) {
           const r = rows[i];
           return [
             cy.name,
-            <Lozenge key={cy.status} appearance={STATUS_APPEARANCE[cy.status] ?? 'default'}>{cy.status}</Lozenge>,
+            cy.status
+              ? <Lozenge key="st" appearance={STATUS_APPEARANCE[cy.status] ?? 'default'}>{cy.status}</Lozenge>
+              : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
             r.scopeTotal,
             r.passed,
             <PassRateBar key={cy.id} rate={r.passRate} />,
@@ -591,68 +648,43 @@ function MultiCycleSummary({ data }: { data: SeededData }) {
   );
 }
 
-function MultiCycleDetail({ data }: { data: SeededData }) {
+function MultiCycleDetail({ data }: { data: ReportData }) {
   const { cycles, rows } = useMemo(() => computeMultiCycleDetail(data), [data]);
   if (rows.length === 0) return <ReportEmptyState />;
 
   return (
     <Section>
-      <div style={{ overflowX: 'auto', maxHeight: 480, overflowY: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
-          <thead>
-            <tr>
-              <th style={{ ...TH, width: '8%' }}>Case</th>
-              <th style={{ ...TH, width: '32%' }}>Title</th>
-              <th style={{ ...TH, width: '10%' }}>Folder</th>
-              {cycles.map(cy => (
-                <th key={cy.id} style={{ ...TH, textAlign: 'center', width: `${40 / cycles.length}%` }}>
-                  {cy.name.split(' — ')[0]}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(row => (
-              <tr
-                key={row.caseKey}
-                onMouseEnter={e => ((e.currentTarget as HTMLTableRowElement).style.background = 'var(--ds-background-neutral-subtle)')}
-                onMouseLeave={e => ((e.currentTarget as HTMLTableRowElement).style.background = '')}
-              >
-                <td style={{ ...TD, fontSize: 'var(--ds-font-size-200)' }}>
-                  <code style={{ color: 'var(--ds-text-brand)' }}>{row.caseKey}</code>
-                </td>
-                <td style={TD}>{row.title}</td>
-                <td style={{ ...TD, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{row.folder}</td>
-                {cycles.map(cy => {
-                  const st = row.statuses[cy.id] ?? null;
-                  return (
-                    <td key={cy.id} style={{ ...TD_C }}>
-                      {st ? (
-                        <Lozenge appearance={STATUS_APPEARANCE[st] ?? 'default'}>{st.replace(/_/g, ' ')}</Lozenge>
-                      ) : (
-                        <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>—</span>
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        headers={[
+          { label: 'Case', width: '8%' },
+          { label: 'Title', width: '32%' },
+          { label: 'Folder', width: '10%' },
+          ...cycles.map(cy => ({
+            label: cy.name.split(' — ')[0],
+            align: 'center' as const,
+            width: `${40 / cycles.length}%`,
+          })),
+        ]}
+        rows={rows.map(row => [
+          <KeyText key={row.caseKey}>{row.caseKey}</KeyText>,
+          <TitleText key={row.title}>{row.title}</TitleText>,
+          <span key="folder" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{row.folder ?? '—'}</span>,
+          ...cycles.map(cy => {
+            const st = row.statuses[cy.id] ?? null;
+            return st ? (
+              <Lozenge key={cy.id} appearance={STATUS_APPEARANCE[st] ?? 'default'}>{st.replace(/_/g, ' ')}</Lozenge>
+            ) : (
+              <span key={cy.id} style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>—</span>
+            );
+          }),
+        ])}
+      />
     </Section>
   );
 }
 
-function MultiCycleDistribution({ data }: { data: SeededData }) {
-  const statusGroups = ['passed', 'failed', 'blocked', 'not_run', 'skipped'];
-  const rows = statusGroups.map(st => {
-    const cycleCounts = data.cycles.map(cy => {
-      const cycleRuns = data.runs.filter(r => r.cycleId === cy.id);
-      return cycleRuns.filter(r => r.status === st).length;
-    });
-    return { status: st, counts: cycleCounts };
-  }).filter(r => r.counts.some(c => c > 0));
+function MultiCycleDistribution({ data }: { data: ReportData }) {
+  const { rows } = useMemo(() => computeMultiCycleDistribution(data), [data]);
 
   const chartData = data.cycles.map((cy, ci) => {
     const obj: Record<string, number | string> = { name: cy.name.split(' — ')[0] };
@@ -664,151 +696,39 @@ function MultiCycleDistribution({ data }: { data: SeededData }) {
     <>
       <Section>
         <ChartWrap title="Status distribution by cycle">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip />
-            <Legend />
-            <Bar dataKey="passed" stackId="a" fill={P.green} name="Passed" />
-            <Bar dataKey="failed" stackId="a" fill={P.red} name="Failed" />
-            <Bar dataKey="blocked" stackId="a" fill={P.yellow} name="Blocked" />
-            <Bar dataKey="not_run" stackId="a" fill={P.grey} name="Not Run" />
-          </BarChart>
-        </ChartWrap>
-      </Section>
-      <Section>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={TH}>Status</th>
-                {data.cycles.map(cy => <th key={cy.id} style={{ ...TH, textAlign: 'right' }}>{cy.name.split(' — ')[0]}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(r => (
-                <tr key={r.status}>
-                  <td style={TD}>
-                    <Lozenge appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status.replace(/_/g, ' ')}</Lozenge>
-                  </td>
-                  {r.counts.map((c, i) => <td key={i} style={TD_R}>{c}</td>)}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-    </>
-  );
-}
-
-function ProjectOverview({ data }: { data: SeededData }) {
-  const totalRuns = data.runs.length;
-  const passed = data.runs.filter(r => r.status === 'passed').length;
-  const failed = data.runs.filter(r => r.status === 'failed').length;
-  const blocked = data.runs.filter(r => r.status === 'blocked').length;
-  const activeCycles = data.cycles.filter(c => c.status === 'active').length;
-  const linkedCases = data.cases.filter(c => c.linkedFeature !== null).length;
-
-  const metrics = [
-    { label: 'Total Test Cases', value: data.cases.length },
-    { label: 'Active Cycles', value: activeCycles },
-    { label: 'Total Cycles', value: data.cycles.length },
-    { label: 'Total Runs', value: totalRuns },
-    { label: 'Passed', value: passed },
-    { label: 'Failed', value: failed },
-    { label: 'Blocked', value: blocked },
-    { label: 'Pass Rate', value: `${Math.round((passed / totalRuns) * 100)}%` },
-    { label: 'Coverage', value: `${Math.round((linkedCases / data.cases.length) * 100)}%` },
-    { label: 'Open Defects', value: data.defects.filter(d => d.status === 'open').length },
-  ];
-
-  return (
-    <Section>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
-        {metrics.map(m => (
-          <div key={m.label} style={{ background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-              {m.label}
-            </div>
-            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums' }}>
-              {m.value}
-            </div>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function ProjectMetrics({ data }: { data: SeededData }) {
-  const metrics = useMemo(() => computeProjectMetrics(data), [data]);
-  const trendData = data.cycles.map((cy, i) => {
-    const runs = data.runs.filter(r => r.cycleId === cy.id);
-    const passed = runs.filter(r => r.status === 'passed').length;
-    return { name: cy.name.split(' — ')[0], passRate: Math.round((passed / Math.max(1, runs.length)) * 100) };
-  });
-
-  return (
-    <>
-      <Section>
-        <ChartWrap title="Pass rate trend by cycle">
-          <LineChart data={trendData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-            <RechartTooltip formatter={(v) => [`${v}%`, 'Pass rate']} />
-            <Line type="monotone" dataKey="passRate" stroke={P.green} strokeWidth={2} dot={{ r: 5 }} name="Pass rate" />
-          </LineChart>
+          <ReportBarChart
+            data={chartData}
+            xKey="name"
+            series={[
+              { dataKey: 'passed', name: 'Passed', color: ADS_CHART.success, stackId: 'a' },
+              { dataKey: 'failed', name: 'Failed', color: ADS_CHART.danger, stackId: 'a' },
+              { dataKey: 'blocked', name: 'Blocked', color: ADS_CHART.warning, stackId: 'a' },
+              { dataKey: 'in_progress', name: 'In Progress', color: ADS_CHART.information, stackId: 'a' },
+              { dataKey: 'not_run', name: 'Not Run', color: ADS_CHART.neutral, stackId: 'a' },
+            ]}
+          />
         </ChartWrap>
       </Section>
       <Section>
         <DataTable
-          headers={[{ label: 'Metric', width: '60%' }, { label: 'Value', align: 'right', width: '40%' }]}
-          rows={metrics.map(m => [m.metric, <strong key={m.metric} style={{ fontSize: 'var(--ds-font-size-400)' }}>{m.value}</strong>])}
+          headers={[
+            { label: 'Status' },
+            ...data.cycles.map(cy => ({ label: cy.name.split(' — ')[0], align: 'right' as const })),
+          ]}
+          rows={rows.map(r => [
+            <Lozenge key={r.status} appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status.replace(/_/g, ' ')}</Lozenge>,
+            ...r.counts,
+          ])}
         />
       </Section>
     </>
   );
 }
 
-function ProjectActivity({ data }: { data: SeededData }) {
-  const rows = data.runs
-    .sort((a, b) => new Date(b.executedAt).getTime() - new Date(a.executedAt).getTime())
-    .slice(0, 80)
-    .map(r => {
-      const tc = data.cases.find(c => c.id === r.caseId);
-      const cy = data.cycles.find(c => c.id === r.cycleId);
-      return { date: r.executedAt, action: `Run ${r.status}`, user: r.executedBy, entity: tc?.caseKey ?? '—', cycle: cy?.name ?? '—' };
-    });
-
-  return (
-    <Section>
-      <DataTable
-        headers={[
-          { label: 'Date', width: '12%' },
-          { label: 'Action', width: '14%' },
-          { label: 'User', width: '16%' },
-          { label: 'Entity', width: '10%' },
-          { label: 'Cycle', width: '48%' },
-        ]}
-        rows={rows.map(r => [
-          <span key={r.date} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
-          <Lozenge key={r.action} appearance={STATUS_APPEARANCE[r.action.split(' ')[1]] ?? 'default'}>{r.action}</Lozenge>,
-          r.user,
-          <code key={r.entity} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.entity}</code>,
-          <span key={r.cycle} style={{ fontSize: 'var(--ds-font-size-200)' }}>{r.cycle}</span>,
-        ])}
-      />
-    </Section>
-  );
-}
-
-function TraceabilitySummary({ data }: { data: SeededData }) {
+function TraceabilitySummary({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeTraceabilitySummary(data), [data]);
   const totalCases = data.cases.length;
-  const linkedCases = data.cases.filter(c => c.linkedFeature !== null).length;
+  const linkedCases = data.cases.filter(c => c.linkedIssueKeys.length > 0).length;
 
   return (
     <>
@@ -816,18 +736,21 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', padding: '8px 0' }}>
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overall Coverage</div>
-            <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--ds-text)' }}>{coveragePercent(linkedCases, totalCases)}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)' }}>{coveragePercent(linkedCases, totalCases)}</div>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{linkedCases} of {totalCases} cases linked to requirements</div>
           </div>
           <div style={{ flex: 1, maxWidth: 400 }}>
-            <ChartWrap title="Pass rate per requirement" height={200}>
-              <BarChart data={rows.map(r => ({ name: r.issueKey, passRate: r.passRate }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-                <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-                <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
-                <RechartTooltip formatter={(v) => [`${v}%`, 'Pass rate']} />
-                <Bar dataKey="passRate" fill={P.blue} name="Pass rate" />
-              </BarChart>
+            <ChartWrap title="Pass rate per requirement">
+              <ReportBarChart
+                data={rows.map(r => ({ name: r.issueKey, passRate: r.passRate }))}
+                xKey="name"
+                series={[{ dataKey: 'passRate', name: 'Pass rate' }]}
+                yDomain={[0, 100]}
+                yUnit="%"
+                tooltipFormatter={(v) => [`${v}%`, 'Pass rate']}
+                showLegend={false}
+                height={200}
+              />
             </ChartWrap>
           </div>
         </div>
@@ -842,8 +765,10 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
             { label: 'Pass Rate', align: 'right', width: '18%' },
           ]}
           rows={rows.map(r => [
-            <code key={r.issueKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.issueKey}</code>,
-            r.summary,
+            <KeyText key={r.issueKey}>{r.issueKey}</KeyText>,
+            r.summary
+              ? <TitleText key="s">{r.summary}</TitleText>
+              : <span key="s" style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
             r.caseCount,
             `${r.coveragePct}%`,
             <PassRateBar key={r.issueKey} rate={r.passRate} />,
@@ -854,29 +779,37 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
   );
 }
 
-function TraceabilityDetail({ data }: { data: SeededData }) {
+function TraceabilityDetail({ data }: { data: ReportData }) {
   const rows = useMemo(() => computeTraceabilityDetail(data), [data]);
   return (
     <Section>
       <DataTable
         headers={[
           { label: 'Issue', width: '10%' },
-          { label: 'Requirement', width: '22%' },
+          { label: 'Requirement', width: '20%' },
           { label: 'Case Key', width: '9%' },
-          { label: 'Case Title', width: '28%' },
-          { label: 'Owner', width: '12%' },
-          { label: 'Last Run', width: '10%', align: 'center' },
-          { label: 'Defects', align: 'right', width: '9%' },
+          { label: 'Case Title', width: '25%' },
+          { label: 'Owner', width: '11%' },
+          { label: 'Last Run', width: '9%', align: 'center' },
+          { label: 'Defects', align: 'right', width: '8%' },
+          { label: 'Links', align: 'right', width: '8%' },
         ]}
         rows={rows.map(r => [
-          <code key={r.issueKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.issueKey}</code>,
-          <span key={r.issueSummary} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{r.issueSummary}</span>,
-          <code key={r.caseKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>{r.caseKey}</code>,
-          r.caseTitle,
-          r.owner,
-          <Lozenge key={r.lastRunStatus} appearance={STATUS_APPEARANCE[r.lastRunStatus] ?? 'default'}>{r.lastRunStatus.replace(/_/g, ' ')}</Lozenge>,
+          <KeyText key={r.issueKey}>{r.issueKey}</KeyText>,
+          r.issueSummary
+            ? <span key="rs" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{r.issueSummary}</span>
+            : <span key="rs" style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          <KeyText key={r.caseKey} color="var(--ds-text)">{r.caseKey}</KeyText>,
+          <TitleText key={r.caseTitle}>{r.caseTitle}</TitleText>,
+          r.owner ?? <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          r.lastRunStatus
+            ? <Lozenge key="lr" appearance={STATUS_APPEARANCE[r.lastRunStatus] ?? 'default'}>{r.lastRunStatus.replace(/_/g, ' ')}</Lozenge>
+            : <span key="lr" style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
           r.defectCount > 0
             ? <Lozenge key="d" appearance="removed">{r.defectCount}</Lozenge>
+            : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
+          r.relatedLinks > 0
+            ? r.relatedLinks
             : <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>,
         ])}
       />
@@ -888,7 +821,7 @@ function TraceabilityDetail({ data }: { data: SeededData }) {
 
 interface Props {
   slug: string;
-  data: SeededData;
+  data: ReportData;
   filters: FilterState;
 }
 
@@ -896,7 +829,7 @@ export default function ReportCanvas({ slug, data, filters }: Props) {
   const def = REPORT_DEFS.find(d => d.slug === slug);
   if (!def) return <ReportEmptyState message="Unknown report" hint="Select a report from the navigator." />;
 
-  const renderers: Record<string, React.ComponentType<{ data: SeededData }>> = {
+  const renderers: Record<string, React.ComponentType<{ data: ReportData }>> = {
     'execution-overview': ExecutionOverview,
     'execution-summary': ExecutionSummary,
     'execution-burndown': ExecutionBurndown,
@@ -912,9 +845,6 @@ export default function ReportCanvas({ slug, data, filters }: Props) {
     'multi-cycle-summary': MultiCycleSummary,
     'multi-cycle-detail': MultiCycleDetail,
     'multi-cycle-distribution': MultiCycleDistribution,
-    'project-overview': ProjectOverview,
-    'project-metrics': ProjectMetrics,
-    'project-activity': ProjectActivity,
     'traceability-summary': TraceabilitySummary,
     'traceability-detail': TraceabilityDetail,
   };

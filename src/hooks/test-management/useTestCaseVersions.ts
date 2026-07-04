@@ -110,102 +110,10 @@ export function useTestCaseVersionsCount(testCaseId: string | undefined) {
         .select('*', { count: 'exact', head: true })
         .eq('test_case_id', testCaseId);
 
-      if (error) {
-        // Don't log if it's just empty/permissions - return 0
-        if (error.message) {
-          console.error('Error counting versions:', error);
-        }
-        return 0;
-      }
+      if (error) throw error;
       return count ?? 0;
     },
     enabled: !!testCaseId,
-  });
-}
-
-interface CreateVersionInput {
-  testCaseId: string;
-  changeSummary?: string;
-}
-
-/**
- * Create a new version snapshot of the current test case state
- */
-export function useCreateTestCaseVersion() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (input: CreateVersionInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      // Fetch current test case state
-      const { data: testCase, error: caseError } = await supabase
-        .from('tm_test_cases')
-        .select('*')
-        .eq('id', input.testCaseId)
-        .single();
-
-      if (caseError) throw caseError;
-
-      // Fetch current steps
-      const { data: steps, error: stepsError } = await supabase
-        .from('tm_test_steps')
-        .select('*')
-        .eq('test_case_id', input.testCaseId)
-        .order('step_number', { ascending: true });
-
-      if (stepsError) throw stepsError;
-
-      // Get next version number
-      const { data: existingVersions } = await typedQuery('tm_test_case_versions')
-        .select('version_number')
-        .eq('test_case_id', input.testCaseId)
-        .order('version_number', { ascending: false })
-        .limit(1);
-
-      const nextVersion = (existingVersions?.[0]?.version_number || 0) + 1;
-
-      // Create snapshot
-      const snapshot: TestCaseVersionSnapshot = {
-        title: testCase.title,
-        description: testCase.description,
-        preconditions: testCase.preconditions,
-        status: testCase.status,
-        priority_id: testCase.priority_id,
-        case_type_id: testCase.case_type_id,
-        folder_id: testCase.folder_id,
-        steps: (steps || []).map(s => ({
-          step_number: s.step_number,
-          action: s.action,
-          expected_result: s.expected_result || '',
-          test_data: s.test_data,
-        })),
-      };
-
-      // Insert version
-      const { data, error } = await typedQuery('tm_test_case_versions')
-        .insert({
-          test_case_id: input.testCaseId,
-          version_number: nextVersion,
-          snapshot,
-          change_summary: input.changeSummary || null,
-          changed_by: user.id,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', variables.testCaseId] });
-      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', variables.testCaseId] });
-      catalystToast.success('Version snapshot created');
-    },
-    onError: (error: Error) => {
-      catalystToast.error('Failed to create version', error.message);
-    },
   });
 }
 
@@ -215,14 +123,22 @@ interface RestoreVersionInput {
 }
 
 /**
- * Restore a test case to a specific version
+ * Restore a test case to a specific version.
+ *
+ * P1-S4 / VER-003/004: restore is snapshot-first and append-only — it never
+ * rewrites history. The old implementation hard-DELETEd every live step
+ * (destroying step identity, and — before P1-S1's soft-delete — silently
+ * wiping execution history via CASCADE) then reinserted from the snapshot.
+ * Restore now soft-deletes current steps, inserts fresh rows matching the
+ * target snapshot, and records the restore itself as a NEW version via the
+ * canonical RPC — "restore to v2" reads as "v(latest+1) == v2's content" in
+ * the version list, never as a rewrite of the past.
  */
 export function useRestoreTestCaseVersion() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: RestoreVersionInput) => {
-      // Fetch the version to restore
       const { data: version, error: versionError } = await typedQuery('tm_test_case_versions')
         .select('snapshot')
         .eq('test_case_id', input.testCaseId)
@@ -233,7 +149,6 @@ export function useRestoreTestCaseVersion() {
 
       const snapshot = version.snapshot as TestCaseVersionSnapshot;
 
-      // Update the test case
       const { error: updateError } = await supabase
         .from('tm_test_cases')
         .update({
@@ -249,11 +164,14 @@ export function useRestoreTestCaseVersion() {
 
       if (updateError) throw updateError;
 
-      // Delete existing steps and insert from snapshot
-      await supabase
+      // Soft-delete current steps (P1-S1) — never destroy step history.
+      const { error: archiveStepsError } = await supabase
         .from('tm_test_steps')
-        .delete()
-        .eq('test_case_id', input.testCaseId);
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('test_case_id', input.testCaseId)
+        .is('deleted_at', null);
+
+      if (archiveStepsError) throw archiveStepsError;
 
       if (snapshot.steps && snapshot.steps.length > 0) {
         const stepsToInsert = snapshot.steps.map(s => ({
@@ -264,16 +182,29 @@ export function useRestoreTestCaseVersion() {
           test_data: s.test_data,
         }));
 
-        await supabase
+        const { error: insertStepsError } = await supabase
           .from('tm_test_steps')
           .insert(stepsToInsert);
+
+        if (insertStepsError) throw insertStepsError;
       }
+
+      // Record the restore as a new version (P1-S3 canonical writer) —
+      // append-only history, never a rewrite of the restored-from version.
+      const { error: snapshotError } = await supabase.rpc('tm_create_version_snapshot', {
+        p_case_id: input.testCaseId,
+        p_change_summary: `Restored to version ${input.versionNumber}`,
+      });
+
+      if (snapshotError) throw snapshotError;
 
       return input;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.testCaseId] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.testCaseId] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.testCaseId] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.testCaseId] });
       queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
       catalystToast.success(`Restored to version ${data.versionNumber}`);
     },

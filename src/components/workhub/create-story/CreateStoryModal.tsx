@@ -103,7 +103,12 @@ import type { TaskPriority } from '@/modules/tasks/types';
 // ── Defect (QA Bug) work type → tm_defects (TestHub) ──────────────────────────
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
+import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 import type { DefectSeverity } from '@/types/test-management';
+// CRE chokepoint (Grids A + D): module-scoped catalogues are filtered through
+// the Catalyst Rules Engine before render. Custom Studio-registry types pass
+// through (registry is authoritative for them). See RULE_TABLE.md.
+import { filterCreatableTypes, type CREModule } from '@/lib/catalyst-rules';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -143,8 +148,25 @@ export interface CreateStoryModalProps {
    * ['Business Request'] so the dropdown shows only that single option.
    */
   workTypes?: readonly string[];
+  /**
+   * CRE module scope (Grid A/D). When provided, the work-type catalogue —
+   * whether the default WORK_TYPES list or a caller-supplied `workTypes`
+   * restriction — is filtered through the Catalyst Rules Engine
+   * (`filterCreatableTypes`) so only types creatable in this module render.
+   * Omit for module-less surfaces (global top-nav Create) to show the full
+   * catalogue.
+   */
+  creModule?: CREModule;
   /** Initial value for the Work type field. Defaults to 'Story'. */
   defaultWorkType?: string;
+  /** Initial value for the Summary field. Set by the AI-suggest Edit
+   *  action so the user can tweak the AI-proposed title before create
+   *  (2026-07-02). Applied on each open. */
+  initialSummary?: string;
+  /** Initial parent issue key (e.g. "BAU-215"). Prefills the parent
+   *  picker with the current issue when creating a subtask from the
+   *  AI-suggest Edit action. */
+  initialParentKey?: string;
   /**
    * Slice 9C — when opening as a Task (defaultWorkType='Task'), pre-selects this
    * workstream. Lets the retired bespoke CreateTaskModal's `defaultWorkstream`
@@ -172,6 +194,14 @@ const WORK_TYPES = [
   // Catalyst-native task (project-less). Selecting it hands off to the Tasks
   // module's CreateTaskModal via onOpenTask — it is NOT created in ph_issues.
   'Task',
+  // Subtask family (Vikram 2026-07-02) — every leaf that lives under a
+  // Story/Task/QA Bug/Change Request/Production Incident. Wired into the
+  // AI-suggest Edit flow so users can tweak the AI title before create.
+  'Sub-task',
+  'Backend',
+  'Frontend',
+  'Figma',
+  'Integration',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
@@ -193,6 +223,12 @@ export const PARENT_TYPE_RULES: Record<string, string[]> = {
   'Production Incident': ['Business Request', 'Story', 'Feature', 'Epic'],
   'Change Request':      ['Epic', 'Business Request', 'Feature'],
   'Task':                [],  // project-less; handed off to CreateTaskModal
+  // Subtask family (2026-07-02) — sit under any "father" type per Vikram.
+  'Sub-task':            ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Backend':             ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Frontend':            ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Figma':               ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  'Integration':         ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
 };
 
 // Per type → which initial status appears in the read-only Status lozenge.
@@ -444,8 +480,11 @@ export function CreateStoryModal({
   onOpenBusinessRequest,
   onOpenTask,
   workTypes,
+  creModule,
   defaultWorkType = 'Story',
   defaultWorkstreamId,
+  initialSummary,
+  initialParentKey,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -470,6 +509,17 @@ export function CreateStoryModal({
   useEffect(() => {
     if (open) setWorkType(defaultWorkType);
   }, [open, defaultWorkType]);
+
+  // Prefill Summary + Parent on open when the caller supplied them
+  // (AI-suggest Edit action). Uses updateField so the form's existing
+  // change tracking stays consistent. Form uses `parentId` to hold the
+  // parent issue key (parent_key at insert).
+  useEffect(() => {
+    if (!open) return;
+    if (initialSummary != null) updateField('summary', initialSummary);
+    if (initialParentKey != null) updateField('parentId', initialParentKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialSummary, initialParentKey]);
   const [createAnother, setCreateAnother] = useState(false);
   // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
   const [editorKey, setEditorKey] = useState(0);
@@ -640,8 +690,24 @@ export function CreateStoryModal({
   );
 
   // Source list — restricted by the caller (e.g. product hub passes
-  // ['Business Request']) or falls back to the full catalogue.
-  const effectiveWorkTypes = workTypes ?? WORK_TYPES;
+  // ['Business Request']) or falls back to the full catalogue plus any
+  // custom main types from the Studio registry (ph_work_item_types). The
+  // curated system list stays in code — Task-handoff and deprecations are
+  // product decisions, not data.
+  const { data: registryTypes } = useWorkItemTypes();
+  const customTypeNames = useMemo(
+    () =>
+      (registryTypes ?? [])
+        .filter((t) => !t.is_system && t.kind === 'standard' && t.is_enabled)
+        .map((t) => t.display_name),
+    [registryTypes]
+  );
+  // CRE chokepoint (Grids A + D): with a module scope, both the default
+  // catalogue and caller-restricted lists must pass filterCreatableTypes.
+  const effectiveWorkTypes = useMemo(() => {
+    const base = workTypes ?? [...WORK_TYPES, ...customTypeNames];
+    return creModule ? filterCreatableTypes(base, creModule) : [...base];
+  }, [workTypes, customTypeNames, creModule]);
   const workTypeOptions: IconOption[] = useMemo(
     () =>
       effectiveWorkTypes.map((t) => ({
@@ -776,6 +842,9 @@ export function CreateStoryModal({
       if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
       try {
         const descAdf = form.descriptionAdf ?? null;
+        // DEF-012: form.sprintReleases holds ph_jira_sprints.id (sprintOptions.value)
+        // directly — write it to the canonical sprint_id FK, not just the label.
+        const sprintId = (form.sprintReleases ?? [])[0] as string | undefined;
         const sprintName = (form.sprintReleases ?? [])
           .map((id) => sprintOptions.find((o) => o.value === id)?.label)
           .filter(Boolean)[0] as string | undefined;
@@ -803,6 +872,7 @@ export function CreateStoryModal({
           assigned_to: form.assigneeId || undefined,
           parent_key: form.parentId || undefined,
           sprint: sprintName,
+          sprint_id: sprintId,
         });
         flag.success('Defect created');
         onSuccess?.('');

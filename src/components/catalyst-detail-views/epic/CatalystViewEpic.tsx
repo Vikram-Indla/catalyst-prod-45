@@ -29,7 +29,7 @@ export default function CatalystViewEpic({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -71,7 +71,7 @@ export default function CatalystViewEpic({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Epic'} />
       {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
       {/* jira-compare 2026-05-10 Fix E-1: Priority is EXCLUDED from Epic Key details.
           Per CLAUDE.md 2026-05-06 directive: Epic Priority belongs only in the right rail
@@ -150,6 +150,7 @@ export default function CatalystViewEpic({
       coverItemTable="ph_issues"
       onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
       isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      isError={isError} error={error} onRetry={refetch}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

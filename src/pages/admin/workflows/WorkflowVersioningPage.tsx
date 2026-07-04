@@ -85,19 +85,19 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
     reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill; deny-before-mutation on JiraTable/kanban',
   },
   subtask: {
-    runtimeReadWired: false, runtimeReadNote: 'no published version seeded — no canonical statuses to resolve',
+    runtimeReadWired: true, runtimeReadNote: 'v1 published (verified on staging 2026-07-03) — CatalystStatusPill resolves',
     runtimeWriteWired: true, runtimeWriteNote: 'useCatalystIssueMutations → gateTransition → advisory noop (no published version); audit row 183e6f7d proven on BAU-4716',
     reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill; deny-before-mutation on JiraTable/kanban',
   },
   defect: {
     runtimeReadWired: true, runtimeReadNote: 'defectsDataSource + useCanonicalIssueWorkflow(Defect)',
     runtimeWriteWired: true, runtimeWriteNote: 'useDefects.ts → recordAdvisoryStatusChange (advisory)',
-    reasonModalWired: false, reasonModalNote: 'advisory only — reason not surfaced on status change UI',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal via StatusLozengeDropdown in CatalystViewDefect (2026-07-03)',
   },
   incident: {
     runtimeReadWired: false, runtimeReadNote: 'no dedicated read hook wired; CatalystStatusPill if issueType=Incident',
     runtimeWriteWired: true, runtimeWriteNote: 'useIncidents.ts → recordAdvisoryStatusChange (advisory)',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal via StatusLozengeDropdown in CatalystViewIncident (2026-07-03)',
   },
   release: {
     runtimeReadWired: true, runtimeReadNote: 'releasesDataSource + useCanonicalIssueWorkflow(Release)',
@@ -107,22 +107,22 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
   business_request: {
     runtimeReadWired: true, runtimeReadNote: 'useBusinessRequestsSource (backlogDataSource) + useCanonicalIssueWorkflow(Business Request)',
     runtimeWriteWired: true, runtimeWriteNote: 'backlogDataSource.onUpdate → canonical key → process_step (A-lite) + recordAdvisoryStatusChange',
-    reasonModalWired: false, reasonModalNote: 'advisory only — reason not surfaced on status change UI',
+    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal in BacklogPage updateField (F3)',
   },
   product_milestone: {
     runtimeReadWired: false, runtimeReadNote: 'card/manager display only — no canonical read hook wired',
-    runtimeWriteWired: true, runtimeWriteNote: 'productMilestoneService.updateMilestone → status (A-lite) + recordAdvisoryStatusChange',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'productMilestoneService.updateMilestone → status (A-lite, preflight before write) + recordAdvisoryStatusChange',
+    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal on MilestonesPage complete action (F3)',
   },
   task: {
     runtimeReadWired: false, runtimeReadNote: 'task_statuses.workflow_status_key added (A_projection) — read hook not yet wired',
-    runtimeWriteWired: true, runtimeWriteNote: 'useUpdatePlannerTask → status_id + recordAdvisoryStatusChange (advisory)',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'useUpdatePlannerTask → status_id, reason preflight before write + recordAdvisoryStatusChange',
+    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal on TasksBoardView card menu, drag-drop (retries via status-only persistStatusChange), + TaskListPageV3 inline edit (F3)',
   },
   sprint: {
     runtimeReadWired: false, runtimeReadNote: 'no canonical read surface — sprint status shown as raw text',
-    runtimeWriteWired: true, runtimeWriteNote: 'useCanonicalSprintUpdate (useEntities.ts) → status (A-lite) + recordAdvisoryStatusChange',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'ReleaseConfirmationModal (complete) → status, reason preflight before write + recordAdvisoryStatusChange; useCanonicalSprintUpdate kept for programmatic writes',
+    reasonModalWired: true, reasonModalNote: 'WF_REASON_REQUIRED → ReasonCaptureModal stacked over the sprint/release confirmation modal (F3)',
   },
 };
 

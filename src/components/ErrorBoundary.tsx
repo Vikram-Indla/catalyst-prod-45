@@ -108,13 +108,16 @@ export class ErrorBoundary extends Component<Props, State> {
               </pre>
             )}
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button onClick={this.handleRetry} iconBefore={<RefreshCw style={{ width: 16, height: 16 }} />}>
+              <Button
+                onClick={this.handleRetry}
+                iconBefore={(props: any) => <RefreshCw {...props} style={{ width: 16, height: 16 }} />}
+              >
                 Refresh Page
               </Button>
               <Button
                 appearance="subtle"
                 onClick={() => { window.location.href = '/'; }}
-                iconBefore={<Home style={{ width: 16, height: 16 }} />}
+                iconBefore={(props: any) => <Home {...props} style={{ width: 16, height: 16 }} />}
               >
                 Go home
               </Button>

@@ -81,7 +81,7 @@ export function ChatSidebar({ expanded, onToggle, className }: ChatSidebarProps)
     path: `/chat?conv=${encodeURIComponent(c.id)}`,
     icon: ({ className: cls }) => (
       <span className={cls} style={{ display: 'inline-flex' }}>
-        <JiraIssueTypeIcon type={(c.ticketType as any) ?? 'Task'} size={14} />
+        {c.ticketType ? <JiraIssueTypeIcon type={c.ticketType as any} size={14} /> : null}
       </span>
     ),
     exact: false,

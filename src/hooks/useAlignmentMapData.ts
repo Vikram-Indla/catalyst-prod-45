@@ -22,7 +22,7 @@ export interface AlignmentRow {
   theme_name: string;
   theme_color: string;
   theme_status: string;
-  theme_progress: number;
+  theme_progress: number | null;
   goal_id: string | null;
   goal_key: string | null;
   goal_title: string | null;
@@ -102,7 +102,7 @@ export function useAlignmentMapData() {
             key: row.theme_key || '',
             title: row.theme_name || '',
             status: row.theme_status || 'draft',
-            progress: Number(row.theme_progress) || 0,
+            progress: row.theme_progress != null ? Number(row.theme_progress) : undefined,
             color: row.theme_color || 'var(--ds-link)',
           });
         }
@@ -123,7 +123,7 @@ export function useAlignmentMapData() {
             key: row.goal_key || '',
             title: row.goal_title || '',
             status: row.goal_status || 'draft',
-            progress: Number(row.goal_progress) || 0,
+            progress: row.goal_progress != null ? Number(row.goal_progress) : undefined,
             health: row.goal_health != null ? Number(row.goal_health) : undefined,
           });
         }
@@ -134,7 +134,7 @@ export function useAlignmentMapData() {
             key: row.kr_key || '',
             title: row.kr_title || '',
             status: row.kr_status || 'not_started',
-            progress: Number(row.kr_progress) || 0,
+            progress: row.kr_progress != null ? Number(row.kr_progress) : undefined,
           });
         }
 
@@ -144,7 +144,7 @@ export function useAlignmentMapData() {
             key: row.initiative_key || '',
             title: row.initiative_title || '',
             status: row.initiative_status || 'draft',
-            progress: Number(row.initiative_progress) || 0,
+            progress: row.initiative_progress != null ? Number(row.initiative_progress) : undefined,
           });
         }
 

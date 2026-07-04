@@ -7,7 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDatePulseViolations } from '@/lib/date-pulse/DatePulseEngine';
 import { computeHealthStatus } from '@/lib/date-pulse/HealthStatusEngine';
-import type { BusinessRequest, WorkItem } from '@/types/date-pulse';
+import { fetchLinkedWorkForBRs } from '@/lib/date-pulse/normalizeLinkedWork';
+import type { BusinessRequest } from '@/types/date-pulse';
 
 export function useBatchBusinessRequestHealth(brIds: string[]) {
   const key = brIds.slice().sort().join(',');
@@ -19,39 +20,21 @@ export function useBatchBusinessRequestHealth(brIds: string[]) {
       const result = new Map<string, string>();
       if (!brIds.length) return result;
 
-      const { data: brs } = await (supabase as any)
+      // Throw on error so React Query records the failure — destructuring
+      // only {data} would silently degrade every BR to "no health status".
+      const { data: brs, error: brsError } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, end_date, process_step, release_id, created_at, updated_at')
         .in('id', brIds);
+      if (brsError) throw brsError;
 
       if (!brs?.length) return result;
 
-      const { data: linkedRows } = await (supabase as any)
-        .from('ph_issues')
-        .select('id, issue_key, issue_type, project_key, status, due_date, created_at, updated_at, parent_key, severity, business_request_id')
-        .in('business_request_id', brIds)
-        .limit(2000);
-
-      const linkedByBR = new Map<string, WorkItem[]>();
-      for (const r of (linkedRows ?? [])) {
-        if (!r.business_request_id) continue;
-        const arr = linkedByBR.get(r.business_request_id) ?? [];
-        arr.push({
-          id: r.id,
-          issue_key: r.issue_key,
-          issue_type: r.issue_type ?? 'Story',
-          project_key: r.project_key ?? '',
-          status: r.status ?? 'todo',
-          due_date: r.due_date ?? null,
-          severity: r.severity ?? null,
-          parent_key: r.parent_key ?? null,
-          sprint_id: null,
-          business_request_id: r.business_request_id,
-          created_at: r.created_at,
-          updated_at: r.updated_at,
-        });
-        linkedByBR.set(r.business_request_id, arr);
-      }
+      // Linked work via the app's real link model: business_request_links
+      // (kind='implementation') → features/stories (epics excluded). Replaces
+      // the prior ph_issues.business_request_id query (that column never
+      // existed — the whole facet errored). Throws on query error.
+      const linkedByBR = await fetchLinkedWorkForBRs(brIds);
 
       for (const br of brs) {
         const brModel: BusinessRequest = {

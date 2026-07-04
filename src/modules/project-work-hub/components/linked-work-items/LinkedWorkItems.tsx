@@ -112,6 +112,29 @@ export function LinkedWorkItems({
     },
   });
 
+  // Source item's issue type — feeds the CRE Grid C chokepoint in LinkToolbar
+  // (canLinkTo: banned pairs + same-type ban). ph_issues first, then the
+  // catalyst_issues fallback, mirroring the picker's own dual-source search.
+  const { data: sourceIssueType = null } = useQuery({
+    queryKey: ['lwi:source-type', issueKey],
+    enabled: !!issueKey,
+    staleTime: 60_000,
+    queryFn: async (): Promise<string | null> => {
+      const { data: ph } = await supabase
+        .from('ph_issues')
+        .select('issue_type')
+        .eq('issue_key', issueKey)
+        .maybeSingle();
+      if (ph?.issue_type) return ph.issue_type as string;
+      const { data: cat } = await supabase
+        .from('catalyst_issues')
+        .select('issue_type')
+        .eq('issue_key', issueKey)
+        .maybeSingle();
+      return (cat?.issue_type as string | undefined) ?? null;
+    },
+  });
+
   const existingLinkedKeys = useMemo(
     () => new Set(links.map((l) => l.target.issue_key).filter(Boolean)),
     [links],
@@ -272,13 +295,15 @@ export function LinkedWorkItems({
             link a known issue by typing its key.
           */}
           {showToolbar && (
-            <AiLinkSimilarPanel
-              issueKey={issueKey}
-              existingLinkedKeys={Array.from(existingLinkedKeys)}
-              onLinked={() => {
-                queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
-              }}
-            />
+            <div className="lwi-ai-panel">
+              <AiLinkSimilarPanel
+                issueKey={issueKey}
+                existingLinkedKeys={Array.from(existingLinkedKeys)}
+                onLinked={() => {
+                  queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
+                }}
+              />
+            </div>
           )}
           <LinkedWorkItemsBody
             id={bodyId}
@@ -289,10 +314,12 @@ export function LinkedWorkItems({
             onCopyKey={handleCopyKey}
             onUnlink={handleUnlink}
             pendingUnlinkIds={pendingUnlinkIds}
+            sourceIssueKey={issueKey}
             footer={
               showToolbar ? (
                 <LinkToolbar
                   sourceIssueKey={issueKey}
+                  sourceIssueType={sourceIssueType}
                   existingLinkedKeys={existingLinkedKeys}
                   onLink={handleLink}
                   onCreateNew={projectData ? handleCreateNew : undefined}

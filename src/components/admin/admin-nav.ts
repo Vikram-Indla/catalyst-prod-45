@@ -77,7 +77,6 @@ export const adminPockets: AdminNavPocket[] = [
       { label: 'Priorities',    path: '/admin/test/priorities' },
       { label: 'Case Types',    path: '/admin/test/case-types' },
       { label: 'Case Statuses', path: '/admin/test/case-statuses' },
-      { label: 'Run Statuses',  path: '/admin/test/run-statuses' },
       { label: 'Permissions',   path: '/admin/test/permissions' },
     ],
   },
@@ -120,6 +119,8 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/icons',
   '/admin/avatars',
   '/admin/workflows',
+  '/admin/workflows/versions',
+  '/admin/test-ops',
   '/admin/release-ops',
   '/admin/workflows/hierarchy',
   '/admin/connections/jira',
@@ -130,7 +131,6 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/test/priorities',
   '/admin/test/case-types',
   '/admin/test/case-statuses',
-  '/admin/test/run-statuses',
   '/admin/test/permissions',
 ]);
 

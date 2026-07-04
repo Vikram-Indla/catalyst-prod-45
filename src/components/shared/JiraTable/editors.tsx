@@ -1260,11 +1260,21 @@ export interface ParentChoice {
   /** Parent's Jira status category — drives chip background per spec.
    *  'new' → neutral, 'indeterminate' → warning, 'done' → success. */
   statusCategory?: 'new' | 'indeterminate' | 'done' | null;
+  /** True only when the parent's real issue_type is 'Epic'. Jira's colored
+   *  chip is an Epic-only feature (Epics carry a user-assigned color; no
+   *  other issue type does) — probed live 2026-07-03: a Story/QA-Bug parent
+   *  renders as a PLAIN link (bg transparent, color.link, no chip) in Jira,
+   *  never a colored background. Defaults to false so non-Epic parents don't
+   *  get a fabricated color. */
+  isEpic?: boolean;
 }
 
-function ParentChip({ choice }: { choice: { id: string; key: string | null; label: string; icon?: React.ReactNode; statusCategory?: 'new' | 'indeterminate' | 'done' | null } }) {
+function ParentChip({ choice }: { choice: { id: string; key: string | null; label: string; icon?: React.ReactNode; statusCategory?: 'new' | 'indeterminate' | 'done' | null; isEpic?: boolean } }) {
   const display = choice.key ? `${choice.key} ${choice.label}` : choice.label;
-  const { bg, text } = accentColorForSeed(choice.id || choice.key || choice.label);
+  const linkColor = token('color.link', 'var(--ds-link)');
+  const { bg, text } = choice.isEpic
+    ? accentColorForSeed(choice.id || choice.key || choice.label)
+    : { bg: 'transparent', text: linkColor };
   return (
     <span
       title={display}
@@ -1274,7 +1284,7 @@ function ParentChip({ choice }: { choice: { id: string; key: string | null; labe
         gap: 4,
         height: 24,
         maxWidth: 260,
-        padding: '0 8px',
+        padding: choice.isEpic ? '0 8px' : '0',
         borderRadius: 3,
         background: bg,
         fontSize: 'var(--ds-font-size-400)',

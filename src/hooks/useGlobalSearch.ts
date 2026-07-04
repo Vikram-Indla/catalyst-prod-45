@@ -17,7 +17,7 @@ function mapIssueToSearchResult(row: any): SearchResult {
     item_type: (row.issue_type || 'task').toLowerCase().replace(/\s+/g, '_') as any,
     assignee_name: row.assignee_display_name || null,
     reporter_name: row.reporter_display_name || null,
-    viewed_at: row.jira_updated_at || row.jira_created_at || new Date().toISOString(),
+    viewed_at: row.jira_updated_at || row.jira_created_at || null,
     archived_at: row.archived_at || null,
   };
 }
@@ -33,7 +33,7 @@ function mapBizRequestToSearchResult(row: any): SearchResult {
     item_type: 'Business Request' as any,
     assignee_name: null,
     reporter_name: null,
-    viewed_at: row.updated_at || row.created_at || new Date().toISOString(),
+    viewed_at: row.updated_at || row.created_at || null,
     archived_at: null,
   };
 }
@@ -49,7 +49,7 @@ function mapCatalystToSearchResult(row: any): SearchResult {
     item_type: (row.issue_type || 'task').toLowerCase().replace(/\s+/g, '_') as any,
     assignee_name: row.assignee_id || null,
     reporter_name: null,
-    viewed_at: row.updated_at || row.created_at || new Date().toISOString(),
+    viewed_at: row.updated_at || row.created_at || null,
   };
 }
 

@@ -24,7 +24,7 @@ export interface WorkItemRouteInput {
  * - feature: /browse/${key} -> resolved by BrowsePage to /items/features?selected=${id}
  * - story: /browse/${key} -> resolved by BrowsePage to /items/stories?selected=${id}
  * - task: /work-manager/tasks/${id} (direct route exists)
- * - defect/incident: /release/incidents/${id} (direct route exists)
+ * - defect/incident: /incident-hub/view/${key} (direct route exists)
  * - release: /release/versions/${id} (direct route exists)
  * - demand: /industry?selected=${id}
  * 
@@ -67,7 +67,7 @@ export function getWorkItemRoute(item: WorkItemRouteInput): string | null {
     case 'defect':
     case 'incident':
       // Incidents/defects have direct route
-      return id ? `/release/incidents/${id}` : null;
+      return key ? `/incident-hub/view/${key}` : null;
       
     case 'release':
       // Releases have direct route to version detail

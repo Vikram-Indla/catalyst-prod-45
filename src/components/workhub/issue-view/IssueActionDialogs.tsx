@@ -11,6 +11,7 @@ import { X, Search, Loader2, AlertTriangle, Flag, Copy, ArrowRight, Archive, Tra
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import { catalystToast } from '@/lib/catalystToast';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
@@ -688,7 +689,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
             <div>
               <label style={labelStyle}>Select New Status</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <span style={{ padding: '4px 10px', borderRadius: 3, background: 'var(--ds-background-warning)', border: '1px solid var(--ds-border-warning)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase' as const }}>{item?.status}</span>
+                <StatusLozenge status={item?.status || 'Unknown'} size="sm" />
                 <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>→</span>
                 <select value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ ...inputStyle, width: 'auto', minWidth: 180, cursor: 'pointer' }}>
                   {moveStatusGroups.map(g => (

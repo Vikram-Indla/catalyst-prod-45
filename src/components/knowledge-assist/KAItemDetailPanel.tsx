@@ -85,7 +85,7 @@ function PriorityBars({ label }: { label: string }) {
           }} />
         ))}
       </div>
-      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.ink, textTransform: 'capitalize' }}>{label || 'Medium'}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.ink, textTransform: 'capitalize' }}>{label ?? '—'}</span>
     </div>
   );
 }

@@ -19,7 +19,9 @@ export interface AttentionItem {
   reason: string;
   assignee: string | null;
   daysInStatus: number;
-  priority: string;
+  /** Null when the source row carries no priority. Never default to 'Medium'
+   *  — CLAUDE.md zero-assumption rule. */
+  priority: string | null;
 }
 
 const FIELDS = 'issue_key, summary, status, status_category, issue_type, project_key, assignee_display_name, reporter_display_name, jira_updated_at, jira_created_at, priority, due_date';
@@ -57,7 +59,7 @@ export function useAttentionItems(userCtx: UserContext | undefined) {
           reason: isAssignee ? 'Assigned to you' : isReporter ? 'You reported this' : `In your project`,
           assignee: isAssignee ? null : item.assignee_display_name,
           daysInStatus: days,
-          priority: item.priority || 'Medium',
+          priority: item.priority ?? null,
         });
       });
 
@@ -91,7 +93,7 @@ export function useAttentionItems(userCtx: UserContext | undefined) {
             reason: `Due ${days} days ago`,
             assignee: null,
             daysInStatus: days,
-            priority: item.priority || 'Medium',
+            priority: item.priority ?? null,
           });
         }
       });
@@ -125,7 +127,7 @@ export function useAttentionItems(userCtx: UserContext | undefined) {
             reason: `${days} days without update`,
             assignee: item.assignee_display_name,
             daysInStatus: days,
-            priority: item.priority || 'Medium',
+            priority: item.priority ?? null,
           });
         }
       });
@@ -156,7 +158,7 @@ export function useAttentionItems(userCtx: UserContext | undefined) {
             reason: 'Unassigned',
             assignee: null,
             daysInStatus: days,
-            priority: item.priority || 'Medium',
+            priority: item.priority ?? null,
           });
         }
       });

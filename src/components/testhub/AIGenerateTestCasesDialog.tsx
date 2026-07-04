@@ -91,7 +91,7 @@ export function AIGenerateTestCasesDialog({
   const [selectedTestCases, setSelectedTestCases] = useState<Set<number>>(new Set());
   const [expandedTestCase, setExpandedTestCase] = useState<number | null>(null);
 
-  const { generateTestCases, isGenerating, error } = useAIGeneration();
+  const { generateTestCases, isGenerating, error, isBlocked } = useAIGeneration();
 
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) {
@@ -183,8 +183,8 @@ export function AIGenerateTestCasesDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg">
-              <Wand2 className="w-5 h-5 text-white" />
+            <div className="p-2 rounded-lg" style={{ background: 'var(--ds-background-brand-bold)' }}>
+              <Wand2 className="w-5 h-5" style={{ color: 'var(--ds-text-inverse)' }} />
             </div>
             AI Test Case Generator
           </DialogTitle>
@@ -326,14 +326,16 @@ export function AIGenerateTestCasesDialog({
                 </Button>
                 <Button
                   onClick={handleGenerate}
-                  disabled={isGenerating || !prompt.trim()}
-                  className="min-w-[140px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+                  disabled={isGenerating || isBlocked || !prompt.trim()}
+                  className="min-w-[140px]" style={{ background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}
                 >
                   {isGenerating ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Generating...
                     </>
+                  ) : isBlocked ? (
+                    'Generation limit reached'
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
@@ -351,7 +353,7 @@ export function AIGenerateTestCasesDialog({
                   className="p-4 bg-muted/50 rounded-lg space-y-3"
                 >
                   <div className="flex items-center gap-2 text-sm">
-                    <Sparkles className="w-4 h-4 text-blue-500 animate-pulse" />
+                    <Sparkles className="w-4 h-4 animate-pulse" style={{ color: 'var(--ds-icon-information)' }} />
                     <span>AI is analyzing your requirements and generating test cases...</span>
                   </div>
                   <Progress value={45} className="h-1" />
@@ -384,10 +386,10 @@ export function AIGenerateTestCasesDialog({
               className="flex-1 min-h-0 flex flex-col gap-4 overflow-hidden"
             >
               {/* Summary */}
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-500/10 to-blue-400/10 rounded-lg border shrink-0">
+              <div className="flex items-center justify-between p-4 rounded-lg border shrink-0" style={{ background: 'var(--ds-background-information)' }}>
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
-                    <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  <div className="p-3 rounded-full" style={{ background: 'var(--ds-background-success)' }}>
+                    <CheckCircle2 className="w-6 h-6" style={{ color: 'var(--ds-icon-success)' }} />
                   </div>
                   <div>
                     <h3 className="font-semibold">
@@ -444,7 +446,8 @@ export function AIGenerateTestCasesDialog({
                           type="checkbox"
                           checked={selectedTestCases.has(index)}
                           onChange={() => handleSelectTestCase(index)}
-                          className="w-4 h-4 rounded border-gray-300"
+                          className="w-4 h-4 rounded"
+                          style={{ borderColor: 'var(--ds-border)' }}
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex-1 min-w-0">
@@ -527,7 +530,7 @@ export function AIGenerateTestCasesDialog({
                                             <strong>Data:</strong> {step.testData}
                                           </p>
                                         )}
-                                        <p className="text-green-600 dark:text-green-400">
+                                        <p style={{ color: 'var(--ds-text-success)' }}>
                                           <strong>Expected:</strong> {step.expectedResult}
                                         </p>
                                       </div>
@@ -580,7 +583,7 @@ export function AIGenerateTestCasesDialog({
                   <Button
                     onClick={handleAddSelected}
                     disabled={selectedTestCases.size === 0}
-                    className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+                    style={{ background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Selected Test Cases

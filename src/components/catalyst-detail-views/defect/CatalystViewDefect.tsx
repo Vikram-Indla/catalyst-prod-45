@@ -40,10 +40,10 @@ export default function CatalystViewDefect({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
-  const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const priorityStyle = issue?.priority ? PRIORITY_STYLES[issue.priority] ?? null : null;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
@@ -66,7 +66,7 @@ export default function CatalystViewDefect({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch B (Defect) · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'QA Bug'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
 
       {/* Jira-parity: Parent → Severity → Priority → (any populated
@@ -169,14 +169,14 @@ export default function CatalystViewDefect({
   const rightContent = useMemo(() => (
     <CatalystSidebarDetails
       issue={issue ?? null} itemId={itemId} projectId={projectId}
-      onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+      onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)}
       onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect"
       parentSource="defect"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
       /* jira-compare 2026-05-03 — Patch B (Defect) · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors CatalystViewStory's Patch D + E. */
-      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      statusPill={<StatusLozengeDropdown status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,6 +212,7 @@ export default function CatalystViewDefect({
       coverItemTable="ph_issues"
       onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
       isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      isError={isError} error={error} onRetry={refetch}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

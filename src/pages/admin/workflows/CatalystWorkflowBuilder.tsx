@@ -25,6 +25,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import Spinner from '@atlaskit/spinner';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import {
   useTypeWorkflow,
   useAddTransition,
@@ -71,7 +72,7 @@ const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> 
 };
 
 // ── Status node ─────────────────────────────────────────────────────────────
-function StatusNode({ data, selected }: NodeProps) {
+export function StatusNode({ data, selected }: NodeProps) {
   const d = data as { name: string; category: string; isInitial: boolean; isCurrent?: boolean; readonly?: boolean };
   const colors = NODE_COLORS[d.category] ?? NODE_COLORS.todo;
 
@@ -157,15 +158,14 @@ function StatusNode({ data, selected }: NodeProps) {
           left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
+          fontWeight: 600,
           color: DARK.textBrand,
           background: DARK.canvas,
-          padding: '0px 5px',
+          padding: '0px 4px',
           borderRadius: 2,
           whiteSpace: 'nowrap',
         }}>
-          INITIAL
+          Initial
         </div>
       )}
       {d.isCurrent && (
@@ -175,25 +175,22 @@ function StatusNode({ data, selected }: NodeProps) {
           left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
+          fontWeight: 600,
           color: 'var(--ds-link)',
           background: DARK.canvas,
-          padding: '0px 5px',
+          padding: '0px 4px',
           borderRadius: 2,
           whiteSpace: 'nowrap',
         }}>
-          CURRENT
+          Current
         </div>
       )}
 
       <div style={{
-        fontSize: 'var(--ds-font-size-100)',
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
-        letterSpacing: '0.06em',
         color: colors.text,
         textAlign: 'center',
-        textTransform: 'uppercase',
         lineHeight: 1.2,
       }}>
         {d.name}
@@ -203,7 +200,7 @@ function StatusNode({ data, selected }: NodeProps) {
 }
 
 // ── Start node ───────────────────────────────────────────────────────────────
-function StartNode(_: NodeProps) {
+export function StartNode(_: NodeProps) {
   return (
     <div style={{
       width: 48,
@@ -216,10 +213,9 @@ function StartNode(_: NodeProps) {
       justifyContent: 'center',
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
-      letterSpacing: '0.06em',
       color: 'var(--ds-border)',
     }}>
-      START
+      Start
       <Handle
         type="source"
         position={Position.Bottom}
@@ -236,7 +232,7 @@ function StartNode(_: NodeProps) {
 }
 
 // ── Deletable edge ───────────────────────────────────────────────────────────
-function DeletableEdge({
+export function DeletableEdge({
   id,
   sourceX,
   sourceY,
@@ -319,12 +315,12 @@ function DeletableEdge({
   );
 }
 
-const NODE_TYPES = { status: StatusNode, start: StartNode };
-const EDGE_TYPES = { deletable: DeletableEdge };
+export const NODE_TYPES = { status: StatusNode, start: StartNode };
+export const EDGE_TYPES = { deletable: DeletableEdge };
 
 // ── Layout helper ─────────────────────────────────────────────────────────────
-function autoLayout(
-  statuses: TypeStatus[],
+export function autoLayout(
+  statuses: Array<{ id: string }>,
   transitions: Array<{ from_status_id: string | null; to_status_id: string }>,
   initialStatusId: string | null,
 ): Map<string, { x: number; y: number }> {
@@ -399,7 +395,7 @@ export function CatalystWorkflowBuilder({
   readonly: isReadonly = false,
   currentStatusId,
 }: CatalystWorkflowBuilderProps) {
-  const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
+  const { data: workflow, isLoading, isError, error, refetch } = useTypeWorkflow(projectKey, workItemType);
   const addTransition = useAddTransition(projectKey, workItemType);
   const deleteTransition = useDeleteTransition(projectKey, workItemType);
   const createStatus = useCreateStatus(projectKey);
@@ -532,6 +528,24 @@ export function CatalystWorkflowBuilder({
       setAddStatusLoading(false);
     }
   };
+
+  // isError alone misses the persisted-cache case (status stays 'success' on
+  // failed background refetch when hydrated data exists; only `error` is set).
+  if (isError || error) {
+    return (
+      <div style={{ flex: 1, padding: '16px 24px', background: DARK.canvas }}>
+        <div style={{ maxWidth: 720 }}>
+          <SectionMessage
+            appearance="error"
+            title="Couldn't load this workflow"
+            actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+          >
+            {(error as Error)?.message ?? 'Unknown error loading workflow statuses.'}
+          </SectionMessage>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

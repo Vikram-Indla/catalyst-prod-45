@@ -26,6 +26,9 @@ import Button from '@atlaskit/button/new';
 import PlusIcon from '@atlaskit/icon/core/add';
 import { supabase } from '@/integrations/supabase/client';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
+// CRE chokepoint (Grid C): link candidates are filtered through canLinkTo
+// so banned pairs (C1/C3) and same-type links (C10) never render as options.
+import { canLinkTo } from '@/lib/catalyst-rules';
 import { LINK_TYPES, DEFAULT_LINK_TYPE } from './constants';
 import type { LinkTypeOption } from './types';
 
@@ -63,6 +66,12 @@ function renderIssueOption({ value, summary, issue_type }: OptionRenderArgs) {
 
 export interface LinkToolbarProps {
   sourceIssueKey: string;
+  /**
+   * Issue type of the source item (e.g. "Story"). When known, candidates are
+   * filtered through CRE `canLinkTo` (Grid C — banned pairs + same-type ban).
+   * When absent (type still resolving), no CRE filter is applied.
+   */
+  sourceIssueType?: string | null;
   existingLinkedKeys: Set<string>;
   onLink: (linkType: string, targetKeys: string[]) => void | Promise<void>;
   onCreateNew?: (linkType: string) => void;
@@ -74,6 +83,7 @@ export interface LinkToolbarProps {
 
 export function LinkToolbar({
   sourceIssueKey,
+  sourceIssueType,
   existingLinkedKeys,
   onLink,
   onCreateNew,
@@ -149,8 +159,11 @@ export function LinkToolbar({
     () => (r: PickerOption) =>
       r.value !== sourceIssueKey &&
       !existingLinkedKeys.has(r.value) &&
-      !selected.some((s) => s.value === r.value),
-    [sourceIssueKey, existingLinkedKeys, selected],
+      !selected.some((s) => s.value === r.value) &&
+      // CRE Grid C chokepoint — only when both types are known; a candidate
+      // with no issue_type is not silently dropped.
+      (!sourceIssueType || !r.issue_type || canLinkTo(sourceIssueType, r.issue_type)),
+    [sourceIssueKey, sourceIssueType, existingLinkedKeys, selected],
   );
 
   const loadOptions = async (input: string): Promise<PickerOption[]> => {

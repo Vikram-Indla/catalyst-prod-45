@@ -7,9 +7,12 @@
  * to no-op if route absent.
  */
 import { useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useDefects, useCreateDefect, useUpdateDefect, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
+import { Routes } from '@/lib/routes';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
@@ -79,6 +82,7 @@ const DEFECT_PATCH_MAP: Record<string, string> = {
 };
 
 export function useDefectsSource(): BacklogDataSource | null {
+  const navigate = useNavigate();
   const { data: projects = [], isLoading: pl } = useProjects();
   const projectId = projects[0]?.id;
   const { data: defectsData, isLoading: dl } = useDefects(projectId);
@@ -145,8 +149,10 @@ export function useDefectsSource(): BacklogDataSource | null {
       statusAppearance: resolvedStatusAppearance,
       statusLabel: resolvedStatusLabel,
       allStatuses,
-      onOpenItem: (_key, id) => {
-        window.location.assign(`/testhub/defects/${id}`);
+      /* P1-S13: the canonical detail surface now exists (CatalystViewTmDefect,
+         routed at /testhub/defects/:defectKey). key is the row's defect_key. */
+      onOpenItem: (key) => {
+        if (key) navigate(Routes.testHub.defect(key));
       },
       onUpdate: async (id, patch) => {
         const mapped: Record<string, any> = {};
@@ -187,7 +193,10 @@ export function useDefectsSource(): BacklogDataSource | null {
       ],
       productId: effectiveProjectId,
       entityKind: 'defect',
-      creatableTypes: ['QA Bug'],
+      // CRE chokepoint (P1-S19, E4): TestHub owns 'QA Bug' per Grid A
+      // (MODULE_OWNED_TYPES.TESTHUB) — route through the filter rather than
+      // hardcoding, so ownership drift is caught automatically.
+      creatableTypes: filterCreatableTypes(['QA Bug'], 'TESTHUB'),
       defaultCreatableType: 'QA Bug',
       resolveItemType: () => 'QA Bug',
     };

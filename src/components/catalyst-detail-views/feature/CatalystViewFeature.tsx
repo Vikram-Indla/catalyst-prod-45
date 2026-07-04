@@ -26,7 +26,7 @@ export default function CatalystViewFeature({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -69,7 +69,7 @@ export default function CatalystViewFeature({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Feature'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       <CatalystKeyDetails
         issue={issue ?? null}
@@ -142,6 +142,7 @@ export default function CatalystViewFeature({
       coverItemTable="ph_issues"
       onCoverChange={(next) => mutations.updateField.mutate({ field: 'cover', value: next, oldValue: (issue as any)?.cover ?? null })}
       isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      isError={isError} error={error} onRetry={refetch}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

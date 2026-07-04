@@ -166,12 +166,14 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const mentionableUsers: CdsUser[] = profiles.map((p: any) => ({
-    id: p.id,
-    name: p.full_name || p.email || 'Unknown',
-    avatarUrl: p.avatar_url,
-    email: p.email,
-  }));
+  const mentionableUsers: CdsUser[] = profiles
+    .filter((p: any) => p.full_name || p.email)
+    .map((p: any) => ({
+      id: p.id,
+      name: p.full_name || p.email,
+      avatarUrl: p.avatar_url,
+      email: p.email,
+    }));
 
   // Jira accountId -> display name map, used to render [~accountid:xxx] mentions
   // in historical descriptions / summaries as @Name.
@@ -294,8 +296,18 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   // Comments tabs reflect changes instantly (no refresh needed).
   useEffect(() => {
     if (!resolvedWorkItemId || !isOpen) return;
+    // Unique suffix per subscription — supabase.channel() returns the
+    // EXISTING channel if one with the same topic already exists (e.g.
+    // React StrictMode double-mount, or two panels open for the same
+    // item). Calling .on() on an already-subscribed channel throws
+    // "cannot add postgres_changes callbacks after subscribe()".
+    // Uniquifying the topic guarantees a fresh channel every effect run.
+    const uniq =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? (crypto as any).randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const channel = supabase
-      .channel(`cv-activity-realtime:${resolvedWorkItemId}`)
+      .channel(`cv-activity-realtime:${resolvedWorkItemId}:${uniq}`)
       .on(
         'postgres_changes',
         {
@@ -553,17 +565,22 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   // mount). The clear happens in a mount effect alongside the scroll so
   // the signal only fires once per open.
   const clearFocusSection = useGlobalSearchStore((s) => s.clearFocusSection);
-  const [activityDefaultTab] = useState<ActivityTabKey>(() => {
-    const initial = useGlobalSearchStore.getState().focusSection;
-    return initial === 'comments' ? 'comments' : 'all';
+  // Vikram 2026-07-02: default landing tab is "Comments" across every
+  // detail surface (modal, right-side panel, full page). The prior
+  // default "all" showed history noise first. Auto-scroll into view
+  // is gated to the For You "View thread" flow — a bare open should
+  // NOT jump the viewport to the activity section.
+  const [activityDefaultTab] = useState<ActivityTabKey>('comments');
+  const [shouldScrollToActivity] = useState<boolean>(() => {
+    return useGlobalSearchStore.getState().focusSection === 'comments';
   });
   useEffect(() => {
-    if (activityDefaultTab !== 'comments') return;
+    if (!shouldScrollToActivity) return;
     requestAnimationFrame(() => {
       sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       clearFocusSection();
     });
-  }, [activityDefaultTab, clearFocusSection]);
+  }, [shouldScrollToActivity, clearFocusSection]);
 
   return (
     <div

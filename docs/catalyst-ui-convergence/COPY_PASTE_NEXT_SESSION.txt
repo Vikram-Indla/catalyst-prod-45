@@ -1,0 +1,37 @@
+================================================================================
+COPY-PASTE THIS ENTIRE BLOCK INTO YOUR NEXT CLAUDE CODE SESSION
+================================================================================
+
+pwd && git branch --show-current && git status --short
+
+First, activate skills and tools for token management + speed:
+/caveman full
+/rtk gain
+
+Then start the feature activation:
+activate feature CAT-CONVERGENCE-UI-FIX-20260703-001
+
+Read the complete handover at docs/catalyst-ui-convergence/HANDOVER.md
+
+Key decision log questions that MUST be approved by Vikram before I launch agents:
+  DL-1: Incident data model — converge incidents table → ph_issues?
+  DL-2: Legacy /release/incidents stack — full delete or freeze?
+  DL-4: Test-case detail — unify CaseDrawer → CatalystDetailRouter?
+  DL-5: Wire /testhub/defects/:key detail (currently inert)?
+  DL-7: Fix systemic aria-modal=false un-dismissable panel?
+
+Once approved on all 5 decisions, I will:
+  1. Activate feature CAT-CONVERGENCE-UI-FIX-20260703-001
+  2. Spawn 6 parallel P0 agents (correctness + a11y fixes, 1-2hr slices each)
+  3. Commit each slice independently
+  4. Run P1 deletion + structural agents (8 slices, batch after deletes)
+  5. Run P2 token cleanup agents (6 parallel, final phase)
+  6. Report PR-ready with evidence + test runs
+
+The discovery is complete at docs/catalyst-ui-convergence/00-DISCOVERY-CONSOLIDATED.md and agents/ folder.
+Total gaps: 312 (P0=21, P1=118, P2=173).
+Convergence grades: Incident B / Test C+ / Release D / Defects C-live F-dead.
+
+================================================================================
+END COPY-PASTE BLOCK
+================================================================================

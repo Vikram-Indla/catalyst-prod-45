@@ -43,11 +43,11 @@ const getEventIcon = (type: string) => {
 
 // Sample mention suggestions - using teal for variety per design spec v2
 const mentionSuggestions = [
-  { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-gray-500' },
+  { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-[var(--ds-background-neutral-subtle)]' },
   { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-[var(--ds-chart-teal-bold)]' },
   { id: 'u3', name: 'Nada Alfassam', initials: 'NA', color: 'bg-[var(--ds-chart-teal-bolder)]' },
   { id: 'u4', name: 'Yazeed Daraz', initials: 'YD', color: 'bg-blue-500' },
-  { id: 'u5', name: 'Imran Aslam', initials: 'IA', color: 'bg-gray-400' },
+  { id: 'u5', name: 'Imran Aslam', initials: 'IA', color: 'bg-[var(--ds-background-neutral-subtle)]' },
   { id: 'u6', name: 'Suleiman Ahmad Allawanseh', initials: 'SA', color: 'bg-[var(--ds-chart-teal-bold)]' },
 ];
 
@@ -142,68 +142,68 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
               <div className="w-px h-5 bg-border mx-1" />
               
               {/* Formatting buttons */}
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Bold">
                 <Bold className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Italic">
                 <Italic className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-muted-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="More formatting options">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
-              
+
               <div className="w-px h-5 bg-border mx-1" />
-              
+
               {/* Color */}
-              <button className="p-1.5 hover:bg-muted rounded text-foreground flex items-center">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground flex items-center" aria-label="Text color">
                 <span className="text-sm font-bold">A</span>
                 <svg className="w-3 h-3 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="m6 9 6 6 6-6"/>
                 </svg>
               </button>
-              
+
               <div className="w-px h-5 bg-border mx-1" />
-              
+
               {/* Lists */}
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Bulleted list">
                 <List className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Numbered list">
                 <ListOrdered className="w-4 h-4" />
               </button>
-              
+
               <div className="w-px h-5 bg-border mx-1" />
-              
+
               {/* Insert tools */}
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Insert checklist">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <path d="m9 12 2 2 4-4" />
                 </svg>
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Insert link">
                 <LinkIcon className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Insert image">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <path d="m21 15-5-5L5 21" />
                 </svg>
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Mention someone">
                 <AtSign className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Insert emoji">
                 <Smile className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Insert table">
                 <Table className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-foreground" aria-label="Insert code block">
                 <Code className="w-4 h-4" />
               </button>
-              <button className="p-1.5 hover:bg-muted rounded text-muted-foreground">
+              <button className="p-1.5 hover:bg-muted rounded text-muted-foreground" aria-label="More options">
                 <Plus className="w-4 h-4" />
               </button>
               
@@ -241,7 +241,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
           
           {/* Mention Suggestions */}
           <div className="flex items-center gap-1 mt-2 flex-wrap">
-            <button className="p-1 text-muted-foreground hover:text-foreground">
+            <button className="p-1 text-muted-foreground hover:text-foreground" aria-label="Add mention">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />

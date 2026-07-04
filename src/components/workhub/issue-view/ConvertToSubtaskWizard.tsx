@@ -12,6 +12,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { Search, X, ChevronRight, Loader2 } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+import { StatusLozenge } from '@/components/shared/StatusLozenge/StatusLozenge';
 import {
   Select,
   SelectContent,
@@ -256,11 +257,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                         {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
                           <div style={{ padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
                         )}
-                        {parentCandidates.length > 0 ? parentCandidates.map((p: any) => {
-                          const cat = (p.status_category ?? '').toLowerCase();
-                          const lozBg = cat.includes('done') ? 'var(--ds-background-success)' : cat.includes('progress') ? 'var(--ds-background-information)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
-                          const lozColor = cat.includes('done') ? 'var(--ds-text-success, var(--ds-text-success))' : cat.includes('progress') ? 'var(--ds-background-information-bold, var(--ds-link-pressed))' : 'var(--ds-text, var(--ds-text))';
-                          return (
+                        {parentCandidates.length > 0 ? parentCandidates.map((p: any) => (
                             <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', borderBottom: `1px solid var(--ds-background-neutral, var(--ds-background-neutral-subtle))` }}
                               onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}
                               onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
@@ -268,10 +265,9 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                               <JiraIssueTypeIcon type={p.issue_type} size={16} />
                               <span style={{ fontWeight: 600, color: 'var(--ds-link)', flexShrink: 0 }}>{p.issue_key}</span>
                               <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.summary}</span>
-                              <span style={{ display: 'inline-block', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', padding: '0px 6px', borderRadius: 3, background: lozBg, color: lozColor, flexShrink: 0, whiteSpace: 'nowrap' }}>{p.status}</span>
+                              <StatusLozenge status={p.status} statusCategory={p.status_category} size="sm" />
                             </button>
-                          );
-                        }) : (
+                          )) : (
                           <div style={{ padding: '16px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textAlign: 'center' }}>
                             {searchingParents ? 'Searching...' : 'No matching issues found'}
                           </div>
@@ -306,7 +302,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', flexShrink: 0 }}>Select New Status:</div>
-                <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
+                <StatusLozenge status={currentStatus} size="sm" />
                 <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontSize: 'var(--ds-font-size-500)' }}>→</span>
                 <Select value={newStatus} onValueChange={setNewStatus}>
                   <SelectTrigger className="w-[200px] bg-white" style={{ fontSize: 'var(--ds-font-size-300)' }}>

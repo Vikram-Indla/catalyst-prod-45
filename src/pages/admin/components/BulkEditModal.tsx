@@ -93,7 +93,7 @@ export function BulkEditModal({
           {/* Header */}
           <div className="ct-modal-header">
             <h2>Bulk Edit {selectedCount} Users</h2>
-            <button className="ct-modal-close" onClick={onClose}>
+            <button className="ct-modal-close" onClick={onClose} aria-label="Close">
               <CrossIcon label="" size="small" />
             </button>
           </div>

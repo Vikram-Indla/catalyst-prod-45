@@ -107,8 +107,8 @@ const getPriorityAppearance = (priority: string | null): LozengeAppearance => {
 const getSeverityColor = (severity: string) => {
   switch (severity) {
     case 'SEV1': return 'bg-destructive text-destructive-foreground';
-    case 'SEV2': return 'bg-orange-500 text-white';
-    case 'SEV3': return 'bg-yellow-500 text-white';
+    case 'SEV2': return 'bg-[var(--ds-background-warning)] text-white';
+    case 'SEV3': return 'bg-[var(--ds-background-information)] text-white';
     case 'SEV4': return 'bg-muted text-muted-foreground';
     default: return 'bg-muted text-muted-foreground';
   }

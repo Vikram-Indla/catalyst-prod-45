@@ -20,6 +20,11 @@ import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo
 // canonical edit factories from JiraTable.
 import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
+import { ReasonCaptureModal } from '@/components/catalyst-detail-views/shared/workflow/ReasonCaptureModal';
+// CRE chokepoint (Grids A + D): the Backlog is a TEAM surface, so the inline
+// create catalogue must pass the Catalyst Rules Engine filter before render.
+// See RULE_TABLE.md.
+import { filterCreatableTypes } from '@/lib/catalyst-rules';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import InlineEdit from '@atlaskit/inline-edit';
 import { BizArabicTranslateLink } from '@/components/shared/title-translate/BizArabicTranslateLink';
@@ -29,7 +34,6 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
 import { SectionMessage } from '@/components/ads';
@@ -503,6 +507,7 @@ function DragRowPreview() {
       {state.iconSrc && (
         <img
           src={state.iconSrc}
+          alt=""
           width={16}
           height={16}
           style={{ flexShrink: 0, display: 'block' }}
@@ -1071,9 +1076,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // into the same downstream filter logic so the column picker, the table
   // columns, and the URL-cols cleanup all behave consistently.
   const effectiveAllowedColumnIds = dataSource?.allowedColumnIds ?? allowedColumnIds;
-  // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
-  const createConversation = useCreateCatyConversation();
 
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
@@ -1712,6 +1715,16 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // the background refetch. onError reverts the snapshot if the PATCH
   // fails. onSettled is the single invalidation point so the local
   // optimistic write reconciles with the authoritative server response.
+  // F3: when an adapter refuses a status change with WF_REASON_REQUIRED,
+  // stash the failed variables here, open ReasonCaptureModal, and retry the
+  // same mutation with reasonCode/reasonText folded into the patch.
+  const [reasonRetry, setReasonRetry] = useState<{
+    id: string;
+    source?: string;
+    patch: Record<string, unknown>;
+    ctx: { entityType: string; from: string | null; to: string };
+  } | null>(null);
+
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
       // Adapter route — for product hub business_requests rows. Skips the
@@ -1806,7 +1819,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
       return { prevStories, prevEpics };
     },
-    onError: (e: Error, _variables, context) => {
+    onError: (e: Error, variables, context) => {
       // Revert every snapshotted query on failure.
       if (context?.prevStories) {
         for (const [key, data] of context.prevStories) {
@@ -1817,6 +1830,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         for (const [key, data] of context.prevEpics) {
           queryClient.setQueryData(key, data);
         }
+      }
+      // F3: adapter refused the status change pending a reason — capture it
+      // inline instead of surfacing an error flag.
+      if ((e as any).code === 'WF_REASON_REQUIRED') {
+        const ctx = (e as any).ctx ?? { entityType: 'Work item', from: null, to: '' };
+        setReasonRetry({ id: variables.id, source: variables.source, patch: variables.patch, ctx });
+        return;
       }
       flag.error('Update failed', e.message);
     },
@@ -2630,6 +2650,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
   // ── Row click → in-page right side panel ──
   const openDetail = useCallback((it: BacklogItem) => {
+    /* 2026-07-03 (CAT-AUDIT-1053): adapter fully owns row-click handling
+       (e.g. risks — no CatalystDetailRouter entry, no detail route; opens
+       its own RiskDetailPanel drawer instead). Bypasses every default
+       below, including the BIZ_SOURCE → 'business_request' fallback. */
+    if (dataSource?.onRowClick) {
+      dataSource.onRowClick({ id: (it as any).issue_key || it.id, key: it.key ?? null });
+      return;
+    }
     // Save scroll position before opening detail view
     const container = document.querySelector('[data-backlog-scroll-container]');
     if (container && projectKey) {
@@ -2653,10 +2681,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/testhub/repository?case=${it.id}`);
       return;
     }
-    /* 2026-06-21: defect entityKind navigates to the dedicated TestHub
-       defect detail. No side-panel — the defect detail is its own surface. */
+    /* P1-S13: canonical defect detail now exists (CatalystViewTmDefect,
+       routed at /testhub/defects/:defectKey) — navigate there. */
     if (dataSource?.entityKind === 'defect') {
-      navigate(`/testhub/defects/${it.id}`);
+      navigate(`/testhub/defects/${it.key ?? it.id}`);
       return;
     }
     writeTicketOrigin({
@@ -2691,6 +2719,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Mirrors openDetail's entityKind short-circuits (release/test_case/defect
   // navigate to dedicated detail pages — no modal surface for those kinds).
   const openModal = useCallback((it: BacklogItem) => {
+    /* 2026-07-03 (CAT-AUDIT-1053): see matching guard in openDetail above. */
+    if (dataSource?.onRowClick) {
+      dataSource.onRowClick({ id: (it as any).issue_key || it.id, key: it.key ?? null });
+      return;
+    }
     if (dataSource?.entityKind === 'release') {
       navigate(`/release-hub/${it.id}`);
       return;
@@ -2700,7 +2733,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       return;
     }
     if (dataSource?.entityKind === 'defect') {
-      navigate(`/testhub/defects/${it.id}`);
+      // P1-S13: canonical defect detail now exists — see openDetail.
+      navigate(`/testhub/defects/${it.key ?? it.id}`);
       return;
     }
     const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;
@@ -3251,20 +3285,34 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
-        getParent: (r) => r.parent_id ? {
-          id: r.parent_id,
-          key: r.parent_key,
-          label: r.parent_label || '',
-          // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
-          // its native designed size (story-16.svg, bug-16.svg, etc.)
-          // — the 0.75× scale at size=12 caused sub-pixel rendering
-          // jitter that made adjacent rows' icons LOOK like different
-          // shapes even when they were the same source SVG. 16×16 is
-          // pixel-perfect at 1× zoom and aligns with the row-1 type
-          // icon's size (also 16).
-          icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
-          statusCategory: r.parent_status_category,
-        } : null,
+        getParent: (r) => {
+          if (!r.parent_id) return null;
+          // Jul 3, 2026: a parent with no resolvable issue_type AND from a
+          // different project is the signature of a parent living in an
+          // archived Jira space (e.g. MIM-15's space "Senaei 1.0" is
+          // archived — Jira itself refuses to open/edit it, confirmed live).
+          // Don't render a reference Catalyst can't do anything useful
+          // with — treat it as no parent rather than a dead link.
+          const parentProjectKey = r.parent_key ? r.parent_key.split('-')[0] : null;
+          if (!r.parent_issue_type && parentProjectKey && projectKey && parentProjectKey !== projectKey) {
+            return null;
+          }
+          return {
+            id: r.parent_id,
+            key: r.parent_key,
+            label: r.parent_label || '',
+            // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
+            // its native designed size (story-16.svg, bug-16.svg, etc.)
+            // — the 0.75× scale at size=12 caused sub-pixel rendering
+            // jitter that made adjacent rows' icons LOOK like different
+            // shapes even when they were the same source SVG. 16×16 is
+            // pixel-perfect at 1× zoom and aligns with the row-1 type
+            // icon's size (also 16).
+            icon: r.parent_issue_type ? <JiraIssueTypeIcon type={r.parent_issue_type} size={16} /> : undefined,
+            statusCategory: r.parent_status_category,
+            isEpic: r.parent_issue_type === 'Epic',
+          };
+        },
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation
         // time with a toast, but the PICKER itself is reachable so users see
@@ -5101,6 +5149,27 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           setEditingId(null);
         }}
       />
+
+      {/* F3: reason capture for workflow-gated status changes made from the
+          table. The adapter throws WF_REASON_REQUIRED; we collect the reason
+          here and retry the same patch with it attached. */}
+      {reasonRetry && (
+        <ReasonCaptureModal
+          entityType={reasonRetry.ctx.entityType}
+          itemKey={reasonRetry.id}
+          fromStatus={reasonRetry.ctx.from}
+          toStatus={reasonRetry.ctx.to}
+          onSubmit={(reason) => {
+            updateField.mutate({
+              id: reasonRetry.id,
+              source: reasonRetry.source,
+              patch: { ...reasonRetry.patch, reasonCode: reason.code, reasonText: reason.text },
+            });
+            setReasonRetry(null);
+          }}
+          onCancel={() => setReasonRetry(null)}
+        />
+      )}
 
       {/* Apr 27, 2026 (L53): both delete dialogs now use the canonical
           DangerConfirmModal, which mirrors Jira's exact pattern from the
@@ -6960,17 +7029,24 @@ function ColumnFilterMultiSelect({
   );
 }
 
-const CREATABLE_TYPES: CreatableIssueType[] = [
-  'Story',
-  'Epic',
-  'Feature',
-  'Task',
-  'QA Bug',
-  'Production Incident',
-  'Business Gap',
-  'API Requirement',
-  'Change Request',
-];
+/* CRE chokepoint (Grids A + D): QA Bug is TESTHUB-owned and Production
+   Incident is INCIDENT-owned, so filterCreatableTypes strips them from this
+   TEAM surface (Grid I also bans them as Backlog rows). The filter returns
+   string[]; every input is a CreatableIssueType, so the cast is safe. */
+const CREATABLE_TYPES = filterCreatableTypes(
+  [
+    'Story',
+    'Epic',
+    'Feature',
+    'Task',
+    'QA Bug',
+    'Production Incident',
+    'Business Gap',
+    'API Requirement',
+    'Change Request',
+  ],
+  'TEAM',
+) as CreatableIssueType[];
 
 /**
  * 2026-07-01 (user request): map a backlog row's `type` to the creatable issue

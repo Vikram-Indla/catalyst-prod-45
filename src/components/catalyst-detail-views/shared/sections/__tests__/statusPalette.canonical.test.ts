@@ -35,7 +35,7 @@ describe('canonical status palette', () => {
   it('pairs each bold bg with WCAG-correct text token', () => {
     expect(statusFg('success')).toBe('var(--ds-text-inverse)');
     expect(statusFg('inprogress')).toBe('var(--ds-text-inverse)');
-    expect(statusFg('moved')).toBe('var(--ds-text)');
+    expect(statusFg('moved')).toBe('var(--ds-text-warning-inverse)');
     expect(statusFg('default')).toBe('var(--ds-text)');
   });
 });

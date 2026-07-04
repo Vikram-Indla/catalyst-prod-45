@@ -93,7 +93,11 @@
     <script>
       (function() {
         var t = localStorage.getItem('catalyst-theme');
-        var isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        // CAT-AUDIT-0201: a missing cache key (first visit, or cleared storage)
+        // must resolve the same way ThemeProvider's own default ('system') does,
+        // else a dark-OS first-time visitor boots light here and flashes dark
+        // once React's effect runs.
+        var isDark = t === 'dark' || ((t === 'system' || t === null) && window.matchMedia('(prefers-color-scheme: dark)').matches);
         var mode = isDark ? 'dark' : 'light';
         var de = document.documentElement;
         de.classList.toggle('dark', isDark);

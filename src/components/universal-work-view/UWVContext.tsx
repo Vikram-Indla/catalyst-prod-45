@@ -6,7 +6,7 @@
  * Lazy-loads the heavy UniversalWorkView surface only when first opened.
  */
 
-import React, { createContext, useContext, useState, useCallback, lazy, Suspense, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, lazy, Suspense, useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
 import Drawer from '@atlaskit/drawer';
 import type { UWVParams, UWVState } from './uwv.types';
@@ -66,8 +66,10 @@ export function UWVProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
+  const value = useMemo(() => ({ openUWV, closeUWV }), [openUWV, closeUWV]);
+
   return (
-    <UWVContext.Provider value={{ openUWV, closeUWV }}>
+    <UWVContext.Provider value={value}>
       {children}
       {/* Apr 25, 2026 — UWV is now an Atlaskit Drawer. Replaces the prior
           full-bleed div overlay. Native: blanket, focus trap, ESC-to-close,

@@ -172,7 +172,7 @@ function mapComment(raw: any): CdsComment {
     id: raw.id,
     author: {
       id: raw.user_id || 'unknown',
-      name: profile?.full_name || profile?.email || 'Unknown',
+      name: profile?.full_name || profile?.email || '—',
       avatarUrl:
         resolveAvatarUrl(profile?.full_name) ?? profile?.avatar_url ?? null,
       email: profile?.email,
@@ -238,12 +238,14 @@ export function BrActivitySection({
     },
   });
 
-  const mentionableUsers: CdsUser[] = profiles.map((p: any) => ({
-    id: p.id,
-    name: p.full_name || p.email || 'Unknown',
-    avatarUrl: p.avatar_url,
-    email: p.email,
-  }));
+  const mentionableUsers: CdsUser[] = profiles
+    .filter((p: any) => p.full_name || p.email)
+    .map((p: any) => ({
+      id: p.id,
+      name: p.full_name || p.email,
+      avatarUrl: p.avatar_url,
+      email: p.email,
+    }));
 
   useQuery({
     queryKey: ['current-user-profile', user?.id],
@@ -378,8 +380,15 @@ export function BrActivitySection({
   // for this BR is inserted / updated / deleted on either table.
   useEffect(() => {
     if (!enabled) return;
+    // Unique per subscription — see CatalystActivitySection for the
+    // same fix. Prevents "cannot add postgres_changes callbacks after
+    // subscribe()" when React StrictMode double-mounts.
+    const uniq =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? (crypto as any).randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const channel = supabase
-      .channel(`br-activity-realtime:${requestId}`)
+      .channel(`br-activity-realtime:${requestId}:${uniq}`)
       .on(
         'postgres_changes',
         {

@@ -29,7 +29,7 @@ export default function CatalystViewTask({
   hideSidebar,
 }: CatalystViewBaseProps) {
 
-  const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
+  const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const queryClient = useQueryClient();
@@ -76,7 +76,7 @@ export default function CatalystViewTask({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · StatusLozengeDropdown relocated to right-rail header in CatalystSidebarDetails. */}
-      <CatalystQuickActions />
+      <CatalystQuickActions itemType={issue?.issue_type || 'Task'} />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare 2026-05-10 Fix JC-2: Severity added to Key details.
           Jira Task screen scheme (10010) includes customfield_10125 (Severity).
@@ -151,6 +151,7 @@ export default function CatalystViewTask({
       ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      isError={isError} error={error} onRetry={refetch}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

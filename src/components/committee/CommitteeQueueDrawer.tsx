@@ -8,14 +8,18 @@
  *   C) Timeline (audit trail)
  */
 
+import { useState } from 'react';
 import { AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/lib/auth';
+import { useRecordApproval, useRecordVeto } from '@/hooks/useCommitteeQueue';
 import type { CommitteeQueueItem, CommitteeApprover, CommitteeDecisionStatus } from '@/hooks/useCommitteeQueue';
 
 interface CommitteeQueueDrawerProps {
@@ -42,30 +46,45 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 }
 
 // Approver row with addedBy
-function ApproverRow({ approver }: { approver: CommitteeApprover }) {
+function ApproverRow({
+  approver,
+  canVote,
+  onApprove,
+  onVeto,
+  isVoting,
+}: {
+  approver: CommitteeApprover;
+  canVote: boolean;
+  onApprove: () => void;
+  onVeto: (comment: string) => void;
+  isVoting: boolean;
+}) {
+  const [vetoing, setVetoing] = useState(false);
+  const [vetoComment, setVetoComment] = useState('');
+
   const statusCfg: Record<CommitteeDecisionStatus, { label: string; fg: string; icon: typeof Clock }> = {
-    pending: { label: 'Pending', fg: 'var(--text-secondary)', icon: Clock },
-    approved: { label: 'Approved', fg: 'var(--status-success)', icon: CheckCircle },
-    vetoed: { label: 'Vetoed', fg: 'var(--status-danger)', icon: XCircle },
+    pending: { label: 'Pending', fg: 'var(--ds-text-subtle)', icon: Clock },
+    approved: { label: 'Approved', fg: 'var(--ds-text-success)', icon: CheckCircle },
+    vetoed: { label: 'Vetoed', fg: 'var(--ds-text-danger)', icon: XCircle },
   };
   const { label, fg, icon: Icon } = statusCfg[approver.decision];
 
   return (
     <div
       className="p-3 rounded-lg border"
-      style={{ background: 'var(--surface-subtle)', borderColor: 'var(--border-default)' }}
+      style={{ background: 'var(--ds-background-neutral-subtle)', borderColor: 'var(--ds-border)' }}
     >
       <div className="flex items-start gap-3">
         {/* Avatar - always neutral background, not status-colored */}
         <div
           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 border"
-          style={{ background: 'var(--surface-subtle)', color: 'var(--text-secondary)', borderColor: 'var(--border-default)' }}
+          style={{ background: 'var(--ds-background-neutral-subtle)', color: 'var(--ds-text-subtle)', borderColor: 'var(--ds-border)' }}
         >
           {approver.userInitials || approver.userName.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-[var(--text-primary)] text-sm">{approver.userName}</span>
+            <span className="font-medium text-[var(--ds-text)] text-sm">{approver.userName}</span>
             {approver.hasVeto && (
               <Lozenge appearance="moved">VETO POWER</Lozenge>
             )}
@@ -76,17 +95,17 @@ function ApproverRow({ approver }: { approver: CommitteeApprover }) {
               {label}
             </span>
             {approver.decidedAt && (
-              <span className="text-[11px] text-[var(--text-tertiary)]">
+              <span className="text-[11px] text-[var(--ds-text-subtlest)]">
                 · {formatDistanceToNow(new Date(approver.decidedAt), { addSuffix: true })}
               </span>
             )}
           </div>
           {/* Added by */}
           {approver.addedBy && (
-            <div className="flex items-center gap-1 mt-1.5 text-[11px] text-[var(--text-tertiary)]">
+            <div className="flex items-center gap-1 mt-1.5 text-[11px] text-[var(--ds-text-subtlest)]">
               <User className="h-3 w-3" />
               <span>
-                Added by <span className="text-[var(--text-secondary)]">{approver.addedBy}</span>
+                Added by <span className="text-[var(--ds-text-subtle)]">{approver.addedBy}</span>
               </span>
               {approver.addedAt && <span className="ml-1">· {format(new Date(approver.addedAt), 'MMM d')}</span>}
             </div>
@@ -95,10 +114,72 @@ function ApproverRow({ approver }: { approver: CommitteeApprover }) {
           {approver.decision === 'vetoed' && approver.comment && (
             <div
               className="mt-2 p-2 rounded text-xs border"
-              style={{ background: 'var(--status-danger-bg)', borderColor: 'var(--status-danger)', color: 'var(--status-danger)' }}
+              style={{ background: 'var(--ds-background-danger)', borderColor: 'var(--ds-text-danger)', color: 'var(--ds-text-danger)' }}
             >
               <span className="font-medium">Reason: </span>
               {approver.comment}
+            </div>
+          )}
+          {/* Your vote */}
+          {canVote && approver.decision === 'pending' && (
+            // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+            <div className="mt-2">
+              {!vetoing ? (
+                // ads-scanner:ignore-next-line — layout utility, matches gap-2 pattern already used elsewhere in this file
+                <div className="flex gap-2">
+                  {/* ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file */}
+                  <Button size="sm" className="h-7 text-xs" disabled={isVoting} onClick={onApprove}>
+                    Approve
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+                    className="h-7 text-xs"
+                    disabled={isVoting}
+                    onClick={() => setVetoing(true)}
+                  >
+                    Veto
+                  </Button>
+                </div>
+              ) : (
+                // ads-scanner:ignore-next-line — layout utility, matches space-y-2 pattern already used elsewhere in this file
+                <div className="space-y-2">
+                  <Textarea
+                    placeholder="Reason for veto (required)"
+                    value={vetoComment}
+                    onChange={(e) => setVetoComment(e.target.value)}
+                    // ads-scanner:ignore-next-line — sizing utility, matches text-xs pattern already used elsewhere in this file
+                    className="text-xs min-h-16"
+                  />
+                  {/* ads-scanner:ignore-next-line — layout utility, matches gap-2 pattern already used elsewhere in this file */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+                      className="h-7 text-xs"
+                      disabled={isVoting || vetoComment.trim().length === 0}
+                      onClick={() => onVeto(vetoComment)}
+                    >
+                      Confirm veto
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      // ads-scanner:ignore-next-line — sizing utility, matches h-6/h-8 text-xs/sm pattern already used elsewhere in this file
+                      className="h-7 text-xs"
+                      disabled={isVoting}
+                      onClick={() => {
+                        setVetoing(false);
+                        setVetoComment('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -119,10 +200,10 @@ interface TimelineEvent {
 
 function TimelineItem({ event, isLast }: { event: TimelineEvent; isLast: boolean }) {
   const iconCfg: Record<TimelineEvent['type'], { icon: typeof Clock; bg: string; fg: string }> = {
-    sent: { icon: Shield, bg: 'var(--status-info-bg)', fg: 'var(--status-info)' },
-    approved: { icon: CheckCircle, bg: 'var(--status-success-bg)', fg: 'var(--status-success)' },
-    vetoed: { icon: XCircle, bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)' },
-    approver_added: { icon: UserPlus, bg: 'var(--surface-subtle)', fg: 'var(--text-secondary)' },
+    sent: { icon: Shield, bg: 'var(--ds-background-information)', fg: 'var(--ds-text-information)' },
+    approved: { icon: CheckCircle, bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)' },
+    vetoed: { icon: XCircle, bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' },
+    approver_added: { icon: UserPlus, bg: 'var(--ds-background-neutral-subtle)', fg: 'var(--ds-text-subtle)' },
   };
   const { icon: Icon, bg, fg } = iconCfg[event.type];
 
@@ -132,19 +213,23 @@ function TimelineItem({ event, isLast }: { event: TimelineEvent; isLast: boolean
         <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: bg, color: fg }}>
           <Icon className="h-3 w-3" />
         </div>
-        {!isLast && <div className="w-px flex-1 my-1" style={{ background: 'var(--border-default)' }} />}
+        {!isLast && <div className="w-px flex-1 my-1" style={{ background: 'var(--ds-border)' }} />}
       </div>
       <div className="flex-1 pb-3">
-        <div className="text-sm text-[var(--text-primary)] font-medium">{event.title}</div>
-        {event.by && <div className="text-xs text-[var(--text-secondary)]">by {event.by}</div>}
-        <div className="text-[11px] text-[var(--text-tertiary)]">{format(new Date(event.at), 'PPp')}</div>
-        {event.details && <div className="mt-1 text-xs text-[var(--text-secondary)] italic">"{event.details}"</div>}
+        <div className="text-sm text-[var(--ds-text)] font-medium">{event.title}</div>
+        {event.by && <div className="text-xs text-[var(--ds-text-subtle)]">by {event.by}</div>}
+        <div className="text-[11px] text-[var(--ds-text-subtlest)]">{format(new Date(event.at), 'PPp')}</div>
+        {event.details && <div className="mt-1 text-xs text-[var(--ds-text-subtle)] italic">"{event.details}"</div>}
       </div>
     </div>
   );
 }
 
 export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers }: CommitteeQueueDrawerProps) {
+  const { user } = useAuth();
+  const recordApproval = useRecordApproval();
+  const recordVeto = useRecordVeto();
+
   if (!item) return null;
 
   // Build timeline
@@ -192,13 +277,13 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[440px] sm:max-w-[440px] p-0 flex flex-col">
-        <SheetHeader className="p-4 border-b shrink-0" style={{ borderColor: 'var(--border-default)' }}>
-          <SheetTitle className="text-sm font-semibold text-[var(--text-primary)]">
+        <SheetHeader className="p-4 border-b shrink-0" style={{ borderColor: 'var(--ds-border)' }}>
+          <SheetTitle className="text-sm font-semibold text-[var(--ds-text)]">
             Committee — {item.incident.incident_key}
           </SheetTitle>
           <div className="flex items-center gap-2 mt-1">
             <StatusBadge status={item.committeeStatus} />
-            <span className="text-[11px] text-[var(--text-tertiary)]">
+            <span className="text-[11px] text-[var(--ds-text-subtlest)]">
               Sent {format(new Date(item.committeeSentAt), 'MMM d')} by {item.committeeSentBy}
             </span>
           </div>
@@ -208,11 +293,11 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
           <div className="p-4 space-y-5">
             {/* DECISION SNAPSHOT */}
             <section>
-              <h3 className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+              <h3 className="text-[11px] font-semibold text-[var(--ds-text-subtle)] uppercase tracking-wider mb-2">
                 Decision Snapshot
               </h3>
-              <div className="p-3 rounded-lg border space-y-2" style={{ background: 'var(--surface-subtle)', borderColor: 'var(--border-default)' }}>
-                <div className="text-sm font-medium text-[var(--text-primary)]">{item.incident.title}</div>
+              <div className="p-3 rounded-lg border space-y-2" style={{ background: 'var(--ds-background-neutral-subtle)', borderColor: 'var(--ds-border)' }}>
+                <div className="text-sm font-medium text-[var(--ds-text)]">{item.incident.title}</div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Lozenge
                     appearance={
@@ -236,24 +321,24 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
 
               <div className="grid grid-cols-2 gap-2 text-xs mt-3">
                 <div>
-                  <span className="text-[var(--text-tertiary)]">Majority required: </span>
-                  <span className="text-[var(--text-primary)] font-medium">{item.approvalsRequiredCount}</span>
+                  <span className="text-[var(--ds-text-subtlest)]">Majority required: </span>
+                  <span className="text-[var(--ds-text)] font-medium">{item.approvalsRequiredCount}</span>
                 </div>
                 <div>
-                  <span className="text-[var(--text-tertiary)]">Current: </span>
-                  <span className="text-[var(--text-primary)] font-medium">
+                  <span className="text-[var(--ds-text-subtlest)]">Current: </span>
+                  <span className="text-[var(--ds-text)] font-medium">
                     {item.approvalsCompletedCount}/{item.approvalsTotalCount}
                   </span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-[var(--text-tertiary)]">Veto: </span>
-                  <span className={cn('font-medium', hasVeto ? 'text-[var(--status-danger)]' : 'text-[var(--text-primary)]')}>
+                  <span className="text-[var(--ds-text-subtlest)]">Veto: </span>
+                  <span className={cn('font-medium', hasVeto ? 'text-[var(--ds-text-danger)]' : 'text-[var(--ds-text)]')}>
                     {hasVeto ? 'Yes — overrides majority' : 'None'}
                   </span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-[var(--text-tertiary)]">Aging: </span>
-                  <span className={cn('font-medium', item.agingDays >= 7 ? 'text-[var(--text-warning)]' : 'text-[var(--text-primary)]')}>
+                  <span className="text-[var(--ds-text-subtlest)]">Aging: </span>
+                  <span className={cn('font-medium', item.agingDays >= 7 ? 'text-[var(--ds-text-warning)]' : 'text-[var(--ds-text)]')}>
                     {item.agingDays}d
                   </span>
                 </div>
@@ -263,9 +348,9 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
               <div
                 className="mt-3 p-2 rounded text-xs border"
                 style={{
-                  background: hasVeto ? 'var(--status-danger-bg)' : item.committeeStatus === 'approved' ? 'var(--status-success-bg)' : 'var(--surface-subtle)',
-                  borderColor: 'var(--border-default)',
-                  color: hasVeto ? 'var(--status-danger)' : item.committeeStatus === 'approved' ? 'var(--status-success)' : 'var(--text-secondary)',
+                  background: hasVeto ? 'var(--ds-background-danger)' : item.committeeStatus === 'approved' ? 'var(--ds-background-success)' : 'var(--ds-background-neutral-subtle)',
+                  borderColor: 'var(--ds-border)',
+                  color: hasVeto ? 'var(--ds-text-danger)' : item.committeeStatus === 'approved' ? 'var(--ds-text-success)' : 'var(--ds-text-subtle)',
                 }}
               >
                 {outcomeNote}
@@ -277,7 +362,7 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
             {/* APPROVERS */}
             <section>
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                <h3 className="text-[11px] font-semibold text-[var(--ds-text-subtle)] uppercase tracking-wider">
                   Approvers ({item.approvers.length})
                 </h3>
                 {onEditApprovers && (
@@ -289,7 +374,18 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
               </div>
               <div className="space-y-2">
                 {item.approvers.map((a) => (
-                  <ApproverRow key={a.id} approver={a} />
+                  <ApproverRow
+                    key={a.id}
+                    approver={a}
+                    canVote={item.committeeStatus === 'pending' && a.userId === user?.id}
+                    isVoting={recordApproval.isPending || recordVeto.isPending}
+                    onApprove={() =>
+                      recordApproval.mutate({ committeeId: item.committeeId, memberId: a.id })
+                    }
+                    onVeto={(comment) =>
+                      recordVeto.mutate({ committeeId: item.committeeId, memberId: a.id, comment })
+                    }
+                  />
                 ))}
               </div>
             </section>
@@ -298,7 +394,7 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
 
             {/* TIMELINE */}
             <section>
-              <h3 className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+              <h3 className="text-[11px] font-semibold text-[var(--ds-text-subtle)] uppercase tracking-wider mb-2">
                 Timeline
               </h3>
               <div>
@@ -310,7 +406,7 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
           </div>
         </ScrollArea>
 
-        <div className="p-3 border-t shrink-0" style={{ borderColor: 'var(--border-default)' }}>
+        <div className="p-3 border-t shrink-0" style={{ borderColor: 'var(--ds-border)' }}>
           <Button variant="outline" className="w-full h-8 text-sm" onClick={() => onOpenChange(false)}>
             Close
           </Button>

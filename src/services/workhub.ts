@@ -416,7 +416,7 @@ async function fetchHistory(workItemId: string) {
       new_value: c.toString || c.to || null,
       old_display: c.fromString || null,
       new_display: c.toString || null,
-      created_at: c.created || new Date().toISOString(),
+      created_at: c.created ?? null,
       _author_name: c.author || 'System',
     }));
   }

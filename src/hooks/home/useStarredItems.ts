@@ -198,11 +198,14 @@ export function useStarredDeliveryItems() {
 
       // Fetch stories
       if (storyIds.length > 0) {
-        const { data: stories } = await supabase
+        const { data: stories, error: storiesError } = await supabase
           .from('stories')
           .select('id, story_key, title, name, status, state, priority, blocked, updated_at, feature:features(id, name, display_id)')
           .in('id', storyIds)
           .is('deleted_at', null);
+        // Throw instead of treating a failed fetch as "no rows" — otherwise
+        // every starred story looks like an orphan and gets deleted below.
+        if (storiesError) throw storiesError;
 
         (stories || []).forEach(story => {
           resolved.add(resolveKey(story.id, 'story'));
@@ -226,11 +229,12 @@ export function useStarredDeliveryItems() {
 
       // Fetch features
       if (featureIds.length > 0) {
-        const { data: features } = await supabase
+        const { data: features, error: featuresError } = await supabase
           .from('features')
           .select('id, display_id, name, status, priority, blocked, updated_at, epic:epics(id, name, epic_key)')
           .in('id', featureIds)
           .is('deleted_at', null);
+        if (featuresError) throw featuresError;
 
         (features || []).forEach(feature => {
           resolved.add(resolveKey(feature.id, 'feature'));
@@ -254,11 +258,12 @@ export function useStarredDeliveryItems() {
 
       // Fetch epics
       if (epicIds.length > 0) {
-        const { data: epics } = await supabase
+        const { data: epics, error: epicsError } = await supabase
           .from('epics')
           .select('id, epic_key, name, status, updated_at')
           .in('id', epicIds)
           .is('deleted_at', null);
+        if (epicsError) throw epicsError;
 
         (epics || []).forEach(epic => {
           resolved.add(resolveKey(epic.id, 'epic'));
@@ -280,10 +285,11 @@ export function useStarredDeliveryItems() {
 
       // Fetch tasks (from tasks) - project = team name
       if (taskIds.length > 0) {
-        const { data: tasks } = await supabase
+        const { data: tasks, error: tasksError } = await supabase
           .from('tasks')
           .select('id, key, title, status, priority, blocked, updated_at, assignee_id, team:teams(id, name)')
           .in('id', taskIds);
+        if (tasksError) throw tasksError;
 
         (tasks || []).forEach(task => {
           resolved.add(resolveKey(task.id, 'task'));
@@ -307,10 +313,11 @@ export function useStarredDeliveryItems() {
 
       // Fetch projects (Phase D — universal star ↔ Home pinned)
       if (projectIds.length > 0) {
-        const { data: projects } = await supabase
+        const { data: projects, error: projectsError } = await supabase
           .from('projects')
           .select('id, name, project_key, status, status_category, updated_at, lead_id')
           .in('id', projectIds);
+        if (projectsError) throw projectsError;
 
         (projects || []).forEach((proj: any) => {
           resolved.add(resolveKey(proj.id, 'project'));

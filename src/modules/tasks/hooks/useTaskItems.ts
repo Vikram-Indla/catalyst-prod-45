@@ -182,13 +182,34 @@ export function useUpdatePlannerTask() {
         if (!match) {
           throw new Error(`Unknown status slug: ${updates.status}`);
         }
+        // F3: reason preflight before the write. Resolve the task's current
+        // status so from→to transition rules apply, not just to-status rules.
+        const reasonCode = (updates as any).reasonCode ?? null;
+        const reasonText = (updates as any).reasonText ?? null;
+        const { data: curTask } = await supabase
+          .from('tasks').select('status_id').eq('id', id).maybeSingle();
+        const prevMatch = statuses.find((s) => s.id === (curTask as any)?.status_id);
+        const prevWfKey = prevMatch
+          ? ((prevMatch as any).workflow_status_key ?? prevMatch.slug ?? null)
+          : null;
+        const wfKey = (match as any).workflow_status_key ?? updates.status ?? null;
+        if (prevMatch?.id !== match.id && !reasonCode && !reasonText) {
+          const { checkReasonRequired } = await import('@/lib/workflow/canonical/runtime');
+          const preflight = await checkReasonRequired('task', null, prevWfKey, wfKey);
+          if (preflight.reasonRequired) {
+            const err = new Error('This transition requires a reason.');
+            (err as any).code = 'WF_REASON_REQUIRED';
+            (err as any).ctx = { entityType: 'Task', from: prevWfKey, to: wfKey };
+            throw err;
+          }
+        }
         dbUpdates.status_id = match.id;
         // Advisory audit: use workflow_status_key from the resolved task_statuses row.
-        const wfKey = (match as any).workflow_status_key ?? updates.status ?? null;
         recordAdvisoryStatusChange({
           entityKey: 'task', entityId: id, projectKey: null,
-          fromStatusRaw: null, toStatusRaw: wfKey, sourceSurface: 'task_hub',
-        }).catch(() => {/* advisory — non-blocking */});
+          fromStatusRaw: prevWfKey, toStatusRaw: wfKey, sourceSurface: 'task_hub',
+          reasonCode, reasonText,
+        } as any).catch(() => {/* advisory — non-blocking */});
       }
 
       // Workstream: direct teamId → workstream_id passthrough. null is valid
@@ -221,6 +242,9 @@ export function useUpdatePlannerTask() {
       context?.previous?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
+      // F3: reason-required refusals are handled by the caller's
+      // ReasonCaptureModal — no error toast for them.
+      if ((err as any)?.code === 'WF_REASON_REQUIRED') return;
       // 2026-06-17: surface the error. Previously this rolled back silently,
       // making status/assignee/priority change failures look like the UI just
       // ignored the click. The toast shows the real Postgres/PostgREST error.

@@ -103,14 +103,14 @@ export function useStatusDistribution(projectId: string, includeFeatures: boolea
       
       // Always include stories
       stories.forEach(item => {
-        const status = item.status || 'todo';
+        const status = item.status || 'unknown';
         statusCounts[status] = (statusCounts[status] || 0) + 1;
       });
 
       // Optionally include features
       if (includeFeatures) {
         (features || []).forEach(item => {
-          const status = item.status || 'backlog';
+          const status = item.status || 'unknown';
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         });
       }

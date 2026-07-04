@@ -30,6 +30,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import { UnassignedAvatar } from '@/components/ads';
+// CRE chokepoint (Grids A + D): every creatable catalogue — default list or
+// caller-locked — is filtered through the Catalyst Rules Engine for the
+// board's module before render. Custom Studio-registry types pass through
+// (registry is authoritative for them). See RULE_TABLE.md.
+import { filterCreatableTypes, type CREModule } from '@/lib/catalyst-rules';
 
 /* 2026-06-15: SmartPopover — portal-based popover that auto-positions itself
    in the direction with the most available viewport space. Flips above/below
@@ -176,6 +181,21 @@ const DEFAULT_CREATABLE_TYPES = [
   'Production Incident', 'Business Gap', 'API Requirement', 'Change Request',
 ];
 
+/* CRE module scope per board mode (Grid A/D). 'release' has no CRE module of
+   its own — its locked 'Release' type is a registry type CRE passes through,
+   and TEAM covers any fallback to the default list. */
+const MODE_TO_CRE_MODULE: Record<
+  NonNullable<InlineCreateCardProps['mode']>,
+  CREModule
+> = {
+  project: 'TEAM',
+  product: 'PRODUCT',
+  incident: 'INCIDENT',
+  tasks: 'TEAM',
+  release: 'TEAM',
+  test: 'TESTHUB',
+};
+
 function InlineCreateCardComponent({
   projectKey,
   columnId,
@@ -188,14 +208,22 @@ function InlineCreateCardComponent({
   onCreateCard,
   onCancel,
 }: InlineCreateCardProps) {
+  /* CRE chokepoint (Grid A/D): the active type list — caller-locked or the
+     default catalogue — is filtered for this board's module before render. */
+  const issueTypes = useMemo(
+    () =>
+      filterCreatableTypes(
+        creatableTypes && creatableTypes.length > 0 ? creatableTypes : DEFAULT_CREATABLE_TYPES,
+        MODE_TO_CRE_MODULE[mode],
+      ),
+    [creatableTypes, mode],
+  );
+
   const [summary, setSummary] = useState('');
   /* 2026-06-15: initial issueName is the first entry of the active type
      list, so product mode (creatableTypes=['Business Request']) opens with
      the correct selected type instead of the project default 'Story'. */
-  const [issueName, setIssueName] = useState<string>(() => {
-    const list = (creatableTypes && creatableTypes.length > 0) ? creatableTypes : null;
-    return list?.[0] ?? 'Story';
-  });
+  const [issueName, setIssueName] = useState<string>(() => issueTypes[0] ?? 'Story');
   const [dueDate, setDueDate] = useState('');           // ISO yyyy-mm-dd
   const [assigneeName, setAssigneeName] = useState<string>('');
   const [assigneeSearch, setAssigneeSearch] = useState('');
@@ -219,11 +247,6 @@ function InlineCreateCardComponent({
   const typeTriggerRef = useRef<HTMLButtonElement>(null);
   const dateTriggerRef = useRef<HTMLButtonElement>(null);
   const assigneeTriggerRef = useRef<HTMLButtonElement>(null);
-
-  // The creatable type list (string names — icon comes from JiraIssueTypeIcon)
-  const issueTypes = creatableTypes && creatableTypes.length > 0
-    ? creatableTypes
-    : DEFAULT_CREATABLE_TYPES;
 
   /* All profiles — the same source the canonical AssigneePickerPopover and
      avatarsByName map are derived from. Falls back to the host-supplied

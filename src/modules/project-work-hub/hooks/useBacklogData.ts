@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useProject } from '@/hooks/useProjects';
+import { isEligibleForBacklogView } from '@/lib/catalyst-rules';
 import type { BacklogEpic, BacklogFeature, BacklogStory } from '../types/backlog.types';
 
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
@@ -152,6 +153,10 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
         query = (query as any)
           .is('jira_removed_at', null)
           .is('archived_at', null)
+          // CAT-DETAIL-MODAL-404-20260702-001: the detail view (useCatalystIssue)
+          // excludes soft-deleted rows via deleted_at — this list must match, or
+          // a deleted row keeps showing here as a dead link that 404s on open.
+          .is('deleted_at', null)
           .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
       }
       if (isAllItems) {
@@ -252,9 +257,12 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
   // double-count with useEpicBacklog. Every other type — including
   // custom or unknown types — lands in the table.
   const skipNonEpicTypeFilter = isReleaseScope || isAllItems;
-  const issueTypeFilter = forceProjectKey
+  // CRE Grid I1: QA Bug / Production Incident excluded from standalone
+  // Backlog rows (still valid Epic children — Grid B2 unaffected).
+  const issueTypeFilter = (forceProjectKey
     ? ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident', 'Business Request']
-    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident'];
+    : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident']
+  ).filter(isEligibleForBacklogView);
 
   const restrictKeySig = restrictToIssueKeys ? [...restrictToIssueKeys].sort().join('|') : '';
   return useQuery({
@@ -268,6 +276,19 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
     queryFn: async (): Promise<BacklogStory[]> => {
       if (!isAllItems && !isReleaseScope && !hasAssigneeOverride && !projectKey) return [];
       if (isReleaseScope && (restrictToIssueKeys?.length ?? 0) === 0) return [];
+      // Custom main types from the Studio registry are backlog scope too —
+      // without this, items of a custom type would be invisible here.
+      const { data: customTypes } = await supabase
+        .from('ph_work_item_types')
+        .select('display_name')
+        .eq('is_system', false)
+        .eq('kind', 'standard')
+        .eq('is_enabled', true)
+        .is('archived_at', null);
+      const effectiveTypeFilter = [
+        ...issueTypeFilter,
+        ...((customTypes ?? []) as { display_name: string }[]).map((t) => t.display_name),
+      ];
       const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, sprint_release, sort_order';
       const buildQuery = () => {
         let q = supabase
@@ -279,9 +300,12 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
           q = (q as any).neq('issue_type', 'Epic');
         } else {
           q = (q as any)
-            .in('issue_type', issueTypeFilter)
+            .in('issue_type', effectiveTypeFilter)
             .is('jira_removed_at', null)
             .is('archived_at', null)
+            // CAT-DETAIL-MODAL-404-20260702-001: match the detail view's
+            // deleted_at exclusion — see the epic query above for rationale.
+            .is('deleted_at', null)
             .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
         }
         if (isAllItems) {

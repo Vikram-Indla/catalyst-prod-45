@@ -3,13 +3,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigation } from "@/contexts/NavigationContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Lozenge } from '@/components/ads';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Clock, Zap, Activity } from "lucide-react";
 
 export default function ValueStreamView() {
   const { selectedProgramId } = useNavigation();
 
-  const { data: valueStreamData, isLoading } = useQuery({
+  const {
+    data: valueStreamData,
+    isLoading,
+    isError: metricsIsError,
+    error: metricsError,
+    refetch: refetchMetrics,
+  } = useQuery({
     queryKey: ["value-stream-metrics", selectedProgramId],
     queryFn: async () => {
       if (!selectedProgramId) return [];
@@ -27,7 +34,12 @@ export default function ValueStreamView() {
     enabled: !!selectedProgramId,
   });
 
-  const { data: features } = useQuery({
+  const {
+    data: features,
+    isError: featuresIsError,
+    error: featuresError,
+    refetch: refetchFeatures,
+  } = useQuery({
     queryKey: ["features-flow", selectedProgramId],
     queryFn: async () => {
       if (!selectedProgramId) return [];
@@ -72,6 +84,40 @@ export default function ValueStreamView() {
 
   if (isLoading) {
     return <div className="p-8">Loading value stream metrics...</div>;
+  }
+
+  /* isError alone misses the persisted-cache case: hydrated data keeps status
+     'success' while the background refetch fails and only `error` is set.
+     Without this gate a failed metrics query hides every KPI card and a failed
+     features query renders 0-count WIP stages. */
+  const queryError =
+    metricsIsError || metricsError
+      ? (metricsError as Error)
+      : featuresIsError || featuresError
+        ? (featuresError as Error)
+        : null;
+
+  if (queryError) {
+    return (
+      <div style={{ padding: 24, maxWidth: 720 }}>
+        <SectionMessage
+          appearance="error"
+          title="Couldn't load value stream data"
+          actions={[
+            {
+              key: 'retry',
+              text: 'Retry',
+              onClick: () => {
+                void refetchMetrics();
+                void refetchFeatures();
+              },
+            },
+          ]}
+        >
+          {queryError.message ?? 'Unknown error loading value stream data.'}
+        </SectionMessage>
+      </div>
+    );
   }
 
   return (

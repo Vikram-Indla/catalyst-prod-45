@@ -79,6 +79,18 @@ const ROLE_OPTIONS = ROLE_GROUPS.flatMap(g => g.options);
 
 const FILTER_ROLE_OPTIONS = [{ label: 'All roles', value: '' }, ...ROLE_OPTIONS];
 
+// Shared @atlaskit/select style overrides (portal z-index + ADS font tokens).
+// Module scope on purpose: used by both the create-access modal and the
+// list-toolbar filters (3cbbc8d96 referenced it from the toolbar where the
+// old component-local const was out of scope → ReferenceError at runtime).
+const selectStyles = {
+  menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }),
+  menu: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  option: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  singleValue: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+  input: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
+};
+
 const STATUS_FILTER_OPTIONS = [
   { label: 'All approved', value: 'all_approved' },
   { label: 'Active', value: 'active' },
@@ -382,13 +394,6 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
   // ADS field label: sentence-case, 12px/600, subtle token — no all-caps, no tracking.
   const lbl: React.CSSProperties = { display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 };
 
-  const selectStyles = {
-    menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }),
-    menu: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
-    option: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
-    singleValue: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
-    input: (base: Record<string, unknown>) => ({ ...base, fontSize: 'var(--ds-font-size-400)' }),
-  };
   const deptOptions = [{ label: 'No department', value: '' }, ...departments.map(d => ({ label: d.name, value: d.id }))];
   const ttlOptions = availableTtls.map(t => ({ label: t.sub ? `${t.label} · ${t.sub}` : t.label, value: t.value }));
   const moduleValue = MODULE_SELECT_OPTIONS.filter(o => moduleAccess[o.value]);

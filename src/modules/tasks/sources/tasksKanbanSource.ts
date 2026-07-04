@@ -269,16 +269,30 @@ export interface TasksKanbanMutations {
   /**
    * Persist a status change via the card's row menu (Change status
    * sub-menu). Looks up the status by slug, then mutates `status_id`.
+   * `reason` is the retry path after a WF_REASON_REQUIRED refusal.
    */
-  persistStatusChange: (cardId: string, statusSlug: string) => void;
+  persistStatusChange: (
+    cardId: string,
+    statusSlug: string,
+    reason?: { code: string | null; text: string | null },
+  ) => void;
 }
 
 /**
  * Compose mutations for TasksBoardView. The `statuses` parameter is the
  * resolved list from `useTaskStatuses` — used to map slug → id for the
- * row-menu status change.
+ * row-menu status change. `onReasonRequired` fires when the workflow
+ * refuses the transition pending a reason (F3) — the view mounts
+ * ReasonCaptureModal and retries via persistStatusChange(.., reason).
  */
-export function useTasksKanbanMutations(statuses: PlannerStatus[]): TasksKanbanMutations {
+export function useTasksKanbanMutations(
+  statuses: PlannerStatus[],
+  onReasonRequired?: (req: {
+    cardId: string;
+    statusSlug: string;
+    ctx: { entityType: string; from: string | null; to: string };
+  }) => void,
+): TasksKanbanMutations {
   const moveTask = useMoveBoardTask();
   const updateTask = useUpdatePlannerTask();
   const qc = useQueryClient();
@@ -389,27 +403,54 @@ export function useTasksKanbanMutations(statuses: PlannerStatus[]): TasksKanbanM
       // briefly revert the card order. useMoveBoardTask.onSettled now
       // invalidates planner-tasks AFTER the mutation completes, which is
       // the correct sync point.
-      moveTask.mutate({
-        task_id: cardId,
-        target_status_id: destColId,
-        target_position: targetPosition,
-      });
+      moveTask.mutate(
+        {
+          task_id: cardId,
+          target_status_id: destColId,
+          target_position: targetPosition,
+        },
+        {
+          onError: (e) => {
+            // F3 parity: workflow refused pending a reason — the optimistic
+            // patch above self-heals via useMoveBoardTask's onSettled
+            // invalidate. Hand off to the view's ReasonCaptureModal; the
+            // retry goes through persistStatusChange (status-only, no
+            // position — acceptable for a reason-gated transition).
+            if ((e as any)?.code === 'WF_REASON_REQUIRED' && onReasonRequired) {
+              onReasonRequired({ cardId, statusSlug: destSlug ?? destColId, ctx: (e as any).ctx });
+            }
+          },
+        },
+      );
     },
-    [moveTask, qc, statuses],
+    [moveTask, qc, statuses, onReasonRequired],
   );
 
   const persistStatusChange = useCallback(
-    (cardId: string, statusSlug: string) => {
+    (cardId: string, statusSlug: string, reason?: { code: string | null; text: string | null }) => {
       const match = statuses.find((s) => s.slug === statusSlug || s.id === statusSlug);
       if (!match) return; // unknown slug → no-op, zero-assumption
       // The card menu reaches PragmaticBoard via `onChangeStatus(id, slug)`.
       // useUpdatePlannerTask resolves slug → status_id internally.
-      updateTask.mutate({
-        id: cardId,
-        updates: { status: match.slug as TaskStatus },
-      });
+      updateTask.mutate(
+        {
+          id: cardId,
+          updates: {
+            status: match.slug as TaskStatus,
+            ...(reason ? { reasonCode: reason.code, reasonText: reason.text } : {}),
+          } as never,
+        },
+        {
+          onError: (e) => {
+            // F3: workflow refused pending a reason — hand off to the view's modal.
+            if ((e as any)?.code === 'WF_REASON_REQUIRED' && onReasonRequired) {
+              onReasonRequired({ cardId, statusSlug: match.slug, ctx: (e as any).ctx });
+            }
+          },
+        },
+      );
     },
-    [statuses, updateTask],
+    [statuses, updateTask, onReasonRequired],
   );
 
   return { persistDrop, persistStatusChange };

@@ -82,9 +82,11 @@ export function AIStrategyIntelligencePanel({
 
   return (
     <div
-      className="strategy-intel-panel fixed top-[52px] right-0 bottom-0 z-50 flex flex-col bg-white shadow-2xl border-l border-slate-200"
+      className="strategy-intel-panel fixed top-[52px] right-0 bottom-0 z-50 flex flex-col shadow-2xl border-l"
       style={{
         width: '50vw',
+        background: 'var(--ds-surface)',
+        borderColor: 'var(--ds-border)',
         transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
@@ -99,8 +101,8 @@ export function AIStrategyIntelligencePanel({
             </div>
             <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-md transition-colors">
-            <X size={18} className="text-slate-400" />
+          <button onClick={onClose} className="p-1.5 rounded-md transition-colors hover:opacity-80" style={{ background: 'transparent' }}>
+            <X size={18} style={{ color: 'var(--ds-icon-subtle)' }} />
           </button>
         </div>
 
@@ -184,7 +186,7 @@ export function AIStrategyIntelligencePanel({
           <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] dark:border dark:border-[var(--ds-border,var(--cp-ink-1))]">
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold" style={{ color: 'var(--ds-text-inverse)', background: 'var(--ds-background-neutral-bold, var(--ds-surface-raised))' }}>
             Close
           </button>
         </div>
@@ -208,17 +210,17 @@ function StatusBanner({ status, health, confidence, label }: {
   }[status];
 
   return (
-    <div className="p-4 bg-white border border-slate-200 rounded-lg mb-5"
-      style={{ borderLeftWidth: 4, borderLeftColor: config.color }}>
+    <div className="p-4 border rounded-lg mb-5"
+      style={{ background: 'var(--ds-surface)', borderColor: 'var(--ds-border)', borderLeftWidth: 4, borderLeftColor: config.color }}>
       <div className="flex items-center gap-2.5">
         <div className="w-2 h-2 rounded-full" style={{ background: config.color }} />
-        <span className="text-[14px] font-[800] text-slate-900">{config.text}</span>
+        <span className="text-[14px] font-[800]" style={{ color: 'var(--ds-text)' }}>{config.text}</span>
         {health !== undefined && (
-          <span className="text-[13px] text-slate-600 ml-2">
+          <span className="text-[13px] ml-2" style={{ color: 'var(--ds-text-subtle)' }}>
             Health {health}/100{confidence !== undefined ? ` · Confidence ${confidence}%` : ''}
           </span>
         )}
-        {label && <span className="text-[13px] text-slate-600 ml-2">{label}</span>}
+        {label && <span className="text-[13px] ml-2" style={{ color: 'var(--ds-text-subtle)' }}>{label}</span>}
       </div>
     </div>
   );
@@ -243,21 +245,21 @@ function AIInsight({ text, signals, isLoading, showSignals = false }: {
   return (
     <div className="mt-5">
       <div className="flex items-center gap-1.5 mb-2">
-        <span className="text-blue-500 text-[11px]">✦</span>
-        <span className="text-[12px] font-[700] text-slate-700 uppercase tracking-wider">AI Insight</span>
+        <span className="text-[11px]" style={{ color: 'var(--ds-text-brand)' }}>✦</span>
+        <span className="text-[12px] font-[700] uppercase tracking-wider" style={{ color: 'var(--ds-text-subtle)' }}>AI Insight</span>
       </div>
       {isLoading ? (
         <div className="space-y-2">
-          <div className="h-3.5 w-full bg-slate-100 rounded animate-pulse" />
-          <div className="h-3.5 w-4/5 bg-slate-100 rounded animate-pulse" />
+          <div className="h-3.5 w-full rounded animate-pulse" style={{ background: 'var(--ds-background-neutral)' }} />
+          <div className="h-3.5 w-4/5 rounded animate-pulse" style={{ background: 'var(--ds-background-neutral)' }} />
         </div>
       ) : (
         <>
-          <p className="text-[13px] text-slate-800 leading-[1.7]">{text || 'No insight available.'}</p>
+          <p className="text-[13px] leading-[1.7]" style={{ color: 'var(--ds-text)' }}>{text || 'No insight available.'}</p>
           {showSignals && signals && signals.length > 0 && (
             <div className="mt-3 space-y-1.5">
               {signals.map((s, i) => (
-                <p key={i} className="text-[12px] text-slate-700 leading-relaxed">
+                <p key={i} className="text-[12px] leading-relaxed" style={{ color: 'var(--ds-text-subtle)' }}>
                   <span className="mr-1.5">{i === 0 ? '🔴' : i === 1 ? '🟡' : '🟢'}</span> {s}
                 </p>
               ))}
@@ -287,11 +289,11 @@ function ChainHealthBars({ metrics }: { metrics: ChainMetrics }) {
         const status: 'on_track' | 'at_risk' | 'critical' = lvl.progress >= 70 ? 'on_track' : lvl.progress >= 40 ? 'at_risk' : 'critical';
         return (
           <div key={i} className="flex items-center gap-3">
-            <span className="text-[12px] text-slate-700 w-[110px] shrink-0">{lvl.label}</span>
-            <div className="flex-1 h-[6px] bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full rounded-full bg-blue-600" style={{ width: `${lvl.progress}%`, transition: 'width 0.8s ease' }} />
+            <span className="text-[12px] w-[110px] shrink-0" style={{ color: 'var(--ds-text-subtle)' }}>{lvl.label}</span>
+            <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ background: 'var(--ds-background-neutral)' }}>
+              <div className="h-full rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', width: `${lvl.progress}%`, transition: 'width 0.8s ease' }} />
             </div>
-            <span className="text-[12px] font-bold text-slate-800 w-[40px] text-right shrink-0">{lvl.progress}%</span>
+            <span className="text-[12px] font-bold w-[40px] text-right shrink-0" style={{ color: 'var(--ds-text)' }}>{lvl.progress}%</span>
             <StatusDot status={status} />
           </div>
         );
@@ -328,24 +330,24 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
     <div className="px-7 py-5">
       {/* At-a-Glance Metrics */}
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>Goal Progress</p>
+        <div className="border rounded-lg p-3.5" style={{ borderColor: 'var(--ds-border)' }}>
+          <p className="uppercase tracking-wider font-semibold mb-1" style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)' }}>Goal Progress</p>
           <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: goalProgress >= 60 ? 'var(--sem-success)' : goalProgress >= 40 ? 'var(--sem-warning)' : 'var(--sem-danger)' }}>
             {goalProgress}%
           </p>
         </div>
-        <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>AI Health</p>
+        <div className="border rounded-lg p-3.5" style={{ borderColor: 'var(--ds-border)' }}>
+          <p className="uppercase tracking-wider font-semibold mb-1" style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)' }}>AI Health</p>
           <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>
             {goalHealth}/100
           </p>
         </div>
-        <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>Key Results</p>
+        <div className="border rounded-lg p-3.5" style={{ borderColor: 'var(--ds-border)' }}>
+          <p className="uppercase tracking-wider font-semibold mb-1" style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)' }}>Key Results</p>
           <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: 'var(--cp-teal-60)' }}>
             {krCount}
           </p>
-          <p className="text-slate-500 mt-0.5" style={{ fontSize: 'var(--ds-font-size-50)' }}>{krsOnTrack} on track</p>
+          <p className="mt-0.5" style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)' }}>{krsOnTrack} on track</p>
         </div>
       </div>
 
@@ -354,11 +356,11 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         <div className="space-y-6">
           {[1, 2, 3, 4].map(section => (
             <div key={section}>
-              <div className="h-3 w-40 bg-slate-100 rounded-full animate-pulse mb-4" />
+              <div className="h-3 w-40 rounded-full animate-pulse mb-4" style={{ background: 'var(--ds-background-neutral)' }} />
               <div className="space-y-2.5">
-                <div className="h-2.5 w-full bg-slate-50 rounded-full animate-pulse" />
-                <div className="h-2.5 bg-slate-50 rounded-full animate-pulse" style={{ width: '90%' }} />
-                <div className="h-2.5 bg-slate-50 rounded-full animate-pulse" style={{ width: '75%' }} />
+                <div className="h-2.5 w-full rounded-full animate-pulse" style={{ background: 'var(--ds-surface-sunken)' }} />
+                <div className="h-2.5 rounded-full animate-pulse" style={{ width: '90%', background: 'var(--ds-surface-sunken)' }} />
+                <div className="h-2.5 rounded-full animate-pulse" style={{ width: '75%', background: 'var(--ds-surface-sunken)' }} />
               </div>
             </div>
           ))}
@@ -369,10 +371,10 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             style={{ width: 48, height: 48, background: 'var(--ds-background-warning)' }}>
             <X size={20} style={{ color: 'var(--ds-text-warning, var(--cp-warning))' }} />
           </div>
-          <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 'var(--ds-font-size-400)' }}>Briefing Unavailable</p>
-          <p className="text-slate-500" style={{ fontSize: 'var(--ds-font-size-300)', maxWidth: 300 }}>{briefError}</p>
+          <p className="font-semibold mb-1" style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>Briefing Unavailable</p>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', maxWidth: 300, color: 'var(--ds-text-subtle)' }}>{briefError}</p>
           {onRegenerate && (
-            <button onClick={onRegenerate} className="mt-4 px-3 py-1.5 rounded-md border border-slate-200 text-[12px] font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+            <button onClick={onRegenerate} className="mt-4 px-3 py-1.5 rounded-md border text-[12px] font-medium flex items-center gap-1.5 hover:opacity-80" style={{ borderColor: 'var(--ds-border)', color: 'var(--ds-text-subtle)' }}>
               <RefreshCw size={14} /> Retry
             </button>
           )}
@@ -382,23 +384,23 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
           <ReactMarkdown
             components={{
               h2: ({ children }) => (
-                <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-slate-100 first:mt-0 text-slate-900"
-                  style={{ fontSize: 'var(--ds-font-size-400)' }}>
+                <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b first:mt-0"
+                  style={{ fontSize: 'var(--ds-font-size-400)', borderColor: 'var(--ds-border)', color: 'var(--ds-text)' }}>
                   {children}
                 </h2>
               ),
               p: ({ children }) => (
-                <p className="mb-4 text-slate-600" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.8 }}>{children}</p>
+                <p className="mb-4" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.8, color: 'var(--ds-text-subtle)' }}>{children}</p>
               ),
               strong: ({ children }) => (
-                <strong className="font-semibold text-slate-900">{children}</strong>
+                <strong className="font-semibold" style={{ color: 'var(--ds-text)' }}>{children}</strong>
               ),
               ul: ({ children }) => (
                 <ul className="my-3 space-y-1.5">{children}</ul>
               ),
               li: ({ children }) => (
-                <li className="pl-1 text-slate-600" style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.6 }}>
-                  <span className="mr-2 text-slate-400">•</span>{children}
+                <li className="pl-1" style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.6, color: 'var(--ds-text-subtle)' }}>
+                  <span className="mr-2" style={{ color: 'var(--ds-text-subtlest)' }}>•</span>{children}
                 </li>
               ),
             }}
@@ -414,20 +416,20 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
           <div className="flex items-center gap-2 mt-5">
             {onRegenerate && (
               <button onClick={onRegenerate} disabled={isBriefGenerating}
-                className="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 disabled:opacity-50">
+                className="px-3 py-1.5 rounded-md text-[11px] font-medium flex items-center gap-1.5 disabled:opacity-50 hover:opacity-80" style={{ color: 'var(--ds-text-subtle)' }}>
                 <RefreshCw size={13} /> Regenerate
               </button>
             )}
             <button onClick={() => copyToClipboard(briefContent)} disabled={!briefContent}
-              className="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 disabled:opacity-50">
+              className="px-3 py-1.5 rounded-md text-[11px] font-medium flex items-center gap-1.5 disabled:opacity-50 hover:opacity-80" style={{ color: 'var(--ds-text-subtle)' }}>
               <Copy size={13} /> Copy
             </button>
           </div>
         </>
       ) : (
         <div className="py-12 text-center">
-          <Sparkles size={24} className="mx-auto mb-3 text-slate-300" />
-          <p className="text-[13px] text-slate-500">Click a strategy chain node to generate an executive brief.</p>
+          <Sparkles size={24} className="mx-auto mb-3" style={{ color: 'var(--ds-text-subtlest)' }} />
+          <p className="text-[13px]" style={{ color: 'var(--ds-text-subtle)' }}>Click a strategy chain node to generate an executive brief.</p>
         </div>
       )}
     </div>
@@ -445,9 +447,9 @@ function StrategyTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetrics
 
   return (
     <div className="px-7 py-5">
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Strategic Theme</div>
-      <h3 className="text-[17px] font-[800] text-slate-900 mb-1">{m.themeName}</h3>
-      <p className="text-[12px] text-slate-600 mb-5">
+      <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--ds-text-subtle)' }}>Strategic Theme</div>
+      <h3 className="text-[17px] font-[800] mb-1" style={{ color: 'var(--ds-text)' }}>{m.themeName}</h3>
+      <p className="text-[12px] mb-5" style={{ color: 'var(--ds-text-subtle)' }}>
         Owner: {m.owners.find(o => o.level === 'Strategic')?.name || '—'} · {m.owners.find(o => o.level === 'Strategic')?.role || ''}
       </p>
 
@@ -461,11 +463,11 @@ function StrategyTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetrics
       {/* Goal Section */}
       <div className="mb-6">
         <SectionLabel>Goal</SectionLabel>
-        <div className="text-[14px] font-[700] text-slate-900 mb-1">{m.goalKey}: {m.goalTitle}</div>
-        <p className="text-[12px] text-slate-600 mb-3">
+        <div className="text-[14px] font-[700] mb-1" style={{ color: 'var(--ds-text)' }}>{m.goalKey}: {m.goalTitle}</div>
+        <p className="text-[12px] mb-3" style={{ color: 'var(--ds-text-subtle)' }}>
           Due: <strong>{goalDue}</strong>
           {' · '}Progress: <strong>{m.goalProgress}%</strong>
-          {' · '}Schedule: <strong className={m.scheduleDriftDays >= 0 ? 'text-green-700' : 'text-red-600'}>
+          {' · '}Schedule: <strong style={{ color: m.scheduleDriftDays >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
             {m.scheduleDriftDays >= 0 ? `${m.scheduleDriftDays} days ahead` : `${Math.abs(m.scheduleDriftDays)} days behind`}
           </strong>
         </p>
@@ -480,13 +482,13 @@ function StrategyTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetrics
             const status: 'on_track' | 'at_risk' | 'critical' = (kr.status === 'At Risk' || kr.status === 'Off Track') ? 'at_risk' : pct >= 70 ? 'on_track' : 'at_risk';
             return (
               <div key={i} className="flex items-center gap-3">
-                <span className="text-[10px] font-bold font-mono text-slate-600 w-[48px] shrink-0">{kr.key}</span>
-                <span className="text-[12px] text-slate-800 flex-1 truncate">{kr.title}</span>
-                <div className="w-[80px] h-[5px] bg-slate-100 rounded-full overflow-hidden shrink-0">
-                  <div className="h-full rounded-full bg-blue-600" style={{ width: `${pct}%` }} />
+                <span className="text-[10px] font-bold font-mono w-[48px] shrink-0" style={{ color: 'var(--ds-text-subtle)' }}>{kr.key}</span>
+                <span className="text-[12px] flex-1 truncate" style={{ color: 'var(--ds-text)' }}>{kr.title}</span>
+                <div className="w-[80px] h-[5px] rounded-full overflow-hidden shrink-0" style={{ background: 'var(--ds-background-neutral)' }}>
+                  <div className="h-full rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', width: `${pct}%` }} />
                 </div>
-                <span className="text-[11px] font-bold text-slate-700 w-[52px] text-right shrink-0">{kr.current}/{kr.target}</span>
-                <span className="text-[11px] font-bold text-slate-700 w-[36px] text-right shrink-0">{pct}%</span>
+                <span className="text-[11px] font-bold w-[52px] text-right shrink-0" style={{ color: 'var(--ds-text-subtle)' }}>{kr.current}/{kr.target}</span>
+                <span className="text-[11px] font-bold w-[36px] text-right shrink-0" style={{ color: 'var(--ds-text-subtle)' }}>{pct}%</span>
                 <StatusDot status={status} />
               </div>
             );
@@ -496,20 +498,20 @@ function StrategyTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetrics
 
       {/* Schedule + Delivery cards */}
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="border border-slate-200 rounded-lg p-3.5">
+        <div className="border rounded-lg p-3.5" style={{ borderColor: 'var(--ds-border)' }}>
           <SectionLabel>Schedule</SectionLabel>
-          <p className="text-[24px] font-[800] leading-none text-slate-900">
+          <p className="text-[24px] font-[800] leading-none" style={{ color: 'var(--ds-text)' }}>
             {m.scheduleDriftDays > 0 ? '+' : ''}{m.scheduleDriftDays}
             <span className="text-[13px] font-[500] ml-1">{m.scheduleDriftDays >= 0 ? 'days ahead' : 'days behind'}</span>
           </p>
-          <p className="text-[12px] mt-1.5 text-slate-500">Due: {goalDue}</p>
+          <p className="text-[12px] mt-1.5" style={{ color: 'var(--ds-text-subtle)' }}>Due: {goalDue}</p>
         </div>
-        <div className="border border-slate-200 rounded-lg p-3.5">
+        <div className="border rounded-lg p-3.5" style={{ borderColor: 'var(--ds-border)' }}>
           <SectionLabel>Delivery</SectionLabel>
-          <p className="text-[24px] font-[800] leading-none text-slate-900">
+          <p className="text-[24px] font-[800] leading-none" style={{ color: 'var(--ds-text)' }}>
             {m.storiesDone}<span className="text-[13px] font-[500] ml-1">of {m.storiesTotal} done</span>
           </p>
-          <p className="text-[12px] mt-1.5 text-slate-500">{m.storiesInProd} in production</p>
+          <p className="text-[12px] mt-1.5" style={{ color: 'var(--ds-text-subtle)' }}>{m.storiesInProd} in production</p>
         </div>
       </div>
 
@@ -524,8 +526,8 @@ function StrategyTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetrics
         <SectionLabel>Key People</SectionLabel>
         <div className="space-y-1">
           {m.owners.slice(0, 3).map((o, i) => (
-            <p key={i} className="text-[13px] text-slate-800">
-              <strong>{o.name}</strong><span className="text-slate-500"> · {o.role}</span>
+            <p key={i} className="text-[13px]" style={{ color: 'var(--ds-text)' }}>
+              <strong>{o.name}</strong><span style={{ color: 'var(--ds-text-subtle)' }}> · {o.role}</span>
             </p>
           ))}
         </div>
@@ -544,12 +546,12 @@ function InitiativesTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetr
 
   return (
     <div className="px-7 py-5">
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Request</div>
+      <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--ds-text-subtle)' }}>Request</div>
 
       {hasInitiative ? (
         <>
-          <h3 className="text-[17px] font-[800] text-slate-900 mb-1">{m.initiativeKey}: {m.initiativeTitle}</h3>
-          <p className="text-[12px] text-slate-600 mb-4">
+          <h3 className="text-[17px] font-[800] mb-1" style={{ color: 'var(--ds-text)' }}>{m.initiativeKey}: {m.initiativeTitle}</h3>
+          <p className="text-[12px] mb-4" style={{ color: 'var(--ds-text-subtle)' }}>
             Lead: {m.owners.find(o => o.level === 'Delivery')?.name || '—'} · {m.owners.find(o => o.level === 'Delivery')?.role || ''}
           </p>
 
@@ -562,16 +564,16 @@ function InitiativesTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetr
             <SectionLabel>Linked to Key Results</SectionLabel>
             {m.krs.map((kr, i) => (
               <div key={i} className="flex items-center gap-2 py-1.5 text-[12px]">
-                <span className="font-mono font-bold text-slate-600">{kr.key}</span>
-                <span className="text-slate-700 flex-1">{kr.title}</span>
-                <span className="ml-auto font-bold text-slate-800">{kr.progress}%</span>
+                <span className="font-mono font-bold" style={{ color: 'var(--ds-text-subtle)' }}>{kr.key}</span>
+                <span className="flex-1" style={{ color: 'var(--ds-text-subtle)' }}>{kr.title}</span>
+                <span className="ml-auto font-bold" style={{ color: 'var(--ds-text)' }}>{kr.progress}%</span>
               </div>
             ))}
           </div>
 
           <div className="mb-5">
             <SectionLabel>Linkage Timeline</SectionLabel>
-            <div className="text-[12px] text-slate-700 leading-relaxed">
+            <div className="text-[12px] leading-relaxed" style={{ color: 'var(--ds-text-subtle)' }}>
               <p>
                 Strategy-to-execution lag: <strong>
                   {m.strategyToExecutionDays > 0 ? `${m.strategyToExecutionDays} days` : 'Not calculated'}
@@ -584,9 +586,9 @@ function InitiativesTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetr
           </div>
         </>
       ) : (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-[13px] font-bold text-amber-800">⚠ No initiative linked</p>
-          <p className="text-[12px] text-amber-700 mt-1">
+        <div className="mt-4 p-4 border rounded-lg" style={{ background: 'var(--ds-background-warning)', borderColor: 'var(--ds-border)' }}>
+          <p className="text-[13px] font-bold" style={{ color: 'var(--ds-text-warning)' }}>⚠ No initiative linked</p>
+          <p className="text-[12px] mt-1" style={{ color: 'var(--ds-text-warning)' }}>
             This chain has no initiative connecting the Key Results to execution. Create an initiative in ProductHub and link it to the KRs.
           </p>
         </div>
@@ -607,12 +609,12 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
 
   return (
     <div className="px-7 py-5">
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Epic</div>
+      <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--ds-text-subtle)' }}>Epic</div>
 
       {hasEpic ? (
         <>
-          <h3 className="text-[17px] font-[800] text-slate-900 mb-1">{m.epicKey}: {m.epicTitle}</h3>
-          <p className="text-[12px] text-slate-600 mb-4">
+          <h3 className="text-[17px] font-[800] mb-1" style={{ color: 'var(--ds-text)' }}>{m.epicKey}: {m.epicTitle}</h3>
+          <p className="text-[12px] mb-4" style={{ color: 'var(--ds-text-subtle)' }}>
             Owner: {m.owners.find(o => o.level === 'Execution')?.name || '—'} · {m.owners.find(o => o.level === 'Execution')?.role || ''}
           </p>
 
@@ -633,26 +635,26 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
                   {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: 'var(--divider)' }} />}
                 </div>
-                <p className="text-[12px] text-slate-700">
+                <p className="text-[12px]" style={{ color: 'var(--ds-text-subtle)' }}>
                   <strong>{m.storiesInProd}</strong> in production · <strong>{m.storiesInProgress}</strong> in progress
-                  {m.storiesBlocked > 0 && <> · <strong className="text-red-600">{m.storiesBlocked} blocked</strong></>}
+                  {m.storiesBlocked > 0 && <> · <strong style={{ color: 'var(--ds-text-danger)' }}>{m.storiesBlocked} blocked</strong></>}
                   {m.storiesBacklog > 0 && <> · <strong>{m.storiesBacklog}</strong> remaining</>}
                 </p>
               </>
             ) : (
-              <p className="text-[12px] text-slate-500">No stories found under this epic.</p>
+              <p className="text-[12px]" style={{ color: 'var(--ds-text-subtle)' }}>No stories found under this epic.</p>
             )}
           </div>
 
           {/* Cycle Times */}
           <div className="mb-5">
             <SectionLabel>Cycle Times</SectionLabel>
-            <p className="text-[12px] text-slate-700 leading-relaxed">
+            <p className="text-[12px] leading-relaxed" style={{ color: 'var(--ds-text-subtle)' }}>
               Epic has been open <strong>{m.epicCycleDays} days</strong>.
               {m.avgStoryCycleDays > 0 && <> Average story takes <strong>{m.avgStoryCycleDays} days</strong> from backlog to done.</>}
               {' '}Current velocity: <strong>{m.velocityPerWeek} stories/week</strong>.
               {m.neededVelocity > m.velocityPerWeek && (
-                <span className="text-amber-600"> Need {m.neededVelocity}/week to finish on time.</span>
+                <span style={{ color: 'var(--ds-text-warning)' }}> Need {m.neededVelocity}/week to finish on time.</span>
               )}
             </p>
           </div>
@@ -661,10 +663,10 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
           {stories && stories.length > 0 && (
             <div className="mb-5">
               <SectionLabel>{`Stories (${stories.length})`}</SectionLabel>
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
+              <div className="border rounded-lg overflow-hidden" style={{ borderColor: 'var(--ds-border)' }}>
                 <table className="w-full text-[11px]">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-600 uppercase tracking-wider">
+                    <tr className="uppercase tracking-wider" style={{ background: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtle)' }}>
                       <th className="text-left px-3 py-2 font-bold">Key</th>
                       <th className="text-left px-3 py-2 font-bold">Title</th>
                       <th className="text-left px-3 py-2 font-bold">Status</th>
@@ -673,24 +675,25 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
                     </tr>
                   </thead>
                   <tbody>
-                    {stories.map((s: any, i: number) => (
-                      <tr key={i} className="border-t border-slate-100">
-                        <td className="px-3 py-2 font-mono font-bold text-slate-600">{s.story_key}</td>
-                        <td className="px-3 py-2 text-slate-800 truncate max-w-[160px]">{s.story_title}</td>
+                    {stories.map((s: any, i: number) => {
+                      const statusColor = s.story_status === 'Done' ? 'var(--ds-text-success)'
+                        : s.story_status === 'In Progress' ? 'var(--ds-text-information)'
+                        : s.story_status === 'Blocked' ? 'var(--ds-text-danger)'
+                        : 'var(--ds-text-subtle)';
+                      return (
+                      <tr key={i} className="border-t" style={{ borderColor: 'var(--ds-border)' }}>
+                        <td className="px-3 py-2 font-mono font-bold" style={{ color: 'var(--ds-text-subtle)' }}>{s.story_key}</td>
+                        <td className="px-3 py-2 truncate max-w-[160px]" style={{ color: 'var(--ds-text)' }}>{s.story_title}</td>
                         <td className="px-3 py-2">
-                          <span className={`font-semibold ${
-                            s.story_status === 'Done' ? 'text-green-700'
-                            : s.story_status === 'In Progress' ? 'text-blue-600'
-                            : s.story_status === 'Blocked' ? 'text-red-600'
-                            : 'text-slate-500'
-                          }`}>{s.story_status}</span>
+                          <span className="font-semibold" style={{ color: statusColor }}>{s.story_status}</span>
                         </td>
-                        <td className="px-3 py-2 text-slate-600">{s.assignee_name?.split(' ')[0] || '—'}</td>
-                        <td className="px-3 py-2 text-right font-bold text-slate-700">
+                        <td className="px-3 py-2" style={{ color: 'var(--ds-text-subtle)' }}>{s.assignee_name?.split(' ')[0] || '—'}</td>
+                        <td className="px-3 py-2 text-right font-bold" style={{ color: 'var(--ds-text-subtle)' }}>
                           {s.cycle_days ? `${Math.round(s.cycle_days)}d` : '—'}
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -698,9 +701,9 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
           )}
         </>
       ) : (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-[13px] font-bold text-amber-800">⚠ No epic linked — delivery gap</p>
-          <p className="text-[12px] text-amber-700 mt-1">
+        <div className="mt-4 p-4 border rounded-lg" style={{ background: 'var(--ds-background-warning)', borderColor: 'var(--ds-border)' }}>
+          <p className="text-[13px] font-bold" style={{ color: 'var(--ds-text-warning)' }}>⚠ No epic linked — delivery gap</p>
+          <p className="text-[12px] mt-1" style={{ color: 'var(--ds-text-warning)' }}>
             This chain has no epic connecting the initiative to stories. Without an epic, there is no delivery pipeline to measure.
           </p>
         </div>
@@ -724,12 +727,12 @@ function OperationsTab({ metrics, defects, aiResult, isAILoading }: { metrics: C
       <div className="mb-6">
         <SectionLabel>Defects & Incidents</SectionLabel>
         {defects.length === 0 ? (
-          <p className="text-[12px] text-green-700">✓ No defects or incidents logged against this chain.</p>
+          <p className="text-[12px]" style={{ color: 'var(--ds-text-success)' }}>✓ No defects or incidents logged against this chain.</p>
         ) : (
-          <div className="border border-slate-200 rounded-lg overflow-hidden">
+          <div className="border rounded-lg overflow-hidden" style={{ borderColor: 'var(--ds-border)' }}>
             <table className="w-full text-[11px]">
               <thead>
-                <tr className="bg-slate-50 text-slate-600 uppercase tracking-wider">
+                <tr className="uppercase tracking-wider" style={{ background: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtle)' }}>
                   <th className="text-left px-3 py-2 font-bold">Sev</th>
                   <th className="text-left px-3 py-2 font-bold">Key</th>
                   <th className="text-left px-3 py-2 font-bold">Title</th>
@@ -745,19 +748,19 @@ function OperationsTab({ metrics, defects, aiResult, isAILoading }: { metrics: C
                     ? Math.round((new Date(d.updated_at).getTime() - new Date(d.created_at).getTime()) / 86400000)
                     : null;
                   return (
-                    <tr key={i} className={`border-t border-slate-100 ${isOpen ? 'bg-red-50/30' : ''}`}>
-                      <td className="px-3 py-2 font-bold text-slate-700">
+                    <tr key={i} className="border-t" style={{ borderColor: 'var(--ds-border)', background: isOpen ? 'var(--ds-background-danger)' : 'transparent' }}>
+                      <td className="px-3 py-2 font-bold" style={{ color: 'var(--ds-text-subtle)' }}>
                         {d.priority === 'Critical' ? 'P1' : d.priority === 'High' ? 'P2' : 'P3'}
                       </td>
-                      <td className="px-3 py-2 font-mono text-slate-600">{d.item_key}</td>
-                      <td className="px-3 py-2 text-slate-800 truncate max-w-[140px]">{d.summary || d.title}</td>
+                      <td className="px-3 py-2 font-mono" style={{ color: 'var(--ds-text-subtle)' }}>{d.item_key}</td>
+                      <td className="px-3 py-2 truncate max-w-[140px]" style={{ color: 'var(--ds-text)' }}>{d.summary || d.title}</td>
                       <td className="px-3 py-2">
-                        <span className={isOpen ? 'text-red-600 font-semibold' : 'text-green-700'}>
+                        <span style={{ color: isOpen ? 'var(--ds-text-danger)' : 'var(--ds-text-success)', fontWeight: isOpen ? 600 : 400 }}>
                           {isOpen ? 'Open' : 'Resolved'}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-slate-600">{d.assignee?.full_name?.split(' ')[0] || '—'}</td>
-                      <td className="px-3 py-2 text-right font-bold text-slate-700">
+                      <td className="px-3 py-2" style={{ color: 'var(--ds-text-subtle)' }}>{d.assignee?.full_name?.split(' ')[0] || '—'}</td>
+                      <td className="px-3 py-2 text-right font-bold" style={{ color: 'var(--ds-text-subtle)' }}>
                         {cycle !== null ? `${cycle}d` : '—'}
                       </td>
                     </tr>
@@ -768,7 +771,7 @@ function OperationsTab({ metrics, defects, aiResult, isAILoading }: { metrics: C
           </div>
         )}
         {defects.length > 0 && m.avgDefectCycleDays > 0 && (
-          <p className="text-[12px] text-slate-600 mt-2">
+          <p className="text-[12px] mt-2" style={{ color: 'var(--ds-text-subtle)' }}>
             Average time to resolve: <strong>{m.avgDefectCycleDays} days</strong>.
           </p>
         )}
@@ -779,10 +782,10 @@ function OperationsTab({ metrics, defects, aiResult, isAILoading }: { metrics: C
         <SectionLabel>All People in This Chain</SectionLabel>
         <div className="space-y-0">
           {m.owners.map((owner, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0">
-              <span className="text-[13px] font-semibold text-slate-800 flex-1">{owner.name}</span>
-              <span className="text-[11px] text-slate-500">{owner.role}</span>
-              <span className="text-[10px] font-mono text-slate-400">{owner.entityKey}</span>
+            <div key={i} className="flex items-center gap-3 py-2 border-b last:border-0" style={{ borderColor: 'var(--ds-border)' }}>
+              <span className="text-[13px] font-semibold flex-1" style={{ color: 'var(--ds-text)' }}>{owner.name}</span>
+              <span className="text-[11px]" style={{ color: 'var(--ds-text-subtle)' }}>{owner.role}</span>
+              <span className="text-[10px] font-mono" style={{ color: 'var(--ds-text-subtlest)' }}>{owner.entityKey}</span>
             </div>
           ))}
         </div>
@@ -792,12 +795,12 @@ function OperationsTab({ metrics, defects, aiResult, isAILoading }: { metrics: C
       <div className="mb-6">
         <SectionLabel>Scope Changes</SectionLabel>
         {m.scopeClean ? (
-          <p className="text-[12px] text-green-700">✓ No scope changes since kickoff.</p>
+          <p className="text-[12px]" style={{ color: 'var(--ds-text-success)' }}>✓ No scope changes since kickoff.</p>
         ) : (
           <div className="space-y-2">
             {m.scopeChanges.map((sc, i) => (
-              <p key={i} className="text-[12px] text-slate-700">
-                <strong className="text-amber-700">△</strong> {sc.description}
+              <p key={i} className="text-[12px]" style={{ color: 'var(--ds-text-subtle)' }}>
+                <strong style={{ color: 'var(--ds-text-warning)' }}>△</strong> {sc.description}
                 — added by <strong>{sc.actor}</strong> on {new Date(sc.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </p>
             ))}
@@ -809,12 +812,12 @@ function OperationsTab({ metrics, defects, aiResult, isAILoading }: { metrics: C
       {m.storiesTotal > 0 && (
         <div className="mb-6">
           <SectionLabel>Velocity</SectionLabel>
-          <p className="text-[12px] text-slate-700 leading-relaxed">
+          <p className="text-[12px] leading-relaxed" style={{ color: 'var(--ds-text-subtle)' }}>
             Current: <strong>{m.velocityPerWeek} stories/week</strong>.
             Required: <strong>{m.neededVelocity}/week</strong>.
             {m.velocityPerWeek >= m.neededVelocity
-              ? <span className="text-green-700"> On pace.</span>
-              : <span className="text-amber-600"> Below target — needs acceleration.</span>}
+              ? <span style={{ color: 'var(--ds-text-success)' }}> On pace.</span>
+              : <span style={{ color: 'var(--ds-text-warning)' }}> Below target — needs acceleration.</span>}
           </p>
         </div>
       )}

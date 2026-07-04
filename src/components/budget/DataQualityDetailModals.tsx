@@ -31,19 +31,22 @@ function Modal({ isOpen, onClose, title, size = 'lg', children }: BaseModalProps
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 backdrop-blur-sm" style={{ background: 'var(--ds-blanket)' }} onClick={onClose} />
       <div className={cn(
-        'relative w-full bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col',
+        'relative w-full rounded-xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col',
         sizeClasses[size]
-      )}>
+      )} style={{ background: 'var(--ds-surface-overlay)' }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
-          <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">{title}</h3>
+        <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: 'var(--ds-border)' }}>
+          <h3 className="font-semibold text-lg" style={{ color: 'var(--ds-text)' }}>{title}</h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors hover:opacity-80"
+            style={{ background: 'transparent' }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
           >
-            <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+            <X className="w-5 h-5" style={{ color: 'var(--ds-icon-subtle)' }} />
           </button>
         </div>
         {/* Content */}
@@ -84,39 +87,39 @@ export function TotalResourcesModal({ isOpen, onClose, resources }: TotalResourc
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="All Resources" size="xl">
       <div className="p-5">
-        <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-          Total: <span className="font-semibold text-slate-800 dark:text-slate-200">{resources.length}</span> resources across{' '}
-          <span className="font-semibold text-slate-800 dark:text-slate-200">{Object.keys(grouped).length}</span> departments
+        <div className="text-sm mb-4" style={{ color: 'var(--ds-text-subtle)' }}>
+          Total: <span className="font-semibold" style={{ color: 'var(--ds-text)' }}>{resources.length}</span> resources across{' '}
+          <span className="font-semibold" style={{ color: 'var(--ds-text)' }}>{Object.keys(grouped).length}</span> departments
         </div>
 
         {sortedDepts.map(dept => (
           <div key={dept} className="mb-4">
-            <div className="flex items-center justify-between py-2 px-3 bg-slate-100 dark:bg-slate-800 rounded-t-lg">
-              <span className="font-semibold text-slate-700 dark:text-slate-200">{dept}</span>
-              <span className="text-sm text-slate-500 dark:text-slate-400">{grouped[dept].length} resources</span>
+            <div className="flex items-center justify-between py-2 px-3 rounded-t-lg" style={{ background: 'var(--ds-background-neutral)' }}>
+              <span className="font-semibold" style={{ color: 'var(--ds-text)' }}>{dept}</span>
+              <span className="text-sm" style={{ color: 'var(--ds-text-subtle)' }}>{grouped[dept].length} resources</span>
             </div>
-            <div className="border border-t-0 border-slate-200 dark:border-slate-700 rounded-b-lg overflow-hidden">
+            <div className="border border-t-0 rounded-b-lg overflow-hidden" style={{ borderColor: 'var(--ds-border)' }}>
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-800/50">
+                <thead style={{ background: 'var(--ds-surface-sunken)' }}>
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">RID</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Name</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Role</th>
-                    <th className="px-3 py-2 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">CTC</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>RID</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>Name</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>Role</th>
+                    <th className="px-3 py-2 text-right text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>CTC</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                <tbody className="divide-y" style={{ borderColor: 'var(--ds-border)' }}>
                   {grouped[dept].map(r => (
-                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                      <td className="px-3 py-2 font-mono text-slate-600 dark:text-slate-400">{r.rid?.padStart(3, '0') || '—'}</td>
-                      <td className="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{r.name}</td>
-                      <td className="px-3 py-2 text-slate-600 dark:text-slate-400">{r.role || '—'}</td>
+                    <tr key={r.id} className="hover:opacity-90" style={{ background: 'transparent' }}>
+                      <td className="px-3 py-2 font-mono" style={{ color: 'var(--ds-text-subtle)' }}>{r.rid?.padStart(3, '0') || '—'}</td>
+                      <td className="px-3 py-2 font-medium" style={{ color: 'var(--ds-text)' }}>{r.name}</td>
+                      <td className="px-3 py-2" style={{ color: 'var(--ds-text-subtle)' }}>{r.role || '—'}</td>
                       <td className="px-3 py-2 text-right font-mono">
                         {/* CTC is considered present even if the value is 0; only null/undefined means missing */}
                         {r.ctc !== null && r.ctc !== undefined ? (
-                          <span className="text-slate-700 dark:text-slate-300">{r.ctc.toLocaleString()}</span>
+                          <span style={{ color: 'var(--ds-text)' }}>{r.ctc.toLocaleString()}</span>
                         ) : (
-                          <span className="text-amber-600 dark:text-amber-400">Missing</span>
+                          <span style={{ color: 'var(--ds-text-warning)' }}>Missing</span>
                         )}
                       </td>
                     </tr>
@@ -146,44 +149,44 @@ export function CompleteRecordsModal({ isOpen, onClose, resources }: CompleteRec
     <Modal isOpen={isOpen} onClose={onClose} title="Complete Records" size="xl">
       <div className="p-5">
         {/* Summary */}
-        <div className="flex items-center gap-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg mb-4">
+        <div className="flex items-center gap-6 p-4 border rounded-lg mb-4" style={{ background: 'var(--ds-background-information)', borderColor: 'var(--ds-border)' }}>
           <div>
-            <div className="text-sm text-blue-600 dark:text-blue-400">Resources with CTC</div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 font-mono">{completeResources.length}</div>
+            <div className="text-sm" style={{ color: 'var(--ds-text-information)' }}>Resources with CTC</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: 'var(--ds-text-information)' }}>{completeResources.length}</div>
           </div>
-          <div className="w-px h-10 bg-blue-200 dark:bg-blue-700" />
+          <div className="w-px h-10" style={{ background: 'var(--ds-border)' }} />
           <div>
-            <div className="text-sm text-blue-600 dark:text-blue-400">Total Monthly CTC</div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 font-mono">{totalMonthly.toLocaleString()} SAR</div>
+            <div className="text-sm" style={{ color: 'var(--ds-text-information)' }}>Total Monthly CTC</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: 'var(--ds-text-information)' }}>{totalMonthly.toLocaleString()} SAR</div>
           </div>
-          <div className="w-px h-10 bg-blue-200 dark:bg-blue-700" />
+          <div className="w-px h-10" style={{ background: 'var(--ds-border)' }} />
           <div>
-            <div className="text-sm text-blue-600 dark:text-blue-400">Est. Annual</div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 font-mono">{(totalMonthly * 12).toLocaleString()} SAR</div>
+            <div className="text-sm" style={{ color: 'var(--ds-text-information)' }}>Est. Annual</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: 'var(--ds-text-information)' }}>{(totalMonthly * 12).toLocaleString()} SAR</div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+        <div className="border rounded-lg overflow-hidden" style={{ borderColor: 'var(--ds-border)' }}>
           <div className="max-h-[400px] overflow-y-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0">
+              <thead className="sticky top-0" style={{ background: 'var(--ds-surface-sunken)' }}>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">RID</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Department</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Role</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Monthly CTC</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>RID</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>Department</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>Role</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtle)' }}>Monthly CTC</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+              <tbody className="divide-y" style={{ borderColor: 'var(--ds-border)' }}>
                 {completeResources.map(r => (
-                  <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                    <td className="px-4 py-3 font-mono text-slate-600 dark:text-slate-400">{r.rid?.padStart(3, '0') || '—'}</td>
-                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{r.name}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{r.department}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{r.role || '—'}</td>
-                    <td className="px-4 py-3 text-right font-mono font-medium text-slate-700 dark:text-slate-300">
+                  <tr key={r.id} className="hover:opacity-90">
+                    <td className="px-4 py-3 font-mono" style={{ color: 'var(--ds-text-subtle)' }}>{r.rid?.padStart(3, '0') || '—'}</td>
+                    <td className="px-4 py-3 font-medium" style={{ color: 'var(--ds-text)' }}>{r.name}</td>
+                    <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle)' }}>{r.department}</td>
+                    <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle)' }}>{r.role || '—'}</td>
+                    <td className="px-4 py-3 text-right font-mono font-medium" style={{ color: 'var(--ds-text)' }}>
                       {r.ctc?.toLocaleString()} SAR
                     </td>
                   </tr>
@@ -222,13 +225,13 @@ export function MissingCTCModal({ isOpen, onClose, resources, onFixAll }: Missin
     <Modal isOpen={isOpen} onClose={onClose} title="Missing CTC Data" size="lg">
       <div className="p-5">
         {/* Warning Banner */}
-        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg mb-4">
-          <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+        <div className="flex items-start gap-3 p-4 border rounded-lg mb-4" style={{ background: 'var(--ds-background-warning)', borderColor: 'var(--ds-border)' }}>
+          <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0" style={{ color: 'var(--ds-icon-warning, var(--ds-text-warning))' }} />
           <div className="flex-1">
-            <div className="font-medium text-amber-800 dark:text-amber-300">
+            <div className="font-medium" style={{ color: 'var(--ds-text-warning)' }}>
               {missingResources.length} resources need compensation data
             </div>
-            <div className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+            <div className="text-sm mt-1" style={{ color: 'var(--ds-text-warning)' }}>
               Budget calculations may be incomplete until CTC values are entered.
             </div>
           </div>
@@ -237,7 +240,8 @@ export function MissingCTCModal({ isOpen, onClose, resources, onFixAll }: Missin
               onClose();
               onFixAll();
             }}
-            className="shrink-0 px-3 py-1.5 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-800/50 hover:bg-amber-200 dark:hover:bg-amber-700/50 rounded-md transition-colors flex items-center gap-1"
+            className="shrink-0 px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1 hover:opacity-80"
+            style={{ color: 'var(--ds-text-warning)', background: 'var(--ds-background-warning-bold, var(--ds-background-warning))' }}
           >
             Fix All
             <ChevronRight className="w-4 h-4" />
@@ -247,21 +251,22 @@ export function MissingCTCModal({ isOpen, onClose, resources, onFixAll }: Missin
         {/* Grouped by Department */}
         {sortedDepts.map(([dept, deptResources]) => (
           <div key={dept} className="mb-3">
-            <div className="flex items-center justify-between py-2 px-3 bg-slate-100 dark:bg-slate-800 rounded-t-lg">
-              <span className="font-semibold text-slate-700 dark:text-slate-200">{dept}</span>
-              <span className="px-2 py-0.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 rounded-full">
+            <div className="flex items-center justify-between py-2 px-3 rounded-t-lg" style={{ background: 'var(--ds-background-neutral)' }}>
+              <span className="font-semibold" style={{ color: 'var(--ds-text)' }}>{dept}</span>
+              <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)' }}>
                 {deptResources.length} missing
               </span>
             </div>
-            <div className="border border-t-0 border-slate-200 dark:border-slate-700 rounded-b-lg p-3">
+            <div className="border border-t-0 rounded-b-lg p-3" style={{ borderColor: 'var(--ds-border)' }}>
               <div className="flex flex-wrap gap-2">
                 {deptResources.map(r => (
                   <span
                     key={r.id}
-                    className="inline-flex items-center gap-1.5 px-2 py-1 text-sm bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 text-sm border rounded"
+                    style={{ background: 'var(--ds-surface-sunken)', borderColor: 'var(--ds-border)' }}
                   >
-                    <span className="font-mono text-slate-500 dark:text-slate-400 text-xs">{r.rid?.padStart(3, '0') || '—'}</span>
-                    <span className="text-slate-700 dark:text-slate-300">{r.name}</span>
+                    <span className="font-mono text-xs" style={{ color: 'var(--ds-text-subtle)' }}>{r.rid?.padStart(3, '0') || '—'}</span>
+                    <span style={{ color: 'var(--ds-text-subtle)' }}>{r.name}</span>
                   </span>
                 ))}
               </div>
@@ -295,51 +300,50 @@ export function DataQualityBreakdownModal({ isOpen, onClose, deptStats }: DataQu
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Data Quality Breakdown" size="md">
       <div className="p-5">
-        {sortedStats.map(stats => (
+        {sortedStats.map(stats => {
+          const qualityColor = stats.quality >= 80
+            ? 'var(--ds-text-success)'
+            : stats.quality >= 50
+            ? 'var(--ds-text-warning)'
+            : 'var(--ds-text-danger)';
+          const qualityBg = stats.quality >= 80
+            ? 'var(--ds-background-success-bold, var(--ds-text-success))'
+            : stats.quality >= 50
+            ? 'var(--ds-background-warning-bold, var(--ds-text-warning))'
+            : 'var(--ds-background-danger-bold, var(--ds-text-danger))';
+          return (
           <div key={stats.name} className="mb-5 last:mb-0">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-slate-700 dark:text-slate-200">{stats.name}</span>
+              <span className="font-medium" style={{ color: 'var(--ds-text)' }}>{stats.name}</span>
               <span
-                className={cn(
-                  'text-sm font-semibold',
-                  stats.quality >= 80
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : stats.quality >= 50
-                    ? 'text-amber-600 dark:text-amber-400'
-                    : 'text-red-600 dark:text-red-400'
-                )}
+                className="text-sm font-semibold"
+                style={{ color: qualityColor }}
               >
                 {stats.quality}%
               </span>
             </div>
 
             {/* Progress bar */}
-            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
+            <div className="h-3 rounded-full overflow-hidden mb-2" style={{ background: 'var(--ds-background-neutral)' }}>
               <div
-                className={cn(
-                  'h-full transition-all duration-500',
-                  stats.quality >= 80
-                    ? 'bg-emerald-500'
-                    : stats.quality >= 50
-                    ? 'bg-amber-500'
-                    : 'bg-red-500'
-                )}
-                style={{ width: `${stats.quality}%` }}
+                className="h-full transition-all duration-500"
+                style={{ width: `${stats.quality}%`, background: qualityBg }}
               />
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--ds-text-subtle)' }}>
               <span>{stats.complete} complete</span>
               <span>•</span>
-              <span className={stats.missing > 0 ? 'text-red-500 dark:text-red-400 font-medium' : ''}>
+              <span style={stats.missing > 0 ? { color: 'var(--ds-text-danger)', fontWeight: 500 } : undefined}>
                 {stats.missing} missing
               </span>
               <span>•</span>
               <span>{stats.total} total</span>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </Modal>
   );

@@ -95,15 +95,23 @@ export function useWfTemplates() {
   } });
 }
 
+/**
+ * Both draft-creation hooks delegate to the ph_wf_create_draft RPC
+ * (20260702130000): admin-asserted, deep clone incl. roles/guards/field
+ * requirements, idempotent per entity (an open draft is returned, not forked),
+ * audited server-side. The previous client-side clone selected columns that
+ * don't exist (label/display_order/metadata) and silently produced empty drafts.
+ */
 export function useCreateDraftVersion() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: { templateId: string; entityKey: string }) => {
-      const { data: existing, error: exErr } = await supabase.from('ph_wf_versions').select('version_no').eq('template_id', input.templateId).order('version_no', { ascending: false }).limit(1);
-      if (exErr) throw exErr;
-      const nextNo = (existing?.[0]?.version_no ?? 0) + 1;
-      const { data, error } = await supabase.from('ph_wf_versions').insert({ template_id: input.templateId, entity_key: input.entityKey, version_no: nextNo, lifecycle: 'draft' }).select('*').single();
-      if (error) throw error; return data;
+      const { data, error } = await supabase.rpc('ph_wf_create_draft' as never, {
+        p_entity_key: input.entityKey,
+        p_from_version_id: null,
+      } as never);
+      if (error) throw error;
+      return { id: data as string };
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'versions'] }),
   });
@@ -113,47 +121,12 @@ export function useCloneVersionToDraft() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (sourceVersionId: string) => {
-      const { data: src, error: srcErr } = await supabase
-        .from('ph_wf_versions')
-        .select('template_id, entity_key, version_no')
-        .eq('id', sourceVersionId)
-        .single();
-      if (srcErr) throw srcErr;
-      const { data: existing } = await supabase
-        .from('ph_wf_versions')
-        .select('version_no')
-        .eq('template_id', src.template_id)
-        .order('version_no', { ascending: false })
-        .limit(1);
-      const nextNo = (existing?.[0]?.version_no ?? 0) + 1;
-      const { data: newVer, error: verErr } = await supabase
-        .from('ph_wf_versions')
-        .insert({ template_id: src.template_id, entity_key: src.entity_key, version_no: nextNo, lifecycle: 'draft' })
-        .select('id')
-        .single();
-      if (verErr) throw verErr;
-      // Copy statuses
-      const { data: statuses } = await supabase
-        .from('ph_wf_version_statuses')
-        .select('status_key, label, category, display_order, is_initial, metadata')
-        .eq('version_id', sourceVersionId);
-      if (statuses?.length) {
-        await supabase.from('ph_wf_version_statuses').insert(
-          statuses.map((s) => ({ ...s, version_id: newVer.id }))
-        );
-      }
-      // Copy transitions
-      const { data: transitions } = await supabase
-        .from('ph_wf_version_transitions')
-        .select('from_status_key, to_status_key, requires_reason, requires_comment')
-        .eq('version_id', sourceVersionId);
-      if (transitions?.length) {
-        await supabase.from('ph_wf_version_transitions').insert(
-          transitions.map((t) => ({ ...t, version_id: newVer.id }))
-        );
-      }
-      await writeAdminAudit('version_cloned', 'workflow_version', newVer.id, { cloned_from: sourceVersionId, new_version_no: nextNo });
-      return newVer;
+      const { data, error } = await supabase.rpc('ph_wf_create_draft' as never, {
+        p_entity_key: null,
+        p_from_version_id: sourceVersionId,
+      } as never);
+      if (error) throw error;
+      return { id: data as string };
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'versions'] }),
   });
@@ -297,6 +270,109 @@ export function useToggleReasonCodeActive() {
       await writeAdminAudit('reason_code_toggled', 'reason_code', id, { before: { is_active: currentIsActive }, after: { is_active: newActive } });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'reason-codes'] }),
+  });
+}
+
+// ── Add enforcement row (F4) — project + entity + mode ───────────────────────
+export function useAddEnforcementRow() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ projectId, entityKey, mode }: { projectId: string; entityKey: string; mode: 'advisory' | 'blocking' }) => {
+      // Resolve the published version so blocking pre-flight has something to check.
+      const { data: pub } = await supabase
+        .from('ph_wf_versions' as any)
+        .select('id')
+        .eq('entity_key', entityKey)
+        .eq('lifecycle', 'published')
+        .maybeSingle();
+      const versionId = (pub as any)?.id ?? null;
+      if (mode === 'blocking' && versionId) {
+        const unsafe = await checkEnforcementBlockingSafe(versionId);
+        if (unsafe.length > 0) {
+          throw new Error(`Cannot enable blocking: guards without evidence source — ${unsafe.join(', ')}`);
+        }
+      }
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('ph_wf_enforcement_config' as any)
+        .insert({
+          project_id: projectId,
+          entity_key: entityKey,
+          mode,
+          workflow_version_id: versionId,
+          enabled_by: user?.id ?? null,
+          enabled_at: new Date().toISOString(),
+        } as any)
+        .select('id')
+        .single();
+      if (error) throw error;
+      await writeAdminAudit('enforcement_row_added', 'enforcement_config', (data as any).id, {
+        after: { projectId, entityKey, mode },
+      });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'enforcement'] }),
+  });
+}
+
+// ── Scheme CRUD (F5) — admin RLS allows direct writes ────────────────────────
+export function useCreateScheme() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string): Promise<string> => {
+      const { data, error } = await supabase
+        .from('ph_wf_schemes' as any)
+        .insert({ name, is_default: false } as any)
+        .select('id')
+        .single();
+      if (error) throw error;
+      const id = (data as any).id as string;
+      await writeAdminAudit('scheme_created', 'scheme', id, { after: { name } });
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'schemes'] }),
+  });
+}
+
+export function useUpsertSchemeEntry() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ schemeId, entityKey, versionId }: { schemeId: string; entityKey: string; versionId: string }) => {
+      const { data: existing } = await supabase
+        .from('ph_wf_scheme_entries' as any)
+        .select('id')
+        .eq('scheme_id', schemeId)
+        .eq('entity_key', entityKey)
+        .maybeSingle();
+      if (existing) {
+        const { error } = await supabase
+          .from('ph_wf_scheme_entries' as any)
+          .update({ version_id: versionId } as any)
+          .eq('id', (existing as any).id);
+        if (error) throw error;
+        await writeAdminAudit('scheme_entry_updated', 'scheme_entry', (existing as any).id, { after: { entityKey, versionId } });
+      } else {
+        const { data, error } = await supabase
+          .from('ph_wf_scheme_entries' as any)
+          .insert({ scheme_id: schemeId, entity_key: entityKey, version_id: versionId } as any)
+          .select('id')
+          .single();
+        if (error) throw error;
+        await writeAdminAudit('scheme_entry_added', 'scheme_entry', (data as any).id, { after: { schemeId, entityKey, versionId } });
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'scheme-entries'] }),
+  });
+}
+
+export function useDeleteSchemeEntry() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (entryId: string) => {
+      const { error } = await supabase.from('ph_wf_scheme_entries' as any).delete().eq('id', entryId);
+      if (error) throw error;
+      await writeAdminAudit('scheme_entry_removed', 'scheme_entry', entryId, {});
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...KEY, 'scheme-entries'] }),
   });
 }
 

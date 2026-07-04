@@ -141,14 +141,16 @@ export function FilteredListPanel({
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
-                <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
+                {item.work_item_type ? <JiraIssueTypeIcon type={item.work_item_type} size={16} /> : null}
               </span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
               <span style={{
                 flex: 1, fontSize: 'var(--ds-font-size-300)', color: INK2, overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
               }}>{item.title}</span>
-              <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
+              {(item.status || item.status_category) ? (
+                <R360StatusLozenge status={item.status || item.status_category} />
+              ) : null}
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED, flexShrink: 0 }}>{relTime(item.updated_at)}</span>
             </div>
           ))
@@ -217,7 +219,7 @@ export function ItemDetailPanel({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* Type + Key */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <JiraIssueTypeIcon type={detail.type || 'Task'} size={16} />
+              {detail.type ? <JiraIssueTypeIcon type={detail.type} size={16} /> : null}
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-mono)', color: INK4 }}>{detail.key}</span>
             </div>
 

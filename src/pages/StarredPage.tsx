@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Eye, FileText, MoreHorizontal, ExternalLink, Trash2, Search } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Avatar, Tooltip } from '@/components/ads';
+import { SectionMessage } from '@/components/ads/SectionMessage';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
 import { formatDistanceToNow } from 'date-fns';
@@ -240,7 +241,7 @@ export default function StarredPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   
-  const { data, isLoading } = useStarredDeliveryItems();
+  const { data, isLoading, isPending, isError, error, refetch } = useStarredDeliveryItems();
   const toggleStar = useToggleStar();
   
   const items = useMemo(() => {
@@ -335,7 +336,20 @@ export default function StarredPage() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {isLoading ? (
+        {/* isError alone misses the persisted-cache case: hydrated data keeps
+            status 'success' while the background refetch fails and only
+            `error` is set. */}
+        {isError || error ? (
+          <div style={{ padding: '16px 24px', maxWidth: 720 }}>
+            <SectionMessage
+              appearance="error"
+              title="Couldn't load starred items"
+              actions={[{ key: 'retry', text: 'Retry', onClick: () => refetch() }]}
+            >
+              {(error as Error)?.message ?? 'Unknown error loading starred items.'}
+            </SectionMessage>
+          </div>
+        ) : isLoading || isPending ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center gap-4">

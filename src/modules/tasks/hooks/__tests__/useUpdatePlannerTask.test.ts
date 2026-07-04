@@ -26,7 +26,21 @@ vi.mock('@/integrations/supabase/client', () => {
     updateCalls.push(payload);
     return { eq };
   });
-  const select = vi.fn(() => Promise.resolve({ data: [], error: null }));
+  // Chainable select mock: awaiting it yields the result directly, and it
+  // also supports .eq().maybeSingle() etc. (F3 preflight fetches the task's
+  // current status_id before a status write).
+  const chain = (result: any): any => {
+    const p: any = Promise.resolve(result);
+    p.eq = vi.fn(() => chain(result));
+    p.is = vi.fn(() => chain(result));
+    p.in = vi.fn(() => chain(result));
+    p.order = vi.fn(() => chain(result));
+    p.limit = vi.fn(() => chain(result));
+    p.maybeSingle = vi.fn(() => Promise.resolve({ data: null, error: null }));
+    p.single = vi.fn(() => Promise.resolve({ data: null, error: null }));
+    return p;
+  };
+  const select = vi.fn(() => chain({ data: [], error: null }));
   const from = vi.fn(() => ({
     update,
     select,

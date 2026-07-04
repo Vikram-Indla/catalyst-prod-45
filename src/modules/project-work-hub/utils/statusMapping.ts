@@ -67,17 +67,17 @@ export const BOARD_TO_STORY_STATUS: Record<string, StoryStatusEnum> = {
 /**
  * Map a board column status to a valid feature status enum
  */
-export function mapToFeatureStatus(columnStatus: string): FeatureStatusEnum {
+export function mapToFeatureStatus(columnStatus: string): FeatureStatusEnum | null {
   const mapped = BOARD_TO_FEATURE_STATUS[columnStatus.toLowerCase()];
-  return mapped || 'backlog'; // Default to backlog if not found
+  return mapped ?? null; // Unknown column status — caller must not assume a default
 }
 
 /**
  * Map a board column status to a valid story status enum
  */
-export function mapToStoryStatus(columnStatus: string): StoryStatusEnum {
+export function mapToStoryStatus(columnStatus: string): StoryStatusEnum | null {
   const mapped = BOARD_TO_STORY_STATUS[columnStatus.toLowerCase()];
-  return mapped || 'todo'; // Default to todo if not found
+  return mapped ?? null; // Unknown column status — caller must not assume a default
 }
 
 /**

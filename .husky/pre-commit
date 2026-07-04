@@ -15,8 +15,24 @@ echo ""
 echo "🎨 ADS color ratchet (blocks on NEW hard-coded colors)…"
 node scripts/ads-color-gate.cjs || exit 1
 
+echo ""
+echo "🎨 ADS fallback-hex ratchet (blocks on NEW var(--ds-*, #hex) / token('x','#hex'))…"
+node scripts/ads-fallback-hex-gate.cjs || exit 1
+
 # Runs the design-governance audit ONCE and gates per category
 # (tokens/typography/spacing/fontImports) vs design-governance/audit-baseline.json.
 echo ""
 echo "📐 ADS audit ratchet (blocks on NEW tokens/typography/spacing violations)…"
 node scripts/ads-audit-gate.cjs || exit 1
+
+# CRE chokepoint gate (.claude/skills/cre/SKILL.md): create/link/parent
+# surfaces must keep querying @/lib/catalyst-rules — no hardcoded type lists.
+echo ""
+echo "⚖️  CRE chokepoint gate (create/link/parent surfaces query the rules engine)…"
+node scripts/cre-chokepoint-gate.cjs || exit 1
+
+# TestHub STRICT color gate (P1-S19, CAT-TESTHUB-PROD-20260703-001): zero
+# baseline, no ratchet — a bare color or dark: twin in TestHub cannot land.
+echo ""
+echo "🧪 TestHub strict color gate (zero-tolerance, no ratchet)…"
+node scripts/lint-colors-testhub.cjs || exit 1

@@ -2,12 +2,17 @@
  * AllWorkTable — Jira-parity flat table for List & All Work tabs
  * Columns: Key, Summary, Type, Status, Priority, Assignee
  * Features: search, status filter, 25-row pagination, sort by created/updated
+ *
+ * Migrated to canonical JiraTable (2026-07-03) — was a hand-rolled <table>.
  */
 import React, { useMemo, useState, useCallback } from 'react';
 import { formatWorkItemKey } from '@/lib/formatWorkItemKey';
 import { Search } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 import type { WorkItem } from '@/types/workItem.types';
 
 /* ── Priority SVG icons (Jira-native) ── */
@@ -26,30 +31,9 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function getInitials(name: string): string {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-}
-
-const AVATAR_COLORS = [
-  'var(--ds-background-accent-purple-subtle)',
-  'var(--ds-background-accent-blue-subtle)',
-  'var(--ds-background-accent-green-subtle)',
-  'var(--ds-background-accent-red-subtle)',
-  'var(--ds-background-accent-yellow-subtle)',
-  'var(--ds-background-accent-teal-subtle)',
-];
-function hashColor(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
-  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
-}
-
 /* ── Tokens ── */
 const T = {
-  headerBg: 'var(--cp-bg-sunken)',
-  headerText: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary)))',
   borderColor: 'var(--cp-border-default)',
-  rowHover: 'var(--cp-interact-hover, rgba(0,0,0,0.04))',
   keyColor: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary))',
   textPrimary: 'var(--cp-text-primary)',
   textSecondary: 'var(--cp-text-secondary)',
@@ -136,20 +120,96 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
     setCurrentPage(1);
   }, [sortBy]);
 
-  if (isLoading) {
-    return (
-      <div style={{ padding: 24 }}>
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{
-            height: 36, borderRadius: 4, marginBottom: 4,
-            background: 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 75%)',
-            backgroundSize: '200% 100%',
-            animation: 'shimmer 1.5s infinite',
-          }} />
-        ))}
-      </div>
-    );
-  }
+  const columns: Column<WorkItem>[] = useMemo(() => [
+    {
+      id: 'key',
+      label: 'Key',
+      width: 10,
+      alwaysVisible: true,
+      cell: ({ row }) => (
+        <span style={{
+          fontFamily: 'var(--cp-font-mono)',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
+          color: T.keyColor,
+        }}>
+          {formatWorkItemKey(row.jiraKey)}
+        </span>
+      ),
+    },
+    {
+      id: 'summary',
+      label: 'Summary',
+      flex: true,
+      alwaysVisible: true,
+      cell: ({ row }) => (
+        <span style={{
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 400, color: T.textPrimary,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          display: 'block',
+        }}>
+          {row.summary}
+        </span>
+      ),
+    },
+    {
+      id: 'type',
+      label: 'Type',
+      width: 6,
+      align: 'center',
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <JiraIssueTypeIcon type={row.type} size={16} />
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 14,
+      // Status — Jira-parity 6-category colours via workflow engine.
+      // Falls back to legacy 3-category lozenge for items outside
+      // the bound workflows (e.g. Task/Subtask/Improvement).
+      cell: ({ row }) => (
+        <StatusLozenge status={row.statusName || row.status || '—'} statusCategory={row.statusCategory} maxWidth={160} />
+      ),
+    },
+    {
+      id: 'priority',
+      label: 'Priority',
+      width: 4,
+      align: 'center',
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={row.priority ? capitalize(row.priority) : undefined}>
+          {PRIORITY_SVG[row.priority] || null}
+        </div>
+      ),
+    },
+    {
+      id: 'assignee',
+      label: 'Assignee',
+      width: 18,
+      cell: ({ row }) => (
+        row.assignee ? (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <CatalystAvatar
+              size="small"
+              appearance="circle"
+              name={row.assignee.name}
+              src={row.assignee.avatarUrl}
+            />
+            <span style={{
+              fontSize: 'var(--ds-font-size-300)', color: T.textPrimary,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {row.assignee.name}
+            </span>
+          </div>
+        ) : (
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: T.textMuted }}>—</span>
+        )
+      ),
+    },
+  ], []);
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'var(--cp-font-body)' }}>
@@ -248,109 +308,21 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
 
       {/* ── Table ── */}
       <div style={{ flex: 1, overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-          <thead>
-            <tr style={{ background: T.headerBg, borderBottom: `2px solid ${T.borderColor}` }}>
-              <th style={{ ...thStyle, width: 100 }}>Key</th>
-              <th style={{ ...thStyle, width: '40%' }}>Summary</th>
-              <th style={{ ...thStyle, width: 56, textAlign: 'center' }}>Type</th>
-              <th style={{ ...thStyle, width: 140 }}>Status</th>
-              <th style={{ ...thStyle, width: 40, textAlign: 'center' }}>Priority</th>
-              <th style={{ ...thStyle, width: 180 }}>Assignee</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pageItems.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: T.textMuted, fontSize: 'var(--ds-font-size-300)' }}>
-                  No work items found.
-                </td>
-              </tr>
-            )}
-            {pageItems.map(item => (
-              <tr
-                key={item.id}
-                onClick={() => onOpenItem?.(item.jiraKey)}
-                style={{
-                  height: 40, maxHeight: 40,
-                  borderBottom: `0.75px solid ${T.borderColor}`,
-                  cursor: 'pointer',
-                  transition: 'background 100ms',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = T.rowHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                {/* Key */}
-                <td style={tdStyle}>
-                  <span style={{
-                    fontFamily: 'var(--cp-font-mono)',
-                    fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
-                    color: T.keyColor,
-                  }}>
-                    {formatWorkItemKey(item.jiraKey)}
-                  </span>
-                </td>
-
-                {/* Summary */}
-                <td style={tdStyle}>
-                  <span style={{
-                    fontSize: 'var(--ds-font-size-300)', fontWeight: 400, color: T.textPrimary,
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    display: 'block',
-                  }}>
-                    {item.summary}
-                  </span>
-                </td>
-
-                {/* Type icon */}
-                <td style={{ ...tdStyle, textAlign: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <JiraIssueTypeIcon type={item.type} size={16} />
-                  </div>
-                </td>
-
-                {/* Status — Jira-parity 6-category colours via workflow engine.
-                    Falls back to legacy 3-category lozenge for items outside
-                    the bound workflows (e.g. Task/Subtask/Improvement). */}
-                <td style={tdStyle}>
-                  <StatusLozenge status={item.statusName || item.status || '—'} statusCategory={item.statusCategory} maxWidth={160} />
-                </td>
-
-                {/* Priority icon */}
-                <td style={{ ...tdStyle, textAlign: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={capitalize(item.priority)}>
-                    {PRIORITY_SVG[item.priority] || PRIORITY_SVG.medium}
-                  </div>
-                </td>
-
-                {/* Assignee */}
-                <td style={tdStyle}>
-                  {item.assignee ? (
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{
-                        width: 24, height: 24, borderRadius: '50%',
-                        background: item.assignee.color || hashColor(item.assignee.name),
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface)',
-                        flexShrink: 0,
-                      }}>
-                        {item.assignee.initials || getInitials(item.assignee.name)}
-                      </div>
-                      <span style={{
-                        fontSize: 'var(--ds-font-size-300)', color: T.textPrimary,
-                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                      }}>
-                        {item.assignee.name}
-                      </span>
-                    </div>
-                  ) : (
-                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: T.textMuted }}>—</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <JiraTable<WorkItem>
+          columns={columns}
+          data={pageItems}
+          getRowId={(row) => row.id}
+          onRowClick={(row) => onOpenItem?.(row.jiraKey)}
+          showRowCount={false}
+          density="compact"
+          ariaLabel={pageTitle}
+          isLoading={isLoading}
+          emptyView={
+            <div style={{ padding: 32, textAlign: 'center', color: T.textMuted, fontSize: 'var(--ds-font-size-300)' }}>
+              No work items found.
+            </div>
+          }
+        />
       </div>
 
       {/* ── Pagination ── */}
@@ -400,28 +372,6 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
     </div>
   );
 }
-
-/* ── Styles ── */
-const thStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  fontSize: 'var(--ds-font-size-100)',
-  fontWeight: 653,
-  color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
-  fontFamily: 'var(--cp-font-body)',
-  whiteSpace: 'nowrap',
-  textAlign: 'left',
-  position: 'sticky',
-  top: 0,
-  zIndex: 1,
-  background: 'var(--ds-background-neutral-subtle)',
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: '0 12px',
-  fontSize: 'var(--ds-font-size-300)',
-  fontFamily: 'var(--cp-font-body)',
-  verticalAlign: 'middle',
-};
 
 /* ── Pagination button ── */
 function PaginationBtn({ children, disabled, active, onClick }: {

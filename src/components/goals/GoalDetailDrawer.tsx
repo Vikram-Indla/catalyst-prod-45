@@ -50,7 +50,12 @@ function statusBadge(status: string) {
   );
 }
 
-function progressBar(pct: number, height = 8) {
+function progressBar(pct: number | null, height = 8) {
+  if (pct === null) {
+    return (
+      <div style={{ width: '100%', height, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }} />
+    );
+  }
   const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--sem-danger)';
   return (
     <div style={{ width: '100%', height, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
@@ -390,8 +395,9 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
     );
   })() : '—';
 
-  const pct = Math.round(goal.progress_pct || 0);
-  const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--sem-danger)';
+  const hasProgress = goal.progress_pct != null;
+  const pct = hasProgress ? Math.round(goal.progress_pct) : null;
+  const pctColor = pct === null ? 'var(--ds-text-subtlest)' : pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--sem-danger)';
 
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
@@ -421,7 +427,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
         <div style={LABEL_STYLE}>Progress</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
           <div style={{ flex: 1 }}>{progressBar(pct)}</div>
-          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: pctColor }}>{pct}%</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: pctColor }}>{pct !== null ? `${pct}%` : '—'}</span>
         </div>
       </div>
 

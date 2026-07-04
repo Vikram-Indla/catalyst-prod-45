@@ -10,6 +10,8 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Trash2 } from '@/lib/atlaskit-icons';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -46,8 +48,8 @@ interface CycleSet {
     id: string;
     name: string;
     status: string;
-    planned_start_date: string | null;
-    planned_end_date: string | null;
+    planned_start: string | null;
+    planned_end: string | null;
     sprint?: { id: string; name: string; status: string } | null;
   } | null;
 }
@@ -152,7 +154,7 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',
@@ -163,7 +165,7 @@ function AddCasesModal({
         maxHeight: '80vh',
         background: 'var(--ds-surface-overlay)',
         borderRadius: 8,
-        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         zIndex: 301,
         display: 'flex',
         flexDirection: 'column',
@@ -297,7 +299,7 @@ function AddToCycleDropdown({
 
   const handleSelectCycle = async (cycle: AvailableCycle) => {
     try {
-      const { error } = await (supabase.from('tm_cycle_sets') as any).insert({
+      const { error } = await supabase.from('tm_cycle_sets').insert({
         cycle_id: cycle.id,
         set_id: setId,
       });
@@ -321,7 +323,7 @@ function AddToCycleDropdown({
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         padding: '4px 0',
         minWidth: 200,
         zIndex: 9999,
@@ -364,7 +366,11 @@ function AddToCycleDropdown({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SetDetailPage() {
-  const { id: setId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
+  // P1-S14 (slug contract): route param is the set's set_key, not its uuid.
+  // Resolve to the internal id below; every downstream query/FK write in
+  // this file already expects that internal id, so `setId` keeps its
+  // existing meaning once resolved.
+  const { setKey: routeSetKey, projectKey = 'BAU' } = useParams<{ setKey: string; projectKey: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: projects = [] } = useProjects();
@@ -377,18 +383,20 @@ export default function SetDetailPage() {
 
   // Query the set itself
   const { data: set, isLoading: setLoading } = useQuery({
-    queryKey: ['test-set', setId],
+    queryKey: ['test-set', routeSetKey],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_test_sets')
         .select('id, name, description, set_type, membership_type, is_active, project_id, set_key')
-        .eq('id', setId!)
+        .eq('set_key', routeSetKey!)
         .single();
       if (error) throw error;
       return data as TmTestSet;
     },
-    enabled: !!setId,
+    enabled: !!routeSetKey,
   });
+
+  const setId = set?.id;
 
   // Query cases in this set
   const { data: setCases = [], isLoading: casesLoading } = useQuery({
@@ -408,14 +416,140 @@ export default function SetDetailPage() {
   const { data: cycleSets = [], isLoading: cyclesLoading } = useQuery({
     queryKey: ['set-cycle-sets', setId],
     queryFn: async () => {
-      const { data, error } = await (supabase.from('tm_cycle_sets') as any)
-        .select('id, cycle_id, tm_test_cycles(id, name, status, planned_start_date, planned_end_date)')
+      const { data, error } = await supabase.from('tm_cycle_sets')
+        .select('id, cycle_id, tm_test_cycles(id, name, status, planned_start, planned_end)')
         .eq('set_id', setId!);
       if (error) throw error;
       return (data ?? []) as CycleSet[];
     },
     enabled: !!setId,
   });
+
+  // JiraTable columns for setCases
+  const setCasesTableColumns: Column<SetCase>[] = [
+    {
+      id: 'key',
+      label: 'Key',
+      width: 10,
+      cell: ({ row }) => (
+        <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
+          {row.tm_test_cases?.case_key ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'title',
+      label: 'Title',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)' }}>
+          {row.tm_test_cases?.title ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => (
+        <>{row.tm_test_cases?.status ? <CaseStatusPill status={row.tm_test_cases.status} /> : '—'}</>
+      ),
+    },
+    {
+      id: 'remove',
+      label: '',
+      width: 10,
+      cell: ({ row }) => (
+        <button
+          onClick={() => removeCaseMut.mutate(row.id)}
+          title="Remove from set"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--ds-text-subtlest)',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Trash2 size={13} />
+        </button>
+      ),
+    },
+  ];
+
+  // JiraTable columns for cycleSets
+  const cyclesTableColumns: Column<CycleSet>[] = [
+    {
+      id: 'cycleName',
+      label: 'Cycle name',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)', fontWeight: 500 }}>
+          {row.tm_test_cycles?.name ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => (
+        <>
+          {row.tm_test_cycles?.status ? (
+            <Lozenge appearance={CYCLE_STATUS_APPEARANCE[row.tm_test_cycles.status] ?? 'default'}>
+              {row.tm_test_cycles.status.charAt(0) + row.tm_test_cycles.status.slice(1).toLowerCase().replace('_', ' ')}
+            </Lozenge>
+          ) : '—'}
+        </>
+      ),
+    },
+    {
+      id: 'startDate',
+      label: 'Start date',
+      width: 12,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
+          {row.tm_test_cycles?.sprint?.name ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'endDate',
+      label: 'End date',
+      width: 12,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text-subtle)' }}>
+          {row.tm_test_cycles?.planned_end ? formatDate(row.tm_test_cycles.planned_end) : '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'actions',
+      label: '',
+      width: 10,
+      cell: ({ row }) => (
+        <>
+          {row.tm_test_cycles?.id && (
+            <button
+              onClick={() => navigate(`/testhub/${projectKey}/cycles/${row.tm_test_cycles?.id}`)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-200)',
+                color: 'var(--ds-link)',
+                padding: 0,
+              }}
+            >
+              View cycle
+            </button>
+          )}
+        </>
+      ),
+    },
+  ];
 
   // Query available cycles for "Add to cycle" dropdown
   const { data: availableCycles = [] } = useQuery({
@@ -596,55 +730,11 @@ export default function SetDetailPage() {
               }
             />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                    <th style={thStyle}>Key</th>
-                    <th style={thStyle}>Title</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={{ ...thStyle, width: 80 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {setCases.map(sc => {
-                    const tc = sc.tm_test_cases;
-                    return (
-                      <tr key={sc.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
-                          {tc?.case_key ?? '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
-                          {tc?.title ?? '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {tc?.status ? (
-                            <CaseStatusPill status={tc.status} />
-                          ) : '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          <button
-                            onClick={() => removeCaseMut.mutate(sc.id)}
-                            title="Remove from set"
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              cursor: 'pointer',
-                              color: 'var(--ds-text-subtlest)',
-                              padding: 4,
-                              display: 'flex',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <JiraTable
+              columns={setCasesTableColumns}
+              data={setCases}
+              getRowId={(row) => row.id}
+            />
           )}
         </>
       )}
@@ -659,58 +749,11 @@ export default function SetDetailPage() {
           ) : cycleSets.length === 0 ? (
             <EmptyState message="This set has not been added to any cycles yet." />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                    <th style={thStyle}>Cycle name</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Start date</th>
-                    <th style={thStyle}>End date</th>
-                    <th style={{ ...thStyle, width: 80 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cycleSets.map(cs => {
-                    const cycle = cs.tm_test_cycles;
-                    return (
-                      <tr key={cs.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text)', fontWeight: 500 }}>
-                          {cycle?.name ?? '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {cycle?.status ? (
-                            <Lozenge appearance={CYCLE_STATUS_APPEARANCE[cycle.status] ?? 'default'}>
-                              {cycle.status.charAt(0) + cycle.status.slice(1).toLowerCase().replace('_', ' ')}
-                            </Lozenge>
-                          ) : '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
-                          {cycle?.sprint?.name ?? '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_start_date ? formatDate(cycle.planned_start_date) : '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_end_date ? formatDate(cycle.planned_end_date) : '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {cycle?.id && (
-                            <button
-                              onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 'var(--ds-font-size-200)',
-                                color: 'var(--ds-link)',
-                                padding: 0,
-                              }}
-                            >
-                              View cycle
-                            </button>
-                          )}
-                        </td>
+            <JiraTable
+              columns={cyclesTableColumns}
+              data={cycleSets}
+              getRowId={(row) => row.id}
+            />
                       </tr>
                     );
                   })}
@@ -776,7 +819,6 @@ function CaseStatusPill({ status }: { status: string }) {
     draft: 'default',
     ready: 'inprogress',
     approved: 'success',
-    needs_update: 'moved',
     deprecated: 'default',
   };
   const label = status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');

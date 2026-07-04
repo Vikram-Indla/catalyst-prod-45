@@ -5,7 +5,7 @@
  * In-page banner for advisory / warning / error / success / info states.
  * Not for transient flags — use Flag for that.
  */
-import AkSectionMessage from '@atlaskit/section-message';
+import AkSectionMessage, { SectionMessageAction } from '@atlaskit/section-message';
 import { type ReactNode } from 'react';
 
 export type SectionMessageAppearance =
@@ -34,7 +34,11 @@ export function SectionMessage({
     <AkSectionMessage
       appearance={appearance}
       title={title}
-      actions={actions}
+      actions={actions?.map((a) => (
+        <SectionMessageAction key={a.key} onClick={a.onClick}>
+          {a.text}
+        </SectionMessageAction>
+      ))}
       testId={testId}
     >
       {children}

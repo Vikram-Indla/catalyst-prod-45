@@ -24,12 +24,18 @@
  *   isAvatarCanonicalFile(filePath)         — G1: true for canonical wrapper files
  *   AVATAR_CONTRACT_CHECKLIST               — G1–G4 PR checklist items
  *   isAssigneeLocked(status)                — G5: assignee picker lock (terminal status only)
+ *
+ * Grid I — Backlog/All-Work View Eligibility:
+ *   isEligibleForBacklogView(type)          — I1/I2: banned as standalone Backlog/All-Work rows
  */
 export {
   MODULE_OWNED_TYPES,
   normalizeType,
   canCreateInModule,
   getAllowedTypesForModule,
+  isCREGovernedType,
+  filterCreatableTypes,
+  getAllowedChildTypesWithRegistry,
   getOwningModule,
   canBeChildOf,
   canLinkTo,
@@ -45,6 +51,19 @@ export {
   validateAvatarImport,
   validateAvatarSrc,
   isAssigneeLocked,
+  // Grid I — Backlog/All-Work View Eligibility
+  isEligibleForBacklogView,
 } from './CatalystRules';
 
-export type { CREModule, CRETypeName, CREValidationResult, AvatarContractItem } from './CatalystRules';
+// Grid B canonical child-type lookup (re-exported so chokepoints can import
+// everything CRE-related from this one barrel, per .claude/skills/cre/SKILL.md).
+export { getAllowedChildTypes } from '@/components/catalyst-detail-views/shared/parent-rules';
+
+export type {
+  CREModule,
+  CRETypeName,
+  CREValidationResult,
+  AvatarContractItem,
+  RegistryWorkItemType,
+  RegistryParentRule,
+} from './CatalystRules';

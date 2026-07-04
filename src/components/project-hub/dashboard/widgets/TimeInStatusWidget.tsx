@@ -458,7 +458,7 @@ export default function TimeInStatusWidget({
                     fontWeight: 500,
                     textTransform: 'none',
                     letterSpacing: '0.04em',
-                    color: token('color.text', '#292A2E'),
+                    color: token('color.text'),
                   }}
                 >
                   Ticket
@@ -578,7 +578,7 @@ export default function TimeInStatusWidget({
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           ...LABEL,
-                          color: token('color.text', '#292A2E'),
+                          color: token('color.text'),
                         }}
                       >
                         {ms > 0 ? (
@@ -644,7 +644,7 @@ export default function TimeInStatusWidget({
                             );
                           })()
                         ) : (
-                          <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
+                          <span style={{ color: token('color.text.disabled') }}>—</span>
                         )}
                       </td>
                     );
@@ -658,7 +658,7 @@ export default function TimeInStatusWidget({
                       borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                       ...SMALL_STRONG,
-                      color: token('color.text', '#292A2E'),
+                      color: token('color.text'),
                       background: totalBg(r.totalMs, totalMax),
                       position: 'sticky', right: 0,
                     }}
@@ -683,7 +683,7 @@ export default function TimeInStatusWidget({
               borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               background: token('elevation.surface', 'var(--ds-surface)'),
               ...LABEL,
-              color: token('color.text.subtle', '#505258'),
+              color: token('color.text.subtle'),
             }}
           >
             <span>

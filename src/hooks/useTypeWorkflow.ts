@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import type { WorkflowStatus } from './useWorkflowStatuses';
 
 export const WORK_ITEM_TYPES = [
@@ -51,6 +52,22 @@ async function fetchProjectId(projectKey: string): Promise<string> {
     .single();
   if (error) throw error;
   return (data as any).id as string;
+}
+
+/**
+ * Legacy write freeze (ph_workflow_type_statuses / ph_workflow_transitions
+ * only). All 11 entities have a published ph_wf_* version, so
+ * useCanonicalIssueWorkflow always resolves canonical and these tables are
+ * already dead for gating — editing them here silently does nothing to
+ * runtime enforcement. Reads (useTypeWorkflow) stay live: WorkflowTypePanel
+ * still displays this data, it just can't be edited from here anymore.
+ * ph_workflow_statuses (board-column master, read across ~15 live surfaces)
+ * is NOT frozen — it has no Studio replacement yet.
+ */
+function assertLegacyRulesWritable(): never {
+  throw new Error(
+    'This workflow editor is frozen. Transition and status rules are edited in the Workflow Studio (/admin/workflows) now.'
+  );
 }
 
 export function useTypeWorkflow(projectKey: string, workItemType: WorkItemType) {
@@ -146,6 +163,7 @@ export function useAddTypeStatus(projectKey: string, workItemType: WorkItemType)
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ statusId, position = 0, isInitial = false }: AddTypeStatusInput) => {
+      assertLegacyRulesWritable();
       const projectId = await fetchProjectId(projectKey);
       const { error } = await supabase
         .from('ph_workflow_type_statuses' as any)
@@ -162,6 +180,9 @@ export function useAddTypeStatus(projectKey: string, workItemType: WorkItemType)
       queryClient.invalidateQueries({ queryKey: ['workflow-statuses', projectKey] });
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
+    },
   });
 }
 
@@ -169,6 +190,7 @@ export function useRemoveTypeStatus(projectKey: string, workItemType: WorkItemTy
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (statusId: string) => {
+      assertLegacyRulesWritable();
       const projectId = await fetchProjectId(projectKey);
       const { error } = await supabase
         .from('ph_workflow_type_statuses' as any)
@@ -182,6 +204,9 @@ export function useRemoveTypeStatus(projectKey: string, workItemType: WorkItemTy
       queryClient.invalidateQueries({ queryKey: ['workflow-statuses', projectKey] });
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
+    },
   });
 }
 
@@ -193,6 +218,7 @@ export function useSetInitialStatus(projectKey: string, workItemType: WorkItemTy
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ statusId }: SetInitialStatusInput) => {
+      assertLegacyRulesWritable();
       const projectId = await fetchProjectId(projectKey);
       // Clear existing initial
       const { error: clearErr } = await supabase
@@ -213,6 +239,9 @@ export function useSetInitialStatus(projectKey: string, workItemType: WorkItemTy
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
+    },
   });
 }
 
@@ -226,6 +255,7 @@ export function useAddTransition(projectKey: string, workItemType: WorkItemType)
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ fromStatusId, toStatusId, isGlobal = false }: AddTransitionInput) => {
+      assertLegacyRulesWritable();
       const projectId = await fetchProjectId(projectKey);
       const { error } = await supabase
         .from('ph_workflow_transitions' as any)
@@ -240,6 +270,9 @@ export function useAddTransition(projectKey: string, workItemType: WorkItemType)
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
+    },
   });
 }
 
@@ -247,6 +280,7 @@ export function useDeleteTransition(projectKey: string, workItemType: WorkItemTy
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (transitionId: string) => {
+      assertLegacyRulesWritable();
       const { error } = await supabase
         .from('ph_workflow_transitions' as any)
         .delete()
@@ -256,6 +290,9 @@ export function useDeleteTransition(projectKey: string, workItemType: WorkItemTy
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
+    },
   });
 }
 
@@ -263,6 +300,7 @@ export function useReorderTypeStatuses(projectKey: string, workItemType: WorkIte
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (orderedStatusIds: string[]) => {
+      assertLegacyRulesWritable();
       const projectId = await fetchProjectId(projectKey);
       const updates = orderedStatusIds.map((statusId, index) =>
         supabase
@@ -277,6 +315,9 @@ export function useReorderTypeStatuses(projectKey: string, workItemType: WorkIte
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
     },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
+    },
   });
 }
 
@@ -284,6 +325,7 @@ export function useCopyTypeWorkflow(projectKey: string, workItemType: WorkItemTy
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (fromType: WorkItemType) => {
+      assertLegacyRulesWritable();
       const projectId = await fetchProjectId(projectKey);
 
       // 1. Fetch source type statuses
@@ -370,6 +412,9 @@ export function useCopyTypeWorkflow(projectKey: string, workItemType: WorkItemTy
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workflow-statuses', projectKey] });
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Legacy workflow editing is frozen.');
     },
   });
 }

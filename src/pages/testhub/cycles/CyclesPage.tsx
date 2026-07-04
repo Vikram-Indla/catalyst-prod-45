@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
-import { useReleases } from '@/hooks/test-management/useReleases';
 import { useSprintsByProject } from '@/hooks/test-management/useSprintsByProject';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import {
@@ -254,27 +253,23 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
   const [selectedTab, setSelectedTab] = useState(0);
   const [name, setName] = useState('');
   const [objective, setObjective] = useState('');
-  const [releaseId, setReleaseId] = useState('');
   const [sprintId, setSprintId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
   const [ownerId, setOwnerId] = useState('');
   const [caseSearch, setCaseSearch] = useState('');
   const [selectedCaseIds, setSelectedCaseIds] = useState<Set<string>>(new Set());
-  const [assigneeIds, setAssigneeIds] = useState<Set<string>>(new Set());
 
   const createCycle = useCreateCycle();
   const addCases = useAddCasesToScope();
-  const { data: releases = [] } = useReleases();
   const { data: sprints = [] } = useSprintsByProject(projectId);
   const { data: casesResult } = useTestCases(projectId, { per_page: 200 });
   const allCases = casesResult?.cases ?? [];
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, email, avatar_url').order('full_name').limit(100);
+      const { data, error } = await supabase.from('profiles').select('id, full_name, email, avatar_url').order('full_name').limit(100);
+      if (error) throw error;
       return data ?? [];
     },
     staleTime: 300000,
@@ -291,6 +286,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
       name: name.trim(),
       description: objective || undefined,
       sprint_id: sprintId || null,
+      assigned_to: ownerId || null,
       planned_start_date: startDate || undefined,
       planned_end_date: endDate || undefined,
     });
@@ -298,12 +294,6 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
       await addCases.mutateAsync({ cycle_id: cycle.id, case_ids: Array.from(selectedCaseIds) });
     }
     onClose();
-  };
-
-  const addTag = () => {
-    const t = tagInput.trim();
-    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
-    setTagInput('');
   };
 
   const fieldStyle: React.CSSProperties = {
@@ -318,7 +308,6 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
   const tabLabels = [
     'Details',
     `Cases${selectedCaseIds.size > 0 ? ` (${selectedCaseIds.size})` : ''}`,
-    'Assignees',
   ];
 
   return (
@@ -362,13 +351,6 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                     {sprints.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label style={labelStyle}>Release</label>
-                  <select value={releaseId} onChange={e => setReleaseId(e.target.value)} style={fieldStyle}>
-                    <option value="">— None —</option>
-                    {releases.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                  </select>
-                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
@@ -394,29 +376,6 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                     onChange={e => setEndDate(e.target.value)}
                     min={startDate || undefined} style={fieldStyle} />
                 </div>
-              </div>
-              <div>
-                <label style={labelStyle}>Tags</label>
-                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
-                  {tags.map(tag => (
-                    <span key={tag} style={{
-                      padding: '0px 8px', borderRadius: 10, fontSize: 'var(--ds-font-size-200)',
-                      background: 'var(--ds-background-neutral)', color: 'var(--ds-text)',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                    }}>
-                      {tag}
-                      <button onClick={() => setTags(prev => prev.filter(t => t !== tag))}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>×</button>
-                    </span>
-                  ))}
-                </div>
-                <input
-                  value={tagInput}
-                  onChange={e => setTagInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
-                  placeholder="Type tag and press Enter"
-                  style={{ ...fieldStyle, width: 'calc(100% - 20px)' }}
-                />
               </div>
             </div>
           </TabPanel>
@@ -489,50 +448,6 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
             </div>
           </TabPanel>
 
-          {/* ── Assignees ── */}
-          <TabPanel>
-            <div style={{ paddingTop: 16 }}>
-              <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', marginTop: 0, marginBottom: 12 }}>
-                Select team members to assign to this cycle.
-              </p>
-              {(profiles as Array<{ id: string; full_name: string | null; email: string | null; avatar_url: string | null }>).length === 0 ? (
-                <Spinner size="small" />
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {(profiles as Array<{ id: string; full_name: string | null; email: string | null; avatar_url: string | null }>).map(p => (
-                    <label key={p.id} style={{
-                      display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0',
-                      borderBottom: '1px solid var(--ds-border)', cursor: 'pointer',
-                    }}>
-                      <input type="checkbox"
-                        checked={assigneeIds.has(p.id)}
-                        onChange={() => {
-                          setAssigneeIds(prev => {
-                            const next = new Set(prev);
-                            next.has(p.id) ? next.delete(p.id) : next.add(p.id);
-                            return next;
-                          });
-                        }}
-                      />
-                      {p.avatar_url
-                        ? <img src={p.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
-                        : <span style={{
-                            width: 28, height: 28, borderRadius: '50%', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            background: 'var(--ds-background-neutral)', color: 'var(--ds-text)',
-                          }}>
-                            {(p.full_name || p.email || '?').charAt(0).toUpperCase()}
-                          </span>
-                      }
-                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
-                        {p.full_name || p.email}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabPanel>
         </Tabs>
       </ModalBody>
       <ModalFooter>

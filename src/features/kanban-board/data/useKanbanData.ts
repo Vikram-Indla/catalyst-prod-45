@@ -15,6 +15,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAllPages } from '@/components/testhub/reports/hooks/fetchAllPages';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { translate } from '@/lib/jql/translator';
@@ -279,7 +280,7 @@ export function useKanbanData(
   });
 
   /* ── TASKS rows (mode='tasks'): tasks table cross-workstream ──────────── */
-  const { data: tasksRows = [], isLoading: tasksLoading, refetch: refetchTasks } = useQuery({
+  const { data: tasksRows = [], isLoading: tasksLoading, refetch: refetchTasks, error: tasksError } = useQuery({
     queryKey: ['kb-tasks-rows'],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
@@ -300,7 +301,7 @@ export function useKanbanData(
      Mirrors the data adapter for /release-hub/release-kanban so the canonical
      board mounts releases without going through useReleasesList (which is
      wired to JiraTable on the legacy surface). Manager resolved via profiles. */
-  const { data: releaseRows = [], isLoading: releaseLoading, refetch: refetchReleases } = useQuery({
+  const { data: releaseRows = [], isLoading: releaseLoading, refetch: refetchReleases, error: releaseError } = useQuery({
     queryKey: ['kb-release-rows'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -349,7 +350,7 @@ export function useKanbanData(
   });
   const testProjectId = (testProjectsRow as any[])[0]?.id ?? null;
 
-  const { data: testRows = [], isLoading: testLoading, refetch: refetchTest } = useQuery({
+  const { data: testRows = [], isLoading: testLoading, refetch: refetchTest, error: testError } = useQuery({
     queryKey: ['kb-test-rows', testProjectId],
     queryFn: async () => {
       if (!testProjectId) return [] as any[];
@@ -402,8 +403,7 @@ export function useKanbanData(
       parentSummary: null,
       sprintRelease: null,
       isFlagged: !!r.is_flagged,
-        cover: r.cover ?? null,
-    cover: r.cover ?? null,
+      cover: r.cover ?? null,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -436,8 +436,7 @@ export function useKanbanData(
       // Prefer the explicit is_flagged column now that rh_releases has one;
       // fall back to at_risk health as legacy signal for older data.
       isFlagged: !!r.is_flagged || r.health === 'at_risk',
-        cover: r.cover ?? null,
-    cover: r.cover ?? null,
+      cover: r.cover ?? null,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -559,14 +558,14 @@ export function useKanbanData(
   }, [columns, resolvedBoardId, boards, isProduct, isIncident, isTasks, isRelease, isTest, productMeta]);
 
   /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
-  const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
+  const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst, error: projectFirstError } = useQuery({
     queryKey: ['kb-issues-p1', key, resolvedBoardQuery],
     queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1, resolvedBoardQuery) : Promise.resolve([] as any[])),
     enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && !isTest,
     staleTime: 5 * 60_000,
   });
   const hasMore = firstPage.length >= PAGE;
-  const { data: restPages = [], refetch: refetchRest } = useQuery({
+  const { data: restPages = [], refetch: refetchRest, error: projectRestError } = useQuery({
     queryKey: ['kb-issues-rest', key, resolvedBoardQuery],
     queryFn: async () => {
       if (!key) return [] as any[];
@@ -590,38 +589,46 @@ export function useKanbanData(
      Mirrors the productRows pattern. Incident rows are ph_issues, so
      useKanbanMutations does NOT need an incident branch — its existing
      project (ph_issues) writes apply unchanged. */
-  const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents } = useQuery({
+  const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents, error: incidentError } = useQuery({
     queryKey: ['kb-incident-issues'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select(ISSUE_SELECT)
-        .eq('issue_type', 'Production Incident')
-        .is('deleted_at', null)
-        .is('archived_at', null)
-        .order('board_position', { ascending: true, nullsFirst: false })
-        .order('jira_updated_at', { ascending: false })
-        .limit(2000);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () =>
+      // PostgREST max_rows clamps any .limit() above 1000, so a flat cap
+      // silently truncates large incident sets — drain pages instead.
+      fetchAllPages((from, to) =>
+        supabase
+          .from('ph_issues')
+          .select(ISSUE_SELECT)
+          .eq('issue_type', 'Production Incident')
+          .is('deleted_at', null)
+          .is('archived_at', null)
+          .order('board_position', { ascending: true, nullsFirst: false })
+          .order('jira_updated_at', { ascending: false })
+          .order('id')
+          .range(from, to),
+      ),
     enabled: isIncident,
     staleTime: 5 * 60_000,
   });
 
   /* ── PRODUCT issues (business_requests filtered by product_id) ──────── */
-  const { data: productRows = [], isLoading: productLoading, refetch: refetchProduct } = useQuery({
+  const { data: productRows = [], isLoading: productLoading, refetch: refetchProduct, error: productError } = useQuery({
     queryKey: ['kb-product-issues', productId],
     queryFn: async () => {
       if (!productId) return [] as any[];
-      const { data } = await (supabase as any)
-        .from('business_requests')
-        .select(BR_SELECT)
-        .eq('product_id', productId)
-        .is('deleted_at', null)
-        .order('board_position', { ascending: true, nullsFirst: false })
-        .order('updated_at', { ascending: false });
-      return (data ?? []) as any[];
+      // PostgREST caps responses at max_rows (1000); page past it. The id
+      // tiebreak keeps the order stable so pages never overlap or skip rows.
+      const rows = await fetchAllPages<any>((from, to) =>
+        (supabase as any)
+          .from('business_requests')
+          .select(BR_SELECT)
+          .eq('product_id', productId)
+          .is('deleted_at', null)
+          .order('board_position', { ascending: true, nullsFirst: false })
+          .order('updated_at', { ascending: false })
+          .order('id', { ascending: true })
+          .range(from, to),
+      );
+      return rows as any[];
     },
     enabled: !!productId && isProduct,
     staleTime: 30_000,
@@ -701,8 +708,7 @@ export function useKanbanData(
       parentSummary: null,
       sprintRelease: null,
       isFlagged: !!r.is_flagged,
-        cover: r.cover ?? null,
-    cover: r.cover ?? null,
+      cover: r.cover ?? null,
       updatedAt: r.updated_at ?? null,
       createdAt: r.created_at ?? null,
       statusChangedAt: null,
@@ -775,6 +781,21 @@ export function useKanbanData(
             : isTest
               ? testLoading
               : projectLoading,
+    /* Primary issues-query failure for the active mode. Surfaced so the page
+       can render a real error state instead of an empty board — a failed
+       query with `?? []` defaults is otherwise indistinguishable from a
+       board with no issues. */
+    error: (isProduct
+      ? productError
+      : isIncident
+        ? incidentError
+        : isTasks
+          ? tasksError
+          : isRelease
+            ? releaseError
+            : isTest
+              ? testError
+              : (projectFirstError ?? projectRestError)) ?? null,
     refetch,
   };
 }

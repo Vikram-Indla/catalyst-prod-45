@@ -149,26 +149,17 @@ interface CommitteeQueueTableProps {
 
 function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
   const config = {
-    pending: { 
-      label: 'Pending', 
-      className: 'bg-amber-100 text-amber-700 border-amber-200', 
-      icon: Clock 
-    },
-    approved: { 
-      label: 'Approved', 
-      className: 'bg-teal-100 text-teal-700 border-teal-200', 
-      icon: CheckCircle 
-    },
-    vetoed: { 
-      label: 'Vetoed', 
-      className: 'bg-rose-100 text-rose-700 border-rose-200', 
-      icon: XCircle 
-    },
+    pending: { label: 'Pending', bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)', icon: Clock },
+    approved: { label: 'Approved', bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)', icon: CheckCircle },
+    vetoed: { label: 'Vetoed', bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)', icon: XCircle },
   } as const;
 
-  const { label, className, icon: Icon } = config[status];
+  const { label, bg, fg, icon: Icon } = config[status];
   return (
-    <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap border", className)}>
+    <span
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
+      style={{ backgroundColor: bg, color: fg }}
+    >
       <Icon className="h-3 w-3" />
       {label}
     </span>
@@ -176,18 +167,21 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
-  const config: Record<string, { bg: string; text: string; dot: string }> = {
-    SEV1: { bg: 'bg-rose-100', text: 'text-rose-700', dot: 'bg-rose-500' },
-    SEV2: { bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500' },
-    SEV3: { bg: 'bg-sky-100', text: 'text-sky-700', dot: 'bg-sky-500' },
-    SEV4: { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
+  const config: Record<string, { bg: string; fg: string }> = {
+    SEV1: { bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' },
+    SEV2: { bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)' },
+    SEV3: { bg: 'var(--ds-background-information)', fg: 'var(--ds-text-information)' },
+    SEV4: { bg: 'var(--ds-background-neutral)', fg: 'var(--ds-text-subtle)' },
   };
 
-  const { bg, text, dot } = config[severity] || config.SEV4;
+  const { bg, fg } = config[severity] || config.SEV4;
 
   return (
-    <span className={cn("inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase", bg, text)}>
-      <span className={cn("w-1.5 h-1.5 rounded-full", dot)} />
+    <span
+      className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase"
+      style={{ backgroundColor: bg, color: fg }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: fg }} />
       {severity}
     </span>
   );
@@ -195,17 +189,13 @@ function SeverityBadge({ severity }: { severity: string }) {
 
 function ProgressBar({ completed, total }: { completed: number; total: number }) {
   const pct = total > 0 ? (completed / total) * 100 : 0;
-  const isComplete = completed >= total;
-  
+
   return (
     <div className="flex items-center gap-2 w-full">
-      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-        <div 
-          className={cn(
-            "h-full rounded-full transition-all",
-            isComplete ? "bg-teal-500" : "bg-teal-500"
-          )}
-          style={{ width: `${pct}%` }}
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--ds-background-neutral)' }}>
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, backgroundColor: 'var(--ds-icon-success)' }}
         />
       </div>
       <span className="text-[11px] font-medium text-muted-foreground tabular-nums whitespace-nowrap">
@@ -219,16 +209,16 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
   const visible = approvers.slice(0, 3);
   const remaining = approvers.length - 3;
 
-  const decisionStyles: Record<CommitteeDecisionStatus, string> = {
-    pending: 'bg-slate-200 text-slate-600',
-    approved: 'bg-teal-100 text-teal-700',
-    vetoed: 'bg-rose-100 text-rose-700',
+  const decisionStyles: Record<CommitteeDecisionStatus, { bg: string; fg: string }> = {
+    pending: { bg: 'var(--ds-background-neutral)', fg: 'var(--ds-text-subtle)' },
+    approved: { bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)' },
+    vetoed: { bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' },
   };
 
   return (
     <div className="flex items-center -space-x-1.5">
       {visible.map((a) => {
-        const styleClass = decisionStyles[a.decision];
+        const style = decisionStyles[a.decision];
         return (
           <Tooltip
             key={a.id}
@@ -236,18 +226,24 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
               <>
                 <div className="font-medium">{a.userName}</div>
                 <div className="capitalize text-muted-foreground">{a.decision}</div>
-                {a.hasVeto && <div className="text-amber-600">Veto power</div>}
+                {a.hasVeto && <div style={{ color: 'var(--ds-text-warning)' }}>Veto power</div>}
               </>
             }
           >
-            <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2 border-white", styleClass)}>
+            <div
+              className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2"
+              style={{ backgroundColor: style.bg, color: style.fg, borderColor: 'var(--ds-surface)' }}
+            >
               {a.userInitials || a.userName.charAt(0)}
             </div>
           </Tooltip>
         );
       })}
       {remaining > 0 && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border-2 border-white bg-slate-100 text-slate-500">
+        <div
+          className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border-2"
+          style={{ backgroundColor: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)', borderColor: 'var(--ds-surface)' }}
+        >
           +{remaining}
         </div>
       )}
@@ -387,7 +383,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
   const handleRowClick = useCallback((item: CommitteeQueueItem, e: React.MouseEvent) => {
     const t = e.target as HTMLElement;
     if (t.closest('a') || t.closest('button')) return;
-    onRowClick ? onRowClick(item) : navigate(`/release/incidents/${item.incident.id}`);
+    onRowClick ? onRowClick(item) : navigate(`/incident-hub/view/${item.incident.incident_key}`);
   }, [navigate, onRowClick]);
 
   const gridTemplate = useMemo(() => getGridTemplate(columnWidths), [columnWidths]);
@@ -449,8 +445,9 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     {/* KEY */}
                     <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                       <Link
-                        to={`/release/incidents/${item.incident.id}`}
-                        className="font-medium text-blue-600 hover:underline truncate text-[12px]"
+                        to={`/incident-hub/view/${item.incident.incident_key}`}
+                        className="font-medium hover:underline truncate text-[12px]"
+                        style={{ color: 'var(--ds-text-brand)' }}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.incident.incident_key}
@@ -470,7 +467,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       {item.incident.severity === 'SEV1' ? (
                         <Tooltip content="Major Incident">
-                          <AlertTriangle className="h-4 w-4 text-amber-500" />
+                          <AlertTriangle className="h-4 w-4" style={{ color: 'var(--ds-icon-warning)' }} />
                         </Tooltip>
                       ) : (
                         <span className="text-muted-foreground">—</span>
@@ -504,12 +501,16 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     </div>
                     {/* AGING */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      <span className={cn(
-                        "text-[11px] font-medium tabular-nums",
-                        item.agingDays > 7 ? "text-rose-600" : 
-                        item.agingDays > 3 ? "text-amber-600" : 
-                        "text-muted-foreground"
-                      )}>
+                      <span
+                        className="text-[11px] font-medium tabular-nums"
+                        style={{
+                          color: item.agingDays > 7
+                            ? 'var(--ds-text-danger)'
+                            : item.agingDays > 3
+                            ? 'var(--ds-text-warning)'
+                            : 'var(--ds-text-subtle)',
+                        }}
+                      >
                         {item.agingDays}d
                       </span>
                     </div>
