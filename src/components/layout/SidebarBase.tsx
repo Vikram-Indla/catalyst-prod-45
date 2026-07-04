@@ -42,7 +42,7 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 // Block A rule 1 (2026-05-01): canonical URL prefix '/product-hub' (not /producthub).
 const HUB_ITEMS = [
   { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: 'var(--ds-icon-subtle)' },
-  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple)' },
+  { label: 'STRATA',       href: '/strata',                     Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple)' },
   { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand)' },
   { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal)' },
   { label: 'Release Hub',  href: '/release-hub/overview', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange)' },
@@ -66,7 +66,7 @@ const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
   '/tasks': () => import('../../modules/tasks/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
-  '/strategyhub': () => import('../../modules-dormant/strategyhub/StrategicThemesPage'),
+  '/strata': () => import('../../modules/strata/StrataRoutes'),
 };
 
 const prefetchedRoutes = new Set<string>();

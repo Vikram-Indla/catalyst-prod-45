@@ -105,7 +105,7 @@ interface HomeSidebarProps {
 // Hub navigation items for collapsed sidebar (HOME route only)
 const HUB_NAV_ITEMS = [
   { key: 'home', label: 'Home', href: '/for-you' },
-  { key: 'strategy', label: 'Strategy Hub', href: '/strategyhub' },
+  { key: 'strategy', label: 'STRATA', href: '/strata' },
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog' },
   { key: 'product', label: 'Product Hub', href: '/product-hub' },
   { key: 'project', label: 'Project Hub', href: '/project-hub' },

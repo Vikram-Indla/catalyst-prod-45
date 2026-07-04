@@ -221,6 +221,32 @@ export const browseRoutes = {
 };
 
 // ---------------------------------------------------------------------------
+// STRATA (CAT-STRATA-20260705-001) — strategy execution & value realization
+// ---------------------------------------------------------------------------
+
+export const strataRoutes = {
+  root: () => '/strata',
+  strategy: () => '/strata/strategy',
+  strategyMap: () => '/strata/strategy/map',
+  scorecards: () => '/strata/scorecards',
+  scorecard: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}`,
+  kpis: () => '/strata/kpis',
+  kpi: (kpiSlug: string) => `/strata/kpis/${kpiSlug}`,
+  execution: () => '/strata/execution',
+  initiative: (initiativeSlug: string) => `/strata/execution/${initiativeSlug}`,
+  portfolio: () => '/strata/portfolio',
+  benefit: (benefitSlug: string) => `/strata/portfolio/benefits/${benefitSlug}`,
+  data: () => '/strata/data',
+  // runKey is the display key e.g. "RUN-1001" — no UUID in URL
+  run: (runKey: string) => `/strata/data/runs/${runKey}`,
+  reviews: () => '/strata/reviews',
+  // snapshotKey is the display key e.g. "SNAP-1001"
+  review: (snapshotKey: string) => `/strata/reviews/${snapshotKey}`,
+  admin: () => '/strata/admin',
+  adminSection: (section: string) => `/strata/admin/${section}`,
+};
+
+// ---------------------------------------------------------------------------
 // Admin
 // ---------------------------------------------------------------------------
 
@@ -251,4 +277,5 @@ export const Routes = {
   knowledgeHub: knowledgeHubRoutes,
   browse: browseRoutes,
   admin: adminRoutes,
+  strata: strataRoutes,
 } as const;

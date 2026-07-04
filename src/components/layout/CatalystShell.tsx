@@ -242,7 +242,7 @@ const JIRA_CANVAS_BG =
 
 const HUB_ROUTES: Record<string, string> = {
   home: '/for-you',
-  strategy: '/strategyhub',
+  strategy: '/strata',
   ideation: '/ideation/backlog',
   product: '/product-hub',
   project: '/project-hub',
@@ -553,6 +553,7 @@ function CatalystShellContent() {
   // Decision A (Apr 2026): Jira blue canvas (var(--ds-background-selected)) + white panel on all
   // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
   const isHubSurfaceRoute =
+    location.pathname.startsWith("/strata") ||
     location.pathname.startsWith("/strategyhub") ||
     location.pathname.startsWith("/producthub") ||
     location.pathname.startsWith("/product/") || // /product/ideas/*, /product/room, etc.
