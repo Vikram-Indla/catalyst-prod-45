@@ -9,6 +9,7 @@ import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { armCorrectionLearner, getActiveTerms } from './dictionary';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
+import { DictationCTA } from './DictationCTA';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
 
 const VoiceFlowContext = createContext<VoiceFlowContextValue>({
@@ -688,6 +689,9 @@ export function VoiceFlowProvider({ children }: Props) {
   return (
     <VoiceFlowContext.Provider value={contextValue}>
       {children}
+      {featureEnabled && (
+        <DictationCTA sessionActive={status !== 'idle'} onActivate={handleActivate} />
+      )}
       {featureEnabled && (
         <VoiceFloatingCapsule
           status={status}
