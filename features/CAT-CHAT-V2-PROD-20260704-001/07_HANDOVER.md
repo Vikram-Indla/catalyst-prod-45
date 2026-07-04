@@ -75,3 +75,22 @@ churn, portals included via body[data-cv2-theme]. Live-measured: body/sender/sid
 Remap lines carry ads-scanner ignore annotations (deliberate chat-scope scale).
 NOTE: shared checkout carries another session's untracked src/pages/testhub-lab/ WIP — it broke
 the dev overlay transiently and adds +3 to ads-audit-gate; not ours, bypass documented.
+
+## Session 004 — Slack-inventory wave (2026-07-05, commit 042f7f84b)
+- Seen receipts (DM/group DM): computeSeenCaption helper + caption under my last message;
+  live-proven (absent pre-read → "Seen" after last_read_at bump). A notch past Slack.
+- Blockquotes end-to-end + ROOT-FIX of the contentEditable lost-first-newline serializer bug
+  (block-boundary-aware join in htmlToMarkdown.walk) — fences and quotes both benefit.
+- Header bell → Slack-style notification menu (All/Mentions/Nothing + Mute) wired to
+  chat_set_notification_pref RPC; pref surfaced via useConversations. DB round-trip proven.
+- Mobile <1024px slice: single-content-column grid branching via new useMediaQuery; desktop
+  byte-identical. Runtime proof blocked (test Chrome window pinned at 1680px — maximized);
+  verified by tsc + branch-table review.
+- Legacy suites resurrected (jest.*→vi.*; they NEVER ran — collection error since commit
+  b5d40232a). 11 hidden failures repaired honestly; exposed 2 REAL bugs, both fixed:
+  hasMention email false-positive (pushed on every email in a body) and the autoDissmisMs
+  typo (Toast.autoDismissMs always undefined).
+- Chat suites now 98/98 with 0 failed SUITES — always verify vitest at suite level via
+  --reporter=json; the default reporter (and rtk compression) hides collection errors.
+- Shared-checkout hazard ongoing: another session's untracked src/pages/testhub-lab/ WIP
+  adds +57 to ads-audit-gate and intermittently breaks the dev overlay. Not ours.
