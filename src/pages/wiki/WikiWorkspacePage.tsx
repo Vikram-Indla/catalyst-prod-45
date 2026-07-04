@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PageTree, type PageTreeMove } from '@/components/wiki-hub/PageTree';
 import WikiPageSurface from '@/components/wiki-hub/WikiPageSurface';
 import { Routes } from '@/lib/routes';
+import { WIKI_TEMPLATES, type WikiTemplate } from '@/components/wiki-hub/templates';
 import {
   useCreateWikiPage,
   useMoveWikiPage,
@@ -53,6 +54,26 @@ export default function WikiWorkspacePage() {
           onSuccess: (created) => {
             navigate(Routes.wiki.page(workspace.slug, created.slug));
           },
+        },
+      );
+    },
+    [createPage, navigate, workspace],
+  );
+
+  const handleCreateFromTemplate = useCallback(
+    (template: WikiTemplate) => {
+      if (!workspace) return;
+      createPage.mutate(
+        {
+          spaceId: workspace.id,
+          title: template.name,
+          parentId: null,
+          content: template.blocks,
+          icon: template.icon,
+          templateKey: template.key,
+        },
+        {
+          onSuccess: (created) => navigate(Routes.wiki.page(workspace.slug, created.slug)),
         },
       );
     },
@@ -161,6 +182,55 @@ export default function WikiWorkspacePage() {
             <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', margin: '0 0 24px' }}>
               {workspace.description || 'Select a page from the tree, or create one.'}
             </p>
+
+            <h2 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text-subtle)', margin: '0 0 10px' }}>
+              Start writing
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => handleCreate(null)}
+                style={{
+                  textAlign: 'start',
+                  padding: '14px 16px',
+                  border: '1px solid var(--ds-border)',
+                  borderRadius: 8,
+                  background: 'var(--ds-surface)',
+                  cursor: 'pointer',
+                }}
+              >
+                <span aria-hidden style={{ fontSize: 20 }}>📄</span>
+                <p style={{ margin: '6px 0 2px', font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
+                  Blank page
+                </p>
+                <p style={{ margin: 0, color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+                  Start from nothing
+                </p>
+              </button>
+              {WIKI_TEMPLATES.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => handleCreateFromTemplate(t)}
+                  style={{
+                    textAlign: 'start',
+                    padding: '14px 16px',
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 8,
+                    background: 'var(--ds-surface)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span aria-hidden style={{ fontSize: 20 }}>{t.icon}</span>
+                  <p style={{ margin: '6px 0 2px', font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
+                    {t.name}
+                  </p>
+                  <p style={{ margin: 0, color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+                    {t.description}
+                  </p>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </main>
