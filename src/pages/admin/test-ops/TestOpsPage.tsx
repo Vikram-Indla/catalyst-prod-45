@@ -30,6 +30,7 @@ import {
   useTmRoles, useTmUserRoles, useAssignTmUserRole, useRemoveTmUserRole,
 } from '@/hooks/test-management/useTmUserRoles';
 import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetection';
+import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -311,7 +312,45 @@ function TeamRolesTab() {
   );
 }
 
-// ── F. Flaky tests ─────────────────────────────────────────────────────────
+// ── F. Coverage gaps ───────────────────────────────────────────────────────
+// P3-F2: Identifies stories/features with zero linked test cases.
+function CoverageGapsTab() {
+  const { data: gaps = [], isLoading, isError } = useCoverageGaps();
+
+  if (isLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'k', content: 'Issue key' }, { key: 't', content: 'Type' },
+    { key: 'p', content: 'Project' }, { key: 's', content: 'Summary' },
+    { key: 'l', content: 'Linked tests' } ] };
+
+  const rows = gaps.map((gap) => ({ key: gap.id, cells: [
+    { key: 'k', content: <code style={{ color: 'var(--ds-text-brand)' }}>{gap.issue_key}</code> },
+    { key: 't', content: <Lozenge appearance="default">{gap.type}</Lozenge> },
+    { key: 'p', content: gap.project_name },
+    { key: 's', content: <span style={{ color: 'var(--ds-text)', fontSize: 13 }}>{gap.summary}</span> },
+    { key: 'l', content: <Lozenge appearance="removed">0</Lozenge> } ] }));
+
+  return (
+    <Panel>
+      <H>Coverage Gaps — Uncovered Items</H>
+      <Note>
+        Stories/Features with zero linked test cases. Computed from <code>ph_issues</code>{' '}
+        left join <code>tm_requirement_links</code> — these items need QA planning before release gating.
+        Sort by project to identify high-impact coverage voids.
+      </Note>
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load coverage gaps.</p></SectionMessage>
+      ) : gaps.length === 0 ? (
+        <Note>All stories/features have at least one linked test case. Coverage complete.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
+// ── G. Flaky tests ─────────────────────────────────────────────────────────
 // P3-F1: Identifies tests failing >20% in last 7 days.
 function FlakyTestsTab() {
   const { data: flakyTests = [], isLoading, isError } = useFlakyTestDetection();
@@ -363,6 +402,7 @@ export default function TestOpsPage() {
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
             <Tab>Team &amp; roles</Tab>
+            <Tab>Coverage gaps</Tab>
             <Tab>Flaky tests</Tab>
           </TabList>
           <TabPanel><CoverageTab /></TabPanel>
@@ -370,6 +410,7 @@ export default function TestOpsPage() {
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
           <TabPanel><TeamRolesTab /></TabPanel>
+          <TabPanel><CoverageGapsTab /></TabPanel>
           <TabPanel><FlakyTestsTab /></TabPanel>
         </Tabs>
       </div>

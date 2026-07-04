@@ -587,6 +587,28 @@ Bounded backlog. **Pull rule:** an item enters execution ONLY as a written 2-hou
 
 Backlog: shared steps / parameterized (data-driven) cases (reuse `tm_test_steps.is_shared`, A4 N5); flaky-test detection from run history; AI coverage-gap suggestions + AI insight cards on remaining surfaces (reuse report-insights pattern); exploratory/session-based testing notes; bulk import (CSV/TestRail); PDF/exec export; cross-project dashboards; keyboard-first runner (TestRail-parity hotkeys); requirement-change → "needs re-test" flagging (needs VER stack — last); public read-only report links; `tm_defect_status_history` + MTTR (A4 N2, D-004 pattern); `tm_coverage_history` snapshots (A4 N4); `tm_baselines`/`tm_watchers` (A4 N6); defect key zero-padding normalization in `tm_next_entity_key` (DAT-058); shared FolderTree (D-REQ-4, VETO-5 — its own approval line).
 
+### SUBTASK P3-F2 · AI coverage-gap suggestions
+- **Purpose:** Identify stories/features with zero linked test cases; surface on TestOps admin so teams know which items need QA investment before release.
+- **Files to touch:**
+  - `src/hooks/test-management/useCoverageGaps.ts` (new — queries ph_issues uncovered by tm_requirement_links, groups by project/type)
+  - `src/pages/admin/test-ops/TestOpsPage.tsx` (add "Coverage gaps" tab after Flaky tests tab)
+- **Files forbidden:** report bodies (§2 VETO-8); report hooks; §2 full list.
+- **Dependencies:** P2 complete (ph_issues + tm_requirement_links live).
+- **Acceptance command:**
+```bash
+# coverage-gap logic returns correct item list
+grep -n "linked_item_id\|NOT EXISTS" src/hooks/test-management/useCoverageGaps.ts
+# UI renders with no console errors
+npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
+```
+- **Acceptance condition (binary):**
+  - Query returns stories/features with zero linked test cases (SQL round-trip: X items uncovered by type)
+  - TestOps admin tab shows list with issue key + type + project + "linked test count" (0)
+  - ADS tokens only (no hard colors), fully gated by admin role
+- **Screenshot/evidence:** TestOps "Coverage gaps" tab before/after, light + dark; SQL query output proving coverage math; B9 admin re-proof (ModuleGate still guards access).
+- **Rollback:** `git revert` (zero schema changes).
+- **Done when:** admin views uncovered items, SQL proves zero linked cases for each.
+
 ### SUBTASK P3-F1 · Flaky-test detection
 - **Purpose:** Identify tests failing intermittently (>20% failure rate in last 7 days); surface on TestOps admin panel so teams can stabilize high-noise tests before release gating.
 - **Files to touch:** 
