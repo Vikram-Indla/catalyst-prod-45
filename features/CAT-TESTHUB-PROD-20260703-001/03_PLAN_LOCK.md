@@ -587,6 +587,30 @@ Bounded backlog. **Pull rule:** an item enters execution ONLY as a written 2-hou
 
 Backlog: shared steps / parameterized (data-driven) cases (reuse `tm_test_steps.is_shared`, A4 N5); flaky-test detection from run history; AI coverage-gap suggestions + AI insight cards on remaining surfaces (reuse report-insights pattern); exploratory/session-based testing notes; bulk import (CSV/TestRail); PDF/exec export; cross-project dashboards; keyboard-first runner (TestRail-parity hotkeys); requirement-change → "needs re-test" flagging (needs VER stack — last); public read-only report links; `tm_defect_status_history` + MTTR (A4 N2, D-004 pattern); `tm_coverage_history` snapshots (A4 N4); `tm_baselines`/`tm_watchers` (A4 N6); defect key zero-padding normalization in `tm_next_entity_key` (DAT-058); shared FolderTree (D-REQ-4, VETO-5 — its own approval line).
 
+### SUBTASK P3-F3 · Defect status history + MTTR computation
+- **Purpose:** Track defect status changes over time; compute mean-time-to-resolution (MTTR) from creation to closed/resolved. Surface MTTR on defect detail view + admin metrics to measure team velocity and QA process efficiency.
+- **Files to touch:**
+  - `supabase/migrations/<unique-ts>_tm_defect_status_history.sql` (new — table + trigger + RPC)
+  - `src/integrations/supabase/types.ts` (regen after migration)
+  - `src/hooks/test-management/useDefectMetrics.ts` (new — hook wrapping RPC, returns defect_id + mttr_hours + status_change_count)
+  - `src/pages/admin/test-ops/TestOpsPage.tsx` (add "Defect metrics" tab with MTTR summary)
+- **Files forbidden:** report bodies (§2 VETO-8); defect detail views beyond adding one read-only MTTR field; §2 full list.
+- **Dependencies:** P2 complete (tm_defects live); defects created/updated via canonical path (P0-S7).
+- **Acceptance command:**
+```bash
+# Schema audit: table exists, trigger logs changes, RPC returns correct MTTR
+[ "$(grep -c 'tm_defect_status_history' src/integrations/supabase/types.ts)" = "1" ] && \
+npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
+```
+- **Acceptance condition (binary):**
+  - Migration applied: `tm_defect_status_history` table has rows, one per status change (SQL: verify count matches defect update count)
+  - RPC `tm_get_defect_mttr()` returns defect_id + mttr_hours (hours from creation to closed, NULL if open)
+  - Admin "Defect metrics" tab shows: total defects, avg MTTR (hours), median MTTR, count by status
+  - Zero console errors on load
+- **Screenshot/evidence:** TestOps "Defect metrics" tab light + dark; SQL query output proving trigger logging; B9 admin re-proof (ModuleGate still guards access).
+- **Rollback:** DROP TRIGGER, DROP TABLE, DROP FUNCTION (all reversible).
+- **Done when:** admin views MTTR stats, SQL proves trigger fired on every status change, RPC computes correctly.
+
 ### SUBTASK P3-F2 · AI coverage-gap suggestions
 - **Purpose:** Identify stories/features with zero linked test cases; surface on TestOps admin so teams know which items need QA investment before release.
 - **Files to touch:**

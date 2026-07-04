@@ -31,6 +31,7 @@ import {
 } from '@/hooks/test-management/useTmUserRoles';
 import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetection';
 import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
+import { useDefectMetrics } from '@/hooks/test-management/useDefectMetrics';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -312,6 +313,92 @@ function TeamRolesTab() {
   );
 }
 
+// ── E. Defect metrics — MTTR & velocity ────────────────────────────────────
+// P3-F3: Tracks defect lifecycle + computes time-to-resolution.
+function DefectMetricsTab() {
+  const { data, isLoading, isError } = useDefectMetrics();
+
+  if (isLoading) return <Loading />;
+
+  const stats = data?.stats;
+  const defects = data?.defects ?? [];
+
+  const head = { cells: [
+    { key: 'k', content: 'Defect key' }, { key: 's', content: 'Status' },
+    { key: 'c', content: 'Created' }, { key: 'm', content: 'MTTR (hrs)' } ] };
+
+  const rows = defects
+    .filter((d) => d.closed_at) // Show only closed defects in table
+    .slice(0, 10) // Top 10 most recent
+    .map((d) => ({ key: d.id, cells: [
+      { key: 'k', content: <code style={{ color: 'var(--ds-text-brand)' }}>{d.defect_key}</code> },
+      { key: 's', content: <Lozenge appearance={d.status === 'closed' ? 'success' : 'moved'}>{d.status}</Lozenge> },
+      { key: 'c', content: new Date(d.created_at).toLocaleDateString() },
+      { key: 'm', content: d.mttr_hours ? d.mttr_hours.toFixed(1) : '—' } ] }));
+
+  const statusEntries = stats ? Object.entries(stats.by_status).map(([status, count]) => ({
+    key: status,
+    cells: [
+      { key: 's', content: <Lozenge appearance="default">{status}</Lozenge> },
+      { key: 'c', content: count },
+    ],
+  })) : [];
+
+  return (
+    <Panel>
+      <H>Defect Metrics — Lifecycle &amp; Resolution Time</H>
+      <Note>
+        Tracks defect status transitions via <code>tm_defect_status_history</code>{' '}
+        and computes MTTR (mean-time-to-resolution) from creation to closed/resolved.
+        Use to measure team velocity and QA process efficiency.
+      </Note>
+
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load defect metrics.</p></SectionMessage>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Total defects</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>{stats?.total_defects ?? 0}</div>
+            </div>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Closed</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>{stats?.closed_defects ?? 0}</div>
+            </div>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Avg MTTR</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>
+                {stats?.avg_mttr_hours ? `${stats.avg_mttr_hours.toFixed(1)}h` : '—'}
+              </div>
+            </div>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Median MTTR</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>
+                {stats?.median_mttr_hours ? `${stats.median_mttr_hours.toFixed(1)}h` : '—'}
+              </div>
+            </div>
+          </div>
+
+          <H style={{ marginTop: 24 }}>Recent closed defects (top 10)</H>
+          {rows.length === 0 ? (
+            <Note>No closed defects yet.</Note>
+          ) : (
+            <DynamicTable head={head} rows={rows} isFixedSize />
+          )}
+
+          <H style={{ marginTop: 24 }}>Defects by status</H>
+          <DynamicTable
+            head={{ cells: [{ key: 's', content: 'Status' }, { key: 'c', content: 'Count' }] }}
+            rows={statusEntries}
+            isFixedSize
+          />
+        </>
+      )}
+    </Panel>
+  );
+}
+
 // ── F. Coverage gaps ───────────────────────────────────────────────────────
 // P3-F2: Identifies stories/features with zero linked test cases.
 function CoverageGapsTab() {
@@ -402,6 +489,7 @@ export default function TestOpsPage() {
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
             <Tab>Team &amp; roles</Tab>
+            <Tab>Defect metrics</Tab>
             <Tab>Coverage gaps</Tab>
             <Tab>Flaky tests</Tab>
           </TabList>
@@ -410,6 +498,7 @@ export default function TestOpsPage() {
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
           <TabPanel><TeamRolesTab /></TabPanel>
+          <TabPanel><DefectMetricsTab /></TabPanel>
           <TabPanel><CoverageGapsTab /></TabPanel>
           <TabPanel><FlakyTestsTab /></TabPanel>
         </Tabs>
