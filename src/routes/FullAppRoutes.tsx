@@ -345,6 +345,9 @@ const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pa
 const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
+const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
+const WikiSandboxPage = lazy(() => import("../pages/wiki/WikiSandboxPage"));
+
 const IncidentDetail = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentDetail })));
 const IncidentsDashboard = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentsDashboard })));
 const CreateIncident = lazy(() => import("../pages/release").then(m => ({ default: m.CreateIncident })));
@@ -803,8 +806,11 @@ export default function FullAppRoutes() {
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
         <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
-        {/* Wiki deprecated 2026-06-25 — all routes removed */}
-        <Route path="/wiki*" element={<Navigate to="/for-you" replace />} />
+        {/* Wiki — Catalyst Pages (CAT-DOCS-NOTION-20260704-001) */}
+        <Route path="/wiki" element={<S><WikiHomePage /></S>} />
+        {import.meta.env.DEV && (
+          <Route path="/wiki/_sandbox" element={<S><WikiSandboxPage /></S>} />
+        )}
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />

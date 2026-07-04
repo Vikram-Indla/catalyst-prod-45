@@ -211,6 +211,17 @@ export const knowledgeHubRoutes = {
 };
 
 // ---------------------------------------------------------------------------
+// Wiki — Catalyst Pages (CAT-DOCS-NOTION-20260704-001)
+// Workspaces per project/product/organization; pages addressed by slug.
+// ---------------------------------------------------------------------------
+
+export const wikiRoutes = {
+  root: () => '/wiki',
+  workspace: (workspaceSlug: string) => `/wiki/${workspaceSlug}`,
+  page: (workspaceSlug: string, pageSlug: string) => `/wiki/${workspaceSlug}/${pageSlug}`,
+};
+
+// ---------------------------------------------------------------------------
 // Work items / Browse
 // ---------------------------------------------------------------------------
 
@@ -248,6 +259,7 @@ export const Routes = {
   portfolio: portfolioRoutes,
   tasks: tasksRoutes,
   knowledgeHub: knowledgeHubRoutes,
+  wiki: wikiRoutes,
   browse: browseRoutes,
   admin: adminRoutes,
 } as const;
