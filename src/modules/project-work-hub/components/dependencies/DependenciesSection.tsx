@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
 import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import TrashIcon from '@atlaskit/icon/core/delete';
 import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   JiraTable, type Column,
   makeKeyCell, makeSummaryCell, makeStatusCell, makeAssigneeCell, makePriorityCell,
@@ -13,7 +14,7 @@ import { getEntry } from '@/components/shared/Timeline/dependencies/normalize';
 import { useTimelineDependencies } from '@/components/shared/Timeline/dependencies/useTimelineDependencies';
 import { SUBTASK_FAMILY_CANONICAL_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
 import { useAddDependencyListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
-import { AddDependencyDialog } from './AddDependencyDialog';
+import { DependencyToolbar } from './DependencyToolbar';
 import { toDependencyRows, RELATIONSHIP_LABEL, type DependencyRow } from './depSectionModel';
 
 export interface DependenciesSectionProps {
@@ -34,11 +35,23 @@ type Row = DependencyRow & { meta: DepMeta | null };
 
 export function DependenciesSection({ issueKey, projectKey }: DependenciesSectionProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [showToolbar, setShowToolbar] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const rootRef = useRef<HTMLElement>(null);
 
   const deps = useTimelineDependencies(projectKey ? [projectKey] : []);
   const queryClient = useQueryClient();
-  useAddDependencyListener(useCallback(() => setDialogOpen(true), []));
+
+  // "+" menu → open the inline toolbar (Jira parity: scroll the section into
+  // view + reveal the inline add row, exactly like LinkedWorkItems). NOT a modal.
+  const openToolbar = useCallback(() => {
+    setCollapsed(false);
+    setShowToolbar(true);
+    requestAnimationFrame(() => {
+      rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, []);
+  useAddDependencyListener(openToolbar);
 
   const baseRows = useMemo(
     () => (issueKey ? toDependencyRows(getEntry(deps.index, issueKey)) : []),
@@ -81,6 +94,33 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
   const subtaskTypesLower = useMemo(
     () => new Set(SUBTASK_FAMILY_CANONICAL_TYPES.map((t) => t.toLowerCase())),
     [],
+  );
+
+  const invalidateTimeline = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] }),
+    [queryClient],
+  );
+
+  // Create one edge per selected key. Surface the first error via toast and
+  // keep the toolbar open; close it only when every insert succeeds.
+  const handleAdd = useCallback(
+    async (direction: 'blocks' | 'is_blocked_by', targetKeys: string[]) => {
+      if (!targetKeys.length) return;
+      setAdding(true);
+      let firstError: string | null = null;
+      for (const otherKey of targetKeys) {
+        const res = await deps.addDependency({ rowKey: issueKey, direction, otherKey, projectKey });
+        if (!res.ok && !firstError) firstError = res.error ?? 'Failed to add dependency';
+      }
+      invalidateTimeline();
+      setAdding(false);
+      if (firstError) {
+        catalystToast.error(firstError);
+        return;
+      }
+      setShowToolbar(false);
+    },
+    [deps, issueKey, projectKey, invalidateTimeline],
   );
 
   // Canonical read-only cells (parity with the child work item table).
@@ -128,7 +168,7 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
   if (!issueKey) return null;
 
   return (
-    <section style={{ marginTop: 8 }}>
+    <section ref={rootRef} style={{ marginTop: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <button
           onClick={() => setCollapsed((c) => !c)}
@@ -142,12 +182,24 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
           <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>{rows.length}</span>
         )}
         <button
-          onClick={() => setDialogOpen(true)}
+          onClick={openToolbar}
           style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-100)' }}
         >
           Add dependency
         </button>
       </div>
+
+      {!collapsed && showToolbar && (
+        <DependencyToolbar
+          sourceIssueKey={issueKey}
+          projectKey={projectKey}
+          index={deps.index}
+          subtaskTypesLower={subtaskTypesLower}
+          isPending={adding}
+          onAdd={handleAdd}
+          onCancel={() => setShowToolbar(false)}
+        />
+      )}
 
       {!collapsed && rows.length > 0 && (
         <JiraTable
@@ -163,26 +215,12 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
             onClick: (r) => {
               void (async () => {
                 await deps.removeDependency(r.edgeId);
-                queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] });
+                invalidateTimeline();
               })();
             },
           }]}
         />
       )}
-
-      <AddDependencyDialog
-        isOpen={dialogOpen}
-        issueKey={issueKey}
-        projectKey={projectKey}
-        index={deps.index}
-        subtaskTypesLower={subtaskTypesLower}
-        onClose={() => setDialogOpen(false)}
-        onSubmit={async (direction, otherKey) => {
-          const result = await deps.addDependency({ rowKey: issueKey, direction, otherKey, projectKey });
-          queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] });
-          return result;
-        }}
-      />
     </section>
   );
 }
