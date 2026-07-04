@@ -31,7 +31,7 @@ import { CatalystTitleEditor } from '../shared/sections/CatalystTitleEditor';
 import { CatalystKeyDetails, KeyDetailsFieldRow } from '../shared/sections/CatalystKeyDetails';
 import { Description } from '../shared/sections/Description';
 import { mapBrToIssueLike } from './sections/BrSidebarAdapter';
-import { CatalystQuickActions } from '../shared/sections';
+import { CatalystPagesSection, CatalystQuickActions } from '../shared/sections';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import {
@@ -361,6 +361,7 @@ export default function CatalystViewBusinessRequestV3({
           />
         )}
         {!isNewlyCreated && <BrAttachmentsSection request={request} />}
+        {!isNewlyCreated && <CatalystPagesSection entityType="business_request" entityId={resolvedId} entityLabel={request?.request_key} isOpen={isOpen} />}
         {/* Order matches Story: Subtasks → Linked → Activity. */}
         {!isNewlyCreated && request?.request_key && resolvedId && (
           <SubtasksPanel

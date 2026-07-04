@@ -24,7 +24,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, StatusLozengeDropdown, CatalystKeyDetails,
+  CatalystActivitySection, CatalystPagesSection, CatalystSidebarDetails, StatusLozengeDropdown, CatalystKeyDetails,
 } from '../shared/sections';
 /* v1 Tiptap description — Story-only swap. All other CatalystView* still use
    the legacy CatalystDescriptionSection. Promotion to canonical pending PO
@@ -160,6 +160,7 @@ export default function CatalystViewStory({
           source={workItemSource}
         />
       )}
+      <CatalystPagesSection entityType="story" entityId={issue?.id} entityLabel={issue?.issue_key} isOpen={isOpen} />
 
       {/* Child sub-tasks (canonical SubtasksPanel) */}
       {issue?.issue_key && (

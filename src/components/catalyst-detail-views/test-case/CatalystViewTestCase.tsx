@@ -33,6 +33,7 @@ import {
   KeyDetailsFieldRow,
   Description,
   CatalystSidebarDetails,
+  CatalystPagesSection,
 } from '../shared/sections';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
@@ -676,6 +677,12 @@ export default function CatalystViewTestCase({
             loadAdf={descriptionAdf}
           />
         }
+      />
+      <CatalystPagesSection
+        entityType="test_case"
+        entityId={itemId}
+        entityLabel={testCase?.key ?? testCase?.case_key ?? null}
+        isOpen={isOpen}
       />
     </div>
   );

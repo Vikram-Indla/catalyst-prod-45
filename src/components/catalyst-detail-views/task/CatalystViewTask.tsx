@@ -10,7 +10,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystPagesSection, CatalystSidebarDetails, CatalystKeyDetails,
   StatusLozengeDropdown, KeyDetailsFieldRow,
 } from '../shared/sections';
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
@@ -99,6 +99,7 @@ export default function CatalystViewTask({
       {/* Canonical section order across all CatalystView*: Attachments
           → Child work items → Linked work items → Activity. */}
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
+      <CatalystPagesSection entityType="task" entityId={issue?.id} entityLabel={issue?.issue_key} isOpen={isOpen} />
 
       {issue?.issue_key && (
         <SubtasksPanel

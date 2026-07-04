@@ -428,7 +428,12 @@ export function VoiceFlowProvider({ children }: Props) {
           if (event.results[i].isFinal) finalTranscript += t;
           else interim += t;
         }
-        if (interim && statusRef.current === 'listening') setPartialText(interim);
+        // Live caption accumulates finals + interim so the speaker sees the
+        // whole utterance build up, not just the trailing fragment.
+        if (statusRef.current === 'listening') {
+          const live = (finalTranscript + interim).trim();
+          if (live) setPartialText(live);
+        }
       };
 
       recognition.onend = async () => {

@@ -296,13 +296,17 @@ export function useWikiPagesForWorkItem(
     queryFn: async () => {
       const { data, error } = await db
         .from('kb_document_links')
-        .select(`id, link_origin, created_at, document:kb_documents (${PAGE_SUMMARY_COLS})`)
+        .select(
+          `id, link_origin, created_at, document:kb_documents (${PAGE_SUMMARY_COLS}, space:kb_doc_spaces (id, slug, name))`,
+        )
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
         .order('created_at');
       if (error) throw error;
       return (data ?? []) as Array<
-        Pick<WikiDocumentLink, 'id' | 'link_origin' | 'created_at'> & { document: WikiPageSummary | null }
+        Pick<WikiDocumentLink, 'id' | 'link_origin' | 'created_at'> & {
+          document: (WikiPageSummary & { space: { id: string; slug: string; name: string } | null }) | null;
+        }
       >;
     },
   });
