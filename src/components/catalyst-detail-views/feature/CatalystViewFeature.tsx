@@ -2,6 +2,7 @@
  * CatalystViewFeature — Feature detail overlay.
  */
 import React, { useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { catalystToast } from '@/lib/catalystToast';
 import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
@@ -31,6 +32,7 @@ export default function CatalystViewFeature({
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const navigate = useNavigate();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
@@ -133,7 +135,13 @@ export default function CatalystViewFeature({
            work item (parent of Story). Jira strict-hierarchy rule: only base items
            (Story / Task / Bug / Defect) may be converted to Sub-task. */
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
-        { label: 'Move', onClick: () => setShowMoveDialog(true) },
+        { label: 'Move', onClick: () => {
+          const pk = issue?.project_key ?? projectKey;
+          const ik = issue?.issue_key;
+          if (!pk || !ik) return;
+          onClose?.();
+          navigate(`/project-hub/${pk}/issue/${ik}/move`);
+        } },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete feature', onClick: () => setShowDeleteDialog(true), danger: true },
       // eslint-disable-next-line react-hooks/exhaustive-deps

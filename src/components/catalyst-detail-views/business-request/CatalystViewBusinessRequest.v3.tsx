@@ -15,6 +15,7 @@
  *   - KanbanPage, CardsPage, RequestListingPage, ProductRoadmapPage
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -97,6 +98,7 @@ export default function CatalystViewBusinessRequestV3({
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
+  const navigate = useNavigate();
 
   /* Dropdown open state tracking — Type, Category, Theme.
      X (clear) button only shows when dropdown is expanded. */
@@ -454,7 +456,12 @@ export default function CatalystViewBusinessRequestV3({
           () => [
             { label: 'Print', onClick: () => window.print() },
             { label: 'Clone', onClick: () => setShowCloneDialog(true) },
-            { label: 'Move to product…', onClick: () => setShowMoveDialog(true) },
+            { label: 'Move to product…', onClick: () => {
+              const rk = request?.request_key;
+              if (!rk) return;
+              onClose?.();
+              navigate(`/product-hub/requests/${rk}/move`);
+            } },
             { label: 'Delete request', onClick: () => setShowDeleteDialog(true), danger: true },
           ],
           // eslint-disable-next-line react-hooks/exhaustive-deps

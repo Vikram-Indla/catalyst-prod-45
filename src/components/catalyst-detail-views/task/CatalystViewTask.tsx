@@ -153,7 +153,13 @@ export default function CatalystViewTask({
           navigate(`/project-hub/${pk}/issue/${ik}/convert-to-subtask`);
         } },
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
-        { label: 'Move', onClick: () => setShowMoveDialog(true) },
+        { label: 'Move', onClick: () => {
+          const pk = issue?.project_key ?? projectKey;
+          const ik = issue?.issue_key;
+          if (!pk || !ik) return;
+          onClose?.();
+          navigate(`/project-hub/${pk}/issue/${ik}/move`);
+        } },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete task', onClick: () => setShowDeleteDialog(true), danger: true },
       // eslint-disable-next-line react-hooks/exhaustive-deps
