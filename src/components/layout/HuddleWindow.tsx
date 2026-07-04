@@ -2,8 +2,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddleMarker, onHuddleMarker } from '@/store/huddleStore';
 import { Avatar } from '@/components/ads';
-import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
+import { useActiveHuddle, useHuddleActions } from '@/hooks/chat/useHuddleData';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { useAuth } from '@/hooks/useAuth';
+import type { ChatConversation } from '@/types/chat';
 import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
 import { Composer } from '@/features/chat-v2/components/Composer/Composer';
 import { MessageList } from '@/features/chat-v2/components/MessagePanel/MessageList';
@@ -84,6 +86,8 @@ export function HuddleWindow() {
   const HUDDLE_MAX = 4;
   const canAddPeople = participants.length < HUDDLE_MAX;
   const [addOpen, setAddOpen] = useState(false);
+  const { user } = useAuth();
+  const { startOrJoin } = useHuddleActions();
   const remoteSharing = !!active?.remoteSharing;
   const localSharing = !!active?.screenSharing;
   const showRemote = remoteSharing;
@@ -134,6 +138,14 @@ export function HuddleWindow() {
   const leave = useHuddleStore((s) => s.leave);
   const toggleChatPanel = useHuddleStore((s) => s.toggleChatPanel);
   const muted = !!active?.micMuted;
+
+  // Adding people to a 1:1 DM created a fresh group — leave this call and start
+  // the huddle in the new group (the other members get rung there).
+  const handleMovedToGroup = useCallback(async (newConvId: string, title: string) => {
+    setAddOpen(false);
+    leave();
+    await startOrJoin({ id: newConvId, title } as ChatConversation);
+  }, [leave, startOrJoin]);
   const sharing = !!active?.screenSharing;
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -425,14 +437,16 @@ export function HuddleWindow() {
         </button>
       </div>
 
-      {addOpen && active && (
+      {addOpen && active && user && (
         <HuddleAddPeople
           conversationId={active.conversationId}
           conversationName={active.conversationName}
+          currentUserId={user.id}
           existingMemberIds={new Set(participants.map((p) => p.userId))}
           remainingSlots={Math.max(0, HUDDLE_MAX - participants.length)}
           onClose={() => setAddOpen(false)}
           onAdded={() => setAddOpen(false)}
+          onMovedToGroup={handleMovedToGroup}
         />
       )}
     </div>

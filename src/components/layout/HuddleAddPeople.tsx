@@ -14,30 +14,55 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useChatAddMember } from '@/hooks/chat/useChatActions';
+import { useStartGroupDm } from '@/hooks/chat/useStartGroupDm';
 import { useWorkspacePeopleSearch, type PeopleHit } from '@/features/chat-v2/hooks/useWorkspacePeopleSearch';
 import { Avatar } from '@/components/ads';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
+interface ConvInfo { kind: string; otherMemberIds: string[] }
+
 interface Props {
   conversationId: string;
   conversationName: string;
+  currentUserId: string;
   existingMemberIds: Set<string>;
   remainingSlots: number;
   onClose: () => void;
   onAdded: () => void;
+  /** Called after a 1:1 DM was expanded into a NEW group — switch the huddle. */
+  onMovedToGroup: (newConversationId: string, groupTitle: string) => void;
 }
 
-export function HuddleAddPeople({ conversationId, conversationName, existingMemberIds, remainingSlots, onClose, onAdded }: Props) {
+export function HuddleAddPeople({ conversationId, conversationName, currentUserId, existingMemberIds, remainingSlots, onClose, onAdded, onMovedToGroup }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const addMember = useChatAddMember();
+  const startGroupDm = useStartGroupDm();
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [conv, setConv] = useState<ConvInfo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { hits, isLoading } = useWorkspacePeopleSearch(query);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
+
+  // Fetch conversation kind + members so we know whether adding people should
+  // grow the conversation (channel / group) or spin up a NEW group (1:1 DM).
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const [{ data: c }, { data: members }] = await Promise.all([
+        db.from('chat_conversations').select('kind').eq('id', conversationId).maybeSingle(),
+        db.from('chat_conversation_members').select('user_id').eq('conversation_id', conversationId),
+      ]);
+      if (cancelled) return;
+      const otherMemberIds = ((members ?? []) as { user_id: string }[])
+        .map((m) => m.user_id).filter((id) => id !== currentUserId);
+      setConv({ kind: (c as { kind: string } | null)?.kind ?? 'dm', otherMemberIds });
+    })();
+    return () => { cancelled = true; };
+  }, [conversationId, currentUserId]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
     document.addEventListener('keydown', onKey, true);
@@ -46,10 +71,26 @@ export function HuddleAddPeople({ conversationId, conversationName, existingMemb
 
   const results = hits.filter((h) => !existingMemberIds.has(h.id));
 
+  // A true 1:1 DM = kind 'dm' with exactly one other member. Adding to it must
+  // NOT pollute the DM — create a fresh group and move the call there.
+  const isOneToOneDm = !!conv && conv.kind === 'dm' && conv.otherMemberIds.length === 1;
+
   const add = async (p: PeopleHit) => {
-    if (busyId) return;
+    if (busyId || !conv) return;
     setBusyId(p.id);
     try {
+      if (isOneToOneDm) {
+        // New group = me + the existing DM peer + the new person. The huddle
+        // moves there (caller switches); everyone else gets rung in the group.
+        const otherIds = Array.from(new Set([...conv.otherMemberIds, p.id]));
+        const newConvId = await startGroupDm.mutateAsync(otherIds);
+        const title = `Group call`;
+        toast({ title: `Moving to a group call with ${p.name}` });
+        onMovedToGroup(newConvId, title);
+        onClose();
+        return;
+      }
+      // Channel / existing group — grow it in place.
       await addMember.mutateAsync({ convId: conversationId, userId: p.id });
       await db.from('chat_messages').insert({
         conversation_id: conversationId,

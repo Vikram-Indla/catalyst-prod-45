@@ -20,8 +20,6 @@ import MinusIcon from "@atlaskit/icon/core/minus";
 import { CatyPulseIcon } from "@/components/ui/CatyPulseIcon";
 import { useConversations } from "@/hooks/chat/useConversations";
 import { useIncomingHuddle } from "@/hooks/chat/useIncomingHuddle";
-import { startRing, stopRing } from "@/lib/chat/huddle/ringtone";
-import { DockCallRing } from "./DockCallRing";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
 import { useDraggableFab } from "./useDraggableFab";
@@ -248,97 +246,33 @@ export function ChatDock({
 
   const fabRef = React.useRef<HTMLButtonElement>(null);
 
-  // Incoming huddle → vibrate the FAB (magenta) instead of a separate strap.
-  // Hovering the FAB stops the vibration and fans out decline/snooze/accept.
-  const { incoming, snoozedCall, accept: acceptCall, decline: declineCall, snooze: snoozeCall } = useIncomingHuddle();
-  const ringing = !!incoming;
-  const snoozed = !!snoozedCall;
-  const callActive = ringing || snoozed;
-  const [ringHovered, setRingHovered] = React.useState(false);
-  const ringDiscRef = React.useRef<HTMLSpanElement>(null);
-  const ringPulseRef = React.useRef<HTMLSpanElement>(null);
-  const ringCloseRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const openRing = React.useCallback(() => {
-    if (ringCloseRef.current) { clearTimeout(ringCloseRef.current); ringCloseRef.current = null; }
-    setRingHovered(true);
-  }, []);
-  const closeRing = React.useCallback(() => {
-    if (ringCloseRef.current) clearTimeout(ringCloseRef.current);
-    ringCloseRef.current = setTimeout(() => setRingHovered(false), 220);
-  }, []);
-
-  React.useEffect(() => {
-    if (!ringing) { setRingHovered(false); return; }
-    startRing();
-    window.dispatchEvent(new CustomEvent('huddle:incoming-ring'));
-    return () => stopRing();
-  }, [ringing, incoming?.huddleId]);
-
-  // rAF-driven vibrate + expanding ring. Inline transforms bypass the global
-  // `prefers-reduced-motion` reset in index.css that kills all CSS animation.
-  React.useEffect(() => {
-    if (!ringing) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const loop = (now: number) => {
-      const t = (now - t0) / 1000;
-      const disc = ringDiscRef.current;
-      const ring = ringPulseRef.current;
-      if (disc) {
-        disc.style.transform = ringHovered
-          ? 'translate(0,0) rotate(0deg)'
-          : `translate(${(Math.sin(t * 40) * 1.4).toFixed(2)}px, ${(Math.cos(t * 36) * 0.9).toFixed(2)}px) rotate(${(Math.sin(t * 38) * 3).toFixed(2)}deg)`;
-      }
-      if (ring) {
-        const p = (t % 1.25) / 1.25; // 0→1 expanding pulse
-        ring.style.transform = `scale(${(0.9 + p * 0.85).toFixed(3)})`;
-        ring.style.opacity = (0.65 * (1 - p)).toFixed(3);
-      }
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(raf);
-      if (ringDiscRef.current) ringDiscRef.current.style.transform = '';
-    };
-  }, [ringing, ringHovered]);
-
-  const fanOpen = callActive && ringHovered;
+  // Incoming/snoozed huddle → the global IncomingHuddleFab (mounted in
+  // CatalystShell) owns the vibrating ring + decline/snooze/accept fan so it
+  // works on EVERY route (incl. /chat where this dock is hidden). Here we only
+  // hide the launcher while a call is active, so the two FABs never overlap.
+  const { incoming, snoozedCall } = useIncomingHuddle();
+  const callActive = !!incoming || !!snoozedCall;
 
   // Full list passed to DockDirectory so archived section works.
   const listConversations = conversations ?? [];
 
-  const fabHidden = dockMounted && !collapsed;
+  const fabHidden = (dockMounted && !collapsed) || callActive;
   const fab = (
-    <>
     <button
       ref={fabRef}
       type="button"
-      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${ringing && !fanOpen ? ' cc-fab--ringing' : ''}${snoozed ? ' cc-fab--snoozed' : ''}`}
+      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
       style={{ top: pos.y, left: pos.x, display: fabHidden ? 'none' : undefined }}
       onClick={() => { if (!didMove.current) onToggleCollapsed(); }}
       onPointerDown={dragHandlers.onPointerDown}
       onPointerMove={dragHandlers.onPointerMove}
       onPointerUp={dragHandlers.onPointerUp}
-      onMouseEnter={callActive ? openRing : undefined}
-      onMouseLeave={callActive ? closeRing : undefined}
-      aria-label={snoozed
-        ? `Snoozed call from ${snoozedCall?.callerName ?? 'someone'}. Hover to answer.`
-        : totalUnread > 0
-          ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
-          : 'Caty online. Open messages.'}
-      title={snoozed ? `Snoozed call from ${snoozedCall?.callerName ?? 'someone'}` : 'Open messages'}
+      aria-label={totalUnread > 0
+        ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
+        : 'Caty online. Open messages.'}
+      title="Open messages"
     >
-      <span className="cc-wake-disc" ref={ringDiscRef}>
-        {ringing && <span className="cc-fab__ring" ref={ringPulseRef} aria-hidden />}
-        {snoozed && (
-          <span className="cc-fab__snooze-badge" aria-hidden title="Snoozed call">
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="13" r="8" />
-              <path d="M12 9v4l2.5 2M9 2h6M10 5.5 8 3" />
-            </svg>
-          </span>
-        )}
+      <span className="cc-wake-disc">
         <CatyPulseIcon size={28} />
         {totalUnread > 0 ? (
           <span
@@ -352,20 +286,6 @@ export function ChatDock({
         )}
       </span>
     </button>
-    {callActive && !fabHidden && (
-      <DockCallRing
-        centerX={pos.x + 38.5}
-        centerY={pos.y + 38.5}
-        open={fanOpen}
-        variant={ringing ? 'ringing' : 'snoozed'}
-        onOpen={openRing}
-        onClose={closeRing}
-        onDecline={() => { setRingHovered(false); declineCall(); }}
-        onSnooze={() => { setRingHovered(false); snoozeCall(); }}
-        onAccept={() => { setRingHovered(false); acceptCall(); }}
-      />
-    )}
-    </>
   );
 
   // Phase 0: before first FAB click — FAB only, zero dock mount cost.
