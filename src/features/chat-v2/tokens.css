@@ -30,8 +30,8 @@ body[data-cv2-theme] {
   --cv2-font: var(--ds-font-family-body, ui-sans-serif, system-ui, sans-serif);
   --cv2-fs-rail-label: 11px;
   --cv2-fs-sidebar-header: 15px;
-  --cv2-fs-search: 13px;
-  --cv2-fs-row-name: 14px;
+  --cv2-fs-search: 14px;
+  --cv2-fs-row-name: 15px;
   --cv2-fs-row-preview: 13px;
   --cv2-fs-row-timestamp: 12px;
   --cv2-fs-msg-name: 15px;
@@ -39,7 +39,21 @@ body[data-cv2-theme] {
   --cv2-fs-msg-body: 15px;
   --cv2-fs-date-sep: 13px;
   --cv2-fs-composer: 15px;
-  --cv2-lh-msg-body: 1.46;
+  --cv2-lh-msg-body: 1.4667;
+
+  /* ── Slack-scale remap of ADS font shorthands, CHAT SCOPE ONLY ─────
+     The surface leaned on `font: var(--ds-font-body-small)` in ~160 places;
+     ADS resolves that to 11px — the whole app read "like ants". Slack's
+     type floor is 12px (timestamps) with 13px meta and 15px body. These
+     locals re-resolve every ADS shorthand consumed inside .cv2-chat-shell
+     (and portaled content under body[data-cv2-theme]) without touching the
+     rest of Catalyst. Weights stay 400 — callers set fontWeight after. */
+  /* ads-scanner:ignore-next-line — chat-scope Slack type scale, deliberate (2026-07-05) */
+  --ds-font-body-small: normal 400 13px/18px var(--ds-font-family-body);
+  /* ads-scanner:ignore-next-line — chat-scope Slack type scale, deliberate (2026-07-05) */
+  --ds-font-body: normal 400 15px/22px var(--ds-font-family-body);
+  /* ads-scanner:ignore-next-line — chat-scope Slack type scale, deliberate (2026-07-05) */
+  --ds-font-body-large: normal 400 18px/24px var(--ds-font-family-body);
 
   /* Component-specific dimensions */
   --cv2-hover-toolbar-h: 32px;
