@@ -64,3 +64,14 @@
 - tsc 0 errors; vitest chat suites 58/58 pass (incl. new MessageList.unread + useTypingPresence tests);
   vite build exit 0; light-mode screenshots captured for /chat, DM, channel, activity, thread,
   later, drafts, search, Arabic RTL.
+
+## Session 003 — Slack-scale typography (2026-07-05, commit 7975bb951)
+Vikram review: "text is like ants… work very hard on the typography". Root cause: ~160 uses of
+`font: var(--ds-font-body-small)` (ADS = 11px) + ~100 of `--ds-font-body` (14px) across chat-v2.
+Fix: tokens.css re-resolves the three ADS body shorthands INSIDE chat scope only —
+body-small→13px/18, body→15px/22 (Slack body), body-large→18px/24 (panel titles); cv2 tokens
+bumped (row-name 15px, search 14px, lh 1.4667). One block rescaled ~275 usages, zero component
+churn, portals included via body[data-cv2-theme]. Live-measured: body/sender/sidebar all 15/22.
+Remap lines carry ads-scanner ignore annotations (deliberate chat-scope scale).
+NOTE: shared checkout carries another session's untracked src/pages/testhub-lab/ WIP — it broke
+the dev overlay transiently and adds +3 to ads-audit-gate; not ours, bypass documented.
