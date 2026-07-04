@@ -227,6 +227,12 @@ export default function CatalystViewDefect({
         onClose={() => setShowCloneDialog(false)}
         issueKey={issue?.issue_key}
         issueSummary={issue?.summary}
+        issueId={issue?.id}
+        projectId={projectId}
+        currentAssigneeId={issue?.assignee_account_id}
+        currentAssigneeName={issue?.assignee_display_name}
+        currentReporterId={issue?.reporter_account_id}
+        currentReporterName={issue?.reporter_display_name}
         onConfirm={handleClone}
       />
       {showMoveDialog && issue?.issue_key && (
