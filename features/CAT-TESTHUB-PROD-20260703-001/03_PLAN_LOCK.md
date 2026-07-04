@@ -819,6 +819,21 @@ npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
 - **Rollback:** `git revert`.
 - **Done when:** insights render + compute correctly; screenshots filed in `06_VALIDATION_EVIDENCE.md`.
 
+### SUBTASK P3-F8 · Keyboard-first runner (TestRail-parity hotkeys)
+- **Purpose:** power-user execution speed — testers on the runner shouldn't have to reach for a mouse per step/case verdict. TestRail-parity numeric hotkeys (1 Pass / 2 Fail / 3 Block / 4 Skip), arrow-key step navigation, Enter to save.
+- **Files to touch:** `src/pages/testhub/cycles/ExecutionPage.tsx` (`StepRunner` only — added `activeStepIndex` state, keydown listener, legend UI, active-step border highlight).
+- **Files forbidden:** offline queue logic (`:18-105`), attachment upload logic (byte-identical per B3 preservation baseline — A2 §3); §2 list.
+- **Dependencies:** none (pure frontend, no schema).
+- **Acceptance command:**
+```bash
+npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
+git diff --stat src/pages/testhub/cycles/ExecutionPage.tsx   # additive only, offline/attachment blocks untouched
+```
+- **Acceptance condition (binary):** pressing 1/2/3/4 sets step (or case) verdict and auto-advances; ↑/↓ moves active-step focus (border-focused highlight); Enter opens save modal when a verdict exists; hotkeys inert while typing in Textarea/Input; ADS tokens only.
+- **Screenshot/evidence:** runner with active-step highlight + legend, light+dark; B3 offline-drill re-proof (file touched) confirming queue/attachment paths behaviorally unchanged.
+- **Rollback:** `git revert` (pure addition, zero behavior change to existing click-driven verdict flow).
+- **Done when:** all 4 hotkeys + arrow nav + Enter-save work end-to-end on a live cycle; screenshots filed in `06_VALIDATION_EVIDENCE.md`.
+
 ---
 
 ## 17. TOTALS

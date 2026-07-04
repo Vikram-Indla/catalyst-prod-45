@@ -488,6 +488,56 @@ function StepRunner({
     if (!timer.running) timer.start();
   };
 
+  // P3-F8: keyboard-first runner (TestRail-parity hotkeys) — active step focus
+  // for keyed verdicts; reset whenever the case list swaps this component.
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
+  useEffect(() => { setActiveStepIndex(0); }, [scope.id]);
+
+  const saveDisabled = steps.length === 0 && caseVerdict === null;
+
+  useEffect(() => {
+    function isTypingTarget(target: EventTarget | null): boolean {
+      if (!(target instanceof HTMLElement)) return false;
+      return target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.isContentEditable;
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (showSaveModal) return;
+      if (isTypingTarget(e.target)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const applyVerdict = (status: StepStatus) => {
+        if (steps.length === 0) {
+          updateCaseVerdict(status);
+        } else {
+          updateStepStatus(activeStepIndex, status);
+          setActiveStepIndex(i => Math.min(i + 1, steps.length - 1));
+        }
+      };
+
+      switch (e.key) {
+        case '1': e.preventDefault(); applyVerdict('PASSED'); break;
+        case '2': e.preventDefault(); applyVerdict('FAILED'); break;
+        case '3': e.preventDefault(); applyVerdict('BLOCKED'); break;
+        case '4': e.preventDefault(); applyVerdict('SKIPPED'); break;
+        case 'ArrowDown':
+          if (steps.length > 0) { e.preventDefault(); setActiveStepIndex(i => Math.min(i + 1, steps.length - 1)); }
+          break;
+        case 'ArrowUp':
+          if (steps.length > 0) { e.preventDefault(); setActiveStepIndex(i => Math.max(i - 1, 0)); }
+          break;
+        case 'Enter':
+          if (!saveDisabled) { e.preventDefault(); setShowSaveModal(true); }
+          break;
+        default:
+          break;
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeStepIndex, steps.length, showSaveModal, saveDisabled]);
+
   const handleReset = () => {
     setStepStates(steps.map(s => ({ stepId: s.id, status: 'NOT_RUN', actualResult: '' })));
     setCaseVerdict(null);
@@ -734,6 +784,19 @@ function StepRunner({
         )}
       </div>
 
+      {/* P3-F8: keyboard hotkey legend */}
+      <div style={{
+        fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)',
+        marginBottom: 12, display: 'flex', gap: 12, flexWrap: 'wrap',
+      }}>
+        <span><strong>1</strong> Pass</span>
+        <span><strong>2</strong> Fail</span>
+        <span><strong>3</strong> Block</span>
+        <span><strong>4</strong> Skip</span>
+        {steps.length > 0 && <span><strong>↑↓</strong> Navigate step</span>}
+        <span><strong>Enter</strong> Save</span>
+      </div>
+
       {/* Steps */}
       {steps.length === 0 ? (
         <div style={{
@@ -763,12 +826,17 @@ function StepRunner({
                   : 'var(--ds-surface-sunken)';
 
             return (
-              <div key={step.id} style={{
-                border: '1px solid var(--ds-border)',
-                borderRadius: 8,
-                overflow: 'hidden',
-                background: 'var(--ds-surface)',
-              }}>
+              <div
+                key={step.id}
+                onClick={() => setActiveStepIndex(i)}
+                style={{
+                  border: `1px solid ${i === activeStepIndex ? 'var(--ds-border-focused)' : 'var(--ds-border)'}`,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  background: 'var(--ds-surface)',
+                  cursor: 'pointer',
+                }}
+              >
                 <div style={{
                   padding: '12px 16px',
                   background: stepBg,
