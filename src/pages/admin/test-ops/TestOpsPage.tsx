@@ -33,6 +33,7 @@ import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetec
 import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
 import { useDefectMetrics } from '@/hooks/test-management/useDefectMetrics';
 import { useCoverageHistory, useProjects } from '@/hooks/test-management/useCoverageHistory';
+import { useSharedSteps } from '@/hooks/test-management/useSharedSteps';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -314,6 +315,43 @@ function TeamRolesTab() {
   );
 }
 
+// ── C. Shared steps library ─────────────────────────────────────────────────
+// P3-F6: Reusable test step library for reducing duplication.
+function SharedStepsTab() {
+  const { data: sharedSteps = [], isLoading, isError } = useSharedSteps();
+
+  if (isLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'n', content: 'Step name' }, { key: 'p', content: 'Project' },
+    { key: 'a', content: 'Action' }, { key: 'u', content: 'Used by (cases)' } ] };
+
+  const rows = sharedSteps.map((step) => ({ key: step.id, cells: [
+    { key: 'n', content: <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{step.name}</span> },
+    { key: 'p', content: <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>{step.project_name}</span> },
+    { key: 'a', content: <span style={{ fontSize: 12, color: 'var(--ds-text)', maxWidth: 200 }}>{step.action}</span> },
+    { key: 'u', content: <Lozenge appearance={step.usage_count > 0 ? 'success' : 'default'}>{step.usage_count}</Lozenge> } ] }));
+
+  return (
+    <Panel>
+      <H>Shared Steps Library</H>
+      <Note>
+        Reusable test steps (marked <code>is_shared=true</code>) across projects.
+        Usage count shows how many test cases reference each step. High-usage steps
+        are candidates for further optimization or automation.
+      </Note>
+
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load shared steps.</p></SectionMessage>
+      ) : sharedSteps.length === 0 ? (
+        <Note>No shared steps in the library yet.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
 // ── D. Coverage history — 30-day trends ────────────────────────────────────
 // P3-F4: Tracks coverage progression over time.
 function CoverageHistoryTab() {
@@ -561,6 +599,7 @@ export default function TestOpsPage() {
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
             <Tab>Team &amp; roles</Tab>
+            <Tab>Shared steps</Tab>
             <Tab>Coverage history</Tab>
             <Tab>Defect metrics</Tab>
             <Tab>Coverage gaps</Tab>
@@ -571,6 +610,7 @@ export default function TestOpsPage() {
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
           <TabPanel><TeamRolesTab /></TabPanel>
+          <TabPanel><SharedStepsTab /></TabPanel>
           <TabPanel><CoverageHistoryTab /></TabPanel>
           <TabPanel><DefectMetricsTab /></TabPanel>
           <TabPanel><CoverageGapsTab /></TabPanel>
