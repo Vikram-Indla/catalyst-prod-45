@@ -65,3 +65,12 @@
 **Orphaned dead code (deletion deferred):** `IncidentWorkArea` + `CommitteeCard` (only consumer was the deleted `IncidentRoomDetail`) now have zero live consumers. NOT deleted — `IncidentWorkArea` is in the running SLA-sweep session's file list (`task_0953eade`), so deleting it would collide. Revisit after that session lands.
 
 **Recommendation:** incident-governance is stable on the native model right now, but a convergence step that moves committee creation to `ph_issues.committee_id` would strand the native-reading queue. Re-scope the queue/voting/SLA-util onto whichever committee model wins once convergence settles.
+
+## Gaps #4 / #5 — assessed, NOT completable without fabrication (won't-fix by design)
+
+Both are data-absent, not code gaps. Per CLAUDE.md zero-assumption ("a lie is always worse than silence"), neither was populated.
+
+- **Gap #4 — backfilled impact/urgency/support_level.** All 153 incidents are uniformly `impact=medium, urgency=medium, support_level=L1` (→ priority P3 for all, by construction). There is NO real impact/urgency signal in any source — the Jira mirror never carried it. Populating per-incident would be inventing data. Requires real per-incident triage input (human), or a real upstream signal, to ever be meaningful. Severity IS real (derived from Jira priority) — leave it; don't trust backfilled priority.
+- **Gap #5 — resolved_at/closed_at for 137 historical closed incidents.** Both timestamps are null on all 137. The real transition times do NOT exist anywhere: `ph_issue_status_history` has only 39 rows total (status-change capture began recently — Reports Hub feature — so pre-capture historical incidents have no coverage). Filling `resolved_at`/`closed_at` from `created_at`/`updated_at` or any proxy would be fabrication → native-table MTTR for these historical incidents is genuinely unavailable and correctly stays null. Live/future incidents WILL accrue real timestamps via `stamp_incident_sla_milestones` + status-history going forward. Both further mooted by the convergence (native governance superseding to ph_issues).
+
+**Punch-list status at session-2 close:** #1 done (role seed), #2 fixed then file-deleted by convergence (loop still works via IncidentKanbanPage), #3 first slice done + rest running as task_0953eade, #6 cross-checked + cleanup done, #7/#8 sweep done (spun off as task_a0bc499b, completed). #4/#5 = won't-fix (data absent). Everything committed + pushed to main.
