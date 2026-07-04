@@ -10,7 +10,7 @@ import { pageLink, workItemMention } from './inlineSpecs';
 export const wikiSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
-    callout,
+    callout: callout(),
   },
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,
