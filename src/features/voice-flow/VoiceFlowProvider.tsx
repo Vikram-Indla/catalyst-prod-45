@@ -5,6 +5,7 @@ import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from '.
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget } from './insertTextIntoTarget';
 import { cleanupTranscript } from './cleanupTranscript';
+import { RealtimeTranscriber, realtimeAvailable } from './RealtimeTranscriber';
 import { useVoiceHotkey } from './useVoiceHotkey';
 import { VoiceFloatingCapsule } from './VoiceFloatingCapsule';
 import type { ActiveField, VoiceFlowContextValue, VoiceResult, VoiceStatus } from './voiceFlow.types';
@@ -51,6 +52,7 @@ export function VoiceFlowProvider({ children }: Props) {
 
   const statusRef         = useRef<VoiceStatus>('idle');
   const captureRef        = useRef<AudioCaptureService>(new AudioCaptureService());
+  const realtimeRef       = useRef<RealtimeTranscriber | null>(null);
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
@@ -64,6 +66,8 @@ export function VoiceFlowProvider({ children }: Props) {
   };
 
   const reset = useCallback(() => {
+    realtimeRef.current?.dispose();
+    realtimeRef.current = null;
     if (nativeModeRef.current) {
       recognitionRef.current?.abort();
       recognitionRef.current = null;
@@ -105,6 +109,30 @@ export function VoiceFlowProvider({ children }: Props) {
     if (!captureRef.current.isRecording && statusRef.current !== 'listening') return;
     setStatusBoth('processing');
     setAnalyserNode(null); // stop waveform; mic stops below
+
+    // ── CatyFlow realtime shortcut ─────────────────────────────────────
+    // If the live WebRTC lane produced a transcript, it IS the result —
+    // no batch round-trip. Small grace wait lets the final delta land.
+    const rt = realtimeRef.current;
+    if (rt?.hasTranscript) {
+      const rtStart = Date.now();
+      await new Promise((r) => setTimeout(r, 350));
+      const transcript = rt.transcript;
+      rt.dispose();
+      realtimeRef.current = null;
+      let durationRt = 0;
+      try {
+        ({ durationMs: durationRt } = await captureRef.current.stop());
+      } catch { /* recording stop failure is irrelevant on this lane */ }
+      if (transcript) {
+        setPartialText(null);
+        await handleResult(transcript, undefined, 'high', durationRt, rtStart);
+        return;
+      }
+    } else if (rt) {
+      rt.dispose();
+      realtimeRef.current = null;
+    }
 
     let blob: Blob;
     let durationMs: number;
@@ -351,6 +379,8 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Cancel ──────────────────────────────────────────────────────────
   const cancel = useCallback(() => {
     if (statusRef.current === 'idle') return;
+    realtimeRef.current?.dispose();
+    realtimeRef.current = null;
     if (nativeModeRef.current) {
       recognitionRef.current?.abort();
       recognitionRef.current = null;
@@ -495,6 +525,30 @@ export function VoiceFlowProvider({ children }: Props) {
 
       const node = captureRef.current.getAnalyserNode();
       setAnalyserNode(node);
+
+      // CatyFlow realtime lane: when the AI gateway is configured, stream
+      // live transcription over WebRTC in parallel with the recording —
+      // Arabic/English words appear on screen while speaking, and the
+      // final transcript replaces the batch round-trip on stop. The
+      // MediaRecorder keeps recording regardless, so a realtime failure
+      // costs nothing: stopAndProcess falls back to the batch path.
+      realtimeRef.current?.dispose();
+      realtimeRef.current = null;
+      const micStream = captureRef.current.getStream();
+      if (micStream) {
+        void realtimeAvailable().then((ok) => {
+          if (!ok || (statusRef.current !== 'listening' && statusRef.current !== 'arming')) return;
+          const rt = new RealtimeTranscriber();
+          realtimeRef.current = rt;
+          void rt.start(micStream, {
+            onLive: (text) => {
+              if (statusRef.current === 'listening' && text) setPartialText(text);
+            },
+          }).then((started) => {
+            if (!started && realtimeRef.current === rt) realtimeRef.current = null;
+          });
+        });
+      }
 
       setStatusBoth('listening');
     } catch (e) {
