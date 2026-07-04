@@ -34,3 +34,19 @@
 ✓ npm run lint:cre — pass
 
 ## Ready for commit
+
+### Step 3: Commit
+✓ Staged and committed: migration, 03_PLAN_LOCK.md, session log
+✓ Commit: f466f1945 "feat(testhub): P3-F5 defect key zero-padding normalization"
+✓ All hooks passed
+
+## DONE — P3-F5 Defect Key Zero-Padding
+
+**Completion summary:**
+- Migration: normalize existing defect_key values to DEF-NNNNN (5-digit zero-padded)
+- RPC: update `tm_next_entity_key()` to generate zero-padded keys going forward
+- Format: all defect keys now DEF-00001, DEF-00002, etc. (consistent sorting + display)
+- ADS compliance: no style changes
+- All validation gates passed
+- Commit: f466f1945
+- Status: COMPLETE + PUSHED (migration committed, ready for apply)

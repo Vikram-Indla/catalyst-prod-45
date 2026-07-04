@@ -56,3 +56,20 @@
 ✓ npm run lint:cre — pass
 
 ## Ready for commit
+
+### Step 5: Commit
+✓ Staged and committed: migration, hook, TestOpsPage.tsx, 03_PLAN_LOCK.md, session log
+✓ Commit: d4e1507d3 "feat(testhub): P3-F4 coverage history snapshots"
+✓ All hooks passed
+
+## DONE — P3-F4 Coverage History Snapshots
+
+**Completion summary:**
+- Migration: `tm_coverage_history` table + backfill RPC
+- Hook: `useCoverageHistory()` queries snapshots, returns trend data
+- UI: "Coverage history" tab in TestOps admin with project selector + trend table
+- Chart: coverage % with progress bar visualization (green ≥80%, yellow <80%)
+- ADS compliance: tokens only, no bare colors
+- All validation gates passed
+- Commit: d4e1507d3
+- Status: COMPLETE + PUSHED (migration committed, ready for apply)

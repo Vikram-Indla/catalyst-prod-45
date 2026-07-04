@@ -49,3 +49,20 @@
 ✓ npm run lint:cre — pass
 
 ## Ready for commit
+
+### Step 4: Commit
+✓ Staged and committed: hook, TestOpsPage.tsx, 03_PLAN_LOCK.md, session log
+✓ Commit: 579bd19e7 "feat(testhub): P3-F6 shared steps library + parameterized test visualization"
+✓ All hooks passed
+
+## DONE — P3-F6 Shared Steps Library
+
+**Completion summary:**
+- Hook: `useSharedSteps()` queries tm_test_steps with is_shared=true, counts usage
+- UI: "Shared steps library" tab in TestOps admin panel
+- Table: step name + project + action + usage count (Lozenge)
+- Identifies high-usage steps as reuse/automation candidates
+- ADS compliance: tokens only, no bare colors
+- All validation gates passed
+- Commit: 579bd19e7
+- Status: COMPLETE + PUSHED

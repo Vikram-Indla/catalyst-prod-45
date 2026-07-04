@@ -58,3 +58,20 @@
 - ADS compliance: var(--ds-*) tokens only, Lozenge + code for semantics
 
 ## Ready for commit
+
+### Step 6: Commit
+✓ Staged: useFlakyTestDetection.ts, TestOpsPage.tsx, 03_PLAN_LOCK.md, session log
+✓ NOT staged: SetDetailPage.tsx (other session), MOBILE_HANDOVER_TL_DR.txt, BR-HEALTH-LINKAGE (other sessions)
+✓ Commit: 7717d5f14 "feat(testhub): P3-F1 flaky-test detection from run history"
+✓ All hooks passed: audit self-test (45 passed), color gates, audit gates, CRE gate, TestHub strict color gate
+
+## DONE — P3-F1 Flaky-test detection
+
+**Completion summary:**
+- Detection hook: `useFlakyTestDetection()` queries last 7 days of runs, identifies >20% failure rate
+- UI integration: "Flaky tests" tab in TestOps admin panel
+- Table: case key + title + 7-day run count + failed count + failure rate (%)
+- ADS compliance: tokens only, no bare colors
+- All validation gates passed
+- Commit: 7717d5f14
+- Status: COMPLETE + PUSHED

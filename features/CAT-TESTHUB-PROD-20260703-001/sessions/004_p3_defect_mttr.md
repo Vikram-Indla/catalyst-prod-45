@@ -55,3 +55,20 @@
 ✓ npm run lint:cre — pass
 
 ## Ready for commit
+
+### Step 5: Commit
+✓ Staged: migration, hook, TestOpsPage.tsx, 03_PLAN_LOCK.md, session log
+✓ Commit: de6764ff8 "feat(testhub): P3-F3 defect status history + MTTR computation"
+✓ All hooks passed: audit self-test (45 passed), color gates, audit gates, CRE gate, TestHub strict color gate
+
+## DONE — P3-F3 Defect Status History + MTTR
+
+**Completion summary:**
+- Migration: `tm_defect_status_history` table + trigger + `tm_get_defect_mttr()` RPC
+- Hook: `useDefectMetrics()` calls RPC, returns defect list + aggregate stats
+- UI: "Defect metrics" tab in TestOps admin panel with KPI cards + tables
+- Metrics: total, closed, avg MTTR, median MTTR, status distribution
+- ADS compliance: tokens only, no bare colors
+- All validation gates passed
+- Commit: de6764ff8
+- Status: COMPLETE + PUSHED (migration committed, ready for apply)

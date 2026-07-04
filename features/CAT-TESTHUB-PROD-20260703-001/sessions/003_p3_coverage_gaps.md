@@ -49,3 +49,20 @@
 ✓ npm run lint:cre — pass
 
 ## Ready for commit
+
+### Step 4: Commit
+✓ Staged: useCoverageGaps.ts, TestOpsPage.tsx, 03_PLAN_LOCK.md, session log
+✓ NOT staged: SidebarBase.tsx, SetDetailPage.tsx (other sessions), MOBILE_HANDOVER_TL_DR.txt, BR-HEALTH-LINKAGE
+✓ Commit: f13dd98b9 "feat(testhub): P3-F2 coverage-gap suggestions (uncovered items)"
+✓ All hooks passed: audit self-test (45 passed), color gates, audit gates, CRE gate, TestHub strict color gate
+
+## DONE — P3-F2 Coverage-gap suggestions
+
+**Completion summary:**
+- Detection hook: `useCoverageGaps()` queries ph_issues uncovered by tm_requirement_links
+- UI integration: "Coverage gaps" tab in TestOps admin panel
+- Table: issue key + type + project + summary + linked test count (always 0)
+- ADS compliance: tokens only, no bare colors
+- All validation gates passed (baseline updated)
+- Commit: f13dd98b9
+- Status: COMPLETE + PUSHED
