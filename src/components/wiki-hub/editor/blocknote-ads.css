@@ -49,10 +49,17 @@
   --bn-border-radius: 4px;
 }
 
-/* Editor canvas: body typography identical to backlog/Kanban surfaces */
+/* Editor canvas: body typography identical to backlog/Kanban surfaces,
+   but with looser long-form reading rhythm (Notion runs ~1.6 vs ADS row
+   density). font: shorthand sets family/size/weight; line-height is
+   re-opened for the reading column below. */
 .wiki-bn .bn-editor {
   font: var(--ds-font-body);
+  line-height: 1.6;
   padding-inline: 0;
+}
+.wiki-bn .bn-block-content {
+  line-height: 1.6;
 }
 
 /* Per-block bidirectional text: Arabic blocks lay out RTL, English LTR,

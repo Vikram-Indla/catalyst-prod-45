@@ -39,6 +39,31 @@ const DocumentComments = lazy(() =>
 
 const AUTOSAVE_MS = 1500;
 
+/** Notion-style relative edit time. */
+function relativeTime(iso: string): string {
+  const then = new Date(iso).getTime();
+  const diff = Date.now() - then;
+  const m = Math.round(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+/** A page counts as "empty" (show the write invitation) when it has no
+ *  blocks, or a single block with no text content. */
+function isDocEmpty(blocks: Block[] | undefined | null): boolean {
+  if (!blocks || blocks.length === 0) return true;
+  if (blocks.length > 1) return false;
+  const c = (blocks[0] as { content?: unknown }).content;
+  if (typeof c === 'string') return c.trim() === '';
+  if (Array.isArray(c)) return c.length === 0;
+  return !c;
+}
+
 export interface WikiPageSurfaceProps {
   workspace: WikiWorkspace;
   page: WikiPage;
@@ -93,11 +118,18 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     );
   }, [page.id, page.space_id, updatePage]);
 
+  // Empty-page invitation (Notion "press / for commands", bilingual).
+  const [showInvite, setShowInvite] = useState(() => isDocEmpty(page.content as Block[]));
+  useEffect(() => setShowInvite(isDocEmpty(page.content as Block[])), [page.id, page.content]);
+
   const handleEditorChange = useCallback(
     (editor: BlockNoteEditor) => {
-      pendingDoc.current = editor.document as Block[];
+      const doc = editor.document as Block[];
+      pendingDoc.current = doc;
+      const empty = isDocEmpty(doc);
+      setShowInvite((prev) => (prev !== empty ? empty : prev));
       // Keystroke durability: journal locally long before the 1.5s autosave.
-      saveDraft(page.id, editor.document as Block[]);
+      saveDraft(page.id, doc);
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(flush, AUTOSAVE_MS);
     },
@@ -389,8 +421,11 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           }}
         />
 
-        <p style={{ margin: '0 0 18px', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
-          Updated {new Date(page.updated_at).toLocaleString()}
+        <p
+          style={{ margin: '0 0 10px', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}
+          title={new Date(page.updated_at).toLocaleString()}
+        >
+          Edited {relativeTime(page.updated_at)}
         </p>
 
         {isLegacyAdf ? (
@@ -464,15 +499,52 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 </button>
               </div>
             )}
-            <WikiEditor
-              key={restoredBlocks ? `${page.id}-draft` : page.id}
-              initialContent={restoredBlocks ?? ((page.content as Block[]) ?? undefined)}
-              onChange={handleEditorChange}
-              onReady={handleEditorReady}
-              dictationStyle="brd-page"
-              workspaceId={workspace.id}
-              workspaceSlug={workspace.slug}
-            />
+            <div>
+              {showInvite && (
+                <p
+                  dir="auto"
+                  style={{
+                    margin: '0 0 4px',
+                    color: 'var(--ds-text-subtlest)',
+                    font: 'var(--ds-font-body)',
+                    userSelect: 'none',
+                  }}
+                >
+                  Start writing, or type{' '}
+                  <kbd
+                    style={{
+                      font: 'var(--ds-font-body-small)',
+                      border: '1px solid var(--ds-border)',
+                      borderRadius: 3,
+                      padding: '0 4px',
+                    }}
+                  >
+                    /
+                  </kbd>{' '}
+                  for commands · ابدأ الكتابة، أو اكتب{' '}
+                  <kbd
+                    style={{
+                      font: 'var(--ds-font-body-small)',
+                      border: '1px solid var(--ds-border)',
+                      borderRadius: 3,
+                      padding: '0 4px',
+                    }}
+                  >
+                    /
+                  </kbd>{' '}
+                  للأوامر
+                </p>
+              )}
+              <WikiEditor
+                key={restoredBlocks ? `${page.id}-draft` : page.id}
+                initialContent={restoredBlocks ?? ((page.content as Block[]) ?? undefined)}
+                onChange={handleEditorChange}
+                onReady={handleEditorReady}
+                dictationStyle="brd-page"
+                workspaceId={workspace.id}
+                workspaceSlug={workspace.slug}
+              />
+            </div>
           </Suspense>
         )}
 

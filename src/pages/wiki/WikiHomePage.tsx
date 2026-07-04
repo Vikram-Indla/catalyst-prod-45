@@ -65,7 +65,17 @@ export default function WikiHomePage() {
   };
 
   return (
-    <div style={{ padding: 'var(--ds-space-300, 24px)', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: 'var(--ds-space-300)', maxWidth: 1200, margin: '0 auto' }}>
+      <style>{`
+        .wiki-workspace-card:hover {
+          border-color: var(--ds-border-bold) !important;
+          box-shadow: var(--ds-shadow-raised);
+        }
+        .wiki-workspace-card:focus-visible {
+          outline: 2px solid var(--ds-border-focused);
+          outline-offset: 1px;
+        }
+      `}</style>
       <PageHeader
         title="Wiki"
         subtitle="Documentation workspaces for every project and product"
@@ -123,7 +133,8 @@ export default function WikiHomePage() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') openWorkspace(w);
               }}
-              style={{ cursor: 'pointer' }}
+              className="wiki-workspace-card"
+              style={{ cursor: 'pointer', transition: 'border-color 120ms ease, box-shadow 120ms ease' }}
             >
               <CardContent style={{ padding: 16, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <div
@@ -140,7 +151,7 @@ export default function WikiHomePage() {
                   }}
                 >
                   {w.icon ? (
-                    <span style={{ fontSize: 18 }}>{w.icon}</span>
+                    <span style={{ font: 'var(--ds-font-heading-small)' }}>{w.icon}</span>
                   ) : (
                     <FileText style={{ width: 18, height: 18, color: 'var(--ds-icon-subtle)' }} />
                   )}

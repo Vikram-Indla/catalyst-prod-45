@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import Tooltip from '@atlaskit/tooltip';
-import { Mic } from '@/lib/atlaskit-icons';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import { getActiveTextTarget } from './useActiveTextTarget';
 import type { ActiveField } from './voiceFlow.types';
 
@@ -119,9 +119,7 @@ export function DictationCTA({ sessionActive, onActivate }: DictationCTAProps) {
             padding: 0,
           }}
         >
-          <Mic
-            style={{ width: 15, height: 15, color: token('color.icon.accent.magenta') }}
-          />
+          <CatyPulseIcon size={15} title="Dictate" />
         </button>
       </Tooltip>
     </div>,

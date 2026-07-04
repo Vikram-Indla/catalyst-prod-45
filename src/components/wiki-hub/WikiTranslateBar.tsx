@@ -62,7 +62,7 @@ export function WikiTranslateBar({ title, getBlocks }: WikiTranslateBarProps) {
   return (
     <div className="wiki-translate wiki-no-print">
       <style>{`
-        .wiki-translate__triggers { display: flex; gap: 6px; opacity: 0; transition: opacity .12s ease; }
+        .wiki-translate__triggers { display: flex; gap: 4px; opacity: 0; transition: opacity .12s ease; }
         .wiki-translate:hover .wiki-translate__triggers,
         .wiki-translate:focus-within .wiki-translate__triggers { opacity: 1; }
       `}</style>

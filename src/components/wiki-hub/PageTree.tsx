@@ -192,6 +192,23 @@ function TreeRow({
             }}
           />
         )}
+        {/* Indentation guides — one faint vertical line per ancestor level,
+            so deep trees keep a legible parent thread (Confluence/Notion). */}
+        {Array.from({ length: depth }, (_, i) => (
+          <span
+            key={i}
+            aria-hidden
+            style={{
+              position: 'absolute',
+              insetInlineStart: 13 + i * INDENT,
+              top: 0,
+              bottom: 0,
+              width: 1,
+              background: 'var(--ds-border)',
+              pointerEvents: 'none',
+            }}
+          />
+        ))}
         <button
           type="button"
           aria-label={isOpen ? 'Collapse' : 'Expand'}

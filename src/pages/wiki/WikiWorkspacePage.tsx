@@ -5,7 +5,7 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FolderOpen } from '@/lib/atlaskit-icons';
+import { FolderOpen, ChevronLeft } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageTree, type PageTreeMove } from '@/components/wiki-hub/PageTree';
 import WikiPageSurface from '@/components/wiki-hub/WikiPageSurface';
@@ -148,9 +148,29 @@ export default function WikiWorkspacePage() {
         }}
       >
         <div style={{ padding: '0 6px 12px' }}>
+          <button
+            type="button"
+            onClick={() => navigate(Routes.wiki.root())}
+            aria-label="All workspaces"
+            title="All workspaces"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              border: 'none',
+              background: 'transparent',
+              color: 'var(--ds-text-subtle)',
+              font: 'var(--ds-font-body-small)',
+              cursor: 'pointer',
+              padding: '2px 0',
+              marginBottom: 4,
+            }}
+          >
+            <ChevronLeft style={{ width: 13, height: 13 }} /> All workspaces
+          </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {workspace.icon ? (
-              <span aria-hidden style={{ fontSize: 18 }}>{workspace.icon}</span>
+              <span aria-hidden style={{ font: 'var(--ds-font-heading-small)' }}>{workspace.icon}</span>
             ) : null}
             <span style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
               {workspace.name}
@@ -195,6 +215,7 @@ export default function WikiWorkspacePage() {
           )
         ) : (
           <div style={{ maxWidth: 860, margin: '0 auto', padding: 40 }}>
+            {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
             <h1 style={{ font: 'var(--ds-font-heading-large)', color: 'var(--ds-text)', margin: '0 0 6px' }}>
               {workspace.name}
             </h1>
@@ -202,6 +223,17 @@ export default function WikiWorkspacePage() {
               {workspace.description || 'Select a page from the tree, or create one.'}
             </p>
 
+            <style>{`
+              .wiki-template-card:hover {
+                border-color: var(--ds-border-bold) !important;
+                background: var(--ds-background-neutral-subtle) !important;
+              }
+              .wiki-template-card:focus-visible {
+                outline: 2px solid var(--ds-border-focused);
+                outline-offset: 1px;
+              }
+            `}</style>
+            {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
             <h2 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text-subtle)', margin: '0 0 10px' }}>
               Start writing
             </h2>
@@ -209,6 +241,7 @@ export default function WikiWorkspacePage() {
               <button
                 type="button"
                 onClick={() => handleCreate(null)}
+                className="wiki-template-card"
                 style={{
                   textAlign: 'start',
                   padding: '14px 16px',
@@ -216,9 +249,10 @@ export default function WikiWorkspacePage() {
                   borderRadius: 8,
                   background: 'var(--ds-surface)',
                   cursor: 'pointer',
+                  transition: 'border-color 120ms ease, background 120ms ease',
                 }}
               >
-                <span aria-hidden style={{ fontSize: 20 }}>📄</span>
+                <span aria-hidden style={{ font: 'var(--ds-font-heading-medium)' }}>📄</span>
                 <p style={{ margin: '6px 0 2px', font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
                   Blank page
                 </p>
@@ -231,6 +265,7 @@ export default function WikiWorkspacePage() {
                   key={t.key}
                   type="button"
                   onClick={() => handleCreateFromTemplate(t)}
+                  className="wiki-template-card"
                   style={{
                     textAlign: 'start',
                     padding: '14px 16px',
@@ -238,9 +273,10 @@ export default function WikiWorkspacePage() {
                     borderRadius: 8,
                     background: 'var(--ds-surface)',
                     cursor: 'pointer',
+                    transition: 'border-color 120ms ease, background 120ms ease',
                   }}
                 >
-                  <span aria-hidden style={{ fontSize: 20 }}>{t.icon}</span>
+                  <span aria-hidden style={{ font: 'var(--ds-font-heading-medium)' }}>{t.icon}</span>
                   <p style={{ margin: '6px 0 2px', font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
                     {t.name}
                   </p>

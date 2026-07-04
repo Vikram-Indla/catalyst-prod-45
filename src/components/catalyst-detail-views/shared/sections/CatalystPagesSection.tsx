@@ -52,6 +52,7 @@ export function CatalystPagesSection({
     <section aria-label="Pages" style={{ marginTop: 20 }} data-testid="catalyst-pages-section">
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <FileText aria-hidden style={{ width: 15, height: 15, color: 'var(--ds-icon)' }} />
+        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
         <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
           Pages
         </h3>
