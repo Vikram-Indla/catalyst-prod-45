@@ -111,7 +111,7 @@ const stepBullet = (active: boolean): React.CSSProperties => ({
 
 const contentArea: React.CSSProperties = {
   flex: 1,
-  padding: '20px 32px 24px 0',
+  padding: 'var(--ds-space-250) var(--ds-space-400) var(--ds-space-300) 0',
   display: 'flex',
   flexDirection: 'column',
   gap: 20,

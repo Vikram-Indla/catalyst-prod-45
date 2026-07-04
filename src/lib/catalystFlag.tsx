@@ -149,7 +149,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
         gap: 12,
         minWidth: 280,
         maxWidth: 420,
-        padding: '12px 14px',
+        padding: 'var(--ds-space-150) 14px',
         background: 'var(--ds-surface-overlay)',
         color: 'var(--ds-text)',
         borderRadius: 6,
@@ -173,7 +173,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
           borderRadius: '50%',
           background: iconBg,
           flexShrink: 0,
-          marginTop: isTwoLine ? 2 : 0,
+          marginTop: isTwoLine ? 'var(--ds-space-025)' : 0,
         }}
       >
         {item.type === 'success' && (
@@ -213,7 +213,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
               alignSelf: 'flex-start',
               background: 'none',
               border: 'none',
-              padding: '2px 0 0 0',
+              padding: 'var(--ds-space-025) 0 0 0',
               cursor: 'pointer',
               color: 'var(--ds-link)',
               fontSize: 'var(--ds-font-size-200)',
@@ -241,7 +241,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
           height: 24,
           borderRadius: 3,
           color: 'var(--ds-text-subtle)',
-          marginTop: isTwoLine ? 2 : 0,
+          marginTop: isTwoLine ? 'var(--ds-space-025)' : 0,
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';

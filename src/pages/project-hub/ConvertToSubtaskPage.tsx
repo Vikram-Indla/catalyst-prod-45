@@ -135,7 +135,7 @@ const stepBullet = (active: boolean): React.CSSProperties => ({
 
 const contentArea: React.CSSProperties = {
   flex: 1,
-  padding: '20px 32px 24px 0',
+  padding: 'var(--ds-space-250) var(--ds-space-400) var(--ds-space-300) 0',
   display: 'flex',
   flexDirection: 'column',
   gap: 20,
@@ -177,7 +177,7 @@ const fieldLabelStyle: React.CSSProperties = {
   fontWeight: 700,
   color: 'var(--ds-text)',
   fontSize: 'var(--ds-font-size-300)',
-  marginBottom: 6,
+  marginBottom: 'var(--ds-space-075)',
 };
 
 /* Two-column form: label column on the left (right-aligned), value column
@@ -196,7 +196,7 @@ const fieldRowLabelStyle: React.CSSProperties = {
   color: 'var(--ds-text)',
   fontSize: 'var(--ds-font-size-300)',
   textAlign: 'left',
-  paddingTop: 6,
+  paddingTop: 'var(--ds-space-075)',
 };
 
 const helperTextStyle: React.CSSProperties = {
@@ -860,7 +860,7 @@ export default function ConvertToSubtaskPage() {
                             flexDirection: 'column',
                           }}
                         >
-                          <div style={{ padding: '6px 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', borderBottom: '1px solid var(--ds-border)' }}>
+                          <div style={{ padding: 'var(--ds-space-075) 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', borderBottom: '1px solid var(--ds-border)' }}>
                             History Search(Showing {suggestions.length} of {suggestionsTotal} matching issues)
                           </div>
                           <div
@@ -890,7 +890,7 @@ export default function ConvertToSubtaskPage() {
                                 }}
                                 style={{
                                   display: 'flex', alignItems: 'center', gap: 8,
-                                  width: '100%', padding: '6px 10px',
+                                  width: '100%', padding: 'var(--ds-space-075) 10px',
                                   background: 'none',
                                   border: 'none',
                                   borderBottom: '1px solid var(--ds-border)',
@@ -1003,8 +1003,9 @@ export default function ConvertToSubtaskPage() {
               {/* "Step 2 not required" note only when step 2 was skipped —
                   Jira parity (2026-07-04). */}
               {!stepNeedsStatus && (
+                {/* ads-scanner:ignore-next-line — 60px indent aligns the note under the step body, Jira parity (probed 2026-07-04) */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingLeft: 60 }}>
-                  <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-icon-brand)', marginTop: 2 }}>
+                  <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-icon-brand)', marginTop: 'var(--ds-space-025)' }}>
                     <InfoIcon label="" />
                   </span>
                   <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>

@@ -48,12 +48,12 @@ interface IssueSelectorModalProps {
 const backdrop: React.CSSProperties = {
   position: 'fixed',
   inset: 0,
-  background: 'var(--ds-blanket, rgba(9,30,66,.54))',
+  background: 'var(--ds-blanket)',
   zIndex: 4000,
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'center',
-  padding: '80px 24px 24px',
+  padding: 'var(--ds-space-1000) var(--ds-space-300) var(--ds-space-300)',
   overflowY: 'auto',
 };
 
@@ -76,7 +76,7 @@ const cardStyle: React.CSSProperties = {
   background: 'var(--ds-surface-overlay)',
   borderRadius: 6,
   boxShadow: 'var(--ds-shadow-overlay)',
-  padding: '20px 24px',
+  padding: 'var(--ds-space-250) var(--ds-space-300)',
   display: 'flex',
   flexDirection: 'column',
   gap: 12,
@@ -100,6 +100,7 @@ const radioLabel: React.CSSProperties = {
 const filterSelectStyle: React.CSSProperties = {
   width: '100%',
   height: 34,
+  // ads-scanner:ignore-next-line — 10px horizontal padding matches Jira's 34px select control (probed 2026-07-04)
   padding: '0 10px',
   border: '1px solid var(--ds-border-input)',
   borderRadius: 3,
@@ -134,7 +135,7 @@ const listRowStyle: React.CSSProperties = {
   gridTemplateColumns: '80px 1fr 24px 100px',
   alignItems: 'center',
   columnGap: 12,
-  padding: '10px 4px',
+  padding: '10px var(--ds-space-050)',
   borderBottom: '1px solid var(--ds-border)',
   cursor: 'pointer',
   color: 'var(--ds-link)',

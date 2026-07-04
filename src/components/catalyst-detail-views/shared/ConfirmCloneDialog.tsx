@@ -83,7 +83,7 @@ interface ConfirmCloneDialogProps {
 }
 
 const asterisk = (
-  <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
+  <span style={{ color: 'var(--ds-text-danger)', marginLeft: 'var(--ds-space-025)' }}>*</span>
 );
 
 const labelStyle: React.CSSProperties = {

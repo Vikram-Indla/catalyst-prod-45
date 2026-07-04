@@ -59,6 +59,7 @@ export function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: stri
 }
 
 const assignToMeStyles = xcss({
+  // ads-scanner:ignore-next-line — 'space.075' IS the ADS token (xcss syntax); scanner misreads it as 75px
   marginTop: 'space.075',
 });
 

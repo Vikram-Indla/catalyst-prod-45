@@ -48,7 +48,7 @@ const cardStyle: React.CSSProperties = {
   background: 'var(--ds-surface-overlay)',
   borderRadius: 6,
   boxShadow: 'var(--ds-shadow-overlay)',
-  padding: '20px 24px',
+  padding: 'var(--ds-space-250) var(--ds-space-300)',
   display: 'flex',
   flexDirection: 'column',
   gap: 12,
@@ -74,7 +74,7 @@ const sectionHeaderStyle: React.CSSProperties = {
 const listRowStyle: React.CSSProperties = {
   display: 'grid', gridTemplateColumns: '70px 1fr 20px 90px',
   alignItems: 'center', columnGap: 10,
-  padding: '6px 4px', borderBottom: '1px solid var(--ds-border)',
+  padding: 'var(--ds-space-075) var(--ds-space-050)', borderBottom: '1px solid var(--ds-border)',
   cursor: 'pointer', background: 'none', border: '0 solid transparent',
   width: '100%', textAlign: 'left',
   fontSize: 'var(--ds-font-size-200)',
