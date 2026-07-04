@@ -346,6 +346,7 @@ const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/Know
 const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
 const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
+const WikiWorkspacePage = lazy(() => import("../pages/wiki/WikiWorkspacePage"));
 const WikiSandboxPage = lazy(() => import("../pages/wiki/WikiSandboxPage"));
 
 const IncidentDetail = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentDetail })));
@@ -811,6 +812,8 @@ export default function FullAppRoutes() {
         {import.meta.env.DEV && (
           <Route path="/wiki/_sandbox" element={<S><WikiSandboxPage /></S>} />
         )}
+        <Route path="/wiki/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/wiki/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />
