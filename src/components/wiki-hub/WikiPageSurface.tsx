@@ -31,6 +31,9 @@ import { WikiPresence } from './WikiPresence';
 
 const WikiEditor = lazy(() => import('./editor/WikiEditor'));
 const AtlaskitRenderer = lazy(() => import('@/components/shared/AtlaskitRenderer'));
+const DocumentComments = lazy(() =>
+  import('@/components/knowledge-hub/DocumentComments').then((m) => ({ default: m.DocumentComments })),
+);
 
 const AUTOSAVE_MS = 1500;
 
@@ -362,6 +365,12 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         )}
 
         <BacklinksPanel pageId={page.id} />
+
+        <div className="wiki-no-print" style={{ marginTop: 28, borderTop: '1px solid var(--ds-border)', paddingTop: 20 }}>
+          <Suspense fallback={null}>
+            <DocumentComments documentId={page.id} />
+          </Suspense>
+        </div>
       </div>
     </article>
   );
