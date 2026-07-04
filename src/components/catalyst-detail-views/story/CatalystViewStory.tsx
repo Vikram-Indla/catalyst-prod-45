@@ -32,6 +32,7 @@ import {
 import { Description } from '../shared/sections/Description';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
@@ -177,6 +178,11 @@ export default function CatalystViewStory({
 
       <LinkedWorkItemsSection
         issueId={itemId}
+        issueKey={issue?.issue_key ?? ''}
+        projectKey={issue?.project_key || projectKey}
+      />
+
+      <DependenciesSection
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
