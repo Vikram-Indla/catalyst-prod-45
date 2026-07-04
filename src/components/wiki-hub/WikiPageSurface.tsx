@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
 import { catalystToast } from '@/lib/catalystToast';
 import { WikiTranslateBar } from './WikiTranslateBar';
+import { GenerateStoriesFromPage } from './GenerateStoriesFromPage';
 
 const WikiEditor = lazy(() => import('./editor/WikiEditor'));
 const AtlaskitRenderer = lazy(() => import('@/components/shared/AtlaskitRenderer'));
@@ -169,6 +170,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             aria-label="Page location"
           />
         </div>
+        <GenerateStoriesFromPage pageId={page.id} title={page.title} getBlocks={currentBlocks} />
         <WikiTranslateBar title={page.title} getBlocks={currentBlocks} />
         <DropdownMenu
           aria-label="Page actions"
