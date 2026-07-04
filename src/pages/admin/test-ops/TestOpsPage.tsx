@@ -34,6 +34,8 @@ import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
 import { useDefectMetrics } from '@/hooks/test-management/useDefectMetrics';
 import { useCoverageHistory, useProjects } from '@/hooks/test-management/useCoverageHistory';
 import { useSharedSteps } from '@/hooks/test-management/useSharedSteps';
+import { useTestHubInsights } from '@/hooks/test-management/useTestHubInsights';
+import { CatyInsightCard } from '@/components/for-you/atlaskit/CatyInsightCard';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -547,6 +549,47 @@ function CoverageGapsTab() {
   );
 }
 
+// ── AI Insights Panel ──────────────────────────────────────────────────────
+// P3-F7: Health metrics via CatyInsightCard pattern (coverage, efficiency, flaky trend, velocity).
+function InsightsPanel() {
+  const { data: insights, isLoading, isError, refetch } = useTestHubInsights();
+
+  if (isLoading) return null; // Spinner shown via CatyInsightCard
+  if (isError) return null; // Silent fail — insights are additive
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      {insights?.map((insight) => (
+        <CatyInsightCard
+          key={insight.type}
+          title={insight.title}
+          onRefresh={() => refetch()}
+        >
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--ds-text)' }}>
+              {insight.value}
+            </span>
+            {insight.trend && (
+              <span
+                style={{
+                  fontSize: 12,
+                  color: insight.severity === 'danger'
+                    ? 'var(--ds-text-danger)'
+                    : insight.severity === 'warning'
+                      ? 'var(--ds-text-warning)'
+                      : 'var(--ds-text-subtle)',
+                }}
+              >
+                {insight.trend}
+              </span>
+            )}
+          </div>
+        </CatyInsightCard>
+      ))}
+    </div>
+  );
+}
+
 // ── G. Flaky tests ─────────────────────────────────────────────────────────
 // P3-F1: Identifies tests failing >20% in last 7 days.
 function FlakyTestsTab() {
@@ -592,6 +635,7 @@ export default function TestOpsPage() {
         <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: '0 0 16px' }}>
           Testing workflow control center — coverage gate, failed-test-to-defect, and Defect workflow governance.
         </p>
+        <InsightsPanel />
         <Tabs id="test-ops-tabs">
           <TabList>
             <Tab>Coverage gate</Tab>

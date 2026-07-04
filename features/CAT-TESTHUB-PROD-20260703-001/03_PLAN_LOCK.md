@@ -800,6 +800,27 @@ RED FLAG format: `1. What might regress/block · 2. Why · 3. Evidence · 4. Saf
 6. Council/discovery outputs are hypotheses (L23): if execution contradicts a cited claim, trust the live probe, log the correction in 08_DRIFT_LOG, and update the slice.
 7. Baselines (`design-governance/*.json`) move only downward; an unavoidable one-time up-rebaseline (E2 global scanner fix) requires its own 09_DECISIONS entry.
 
+## 12. PHASE P3 — PULL-BASED DELIGHTERS (appended post-P0..P2 merge)
+
+**Goal:** proven patterns ported / AI insights surfaced / bulk operations / admin power-user features. Each item = standalone 2-hour SUBTASK with its own session log. **No batching across P3 items.**
+
+### SUBTASK P3-F7 · AI insight cards for TestOps admin panel
+- **Purpose:** surface 4 key TestHub health insights (coverage anomaly, execution efficiency, flaky-trend acceleration, defect-closure velocity) via proven `CatyInsightCard` pattern (Tasks/for-you reuse).
+- **Files to touch:** `src/hooks/test-management/useTestHubInsights.ts` (new); `src/pages/admin/test-ops/TestOpsPage.tsx` (mount insights above tabs).
+- **Files forbidden:** `CatyInsightCard.tsx` core; §2 list.
+- **Dependencies:** P3-F1..F6 merged.
+- **Acceptance command:**
+```bash
+npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
+# SQL: spot-check coverage-drop detection, defect-closure trend
+```
+- **Acceptance condition (binary):** 4 insights render (coverage %, exec speed, flaky 7d→30d delta, closure rate); ADS tokens only; zero console errors on forced failure.
+- **Screenshot/evidence:** TestOps admin light+dark (insights above tabs); force-failure error state.
+- **Rollback:** `git revert`.
+- **Done when:** insights render + compute correctly; screenshots filed in `06_VALIDATION_EVIDENCE.md`.
+
+---
+
 ## 17. TOTALS
 
 | Phase | Slices | Wall-clock (1 builder + agents) |
