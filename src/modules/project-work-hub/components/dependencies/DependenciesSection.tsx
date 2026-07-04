@@ -129,9 +129,14 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
   const count = baseRows.length;
   const bodyId = `dep-body-${issueKey}`;
 
+  // Refresh every surface that reads ph_issue_dependencies. Global staleTime is
+  // 15min, so without these invalidations the timeline column view AND the
+  // standalone Dependencies page (/*-hub/:key/dependencies, query key
+  // ['dependencies', key]) keep serving stale data after a detail-page edit.
   const invalidateAfterWrite = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] });
     queryClient.invalidateQueries({ queryKey: ['dependency-row-meta'] });
+    queryClient.invalidateQueries({ queryKey: ['dependencies'] });
   }, [queryClient]);
 
   // Create one edge per selected key. First error → toast, keep toolbar open;
