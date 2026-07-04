@@ -18,6 +18,7 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
+import { DockPanel } from '@/components/chat/dock/DockPanel';
 import { useConversationMembers } from '@/hooks/chat/useConversationMembers';
 import { useChatRemoveMember } from '@/hooks/chat/useChatActions';
 import { useAuth } from '@/hooks/useAuth';
@@ -50,25 +51,22 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
   const myRole = members.find((m) => user && m.userId === user.id)?.role ?? 'member';
   const canRemove = myRole === 'admin';
 
-  return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width="small">
-          <ModalHeader>
-            <ModalTitle>People ({members.length})</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
+  const inDock =
+    typeof document !== 'undefined' && !!document.querySelector('.cc-dock');
+
+  const body = (
+    <>
             {isLoading && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                 Loading…
               </div>
             )}
             {!isLoading && members.length === 0 && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                 No members yet.
               </div>
             )}
-            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            <div style={inDock ? undefined : { maxHeight: 360, overflowY: 'auto' }}>
               {members.map((m) => {
                 const isSelf = user && m.userId === user.id;
                 const canActOnRow = canRemove || isSelf;
@@ -90,7 +88,8 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          fontSize: 'var(--ds-font-size-400)',
+                          fontSize: 'var(--ds-font-size-300)',
+                          fontWeight: 600,
                           color: 'var(--ds-text)',
                         }}
                       >
@@ -117,7 +116,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                         )}
                       </div>
                       {m.email && (
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>{m.email}</div>
                       )}
                       <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                         joined {timeAgo(m.joinedAt)}
@@ -141,17 +140,39 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                 );
               })}
             </div>
-          </ModalBody>
-          <ModalFooter>
-            {onInvite && (
-              <Button appearance="primary" onClick={onInvite}>
-                Add people
-              </Button>
-            )}
-            <Button appearance="subtle" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
+    </>
+  );
+
+  const footer = (
+    <>
+      {onInvite && (
+        <Button appearance="primary" onClick={onInvite}>
+          Add people
+        </Button>
+      )}
+      <Button appearance="subtle" onClick={onClose}>
+        Close
+      </Button>
+    </>
+  );
+
+  if (inDock) {
+    return isOpen ? (
+      <DockPanel title={`People (${members.length})`} onClose={onClose} footer={footer}>
+        {body}
+      </DockPanel>
+    ) : null;
+  }
+
+  return (
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} width="small">
+          <ModalHeader>
+            <ModalTitle>People ({members.length})</ModalTitle>
+          </ModalHeader>
+          <ModalBody>{body}</ModalBody>
+          <ModalFooter>{footer}</ModalFooter>
         </Modal>
       )}
     </ModalTransition>

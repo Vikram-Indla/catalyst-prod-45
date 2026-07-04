@@ -10,14 +10,8 @@
  * caller is added as a member if not already (idempotent).
  */
 import React, { useMemo, useState } from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTransition,
-} from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
+import { DockPanel } from './DockPanel';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
@@ -90,14 +84,18 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width="medium">
-          <ModalHeader>
-            <ModalTitle>Browse channels</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
+    <DockPanel
+      title="Browse channels"
+      onClose={onClose}
+      footer={
+        <Button appearance="subtle" onClick={onClose}>
+          Close
+        </Button>
+      }
+    >
             <input
               type="text"
               value={query}
@@ -106,20 +104,20 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 'var(--ds-font-size-400)',
+                fontSize: 'var(--ds-font-size-100)',
                 border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 marginBottom: 12,
               }}
             />
-            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            <div>
               {isLoading && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   Loading…
                 </div>
               )}
               {!isLoading && filtered.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   No channels match.
                 </div>
               )}
@@ -144,11 +142,11 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                 >
                   <ProjectIcon projectKey={r.project_key ?? ''} size="medium" />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                       #{(r.title ?? r.project_key ?? '').replace(/^#\s*/, '')}
                     </div>
                     {r.project_key && (
-                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                         {r.project_key}
                       </div>
                     )}
@@ -156,15 +154,7 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                 </button>
               ))}
             </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+    </DockPanel>
   );
 }
 
