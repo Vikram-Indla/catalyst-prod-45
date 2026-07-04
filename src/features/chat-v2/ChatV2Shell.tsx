@@ -189,6 +189,11 @@ function ChatV2Inner() {
     [conversations, activeConversationId],
   );
 
+  // Unread watermark snapshot for the "New messages" divider. Set on select
+  // (before mark-read), cleared when switching to a conversation with no
+  // unreads. Keyed by conversation so stale markers never leak across.
+  const [unreadMarker, setUnreadMarker] = useState<{ convId: string; since: string } | null>(null);
+
   const { messages: activeMessages } = useMessages(activeConversationId ?? null);
   const { data: activeMembers } = useConversationMembers(activeConversationId ?? null);
   const [threadSummarizeSourceId, setThreadSummarizeSourceId] = useState<string | null>(null);
@@ -199,6 +204,15 @@ function ChatV2Inner() {
 
   const handleSelect = (id: string) => {
     setActiveConversationId(id);
+    // Capture the unread watermark BEFORE mark-read resets last_read_at —
+    // the "New messages" divider anchors to this snapshot until the user
+    // switches conversations.
+    const selected = conversations.find(c => c.id === id);
+    setUnreadMarker(
+      selected && selected.unreadCount > 0
+        ? { convId: id, since: selected.lastReadAt ?? '1970-01-01T00:00:00.000Z' }
+        : null,
+    );
     // Mark read on open so the unread red dot clears immediately. Best-effort:
     // failure must never block opening the conversation.
     if (user?.id) {
@@ -687,6 +701,7 @@ function ChatV2Inner() {
           conversation={activeConversation}
           onOpenThread={shell.openThread}
           onClose={() => setActiveConversationId(undefined)}
+          unreadSince={unreadMarker?.convId === activeConversation.id ? unreadMarker.since : null}
           initialJumpMessageId={activityJumpMessageId}
           onSummarize={handleSummarizePreset}
           onOpenForwardSource={(conversationId, messageId) =>

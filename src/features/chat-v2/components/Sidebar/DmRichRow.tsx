@@ -109,6 +109,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         </div>
         {preview && (
           <div
+            dir="auto"
             style={{
               fontFamily: 'var(--cv2-font)',
               font: 'var(--ds-font-body-small)',

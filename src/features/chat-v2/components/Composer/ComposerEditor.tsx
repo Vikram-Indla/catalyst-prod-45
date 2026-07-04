@@ -218,6 +218,7 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
           aria-multiline="true"
           contentEditable
           suppressContentEditableWarning
+          dir="auto"
           onInput={emitChange}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}

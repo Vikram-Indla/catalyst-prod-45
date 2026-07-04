@@ -29,6 +29,48 @@ class ChatRealtimeManager {
   private messageChannels = new Map<string, ChannelEntry>();
   private typingChannels = new Map<string, ChannelEntry>();
   private huddleSignalChannels = new Map<string, ChannelEntry>();
+  private reactionEntry: ChannelEntry | null = null;
+
+  /**
+   * Subscribe to reaction-row changes. `chat_message_reactions` has no
+   * conversation_id column, so this is ONE app-wide channel shared by every
+   * subscriber; callers filter by message_id from the payload.
+   */
+  subscribeReactions(cb: MessageChangeCallback): UnsubscribeFn {
+    if (!this.reactionEntry) {
+      const channel = supabase.channel('chat-reactions:all');
+      const callbacks = new Set<(arg: unknown) => void>();
+      const created: ChannelEntry = { channel, callbacks };
+
+      channel
+        .on(
+          'postgres_changes' as 'system',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'chat_message_reactions',
+          } as never,
+          (payload: unknown) => {
+            created.callbacks.forEach((fn) => fn(payload));
+          },
+        )
+        .subscribe();
+
+      this.reactionEntry = created;
+    }
+
+    const entry = this.reactionEntry;
+    const wrapped = (arg: unknown) => cb(arg);
+    entry.callbacks.add(wrapped);
+
+    return () => {
+      entry.callbacks.delete(wrapped);
+      if (entry.callbacks.size === 0 && this.reactionEntry === entry) {
+        supabase.removeChannel(entry.channel);
+        this.reactionEntry = null;
+      }
+    };
+  }
 
   /** Subscribe to durable message changes for a conversation. */
   subscribeMessages(conversationId: string, cb: MessageChangeCallback): UnsubscribeFn {

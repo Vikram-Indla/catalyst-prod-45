@@ -9,6 +9,10 @@ import type { AttachmentMap } from '../../hooks/useMessageAttachments';
 interface MessageListProps {
   messages: ChatMessage[];
   loading?: boolean;
+  /** Unread watermark (ISO). The "New messages" divider renders before the
+   *  first message from another author created after this instant. */
+  unreadSince?: string | null;
+  currentUserId?: string | null;
   savedIds?: Set<string>;
   pinnedIds?: Set<string>;
   pinnedByMap?: Record<string, { name: string | null; isMe: boolean }>;
@@ -33,20 +37,39 @@ interface MessageListProps {
 const SAME_AUTHOR_WINDOW_MS = 5 * 60 * 1000;
 
 interface RenderItem {
-  kind: 'date' | 'message';
+  kind: 'date' | 'message' | 'unread';
   key: string;
   date?: string;
   message?: ChatMessage;
   showHeader?: boolean;
 }
 
-function buildRenderList(messages: ChatMessage[]): RenderItem[] {
+export function buildRenderList(
+  messages: ChatMessage[],
+  unreadSince?: string | null,
+  currentUserId?: string | null,
+): RenderItem[] {
   const out: RenderItem[] = [];
   let lastDay = '';
   let lastAuthor: string | null = null;
   let lastTime = 0;
+  const unreadCutoff = unreadSince ? new Date(unreadSince).getTime() : null;
+  let unreadPlaced = false;
   for (const m of messages) {
     const dk = dayKey(m.createdAt);
+    if (
+      unreadCutoff !== null &&
+      !unreadPlaced &&
+      m.authorId !== currentUserId &&
+      new Date(m.createdAt).getTime() > unreadCutoff
+    ) {
+      out.push({ kind: 'unread', key: 'unread-divider' });
+      unreadPlaced = true;
+      // The divider breaks author grouping — the first unread message
+      // always shows its full header.
+      lastAuthor = null;
+      lastTime = 0;
+    }
     if (dk !== lastDay) {
       out.push({ kind: 'date', key: `date-${dk}`, date: m.createdAt });
       lastDay = dk;
@@ -77,6 +100,8 @@ function buildRenderList(messages: ChatMessage[]): RenderItem[] {
 export function MessageList({
   messages,
   loading,
+  unreadSince,
+  currentUserId,
   savedIds,
   pinnedIds,
   pinnedByMap,
@@ -97,7 +122,10 @@ export function MessageList({
   followLatest = true,
 }: MessageListProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const renderList = useMemo(() => buildRenderList(messages), [messages]);
+  const renderList = useMemo(
+    () => buildRenderList(messages, unreadSince, currentUserId),
+    [messages, unreadSince, currentUserId],
+  );
 
   useEffect(() => {
     if (!followLatest) return;
@@ -171,7 +199,32 @@ export function MessageList({
         </div>
       ) : (
         renderList.map(item =>
-          item.kind === 'date' ? (
+          item.kind === 'unread' ? (
+            <div
+              key={item.key}
+              role="separator"
+              aria-label="New messages"
+              data-cv2-unread-divider
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--ds-space-100)',
+                padding: 'var(--ds-space-050) var(--ds-space-250)',
+              }}
+            >
+              <span style={{ flex: 1, height: 1, background: 'var(--cv2-danger)' }} />
+              <span
+                style={{
+                  font: 'var(--ds-font-body-small)',
+                  fontWeight: 600,
+                  color: 'var(--cv2-danger)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                New messages
+              </span>
+            </div>
+          ) : item.kind === 'date' ? (
             <DateSeparator
               key={item.key}
               iso={item.date!}

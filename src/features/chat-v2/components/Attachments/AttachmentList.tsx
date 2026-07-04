@@ -59,6 +59,7 @@ function AttachmentItem({ attachment }: { attachment: ChatAttachment }) {
       >
         <span
           title={attachment.filename}
+          dir="auto"
           style={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',

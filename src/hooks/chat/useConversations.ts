@@ -222,6 +222,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         lastMessageAt: conv.last_message_at ?? null,
         lastMessagePreview: conv.last_message_preview ?? null,
         unreadCount,
+        lastReadAt: member.last_read_at ?? null,
       };
       return mapped;
     });
