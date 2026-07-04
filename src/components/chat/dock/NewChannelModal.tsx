@@ -172,7 +172,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
               htmlFor="cc-new-channel-name"
               style={{
                 display: 'block',
-                fontSize: 'var(--ds-font-size-200)',
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-subtle)',
                 marginBottom: 4,
@@ -201,7 +201,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             <label
               style={{
                 display: 'block',
-                fontSize: 'var(--ds-font-size-200)',
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-subtle)',
                 marginBottom: 4,
@@ -226,7 +226,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
                 <div
                   style={{
                     padding: 12,
-                    fontSize: 'var(--ds-font-size-200)',
+                    fontSize: 'var(--ds-font-size-100)',
                     color: 'var(--ds-text-subtle)',
                     textAlign: 'center',
                   }}

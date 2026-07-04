@@ -142,11 +142,11 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                 >
                   <ProjectIcon projectKey={r.project_key ?? ''} size="medium" />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                       #{(r.title ?? r.project_key ?? '').replace(/^#\s*/, '')}
                     </div>
                     {r.project_key && (
-                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                         {r.project_key}
                       </div>
                     )}

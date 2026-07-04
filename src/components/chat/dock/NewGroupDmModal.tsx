@@ -158,7 +158,7 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
             />
             {error && (
               <div style={{
-                fontSize: 'var(--ds-font-size-200)',
+                fontSize: 'var(--ds-font-size-100)',
                 color: 'var(--ds-text-danger)',
                 marginBottom: 8,
               }}>{error}</div>
@@ -199,9 +199,9 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{c.name}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>{c.name}</div>
                       {c.sub && (
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{c.sub}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>{c.sub}</div>
                       )}
                     </div>
                   </button>
