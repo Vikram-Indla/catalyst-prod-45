@@ -91,7 +91,7 @@ export function AIGenerateTestCasesDialog({
   const [selectedTestCases, setSelectedTestCases] = useState<Set<number>>(new Set());
   const [expandedTestCase, setExpandedTestCase] = useState<number | null>(null);
 
-  const { generateTestCases, isGenerating, error } = useAIGeneration();
+  const { generateTestCases, isGenerating, error, isBlocked } = useAIGeneration();
 
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) {
@@ -326,7 +326,7 @@ export function AIGenerateTestCasesDialog({
                 </Button>
                 <Button
                   onClick={handleGenerate}
-                  disabled={isGenerating || !prompt.trim()}
+                  disabled={isGenerating || isBlocked || !prompt.trim()}
                   className="min-w-[140px]" style={{ background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)' }}
                 >
                   {isGenerating ? (
@@ -334,6 +334,8 @@ export function AIGenerateTestCasesDialog({
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Generating...
                     </>
+                  ) : isBlocked ? (
+                    'Generation limit reached'
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />

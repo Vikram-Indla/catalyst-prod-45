@@ -367,3 +367,40 @@ D-003 resolved 2026-07-04: Vikram confirmed `ph_releases` as the release id-spac
 | Baseline ratchet | `audit:ads:gate` tokens count dropped 24743→24730 from the deleted dead code — ratcheted down via `node scripts/ads-audit-gate.cjs --update`, per CLAUDE.md's "ratchet down when a slice reduces counts" rule |
 
 **P2-S4 done** — route already retired by an earlier slice; this slice closed out the orphaned dead folder it left behind. Next: **P2-S5…S8** (JUnit XML ingestion).
+
+## P2-S5…S8 (JUnit ingestion) — SKIPPED
+
+Vikram: "ignore JUNIT and execute S9 to S20 uninterrupted." Not started, not evaluated. Carried
+forward alongside S17b and the live-verification backlog.
+
+## P2-S16 (per-instance assignee/due-date on scope) — target already satisfied
+
+Confirmed directly (not from agent report alone) via `Read` on `CycleDetailPage.tsx`:
+`AssigneeCell` (~line 552) and `DueDateCell` (~line 595) already render + write
+`tm_cycle_scope.assigned_to`/`due_date` per row; table header already has both columns. No code
+change. Full reasoning in `09_DECISIONS.md` D-022.
+
+## P2-S19/S20 (RBAC reality)
+
+| Item | Evidence |
+|---|---|
+| **Real gap found**: `tm_user_has_access()` permissive fallback | With `tm_user_roles` empty (true for every project), the function returns `true` for any authenticated user on any project — confirmed via `pg_get_functiondef`. Every tm_* RLS policy gated by it currently provides no real tenant isolation. Deliberately NOT fixed this slice (would lock out every current user instantly) — documented as the actual ADM-007 note, per Plan Lock's own "implementation may slip to P3." Full reasoning: D-023 |
+| A4 E4 — CHECK widening | `tm_requirement_links_requirement_type_check` widened to include `defect`/`incident` (was story/epic/feature/business_request/external only). Migration `p2_s20_widen_requirement_type_check` |
+| A2 S6 — set-membership consolidation | `trigger_update_test_set_count` moved from dead `tm_test_set_cases` (0 rows, 0 code refs) to canonical `tm_set_cases` (3 rows). Live drift proof: `tm_test_sets.test_count` stored 0 vs actual 3 before fix; backfilled correct count; live-proofed trigger fires (scratch insert/delete: 3→4→3). Dropped `tm_test_set_cases` outright (0 rows, 0 refs, no snapshot needed). Migration `p2_s20_set_membership_consolidation` |
+| P2-S19 real consumer | New `src/hooks/test-management/useTmUserRoles.ts` + "Team & roles" tab on `/admin/test-ops`. `tm_approve_release_readiness` rewritten to require `admin`/`test_lead` role — fail-closed on this one action only. Live-proofed: approval with no role → rejected; assigned `test_lead` role → same call succeeded, `overall_status` → `approved` |
+| Accept cmd | `npx tsc --noEmit` clean, all 4 gates pass, `npm run build` exit 0 |
+
+**P2-S19/S20 done.**
+
+## P2-S9…S11 (AI governance)
+
+| Item | Evidence |
+|---|---|
+| **D-024 — repo-wide silent-failure bug found** | `ai-generate-story-test-cases`'s usage logging (`logGovernance()` → `ai_governance_audit_log`) has never once succeeded — column mismatch, silently swallowed. Same broken pattern copy-pasted into 10 other AI edge functions repo-wide. Fixed for this function only (writes to `tm_ai_usage_log` now); the other 10 flagged via `spawn_task` (task_b1ad6af3), not fixed here |
+| AI-004 quota + cooldown | 20/day + 10s cooldown, enforced server-side against `tm_ai_usage_log` directly (no separate counter table). New `quota_exceeded`/`cooldown` codes → `isBlocked` state in `useAIGeneration.ts` → Generate button shows "Generation limit reached" |
+| Deploy | `ai-generate-story-test-cases` deployed (version 5, `verify_jwt: false` preserved to match existing config — auth handled in-code). Live-verified: unauthenticated `curl` → `401 unauthorized` (auth gate intact post-deploy) |
+| **AI-006 — agent finding corrected before acting on it** | A research agent reported `useCatyAI.ts` as live/routed. Verified directly: the whole `caty-ai-chat/` folder (8 files) has zero importers outside itself (only a Storybook story + generated doc reference it); `BacklogPage.atlaskit.tsx`'s only connection was a dead, never-invoked `useCreateCatyConversation()` call. Deleted `useCatyAI.ts`, `src/types/caty-ai.ts`, the whole `caty-ai-chat/` folder, and the dead call+import in `BacklogPage.atlaskit.tsx`. `caty_conversations`/`caty_messages` tables (0 rows) left alone — no code references them either way now |
+| Accept cmd | `npx tsc --noEmit` clean. All 4 local gates pass (tokens baseline ratcheted down 24730→24596 from the deleted dead code). `npm run build` exit 0 |
+| **Deferred** | Full authenticated round-trip proof (real generation call → quota/cooldown/ledger row) — needs a real user JWT, deferred to the browser-access backlog |
+
+**P2-S9…S11 done.** Next: **P2-S12…S15** (Collaboration).

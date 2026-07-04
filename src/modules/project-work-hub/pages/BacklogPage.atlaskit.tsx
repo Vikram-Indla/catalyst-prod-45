@@ -34,7 +34,6 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
 import { SectionMessage } from '@/components/ads';
@@ -1077,9 +1076,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // into the same downstream filter logic so the column picker, the table
   // columns, and the URL-cols cleanup all behave consistently.
   const effectiveAllowedColumnIds = dataSource?.allowedColumnIds ?? allowedColumnIds;
-  // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
-  const createConversation = useCreateCatyConversation();
 
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls

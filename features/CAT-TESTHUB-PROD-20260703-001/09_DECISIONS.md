@@ -131,6 +131,94 @@ in this session that was never independently re-verified via a live SQL probe, `
 direct `grep` carries a small residual risk and should be spot-checked before being relied on
 again. Flagging this to Vikram directly rather than quietly self-correcting.
 
+## D-024 (2026-07-04, P2-S9/S10/S11 — AI governance: a repo-wide silent-failure bug, quota, and a live-vs-dead correction on my own research)
+**Usage logging for the `ai-generate-story-test-cases` edge function had never worked, and the
+same bug pattern is copy-pasted into 10 other AI edge functions repo-wide.** Its `logGovernance()`
+helper inserted into `ai_governance_audit_log` with columns (`payload`/`status`/`error_message`/
+`source`) that don't exist on that table's real schema (`id`/`actor_id`/`contract_id`/`action`/
+`object_type`/`object_id`/`diff` — looks designed for a different, contract-based governance
+concept entirely). Every insert has silently failed since the function was written — confirmed
+live: `select count(*) from ai_governance_audit_log` → 0, and the same `catch (_e) { /* audit
+must never block inference */ }` swallow pattern exists in all 10 other functions
+(`ai-improve-story`, `ai-translate-field`, `ai-suggest-children`, `voice-transcribe`,
+`ai-translate-title`, `summarize-release`, `presence-backup-suggest`, `summarize-comments`,
+`generate-whatsapp-summary`, `ai-improve-comment`). **Fixed for this function only** (in scope for
+this feature) — replaced with a `logUsage()` helper writing to `tm_ai_usage_log` (the real
+usage-ledger table, already existed with correct RLS, 0 rows, zero prior code references —
+confirmed via grep before use). **The other 10 functions are out of scope** — flagged via
+`spawn_task` (task_b1ad6af3) rather than silently expanding this slice.
+
+**AI-004 (quota + cooldown)**: added server-side, in the same edge function, querying
+`tm_ai_usage_log` directly (no separate counter table) — 20/day per user, 10s cooldown between
+calls. New `quota_exceeded`/`cooldown` error codes surface as a distinct `isBlocked` state in
+`useAIGeneration.ts` (not just a generic error), disabling the Generate button in
+`AIGenerateTestCasesDialog.tsx` with "Generation limit reached". Deployed (version 5); live-
+verified the unauthenticated-401 path still works post-deploy (`curl` → 401 unauthorized). Full
+authenticated round-trip (quota/cooldown/ledger-row proof) needs a real user JWT — deferred to
+the browser-access backlog like every other live-UI proof this session.
+
+**AI-006 (delete dead `useCatyAI` layer) — a discovery agent's finding was wrong, caught before
+acting on it.** A research agent reported `useCatyAI.ts`'s consumers as "live, routed" — checked
+directly (this session's standing rule after the `rtk proxy grep` staleness incident) and found
+the *entire* `src/components/caty-ai-chat/` folder (8 files: `CatyAIChat`, `CatyGenerateTestsModal`,
+`CatyAICoverageAnalysis`, etc.) has **zero importers anywhere outside itself** — grep for each
+component name and for the folder path itself came back empty except the Storybook registry story
+and the generated usage-map doc (neither a live route). The *only* connection to a live file was
+`BacklogPage.atlaskit.tsx` calling `useCreateCatyConversation()` — but the returned
+`createConversation` mutation object was never actually invoked anywhere in that file either (one
+dead `const` declaration, no `.mutate(` call). Deleted the whole layer: `useCatyAI.ts`,
+`src/types/caty-ai.ts`, the entire `caty-ai-chat/` folder, and the dead hook call + import in
+`BacklogPage.atlaskit.tsx`. `caty_conversations`/`caty_messages` DB tables (0 rows) left alone —
+out of this slice's frontend-cleanup scope, no code references them anymore either way.
+
+## D-022 (2026-07-04, P2-S16 — target already fully satisfied)
+**Per-instance assignee/due-date on cycle scope already exists, live, working, no gaps.**
+`tm_cycle_scope.assigned_to`/`due_date` columns already exist; `CycleDetailPage.tsx`'s
+`AssigneeCell` (line ~552) and `DueDateCell` (line ~595) already render/write both per row,
+already wired into the scope table header (`Assignee`/`Due Date` columns). Confirmed by direct
+read, not just agent report (the P0-S2/S7 lesson about verifying before trusting held). No code
+change made — same shape as D-007 (target already resolved before the slice started).
+
+## D-023 (2026-07-04, P2-S19/S20 — RBAC reality: a real gap, and a real fail-closed fix on one path)
+**`tm_user_has_access()` (the function nearly every tm_* RLS policy calls) has a permissive
+fallback: if `tm_user_roles` has no row for a user+project, it returns `true` anyway** ("Allow
+authenticated users to access any project — permissive for development" per its own comment).
+`tm_user_roles` has 0 rows for every project on staging. **Net effect: every tm_* RLS policy
+gated by this function currently provides no real tenant isolation — any authenticated user can
+read/write any project's TestHub data.** This is the actual substance of ADM-007.
+
+**Deliberately not touched this slice**: tightening the fallback (removing the `RETURN TRUE`
+permissive branch) would instantly lock out every current user on every tm_* table, since no
+project has any `tm_user_roles` rows to fall back TO. That's the textbook regression-red-flag
+shape CLAUDE.md exists to catch — stopped rather than patched over. Real fix needs a dedicated,
+carefully-sequenced future slice: backfill `tm_user_roles` for every current project member
+first (from existing project-membership signal, not invented), THEN remove the permissive
+fallback, with live verification that no one gets locked out. Plan Lock's own S20 text already
+anticipated this ("implementation may slip to P3") — this decision makes the reasoning explicit
+rather than leaving it as an unexplained deferral.
+
+**What WAS built this slice** (P2-S19, real and additive): `tm_user_roles` had zero live
+consumers anywhere (confirmed via grep) despite having full RLS. First consumer built:
+- New `src/hooks/test-management/useTmUserRoles.ts` (assign/remove/list roles per project).
+- New "Team & roles" tab on `/admin/test-ops` (`TestOpsPage.tsx`) — real CRUD against
+  `tm_user_roles`, not decorative (the actually-decorative matrix, `PermissionsMatrix.tsx`, is a
+  completely separate product-level permission system unrelated to `tm_user_roles` — confirmed
+  it never references that table at all).
+- `tm_approve_release_readiness` rewritten to **require** an `admin`/`test_lead` role in
+  `tm_user_roles` for the release's project before approving — additive, fail-closed on this ONE
+  action only, doesn't touch the broad `tm_user_has_access()` fallback. Live-proofed: approval
+  attempt with no role assigned → rejected ("Only admin or test_lead roles may approve release
+  readiness"); assigned a real `test_lead` row → same call succeeded, `tm_release_readiness.
+  overall_status` flipped to `approved` with `approved_by`/`approved_at` set correctly.
+- Also widened `tm_requirement_links.requirement_type` CHECK to include `defect`/`incident`
+  (A4 E4) — was `story|epic|feature|business_request|external` only.
+- Set-membership consolidation (A2 S6): `trigger_update_test_set_count` was firing on
+  `tm_test_set_cases` (dead legacy twin, 0 rows, zero live code references — confirmed via grep)
+  instead of `tm_set_cases` (canonical, live, 3 rows) — proven drift live
+  (`tm_test_sets.test_count` stored 0, actual 3). Backfilled the correct count, moved the
+  trigger, live-proofed with a scratch insert/delete (count went 3→4→3 correctly), then dropped
+  the dead twin outright (0 rows, 0 references, no snapshot table needed — nothing to lose).
+
 ## D-009 (2026-07-03, found live during P1-S10b — self-correction of my own P1-S9 work)
 **The P1-S9 backfill migration (`20260703410000`) set `requirement_id` on its 16 rows but never `external_key`/`external_title`.** Both `TestCoveragePanel.tsx` and (after S10b) `TestCasesSection.tsx` filter `tm_requirement_links` by `external_key`, not `requirement_id` — so all 16 backfilled rows were invisible to both readers despite having a technically-correct FK. Caught by live testing (story BAU-2668 showed "Test cases 2" instead of the expected 18), not by re-reading my own migration SQL. Fixed with a follow-up data-repair migration (`20260703430000`) rather than amending the original — the original already ran and is committed; a second additive migration is the correct fix per the migration-ledger discipline (never alter an applied migration's file after the fact). Lesson: when a migration sets one column that participates in a join/filter used elsewhere, grep every reader's filter column before declaring the backfill's job done — count equality (16=16) on the wrong column silently proves nothing.
 

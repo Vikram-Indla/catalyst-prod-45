@@ -21,7 +21,9 @@ import {
 import {
   useLatestReadiness,
   useCreateReadinessSnapshot,
+  useApproveReadiness,
 } from '@/hooks/releases/useReleaseReadiness';
+import { useAuth } from '@/hooks/useAuth';
 
 const TEXT = 'var(--ds-text)';
 const SUBTLE = 'var(--ds-text-subtle)';
@@ -66,6 +68,9 @@ export function QualityGatesSection({ releaseId }: Props) {
   const { data: readiness, isPending: readinessPending } = useLatestReadiness(releaseId);
   const evaluate = useEvaluateQualityGates();
   const createSnapshot = useCreateReadinessSnapshot();
+  const approve = useApproveReadiness();
+  const { user } = useAuth();
+  const canOfferApprove = readiness && ['ready', 'at_risk'].includes(readiness.overall_status);
 
   return (
     <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 16, marginTop: 16 }}>
@@ -102,6 +107,15 @@ export function QualityGatesSection({ releaseId }: Props) {
           >
             Snapshot readiness
           </Button>
+          {canOfferApprove && (
+            <Button
+              appearance="primary"
+              isDisabled={!user || approve.isPending}
+              onClick={() => user && approve.mutate({ snapshotId: readiness!.id, userId: user.id, releaseId })}
+            >
+              Approve
+            </Button>
+          )}
         </div>
       </div>
 
