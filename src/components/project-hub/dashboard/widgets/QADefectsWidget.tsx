@@ -110,7 +110,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
-        color: token('color.text', '#292A2E'),
+        color: token('color.text'),
       }}
     >
       {label}

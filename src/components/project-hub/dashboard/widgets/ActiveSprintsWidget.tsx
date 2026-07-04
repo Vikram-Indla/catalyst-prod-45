@@ -86,16 +86,16 @@ function fmtShort(s: string | null): string {
 // ─── Gantt bar ────────────────────────────────────────────────────────────────
 
 const BAR_BG: Record<SprintStatus, string> = {
-  Active:    token('color.background.accent.blue.subtle', '#CCE0FF'),
-  'At Risk': token('color.background.accent.orange.subtle', '#FFE2BD'),
-  Upcoming:  token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
-  Completed: token('color.background.accent.green.subtle', '#BAF3DB'),
+  Active:    token('color.background.accent.blue.subtle'),
+  'At Risk': token('color.background.accent.orange.subtle'),
+  Upcoming:  token('color.background.neutral.subtle'),
+  Completed: token('color.background.accent.green.subtle'),
 };
 const BAR_BORDER: Record<SprintStatus, string> = {
-  Active:    token('color.border.accent.blue', 'var(--ds-link)'),
-  'At Risk': token('color.border.accent.orange', '#D97008'),
-  Upcoming:  token('color.border', 'var(--ds-border)'),
-  Completed: token('color.border.accent.green', 'var(--ds-background-success-bold)'),
+  Active:    token('color.border.accent.blue'),
+  'At Risk': token('color.border.accent.orange'),
+  Upcoming:  token('color.border'),
+  Completed: token('color.border.accent.green'),
 };
 
 function GanttBar({

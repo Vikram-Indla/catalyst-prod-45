@@ -229,7 +229,7 @@ export default function DeliveryCompositionWidget({
                   style={{
                     ...SMALL,
                     textAlign: 'right',
-                    color: token('color.text', '#292A2E'),
+                    color: token('color.text'),
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >

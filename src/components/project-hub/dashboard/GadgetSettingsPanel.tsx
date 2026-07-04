@@ -547,7 +547,7 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
-                fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', '#97A0AF'),
+                fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest'),
                 fontStyle: 'italic',
               }}
             >
