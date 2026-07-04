@@ -13,7 +13,7 @@ import TextArea from '@atlaskit/textarea';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { CheckSquare, ChevronRight } from '@/lib/atlaskit-icons';
 import { usePendingApprovals, useApproveSignoff, useRejectSignoff, type PendingApproval } from '@/hooks/useReleaseHub';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { catalystToast } from '@/lib/catalystToast';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
@@ -67,7 +67,7 @@ function ApprovalWindow({ approval, onClose }: { approval: PendingApproval; onCl
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {approval.role && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{approval.role}</span>}
-              <Avatar name={approval.approverName ?? 'Unassigned'} src={approval.approverAvatarUrl ?? undefined} size="small" />
+              <CatalystAvatar name={approval.approverName ?? 'Unassigned'} src={approval.approverAvatarUrl ?? undefined} size="small" />
               <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{approval.approverName ?? 'Unassigned'}</span>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function SignOffQueuePage() {
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
           {approvals.map((a) => (
             <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-              <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="medium" />
+              <CatalystAvatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="medium" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{a.approverName ?? 'Unassigned'}</span>

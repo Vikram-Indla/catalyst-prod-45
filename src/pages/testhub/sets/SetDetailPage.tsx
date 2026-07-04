@@ -10,6 +10,8 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Trash2 } from '@/lib/atlaskit-icons';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -423,6 +425,132 @@ export default function SetDetailPage() {
     enabled: !!setId,
   });
 
+  // JiraTable columns for setCases
+  const setCasesTableColumns: Column<SetCase>[] = [
+    {
+      id: 'key',
+      label: 'Key',
+      width: 10,
+      cell: ({ row }) => (
+        <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
+          {row.tm_test_cases?.case_key ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'title',
+      label: 'Title',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)' }}>
+          {row.tm_test_cases?.title ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => (
+        <>{row.tm_test_cases?.status ? <CaseStatusPill status={row.tm_test_cases.status} /> : '—'}</>
+      ),
+    },
+    {
+      id: 'remove',
+      label: '',
+      width: 10,
+      cell: ({ row }) => (
+        <button
+          onClick={() => removeCaseMut.mutate(row.id)}
+          title="Remove from set"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--ds-text-subtlest)',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Trash2 size={13} />
+        </button>
+      ),
+    },
+  ];
+
+  // JiraTable columns for cycleSets
+  const cyclesTableColumns: Column<CycleSet>[] = [
+    {
+      id: 'cycleName',
+      label: 'Cycle name',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)', fontWeight: 500 }}>
+          {row.tm_test_cycles?.name ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => (
+        <>
+          {row.tm_test_cycles?.status ? (
+            <Lozenge appearance={CYCLE_STATUS_APPEARANCE[row.tm_test_cycles.status] ?? 'default'}>
+              {row.tm_test_cycles.status.charAt(0) + row.tm_test_cycles.status.slice(1).toLowerCase().replace('_', ' ')}
+            </Lozenge>
+          ) : '—'}
+        </>
+      ),
+    },
+    {
+      id: 'startDate',
+      label: 'Start date',
+      width: 12,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
+          {row.tm_test_cycles?.sprint?.name ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'endDate',
+      label: 'End date',
+      width: 12,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text-subtle)' }}>
+          {row.tm_test_cycles?.planned_end ? formatDate(row.tm_test_cycles.planned_end) : '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'actions',
+      label: '',
+      width: 10,
+      cell: ({ row }) => (
+        <>
+          {row.tm_test_cycles?.id && (
+            <button
+              onClick={() => navigate(`/testhub/${projectKey}/cycles/${row.tm_test_cycles?.id}`)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-200)',
+                color: 'var(--ds-link)',
+                padding: 0,
+              }}
+            >
+              View cycle
+            </button>
+          )}
+        </>
+      ),
+    },
+  ];
+
   // Query available cycles for "Add to cycle" dropdown
   const { data: availableCycles = [] } = useQuery({
     queryKey: ['available-cycles', projectId, setId],
@@ -602,55 +730,11 @@ export default function SetDetailPage() {
               }
             />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                    <th style={thStyle}>Key</th>
-                    <th style={thStyle}>Title</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={{ ...thStyle, width: 80 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {setCases.map(sc => {
-                    const tc = sc.tm_test_cases;
-                    return (
-                      <tr key={sc.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
-                          {tc?.case_key ?? '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
-                          {tc?.title ?? '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {tc?.status ? (
-                            <CaseStatusPill status={tc.status} />
-                          ) : '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          <button
-                            onClick={() => removeCaseMut.mutate(sc.id)}
-                            title="Remove from set"
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              cursor: 'pointer',
-                              color: 'var(--ds-text-subtlest)',
-                              padding: 4,
-                              display: 'flex',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <JiraTable
+              columns={setCasesTableColumns}
+              data={setCases}
+              getRowId={(row) => row.id}
+            />
           )}
         </>
       )}
@@ -665,58 +749,11 @@ export default function SetDetailPage() {
           ) : cycleSets.length === 0 ? (
             <EmptyState message="This set has not been added to any cycles yet." />
           ) : (
-            <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                    <th style={thStyle}>Cycle name</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Start date</th>
-                    <th style={thStyle}>End date</th>
-                    <th style={{ ...thStyle, width: 80 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cycleSets.map(cs => {
-                    const cycle = cs.tm_test_cycles;
-                    return (
-                      <tr key={cs.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text)', fontWeight: 500 }}>
-                          {cycle?.name ?? '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {cycle?.status ? (
-                            <Lozenge appearance={CYCLE_STATUS_APPEARANCE[cycle.status] ?? 'default'}>
-                              {cycle.status.charAt(0) + cycle.status.slice(1).toLowerCase().replace('_', ' ')}
-                            </Lozenge>
-                          ) : '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
-                          {cycle?.sprint?.name ?? '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_start ? formatDate(cycle.planned_start) : '—'}
-                        </td>
-                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle)' }}>
-                          {cycle?.planned_end ? formatDate(cycle.planned_end) : '—'}
-                        </td>
-                        <td style={tdStyle}>
-                          {cycle?.id && (
-                            <button
-                              onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 'var(--ds-font-size-200)',
-                                color: 'var(--ds-link)',
-                                padding: 0,
-                              }}
-                            >
-                              View cycle
-                            </button>
-                          )}
-                        </td>
+            <JiraTable
+              columns={cyclesTableColumns}
+              data={cycleSets}
+              getRowId={(row) => row.id}
+            />
                       </tr>
                     );
                   })}

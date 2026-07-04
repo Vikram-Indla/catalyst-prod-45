@@ -13,7 +13,7 @@
 import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import { Avatar } from '@/components/ads/Avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useProjectHoverData } from '@/hooks/chat/useProjectHoverData';
 
 export interface ChatProjectRowProps {
@@ -136,11 +136,10 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                 {data?.members.length ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                     {visibleMembers.map((m) => (
-                      <Avatar
+                      <CatalystAvatar
                         key={m.user_id}
                         name={m.full_name ?? '?'}
                         size="small"
-                        aria-label={m.full_name ?? 'Member'}
                       />
                     ))}
                     {extra > 0 ? (

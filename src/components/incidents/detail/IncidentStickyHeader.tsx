@@ -148,8 +148,8 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
               Release
             </Link>
             <span className="text-muted-foreground/60">/</span>
-            <Link 
-              to="/release/incidents" 
+            <Link
+              to="/incident-hub"
               className="hover:text-foreground transition-colors"
             >
               Incidents

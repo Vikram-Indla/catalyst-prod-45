@@ -101,7 +101,7 @@ export function OperationsGridRow({
 
     // Fallback to deterministic rules
     if (isIncident) {
-      return item.id ? `/release/incidents/${item.id}` : null;
+      return item.key ? `/incident-hub/view/${item.key}` : null;
     }
     if (isRelease) {
       return item.id ? `/release/releases/${item.id}` : null;

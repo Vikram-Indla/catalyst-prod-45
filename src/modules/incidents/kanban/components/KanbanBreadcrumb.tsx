@@ -25,8 +25,8 @@ export const KanbanBreadcrumb = memo(function KanbanBreadcrumb() {
           Release
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)]" />
-        <Link 
-          to="/release/incidents" 
+        <Link
+          to="/incident-hub"
           className="font-medium hover:underline transition-colors text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:text-[var(--ds-text-brand)]"
         >
           Incidents

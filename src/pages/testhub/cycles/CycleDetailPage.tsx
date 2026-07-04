@@ -27,6 +27,8 @@ import { TMCycleScope, RunStatus } from '@/types/test-management';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 
 export default function CycleDetailPage() {
   const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
@@ -51,6 +53,74 @@ export default function CycleDetailPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'scope' | 'planning'>('scope');
+
+  // JiraTable columns for scope view
+  const scopeTableColumns: Column<TMCycleScope>[] = [
+    {
+      id: 'key',
+      label: 'Key',
+      width: 10,
+      cell: ({ row }) => (
+        <div style={{ fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
+          {row.test_case?.key ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'title',
+      label: 'Title',
+      flex: true,
+      cell: ({ row }) => (
+        <div style={{ color: 'var(--ds-text)' }}>
+          {row.test_case?.title ?? '—'}
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      width: 12,
+      cell: ({ row }) => <RunStatusPill status={row.status} />,
+    },
+    {
+      id: 'assignee',
+      label: 'Assignee',
+      width: 15,
+      cell: ({ row }) => <AssigneeCell scopeId={row.id} cycleId={cycleId ?? ''} assignee={row.assignee ?? null} />,
+    },
+    {
+      id: 'dueDate',
+      label: 'Due Date',
+      width: 14,
+      cell: ({ row }) => <DueDateCell scopeId={row.id} cycleId={cycleId ?? ''} dueDate={row.due_date} />,
+    },
+    {
+      id: 'actions',
+      label: 'Actions',
+      width: 11,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', gap: 4 }}>
+          {['🐛', '📝', '📎'].map((emoji, idx) => (
+            <PanelButton key={idx} emoji={emoji} />
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: 'remove',
+      label: '',
+      width: 6,
+      cell: ({ row }) => (
+        <button
+          onClick={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [row.id] })}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', padding: 4 }}
+          title="Remove from scope"
+        >
+          <Trash2 size={13} />
+        </button>
+      ),
+    },
+  ];
 
   const { data: teamMembers = [] } = useQuery({
     queryKey: ['team-members'],
@@ -420,42 +490,17 @@ export default function CycleDetailPage() {
           No cases match the selected status filter.
         </div>
       ) : (
-        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
-            <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
-                <th style={{ ...thStyle, width: 36 }}>
-                  <input
-                    type="checkbox"
-                    checked={allSelected}
-                    onChange={toggleAll}
-                    style={{ width: 16, height: 16, cursor: 'pointer' }}
-                    title={allSelected ? 'Deselect all' : 'Select all'}
-                  />
-                </th>
-                <th style={thStyle}>Key</th>
-                <th style={thStyle}>Title</th>
-                <th style={thStyle}>Status</th>
-                <th style={{ ...thStyle, minWidth: 130 }}>Assignee</th>
-                <th style={{ ...thStyle, minWidth: 120 }}>Due Date</th>
-                <th style={{ ...thStyle, width: 96 }}>Actions</th>
-                <th style={{ ...thStyle, width: 40 }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.map(item => (
-                <ScopeRow
-                  key={item.id}
-                  item={item}
-                  cycleId={cycleId ?? ''}
-                  onRemove={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [item.id] })}
-                  selected={selectedIds.has(item.id)}
-                  onToggle={() => toggleOne(item.id)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <JiraTable
+          columns={scopeTableColumns}
+          data={filteredItems}
+          getRowId={(row) => row.id}
+          selectable
+          selection={selectedIds}
+          onSelectionChange={setSelectedIds}
+          onRowClick={(item) => {
+            // Placeholder for potential detail view
+          }}
+        />
       )}
 
       {showAddCases && cycleId && projectId && (
@@ -473,78 +518,30 @@ export default function CycleDetailPage() {
 
 type ScopePanel = 'defect' | 'comments' | 'evidence' | null;
 
-function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
-  item: TMCycleScope;
-  cycleId: string;
-  onRemove: () => void;
-  selected?: boolean;
-  onToggle?: () => void;
-}) {
+function PanelButton({ emoji }: { emoji: string }) {
   const [panel, setPanel] = useState<ScopePanel>(null);
-  const toggle = (p: ScopePanel) => setPanel(prev => prev === p ? null : p);
 
-  const iconBtn = (label: string, emoji: string, p: ScopePanel) => (
+  const labelMap: Record<string, { label: string; panelType: ScopePanel }> = {
+    '🐛': { label: 'Log defect', panelType: 'defect' },
+    '📝': { label: 'Comments', panelType: 'comments' },
+    '📎': { label: 'Evidence', panelType: 'evidence' },
+  };
+
+  const { label, panelType } = labelMap[emoji] || { label: '', panelType: null };
+
+  return (
     <button
-      onClick={() => toggle(p)}
+      onClick={() => setPanel(prev => prev === panelType ? null : panelType)}
       title={label}
       style={{
-        background: panel === p ? 'var(--ds-background-selected)' : 'none',
+        background: panel ? 'var(--ds-background-selected)' : 'none',
         border: '1px solid var(--ds-border)',
         borderRadius: 4, cursor: 'pointer', padding: '0px 6px',
-        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel === p ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
+        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
       }}
     >
       {emoji}
     </button>
-  );
-
-  return (
-    <>
-      <tr style={{ borderBottom: '1px solid var(--ds-border)', background: selected ? 'var(--ds-background-selected)' : undefined }}>
-        <td style={{ ...tdStyle, width: 36 }}>
-          <input
-            type="checkbox"
-            checked={!!selected}
-            onChange={onToggle}
-            style={{ width: 16, height: 16, cursor: 'pointer' }}
-          />
-        </td>
-        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
-          {item.test_case?.key ?? '—'}
-        </td>
-        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
-          {item.test_case?.title ?? '—'}
-        </td>
-        <td style={tdStyle}>
-          <RunStatusPill status={item.status} />
-        </td>
-        <td style={tdStyle}>
-          <AssigneeCell scopeId={item.id} cycleId={cycleId} assignee={item.assignee ?? null} />
-        </td>
-        <td style={tdStyle}>
-          <DueDateCell scopeId={item.id} cycleId={cycleId} dueDate={item.due_date} />
-        </td>
-        <td style={tdStyle}>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {iconBtn('Log defect', '🐛', 'defect')}
-            {iconBtn('Comments', '📝', 'comments')}
-            {iconBtn('Evidence', '📎', 'evidence')}
-          </div>
-        </td>
-        <td style={tdStyle}>
-          <button
-            onClick={onRemove}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', padding: 4 }}
-            title="Remove from scope"
-          >
-            <Trash2 size={13} />
-          </button>
-        </td>
-      </tr>
-      {panel === 'defect' && <DefectPanel item={item} cycleId={cycleId} onClose={() => setPanel(null)} />}
-      {panel === 'comments' && <CommentsPanel item={item} onClose={() => setPanel(null)} />}
-      {panel === 'evidence' && <EvidencePanel item={item} onClose={() => setPanel(null)} />}
-    </>
   );
 }
 

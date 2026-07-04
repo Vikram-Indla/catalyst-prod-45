@@ -345,7 +345,7 @@ async function fetchStarredItems(params: {
         activityDate: new Date(starredItem?.starred_at || inc.updated_at || inc.created_at),
         activityType: 'Updated' as const,
         severity: inc.severity,
-        navPath: `/release/incidents/${inc.id}`,
+        navPath: `/incident-hub/view/${inc.incident_key || `INC-${inc.id.slice(0, 6)}`}`,
       });
     });
   }
@@ -471,7 +471,7 @@ async function fetchOperations(params: {
     activityDate: new Date(inc.updated_at || inc.created_at),
     activityType: 'Updated' as const,
     severity: inc.severity,
-    navPath: `/release/incidents/${inc.id}`,
+    navPath: `/incident-hub/view/${inc.incident_key || `INC-${inc.id.slice(0, 6)}`}`,
   }));
 
   // Client-side pagination

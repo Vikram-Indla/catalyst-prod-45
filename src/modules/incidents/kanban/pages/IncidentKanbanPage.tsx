@@ -527,8 +527,8 @@ export default function IncidentKanbanPage() {
       catalystToast.success('Incident created successfully');
       setCreateDialogOpen(false);
 
-      if (result?.id) {
-        navigate(`/release/incidents/${result.id}?created=true`);
+      if (result?.incident_key) {
+        navigate(`/incident-hub/view/${result.incident_key}?created=true`);
       }
     } catch (error: any) {
       catalystToast.error(error?.message || 'Failed to create incident');

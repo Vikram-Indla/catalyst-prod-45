@@ -288,7 +288,7 @@ export default function ForYouPage() {
   const handleKeyClick = useCallback((key: string, type: string) => {
     setIsAIPanelOpen(false);
     switch (type) {
-      case 'incident': navigate(`/release/incidents?selected=${key}`); break;
+      case 'incident': navigate(`/incident-hub/view/${key}`); break;
       case 'feature': navigate(`/program/features?selected=${key}`); break;
       case 'story': navigate(`/project/stories?selected=${key}`); break;
       case 'defect': navigate(`/project/defects?selected=${key}`); break;

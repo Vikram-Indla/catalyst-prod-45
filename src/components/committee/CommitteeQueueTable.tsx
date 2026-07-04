@@ -383,7 +383,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
   const handleRowClick = useCallback((item: CommitteeQueueItem, e: React.MouseEvent) => {
     const t = e.target as HTMLElement;
     if (t.closest('a') || t.closest('button')) return;
-    onRowClick ? onRowClick(item) : navigate(`/release/incidents/${item.incident.id}`);
+    onRowClick ? onRowClick(item) : navigate(`/incident-hub/view/${item.incident.incident_key}`);
   }, [navigate, onRowClick]);
 
   const gridTemplate = useMemo(() => getGridTemplate(columnWidths), [columnWidths]);
@@ -445,7 +445,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     {/* KEY */}
                     <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                       <Link
-                        to={`/release/incidents/${item.incident.id}`}
+                        to={`/incident-hub/view/${item.incident.incident_key}`}
                         className="font-medium hover:underline truncate text-[12px]"
                         style={{ color: 'var(--ds-text-brand)' }}
                         onClick={(e) => e.stopPropagation()}

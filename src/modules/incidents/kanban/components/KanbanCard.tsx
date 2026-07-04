@@ -134,12 +134,12 @@ export const KanbanCard = memo(function KanbanCard({
   }, [committeeDue]);
 
   const handleClick = () => {
-    navigate(`/release/incidents/${incident.id}`);
+    navigate(`/incident-hub/view/${incident.incident_key}`);
   };
 
   const handleKeyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/release/incidents/${incident.id}`);
+    navigate(`/incident-hub/view/${incident.incident_key}`);
   };
   
   const handleEditCommitteeClick = (e: React.MouseEvent) => {
@@ -292,25 +292,25 @@ export const KanbanCard = memo(function KanbanCard({
       
       {/* Quick Actions (on hover) */}
       <div className="hidden group-hover:flex items-center gap-1 mt-2 pt-2 border-t border-border">
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="h-7 text-xs flex-1"
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/release/incidents/${incident.id}?action=assign`);
+            navigate(`/incident-hub/view/${incident.incident_key}?action=assign`);
           }}
         >
           <UserPlus className="h-3 w-3 mr-1" />
           Assign
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="h-7 text-xs flex-1"
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/release/incidents/${incident.id}?action=escalate`);
+            navigate(`/incident-hub/view/${incident.incident_key}?action=escalate`);
           }}
         >
           <ArrowUp className="h-3 w-3 mr-1" />

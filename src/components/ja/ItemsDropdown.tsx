@@ -45,7 +45,7 @@ const projectItems: ItemConfig[] = [
   { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features", moduleCode: "PROGRAM" },
   { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/stories", moduleCode: "TEAMS" },
   { label: "Defects", icon: Bug, color: "text-workitem-defect", path: "/items/defects", moduleCode: "TEAMS" },
-  { label: "Incidents", icon: AlertOctagon, color: "text-destructive", path: "/release/incidents", moduleCode: "TEAMS" },
+  { label: "Incidents", icon: AlertOctagon, color: "text-destructive", path: "/incident-hub", moduleCode: "TEAMS" },
   { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
   { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
   { label: "Quarters", icon: Calendar, color: "text-info", path: "/quarters", moduleCode: "PROGRAM" },
