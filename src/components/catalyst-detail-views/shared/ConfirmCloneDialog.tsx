@@ -17,7 +17,7 @@
  * source issue. Selected values are held in dialog state until Clone is
  * confirmed. Callers consume the patch via `onConfirm(patch)`.
  */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -276,14 +276,21 @@ export function ConfirmCloneDialog({
   const [reporterName, setReporterName] = useState<string | null>(currentReporterName ?? null);
   const [include, setInclude] = useState<CloneInclude>(DEFAULT_INCLUDE);
 
+  // Reset ONLY on open (false → true). Do not depend on the initial-* props
+  // themselves — if any of them change while the dialog is open (parent
+  // re-renders with fresh issue data), state must not blow away the user's
+  // edits (checkbox picks, edited summary, picked assignee/reporter).
+  const wasOpen = useRef(false);
   useEffect(() => {
-    if (!isOpen) return;
-    setSummary(initialSummary);
-    setAssigneeId(currentAssigneeId ?? null);
-    setAssigneeName(currentAssigneeName ?? null);
-    setReporterId(currentReporterId ?? null);
-    setReporterName(currentReporterName ?? null);
-    setInclude(DEFAULT_INCLUDE);
+    if (isOpen && !wasOpen.current) {
+      setSummary(initialSummary);
+      setAssigneeId(currentAssigneeId ?? null);
+      setAssigneeName(currentAssigneeName ?? null);
+      setReporterId(currentReporterId ?? null);
+      setReporterName(currentReporterName ?? null);
+      setInclude(DEFAULT_INCLUDE);
+    }
+    wasOpen.current = isOpen;
   }, [isOpen, initialSummary, currentAssigneeId, currentAssigneeName, currentReporterId, currentReporterName]);
 
   const { data: currentProfile } = useQuery({
@@ -405,8 +412,8 @@ export function ConfirmCloneDialog({
                     key={row.key}
                     label={`${row.label} (${row.count})`}
                     isChecked={include[row.key]}
-                    onChange={(e) =>
-                      setInclude((prev) => ({ ...prev, [row.key]: e.currentTarget.checked }))
+                    onChange={() =>
+                      setInclude((prev) => ({ ...prev, [row.key]: !prev[row.key] }))
                     }
                   />
                 ))}

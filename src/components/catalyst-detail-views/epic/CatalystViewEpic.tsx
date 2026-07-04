@@ -6,7 +6,9 @@
  */
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
-import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import type { ClonePatch } from '../shared/ConfirmCloneDialog';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
@@ -36,16 +38,15 @@ export default function CatalystViewEpic({
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-  const handleClone = React.useCallback(() => {
+  const handleClone = React.useCallback((patch?: ClonePatch) => {
     if (!issue?.issue_key) return;
-    cloneIssue(issue.issue_key)
-      .then((newKey) => {
-        catalystToast.success(`Cloned as ${newKey}`, undefined, { label: 'Open', onClick: () => onOpenItem?.(newKey) });
-      })
-      .catch((e: unknown) => {
-        catalystToast.error('Clone failed', e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error');
-      });
-  }, [issue?.issue_key, onOpenItem]);
+    void cloneWorkItemWithFlags({
+      sourceKey: issue.issue_key,
+      sourceType: issue.issue_type,
+      projectKey: issue.project_key ?? projectKey,
+      patch,
+    });
+  }, [issue?.issue_key, issue?.issue_type, issue?.project_key, projectKey]);
 
   // Track this view in user_recent_items so the sidebar Recents rail picks it up.
   // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.

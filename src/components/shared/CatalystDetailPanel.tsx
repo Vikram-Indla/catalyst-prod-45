@@ -44,6 +44,8 @@ import { ConfirmArchiveDialog } from '@/components/catalyst-detail-views/shared/
 import { ConfirmDeleteDialog } from '@/components/catalyst-detail-views/shared/ConfirmDeleteDialog';
 import { MoveIssueDialog } from '@/components/catalyst-detail-views/shared/MoveIssueDialog';
 import { catalystToast } from '@/lib/catalystToast';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import type { ClonePatch } from '@/components/catalyst-detail-views/shared/ConfirmCloneDialog';
 import { useCatalystIssue, useCatalystIssueMutations } from '@/components/catalyst-detail-views/shared/hooks';
 import {
   CatalystTitleEditor,
@@ -297,10 +299,15 @@ function PhIssuePanelBody({
     };
   }, [moreOpen]);
 
-  const handleClone = () => {
+  const handleClone = (patch?: ClonePatch) => {
     if (!issue?.issue_key) return;
     setShowCloneDialog(false);
-    catalystToast.success(`Cloned ${issue.issue_key}`);
+    void cloneWorkItemWithFlags({
+      sourceKey: issue.issue_key,
+      sourceType: issue.issue_type,
+      projectKey: issue.project_key ?? projectKey,
+      patch,
+    });
   };
 
   const parentSource = (() => {
