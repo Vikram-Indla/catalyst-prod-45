@@ -428,13 +428,19 @@ export function ProfilePicker({
   /* ───── Popover ───── */
   const anchorEl = bodyOnly ? anchorRef?.current : triggerRef.current;
   const rect = anchorEl?.getBoundingClientRect();
+  /* Jira-parity: dropdown width mirrors the trigger's width so the two align
+     edge-to-edge. Cell/renderTrigger variants (narrow anchors like table cells)
+     keep the historical 280px minimum so results stay legible. */
+  const popoverWidth = rect
+    ? Math.max(rect.width, 240)
+    : 280;
   const portalStyle: React.CSSProperties = rect
     ? {
         position: 'fixed',
         top: rect.bottom + 6,
-        left: Math.max(8, Math.min(rect.left, window.innerWidth - 296)),
+        left: Math.max(8, Math.min(rect.left, window.innerWidth - popoverWidth - 8)),
         zIndex: 10000,
-        width: 280,
+        width: popoverWidth,
       }
     : { display: 'none' };
 
