@@ -117,7 +117,6 @@ export const CoverStrap: React.FC<Props> = ({ cover, height = 100, workItemId, w
           width: '100%',
           height,
           background: cover,
-          borderRadius: 6,
           marginBottom: 12,
         }}
       >

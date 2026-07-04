@@ -22,8 +22,10 @@ export function ConversationRow({
   presence = null,
   hasHuddle = false,
 }: ConversationRowProps) {
-  const { title, lastMessageAt, unreadCount, kind, memberCount, projectKey, ticketType } = conversation;
-  const hasUnread = unreadCount > 0;
+  const { title, lastMessageAt, unreadCount, kind, memberCount, projectKey, ticketType, isMuted } = conversation;
+  // Muted conversations never bold or badge — Slack parity: mute means
+  // "stop drawing my attention", the row just dims.
+  const hasUnread = unreadCount > 0 && !isMuted;
   // Group DM avatars match Slack: a square showing the OTHER-member count
   // instead of name initials. Skip the override when memberCount is unknown
   // (0/null) so we fall back to initials rather than rendering a literal "0".
@@ -87,7 +89,7 @@ export function ConversationRow({
           fontFamily: 'var(--cv2-font)',
           fontSize: 'var(--cv2-fs-row-name)',
           fontWeight: hasUnread ? 700 : 500,
-          color: 'var(--cv2-text-strong)',
+          color: isMuted ? 'var(--cv2-text-muted)' : 'var(--cv2-text-strong)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',

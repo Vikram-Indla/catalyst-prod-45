@@ -10,6 +10,7 @@ import { UploadProgressBanner } from '../Attachments/UploadProgressBanner';
 import { ChannelEmptyState } from './ChannelEmptyState';
 import { AddPeopleModal } from '../CreateChannel/AddPeopleModal';
 import { EditDescriptionModal } from '../CreateChannel/EditDescriptionModal';
+import { computeSeenCaption } from './seenReceipts';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useChatMessageActions } from '@/hooks/chat/useChatMessageActions';
 import { useChatToggleStar } from '@/hooks/chat/useChatActions';
@@ -20,6 +21,7 @@ import { useStartGroupDm } from '@/hooks/chat/useStartGroupDm';
 import { useStagedAttachments } from '../../hooks/useStagedAttachments';
 import { useMessageAttachments } from '../../hooks/useMessageAttachments';
 import { useConversationDraft } from '../../hooks/useConversationDraft';
+import { useTypingPresence } from '../../hooks/useTypingPresence';
 import { useMyScheduledCountByConversation } from '../../hooks/useMyScheduledMessages';
 import { ScheduledEditBanner } from '../DraftsAndSent/ScheduledEditBanner';
 import { ComposerScheduledBanner } from '../DraftsAndSent/ComposerScheduledBanner';
@@ -39,6 +41,9 @@ interface MessagePanelProps {
   onClose?: () => void;
   /** When provided, the panel scroll-jumps + pulses this message id whenever the value changes. */
   initialJumpMessageId?: string | null;
+  /** Unread watermark (ISO) captured before mark-read-on-open. Messages from
+   *  others after this instant render below a "New messages" divider. */
+  unreadSince?: string | null;
   /** Triggered when the user picks a summarize preset from the header menu. */
   onSummarize?: (preset: 'unreads' | 'last7' | 'custom') => void;
   /** Called when the user clicks "View message" on a forwarded card. */
@@ -58,7 +63,7 @@ interface MessagePanelProps {
   onSeeAllScheduled?: () => void;
 }
 
-export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled, onSeeAllScheduled }: MessagePanelProps) {
+export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, unreadSince, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled, onSeeAllScheduled }: MessagePanelProps) {
   const { user } = useAuth();
   const activeHuddleIds = useActiveHuddleIds();
   const { startOrJoin } = useHuddleActions();
@@ -71,7 +76,7 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
       const mic = e instanceof DOMException || /getUserMedia|NotAllowed|NotFound|Permission|microphone/i.test(msg);
       catalystToast.error(
         full ? 'Huddle is full' : 'Could not start huddle',
-        full ? 'A huddle allows 2 people.'
+        full ? 'A huddle allows up to 4 people.'
           : mic ? 'Microphone blocked — allow mic access and try again.'
           : msg,
       );
@@ -102,6 +107,11 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
   const staged = useStagedAttachments(conversation.id);
   const { byMessage: attachmentsByMessage } = useMessageAttachments(conversation.id);
   const draftState = useConversationDraft(conversation.id);
+  const myName = useMemo(
+    () => (members ?? []).find(m => m.id === user?.id)?.name || null,
+    [members, user?.id],
+  );
+  const { typingUsers, notifyTyping } = useTypingPresence(conversation.id, myName);
   const scheduledByConv = useMyScheduledCountByConversation();
   const inScheduledEdit = !!editScheduledMessage;
   const scheduledForThisConv = scheduledByConv.get(conversation.id);
@@ -474,6 +484,13 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
     [messages, pinnedIds],
   );
 
+  // WhatsApp-style "Seen" receipt under my last message — DMs/group DMs only.
+  // Live updates ride the existing members-query invalidations; no new subscriptions.
+  const seenCaption = useMemo(
+    () => computeSeenCaption(messages, members ?? [], user?.id ?? null, conversation.kind),
+    [messages, members, user?.id, conversation.kind],
+  );
+
   const handleOpenPinned = useCallback(
     (messageId: string) => {
       setActiveTab('messages');
@@ -565,12 +582,15 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
       <MessageList
         messages={messages}
         loading={isLoading}
+        unreadSince={unreadSince}
+        currentUserId={user?.id ?? null}
         savedIds={savedIds}
         pinnedIds={pinnedIds}
         pinnedByMap={pinnedByMap}
         attachmentsByMessage={attachmentsByMessage}
         removingIds={removingIds}
         jumpHighlightId={jumpHighlightId}
+        seenCaption={seenCaption}
         onOpenThread={onOpenThread}
         onToggleReaction={(id, emoji) => {
           void toggleReaction(id, emoji);
@@ -587,6 +607,23 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
       />
       </>
       )}
+      {activeTab === 'messages' && typingUsers.length > 0 && (
+        <div
+          aria-live="polite"
+          style={{
+            padding: 'var(--ds-space-025) var(--ds-space-250) 0',
+            font: 'var(--ds-font-body-small)',
+            fontStyle: 'italic',
+            color: 'var(--cv2-text-muted)',
+          }}
+        >
+          {typingUsers.length === 1
+            ? `${typingUsers[0]} is typing…`
+            : typingUsers.length === 2
+              ? `${typingUsers[0]} and ${typingUsers[1]} are typing…`
+              : 'Several people are typing…'}
+        </div>
+      )}
       {activeTab === 'messages' && (
       <Composer
         key={composerKey}
@@ -597,7 +634,14 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         onRemoveAttachment={id => staged.removeAttachment(id)}
         isUploading={staged.isUploading}
         initialDraft={initialComposerBody}
-        onDraftChange={inScheduledEdit ? undefined : draftState.setDraft}
+        onDraftChange={
+          inScheduledEdit
+            ? undefined
+            : value => {
+                draftState.setDraft(value);
+                if (value) notifyTyping();
+              }
+        }
         bannerAttached={inScheduledEdit || !!scheduledForThisConv}
         notificationBanner={
           inScheduledEdit ? (

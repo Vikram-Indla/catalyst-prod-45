@@ -24,6 +24,10 @@ interface PortalMenuProps {
   /** Overrides SIZES.DROPDOWN_MAX_HEIGHT for menus with fixed, finite content
    *  (e.g. a settings panel) that should never need an internal scrollbar. */
   maxHeight?: number;
+  /** Override the portal's z-index. Useful when the trigger sits inside an
+   *  @atlaskit/modal-dialog (z-index ~510 by default) so the popup renders
+   *  above the modal instead of behind its backdrop. */
+  zIndex?: number;
   ariaLabel: string;
   onClose?: () => void;
 }
@@ -39,7 +43,7 @@ import { useLayoutEffect } from 'react';
 const VIEWPORT_MARGIN = 8;
 const TRIGGER_GAP = 4;
 
-export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align = 'left', minWidth = SIZES.DROPDOWN_MIN_WIDTH, maxHeight = SIZES.DROPDOWN_MAX_HEIGHT, ariaLabel, onClose }) => {
+export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align = 'left', minWidth = SIZES.DROPDOWN_MIN_WIDTH, maxHeight = SIZES.DROPDOWN_MAX_HEIGHT, zIndex, ariaLabel, onClose }) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -161,7 +165,7 @@ export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align
             minWidth,
             maxHeight,
             overflowY: 'auto',
-            zIndex: SIZES.Z_DROPDOWN,
+            zIndex: zIndex ?? SIZES.Z_DROPDOWN,
           }}
         >
           {children(close)}

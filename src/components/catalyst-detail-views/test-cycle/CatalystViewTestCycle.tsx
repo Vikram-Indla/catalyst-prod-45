@@ -9,7 +9,10 @@
  * the real CatalystViewBase. Inline edits (title / status / description) write
  * through the canonical useUpdateCycle mutation.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import {
   CatalystTitleEditor,
@@ -21,6 +24,10 @@ import {
 } from '../shared/sections';
 import { useTestCycle, useUpdateCycle } from '@/hooks/test-management/useTestCycles';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import { cloneTestCycle, fetchTestCycleSectionCounts, TEST_CYCLE_INCLUDE_CATALOG } from '@/lib/cloneTestCycle';
 import { TmCommentsSection } from '@/components/testhub/TmCommentsSection';
 
 /* Cycle lifecycle (TMCycle enum) → display + lozenge category. Zero-assumption:
@@ -87,6 +94,46 @@ export default function CatalystViewTestCycle({
   const { data: cycle, isLoading } = useTestCycle(isOpen ? itemId : undefined);
   const updateCycle = useUpdateCycle();
   const projectId = cycle?.project_id ?? undefined;
+  const queryClient = useQueryClient();
+
+  /* ── Action menu state — Clone + Delete dialogs. */
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const { data: cloneCounts = {} } = useQuery({
+    queryKey: ['clone-section-counts-test-cycle', itemId],
+    enabled: showCloneDialog && !!itemId,
+    staleTime: 60000,
+    queryFn: () => fetchTestCycleSectionCounts(itemId as string),
+  });
+
+  const handleClone = useCallback((patch?: ClonePatch) => {
+    if (!cycle?.id) return;
+    const sourceKey = (cycle.cycle_key ?? (cycle as any).key ?? '') as string;
+    void cloneWorkItemWithFlags({
+      sourceKey,
+      entityLabel: 'Test cycle',
+      detailUrl: () => `/testhub/cycles/${cycle.id}`,
+      cloneFn: (p) => cloneTestCycle(cycle.id as string, p),
+      patch,
+    });
+  }, [cycle?.id, cycle?.cycle_key]);
+
+  const handleDelete = useCallback(async () => {
+    if (!cycle?.id) return;
+    const { error } = await supabase.from('tm_test_cycles').delete().eq('id', cycle.id);
+    if (error) {
+      catalystToast.error('Delete failed', error.message);
+      return;
+    }
+    catalystToast.success('Test cycle deleted');
+    setShowDeleteDialog(false);
+    queryClient.invalidateQueries({ queryKey: ['tm-cycle', itemId] });
+    if (projectId) {
+      queryClient.invalidateQueries({ predicate: q => q.queryKey[0] === 'tm-cycles' && q.queryKey[1] === projectId });
+    }
+    onClose?.();
+  }, [cycle?.id, itemId, projectId, queryClient, onClose]);
 
   const pseudoIssue = useMemo(() => cycleToPseudoIssue(cycle), [cycle]);
 
@@ -207,30 +254,64 @@ export default function CatalystViewTestCycle({
 
   const fullPageHrefBuilder = useCallback(() => `/testhub/cycles/${itemId}`, [itemId]);
 
+  const sourceKey = (cycle?.cycle_key ?? (cycle as any)?.key ?? null) as string | null;
+  const sourceName = cycle?.name ?? null;
+
   return (
-    <CatalystViewBase
-      isOpen={isOpen}
-      onClose={onClose}
-      panelMode={panelMode}
-      fullPageMode={fullPageMode}
-      itemType="Test Cycle"
-      itemKey={cycle?.key ?? null}
-      projectKey={projectKey ?? ''}
-      projectName="Test Hub"
-      parentKey={null}
-      parentType="Test Cycle"
-      moreMenuItems={[]}
-      onTogglePanelMode={onTogglePanelMode}
-      navigationItems={navigationItems}
-      currentItemId={itemId}
-      onNavigate={onNavigate}
-      leftContent={leftContent}
-      rightContent={rightContent}
-      isLoading={isLoading}
-      isNotFound={!isLoading && cycle === null}
-      hideSidebar={hideSidebar}
-      fullPageHrefBuilder={fullPageHrefBuilder}
-    />
+    <>
+      <CatalystViewBase
+        isOpen={isOpen}
+        onClose={onClose}
+        panelMode={panelMode}
+        fullPageMode={fullPageMode}
+        itemType="Test Cycle"
+        itemKey={cycle?.key ?? null}
+        projectKey={projectKey ?? ''}
+        projectName="Test Hub"
+        parentKey={null}
+        parentType="Test Cycle"
+        moreMenuItems={useMemo(() => [
+          { label: 'Clone', onClick: () => { if (cycle?.id) setShowCloneDialog(true); } },
+          { label: 'Move', onClick: () => catalystToast.info('Coming soon') },
+          { label: 'Delete', onClick: () => { if (cycle?.id) setShowDeleteDialog(true); }, danger: true },
+        ], [cycle?.id])}
+        /* tm_test_cycles has no is_flagged / archived columns — omit flagContext.
+           When Vikram wants flag support, add columns via migration first. */
+        onTogglePanelMode={onTogglePanelMode}
+        navigationItems={navigationItems}
+        currentItemId={itemId}
+        onNavigate={onNavigate}
+        leftContent={leftContent}
+        rightContent={rightContent}
+        isLoading={isLoading}
+        isNotFound={!isLoading && cycle === null}
+        hideSidebar={hideSidebar}
+        fullPageHrefBuilder={fullPageHrefBuilder}
+      />
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={sourceKey}
+        issueSummary={sourceName}
+        issueId={cycle?.id ?? null}
+        projectId={projectId ?? null}
+        currentAssigneeId={(cycle as any)?.assigned_to ?? null}
+        currentAssigneeName={null}
+        hideReporter
+        useAllProfiles
+        includeCatalog={TEST_CYCLE_INCLUDE_CATALOG}
+        counts={cloneCounts}
+        onConfirm={handleClone}
+      />
+      <ConfirmDeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        issueKey={sourceKey}
+        issueSummary={sourceName}
+        typeLabel="test cycle"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }
 

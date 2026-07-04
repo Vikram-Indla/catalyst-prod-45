@@ -17,6 +17,7 @@ import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { useWorkspacePeopleSearch, type PeopleHit } from '../../hooks/useWorkspacePeopleSearch';
 import { useWorkspaceSearch, type WorkspaceSearchHit } from '../../hooks/useWorkspaceSearch';
 import { formatActivityTime } from '../../lib/formatTimestamp';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface WorkspaceSearchModalProps {
   /** Placeholder text shown when the input is empty (also the workspace
@@ -51,6 +52,7 @@ export function WorkspaceSearchModal({
 }: WorkspaceSearchModalProps) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>();
   const trimmed = query.trim();
   const showResults = trimmed.length > 0;
 
@@ -71,6 +73,7 @@ export function WorkspaceSearchModal({
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Workspace search"

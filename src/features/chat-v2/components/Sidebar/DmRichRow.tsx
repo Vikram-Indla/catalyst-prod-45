@@ -25,8 +25,10 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
     kind,
     dmAvatarUrls,
     dmMemberNames,
+    isMuted,
   } = conversation;
-  const hasUnread = unreadCount > 0;
+  // Muted DMs never bold or badge — mute means "stop drawing my attention".
+  const hasUnread = unreadCount > 0 && !isMuted;
   const isGroup = kind === 'group_dm';
   const displayTitle = isGroup && dmMemberNames && dmMemberNames.length > 0
     ? dmMemberNames.join(', ')
@@ -109,6 +111,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         </div>
         {preview && (
           <div
+            dir="auto"
             style={{
               fontFamily: 'var(--cv2-font)',
               font: 'var(--ds-font-body-small)',

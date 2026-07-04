@@ -77,6 +77,26 @@ export function useThreadMessages(conversationId: string | null, parentId: strin
     return unsubscribe;
   }, [conversationId, parentId, qc]);
 
+  // Realtime: reactions live in their own table (no chat_messages row change),
+  // so the message channel misses them. Only refetch when the reacted message
+  // is the thread parent or one of its cached replies.
+  useEffect(() => {
+    if (!conversationId || !parentId) return;
+    const unsubscribe = chatRealtime.subscribeReactions((payload) => {
+      const p = payload as { new?: { message_id?: string }; old?: { message_id?: string } };
+      const messageId = p?.new?.message_id ?? p?.old?.message_id;
+      if (!messageId) return;
+      const cached = qc.getQueryData<Array<{ id: string }>>(
+        ['chat', 'thread', conversationId, parentId],
+      );
+      const inThread = messageId === parentId || !!cached?.some((r) => r.id === messageId);
+      if (inThread) {
+        qc.invalidateQueries({ queryKey: ['chat', 'thread', conversationId, parentId] });
+      }
+    });
+    return unsubscribe;
+  }, [conversationId, parentId, qc]);
+
   const reply = useMutation({
     mutationFn: async (text: string) => {
       if (!conversationId || !parentId || !user) return;

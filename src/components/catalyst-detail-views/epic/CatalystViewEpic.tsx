@@ -5,8 +5,11 @@
  * Epic-unique: Child work items table (Jira-parity with inline CRUD).
  */
 import React, { useEffect, useRef, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { catalystToast } from '@/lib/catalystToast';
-import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import type { ClonePatch } from '../shared/ConfirmCloneDialog';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
@@ -32,20 +35,20 @@ export default function CatalystViewEpic({
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const navigate = useNavigate();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-  const handleClone = React.useCallback(() => {
+  const handleClone = React.useCallback((patch?: ClonePatch) => {
     if (!issue?.issue_key) return;
-    cloneIssue(issue.issue_key)
-      .then((newKey) => {
-        catalystToast.success(`Cloned as ${newKey}`, undefined, { label: 'Open', onClick: () => onOpenItem?.(newKey) });
-      })
-      .catch((e: unknown) => {
-        catalystToast.error('Clone failed', e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error');
-      });
-  }, [issue?.issue_key, onOpenItem]);
+    void cloneWorkItemWithFlags({
+      sourceKey: issue.issue_key,
+      sourceType: issue.issue_type,
+      projectKey: issue.project_key ?? projectKey,
+      patch,
+    });
+  }, [issue?.issue_key, issue?.issue_type, issue?.project_key, projectKey]);
 
   // Track this view in user_recent_items so the sidebar Recents rail picks it up.
   // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.
@@ -136,13 +139,26 @@ export default function CatalystViewEpic({
       }}
       /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={useMemo(() => [
-        { label: 'Print', onClick: () => window.print() },
         { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
-        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Move', onClick: () => {
+          const pk = issue?.project_key ?? projectKey;
+          const ik = issue?.issue_key;
+          if (!pk || !ik) return;
+          onClose?.();
+          navigate(`/project-hub/${pk}/issue/${ik}/move`);
+        } },
         { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete epic', onClick: () => setShowDeleteDialog(true), danger: true },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ], [issue?.issue_key])}
+      flagContext={issue?.id && issue?.issue_key ? {
+        issueId: issue.id,
+        issueKey: issue.issue_key,
+        isFlagged: !!(issue as any).is_flagged,
+        issueTitle: issue.summary,
+        issueType: issue.issue_type,
+        tableName: 'ph_issues',
+      } : undefined}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent}
       cover={(issue as any)?.cover ?? null}
@@ -157,6 +173,12 @@ export default function CatalystViewEpic({
         onClose={() => setShowCloneDialog(false)}
         issueKey={issue?.issue_key}
         issueSummary={issue?.summary}
+        issueId={issue?.id}
+        projectId={projectId}
+        currentAssigneeId={issue?.assignee_account_id}
+        currentAssigneeName={issue?.assignee_display_name}
+        currentReporterId={issue?.reporter_account_id}
+        currentReporterName={issue?.reporter_display_name}
         onConfirm={handleClone}
       />
       {showMoveDialog && issue?.issue_key && (

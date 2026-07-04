@@ -225,7 +225,7 @@ function NoneLabel() {
 
 function Arrow() {
   return (
-    <span aria-hidden style={{ color: 'var(--ds-text-subtle)', margin: '0 6px' }}>
+    <span aria-hidden style={{ color: 'var(--ds-text-subtle)', margin: '0 var(--ds-space-075)' }}>
       →
     </span>
   );
@@ -238,15 +238,15 @@ export function HistoryPill({ label = 'HISTORY' }: { label?: string }) {
     <span
       style={{
         display: 'inline-block',
-        padding: '0px 8px',
+        padding: '0 var(--ds-space-075)',
         borderRadius: 3,
         border: '1px solid var(--ds-border)',
-        background: 'var(--ds-background-neutral)',
-        color: 'var(--ds-text-subtle)',
-        fontSize: 'var(--ds-font-size-100)',
+        background: 'var(--ds-surface)',
+        color: 'var(--ds-text)',
+        fontSize: 11,
         fontWeight: 700,
         letterSpacing: 0.5,
-        lineHeight: '14px',
+        lineHeight: '16px',
         textTransform: 'uppercase',
         fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
       }}

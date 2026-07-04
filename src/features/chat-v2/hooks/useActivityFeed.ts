@@ -103,7 +103,9 @@ async function fetchUnreadHeads(
   userId: string,
 ): Promise<LatestMessageRow[]> {
   const unreadConvIds = conversations
-    .filter(c => c.unreadCount > 0)
+    // Muted conversations stay out of the activity feed — mute means
+    // "stop drawing my attention" (Slack parity).
+    .filter(c => c.unreadCount > 0 && !c.isMuted)
     .map(c => c.id);
   if (unreadConvIds.length === 0) return [];
   try {

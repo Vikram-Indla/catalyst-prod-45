@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { ChevronDown } from '@/lib/atlaskit-icons';
+import UtilityChevronDown from '@atlaskit/icon/utility/chevron-down';
+import UtilityChevronRight from '@atlaskit/icon/utility/chevron-right';
 import type {
   CdsComment,
   CdsActivityItem,
@@ -9,6 +11,8 @@ import type {
   CdsQuickReply,
 } from '../types';
 import type { JiraUserMap } from '../utils/jiraContent';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
+import { token } from '@atlaskit/tokens';
 import { CommentThread } from '../comments/CommentThread';
 import { ActivityFeed } from './ActivityFeed';
 import { Comment } from '../comments/Comment';
@@ -117,6 +121,7 @@ function ActivityPanel({
     ? 'all'
     : defaultTab;
   const [activeTab, setActiveTab] = useState<ActivityTabKey>(initialTab);
+  const [sectionExpanded, setSectionExpanded] = useState(true);
   const [sortOrder, setSortOrder] = useState<CdsSortOrder>(defaultSortOrder);
   const [sortOpen, setSortOpen] = useState(false);
   // ID of the comment currently being replied to. When set, an inline
@@ -337,14 +342,38 @@ function ActivityPanel({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }} className={className}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+        <button
+          type="button"
+          onClick={() => setSectionExpanded((v) => !v)}
+          aria-expanded={sectionExpanded}
+          aria-label={sectionExpanded ? 'Collapse Activity' : 'Expand Activity'}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 20,
+            height: 20,
+            padding: 0,
+            border: 'none',
+            borderRadius: 3,
+            background: 'transparent',
+            color: 'var(--ds-text-subtle)',
+            cursor: 'pointer',
+          }}
+        >
+          {sectionExpanded ? <UtilityChevronDown label="" color="currentColor" /> : <UtilityChevronRight label="" color="currentColor" />}
+        </button>
         <h2
-          style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: '20px', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text)' }}
+          onClick={() => setSectionExpanded((v) => !v)}
+          style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: '20px', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text)', cursor: 'pointer' }}
         >
           Activity
         </h2>
       </div>
 
+      {!sectionExpanded ? null : (
+      <>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {tabs.map((tab) => (
@@ -368,68 +397,6 @@ function ActivityPanel({
           ))}
         </div>
 
-        <div style={{ position: 'relative' }}>
-          <button
-            type="button"
-            onClick={() => setSortOpen(!sortOpen)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontSize: 14,
-              color: 'var(--ds-text-subtlest)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px 0',
-            }}
-          >
-            {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
-            <ChevronDown className="h-3.5 w-3.5" />
-          </button>
-
-          {sortOpen && (
-            <>
-              <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setSortOpen(false)} />
-              <div style={{
-                position: 'absolute',
-                right: 0,
-                top: 'calc(100% + 4px)',
-                zIndex: 50,
-                background: 'var(--ds-surface-raised)',
-                border: '1px solid var(--ds-border)',
-                borderRadius: 4,
-                boxShadow: 'var(--ds-shadow-overlay)',
-                padding: '4px 0',
-                minWidth: 140,
-              }}>
-                {(['newest', 'oldest'] as CdsSortOrder[]).map((order) => (
-                  <button
-                    key={order}
-                    type="button"
-                    onClick={() => {
-                      setSortOrder(order);
-                      setSortOpen(false);
-                    }}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '6px 12px',
-                      fontSize: 14,
-                      border: 'none',
-                      cursor: 'pointer',
-                      background: order === sortOrder ? 'var(--ds-background-selected)' : 'transparent',
-                      color: order === sortOrder ? 'var(--ds-link)' : 'var(--ds-text)',
-                    }}
-                  >
-                    {order === 'newest' ? 'Newest first' : 'Oldest first'}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
       </div>
 
       {activeTab === 'comments' && (
@@ -479,6 +446,10 @@ function ActivityPanel({
             isLoadingComments={isLoadingComments}
             isLoadingHistory={isLoadingHistory}
             workItemId={workItemId}
+            currentUser={currentUser}
+            onEditComment={onEditComment}
+            onDeleteComment={onDeleteComment}
+            onToggleReaction={onToggleReaction}
           />
 
           {hasMoreHistory && (
@@ -494,6 +465,8 @@ function ActivityPanel({
             </div>
           )}
         </div>
+      )}
+      </>
       )}
     </div>
   );
@@ -511,12 +484,21 @@ function AllTabFeed({
   isLoadingComments,
   isLoadingHistory,
   workItemId,
+  currentUser,
+  onEditComment,
+  onDeleteComment,
+  onToggleReaction,
 }: {
   mergedAll: CdsActivityItem[];
   isLoadingComments: boolean;
   isLoadingHistory: boolean;
   workItemId?: string;
+  currentUser?: CdsUser;
+  onEditComment?: (id: string, content: string) => void | Promise<void>;
+  onDeleteComment?: (id: string) => void | Promise<void>;
+  onToggleReaction?: (commentId: string, emoji: string, hasMine: boolean) => void | Promise<void>;
 }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
   const historyOnly = useMemo(
     () => mergedAll.filter((i) => i.type !== 'comment'),
     [mergedAll],
@@ -583,11 +565,56 @@ function AllTabFeed({
         }
         const item = s.item;
         if (item.type === 'comment' && item.comment) {
+          const c = item.comment;
+          // Fall back to the raw auth.uid() when the profile-lookup that
+          // populates `currentUser` hasn't resolved yet. The comment's
+          // author.id is always the profile UUID = auth.uid(), so this
+          // matches on the first render instead of blocking until the
+          // profile query returns.
+          const meId = currentUser?.id ?? user?.id ?? null;
+          const canEdit = !!onEditComment && !!meId && c.author.id === meId;
+          const canDelete = !!onDeleteComment && !!meId && c.author.id === meId;
+          if (editingId === c.id) {
+            const editSeed = seedFlagContent(c);
+            return (
+              <div key={item.id} style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 8, paddingBottom: 8 }}>
+                <CommentEditor
+                  currentUser={currentUser}
+                  defaultValue={editSeed}
+                  autoFocus
+                  onSubmit={async (content) => {
+                    if (!onEditComment) return;
+                    await onEditComment(c.id, stripFlagPrefix(content, c.commentType));
+                    setEditingId(null);
+                  }}
+                  onCancel={() => setEditingId(null)}
+                  workItemId={workItemId}
+                />
+              </div>
+            );
+          }
           return (
             <div key={item.id} style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 4, paddingBottom: 4 }}>
               <Comment
-                comment={item.comment}
-                extras={<div style={{ marginTop: 4 }}><HistoryPill label="COMMENT" /></div>}
+                comment={c}
+                extras={<div style={{ marginTop: 0, marginBottom: 8 }}><HistoryPill label="COMMENTS" /></div>}
+                actions={
+                  <CommentToolbar
+                    reactions={c.reactions}
+                    onToggleReaction={
+                      onToggleReaction
+                        ? (emoji, hasMine) => onToggleReaction(c.id, emoji, hasMine)
+                        : undefined
+                    }
+                    onEdit={canEdit ? () => setEditingId(c.id) : undefined}
+                    onCopyLink={() => {
+                      const url = new URL(window.location.href);
+                      url.searchParams.set('comment', c.id);
+                      void navigator.clipboard?.writeText(url.toString());
+                    }}
+                    onDelete={canDelete ? () => onDeleteComment!(c.id) : undefined}
+                  />
+                }
               />
             </div>
           );
@@ -608,6 +635,67 @@ function AllTabFeed({
       })}
     </div>
   );
+}
+
+/**
+ * Build the editor's `defaultValue` as an ADF doc for a flag audit
+ * comment. First paragraph contains the same Atlassian flag emoji
+ * shortcode the icon renders from (`:flag_on:` / `:flag_off:`) so the
+ * editor draws the identical branded flag glyph as the read-only
+ * FlagCommentBody. Second paragraph carries the optional reason.
+ * Non-flag comments pass through unchanged.
+ */
+function seedFlagContent(c: CdsComment): string {
+  const variant = c.commentType;
+  const body = c.content ?? '';
+  if (variant !== 'flag_added' && variant !== 'flag_removed') return body;
+  const isAdded = variant === 'flag_added';
+  const emojiChar = isAdded ? '🚩' : '🏳️';
+  const label = isAdded ? 'Flag added' : 'Flag removed';
+  return body.length > 0
+    ? `${emojiChar} ${label}\n${body}`
+    : `${emojiChar} ${label}`;
+}
+
+/**
+ * Strip the seeded flag paragraph on save so the stored body is just
+ * the reason text. Handles both ADF (editor returns JSON) and the
+ * plain-text markdown-lite the editor's `.getMarkdown()` path emits.
+ */
+function stripFlagPrefix(content: string, variant?: string): string {
+  if (variant !== 'flag_added' && variant !== 'flag_removed') return content;
+  const label = variant === 'flag_added' ? 'Flag added' : 'Flag removed';
+  const emojiChar = variant === 'flag_added' ? '🚩' : '🏳️';
+  const shortName = variant === 'flag_added' ? ':flag_on:' : ':flag_off:';
+  // ADF path — parse and drop the first paragraph if it looks like the
+  // seeded flag header.
+  const trimmed = content.trim();
+  if (trimmed.startsWith('{')) {
+    try {
+      const doc = JSON.parse(trimmed);
+      if (doc?.type === 'doc' && Array.isArray(doc.content) && doc.content.length > 0) {
+        const first = doc.content[0];
+        const firstNodes = first?.content ?? [];
+        const isFlagPara = firstNodes.some(
+          (n: any) =>
+            (n?.type === 'emoji' && (n.attrs?.shortName === shortName || n.attrs?.text === emojiChar)) ||
+            (n?.type === 'text' && typeof n.text === 'string' && n.text.includes(label)),
+        );
+        if (isFlagPara) {
+          const remaining = doc.content.slice(1);
+          if (remaining.length === 0) return '';
+          return JSON.stringify({ ...doc, content: remaining });
+        }
+      }
+    } catch {
+      // fall through to plain-text stripping
+    }
+  }
+  // Plain-text path.
+  return content
+    .replace(new RegExp(`^\\s*${emojiChar}\\s*${label}\\s*(\\n|$)`), '')
+    .replace(new RegExp(`^\\s*${shortName}\\s*${label}\\s*(\\n|$)`), '')
+    .trimStart();
 }
 
 export { ActivityPanel };

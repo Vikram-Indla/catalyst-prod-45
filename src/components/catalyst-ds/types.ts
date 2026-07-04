@@ -20,6 +20,8 @@ export interface CdsCommentReaction {
   hasMine: boolean;
 }
 
+export type CdsCommentType = 'normal' | 'flag_added' | 'flag_removed';
+
 export interface CdsComment {
   id: string;
   author: CdsUser;
@@ -28,6 +30,11 @@ export interface CdsComment {
   updatedAt?: string;
   isEdited?: boolean;
   isSystem?: boolean;
+  /** Discriminates flag audit comments from user-authored comments so
+   *  the renderer can swap in the Jira-parity "Flag added / Flag
+   *  removed" header. Body still lives in `content` and is optional
+   *  for flag entries. Defaults to 'normal' for legacy rows.  */
+  commentType?: CdsCommentType;
   /** Aggregated reactions for this comment, ordered by first-applied. */
   reactions?: CdsCommentReaction[];
   /** Self-referencing FK — points to the immediate parent comment.

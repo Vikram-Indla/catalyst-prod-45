@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { XIcon } from '../shared/Icon';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface EditDescriptionModalProps {
   conversationId: string;
@@ -29,6 +30,7 @@ export function EditDescriptionModal({
   const [value, setValue] = useState(currentDescription ?? '');
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   useEffect(() => { inputRef.current?.focus(); inputRef.current?.select(); }, []);
   useEffect(() => {
@@ -70,6 +72,7 @@ export function EditDescriptionModal({
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Edit description"

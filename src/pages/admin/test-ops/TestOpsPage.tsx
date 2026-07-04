@@ -32,7 +32,7 @@ import {
 import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetection';
 import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
 import { useDefectMetrics } from '@/hooks/test-management/useDefectMetrics';
-import { useCoverageHistory, useProjects } from '@/hooks/test-management/useCoverageHistory';
+import { useCoverageHistory, useProjects as useCoverageProjects } from '@/hooks/test-management/useCoverageHistory';
 import { useSharedSteps } from '@/hooks/test-management/useSharedSteps';
 import { useTestHubInsights } from '@/hooks/test-management/useTestHubInsights';
 import { CatyInsightCard } from '@/components/for-you/atlaskit/CatyInsightCard';
@@ -357,7 +357,7 @@ function SharedStepsTab() {
 // ── D. Coverage history — 30-day trends ────────────────────────────────────
 // P3-F4: Tracks coverage progression over time.
 function CoverageHistoryTab() {
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const { data: projects = [], isLoading: projectsLoading } = useCoverageProjects();
   const [selectedProjectId, setSelectedProjectId] = React.useState<string | null>(null);
 
   const activeProjectId = selectedProjectId ?? projects[0]?.id ?? null;
