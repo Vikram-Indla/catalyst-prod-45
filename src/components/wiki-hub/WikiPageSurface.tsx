@@ -20,6 +20,7 @@ import {
 } from '@/hooks/useWiki';
 import { blocksToText } from './editor/blocksToText';
 import { clearDraft, getDraft, saveDraft } from './editor/localDraft';
+import { attachMarqueeSelection } from './editor/marqueeSelection';
 import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
 import { DropdownMenu } from '@/components/ads';
@@ -139,6 +140,21 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     setDraft(null);
   }, [page.id]);
 
+  // ---- Multi-block marquee selection (drag on the page margins) ----
+  const editorRef = useRef<BlockNoteEditor | null>(null);
+  const columnRef = useRef<HTMLDivElement | null>(null);
+  const handleEditorReady = useCallback((editor: BlockNoteEditor) => {
+    editorRef.current = editor;
+  }, []);
+  useEffect(() => {
+    const column = columnRef.current;
+    if (!column || page.content_format === 'adf') return;
+    return attachMarqueeSelection(
+      column,
+      () => (editorRef.current as unknown as { prosemirrorView?: never })?.prosemirrorView ?? null,
+    );
+  }, [page.id, page.content_format]);
+
   useEffect(() => {
     const onHide = () => {
       if (document.visibilityState === 'hidden') flush();
@@ -253,7 +269,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         />
       ) : null}
 
-      <div style={{ maxWidth: 860, width: '100%', margin: '0 auto', padding: '0 40px 80px' }}>
+      <div ref={columnRef} style={{ maxWidth: 860, width: '100%', margin: '0 auto', padding: '0 40px 80px' }}>
         <div
           style={{
             display: 'flex',
@@ -452,6 +468,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
               key={restoredBlocks ? `${page.id}-draft` : page.id}
               initialContent={restoredBlocks ?? ((page.content as Block[]) ?? undefined)}
               onChange={handleEditorChange}
+              onReady={handleEditorReady}
               dictationStyle="brd-page"
               workspaceId={workspace.id}
               workspaceSlug={workspace.slug}

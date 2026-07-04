@@ -28,6 +28,7 @@ import { filterSuggestionItems, type Block, type BlockNoteEditor, type PartialBl
 import { supabase } from '@/integrations/supabase/client';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { wikiSchema } from './wikiSchema';
+import { wikiPasteHandler } from './pasteNormalizer';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
 import './blocknote-ads.css';
@@ -77,6 +78,9 @@ export default function WikiEditor({
       initialContent:
         initialContent && initialContent.length > 0 ? (initialContent as never) : undefined,
       uploadFile,
+      // GDocs/Word paste lands as semantic HTML (bold/italic/lists survive);
+      // everything else keeps the default markdown-priority behavior.
+      pasteHandler: wikiPasteHandler as never,
     },
     // Re-create only when switching documents, never on theme changes.
     [initialContent],
