@@ -754,12 +754,6 @@ export default function SetDetailPage() {
               data={cycleSets}
               getRowId={(row) => row.id}
             />
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
           )}
         </>
       )}

@@ -56,6 +56,13 @@ const answeredElsewhere: Set<string> = new Set();
 const acceptBus: BroadcastChannel | null =
   typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(ACCEPT_CHANNEL) : null;
 
+// Cross-tab snooze — a snooze on one tab silences the others instantly (same
+// browser). Cross-BROWSER/device silence rides on the huddle_snoozes DB table
+// (read in the poll below), so both are covered.
+const SNOOZE_CHANNEL = 'huddle-snooze';
+const snoozeBus: BroadcastChannel | null =
+  typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(SNOOZE_CHANNEL) : null;
+
 interface HuddleRow { id: string; conversation_id: string; started_by: string }
 interface PartRow { huddle_id: string }
 
@@ -64,6 +71,7 @@ export interface IncomingHuddle {
   conversationId: string;
   conversationName: string;
   callerName: string;
+  callerAvatarUrl: string | null;
   /** true when the user snoozed this (still-live) huddle — muted, not ringing. */
   snoozed: boolean;
 }
@@ -117,17 +125,28 @@ export function useIncomingHuddle(): {
       );
       if (!candidate) return null;
       const [{ data: caller }, { data: conv }] = await Promise.all([
-        db.from('profiles').select('full_name').eq('id', candidate.started_by).maybeSingle(),
+        db.from('profiles').select('full_name, avatar_url').eq('id', candidate.started_by).maybeSingle(),
         db.from('chat_conversations').select('title').eq('id', candidate.conversation_id).maybeSingle(),
       ]);
       const callerName = (caller as { full_name: string | null } | null)?.full_name || 'Someone';
+      const callerAvatarUrl = (caller as { avatar_url: string | null } | null)?.avatar_url ?? null;
       const convName = (conv as { title: string | null } | null)?.title || callerName;
+      // Snoozed if EITHER the local cache OR the DB row (any device) is unexpired.
+      // Isolated + guarded so a snooze-read failure can NEVER suppress the ring.
+      let dbSnoozed = false;
+      try {
+        const { data: snz } = await db.from('huddle_snoozes')
+          .select('until_at').eq('user_id', userId).eq('huddle_id', candidate.id).maybeSingle();
+        const dbUntil = (snz as { until_at: string } | null)?.until_at;
+        dbSnoozed = !!dbUntil && new Date(dbUntil).getTime() > Date.now();
+      } catch { /* ignore — treat as not snoozed */ }
       return {
         huddleId: candidate.id,
         conversationId: candidate.conversation_id,
         conversationName: convName,
         callerName,
-        snoozed: isSnoozed(candidate.id),
+        callerAvatarUrl,
+        snoozed: isSnoozed(candidate.id) || dbSnoozed,
       };
     },
   });
@@ -142,7 +161,15 @@ export function useIncomingHuddle(): {
       .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'chat_huddle_participants' } as never,
         () => qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] }))
       .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    // Snooze realtime lives on its OWN channel so a failure here can never break
+    // the critical huddle ring channel above. A snooze on another device lands
+    // here → re-evaluate + go silent.
+    const snoozeCh = supabase
+      .channel(`huddle-snooze-rt:${instanceId}`)
+      .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'huddle_snoozes', filter: `user_id=eq.${userId}` } as never,
+        () => qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] }))
+      .subscribe();
+    return () => { supabase.removeChannel(ch); supabase.removeChannel(snoozeCh); };
   }, [userId, qc, instanceId]);
 
   // cross-tab: another tab of the same account answered — stop ringing here now.
@@ -158,22 +185,49 @@ export function useIncomingHuddle(): {
     return () => acceptBus.removeEventListener('message', onMsg);
   }, [qc, userId]);
 
+  // cross-tab: another tab snoozed — silence here instantly (before the DB poll).
+  useEffect(() => {
+    if (!snoozeBus) return;
+    const onMsg = (e: MessageEvent) => {
+      const id = (e.data as { huddleId?: string } | null)?.huddleId;
+      if (!id) return;
+      snoozed.set(id, Date.now() + SNOOZE_MS);
+      persistSnoozed();
+      qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+    };
+    snoozeBus.addEventListener('message', onMsg);
+    return () => snoozeBus.removeEventListener('message', onMsg);
+  }, [qc, userId]);
+
   const base = !activeInCall && data ? data : null;
   const incoming = base && !base.snoozed ? base : null;
   const snoozedCall = base && base.snoozed ? base : null;
 
   const decline = useCallback(() => {
+    // A decline is just a "miss" — the per-viewer huddle_summary event row shows
+    // "You missed a huddle" for the decliner, so no separate message is posted.
     if (data) { declined.add(data.huddleId); snoozed.delete(data.huddleId); persistDeclined(); persistSnoozed(); }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 
   const snooze = useCallback(() => {
-    if (data) { snoozed.set(data.huddleId, Date.now() + SNOOZE_MS); persistSnoozed(); }
+    if (data) {
+      snoozed.set(data.huddleId, Date.now() + SNOOZE_MS); persistSnoozed();
+      snoozeBus?.postMessage({ huddleId: data.huddleId }); // instant cross-tab
+      // cross-browser/device: persist so every other session silences too.
+      void db.from('huddle_snoozes').upsert(
+        { user_id: userId, huddle_id: data.huddleId, until_at: new Date(Date.now() + SNOOZE_MS).toISOString() },
+        { onConflict: 'user_id,huddle_id' },
+      );
+    }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 
   const unsnooze = useCallback(() => {
-    if (data) { snoozed.delete(data.huddleId); persistSnoozed(); }
+    if (data) {
+      snoozed.delete(data.huddleId); persistSnoozed();
+      void db.from('huddle_snoozes').delete().eq('user_id', userId).eq('huddle_id', data.huddleId);
+    }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 

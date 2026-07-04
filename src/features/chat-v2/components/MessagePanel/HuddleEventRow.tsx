@@ -1,11 +1,14 @@
 import React from 'react';
+import Lozenge from '@atlaskit/lozenge';
 import type { ChatMessage } from '@/types/chat';
 import { formatHuddleDuration } from '@/lib/chat/huddle/formatHuddleDuration';
+import { useAuth } from '@/hooks/useAuth';
 import { ThreadReplyMeta } from './ThreadReplyMeta';
 
-/** Centered system row in the thread. Two states:
+/** Centered system row in the thread. Rendered PER-VIEWER:
  *  - huddle_live    → "🎧 Huddle is happening" (call in progress; replies thread here)
- *  - huddle_summary → "🎧 A huddle happened — You and {name} were in the huddle for 1m". */
+ *  - huddle_summary, I joined     → "🎧 A huddle happened — You (and X) were in the huddle for 1m"
+ *  - huddle_summary, I DIDN'T join → "🎧 You missed a huddle [MISSED] — {caller} was in the huddle for 1m" */
 export function HuddleEventRow({
   message,
   onOpenThread,
@@ -13,14 +16,37 @@ export function HuddleEventRow({
   message: ChatMessage;
   onOpenThread?: (messageId: string) => void;
 }) {
-  const meta = (message.eventMeta ?? {}) as { duration_seconds?: number; with_name?: string };
+  const { user } = useAuth();
+  const myId = user?.id ?? null;
+  const meta = (message.eventMeta ?? {}) as {
+    duration_seconds?: number;
+    with_name?: string;
+    caller_name?: string;
+    participants?: { id: string; name: string }[];
+  };
   const withName = (meta.with_name || '').trim();
   const isLive = message.eventType === 'huddle_live';
   const dur = formatHuddleDuration(Number(meta.duration_seconds ?? 0));
-  const title = isLive ? 'Huddle is happening' : 'A huddle happened';
-  const detail = isLive
-    ? (withName ? `You and ${withName} are in the huddle.` : 'You are in the huddle.')
-    : (withName ? `You and ${withName} were in the huddle for ${dur}.` : `In the huddle for ${dur}.`);
+  const participants = meta.participants ?? [];
+  const iJoined = !myId || participants.length === 0 ? true : participants.some((p) => p.id === myId);
+  const others = participants.filter((p) => p.id !== myId).map((p) => p.name);
+  const missed = !isLive && participants.length > 0 && !iJoined;
+
+  let title: string;
+  let detail: string;
+  if (isLive) {
+    title = 'Huddle is happening';
+    detail = withName ? `You and ${withName} are in the huddle.` : 'You are in the huddle.';
+  } else if (missed) {
+    const caller = (meta.caller_name || withName || 'Someone').trim();
+    title = 'You missed a huddle';
+    detail = `${caller} was in the huddle for ${dur}.`;
+  } else {
+    title = 'A huddle happened';
+    detail = others.length
+      ? `You and ${others.join(', ')} were in the huddle for ${dur}.`
+      : `You were in a huddle for ${dur}.`;
+  }
   return (
     <div
       role="note"
@@ -39,6 +65,7 @@ export function HuddleEventRow({
         }}>🎧</span>
         <span>
           <strong style={{ color: 'var(--ds-text)' }}>{title}</strong>
+          {missed && <>{' '}<Lozenge appearance="removed">Missed</Lozenge></>}
           {'  '}{detail}
         </span>
       </div>
