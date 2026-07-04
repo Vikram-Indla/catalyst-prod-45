@@ -19,6 +19,7 @@ import {
   type WikiWorkspace,
 } from '@/hooks/useWiki';
 import { blocksToText } from './editor/blocksToText';
+import { clearDraft, getDraft, saveDraft } from './editor/localDraft';
 import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
 import { DropdownMenu } from '@/components/ads';
@@ -73,11 +74,17 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     const doc = pendingDoc.current;
     if (!doc) return;
     pendingDoc.current = null;
-    updatePage.mutate({
-      id: page.id,
-      spaceId: page.space_id,
-      patch: { content: doc, content_text: blocksToText(doc), content_format: 'blocknote' },
-    });
+    updatePage.mutate(
+      {
+        id: page.id,
+        spaceId: page.space_id,
+        patch: { content: doc, content_text: blocksToText(doc), content_format: 'blocknote' },
+      },
+      {
+        // Confirmed on the server — the local journal entry is now redundant.
+        onSuccess: () => clearDraft(page.id),
+      },
+    );
     // Mirror @-mention chips into kb_document_links / kb_page_links.
     // Fire-and-forget: link sync must never block or fail the autosave.
     void syncMentionLinks(page.id, doc).catch((e) =>
@@ -88,11 +95,49 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   const handleEditorChange = useCallback(
     (editor: BlockNoteEditor) => {
       pendingDoc.current = editor.document as Block[];
+      // Keystroke durability: journal locally long before the 1.5s autosave.
+      saveDraft(page.id, editor.document as Block[]);
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(flush, AUTOSAVE_MS);
     },
-    [flush],
+    [flush, page.id],
   );
+
+  // ---- Unsaved-draft recovery (crash/refresh between autosaves) ----
+  const [draft, setDraft] = useState<{ blocks: Block[]; savedAt: number } | null>(null);
+  const [restoredBlocks, setRestoredBlocks] = useState<Block[] | null>(null);
+  useEffect(() => {
+    setDraft(null);
+    setRestoredBlocks(null);
+    let cancelled = false;
+    void getDraft(page.id).then((d) => {
+      if (cancelled || !d) return;
+      // Only offer drafts meaningfully newer than the server copy.
+      if (d.savedAt > new Date(page.updated_at).getTime() + 2000) {
+        setDraft({ blocks: d.blocks as Block[], savedAt: d.savedAt });
+      } else {
+        clearDraft(page.id);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page.id]);
+
+  const restoreDraft = useCallback(() => {
+    if (!draft) return;
+    setRestoredBlocks(draft.blocks);
+    pendingDoc.current = draft.blocks;
+    setDraft(null);
+    // Persist the restored content immediately.
+    setTimeout(flush, 0);
+  }, [draft, flush]);
+
+  const discardDraft = useCallback(() => {
+    clearDraft(page.id);
+    setDraft(null);
+  }, [page.id]);
 
   useEffect(() => {
     const onHide = () => {
@@ -353,9 +398,59 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           </div>
         ) : (
           <Suspense fallback={<Skeleton style={{ height: 320, borderRadius: 8 }} />}>
+            {draft && (
+              <div
+                role="status"
+                className="wiki-no-print"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  margin: '0 0 14px',
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  background: 'var(--ds-background-warning)',
+                  color: 'var(--ds-text)',
+                  font: 'var(--ds-font-body-small)',
+                }}
+              >
+                <span style={{ flex: 1 }}>
+                  Unsaved changes from {new Date(draft.savedAt).toLocaleTimeString()} were recovered on this
+                  device.
+                </span>
+                <button
+                  type="button"
+                  onClick={restoreDraft}
+                  style={{
+                    border: '1px solid var(--ds-border)',
+                    borderRadius: 4,
+                    background: 'var(--ds-surface)',
+                    color: 'var(--ds-text)',
+                    font: 'var(--ds-font-body-small)',
+                    padding: '3px 10px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Restore
+                </button>
+                <button
+                  type="button"
+                  onClick={discardDraft}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--ds-text-subtle)',
+                    font: 'var(--ds-font-body-small)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Discard
+                </button>
+              </div>
+            )}
             <WikiEditor
-              key={page.id}
-              initialContent={(page.content as Block[]) ?? undefined}
+              key={restoredBlocks ? `${page.id}-draft` : page.id}
+              initialContent={restoredBlocks ?? ((page.content as Block[]) ?? undefined)}
               onChange={handleEditorChange}
               dictationStyle="brd-page"
               workspaceId={workspace.id}
