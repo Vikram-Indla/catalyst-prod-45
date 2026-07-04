@@ -587,6 +587,28 @@ Bounded backlog. **Pull rule:** an item enters execution ONLY as a written 2-hou
 
 Backlog: shared steps / parameterized (data-driven) cases (reuse `tm_test_steps.is_shared`, A4 N5); flaky-test detection from run history; AI coverage-gap suggestions + AI insight cards on remaining surfaces (reuse report-insights pattern); exploratory/session-based testing notes; bulk import (CSV/TestRail); PDF/exec export; cross-project dashboards; keyboard-first runner (TestRail-parity hotkeys); requirement-change → "needs re-test" flagging (needs VER stack — last); public read-only report links; `tm_defect_status_history` + MTTR (A4 N2, D-004 pattern); `tm_coverage_history` snapshots (A4 N4); `tm_baselines`/`tm_watchers` (A4 N6); defect key zero-padding normalization in `tm_next_entity_key` (DAT-058); shared FolderTree (D-REQ-4, VETO-5 — its own approval line).
 
+### SUBTASK P3-F1 · Flaky-test detection
+- **Purpose:** Identify tests failing intermittently (>20% failure rate in last 7 days); surface on TestOps admin panel so teams can stabilize high-noise tests before release gating.
+- **Files to touch:** 
+  - `src/hooks/test-management/useFlakyTestDetection.ts` (new — detection logic querying `tm_test_runs` by case+project+date, computing failure pct)
+  - `src/pages/admin/test-ops/TestOpsPage.tsx` (new tab or section: "Flaky tests" with case key + failure rate + 7-day run count)
+- **Files forbidden:** report bodies (§2 VETO-8); report hooks; §2 full list.
+- **Dependencies:** P2 complete (tables live, test runs history populated).
+- **Acceptance command:**
+```bash
+# detection logic returns correct case list
+grep -n "failure_rate\|run_count\|tm_test_runs" src/hooks/test-management/useFlakyTestDetection.ts
+# UI renders with no console errors
+npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
+```
+- **Acceptance condition (binary):** 
+  - Detection function returns cases with >20% failures (SQL round-trip pasted: 3 test cases, exact fail counts)
+  - TestOps admin panel shows list with case key + fail rate + run count, no errors on load
+  - ADS tokens only (no hard colors), fully gated by admin role
+- **Screenshot/evidence:** TestOps "Flaky tests" tab before/after, light + dark; SQL query output proving detection math; B9 admin re-proof (ModuleGate still guards access).
+- **Rollback:** `git revert` (zero schema changes, zero cascade).
+- **Done when:** admin views flaky test list, sees correct rates, SQL proves the numbers match run history.
+
 ---
 
 ## 13. VALIDATION COMMANDS (run before EVERY commit, all phases)

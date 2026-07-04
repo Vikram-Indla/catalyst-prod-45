@@ -29,6 +29,7 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import {
   useTmRoles, useTmUserRoles, useAssignTmUserRole, useRemoveTmUserRole,
 } from '@/hooks/test-management/useTmUserRoles';
+import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetection';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -310,6 +311,43 @@ function TeamRolesTab() {
   );
 }
 
+// ── F. Flaky tests ─────────────────────────────────────────────────────────
+// P3-F1: Identifies tests failing >20% in last 7 days.
+function FlakyTestsTab() {
+  const { data: flakyTests = [], isLoading, isError } = useFlakyTestDetection();
+
+  if (isLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'k', content: 'Case key' }, { key: 't', content: 'Title' },
+    { key: 'r', content: 'Runs (7d)' }, { key: 'f', content: 'Failed' },
+    { key: 'p', content: 'Failure rate' } ] };
+
+  const rows = flakyTests.map((test) => ({ key: test.id, cells: [
+    { key: 'k', content: <code style={{ color: 'var(--ds-text-brand)' }}>{test.case_key}</code> },
+    { key: 't', content: <span style={{ fontSize: 13, color: 'var(--ds-text)' }}>{test.title}</span> },
+    { key: 'r', content: test.total_runs },
+    { key: 'f', content: <Lozenge appearance="removed">{test.failed_runs}</Lozenge> },
+    { key: 'p', content: <Lozenge appearance="moved">{test.failure_rate}%</Lozenge> } ] }));
+
+  return (
+    <Panel>
+      <H>Flaky Test Detection</H>
+      <Note>
+        Tests with &gt;20% failure rate in the last 7 days. Computed from <code>tm_test_runs</code>{' '}
+        — sorted by highest failure rate first. Use this to identify unstable tests before release gating.
+      </Note>
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load flaky tests.</p></SectionMessage>
+      ) : flakyTests.length === 0 ? (
+        <Note>No flaky tests detected in the last 7 days (all tests passing at ≥80%).</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
 export default function TestOpsPage() {
   return (
     <AdminGuard>
@@ -325,12 +363,14 @@ export default function TestOpsPage() {
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
             <Tab>Team &amp; roles</Tab>
+            <Tab>Flaky tests</Tab>
           </TabList>
           <TabPanel><CoverageTab /></TabPanel>
           <TabPanel><FailedTestDefectTab /></TabPanel>
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
           <TabPanel><TeamRolesTab /></TabPanel>
+          <TabPanel><FlakyTestsTab /></TabPanel>
         </Tabs>
       </div>
     </AdminGuard>
