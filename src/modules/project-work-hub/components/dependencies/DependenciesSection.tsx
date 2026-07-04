@@ -1,21 +1,21 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
-import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
-import TrashIcon from '@atlaskit/icon/core/delete';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import {
-  JiraTable, type Column,
-  makeKeyCell, makeSummaryCell, makeStatusCell, makeAssigneeCell, makePriorityCell,
-} from '@/components/shared/JiraTable';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { getEntry } from '@/components/shared/Timeline/dependencies/normalize';
 import { useTimelineDependencies } from '@/components/shared/Timeline/dependencies/useTimelineDependencies';
 import { SUBTASK_FAMILY_CANONICAL_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
 import { useAddDependencyListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
+// Reuse the LinkedWorkItems render stack verbatim so Dependencies looks
+// pixel-identical (grouped rows, type icons, status lozenge, assignee avatar,
+// priority bars, "+" add affordance). Only the data source + write path differ.
+import { LinkedWorkItemsHeader } from '../linked-work-items/LinkedWorkItemsHeader';
+import { LinkedWorkItemsBody } from '../linked-work-items/LinkedWorkItemsBody';
+import type { LinkedWorkItem } from '../linked-work-items/types';
+import type { StatusCategory } from '../dialogs/story-detail-modules/types';
 import { DependencyToolbar } from './DependencyToolbar';
-import { toDependencyRows, RELATIONSHIP_LABEL, type DependencyRow } from './depSectionModel';
+import { toDependencyRows, RELATIONSHIP_LABEL } from './depSectionModel';
 
 export interface DependenciesSectionProps {
   issueKey: string;
@@ -28,24 +28,25 @@ interface DepMeta {
   status: string | null;
   status_category: string | null;
   assignee_display_name: string | null;
+  assignee_account_id: string | null;
   priority: string | null;
 }
 
-type Row = DependencyRow & { meta: DepMeta | null };
-
 export function DependenciesSection({ issueKey, projectKey }: DependenciesSectionProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const [showToolbar, setShowToolbar] = useState(false);
   const [adding, setAdding] = useState(false);
-  const rootRef = useRef<HTMLElement>(null);
+  const [pendingUnlinkIds, setPendingUnlinkIds] = useState<Set<string>>(new Set());
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const deps = useTimelineDependencies(projectKey ? [projectKey] : []);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  // "+" menu → open the inline toolbar (Jira parity: scroll the section into
-  // view + reveal the inline add row, exactly like LinkedWorkItems). NOT a modal.
+  // "+" menu / add affordance → un-collapse, reveal the inline toolbar, and
+  // scroll the section into view (Jira parity with LinkedWorkItems). No modal.
   const openToolbar = useCallback(() => {
-    setCollapsed(false);
+    setExpanded(true);
     setShowToolbar(true);
     requestAnimationFrame(() => {
       rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -67,7 +68,7 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
       if (otherKeys.length === 0) return m;
       const { data, error } = await (supabase as any)
         .from('ph_issues')
-        .select('issue_key, issue_type, summary, status, status_category, assignee_display_name, priority')
+        .select('issue_key, issue_type, summary, status, status_category, assignee_display_name, assignee_account_id, priority')
         .in('issue_key', otherKeys);
       if (error) { console.error('[DependenciesSection] meta load failed', error); return m; }
       for (const r of (data ?? [])) {
@@ -77,6 +78,7 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
           status: r.status ?? null,
           status_category: r.status_category ?? null,
           assignee_display_name: r.assignee_display_name ?? null,
+          assignee_account_id: r.assignee_account_id ?? null,
           priority: r.priority ?? null,
         });
       }
@@ -86,23 +88,54 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
     staleTime: 30_000,
   });
 
-  const rows: Row[] = useMemo(
-    () => baseRows.map((r) => ({ ...r, meta: metaMap.get(r.key) ?? null })),
-    [baseRows, metaMap],
-  );
-
   const subtaskTypesLower = useMemo(
     () => new Set(SUBTASK_FAMILY_CANONICAL_TYPES.map((t) => t.toLowerCase())),
     [],
   );
 
-  const invalidateTimeline = useCallback(
-    () => queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] }),
-    [queryClient],
-  );
+  // Map each dependency edge into the LinkedWorkItem shape and group by the
+  // relationship label ("is blocked by" / "blocks") — the group header text,
+  // exactly like LinkedWorkItems groups by link type.
+  const groups = useMemo(() => {
+    const order: string[] = [];
+    const byRel = new Map<string, LinkedWorkItem[]>();
+    for (const r of baseRows) {
+      const label = RELATIONSHIP_LABEL[r.relationship];
+      const meta = metaMap.get(r.key);
+      const item: LinkedWorkItem = {
+        id: String(r.edgeId),
+        link_type: label,
+        created_at: r.createdAt ?? '',
+        source_id: issueKey,
+        target_id: r.key,
+        target: {
+          issue_key: r.key,
+          summary: meta?.summary ?? '',
+          issue_type: meta?.issue_type ?? '',
+          status: meta?.status ?? '',
+          status_category: (meta?.status_category ?? '') as StatusCategory,
+          assignee_account_id: meta?.assignee_account_id ?? null,
+          assignee_display_name: meta?.assignee_display_name ?? null,
+          priority: meta?.priority ?? null,
+          jira_updated_at: null,
+        },
+      };
+      if (!byRel.has(label)) { byRel.set(label, []); order.push(label); }
+      byRel.get(label)!.push(item);
+    }
+    return order.map((linkType) => ({ linkType, links: byRel.get(linkType)! }));
+  }, [baseRows, metaMap, issueKey]);
 
-  // Create one edge per selected key. Surface the first error via toast and
-  // keep the toolbar open; close it only when every insert succeeds.
+  const count = baseRows.length;
+  const bodyId = `dep-body-${issueKey}`;
+
+  const invalidateAfterWrite = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] });
+    queryClient.invalidateQueries({ queryKey: ['dependency-row-meta'] });
+  }, [queryClient]);
+
+  // Create one edge per selected key. First error → toast, keep toolbar open;
+  // close only when every insert succeeds.
   const handleAdd = useCallback(
     async (direction: 'blocks' | 'is_blocked_by', targetKeys: string[]) => {
       if (!targetKeys.length) return;
@@ -112,115 +145,86 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
         const res = await deps.addDependency({ rowKey: issueKey, direction, otherKey, projectKey });
         if (!res.ok && !firstError) firstError = res.error ?? 'Failed to add dependency';
       }
-      invalidateTimeline();
+      invalidateAfterWrite();
       setAdding(false);
-      if (firstError) {
-        catalystToast.error(firstError);
-        return;
-      }
+      if (firstError) { catalystToast.error(firstError); return; }
       setShowToolbar(false);
     },
-    [deps, issueKey, projectKey, invalidateTimeline],
+    [deps, issueKey, projectKey, invalidateAfterWrite],
   );
 
-  // Canonical read-only cells (parity with the child work item table).
-  // Reference: src/modules/tasks/columns/tasksListColumns.ts (buildTasksListColumns).
-  const columns: Column<Row>[] = useMemo(() => {
-    const keyCell = makeKeyCell(
-      (r: Row) => r.key,
-      undefined,                                    // no inline open handler on this section
-      undefined,
-      (r: Row) => (r.meta?.issue_type ? <JiraIssueTypeIcon type={r.meta.issue_type} size={16} /> : null),
-    );
-    const summaryCell = makeSummaryCell((r: Row) => r.meta?.summary ?? '');
-    const statusCell = makeStatusCell(
-      (r: Row) => r.meta?.status ?? null,
-      () => 'default',                              // unused by render body; lozenge colors from category
-      undefined,
-      (r: Row) => r.meta?.status_category ?? null,
-    );
-    const assigneeCell = makeAssigneeCell((r: Row) =>
-      r.meta?.assignee_display_name ? { name: r.meta.assignee_display_name, avatarUrl: null } : null);
-    const priorityCell = makePriorityCell((r: Row) => r.meta?.priority ?? null);
+  const handleUnlink = useCallback(
+    (link: LinkedWorkItem) => {
+      setPendingUnlinkIds((prev) => new Set(prev).add(link.id));
+      void (async () => {
+        await deps.removeDependency(link.id);
+        invalidateAfterWrite();
+        setPendingUnlinkIds((prev) => {
+          const next = new Set(prev); next.delete(link.id); return next;
+        });
+      })();
+    },
+    [deps, invalidateAfterWrite],
+  );
 
-    return [
-      {
-        id: 'work', label: 'Work', flex: true, lockedPosition: true,
-        cell: (props) => (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', minWidth: 0 }}>
-            {keyCell(props)}
-            <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
-              {summaryCell(props)}
-            </span>
-          </span>
-        ),
-      },
-      {
-        id: 'relationship', label: 'Relationship', width: 16,
-        cell: ({ row }) => <span style={{ color: 'var(--ds-text-subtle)' }}>{RELATIONSHIP_LABEL[row.relationship]}</span>,
-      },
-      { id: 'priority', label: 'Priority', width: 10, cell: priorityCell },
-      { id: 'assignee', label: 'Assignee', width: 16, cell: assigneeCell },
-      { id: 'status', label: 'Status', width: 14, cell: statusCell },
-    ];
+  const handleOpen = useCallback(
+    (link: LinkedWorkItem) => navigate(`/browse/${link.target.issue_key}`),
+    [navigate],
+  );
+
+  const handleCopyKey = useCallback((link: LinkedWorkItem) => {
+    void navigator.clipboard?.writeText(link.target.issue_key);
+    catalystToast.success(`Copied ${link.target.issue_key}`);
   }, []);
 
   if (!issueKey) return null;
 
   return (
-    <section ref={rootRef} style={{ marginTop: 8 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <button
-          onClick={() => setCollapsed((c) => !c)}
-          aria-expanded={!collapsed}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0, color: 'var(--ds-text)' }}
-        >
-          {collapsed ? <ChevronRightIcon label="" /> : <ChevronDownIcon label="" />}
-          <span style={{ fontWeight: 600, marginLeft: 4 }}>Dependencies</span>
-        </button>
-        {rows.length > 0 && (
-          <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>{rows.length}</span>
-        )}
-        <button
-          onClick={openToolbar}
-          style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand)', fontSize: 'var(--ds-font-size-100)' }}
-        >
+    <div ref={rootRef} className="lwi-root" data-issue-key={issueKey}>
+      <LinkedWorkItemsHeader
+        count={count}
+        expanded={expanded}
+        onToggle={() => setExpanded((e) => !e)}
+        onAdd={openToolbar}
+        bodyId={bodyId}
+        title="Dependencies"
+        addLabel="Add dependency"
+      />
+
+      {/* Empty-state gray "Add dependency" link below the header, aligned with
+          the title — mirrors LinkedWorkItems' empty CTA. */}
+      {count === 0 && !showToolbar && (
+        <button type="button" className="lwi-add-link" onClick={openToolbar}>
           Add dependency
         </button>
-      </div>
+      )}
 
-      {!collapsed && showToolbar && (
-        <DependencyToolbar
+      {expanded && (
+        <LinkedWorkItemsBody
+          id={bodyId}
+          groups={groups}
+          isLoading={deps.isLoading}
+          isError={false}
+          onOpen={handleOpen}
+          onCopyKey={handleCopyKey}
+          onUnlink={handleUnlink}
+          pendingUnlinkIds={pendingUnlinkIds}
           sourceIssueKey={issueKey}
-          projectKey={projectKey}
-          index={deps.index}
-          subtaskTypesLower={subtaskTypesLower}
-          isPending={adding}
-          onAdd={handleAdd}
-          onCancel={() => setShowToolbar(false)}
+          footer={
+            showToolbar ? (
+              <DependencyToolbar
+                sourceIssueKey={issueKey}
+                projectKey={projectKey}
+                index={deps.index}
+                subtaskTypesLower={subtaskTypesLower}
+                isPending={adding}
+                onAdd={handleAdd}
+                onCancel={() => setShowToolbar(false)}
+              />
+            ) : null
+          }
         />
       )}
-
-      {!collapsed && rows.length > 0 && (
-        <JiraTable
-          columns={columns}
-          data={rows}
-          getRowId={(r) => `${r.relationship}:${r.key}:${r.edgeId}`}
-          ariaLabel="Dependencies"
-          contextMenuActions={[{
-            id: 'remove',
-            label: 'Remove dependency',
-            icon: <TrashIcon label="" />,
-            danger: true,
-            onClick: (r) => {
-              void (async () => {
-                await deps.removeDependency(r.edgeId);
-                invalidateTimeline();
-              })();
-            },
-          }]}
-        />
-      )}
-    </section>
+    </div>
   );
 }
