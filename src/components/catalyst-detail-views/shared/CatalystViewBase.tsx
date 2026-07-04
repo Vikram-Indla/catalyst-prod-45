@@ -823,13 +823,29 @@ export function CatalystViewBase({
     // top bar (modal header overlap). The modal dialog owns its own sizing; our wrapper just
     // needs flex layout. Each column (left/right) independently scrolls via overflowY:'auto'.
     return (
-      <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
-        <div data-cv-scope style={{
-          minHeight: 600, display: 'flex', flexDirection: 'column',
-        }}>
-          {cardContents}
-        </div>
-      </Modal>
+      <>
+        <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
+          <div data-cv-scope style={{
+            minHeight: 600, display: 'flex', flexDirection: 'column',
+          }}>
+            {cardContents}
+          </div>
+        </Modal>
+        {/* 2026-07-04: menu-injected dialogs (Add flag, etc.) previously
+            only rendered in the panel/fullpage branch — invisible in modal
+            mode. Repeat here so the ⋯ menu works on the modal too. */}
+        {showFlagModal && flagContext && (
+          <AddFlagModal
+            issueId={flagContext.issueId}
+            issueKey={flagContext.issueKey}
+            issueTitle={flagContext.issueTitle}
+            issueType={flagContext.issueType}
+            flagged={flagContext.isFlagged}
+            tableName={flagContext.tableName ?? 'ph_issues'}
+            onClose={() => setShowFlagModal(false)}
+          />
+        )}
+      </>
     );
   }
 
