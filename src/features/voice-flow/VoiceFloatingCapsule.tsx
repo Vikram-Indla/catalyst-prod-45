@@ -15,6 +15,8 @@ interface Props {
   analyserNode?: AnalyserNode | null;
   /** Partial streaming text during processing state */
   partialText?: string | null;
+  /** True when a text selection was active at start — spoken words are an instruction. */
+  commandMode?: boolean;
 }
 
 interface Pos { top: number; left: number }
@@ -337,6 +339,7 @@ export function VoiceFloatingCapsule({
   detectedLanguage,
   analyserNode,
   partialText,
+  commandMode,
 }: Props) {
   const [pos, setPos] = useState<Pos | null>(null);
   const posRef = useRef<Pos | null>(null);
@@ -391,7 +394,9 @@ export function VoiceFloatingCapsule({
         return (
           <>
             <WaveformBars analyserNode={analyserNode} />
-            <span className="vf-label vf-label--muted">Listening… (Space to finish)</span>
+            <span className="vf-label vf-label--muted">
+              {commandMode ? 'Command — say the change to apply' : 'Listening… (Space to finish)'}
+            </span>
             {remainingMs !== undefined && (
               <span className="vf-timer" aria-label={`${formatMs(remainingMs)} remaining`}>
                 {formatMs(remainingMs)}

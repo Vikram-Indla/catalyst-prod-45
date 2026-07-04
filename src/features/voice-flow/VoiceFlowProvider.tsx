@@ -54,6 +54,8 @@ export function VoiceFlowProvider({ children }: Props) {
   const statusRef         = useRef<VoiceStatus>('idle');
   const captureRef        = useRef<AudioCaptureService>(new AudioCaptureService());
   const realtimeRef       = useRef<RealtimeTranscriber | null>(null);
+  const commandRef        = useRef<{ selectedText: string } | null>(null);
+  const [commandMode, setCommandMode] = useState(false);
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
@@ -69,6 +71,8 @@ export function VoiceFlowProvider({ children }: Props) {
   const reset = useCallback(() => {
     realtimeRef.current?.dispose();
     realtimeRef.current = null;
+    commandRef.current = null;
+    setCommandMode(false);
     if (nativeModeRef.current) {
       recognitionRef.current?.abort();
       recognitionRef.current = null;
@@ -306,6 +310,49 @@ export function VoiceFlowProvider({ children }: Props) {
     durationMs: number,
     geminiStart: number,
   ) => {
+    // Command mode: the transcript is an INSTRUCTION applied to the text
+    // that was selected at activation. The rewrite replaces the selection
+    // (insertTextIntoTarget writes over the saved range). ~1.5s is
+    // acceptable here, so no deadline race — failure is surfaced.
+    const command = commandRef.current;
+    if (command) {
+      commandRef.current = null;
+      setCommandMode(false);
+      try {
+        const { data, error } = await supabase.functions.invoke('catyflow-clean', {
+          body: { mode: 'command', text: englishText, selected_text: command.selectedText },
+        });
+        const rewritten = (data as { cleaned?: string } | null)?.cleaned?.trim();
+        if (error || !rewritten) throw new Error('command rewrite failed');
+        const voiceResultCmd: VoiceResult = {
+          englishText: rewritten,
+          rawText: command.selectedText,
+          detectedLanguage: detectedLang,
+          confidence: 'high',
+          durationMs,
+          geminiLatencyMs: Date.now() - geminiStart,
+        };
+        setResult(voiceResultCmd);
+        if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
+          setStatusBoth('committing');
+          try {
+            insertTextIntoTarget(fieldRef.current, rewritten);
+          } catch (insertErr) {
+            console.warn('[VoiceFlow] command insert failed:', insertErr);
+          }
+          void updateSession('completed', voiceResultCmd);
+          scheduleReset(200);
+        } else {
+          setStatusBoth('ready');
+        }
+      } catch {
+        setErrorMessage('Could not apply the change — selection left untouched');
+        setStatusBoth('error');
+        scheduleReset(4000);
+      }
+      return;
+    }
+
     // CatyFlow polish pass (CAT-VOICE-FLOW-20260704-001): register-aware
     // cleanup raced against a deadline — a late/failed cleanup silently
     // falls back to the raw transcript, dictation never blocks on it.
@@ -431,6 +478,25 @@ export function VoiceFlowProvider({ children }: Props) {
     }
 
     fieldRef.current = field;
+
+    // Command mode (Wispr parity): a non-collapsed selection at activation
+    // means "apply my spoken instruction to this text" instead of dictation.
+    let selectedText = '';
+    if (field.kind === 'contenteditable') {
+      selectedText = field.savedRange?.toString() ?? '';
+    } else {
+      const el = field.element as HTMLInputElement | HTMLTextAreaElement;
+      if (
+        typeof el.value === 'string' &&
+        field.savedStart >= 0 &&
+        field.savedEnd > field.savedStart
+      ) {
+        selectedText = el.value.slice(field.savedStart, field.savedEnd);
+      }
+    }
+    commandRef.current = selectedText.trim() ? { selectedText } : null;
+    setCommandMode(!!commandRef.current);
+
     setStatusBoth('arming');
 
     const sessId = crypto.randomUUID();
@@ -634,6 +700,7 @@ export function VoiceFlowProvider({ children }: Props) {
           detectedLanguage={detectedLanguage}
           analyserNode={analyserNode}
           partialText={partialText}
+          commandMode={commandMode}
         />
       )}
     </VoiceFlowContext.Provider>
