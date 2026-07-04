@@ -32,6 +32,7 @@ import {
 import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetection';
 import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
 import { useDefectMetrics } from '@/hooks/test-management/useDefectMetrics';
+import { useCoverageHistory, useProjects } from '@/hooks/test-management/useCoverageHistory';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -313,6 +314,77 @@ function TeamRolesTab() {
   );
 }
 
+// ── D. Coverage history — 30-day trends ────────────────────────────────────
+// P3-F4: Tracks coverage progression over time.
+function CoverageHistoryTab() {
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const [selectedProjectId, setSelectedProjectId] = React.useState<string | null>(null);
+
+  const activeProjectId = selectedProjectId ?? projects[0]?.id ?? null;
+  const { data: trend, isLoading: trendLoading, isError } = useCoverageHistory(activeProjectId ?? '', 30);
+
+  if (projectsLoading) return <Loading />;
+
+  const snapshots = trend?.snapshots ?? [];
+  const head = { cells: [
+    { key: 'd', content: 'Date' }, { key: 't', content: 'Total items' },
+    { key: 'c', content: 'Covered' }, { key: 'p', content: 'Coverage %' } ] };
+
+  const rows = snapshots.map((s) => ({ key: s.snapshot_date, cells: [
+    { key: 'd', content: new Date(s.snapshot_date).toLocaleDateString() },
+    { key: 't', content: s.total_items },
+    { key: 'c', content: <Lozenge appearance={s.coverage_pct >= 80 ? 'success' : 'moved'}>{s.covered_items}</Lozenge> },
+    { key: 'p', content: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{
+          width: 80,
+          height: 20,
+          backgroundColor: 'var(--ds-background-neutral-subtle)',
+          borderRadius: 4,
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            width: `${s.coverage_pct}%`,
+            height: '100%',
+            backgroundColor: s.coverage_pct >= 80 ? 'var(--ds-background-success)' : 'var(--ds-background-warning)',
+            transition: 'width 0.2s',
+          }} />
+        </div>
+        <span style={{ fontSize: 12, color: 'var(--ds-text)' }}>{s.coverage_pct.toFixed(1)}%</span>
+      </div>
+    ) } ] }));
+
+  return (
+    <Panel>
+      <H>Coverage History — 30-day Trend</H>
+      <Note>
+        Daily snapshots of coverage state (stories/features covered by test cases).
+        Use to track coverage velocity and identify regression in test planning.
+      </Note>
+
+      <div style={{ maxWidth: 240, marginBottom: 16 }}>
+        <Select
+          inputId="coverage-history-project-select"
+          options={projects.map((p: any) => ({ label: p.name, value: p.id }))}
+          value={activeProjectId ? { label: projects.find((p: any) => p.id === activeProjectId)?.name, value: activeProjectId } : null}
+          onChange={(opt: any) => setSelectedProjectId(opt?.value ?? null)}
+          placeholder="Select project"
+        />
+      </div>
+
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load coverage history.</p></SectionMessage>
+      ) : trendLoading ? (
+        <Loading />
+      ) : snapshots.length === 0 ? (
+        <Note>No coverage history data yet. Run backfill to populate.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
 // ── E. Defect metrics — MTTR & velocity ────────────────────────────────────
 // P3-F3: Tracks defect lifecycle + computes time-to-resolution.
 function DefectMetricsTab() {
@@ -489,6 +561,7 @@ export default function TestOpsPage() {
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
             <Tab>Team &amp; roles</Tab>
+            <Tab>Coverage history</Tab>
             <Tab>Defect metrics</Tab>
             <Tab>Coverage gaps</Tab>
             <Tab>Flaky tests</Tab>
@@ -498,6 +571,7 @@ export default function TestOpsPage() {
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
           <TabPanel><TeamRolesTab /></TabPanel>
+          <TabPanel><CoverageHistoryTab /></TabPanel>
           <TabPanel><DefectMetricsTab /></TabPanel>
           <TabPanel><CoverageGapsTab /></TabPanel>
           <TabPanel><FlakyTestsTab /></TabPanel>

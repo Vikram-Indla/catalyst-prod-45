@@ -587,6 +587,31 @@ Bounded backlog. **Pull rule:** an item enters execution ONLY as a written 2-hou
 
 Backlog: shared steps / parameterized (data-driven) cases (reuse `tm_test_steps.is_shared`, A4 N5); flaky-test detection from run history; AI coverage-gap suggestions + AI insight cards on remaining surfaces (reuse report-insights pattern); exploratory/session-based testing notes; bulk import (CSV/TestRail); PDF/exec export; cross-project dashboards; keyboard-first runner (TestRail-parity hotkeys); requirement-change → "needs re-test" flagging (needs VER stack — last); public read-only report links; `tm_defect_status_history` + MTTR (A4 N2, D-004 pattern); `tm_coverage_history` snapshots (A4 N4); `tm_baselines`/`tm_watchers` (A4 N6); defect key zero-padding normalization in `tm_next_entity_key` (DAT-058); shared FolderTree (D-REQ-4, VETO-5 — its own approval line).
 
+### SUBTASK P3-F4 · Coverage history snapshots (coverage progression tracking)
+- **Purpose:** Capture coverage state (stories/features covered vs uncovered) at regular intervals (daily or per-cycle); enable trend reporting and coverage velocity analysis — "did we increase coverage this week?" (A4 N4, D-004 pattern).
+- **Files to touch:**
+  - `supabase/migrations/<unique-ts>_tm_coverage_history.sql` (new — table + backfill RPC)
+  - `src/integrations/supabase/types.ts` (regen after migration)
+  - `src/hooks/test-management/useCoverageHistory.ts` (new — query snapshots by project/date range, compute trend)
+  - `src/pages/admin/test-ops/TestOpsPage.tsx` (add "Coverage history" tab with chart/trend)
+- **Files forbidden:** report bodies (§2 VETO-8); report hooks; §2 full list.
+- **Dependencies:** P2 complete (ph_issues + tm_requirement_links + tm_test_case_links live); P3-F2 coverage-gap logic confirmed.
+- **Acceptance command:**
+```bash
+# Schema audit: table exists, backfill succeeds, snapshot counts match projects
+[ "$(grep -c 'tm_coverage_history' src/integrations/supabase/types.ts)" = "1" ] && \
+npx tsc --noEmit && npm run lint:colors:gate && npm run audit:ads:gate
+```
+- **Acceptance condition (binary):**
+  - Migration applied: `tm_coverage_history` table exists with rows (one per snapshot: project_id, snapshot_date, total_items, covered_items, coverage_pct)
+  - Backfill RPC `tm_backfill_coverage_history()` populates history from today going back 30 days (one snapshot per project per day)
+  - Hook returns trends: project + array of {date, coverage_pct}
+  - Admin tab renders: project selector + line chart of coverage % over 30 days
+  - Zero console errors on load
+- **Screenshot/evidence:** TestOps "Coverage history" tab light + dark, chart visible; SQL query output proving snapshot counts; B9 admin re-proof.
+- **Rollback:** DROP TABLE, DROP FUNCTION (reversible).
+- **Done when:** admin views 30-day coverage trend per project, chart renders correctly, SQL proves one snapshot per project per day.
+
 ### SUBTASK P3-F3 · Defect status history + MTTR computation
 - **Purpose:** Track defect status changes over time; compute mean-time-to-resolution (MTTR) from creation to closed/resolved. Surface MTTR on defect detail view + admin metrics to measure team velocity and QA process efficiency.
 - **Files to touch:**
