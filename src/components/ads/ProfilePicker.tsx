@@ -115,6 +115,14 @@ export interface ProfilePickerProps {
    * fires immediately so the parent can unmount.
    */
   locked?: boolean;
+  /**
+   * When true, the default input trigger renders with a dark-gray border to
+   * match a bordered form field (e.g. inside a form modal). On open the border
+   * is replaced by the focused-ring `boxShadow` — no double border. Only
+   * affects the default input trigger; render-trigger / cell / body-only /
+   * multi paths are untouched.
+   */
+  bordered?: boolean;
 }
 
 export function ProfilePicker({
@@ -134,6 +142,7 @@ export function ProfilePicker({
   anchorRef,
   onClose,
   locked,
+  bordered,
 }: ProfilePickerProps) {
   const bodyOnly = !!anchorRef;
   const multi = !!selectedIds && !!onChangeMulti;
@@ -157,9 +166,23 @@ export function ProfilePicker({
     if (open) forceTick((n) => n + 1);
   }, [open]);
   const [search, setSearch] = useState('');
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  /* `dirty` distinguishes "input shows the current value pre-selected" (open,
+     nothing typed → list is UNFILTERED) from "user has typed → filter". Without
+     it, seeding `search` with the current name filters the list down to only
+     the current person on open. Reset whenever the popover opens/closes. */
+  const [dirty, setDirty] = useState(false);
+  /* triggerRef anchors the popover + click-outside detection. When the default
+     trigger is used it points at the input-shaped container (Jira-parity —
+     value and search share one field); when `renderTrigger` is provided the
+     custom trigger passes its own ref via the helper. */
+  const triggerRef = useRef<HTMLElement | null>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  /* When the default trigger is active, the trigger IS the search input —
+     no separate search row in the popover, and the current value appears
+     inline with text pre-selected on focus (blue highlight). */
+  const useInputTrigger = !renderTrigger && !bodyOnly && !multi;
 
   const handleToggle = useCallback(
     (e: React.MouseEvent) => {
@@ -208,20 +231,49 @@ export function ProfilePicker({
     return () => document.removeEventListener('keydown', onKey, true);
   }, [open, closePopover]);
 
-  /* Autofocus search on open */
+  /* Autofocus search on open. When the default (input) trigger is used, seed
+     the search with the current value and select all text so the user's first
+     keystroke replaces it — matches Jira's blue-highlighted text behaviour. */
+  const prevOpen = useRef(false);
   useEffect(() => {
-    if (open) {
-      const t = window.setTimeout(() => searchRef.current?.focus(), 0);
-      return () => window.clearTimeout(t);
+    if (!open) {
+      if (prevOpen.current) {
+        setSearch('');
+        setDirty(false);
+      }
+      prevOpen.current = false;
+      return;
     }
-  }, [open]);
+    const justOpened = !prevOpen.current;
+    prevOpen.current = true;
+    if (!justOpened) return;
+    /* Seed search with the current name so the input shows the current value
+       pre-selected. The list stays UNFILTERED because `dirty` is false — only
+       once the user actually types does the filter kick in. */
+    setDirty(false);
+    if (useInputTrigger) setSearch(value?.name ?? '');
+    else setSearch('');
+    const t = window.setTimeout(() => {
+      const el = searchRef.current;
+      if (!el) return;
+      el.focus();
+      if (useInputTrigger) el.select();
+    }, 0);
+    return () => window.clearTimeout(t);
+    // Deliberately excluding `value?.name` — seed only on open transition, not
+    // when the value changes (which would reset user input mid-typing).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, useInputTrigger]);
 
   const q = search.trim().toLowerCase();
+  /* Filter only after the user actually types. When the input trigger seeds
+     itself with the current value, `search` is non-empty but `dirty` is false
+     — the list must stay unfiltered so the user can pick anyone. */
   const filtered = useMemo(
-    () => (q
+    () => (q && dirty
       ? members.filter((m) => m.name.toLowerCase().includes(q) || (m.email ?? '').toLowerCase().includes(q))
       : members),
-    [members, q],
+    [members, q, dirty],
   );
 
   const handleSelect = useCallback(
@@ -263,9 +315,84 @@ export function ProfilePicker({
         : `${multiSelectedMembers.length} selected`
     : null;
 
-  const defaultTrigger = (
+  const containerPadding = triggerVariant === 'cell' ? '2px 4px' : '4px 8px';
+  const inputTriggerLabel = value?.name ?? '';
+  const inputTriggerPlaceholder = value ? '' : 'Unassigned';
+
+  const defaultTrigger = useInputTrigger ? (
+    <div
+      ref={(el) => { triggerRef.current = el; }}
+      onClick={(e) => {
+        if (effectivelyDisabled) return;
+        e.stopPropagation();
+        if (!open) setOpen(true);
+        searchRef.current?.focus();
+        searchRef.current?.select();
+      }}
+      aria-label={`${fieldLabel ? `Change ${fieldLabel.toLowerCase()}` : 'Change user'} (${value?.name ?? 'Unassigned'})`}
+      title={isLocked ? `Locked: ${value?.name ?? ''}` : (value?.name ?? 'Unassigned')}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: containerPadding,
+        borderRadius: 3,
+        cursor: effectivelyDisabled ? 'default' : 'text',
+        fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
+        width: '100%',
+        minWidth: 0,
+        /* Bordered mode: idle shows a 1px --ds-border ring, open shows the 2px
+           focused ring instead — swap prevents a double border. Non-bordered
+           mode keeps the original behaviour (only focus ring, no idle border). */
+        boxShadow: open
+          ? 'inset 0 0 0 2px var(--ds-border-focused)'
+          : bordered
+            ? 'inset 0 0 0 1px var(--ds-border-input)'
+            : 'none',
+        transition: 'box-shadow 0.1s',
+      }}
+    >
+      {value
+        ? <AkAvatar appearance="circle" size="small" name={value.name} src={value.avatarUrl ?? undefined} label={value.name} />
+        : <UnassignedAvatar size={size} />}
+      <input
+        ref={searchRef}
+        type="text"
+        value={open ? search : inputTriggerLabel}
+        placeholder={inputTriggerPlaceholder}
+        readOnly={effectivelyDisabled}
+        onChange={(e) => {
+          if (!open) setOpen(true);
+          setSearch(e.target.value);
+          setDirty(true);
+        }}
+        onFocus={() => {
+          if (effectivelyDisabled) return;
+          if (!open) setOpen(true);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!open) setOpen(true);
+          (e.currentTarget as HTMLInputElement).select();
+        }}
+        style={{
+          flex: 1,
+          minWidth: 0,
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          padding: 0,
+          fontFamily: 'inherit',
+          fontSize: 'var(--ds-font-size-400)',
+          fontWeight: 400,
+          color: 'var(--ds-text)',
+          cursor: effectivelyDisabled ? 'default' : 'text',
+        }}
+      />
+    </div>
+  ) : (
     <button
-      ref={triggerRef}
+      ref={(el) => { triggerRef.current = el; }}
       type="button"
       onClick={handleToggle}
       disabled={effectivelyDisabled}
@@ -282,7 +409,7 @@ export function ProfilePicker({
       style={{
         background: 'none',
         border: 'none',
-        padding: triggerVariant === 'cell' ? '2px 4px' : '4px 8px',
+        padding: containerPadding,
         cursor: effectivelyDisabled ? 'default' : 'pointer',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-400)',
@@ -317,13 +444,19 @@ export function ProfilePicker({
   /* ───── Popover ───── */
   const anchorEl = bodyOnly ? anchorRef?.current : triggerRef.current;
   const rect = anchorEl?.getBoundingClientRect();
+  /* Jira-parity: dropdown width mirrors the trigger's width so the two align
+     edge-to-edge. Cell/renderTrigger variants (narrow anchors like table cells)
+     keep the historical 280px minimum so results stay legible. */
+  const popoverWidth = rect
+    ? Math.max(rect.width, 240)
+    : 280;
   const portalStyle: React.CSSProperties = rect
     ? {
         position: 'fixed',
         top: rect.bottom + 6,
-        left: Math.max(8, Math.min(rect.left, window.innerWidth - 296)),
+        left: Math.max(8, Math.min(rect.left, window.innerWidth - popoverWidth - 8)),
         zIndex: 10000,
-        width: 280,
+        width: popoverWidth,
       }
     : { display: 'none' };
 
@@ -346,29 +479,34 @@ export function ProfilePicker({
               overflow: 'hidden',
             }}
           >
-            <div
-              style={{
-                padding: '8px 12px',
-                borderBottom: '1px solid var(--ds-border)',
-                background: 'var(--ds-surface-sunken)',
-              }}
-            >
-              <input
-                ref={searchRef}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search people…"
+            {/* Separate search row — only when the input trigger isn't in use.
+               With the input trigger the trigger IS the search field, matching
+               Jira's single-field pattern. */}
+            {!useInputTrigger && (
+              <div
                 style={{
-                  width: '100%',
-                  border: 'none',
-                  outline: 'none',
-                  background: 'transparent',
-                  fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
-                  fontSize: 'var(--ds-font-size-400)',
-                  color: 'var(--ds-text)',
+                  padding: '8px 12px',
+                  borderBottom: '1px solid var(--ds-border)',
+                  background: 'var(--ds-surface-sunken)',
                 }}
-              />
-            </div>
+              >
+                <input
+                  ref={searchRef}
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setDirty(true); }}
+                  placeholder="Search people…"
+                  style={{
+                    width: '100%',
+                    border: 'none',
+                    outline: 'none',
+                    background: 'transparent',
+                    fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
+                    fontSize: 'var(--ds-font-size-400)',
+                    color: 'var(--ds-text)',
+                  }}
+                />
+              </div>
+            )}
 
             <div role="listbox" style={{ maxHeight: 280, overflowY: 'auto' }}>
               {!multi && showAssignToMe && meMember && (

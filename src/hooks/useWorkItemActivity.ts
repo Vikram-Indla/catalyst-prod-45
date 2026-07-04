@@ -24,6 +24,8 @@ export interface Reaction {
   reacted_by_me: boolean;
 }
 
+export type CommentType = 'normal' | 'flag_added' | 'flag_removed';
+
 export interface ActivityEntry {
   id: string;
   kind: 'comment' | 'history';
@@ -33,6 +35,7 @@ export interface ActivityEntry {
   actor_name: string;
   // Comment fields
   body?: string;
+  comment_type?: CommentType;
   reactions?: Reaction[];
   // History fields
   action?: string;
@@ -83,7 +86,7 @@ export function useWorkItemActivity(workItemId: string | null) {
       const [commentsRes, logsRes, reactionsRes] = await Promise.all([
         supabase
           .from('ph_comments')
-          .select('id, author_id, body, created_at')
+          .select('id, author_id, body, comment_type, created_at')
           .eq('work_item_id', resolvedWorkItemId)
           .order('created_at', { ascending: false })
           .limit(50),
@@ -144,6 +147,7 @@ export function useWorkItemActivity(workItemId: string | null) {
         actor_id: c.author_id,
         actor_name: profileMap.get(c.author_id) || 'Unknown',
         body: c.body,
+        comment_type: (c as { comment_type?: CommentType }).comment_type ?? 'normal',
         reactions: reactionMap.get(c.id) || [],
       }));
 

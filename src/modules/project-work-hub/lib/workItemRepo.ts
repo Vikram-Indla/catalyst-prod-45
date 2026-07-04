@@ -461,15 +461,38 @@ export async function getArchivedIssues(filters?: {
 //   NOTE: ph_issues has no project_id column — projects link via project_key (text) only.
 //
 // Returns the new issue_key string.
-export async function cloneIssue(issueKey: string): Promise<string> {
-  // 1. Fetch the original — use actual column names from ph_issues schema.
-  //    acceptance_criteria is plain text (no ADF variant exists in this table).
-  //    project_id does NOT exist in ph_issues; projects link via project_key.
+export interface CloneInclude {
+  attachments?: boolean;
+  childItems?: boolean;
+  linkedItems?: boolean;
+  subtasks?: boolean;
+  links?: boolean;
+  design?: boolean;
+  comments?: boolean;
+  testCases?: boolean;
+}
+
+export interface CloneIssuePatch {
+  /** Overrides the default `Copy of <summary>` prefix. Trimmed. Falsy → falls back to default. */
+  summary?: string | null;
+  assigneeId?: string | null;
+  assigneeName?: string | null;
+  /** Overrides the source reporter. `null` = clear. `undefined` = inherit. */
+  reporterId?: string | null;
+  reporterName?: string | null;
+  /** Per-section deep-copy flags. Falsy/omitted → the clone gets that section empty. */
+  include?: CloneInclude;
+}
+
+const SUBTASK_ISSUE_TYPES = new Set(['sub-task', 'subtask', 'backend', 'frontend', 'integration']);
+
+export async function cloneIssue(issueKey: string, patch?: CloneIssuePatch): Promise<string> {
+  // 1. Fetch the original (need `id` for FK-child copies).
   const { data: original, error: fetchError } = await supabase
     .from('ph_issues')
     .select(
-      'issue_key, summary, description_adf, issue_type, priority, parent_key, ' +
-      'project_key, reporter_account_id, acceptance_criteria, ' +
+      'id, issue_key, summary, description_adf, issue_type, priority, parent_key, ' +
+      'project_key, reporter_account_id, ' +
       'status, status_category',
     )
     .eq('issue_key', issueKey)
@@ -484,32 +507,258 @@ export async function cloneIssue(issueKey: string): Promise<string> {
 
   const nowIso = new Date().toISOString();
 
-  // 3. Insert the clone — only columns that exist on ph_issues.
-  // Removed: acceptance_criteria_adf, project_id, is_archived (non-existent columns).
-  // acceptance_criteria (plain text) is preserved.
-  // archived_at null = not archived.
+  const patchedSummary = patch?.summary?.trim();
+  const finalSummary = patchedSummary && patchedSummary.length > 0
+    ? patchedSummary
+    : `Copy of ${orig.summary ?? ''}`;
+
+  const finalReporterId = patch?.reporterId !== undefined ? patch.reporterId : (orig.reporter_account_id ?? null);
+  const finalReporterName = patch?.reporterName !== undefined ? patch.reporterName : null;
+  const finalAssigneeId = patch?.assigneeId !== undefined ? patch.assigneeId : null;
+  const finalAssigneeName = patch?.assigneeName !== undefined ? patch.assigneeName : null;
+
+  // 3. Insert the clone.
+  const insertPayload: Record<string, any> = {
+    issue_key: newKey,
+    summary: finalSummary,
+    description_adf: orig.description_adf ?? null,
+    issue_type: orig.issue_type ?? null,
+    priority: orig.priority ?? 'Medium',
+    parent_key: orig.parent_key ?? null,
+    project_key: orig.project_key,
+    reporter_account_id: finalReporterId,
+    status: 'To Do',
+    status_category: 'todo',
+    archived_at: null,
+    source: 'catalyst',
+    jira_created_at: nowIso,
+    jira_updated_at: nowIso,
+  };
+  if (finalReporterName !== null) insertPayload.reporter_display_name = finalReporterName;
+  if (finalAssigneeId !== null) insertPayload.assignee_account_id = finalAssigneeId;
+  if (finalAssigneeName !== null) insertPayload.assignee_display_name = finalAssigneeName;
+
   const { data: inserted, error: insertError } = await supabase
     .from('ph_issues')
-    .insert({
-      issue_key: newKey,
-      summary: `Copy of ${orig.summary ?? ''}`,
-      description_adf: orig.description_adf ?? null,
-      acceptance_criteria: orig.acceptance_criteria ?? null,
-      issue_type: orig.issue_type ?? null,
-      priority: orig.priority ?? 'Medium',
-      parent_key: orig.parent_key ?? null,
-      project_key: orig.project_key,
-      reporter_account_id: orig.reporter_account_id ?? null,
+    .insert(insertPayload as any)
+    .select('id, issue_key')
+    .single();
+  if (insertError) throw insertError;
+
+  const newId = (inserted as any).id as string;
+
+  // 4. Deep-copy per section include flags. Best-effort — failures on one
+  // section don't kill the whole clone (rows already committed).
+  const include = patch?.include ?? {};
+  await deepCopyCloneSections({
+    sourceId: orig.id,
+    sourceKey: orig.issue_key,
+    sourceProjectKey: orig.project_key,
+    newId,
+    newKey,
+    include,
+  });
+
+  return newKey;
+}
+
+interface DeepCopyArgs {
+  sourceId: string;
+  sourceKey: string;
+  sourceProjectKey: string;
+  newId: string;
+  newKey: string;
+  include: CloneInclude;
+}
+
+async function deepCopyCloneSections({
+  sourceId,
+  sourceKey,
+  sourceProjectKey,
+  newId,
+  newKey,
+  include,
+}: DeepCopyArgs): Promise<void> {
+  const tasks: Array<Promise<unknown>> = [];
+
+  if (include.attachments) tasks.push(copyAttachments(sourceId, newId));
+  if (include.comments) tasks.push(copyComments(sourceId, newId));
+  if (include.design) tasks.push(copyDesigns(sourceId, newId));
+  if (include.links) tasks.push(copyWebLinks(sourceId, newId));
+  if (include.linkedItems) tasks.push(copyIssueLinks(sourceKey, newKey));
+  if (include.childItems || include.subtasks) {
+    tasks.push(copyChildIssues(sourceKey, newKey, sourceProjectKey, {
+      includeChildItems: !!include.childItems,
+      includeSubtasks: !!include.subtasks,
+    }));
+  }
+  if (include.testCases) tasks.push(copyTestCases(sourceKey, newKey));
+
+  await Promise.allSettled(tasks);
+}
+
+async function copyAttachments(sourceId: string, newId: string) {
+  const { data } = await supabase
+    .from('ph_attachments')
+    .select('file_name, file_size, mime_type, storage_path, uploaded_by')
+    .eq('work_item_id', sourceId);
+  if (!data?.length) return;
+  await supabase.from('ph_attachments').insert(
+    data.map((r: any) => ({ ...r, work_item_id: newId })) as any,
+  );
+}
+
+async function copyComments(sourceId: string, newId: string) {
+  const { data } = await supabase
+    .from('ph_comments')
+    .select('author_id, body')
+    .eq('work_item_id', sourceId);
+  if (!data?.length) return;
+  await supabase.from('ph_comments').insert(
+    data.map((r: any) => ({ ...r, work_item_id: newId })) as any,
+  );
+}
+
+async function copyDesigns(sourceId: string, newId: string) {
+  const { data } = await (supabase as any)
+    .from('ph_designs')
+    .select('url, created_by')
+    .eq('work_item_id', sourceId);
+  if (!data?.length) return;
+  await (supabase as any).from('ph_designs').insert(
+    data.map((r: any) => ({ ...r, work_item_id: newId })),
+  );
+}
+
+async function copyWebLinks(sourceId: string, newId: string) {
+  const { data } = await (supabase as any)
+    .from('ph_web_links')
+    .select('url, link_text, created_by')
+    .eq('work_item_id', sourceId);
+  if (!data?.length) return;
+  await (supabase as any).from('ph_web_links').insert(
+    data.map((r: any) => ({ ...r, work_item_id: newId })),
+  );
+}
+
+async function copyIssueLinks(sourceKey: string, newKey: string) {
+  const { data } = await supabase
+    .from('ph_issue_links')
+    .select('link_type, source_id, target_id, created_by')
+    .or(`source_id.eq.${sourceKey},target_id.eq.${sourceKey}`);
+  if (!data?.length) return;
+  const rows = data.map((r: any) => ({
+    link_type: r.link_type,
+    source_id: r.source_id === sourceKey ? newKey : r.source_id,
+    target_id: r.target_id === sourceKey ? newKey : r.target_id,
+    created_by: r.created_by,
+  }));
+  await supabase.from('ph_issue_links').insert(rows as any);
+}
+
+async function copyChildIssues(
+  sourceKey: string,
+  newKey: string,
+  projectKey: string,
+  flags: { includeChildItems: boolean; includeSubtasks: boolean },
+) {
+  const { data: children } = await supabase
+    .from('ph_issues')
+    .select(
+      'id, issue_key, summary, description_adf, issue_type, priority, ' +
+      'project_key, assignee_account_id, assignee_display_name, ' +
+      'reporter_account_id, reporter_display_name',
+    )
+    .eq('parent_key', sourceKey)
+    .is('deleted_at', null);
+
+  if (!children?.length) return;
+
+  const nowIso = new Date().toISOString();
+
+  for (const child of children as Array<Record<string, any>>) {
+    const t = (child.issue_type ?? '').toLowerCase().trim();
+    const isSubtask = SUBTASK_ISSUE_TYPES.has(t);
+    if (isSubtask && !flags.includeSubtasks) continue;
+    if (!isSubtask && !flags.includeChildItems) continue;
+
+    const childNewKey = await generateIssueKey((child.project_key ?? projectKey) as string);
+    await supabase.from('ph_issues').insert({
+      issue_key: childNewKey,
+      summary: child.summary ?? '',
+      description_adf: child.description_adf ?? null,
+      issue_type: child.issue_type ?? null,
+      priority: child.priority ?? 'Medium',
+      parent_key: newKey,
+      project_key: child.project_key ?? projectKey,
+      assignee_account_id: child.assignee_account_id ?? null,
+      assignee_display_name: child.assignee_display_name ?? null,
+      reporter_account_id: child.reporter_account_id ?? null,
+      reporter_display_name: child.reporter_display_name ?? null,
       status: 'To Do',
       status_category: 'todo',
       archived_at: null,
       source: 'catalyst',
       jira_created_at: nowIso,
       jira_updated_at: nowIso,
-    } as any)
-    .select('issue_key')
-    .single();
-  if (insertError) throw insertError;
+    } as any);
+  }
+}
 
-  return (inserted as any).issue_key as string;
+async function copyTestCases(sourceKey: string, newKey: string) {
+  const { data } = await supabase
+    .from('tm_test_cases')
+    .select(
+      'title, description, description_html, expected_result, ' +
+      'preconditions, preconditions_html, postconditions_html, ' +
+      'priority_id, case_type_id, status, test_format, ' +
+      'gherkin_feature, gherkin_scenario, labels, custom_fields, ' +
+      'folder_id, project_id, cloned_from_id, is_template',
+    )
+    .eq('linked_story_key', sourceKey)
+    .eq('archived', false);
+
+  if (!data?.length) return;
+
+  for (const tc of data as Array<Record<string, any>>) {
+    let caseKey: string | null = null;
+    try {
+      const { data: rpcKey } = await (supabase as any).rpc('tm_next_entity_key', {
+        p_prefix: 'TC',
+        p_project_id: tc.project_id,
+      });
+      caseKey = (rpcKey as string) ?? null;
+    } catch { /* fall through */ }
+    if (!caseKey) {
+      const { count } = await supabase
+        .from('tm_test_cases')
+        .select('id', { count: 'exact', head: true })
+        .eq('project_id', tc.project_id);
+      caseKey = `TC-${String((count || 0) + 1).padStart(3, '0')}`;
+    }
+
+    await supabase.from('tm_test_cases').insert({
+      case_key: caseKey,
+      title: tc.title,
+      description: tc.description ?? null,
+      description_html: tc.description_html ?? null,
+      expected_result: tc.expected_result ?? null,
+      preconditions: tc.preconditions ?? null,
+      preconditions_html: tc.preconditions_html ?? null,
+      postconditions_html: tc.postconditions_html ?? null,
+      priority_id: tc.priority_id ?? null,
+      case_type_id: tc.case_type_id ?? null,
+      status: tc.status ?? null,
+      test_format: tc.test_format ?? null,
+      gherkin_feature: tc.gherkin_feature ?? null,
+      gherkin_scenario: tc.gherkin_scenario ?? null,
+      labels: tc.labels ?? [],
+      custom_fields: tc.custom_fields ?? null,
+      folder_id: tc.folder_id ?? null,
+      project_id: tc.project_id,
+      linked_story_key: newKey,
+      archived: false,
+      is_template: tc.is_template ?? false,
+    } as any);
+  }
 }

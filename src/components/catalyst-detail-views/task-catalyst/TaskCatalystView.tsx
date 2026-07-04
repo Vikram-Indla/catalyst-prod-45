@@ -51,6 +51,9 @@ import { AttachmentsSection } from '@/modules/tasks/components/TaskDetailDrawer/
 // CAT-TASKS-20260627-001 Slice 6: task <-> work-item linking section.
 import { TaskLinkedItemsSection } from '@/modules/tasks/components/TaskLinkedItemsSection';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
+import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import { cloneTaskHubTask, fetchTaskHubSectionCounts, TASK_HUB_INCLUDE_CATALOG } from '@/lib/cloneTaskHubTask';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /* ═══════════════════════════════════════════
@@ -352,6 +355,25 @@ export default function TaskCatalystView({
   );
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+
+  const { data: cloneCounts = {} } = useQuery({
+    queryKey: ['clone-section-counts-tasks-hub', itemId],
+    enabled: showCloneDialog && !!itemId,
+    staleTime: 60000,
+    queryFn: () => fetchTaskHubSectionCounts(itemId as string),
+  });
+
+  const handleClone = useCallback((patch?: ClonePatch) => {
+    if (!itemId || !t?.key) return;
+    void cloneWorkItemWithFlags({
+      sourceKey: t.key,
+      entityLabel: 'Task',
+      detailUrl: (newKey) => `/tasks/view/${newKey}`,
+      cloneFn: (p) => cloneTaskHubTask(itemId, p),
+      patch,
+    });
+  }, [itemId, t?.key]);
 
   // Flush any pending debounced writes when the panel closes.
   useEffect(() => {
@@ -666,8 +688,18 @@ export default function TaskCatalystView({
         parentType="Task"
         moreMenuItems={[
           { label: 'Copy link', onClick: handleCopyLink },
+          { label: 'Clone', onClick: () => { if (itemId && t?.key) setShowCloneDialog(true); } },
+          { label: 'Move', onClick: () => catalystToast.info('Coming soon') },
           { label: 'Delete', onClick: () => setShowDeleteDialog(true), danger: true },
         ]}
+        flagContext={t?.id && t?.key ? {
+          issueId: t.id as string,
+          issueKey: t.key as string,
+          isFlagged: !!t.is_flagged,
+          issueTitle: t.title ?? undefined,
+          issueType: 'Task',
+          tableName: 'tasks',
+        } : undefined}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
         currentItemId={itemId}
@@ -686,6 +718,22 @@ export default function TaskCatalystView({
         issueSummary={t?.title}
         typeLabel="task"
         onConfirm={handleDelete}
+      />
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={t?.key ?? null}
+        issueSummary={t?.title ?? null}
+        issueId={itemId ?? null}
+        projectId={(t as any)?.workstream_id ?? null}
+        currentAssigneeId={t?.assignee_id ?? null}
+        currentAssigneeName={(t as any)?.assignee?.full_name ?? null}
+        currentReporterId={t?.reporter_id ?? null}
+        currentReporterName={(t as any)?.reporter?.full_name ?? null}
+        useAllProfiles
+        includeCatalog={TASK_HUB_INCLUDE_CATALOG}
+        counts={cloneCounts}
+        onConfirm={handleClone}
       />
     </>
   );

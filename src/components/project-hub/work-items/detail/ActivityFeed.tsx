@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useWorkItemActivity, type ActivityEntry, type Reaction } from '@/hooks/useWorkItemActivity';
 import { Loader2, Trash2, SmilePlus } from '@/lib/atlaskit-icons';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
+import { token } from '@atlaskit/tokens';
 import { UserAvatar } from '@/components/shared/UserAvatar';
 import { CurrentUserAvatar } from '@/components/project-hub/shell/CurrentUserAvatar';
 
@@ -161,7 +163,14 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         className="rounded text-[13px] bg-[var(--bg-1)]"
         style={{ padding: 8, borderRadius: 4, lineHeight: '20px', color: 'var(--fg-1)' }}
       >
-        {entry.body}
+        {entry.comment_type === 'flag_added' || entry.comment_type === 'flag_removed' ? (
+          <FlagCommentBody
+            variant={entry.comment_type}
+            body={entry.body ?? ''}
+          />
+        ) : (
+          entry.body
+        )}
       </div>
 
       {/* Reactions */}
@@ -228,6 +237,37 @@ function HistoryEntry({ entry }: { entry: ActivityEntry }) {
         </div>
       )}
     </>
+  );
+}
+
+// ─── Flag Comment Body ──────────────────────────────────────
+// Renders the flag/unflag audit comment with a two-line layout:
+//   line 1: orange (added) or subtle-gray (removed) flag icon + label
+//   line 2: optional user reason — only rendered when non-empty
+function FlagCommentBody({ variant, body }: {
+  variant: 'flag_added' | 'flag_removed';
+  body: string;
+}) {
+  const isAdded = variant === 'flag_added';
+  const label = isAdded ? 'Flag added' : 'Flag removed';
+  const trimmed = (body ?? '').trim();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <FlagFilledIcon
+          label={label}
+          spacing="none"
+          color={isAdded
+            ? token('color.icon.warning', 'var(--ds-background-warning-bold)')
+            : token('color.icon.subtle', 'var(--ds-icon-subtle)')}
+        />
+        <span style={{ color: 'var(--ds-text)' }}>{label}</span>
+      </div>
+      {trimmed.length > 0 && (
+        <div style={{ color: 'var(--ds-text-subtle)' }}>{trimmed}</div>
+      )}
+    </div>
   );
 }
 

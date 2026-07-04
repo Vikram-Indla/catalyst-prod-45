@@ -2,8 +2,10 @@
  * catalystFlag — canonical small flag toast for Catalyst.
  *
  * API:
- *   catalystFlag.success('Release created')
+ *   catalystFlag.success('Release created')                    // legacy — single message
  *   catalystFlag.error('Something went wrong')
+ *   catalystFlag.info({ title, description })                  // 2-line info flag (purple icon)
+ *   catalystFlag.success({ title, description, action })       // 2-line with optional link action
  *
  * Mount <CatalystFlagHost /> once at the app root (App.tsx).
  *
@@ -11,18 +13,32 @@
  *   - White background, black title text
  *   - Success: green circular icon with white check stroke
  *   - Error:   red circular icon with white cross stroke
+ *   - Info:    purple/discovery circular icon with white "i" glyph
+ *   - Optional description line under the title (2-line flag)
+ *   - Optional link action rendered under the body (opens new tab / runs cb)
  *   - Close X at the end, auto-dismiss after `duration` ms (default 4000)
- *   - Bottom-right stack, slide-in animation
+ *   - Bottom-left stack, slide-in animation
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-export type CatalystFlagType = 'success' | 'error';
+export type CatalystFlagType = 'success' | 'error' | 'info';
+
+export interface CatalystFlagAction {
+  label: string;
+  onClick: () => void;
+}
+
+export interface CatalystFlagContent {
+  title: string;
+  description?: string;
+  action?: CatalystFlagAction;
+}
 
 export interface CatalystFlagItem {
   id: number;
   type: CatalystFlagType;
-  message: string;
+  content: CatalystFlagContent;
   duration: number;
 }
 
@@ -36,10 +52,20 @@ function emit() {
   listeners.forEach((l) => l([...queue]));
 }
 
-function push(type: CatalystFlagType, message: string, duration = 4000) {
-  const item: CatalystFlagItem = { id: ++counter, type, message, duration };
+function normalizeContent(input: string | CatalystFlagContent): CatalystFlagContent {
+  return typeof input === 'string' ? { title: input } : input;
+}
+
+function push(type: CatalystFlagType, input: string | CatalystFlagContent, duration = 4000) {
+  const item: CatalystFlagItem = {
+    id: ++counter,
+    type,
+    content: normalizeContent(input),
+    duration,
+  };
   queue = [...queue, item];
   emit();
+  return item.id;
 }
 
 function dismiss(id: number) {
@@ -48,8 +74,10 @@ function dismiss(id: number) {
 }
 
 export const catalystFlag = {
-  success: (message: string, duration?: number) => push('success', message, duration),
-  error:   (message: string, duration?: number) => push('error',   message, duration),
+  success: (input: string | CatalystFlagContent, duration?: number) => push('success', input, duration),
+  error:   (input: string | CatalystFlagContent, duration?: number) => push('error',   input, duration),
+  info:    (input: string | CatalystFlagContent, duration?: number) => push('info',    input, duration),
+  dismiss,
 };
 
 // ───────────────────────── Host ─────────────────────────
@@ -94,7 +122,6 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
-    // play enter transition next frame
     const r = requestAnimationFrame(() => setEntered(true));
     timer.current = window.setTimeout(onClose, item.duration);
     return () => {
@@ -103,10 +130,13 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
     };
   }, [item.duration, onClose]);
 
-  const isSuccess = item.type === 'success';
-  const iconBg = isSuccess
-    ? 'var(--ds-background-success-bold)'
-    : 'var(--ds-background-danger-bold)';
+  const iconBg =
+    item.type === 'success' ? 'var(--ds-background-success-bold)'
+    : item.type === 'error' ? 'var(--ds-background-danger-bold)'
+    : 'var(--ds-background-discovery-bold)';
+
+  const { title, description, action } = item.content;
+  const isTwoLine = !!description || !!action;
 
   return (
     <div
@@ -115,7 +145,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
       style={{
         pointerEvents: 'auto',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 12,
         minWidth: 280,
         maxWidth: 420,
@@ -143,21 +173,60 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
           borderRadius: '50%',
           background: iconBg,
           flexShrink: 0,
+          marginTop: isTwoLine ? 2 : 0,
         }}
       >
-        {isSuccess ? (
+        {item.type === 'success' && (
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <path d="M5 12.5l4.5 4.5L19 7.5" stroke="var(--ds-text-inverse)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        ) : (
+        )}
+        {item.type === 'error' && (
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12M18 6L6 18" stroke="var(--ds-text-inverse)" strokeWidth="2.6" strokeLinecap="round" />
           </svg>
         )}
+        {item.type === 'info' && (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="7.5" r="1.4" fill="var(--ds-text-inverse)" />
+            <path d="M12 11v7" stroke="var(--ds-text-inverse)" strokeWidth="2.4" strokeLinecap="round" />
+          </svg>
+        )}
       </span>
-      <span style={{ flex: 1, lineHeight: 1.35, color: 'var(--ds-text)', fontWeight: 500 }}>
-        {item.message}
-      </span>
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+        <span style={{ lineHeight: 1.35, color: 'var(--ds-text)', fontWeight: 600 }}>
+          {title}
+        </span>
+        {description && (
+          <span style={{ lineHeight: 1.35, color: 'var(--ds-text)', fontWeight: 400 }}>
+            {description}
+          </span>
+        )}
+        {action && (
+          <button
+            type="button"
+            onClick={() => { action.onClick(); onClose(); }}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+            style={{
+              alignSelf: 'flex-start',
+              background: 'none',
+              border: 'none',
+              padding: '2px 0 0 0',
+              cursor: 'pointer',
+              color: 'var(--ds-link)',
+              fontSize: 'var(--ds-font-size-200)',
+              fontWeight: 500,
+              lineHeight: 1.35,
+              textAlign: 'left',
+            }}
+          >
+            {action.label}
+          </button>
+        )}
+      </div>
+
       <button
         type="button"
         onClick={onClose}
@@ -172,6 +241,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
           height: 24,
           borderRadius: 3,
           color: 'var(--ds-text-subtle)',
+          marginTop: isTwoLine ? 2 : 0,
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';

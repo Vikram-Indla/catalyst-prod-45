@@ -39,6 +39,11 @@ import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-man
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import { TmCommentsSection } from '@/components/testhub/TmCommentsSection';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
+import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import { cloneTestCase, fetchTestCaseSectionCounts, TEST_CASE_INCLUDE_CATALOG } from '@/lib/cloneTestCase';
 
 /* ═══════════════════════════════════════════
    STATUS — tm lifecycle enum (NOT a Jira workflow). [MM1]
@@ -153,6 +158,59 @@ export default function CatalystViewTestCase({
   const queryClient = useQueryClient();
   const { data: testCase, isLoading } = useTestCase(isOpen ? itemId : undefined);
   const projectId = testCase?.project_id ?? undefined;
+
+  /* ── Action menu state — Clone, Archive, Delete dialogs. */
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  /* Test-case section counts feed the Include catalog inside ConfirmCloneDialog. */
+  const { data: cloneCounts = {} } = useQuery({
+    queryKey: ['clone-section-counts-test-case', itemId],
+    enabled: showCloneDialog && !!itemId,
+    staleTime: 60000,
+    queryFn: () => fetchTestCaseSectionCounts(itemId as string),
+  });
+
+  const handleClone = useCallback((patch?: ClonePatch) => {
+    if (!testCase?.id) return;
+    const sourceKey = (testCase.case_key ?? (testCase as any).key ?? '') as string;
+    void cloneWorkItemWithFlags({
+      sourceKey,
+      entityLabel: 'Test case',
+      detailUrl: () => `/testhub/repository`,
+      cloneFn: (p) => cloneTestCase(testCase.id as string, p),
+      patch,
+    });
+  }, [testCase?.id, testCase?.case_key]);
+
+  const handleArchive = useCallback(async () => {
+    if (!testCase?.id) return;
+    await supabase.from('tm_test_cases').update({ archived: true } as any).eq('id', testCase.id);
+    catalystToast.success('Test case archived');
+    setShowArchiveDialog(false);
+    queryClient.invalidateQueries({ queryKey: ['tm-case', itemId] });
+    if (projectId) {
+      queryClient.invalidateQueries({ predicate: q => q.queryKey[0] === 'tm-cases' && q.queryKey[1] === projectId });
+    }
+    onClose?.();
+  }, [testCase?.id, itemId, projectId, queryClient, onClose]);
+
+  const handleDelete = useCallback(async () => {
+    if (!testCase?.id) return;
+    const { error } = await supabase.from('tm_test_cases').delete().eq('id', testCase.id);
+    if (error) {
+      catalystToast.error('Delete failed', error.message);
+      return;
+    }
+    catalystToast.success('Test case deleted');
+    setShowDeleteDialog(false);
+    queryClient.invalidateQueries({ queryKey: ['tm-case', itemId] });
+    if (projectId) {
+      queryClient.invalidateQueries({ predicate: q => q.queryKey[0] === 'tm-cases' && q.queryKey[1] === projectId });
+    }
+    onClose?.();
+  }, [testCase?.id, itemId, projectId, queryClient, onClose]);
 
   const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['tm-case', itemId] });
@@ -760,30 +818,77 @@ export default function CatalystViewTestCase({
   /* No per-case full-page route — point "Open in full page" back to Repository. */
   const fullPageHrefBuilder = useCallback(() => '/testhub/repository', []);
 
+  const sourceKey = (testCase?.case_key ?? (testCase as any)?.key ?? null) as string | null;
+  const sourceTitle = testCase?.title ?? null;
+
   return (
-    <CatalystViewBase
-      isOpen={isOpen}
-      onClose={onClose}
-      panelMode={panelMode}
-      fullPageMode={fullPageMode}
-      itemType="Test Case"
-      itemKey={testCase?.key ?? testCase?.case_key ?? null}
-      projectKey={projectKey ?? ''}
-      projectName="Test Hub"
-      parentKey={null}
-      parentType="Test Case"
-      moreMenuItems={[]}
-      onTogglePanelMode={onTogglePanelMode}
-      navigationItems={navigationItems}
-      currentItemId={itemId}
-      onNavigate={onNavigate}
-      leftContent={leftContent}
-      rightContent={rightContent}
-      isLoading={isLoading}
-      isNotFound={!isLoading && testCase === null}
-      hideSidebar={hideSidebar}
-      fullPageHrefBuilder={fullPageHrefBuilder}
-    />
+    <>
+      <CatalystViewBase
+        isOpen={isOpen}
+        onClose={onClose}
+        panelMode={panelMode}
+        fullPageMode={fullPageMode}
+        itemType="Test Case"
+        itemKey={testCase?.key ?? testCase?.case_key ?? null}
+        projectKey={projectKey ?? ''}
+        projectName="Test Hub"
+        parentKey={null}
+        parentType="Test Case"
+        moreMenuItems={useMemo(() => [
+          { label: 'Clone', onClick: () => { if (testCase?.id) setShowCloneDialog(true); } },
+          { label: 'Move', onClick: () => catalystToast.info('Coming soon') },
+          { label: 'Archive', onClick: () => { if (testCase?.id) setShowArchiveDialog(true); } },
+          { label: 'Delete', onClick: () => { if (testCase?.id) setShowDeleteDialog(true); }, danger: true },
+        ], [testCase?.id])}
+        flagContext={testCase?.id && sourceKey ? {
+          issueId: testCase.id as string,
+          issueKey: sourceKey,
+          isFlagged: !!(testCase as any).is_flagged,
+          issueTitle: sourceTitle ?? undefined,
+          issueType: 'Test Case',
+          tableName: 'tm_test_cases',
+        } : undefined}
+        onTogglePanelMode={onTogglePanelMode}
+        navigationItems={navigationItems}
+        currentItemId={itemId}
+        onNavigate={onNavigate}
+        leftContent={leftContent}
+        rightContent={rightContent}
+        isLoading={isLoading}
+        isNotFound={!isLoading && testCase === null}
+        hideSidebar={hideSidebar}
+        fullPageHrefBuilder={fullPageHrefBuilder}
+      />
+      <ConfirmCloneDialog
+        isOpen={showCloneDialog}
+        onClose={() => setShowCloneDialog(false)}
+        issueKey={sourceKey}
+        issueSummary={sourceTitle}
+        issueId={testCase?.id ?? null}
+        projectId={projectId ?? null}
+        currentAssigneeId={(testCase as any)?.assigned_user?.id ?? (testCase as any)?.assigned_to ?? null}
+        currentAssigneeName={(testCase as any)?.assigned_user?.full_name ?? null}
+        hideReporter
+        useAllProfiles
+        includeCatalog={TEST_CASE_INCLUDE_CATALOG}
+        counts={cloneCounts}
+        onConfirm={handleClone}
+      />
+      <ConfirmArchiveDialog
+        isOpen={showArchiveDialog}
+        onClose={() => setShowArchiveDialog(false)}
+        issueSummary={sourceTitle}
+        onConfirm={handleArchive}
+      />
+      <ConfirmDeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        issueKey={sourceKey}
+        issueSummary={sourceTitle}
+        typeLabel="test case"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }
 
