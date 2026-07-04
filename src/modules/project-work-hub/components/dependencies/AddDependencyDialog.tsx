@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
+import TextField from '@atlaskit/textfield';
 import { supabase } from '@/integrations/supabase/client';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { getEntry, type DependencyIndex, type UiDirection } from '@/components/shared/Timeline/dependencies/normalize';
 import { filterCandidateIssues, relatedKeysFor, type CandidateIssue } from './depSectionModel';
 
@@ -30,19 +32,25 @@ export function AddDependencyDialog({
   const [target, setTarget] = useState<{ label: string; value: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 300);
 
   const relatedKeys = useMemo(() => relatedKeysFor(getEntry(index, issueKey)), [index, issueKey]);
 
   const { data: options = [], isLoading } = useQuery({
-    queryKey: ['dependency-candidates', projectKey, issueKey, Array.from(relatedKeys).sort().join(',')],
+    queryKey: ['dependency-candidates', projectKey, issueKey, Array.from(relatedKeys).sort().join(','), debouncedSearchTerm],
     queryFn: async () => {
       if (!projectKey) return [];
-      const { data, error: qErr } = await (supabase as any)
+      const q = debouncedSearchTerm.trim();
+      let query = supabase
         .from('ph_issues')
         .select('issue_key, issue_type, parent_key, summary')
         .eq('project_key', projectKey)
-        .is('deleted_at', null)
-        .limit(500);
+        .is('deleted_at', null);
+      if (q) {
+        query = query.or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`);
+      }
+      const { data, error: qErr } = await query.limit(25);
       if (qErr) throw new Error(qErr.message ?? 'Failed to load work items');
       const rows = (data ?? []) as (CandidateIssue & { summary?: string })[];
       const filtered = filterCandidateIssues(rows, { issueKey, relatedKeys, subtaskTypesLower });
@@ -90,16 +98,25 @@ export function AddDependencyDialog({
               <label style={{ display: 'block', marginBottom: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                 Work item
               </label>
-              <Select
-                inputId="dep-target"
-                options={options}
-                value={target}
-                onChange={(o) => setTarget(o as { label: string; value: string } | null)}
-                isLoading={isLoading}
-                isClearable
-                placeholder="Select a work item…"
+              <TextField
+                aria-label="Search work items"
+                placeholder="Search by key or summary…"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
                 isDisabled={submitting}
               />
+              <div style={{ marginTop: 8 }}>
+                <Select
+                  inputId="dep-target"
+                  options={options}
+                  value={target}
+                  onChange={(o) => setTarget(o as { label: string; value: string } | null)}
+                  isLoading={isLoading}
+                  isClearable
+                  placeholder="Select a work item…"
+                  isDisabled={submitting}
+                />
+              </div>
             </div>
             {error && (
               <div role="alert" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>
