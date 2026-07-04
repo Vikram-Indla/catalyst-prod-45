@@ -404,3 +404,43 @@ change. Full reasoning in `09_DECISIONS.md` D-022.
 | **Deferred** | Full authenticated round-trip proof (real generation call → quota/cooldown/ledger row) — needs a real user JWT, deferred to the browser-access backlog |
 
 **P2-S9…S11 done.** Next: **P2-S12…S15** (Collaboration).
+
+## P2-S12…S15 (Collaboration)
+
+| Item | Evidence |
+|---|---|
+| COL-001/002 mount | New `src/hooks/test-management/useTmComments.ts` + `src/components/testhub/TmCommentsSection.tsx` (canonical `CommentThread`/`CommentEditor` from `@/components/catalyst-ds`, backed by `tm_comments`). Mounted as a "Comments" tab on `CatalystViewTestCase.tsx` (entity_type='test_case') and a section on `CatalystViewTestCycle.tsx` (entity_type='cycle') |
+| Why not `CatalystActivitySection` directly | Confirmed via direct read: hard FK'd to `ph_issues` (`ph_comments.work_item_id`/`ph_activity_log.work_item_id` both `REFERENCES ph_issues(id)`, verified via `pg_constraint`). tm entities have no ph_issues row — would render silently empty. Gap register's own COL-001 text already recommends the tm_comments-adapter interim path taken here. Full reasoning: D-025 |
+| COL-003 (spine unification) | Not attempted — genuinely schema-blocked (ph_comments' FK, not just a preference call). Documented in D-025 |
+| COL-004 fix | `CommentsPanel` in `CycleDetailPage.tsx` refactored into a shared `CommentThreadBlock`; scope-level thread (`entity_type='cycle_scope'`) now always available, run-level thread shown additionally when a run exists. Was the reverse of the compressed Plan Lock line — verified against the gap register before implementing |
+| COL-005/019 | One real notification wired: scope-assignment insert into `notifications` (real schema: `recipient_user_id`/`notification_type`/`entity_type`/`entity_id`/`hub_source`/`tab`), in `CycleDetailPage.tsx`'s assign mutation. Found (not fixed — out of scope): the one existing live notification-insert example elsewhere (`workItemRepo.ts`) uses columns that don't exist on the real table — another silent-failure bug, same class as D-024 |
+| Live SQL proof | `tm_comments` insert/read round-trip verified for both new entity types (`test_case`, `cycle`) — read shape with profile join matches `useTmComments` exactly. `cycle_scope` comment inserted on a scope item with **zero runs** (previously impossible per COL-004). `notifications` row inserted with the assignment shape → confirmed it appears via the exact query `useNotificationsNew.ts` already reads (`entity_deleted=false`, `is_dismissed=false`, `tab='direct'`), alongside real production rows. All test rows cleaned up after |
+| Accept cmd | `npx tsc --noEmit` clean (one gate-caught off-grid `14px`→`12px` fix along the way, duplicated from pre-existing code into the new shared component). All 4 gates pass. `npm run build` exit 0 |
+
+**P2-S12…S15 done** within the FK-blocked scope boundary (D-025).
+
+## P2-S18 (saved filters)
+
+Investigated Plan Lock's "rides P1-S14 column" premise — didn't hold (`tm_saved_filters` has zero
+code references; TestHub's real filters UI runs on `ph_saved_filters`, already slug-capable).
+Verified the `/testhub/filters/:filterId` → `TestHubFilterPreviewPage` routing is intentional
+(the preview/builder page itself branches on `:filterId` to load an existing filter), not a
+mis-route — matches the identical pattern on `/incident-hub/filters/:filterId`. Found and deleted
+one confirmed-dead artifact: `src/pages/testhub/FilterDetailPage.tsx` + its orphaned lazy import
+in `FullAppRoutes.tsx` (zero route references anywhere). No TestHub `ph_saved_filters` rows exist
+yet to demo a live deep-link against (0 rows, confirmed) — not fabricated. Full reasoning: D-025.
+
+**P2-S18 done** — target largely already satisfied by shared infrastructure; one dead file removed.
+
+## P2-S17 — DEFERRED
+
+Same call as P1-S17b: net-new UI (board + calendar) with zero live-verification capability this
+session is a bad risk/reward trade. Not started. Full reasoning: D-025.
+
+---
+
+**P2 status: S1–S4, S9–S20 done (S17 deferred, S5–S8 skipped per Vikram's explicit instruction).**
+Carry-forwards: P1-S17b, P2-S5…S8 (JUnit), P2-S17 (board/calendar), COL-003 (comment spine
+unification — needs its own Vikram decision), the repo-wide AI-governance-logging bug in 10
+other edge functions (flagged via `spawn_task`), and the full live-browser visual-verification
+backlog (blocked all session, no credentials to recover).

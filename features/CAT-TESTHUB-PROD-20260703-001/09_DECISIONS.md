@@ -171,6 +171,90 @@ dead `const` declaration, no `.mutate(` call). Deleted the whole layer: `useCaty
 `BacklogPage.atlaskit.tsx`. `caty_conversations`/`caty_messages` DB tables (0 rows) left alone —
 out of this slice's frontend-cleanup scope, no code references them anymore either way.
 
+## D-025 (2026-07-04, P2-S12..S15 — Collaboration: FK-blocked spine, plus real gap-register corrections)
+**COL-001/002 mounted, using the gap register's own recommended interim approach.**
+`CatalystActivitySection` (the ph_comments/ph_activity_log-backed component every other
+detail view uses) is **hard-FK'd to `ph_issues`** — confirmed by direct read: it resolves
+`itemId` to a `ph_issues` row before doing anything else, and both `ph_comments.work_item_id`
+and `ph_activity_log.work_item_id` have real `FOREIGN KEY ... REFERENCES ph_issues(id)`
+constraints (confirmed via `pg_constraint`). `tm_test_cases`/`tm_test_cycles` have no
+`ph_issues` row — mounting that component as-is would silently render empty forever, the exact
+"green screenshot over silent-empty query" trap this whole feature exists to eliminate. The gap
+register (G14 COL-001) already anticipated this and recommends the correct interim path
+verbatim: "backed by a tm_comments adapter (entity_type='test_case') **until the comment-spine
+unification (COL-003) lands**." Built exactly that — new `TmCommentsSection.tsx` uses the real
+canonical UI primitives (`@/components/catalyst-ds` `CommentThread`/`CommentEditor`, the same
+ones `CatalystActivitySection` uses), backed by `tm_comments` instead of `ph_comments`. Mounted
+as a new "Comments" tab on `CatalystViewTestCase.tsx` (entity_type='test_case') and a new section
+on `CatalystViewTestCycle.tsx` (entity_type='cycle', flat layout, no tabs there). Live-proofed the
+full round-trip for both entity types (insert → read with profile join → matches the shape the
+hook expects exactly) — no activity/audit timeline is included (TestHub has no `tm_activity_log`
+table — confirmed absent in the P0.1 ghost-relation probe — so this is comments-only, an honest,
+documented scope difference from the ph_issues view, not a silent gap).
+
+**COL-003 (comment-spine unification) — genuinely schema-blocked, not fixed this slice.** The gap
+register's own recommendation ("pick ph_comments, keyed by case_key/defect_key/cycle_key")
+doesn't match the CURRENT `ph_comments` schema — `work_item_id` is a `uuid` FK to `ph_issues(id)`,
+not a text key. Migrating `tm_comments` rows into `ph_comments` today would mean either (a)
+dropping that FK — touches the live Jira-comment-sync feature used by 7 detail views, or (b)
+fabricating `ph_issues` shadow rows for every test case/cycle — a zero-assumption violation that
+pollutes a table everything else in Catalyst reads. This needs its own dedicated decision (same
+class as D-003), not a unilateral call inside a compressed multi-slice batch. Documented, not
+forced.
+
+**COL-004 fixed — and it was the opposite of what the compressed Plan Lock line suggested.** The
+one-line Plan Lock text ("comment-before-first-run on scope items") reads like a validation GATE;
+the actual gap (checked against the gap register before writing anything) is the reverse: users
+were **blocked** from commenting on a cycle scope item until it had been executed at least once
+(`CommentsPanel` keyed on `item.last_run_id`, `enabled: !!runId`, `NO_RUN_MSG` otherwise —
+`CycleDetailPage.tsx`). Fixed by splitting into two independent threads: a scope-level thread
+(`entity_type='cycle_scope'`, always available) and the existing run-level thread
+(`entity_type='run'`, shown additionally once a run exists) — both render in the same panel,
+neither blocks the other. Live-proofed on a scope item with zero runs (insert succeeded,
+previously would have been unreachable in the UI).
+
+**COL-005/019 — one real, correctly-shaped notification wired; the rest deliberately not
+attempted.** `notificationTriggerService.ts` turned out to be a config/scheme-admin service, not
+an event-firing one — there is no single "fire this event" function to call, and grep found the
+one live INSERT-into-`notifications` example (`workItemRepo.ts`) uses column names
+(`user_id`/`type`/`title`/`body`/`is_read`) that **don't exist** on the real `notifications` table
+(confirmed live: real columns are `recipient_user_id`/`notification_type`/`entity_type`/
+`entity_id`/`hub_source`/`tab`/`is_dismissed`/etc.) — yet another silently-broken insert, same bug
+class as D-024's AI governance log and D-006's RPC. Wiring the full COL-005 registry (all
+TestHub event keys) would mean either fixing that broader break across other hubs too or
+re-inventing delivery from scratch — disproportionate for this slice. Instead, wrote ONE real,
+correctly-shaped notification (assignment, COL-019's suggested starting point) directly into
+`CycleDetailPage.tsx`'s scope-assign mutation, using the verified real schema. Live-proofed: the
+inserted row appears via the exact query `useNotificationsNew.ts` already reads
+(`recipient_user_id` + `entity_deleted=false` + `is_dismissed=false` + `tab='direct'`), alongside
+real ProjectHub notifications. (Also noted, not fixed: `notifications` has RLS disabled entirely
+— `relrowsecurity=false` — a pre-existing, repo-wide condition affecting every hub equally, well
+outside this feature's mandate.)
+
+## P2-S18 (saved filters) — mostly already satisfied; one dead import found+removed
+Investigated the Plan Lock's premise ("rides P1-S14 column") and found it doesn't hold: the
+`tm_saved_filters` table P1-S14 added a slug to has **zero code references anywhere** — TestHub's
+actual live "saved filters" UI (`FiltersListPage`/`FilterPreviewPage`, mode='test') runs entirely
+on the shared `ph_saved_filters` table, which already has its own `slug` column and an existing
+UUID-or-slug dual lookup (confirmed live: `FilterPreviewPage.tsx` resolves `:filterId` as either
+format). Checked a hypothesis that `/testhub/filters/:filterId` was mis-routed to the wrong
+component (it goes to `TestHubFilterPreviewPage`, not `TestHubFilterDetailPage`) — verified this
+is intentional, not a bug: `FilterPreviewPage.tsx` itself branches on the `:filterId` param to
+load an existing saved filter for view/edit, and the same routing shape is used identically by
+`/incident-hub/filters/:filterId`. The one real, confirmed-dead artifact: `src/pages/testhub/
+FilterDetailPage.tsx` (a thin wrapper around the canonical `FilterDetailPage`) had zero route
+references anywhere (only its own now-removed lazy import in `FullAppRoutes.tsx`) — deleted both.
+No TestHub-scoped `ph_saved_filters` rows exist yet (0 rows, confirmed live) so there's no
+existing UI to demo a deep-link against; not fabricated per zero-assumption discipline.
+
+## P2-S17 (cycle board/calendar rebuild) — DEFERRED
+Same call as P1-S17b (JiraTable adoption): a from-scratch UI build (board + calendar, no existing
+cycle-scoped base for either per discovery) with zero live-verification capability available
+(browser session logout, carried the whole session) is a bad risk/reward trade even under
+"proceed uninterrupted" authorization — this exact class of change is why CLAUDE.md's
+screenshot-mandatory rule exists. Not started. Carried forward alongside S17b and the
+live-verification backlog.
+
 ## D-022 (2026-07-04, P2-S16 — target already fully satisfied)
 **Per-instance assignee/due-date on cycle scope already exists, live, working, no gaps.**
 `tm_cycle_scope.assigned_to`/`due_date` columns already exist; `CycleDetailPage.tsx`'s

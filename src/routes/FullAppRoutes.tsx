@@ -168,7 +168,6 @@ const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/Rep
 const TestHubBoardPage = lazy(() => import("../pages/testhub/BoardPage"));
 const TestHubFiltersListPage = lazy(() => import("../pages/testhub/FiltersListPage"));
 const TestHubFilterPreviewPage = lazy(() => import("../pages/testhub/FilterPreviewPage"));
-const TestHubFilterDetailPage = lazy(() => import("../pages/testhub/FilterDetailPage"));
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));

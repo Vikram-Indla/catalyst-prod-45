@@ -37,6 +37,7 @@ import {
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
+import { TmCommentsSection } from '@/components/testhub/TmCommentsSection';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /* ═══════════════════════════════════════════
@@ -638,6 +639,23 @@ export default function CatalystViewTestCase({
     </div>
   );
 
+  /* ── Comments tab body (G14 COL-001). ── */
+  const { data: commentCount = 0 } = useQuery({
+    queryKey: ['tm-comments-count', 'test_case', itemId],
+    enabled: !!itemId,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('tm_comments').select('id', { count: 'exact', head: true })
+        .eq('entity_type', 'test_case').eq('entity_id', itemId!);
+      return count ?? 0;
+    },
+  });
+  const commentsPanel = (
+    <div style={{ padding: '8px 16px' }}>
+      <TmCommentsSection entityType="test_case" entityId={itemId} />
+    </div>
+  );
+
   /* ── Details tab body. ── */
   const detailsPanel = (
     <div>
@@ -699,11 +717,13 @@ export default function CatalystViewTestCase({
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
               <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
               <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
+              <Tab>Comments{commentCount ? ` (${commentCount})` : ''}</Tab>
             </TabList>
             <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
             <TabPanel>{versionsPanel}</TabPanel>
             <TabPanel>{requirementsPanel}</TabPanel>
+            <TabPanel>{commentsPanel}</TabPanel>
           </Tabs>
         </div>
       </>

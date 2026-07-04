@@ -572,6 +572,26 @@ function AssigneeCell({ scopeId, cycleId, assignee }: {
     setSaving(false);
     if (error) { catalystToast.error('Failed to assign'); return; }
     qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+    // G14 COL-005/COL-019: first real TestHub notification event — the
+    // registry event (test_cycle "tester_assigned") was defined but never
+    // fired anywhere (confirmed via grep before writing this). Written
+    // against the real `notifications` schema (recipient_user_id/
+    // notification_type/hub_source/entity_type/entity_id, all uuid/text as
+    // confirmed live) — NOT the pattern in workItemRepo.ts's addComment-
+    // adjacent notification insert, which uses column names
+    // (user_id/type/title/body/is_read) that don't exist on this table.
+    if (userId) {
+      const { data: { user: actor } } = await supabase.auth.getUser();
+      await supabase.from('notifications').insert({
+        recipient_user_id: userId,
+        actor_user_id: actor?.id ?? null,
+        notification_type: 'assigned',
+        entity_type: 'test_cycle_scope',
+        entity_id: scopeId,
+        hub_source: 'TestHub',
+        tab: 'direct',
+      } as any);
+    }
   }, [scopeId, cycleId, qc]);
 
   return (
@@ -805,19 +825,24 @@ function DefectPanel({ item, cycleId, onClose }: { item: TMCycleScope; cycleId: 
 }
 
 // ── Comments panel ──────────────────────────────────────────────────────────
-function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => void }) {
+// G14 COL-004: this used to key ONLY on the scope item's last run (entity_type
+// 'run'), so planning-phase discussion was impossible until the item had been
+// executed at least once (NO_RUN_MSG). Fixed: scope-level thread
+// (entity_type='cycle_scope', entity_id=item.id) is always available; the
+// run-level thread (entity_type='run') renders as a separate section below it
+// once a run exists — both streams shown, neither blocks the other.
+function CommentThreadBlock({ entityType, entityId, label }: { entityType: string; entityId: string; label: string }) {
   const qc = useQueryClient();
-  const runId = item.last_run_id;
+  const queryKey = ['scope-comments', entityType, entityId];
 
   const { data: comments = [], isLoading } = useQuery({
-    queryKey: ['scope-comments', runId],
-    enabled: !!runId,
+    queryKey,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_comments')
         .select('id, content, created_at, author:profiles!tm_comments_author_id_fkey(full_name)')
-        .eq('entity_type', 'run')
-        .eq('entity_id', runId!)
+        .eq('entity_type', entityType)
+        .eq('entity_id', entityId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data ?? [];
@@ -828,19 +853,19 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
   const [posting, setPosting] = useState(false);
 
   const handlePost = async () => {
-    if (!text.trim() || !runId) return;
+    if (!text.trim()) return;
     setPosting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { error } = await supabase.from('tm_comments').insert({
-        entity_type: 'run',
-        entity_id: runId,
+        entity_type: entityType,
+        entity_id: entityId,
         content: text.trim(),
         author_id: user.id,
       });
       if (error) throw error;
-      qc.invalidateQueries({ queryKey: ['scope-comments', runId] });
+      qc.invalidateQueries({ queryKey });
       setText('');
     } catch (e: unknown) {
       catalystToast.error(e instanceof Error ? e.message : 'Failed');
@@ -850,50 +875,59 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
   };
 
   return (
-    <RightPanel title="Comments" subtitle={item.test_case?.title ?? item.case_id} onClose={onClose}>
-      {!runId ? NO_RUN_MSG : (
-        <>
-          {isLoading ? <Spinner size="small" /> : comments.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
-              {comments.map((c: { id: string; content: string; created_at: string; author: { full_name: string } | null }) => (
-                <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle)', paddingBottom: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)' }}>
-                      {c.author?.full_name ?? 'Unknown'}
-                    </span>
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
-                      {new Date(c.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{c.content}</p>
-                </div>
-              ))}
+    <div style={{ marginBottom: 20 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', margin: '0 0 8px' }}>
+        {label}
+      </p>
+      {isLoading ? <Spinner size="small" /> : comments.length === 0 ? (
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+          {comments.map((c: { id: string; content: string; created_at: string; author: { full_name: string } | null }) => (
+            <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle)', paddingBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)' }}>
+                  {c.author?.full_name ?? 'Unknown'}
+                </span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+                  {new Date(c.created_at).toLocaleString()}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{c.content}</p>
             </div>
-          )}
-          <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
-            <Textarea
-              value={text}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
-              placeholder="Add a comment…"
-              minimumRows={3}
-            />
-            <button
-              onClick={handlePost}
-              disabled={!text.trim() || posting}
-              style={{
-                marginTop: 8, padding: '8px 14px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
-                cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
-                fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
-              }}
-            >
-              {posting ? 'Posting…' : 'Post comment'}
-            </button>
-          </div>
-        </>
+          ))}
+        </div>
       )}
+      <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
+        <Textarea
+          value={text}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
+          placeholder="Add a comment…"
+          minimumRows={3}
+        />
+        <button
+          onClick={handlePost}
+          disabled={!text.trim() || posting}
+          style={{
+            marginTop: 8, padding: '8px 12px', borderRadius: 4, border: 'none',
+            background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
+            cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
+          }}
+        >
+          {posting ? 'Posting…' : 'Post comment'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => void }) {
+  const runId = item.last_run_id;
+  return (
+    <RightPanel title="Comments" subtitle={item.test_case?.title ?? item.case_id} onClose={onClose}>
+      <CommentThreadBlock entityType="cycle_scope" entityId={item.id} label="Scope discussion" />
+      {runId && <CommentThreadBlock entityType="run" entityId={runId} label="Latest run" />}
     </RightPanel>
   );
 }
