@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
 import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import TrashIcon from '@atlaskit/icon/core/delete';
@@ -37,6 +37,7 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const deps = useTimelineDependencies(projectKey ? [projectKey] : []);
+  const queryClient = useQueryClient();
   useAddDependencyListener(useCallback(() => setDialogOpen(true), []));
 
   const baseRows = useMemo(
@@ -159,7 +160,12 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
             label: 'Remove dependency',
             icon: <TrashIcon label="" />,
             danger: true,
-            onClick: (r) => { void deps.removeDependency(r.edgeId); },
+            onClick: (r) => {
+              void (async () => {
+                await deps.removeDependency(r.edgeId);
+                queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] });
+              })();
+            },
           }]}
         />
       )}
@@ -171,8 +177,11 @@ export function DependenciesSection({ issueKey, projectKey }: DependenciesSectio
         index={deps.index}
         subtaskTypesLower={subtaskTypesLower}
         onClose={() => setDialogOpen(false)}
-        onSubmit={(direction, otherKey) =>
-          deps.addDependency({ rowKey: issueKey, direction, otherKey, projectKey })}
+        onSubmit={async (direction, otherKey) => {
+          const result = await deps.addDependency({ rowKey: issueKey, direction, otherKey, projectKey });
+          queryClient.invalidateQueries({ queryKey: ['timeline-dependencies'] });
+          return result;
+        }}
       />
     </section>
   );
