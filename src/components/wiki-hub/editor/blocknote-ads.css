@@ -1,0 +1,76 @@
+/**
+ * BlockNote → ADS token mapping — the ONLY styling bridge file.
+ * Every --bn-* variable resolves to a var(--ds-*) token, so light/dark
+ * mode flips automatically with Catalyst's ThemeProvider (.dark class +
+ * data-color-mode on <html>). No literal colors in this file.
+ */
+
+.wiki-bn .bn-container,
+.wiki-bn .bn-root,
+.wiki-bn [data-color-scheme] {
+  --bn-colors-editor-text: var(--ds-text);
+  --bn-colors-editor-background: var(--ds-surface);
+  --bn-colors-menu-text: var(--ds-text);
+  --bn-colors-menu-background: var(--ds-surface-raised);
+  --bn-colors-tooltip-text: var(--ds-text);
+  --bn-colors-tooltip-background: var(--ds-surface-raised);
+  --bn-colors-hovered-text: var(--ds-text);
+  --bn-colors-hovered-background: var(--ds-background-neutral-subtle);
+  --bn-colors-selected-text: var(--ds-text-selected);
+  --bn-colors-selected-background: var(--ds-background-selected);
+  --bn-colors-disabled-text: var(--ds-text-disabled);
+  --bn-colors-disabled-background: var(--ds-background-disabled);
+  --bn-colors-shadow: var(--ds-shadow-overlay);
+  --bn-colors-border: var(--ds-border);
+  --bn-colors-side-menu: var(--ds-icon-subtle);
+
+  --bn-colors-highlights-gray-text: var(--ds-text);
+  --bn-colors-highlights-gray-background: var(--ds-background-neutral);
+  --bn-colors-highlights-red-text: var(--ds-text-accent-red);
+  --bn-colors-highlights-red-background: var(--ds-background-accent-red-subtlest);
+  --bn-colors-highlights-orange-text: var(--ds-text-accent-orange);
+  --bn-colors-highlights-orange-background: var(--ds-background-accent-orange-subtlest);
+  --bn-colors-highlights-yellow-text: var(--ds-text-accent-yellow);
+  --bn-colors-highlights-yellow-background: var(--ds-background-accent-yellow-subtlest);
+  --bn-colors-highlights-green-text: var(--ds-text-accent-green);
+  --bn-colors-highlights-green-background: var(--ds-background-accent-green-subtlest);
+  --bn-colors-highlights-blue-text: var(--ds-text-accent-blue);
+  --bn-colors-highlights-blue-background: var(--ds-background-accent-blue-subtlest);
+  --bn-colors-highlights-purple-text: var(--ds-text-accent-purple);
+  --bn-colors-highlights-purple-background: var(--ds-background-accent-purple-subtlest);
+  --bn-colors-highlights-pink-text: var(--ds-text-accent-magenta);
+  --bn-colors-highlights-pink-background: var(--ds-background-accent-magenta-subtlest);
+  --bn-colors-highlights-brown-text: var(--ds-text-subtle);
+  --bn-colors-highlights-brown-background: var(--ds-background-neutral);
+
+  /* Typography parity: inherit Catalyst's app font so Wiki text matches
+     the project backlog / Kanban surfaces exactly. */
+  --bn-font-family: inherit;
+  --bn-border-radius: 4px;
+}
+
+/* Editor canvas: body typography identical to backlog/Kanban surfaces */
+.wiki-bn .bn-editor {
+  font: var(--ds-font-body);
+  padding-inline: 0;
+}
+
+/* Per-block bidirectional text: Arabic blocks lay out RTL, English LTR,
+   resolved from each block's own content. */
+.wiki-bn .bn-block-content,
+.wiki-bn .bn-inline-content {
+  unicode-bidi: plaintext;
+}
+
+/* Headings track ADS heading color */
+.wiki-bn .bn-editor h1,
+.wiki-bn .bn-editor h2,
+.wiki-bn .bn-editor h3 {
+  color: var(--ds-text);
+}
+
+/* Menus/popovers sit above shell chrome */
+.wiki-bn .bn-suggestion-menu,
+.wiki-bn .mantine-Menu-dropdown {
+  border: 1px solid var(--ds-border);
+}
