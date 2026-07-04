@@ -29,7 +29,6 @@ import { useConversationDraft } from "@/features/chat-v2/hooks/useConversationDr
 import { useMessageAttachments } from "@/features/chat-v2/hooks/useMessageAttachments";
 import { useMyScheduledCountByConversation } from "@/features/chat-v2/hooks/useMyScheduledMessages";
 import { useChatTheme } from "@/features/chat-v2/hooks/useChatTheme";
-import catyIcon from "@/assets/caty-icon.svg";
 // ads-scanner:ignore-next-line -- chat.css uses only ADS tokens; kept for ConversationHeader cc-* classes
 import "@/components/chat/chat.css";
 // ads-scanner:ignore-next-line -- chat-v2 tokens use ADS vars via --cv2-* indirection
@@ -112,8 +111,8 @@ export function DockConversationPane({
   const scheduledByConv = useMyScheduledCountByConversation();
   const scheduledForThisConv = scheduledByConv.get(conversation.id);
 
-  const [summaryDismissed, setSummaryDismissed] = useState(false);
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);
+  const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
 
   const savedIds = useMemo(
     () =>
@@ -272,28 +271,6 @@ export function DockConversationPane({
         onBack={onBack}
       />
 
-      {/* Ticket summary pill — finding 52: Caty can summarize ticket threads */}
-      {conversation.kind === 'ticket' && !summaryDismissed && messages.length >= 3 && (
-        <div className="cc-conv-pane__ticket-summary">
-          <img src={catyIcon} alt="" width={16} height={16} />
-          <span className="cc-conv-pane__ticket-summary-text">
-            {messages.length} messages — summarize this thread?
-          </span>
-          <button
-            type="button"
-            className="cc-conv-pane__ticket-summary-cta"
-            onClick={() => window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { prompt: `Summarize the discussion on ${conversation.ticketKey ?? 'this ticket'}` } }))}
-          >
-            Summarize
-          </button>
-          <button
-            type="button"
-            className="cc-conv-pane__ticket-summary-dismiss"
-            aria-label="Dismiss thread summary"
-            onClick={() => setSummaryDismissed(true)}
-          >×</button>
-        </div>
-      )}
 
       {threadParent ? (
         <ThreadPanel
@@ -311,6 +288,16 @@ export function DockConversationPane({
             savedIds={savedIds}
             pinnedIds={pinnedIds}
             attachmentsByMessage={attachmentsByMessage}
+            jumpHighlightId={jumpHighlightId}
+            onJumpTo={(messageId) => {
+              setJumpHighlightId(messageId);
+              requestAnimationFrame(() => {
+                document
+                  .querySelector(`.cc-conv-pane [data-message-id="${messageId}"]`)
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              });
+              window.setTimeout(() => setJumpHighlightId(null), 2400);
+            }}
             onOpenThread={handleOpenThread}
             onToggleReaction={toggleReaction}
             onEdit={(messageId, markdown) => {

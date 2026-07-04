@@ -8,6 +8,7 @@
 import React, { useCallback, useRef, useState, forwardRef } from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import MicrophoneIcon from '@atlaskit/icon/core/microphone';
+import AttachmentIcon from '@atlaskit/icon/core/attachment';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useDraft } from '@/hooks/chat/useDraft';
@@ -154,6 +155,15 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
               sendHint
             )}
           </div>
+          {conversationId && (
+            <IconButton
+              icon={AttachmentIcon}
+              label="Attach files"
+              appearance="subtle"
+              isDisabled={disabled || uploading}
+              onClick={() => fileInputRef.current?.click()}
+            />
+          )}
           {onMic && (
             <IconButton
               icon={MicrophoneIcon}

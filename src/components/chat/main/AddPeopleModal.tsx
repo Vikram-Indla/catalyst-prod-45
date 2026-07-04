@@ -22,6 +22,7 @@ import Modal, {
   ModalTitle,
   ModalTransition,
 } from '@atlaskit/modal-dialog';
+import { DockPanel } from '@/components/chat/dock/DockPanel';
 import Button from '@atlaskit/button/new';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useChatSearch } from '@/hooks/chat/useChatSearch';
@@ -142,14 +143,11 @@ export function AddPeopleModal({
     }
   };
 
-  return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width="medium">
-          <ModalHeader>
-            <ModalTitle>Add people</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
+  const inDock =
+    typeof document !== 'undefined' && !!document.querySelector('.cc-dock');
+
+  const body = (
+    <>
             <input
               type="text"
               value={query}
@@ -158,7 +156,7 @@ export function AddPeopleModal({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 'var(--ds-font-size-400)',
+                fontSize: 'var(--ds-font-size-100)',
                 border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 marginBottom: 12,
@@ -167,7 +165,7 @@ export function AddPeopleModal({
             {error && (
               <div
                 style={{
-                  fontSize: 'var(--ds-font-size-200)',
+                  fontSize: 'var(--ds-font-size-100)',
                   color: 'var(--ds-text-danger)',
                   background: 'var(--ds-background-danger)',
                   padding: '4px 10px',
@@ -179,9 +177,9 @@ export function AddPeopleModal({
                 {error}
               </div>
             )}
-            <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            <div style={inDock ? undefined : { maxHeight: 360, overflowY: 'auto' }}>
               {candidates.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)' }}>
                   No matches.
                 </div>
               )}
@@ -219,7 +217,7 @@ export function AddPeopleModal({
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {c.name}
                         </span>
@@ -239,30 +237,52 @@ export function AddPeopleModal({
                         )}
                       </div>
                       {c.subtitle && (
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{c.subtitle}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>{c.subtitle}</div>
                       )}
                     </div>
                   </button>
                 );
               })}
             </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              isDisabled={selected.size === 0 || submitting}
-              onClick={submit}
-            >
-              {submitting
-                ? 'Adding…'
-                : selected.size === 0
-                ? 'Add people'
-                : `Add ${selected.size}`}
-            </Button>
-          </ModalFooter>
+    </>
+  );
+
+  const footer = (
+    <>
+      <Button appearance="subtle" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button
+        appearance="primary"
+        isDisabled={selected.size === 0 || submitting}
+        onClick={submit}
+      >
+        {submitting
+          ? 'Adding…'
+          : selected.size === 0
+          ? 'Add people'
+          : `Add ${selected.size}`}
+      </Button>
+    </>
+  );
+
+  if (inDock) {
+    return isOpen ? (
+      <DockPanel title="Add people" onClose={onClose} footer={footer}>
+        {body}
+      </DockPanel>
+    ) : null;
+  }
+
+  return (
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} width="medium">
+          <ModalHeader>
+            <ModalTitle>Add people</ModalTitle>
+          </ModalHeader>
+          <ModalBody>{body}</ModalBody>
+          <ModalFooter>{footer}</ModalFooter>
         </Modal>
       )}
     </ModalTransition>

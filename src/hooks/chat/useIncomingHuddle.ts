@@ -29,6 +29,33 @@ function persistDeclined() {
   try { localStorage.setItem(DECLINED_KEY, JSON.stringify([...declined].slice(-200))); } catch { /* ignore */ }
 }
 
+// Snoozed huddles — { huddleId: expiryMs }. A snooze mutes the ring for 1 hour;
+// after expiry the same huddle (if still active) rings again. Survives refresh.
+const SNOOZE_KEY = 'huddle-snoozed';
+const SNOOZE_MS = 60 * 60 * 1000; // 1 hour
+const snoozed: Map<string, number> = (() => {
+  try { return new Map<string, number>(Object.entries(JSON.parse(localStorage.getItem(SNOOZE_KEY) || '{}'))); }
+  catch { return new Map<string, number>(); }
+})();
+function persistSnoozed() {
+  try { localStorage.setItem(SNOOZE_KEY, JSON.stringify(Object.fromEntries(snoozed))); } catch { /* ignore */ }
+}
+function isSnoozed(id: string): boolean {
+  const until = snoozed.get(id);
+  if (until == null) return false;
+  if (Date.now() >= until) { snoozed.delete(id); persistSnoozed(); return false; }
+  return true;
+}
+
+// Answered-elsewhere — when the SAME user answers on ANOTHER tab, that tab
+// broadcasts the huddle id so this tab's ring stops INSTANTLY, without waiting
+// on Supabase realtime to deliver the participant-INSERT. Same origin + same
+// account => BroadcastChannel is the reliable, low-latency cross-tab signal.
+const ACCEPT_CHANNEL = 'huddle-accept';
+const answeredElsewhere: Set<string> = new Set();
+const acceptBus: BroadcastChannel | null =
+  typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(ACCEPT_CHANNEL) : null;
+
 interface HuddleRow { id: string; conversation_id: string; started_by: string }
 interface PartRow { huddle_id: string }
 
@@ -37,12 +64,19 @@ export interface IncomingHuddle {
   conversationId: string;
   conversationName: string;
   callerName: string;
+  /** true when the user snoozed this (still-live) huddle — muted, not ringing. */
+  snoozed: boolean;
 }
 
 export function useIncomingHuddle(): {
+  /** a live huddle ringing right now (not snoozed) */
   incoming: IncomingHuddle | null;
+  /** a live huddle the user snoozed — surfaced so they can still answer it */
+  snoozedCall: IncomingHuddle | null;
   accept: () => void;
   decline: () => void;
+  snooze: () => void;
+  unsnooze: () => void;
 } {
   const { user } = useAuth();
   const userId = user?.id ?? null;
@@ -75,8 +109,11 @@ export function useIncomingHuddle(): {
         .is('left_at', null)
         .gt('last_seen_at', liveCutoff());
       const liveHuddleIds = new Set(((fresh ?? []) as PartRow[]).map((p) => p.huddle_id));
+      // A snoozed huddle is NOT excluded here — we still surface it (as snoozed)
+      // so the user can answer it; the `snoozed` flag drives the muted UI.
       const candidate = rows.find(
-        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id) && liveHuddleIds.has(h.id),
+        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id)
+          && !answeredElsewhere.has(h.id) && liveHuddleIds.has(h.id),
       );
       if (!candidate) return null;
       const [{ data: caller }, { data: conv }] = await Promise.all([
@@ -90,6 +127,7 @@ export function useIncomingHuddle(): {
         conversationId: candidate.conversation_id,
         conversationName: convName,
         callerName,
+        snoozed: isSnoozed(candidate.id),
       };
     },
   });
@@ -107,18 +145,47 @@ export function useIncomingHuddle(): {
     return () => { supabase.removeChannel(ch); };
   }, [userId, qc, instanceId]);
 
-  const incoming = !activeInCall && data ? data : null;
+  // cross-tab: another tab of the same account answered — stop ringing here now.
+  useEffect(() => {
+    if (!acceptBus) return;
+    const onMsg = (e: MessageEvent) => {
+      const id = (e.data as { huddleId?: string } | null)?.huddleId;
+      if (!id) return;
+      answeredElsewhere.add(id);
+      qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+    };
+    acceptBus.addEventListener('message', onMsg);
+    return () => acceptBus.removeEventListener('message', onMsg);
+  }, [qc, userId]);
+
+  const base = !activeInCall && data ? data : null;
+  const incoming = base && !base.snoozed ? base : null;
+  const snoozedCall = base && base.snoozed ? base : null;
 
   const decline = useCallback(() => {
-    if (data) { declined.add(data.huddleId); persistDeclined(); }
+    if (data) { declined.add(data.huddleId); snoozed.delete(data.huddleId); persistDeclined(); persistSnoozed(); }
+    qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+  }, [data, qc, userId]);
+
+  const snooze = useCallback(() => {
+    if (data) { snoozed.set(data.huddleId, Date.now() + SNOOZE_MS); persistSnoozed(); }
+    qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+  }, [data, qc, userId]);
+
+  const unsnooze = useCallback(() => {
+    if (data) { snoozed.delete(data.huddleId); persistSnoozed(); }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
   }, [data, qc, userId]);
 
   const accept = useCallback(() => {
     if (!data) return;
+    if (snoozed.has(data.huddleId)) { snoozed.delete(data.huddleId); persistSnoozed(); }
+    // Tell my other tabs to stop ringing immediately (before realtime catches up).
+    answeredElsewhere.add(data.huddleId);
+    acceptBus?.postMessage({ huddleId: data.huddleId });
     const conv = { id: data.conversationId, title: data.conversationName } as ChatConversation;
     void startOrJoin(conv);
   }, [data, startOrJoin]);
 
-  return { incoming, accept, decline };
+  return { incoming, snoozedCall, accept, decline, snooze, unsnooze };
 }
