@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Clock, Pencil, Archive, Loader2, ChevronLeft } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -59,6 +59,13 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
   const [archiveConfirmId, setArchiveConfirmId] = useState<string | null>(null);
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
+  // Guards async setState after unmount (drawer closed / brdId switched mid-fetch).
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   useEffect(() => { fetchEpics(); }, [brdId]);
 
   const fetchEpics = async () => {
@@ -68,6 +75,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
       .eq('brd_id', brdId)
       .neq('publish_status', 'archived')
       .order('created_at', { ascending: true });
+    if (!mountedRef.current) return;
     if (!error && data) setEpics(data);
     setLoading(false);
   };

@@ -45,16 +45,20 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
 
   // Resolve brd_documents.id for Realtime subscription
   useEffect(() => {
+    let cancelled = false;
     const resolve = async () => {
       const jiraKey = (doc as any)?.jira_ticket_key;
       const { data: direct } = await typedQuery('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+      if (cancelled) return;
       if (direct?.id) { setResolvedBrdId(direct.id); return; }
       if (jiraKey) {
         const { data: jiraMatch } = await typedQuery('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        if (cancelled) return;
         if (jiraMatch?.id) { setResolvedBrdId(jiraMatch.id); return; }
       }
     };
     resolve();
+    return () => { cancelled = true; };
   }, [doc]);
 
   // FIX 1: Realtime listener on brd_processing_queue for background completion

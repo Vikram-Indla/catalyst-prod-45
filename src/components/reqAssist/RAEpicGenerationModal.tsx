@@ -36,6 +36,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   const hasStarted = useRef(false);
   const doneRef = useRef(false);
   const failedRef = useRef(false);
+  // Guards async setState after unmount (close modal mid-generation).
+  const cancelledRef = useRef(false);
 
 
   // Keep refs in sync
@@ -98,6 +100,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     }
 
     const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
+    if (cancelledRef.current) return;
     if (error) {
       console.error('[RA] Generation failed');
       setHasFailed(true);
@@ -144,6 +147,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
       } catch (err) {
 
+        if (cancelledRef.current) return;
+
         setHasFailed(true);
 
         setErrorMsg('Failed to resolve BRD document. Please retry.');
@@ -151,6 +156,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         return;
 
       }
+
+      if (cancelledRef.current) return;
 
       if (!brdId) {
 
@@ -170,6 +177,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
       } catch (err) {
 
+        if (cancelledRef.current) return;
+
         console.error('[EpicModal] invokeGeneration threw:', err);
 
         setHasFailed(true);
@@ -180,9 +189,12 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
     };
 
+    cancelledRef.current = false;
     run();
 
-     
+    return () => {
+      cancelledRef.current = true;
+    };
 
   }, []);
 

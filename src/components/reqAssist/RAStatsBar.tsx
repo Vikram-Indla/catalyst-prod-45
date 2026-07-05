@@ -62,11 +62,13 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 
   // D09: Fetch activity log + realtime subscription
   useEffect(() => {
+    let cancelled = false;
     const fetchActivity = async () => {
       const { data } = await typedQuery('ra_activity_log')
         .select('id, brd_id, event_type, message, created_at')
         .order('created_at', { ascending: false })
         .limit(10);
+      if (cancelled) return;
       if (data) setActivityEvents(data);
     };
     fetchActivity();
@@ -77,7 +79,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => { cancelled = true; supabase.removeChannel(channel); };
   }, []);
 
   if (error) {

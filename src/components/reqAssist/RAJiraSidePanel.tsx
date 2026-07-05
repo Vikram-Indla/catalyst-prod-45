@@ -76,6 +76,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
   // Load BRD data chain
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
       const jiraKey = doc.jira_ticket_key;
       if (!jiraKey) return;
@@ -84,6 +85,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         .select('id, pipeline_stage, raw_text, parent_jira_key, ticket_type, raw_text_source')
         .eq('jira_key', jiraKey)
         .maybeSingle();
+      if (cancelled) return;
 
       if (!brdRow?.id) {
         setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0, parentJiraKey: null, ticketType: null, rawTextSource: null });
@@ -96,6 +98,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         typedQuery('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdRow.id),
         typedQuery('brd_uat_scenarios').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
       ]);
+      if (cancelled) return;
 
       let finalWikiCount = wikiRes.count ?? 0;
       if (finalWikiCount === 0 && doc.wikihub_chunk_count) {
@@ -121,10 +124,12 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           .select('*')
           .eq('brd_id', brdRow.id)
           .order('created_at', { ascending: true });
+        if (cancelled) return;
         if (scenarios) setUatScenarios(scenarios);
       }
     };
     load();
+    return () => { cancelled = true; };
   }, [doc]);
 
   const handleCopy = () => {

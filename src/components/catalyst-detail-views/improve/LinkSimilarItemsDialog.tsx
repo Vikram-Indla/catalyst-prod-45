@@ -74,6 +74,7 @@ export function LinkSimilarItemsDialog({
       setError('Missing issue key — cannot fetch similar items.');
       return;
     }
+    let cancelled = false;
     (async () => {
       setLoading(true);
       setError(null);
@@ -81,15 +82,20 @@ export function LinkSimilarItemsDialog({
         const { data, error: fnError } = await supabase.functions.invoke('ai-similar-items', {
           body: { issueKey, existingLinkedKeys },
         });
+        if (cancelled) return;
         if (fnError) throw fnError;
         const list = (data as { suggestions?: SimilarSuggestion[] }).suggestions || [];
         setSuggestions(list);
       } catch (e) {
+        if (cancelled) return;
         setError(e instanceof Error ? e.message : 'AI features temporarily unavailable. Try again.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, issueKey, JSON.stringify(existingLinkedKeys)]);
 
   // Esc to close (CLAUDE.md L1 pattern).
