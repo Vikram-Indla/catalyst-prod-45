@@ -48,7 +48,7 @@ function FieldLabel({ label, required, helper }: { label: string; required?: boo
         {required ? <span style={{ color: 'var(--ds-text-danger)' }}> *</span> : null}
       </span>
       {helper ? (
-        <span style={{ marginLeft: 6, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{helper}</span>
+        <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{helper}</span>
       ) : null}
     </div>
   );

@@ -22,12 +22,14 @@ import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useProfileNames, useStrataContext, useUploadRuns,
+  useDataSources, useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useKpiTypes,
+  useProfileNames, useStrataContext, useStrataRoles, useThresholdSchemes, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 import {
   StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
+import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import { StrataGovernedStatusLozenge } from '@/modules/strata/pages/StrataKpiLibraryPage';
 import type {
@@ -35,6 +37,35 @@ import type {
 } from '@/modules/strata/types';
 
 const STALE = 30_000;
+
+/** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
+const CREATE_ROLES = ['strategy_office', 'kpi_owner', 'strata_admin'] as const;
+const SUBMIT_ROLES = ['kpi_owner', 'data_steward', 'strategy_office', 'strata_admin'] as const;
+
+const DIRECTION_OPTIONS = [
+  { value: 'higher_better', label: 'Higher is better' },
+  { value: 'lower_better', label: 'Lower is better' },
+  { value: 'band', label: 'Band' },
+  { value: 'manual', label: 'Manual' },
+];
+const FREQUENCY_OPTIONS = [
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'quarterly', label: 'Quarterly' },
+  { value: 'half_yearly', label: 'Half-yearly' },
+  { value: 'yearly', label: 'Yearly' },
+];
+const ENTRY_METHOD_OPTIONS = [
+  { value: 'upload', label: 'Upload' },
+  { value: 'manual', label: 'Manual' },
+  { value: 'connector', label: 'Connector' },
+];
+const FORMULA_TYPE_BASE = ['ratio_to_target', 'lower_better', 'band', 'manual_index'];
+const TARGET_TYPE_OPTIONS = [
+  { value: 'point', label: 'Point' },
+  { value: 'band', label: 'Band' },
+  { value: 'milestone', label: 'Milestone' },
+];
 
 /** Shape returned by strata_calc_kpi_achievement — rendered verbatim, never recomputed. */
 interface KpiAchievementPayload {
@@ -125,15 +156,25 @@ export default function StrataKpiDetailPage() {
   const achievementQ = useKpiAchievement(kpi?.id, activePeriod?.id);
   const uploadRunsQ = useUploadRuns();
   const profilesQ = useProfileNames();
+  const rolesQ = useStrataRoles();
+  const dataSourcesQ = useDataSources();
+  const kpiTypesQ = useKpiTypes();
+  const schemesQ = useThresholdSchemes();
   const invalidate = useInvalidateStrata();
   const [showTrendData, setShowTrendData] = useState(false);
   /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
   const [decision, setDecision] = useState<
     | { kind: 'approve-kpi' }
     | { kind: 'approve-formula'; id: string; label: string }
-    | { kind: 'attest'; id: string; label: string }
+    | { kind: 'attest'; id: string; periodId: string; label: string }
     | null
   >(null);
+  /** Authoring modal — one at a time (edit KPI / new formula / set target / submit actual). */
+  const [authoring, setAuthoring] = useState<null | 'edit-kpi' | 'new-formula' | 'set-target' | 'submit-actual'>(null);
+
+  const roles = rolesQ.data ?? [];
+  const canAuthor = roles.some((r) => (CREATE_ROLES as readonly string[]).includes(r));
+  const canSubmitActual = roles.some((r) => (SUBMIT_ROLES as readonly string[]).includes(r));
 
   const commentaryQ = useQuery({
     queryKey: ['strata', 'commentary', 'kpi', kpi?.id],
@@ -246,7 +287,7 @@ export default function StrataKpiDetailPage() {
             <Button
               appearance="default"
               spacing="compact"
-              onClick={() => setDecision({ kind: 'attest', id: row.id, label: periodById.get(row.period_id)?.name ?? '—' })}
+              onClick={() => setDecision({ kind: 'attest', id: row.id, periodId: row.period_id, label: periodById.get(row.period_id)?.name ?? '—' })}
               testId={`strata-attest-${row.id}`}
             >
               Attest
@@ -317,6 +358,15 @@ export default function StrataKpiDetailPage() {
               Evidence
             </Button>
           ) : null}
+          {canAuthor && (kpi.status === 'draft' || kpi.status === 'pending_approval') ? (
+            <Button
+              appearance="default"
+              onClick={() => setAuthoring('edit-kpi')}
+              testId="strata-kpi-edit"
+            >
+              Edit KPI
+            </Button>
+          ) : null}
           {kpi.status === 'pending_approval' ? (
             <Button
               appearance="primary"
@@ -372,11 +422,20 @@ export default function StrataKpiDetailPage() {
           icon={<Activity size={16} />}
           count={trendRows.length || null}
           testId="strata-kpi-trend"
-          actions={trendRows.length > 0 ? (
-            <Button appearance="subtle" spacing="compact" onClick={() => setShowTrendData((v) => !v)}>
-              {showTrendData ? 'Hide data' : 'Show data'}
-            </Button>
-          ) : undefined}
+          actions={
+            <>
+              {trendRows.length > 0 ? (
+                <Button appearance="subtle" spacing="compact" onClick={() => setShowTrendData((v) => !v)}>
+                  {showTrendData ? 'Hide data' : 'Show data'}
+                </Button>
+              ) : null}
+              {canAuthor ? (
+                <Button appearance="default" spacing="compact" onClick={() => setAuthoring('set-target')} testId="strata-kpi-set-target">
+                  Set target
+                </Button>
+              ) : null}
+            </>
+          }
         >
           {detailQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading trend" />
@@ -447,7 +506,17 @@ export default function StrataKpiDetailPage() {
         </StrataPanel>
 
         {/* (e) Formula versions */}
-        <StrataPanel title="Formula versions" icon={<GitBranch size={16} />} count={formulas.length || null} testId="strata-kpi-formulas">
+        <StrataPanel
+          title="Formula versions"
+          icon={<GitBranch size={16} />}
+          count={formulas.length || null}
+          testId="strata-kpi-formulas"
+          actions={canAuthor ? (
+            <Button appearance="default" spacing="compact" onClick={() => setAuthoring('new-formula')} testId="strata-kpi-new-formula">
+              New formula version
+            </Button>
+          ) : undefined}
+        >
           {detailQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading formulas" />
           ) : formulas.length === 0 ? (
@@ -493,7 +562,18 @@ export default function StrataKpiDetailPage() {
         </StrataPanel>
 
         {/* (f) Lineage */}
-        <StrataPanel title="Lineage" icon={<Database size={16} />} count={actuals.length || null} testId="strata-kpi-lineage" noPadding>
+        <StrataPanel
+          title="Lineage"
+          icon={<Database size={16} />}
+          count={actuals.length || null}
+          testId="strata-kpi-lineage"
+          noPadding
+          actions={canSubmitActual ? (
+            <Button appearance="default" spacing="compact" onClick={() => setAuthoring('submit-actual')} testId="strata-kpi-submit-actual">
+              Submit actual
+            </Button>
+          ) : undefined}
+        >
           {detailQ.isLoading ? (
             <div style={{ padding: 16 }}><Spinner size="medium" aria-label="Loading lineage" /></div>
           ) : actuals.length === 0 ? (
@@ -590,9 +670,164 @@ export default function StrataKpiDetailPage() {
         onConfirm={async (verdict, note) => {
           if (decision?.kind !== 'attest') return;
           await kpiApi.attestActual(decision.id, verdict as 'validated' | 'rejected' | 'quarantined', note || undefined);
+          // A validated actual changes the governed calc — refresh it server-side before refetching.
+          if (verdict === 'validated') {
+            await kpiApi.achievement(kpi.id, decision.periodId);
+          }
           invalidate();
         }}
         testId="strata-attest-modal"
+      />
+
+      {/* Authoring modals — server RPCs validate (SoD, band rules, closed periods); errors render in-modal */}
+      <StrataFormModal
+        open={authoring === 'edit-kpi'}
+        onClose={() => setAuthoring(null)}
+        title="Edit KPI"
+        description="Updates the draft KPI definition. Segregation of duties (e.g. validator ≠ owner) is enforced by the server."
+        width="large"
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true },
+          { key: 'unit', label: 'Unit', kind: 'text', placeholder: 'e.g. %, days, count' },
+          { key: 'direction', label: 'Direction', kind: 'select', options: DIRECTION_OPTIONS },
+          { key: 'frequency', label: 'Frequency', kind: 'select', options: FREQUENCY_OPTIONS },
+          { key: 'entryMethod', label: 'Entry method', kind: 'select', options: ENTRY_METHOD_OPTIONS },
+          { key: 'accountableOwnerId', label: 'Accountable owner', kind: 'user' },
+          { key: 'dataOwnerId', label: 'Data owner', kind: 'user' },
+          { key: 'reporterId', label: 'Reporter', kind: 'user' },
+          { key: 'validatorId', label: 'Validator', kind: 'user', helper: 'Must differ from the submitter — enforced server-side' },
+          { key: 'escalationOwnerId', label: 'Escalation owner', kind: 'user' },
+          {
+            key: 'dataSourceId', label: 'Data source', kind: 'select',
+            options: (dataSourcesQ.data ?? []).map((d) => ({ value: d.id, label: d.name })),
+          },
+          {
+            key: 'thresholdSchemeId', label: 'Threshold scheme', kind: 'select',
+            options: (schemesQ.data ?? []).map((s) => ({ value: s.id, label: s.name })),
+          },
+          {
+            key: 'kpiTypeId', label: 'KPI type', kind: 'select',
+            options: (kpiTypesQ.data ?? []).map((t) => ({ value: t.id, label: t.name })),
+          },
+        ]}
+        initial={{
+          name: kpi.name, unit: kpi.unit, direction: kpi.direction, frequency: kpi.frequency,
+          entryMethod: kpi.entry_method,
+          accountableOwnerId: kpi.accountable_owner_id, dataOwnerId: kpi.data_owner_id,
+          reporterId: kpi.reporter_id, validatorId: kpi.validator_id,
+          escalationOwnerId: kpi.escalation_owner_id,
+          dataSourceId: kpi.data_source_id, thresholdSchemeId: kpi.threshold_scheme_id,
+          kpiTypeId: kpi.kpi_type_id,
+        }}
+        submitLabel="Save KPI"
+        onSubmit={async (v) => {
+          await kpiApi.updateKpi(kpi.id, {
+            name: v.name ? String(v.name) : undefined,
+            unit: v.unit ? String(v.unit) : undefined,
+            direction: v.direction ? String(v.direction) : undefined,
+            frequency: v.frequency ? String(v.frequency) : undefined,
+            entryMethod: v.entryMethod ? String(v.entryMethod) : undefined,
+            accountableOwnerId: v.accountableOwnerId ? String(v.accountableOwnerId) : undefined,
+            dataOwnerId: v.dataOwnerId ? String(v.dataOwnerId) : undefined,
+            reporterId: v.reporterId ? String(v.reporterId) : undefined,
+            validatorId: v.validatorId ? String(v.validatorId) : undefined,
+            escalationOwnerId: v.escalationOwnerId ? String(v.escalationOwnerId) : undefined,
+            dataSourceId: v.dataSourceId ? String(v.dataSourceId) : undefined,
+            thresholdSchemeId: v.thresholdSchemeId ? String(v.thresholdSchemeId) : undefined,
+            kpiTypeId: v.kpiTypeId ? String(v.kpiTypeId) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-kpi-edit-modal"
+      />
+      <StrataFormModal
+        open={authoring === 'new-formula'}
+        onClose={() => setAuthoring(null)}
+        title="New formula version"
+        description="Creates a pending version. It only drives the calc engine after governed approval."
+        fields={[
+          { key: 'expression', label: 'Expression', kind: 'textarea', required: true, placeholder: 'e.g. actual / target' },
+          {
+            key: 'formulaType', label: 'Formula type', kind: 'select',
+            options: [...new Set([...FORMULA_TYPE_BASE, ...formulas.map((f) => f.formula_type)])]
+              .map((t) => ({ value: t, label: labelize(t) })),
+          },
+          { key: 'changeReason', label: 'Change reason', kind: 'textarea', placeholder: 'Why is the formula changing?' },
+        ]}
+        initial={{ formulaType: 'ratio_to_target' }}
+        submitLabel="Create version"
+        onSubmit={async (v) => {
+          await kpiApi.createFormulaVersion({
+            kpiId: kpi.id,
+            expression: String(v.expression),
+            formulaType: v.formulaType ? String(v.formulaType) : undefined,
+            changeReason: v.changeReason ? String(v.changeReason) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-kpi-new-formula-modal"
+      />
+      <StrataFormModal
+        open={authoring === 'set-target'}
+        onClose={() => setAuthoring(null)}
+        title="Set target"
+        description="Records a governed target for a period. Band bounds are required by the server for band-type targets."
+        fields={[
+          {
+            key: 'periodId', label: 'Period', kind: 'select', required: true,
+            options: periods.map((p) => ({ value: p.id, label: p.name })),
+          },
+          { key: 'target', label: 'Target', kind: 'number', required: true },
+          { key: 'baseline', label: 'Baseline', kind: 'number' },
+          { key: 'tolerance', label: 'Tolerance', kind: 'number' },
+          { key: 'bandMin', label: 'Band min', kind: 'number', helper: 'Required for band targets' },
+          { key: 'bandMax', label: 'Band max', kind: 'number', helper: 'Required for band targets' },
+          { key: 'targetType', label: 'Target type', kind: 'select', options: TARGET_TYPE_OPTIONS },
+        ]}
+        initial={{ periodId: activePeriod?.id ?? null, targetType: 'point' }}
+        submitLabel="Set target"
+        onSubmit={async (v) => {
+          await kpiApi.createTarget({
+            kpiId: kpi.id,
+            periodId: String(v.periodId),
+            target: Number(v.target),
+            baseline: v.baseline != null ? Number(v.baseline) : undefined,
+            tolerance: v.tolerance != null ? Number(v.tolerance) : undefined,
+            bandMin: v.bandMin != null ? Number(v.bandMin) : undefined,
+            bandMax: v.bandMax != null ? Number(v.bandMax) : undefined,
+            targetType: v.targetType ? (String(v.targetType) as 'point' | 'band' | 'milestone') : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-kpi-set-target-modal"
+      />
+      <StrataFormModal
+        open={authoring === 'submit-actual'}
+        onClose={() => setAuthoring(null)}
+        title="Submit actual"
+        description="Submits a manual actual as pending. It becomes canonical only after a different person attests it."
+        fields={[
+          {
+            key: 'periodId', label: 'Period', kind: 'select', required: true,
+            options: periods.map((p) => ({ value: p.id, label: p.name })),
+          },
+          { key: 'value', label: 'Value', kind: 'number', required: true },
+          { key: 'note', label: 'Commentary', kind: 'textarea', placeholder: 'Context for the validator' },
+          { key: 'confidence', label: 'Confidence (0–1)', kind: 'number', min: 0, max: 1, step: 0.05 },
+        ]}
+        initial={{ periodId: activePeriod?.id ?? null }}
+        submitLabel="Submit actual"
+        onSubmit={async (v) => {
+          await kpiApi.submitActual({
+            kpiId: kpi.id,
+            periodId: String(v.periodId),
+            value: Number(v.value),
+            note: v.note ? String(v.note) : undefined,
+            confidence: v.confidence != null ? Number(v.confidence) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-kpi-submit-actual-modal"
       />
     </StrataPageShell>
   );

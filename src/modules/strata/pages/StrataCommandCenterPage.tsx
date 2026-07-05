@@ -7,9 +7,10 @@
  * Layout (12-col grid):
  *   Row 1 — executive stat strip (evidence-route navigation on score/VaR).
  *   Row 2 — Enterprise score trend (8) + Perspective health (4).
- *   Row 3 — Needs attention: ONE actionable inbox (JiraTable) merging
- *           exceptions, open decisions, open actions, pending attestations
- *           and pending AI advisories.
+ *   Row 3 — Needs attention: ONE actionable inbox (JiraTable) fed by the
+ *           server-side rule engine (strata_needs_attention): attestations,
+ *           benefit validations, blockers, overdue actions/gates, broken
+ *           assumptions, missing actuals, upload rejections, governance drift.
  *
  * Every score/band/rollup on this page is server-calculated (strata_calc_*
  * RPCs or frozen snapshot payloads) — the UI only renders and counts rows.
@@ -17,7 +18,6 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
@@ -27,22 +27,18 @@ import type { Column } from '@/components/shared/JiraTable';
 import { LABEL } from '@/components/project-hub/dashboard/dashboardTypography';
 import { Routes } from '@/lib/routes';
 import { AlertTriangle, PieChart, TrendingUp } from '@/lib/atlaskit-icons';
-import { kpiApi } from '@/modules/strata/domain';
 import {
   useStrataContext,
   useScorecardInstances,
   useScorecardCalc,
-  useScorecardLines,
   usePortfolios,
   useValueAtRisk,
   useBenefits,
   useBenefitRealization,
   useDecisions,
-  useActions,
   useDependencies,
-  useAiOutputs,
   useKpis,
-  useThresholdSchemes,
+  useNeedsAttention,
   useEnterpriseScoreTrend,
 } from '@/modules/strata/hooks/useStrata';
 import {
@@ -58,7 +54,7 @@ import {
 import {
   fmtDate, fmtRatioPct, fmtSarCompact, fmtScore, labelize,
 } from '@/modules/strata/components/format';
-import type { ScorecardCalcResult, ThresholdBand } from '@/modules/strata/types';
+import type { ScorecardCalcResult } from '@/modules/strata/types';
 
 /** Display-only: server score → text, dash when engine reports no data. */
 function scoreText(score: number | null | undefined, hasData: boolean | undefined): string {
@@ -176,31 +172,24 @@ function TrendTooltip({ active, payload }: {
   );
 }
 
-// ── Needs attention inbox ────────────────────────────────────────────────────
-type AttentionType = 'Exception' | 'Decision' | 'Action' | 'Attestation' | 'Advisory';
-
+// ── Needs attention inbox (server-side rule engine — strata_needs_attention) ─
 interface AttentionRow {
   id: string;
-  type: AttentionType;
-  title: string;
-  context: string;
-  /** Due date ISO (decisions/actions) — rendered danger when overdue. */
+  /** Rule key from the engine (pending_attestation, blocked_dependency, …). */
+  itemType: string;
+  severity: string;
+  /** Resolved entity name — never a raw UUID; dash when unknown. */
+  entityName: string | null;
+  detail: string;
+  /** Due date ISO — rendered danger when overdue. */
   due: string | null;
-  /** Non-date meta (confidence %, score) when no due date applies. */
-  meta: string | null;
-  /** Governed band key (exceptions) — null shows the status lozenge instead. */
-  bandKey: string | null;
-  statusLabel: string | null;
-  statusAppearance: React.ComponentProps<typeof Lozenge>['appearance'];
   nav?: () => void;
 }
 
-const TYPE_LOZENGE: Record<AttentionType, React.ComponentProps<typeof Lozenge>['appearance']> = {
-  Exception: 'removed',
-  Decision: 'inprogress',
-  Action: 'default',
-  Attestation: 'moved',
-  Advisory: 'new',
+/** Severity → lozenge appearance (existing conventions: danger-ish = removed). */
+const SEVERITY_LOZENGE: Record<string, React.ComponentProps<typeof Lozenge>['appearance']> = {
+  critical: 'removed',
+  warning: 'moved',
 };
 
 export default function StrataCommandCenterPage() {
@@ -216,7 +205,6 @@ export default function StrataCommandCenterPage() {
   );
   const calcQ = useScorecardCalc(instance);
   const calc: ScorecardCalcResult | null = calcQ.data ?? null;
-  const linesQ = useScorecardLines(instance?.id);
 
   // ── Enterprise score trend (server-calculated history only) ───────────────
   const trendQ = useEnterpriseScoreTrend(activeCycle?.id);
@@ -233,68 +221,32 @@ export default function StrataCommandCenterPage() {
 
   // ── Governance / execution counts ──────────────────────────────────────────
   const decisionsQ = useDecisions();
-  const actionsQ = useActions();
   const dependenciesQ = useDependencies();
-  const aiQ = useAiOutputs();
   const kpisQ = useKpis();
-  const schemesQ = useThresholdSchemes();
-
-  const attestationsQ = useQuery({
-    queryKey: ['strata', 'actuals-for-period', activePeriod?.id],
-    queryFn: () => kpiApi.actualsForPeriod(activePeriod!.id),
-    enabled: !!activePeriod,
-    staleTime: 30_000,
-  });
+  // Server-side rule engine feed — replaces the former client-composed inbox.
+  const needsAttentionQ = useNeedsAttention(activePeriod?.id);
 
   const openDecisions = useMemo(
     () => (decisionsQ.data ?? []).filter((d) => d.status === 'open'),
     [decisionsQ.data],
   );
-  const openActions = useMemo(
-    () => (actionsQ.data ?? []).filter((a) => a.status === 'open' || a.status === 'in_progress'),
-    [actionsQ.data],
-  );
+  // Live blocked-dependency rows (same rule as the engine's blocked_dependency).
   const blockedDeps = useMemo(
-    () => (dependenciesQ.data ?? []).filter((d) => d.status === 'blocked'),
+    () => (dependenciesQ.data ?? []).filter(
+      (d) => (d.is_blocker || d.status === 'blocked') && !['resolved', 'cancelled'].includes(d.status),
+    ),
     [dependenciesQ.data],
   );
+  // Pending attestations for the active period — from the rule-engine feed.
   const pendingAttestations = useMemo(
-    () => (attestationsQ.data ?? []).filter((a) => a.validation_status === 'pending'),
-    [attestationsQ.data],
-  );
-  const pendingAi = useMemo(
-    () => (aiQ.data ?? []).filter((a) => a.human_review_status === 'pending'),
-    [aiQ.data],
+    () => (needsAttentionQ.data ?? []).filter((r) => r.item_type === 'pending_attestation'),
+    [needsAttentionQ.data],
   );
 
-  // ── Exceptions: calc lines whose governed band ≠ the scheme's best band ───
-  const bestBandKeys = useMemo(() => {
-    const keys = new Set<string>();
-    (schemesQ.data ?? []).forEach((s) => {
-      const best = (s.bands ?? []).reduce<ThresholdBand | null>(
-        (acc, b) => (acc == null || b.min_score > acc.min_score ? b : acc), null,
-      );
-      if (best) keys.add(best.key);
-    });
-    return keys;
-  }, [schemesQ.data]);
-
-  const kpiIdByLineId = useMemo(() => {
-    const m = new Map<string, string>();
-    (linesQ.data ?? []).forEach((l) => { if (l.kpi_id) m.set(l.id, l.kpi_id); });
-    return m;
-  }, [linesQ.data]);
   const kpiById = useMemo(
     () => new Map((kpisQ.data ?? []).map((k) => [k.id, k])),
     [kpisQ.data],
   );
-
-  const exceptions = useMemo(() => {
-    if (!calc || bestBandKeys.size === 0) return [];
-    return calc.lines.filter(
-      (l) => l.ref_type === 'kpi' && l.status_key != null && !bestBandKeys.has(l.status_key),
-    );
-  }, [calc, bestBandKeys]);
 
   // ── Trend points: period-named, ordered by period starts_on ───────────────
   const trendPoints: TrendChartPoint[] = useMemo(() => {
@@ -318,116 +270,79 @@ export default function StrataCommandCenterPage() {
     if (p.slug) navigate(Routes.strata.scorecardEvidence(p.slug));
   };
 
-  // ── Needs attention rows (one actionable inbox) ────────────────────────────
+  // ── Needs attention rows (server rule engine → drill to owning surface) ────
   const attentionRows: AttentionRow[] = useMemo(() => {
-    const rows: AttentionRow[] = [];
-    exceptions.forEach((line) => {
-      const kpiId = kpiIdByLineId.get(line.line_id) ?? (typeof line.detail?.kpi_id === 'string' ? line.detail.kpi_id : undefined);
-      const kpi = kpiId ? kpiById.get(kpiId) : undefined;
-      rows.push({
-        id: `exception-${line.line_id}`,
-        type: 'Exception',
-        title: kpi?.name ?? '—',
-        context: activePeriod?.name ?? '—',
-        due: null,
-        meta: line.has_data ? `Score ${fmtScore(line.score)}` : null,
-        bandKey: line.status_key,
-        statusLabel: null,
-        statusAppearance: 'default',
-        nav: kpi?.slug ? () => navigate(Routes.strata.kpi(kpi.slug!)) : undefined,
-      });
-    });
-    openDecisions.forEach((d) => {
-      rows.push({
-        id: `decision-${d.id}`,
-        type: 'Decision',
-        title: d.title,
-        context: d.decision_key,
-        due: d.due_date,
-        meta: null,
-        bandKey: null,
-        statusLabel: 'Open',
-        statusAppearance: 'inprogress',
-        nav: () => navigate(Routes.strata.reviews()),
-      });
-    });
-    openActions.forEach((a) => {
-      rows.push({
-        id: `action-${a.id}`,
-        type: 'Action',
-        title: a.title,
-        context: a.action_key,
-        due: a.due_date,
-        meta: null,
-        bandKey: null,
-        statusLabel: a.status === 'in_progress' ? 'In progress' : 'Open',
-        statusAppearance: a.status === 'in_progress' ? 'inprogress' : 'default',
-        nav: () => navigate(Routes.strata.reviews()),
-      });
-    });
-    pendingAttestations.forEach((a) => {
-      const kpi = kpiById.get(a.kpi_id);
-      rows.push({
-        id: `attestation-${a.id}`,
-        type: 'Attestation',
-        title: kpi?.name ?? '—',
-        context: activePeriod?.name ?? '—',
-        due: null,
-        meta: a.submitted_at ? `Submitted ${fmtDate(a.submitted_at)}` : null,
-        bandKey: null,
-        statusLabel: 'Pending validation',
-        statusAppearance: 'moved',
-        nav: () => navigate(Routes.strata.data()),
-      });
-    });
-    pendingAi.forEach((ai) => {
-      rows.push({
-        id: `advisory-${ai.id}`,
-        type: 'Advisory',
-        title: ai.content,
-        context: labelize(ai.use_case),
-        due: null,
-        meta: ai.confidence != null ? `Confidence ${fmtRatioPct(ai.confidence)}` : null,
-        bandKey: null,
-        statusLabel: 'Pending review',
-        statusAppearance: 'new',
-        nav: () => navigate(Routes.strata.reviews()),
-      });
-    });
-    return rows;
-  }, [exceptions, openDecisions, openActions, pendingAttestations, pendingAi, kpiIdByLineId, kpiById, activePeriod, navigate]);
+    /** Each row drills to the surface that owns its entity type. */
+    const navFor = (entityType: string, entityId: string): (() => void) | undefined => {
+      switch (entityType) {
+        case 'kpi': {
+          const slug = kpiById.get(entityId)?.slug;
+          return () => navigate(slug ? Routes.strata.kpi(slug) : Routes.strata.kpis());
+        }
+        case 'benefit':
+        case 'portfolio':
+          return () => navigate(Routes.strata.portfolio());
+        case 'initiative':
+        case 'project_card':
+          return () => navigate(Routes.strata.execution());
+        case 'action':
+        case 'decision':
+          return () => navigate(Routes.strata.reviews());
+        case 'upload_run':
+          return () => navigate(Routes.strata.data());
+        case 'element':
+          return () => navigate(Routes.strata.strategy());
+        default:
+          return undefined;
+      }
+    };
+    return (needsAttentionQ.data ?? []).map((r, i) => ({
+      id: `${r.item_type}-${r.entity_id}-${i}`,
+      itemType: r.item_type,
+      severity: r.severity,
+      entityName: r.entity_name,
+      detail: r.detail,
+      due: r.due_date,
+      nav: navFor(r.entity_type, r.entity_id),
+    }));
+  }, [needsAttentionQ.data, kpiById, navigate]);
 
-  // No silent failures: surface the first failing inbox source.
-  const attentionError = [calcQ, schemesQ, decisionsQ, actionsQ, attestationsQ, aiQ]
-    .map((q) => q.error)
-    .find(Boolean);
+  // No silent failures: surface the failing inbox source.
+  const attentionError = needsAttentionQ.error;
 
   const attentionColumns: Column<AttentionRow>[] = useMemo(() => [
     {
-      id: 'type', label: 'Type', width: 12,
-      cell: ({ row }) => <Lozenge appearance={TYPE_LOZENGE[row.type]}>{row.type}</Lozenge>,
+      id: 'type', label: 'Type', width: 16,
+      cell: ({ row }) => (
+        <Lozenge appearance={SEVERITY_LOZENGE[row.severity] ?? 'default'}>
+          {labelize(row.itemType)}
+        </Lozenge>
+      ),
     },
     {
-      id: 'title', label: 'Item', flex: true,
+      id: 'entity', label: 'Item', width: 20,
       cell: ({ row }) => (
         <span style={{
           fontSize: 'var(--ds-font-size-200)', color: T.text, display: 'block',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
-          {row.title}
+          {row.entityName ?? '—'}
         </span>
       ),
     },
     {
-      id: 'context', label: 'Context', width: 16,
+      id: 'detail', label: 'Detail', flex: true,
       cell: ({ row }) => (
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
-          {row.context}
+        <span style={{
+          fontSize: 'var(--ds-font-size-100)', color: T.subtle, display: 'block',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {row.detail}
         </span>
       ),
     },
     {
-      id: 'due', label: 'Due / Meta', width: 16,
+      id: 'due', label: 'Due', width: 12,
       cell: ({ row }) => row.due ? (
         <span style={{
           fontSize: 'var(--ds-font-size-100)',
@@ -437,19 +352,9 @@ export default function StrataCommandCenterPage() {
         }}>
           {fmtDate(row.due)}
         </span>
-      ) : row.meta ? (
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>{row.meta}</span>
       ) : (
         <span style={{ color: T.subtlest }}>—</span>
       ),
-    },
-    {
-      id: 'status', label: 'Status / Band', width: 14,
-      cell: ({ row }) => row.bandKey
-        ? <StrataBandLozenge bandKey={row.bandKey} />
-        : row.statusLabel
-          ? <Lozenge appearance={row.statusAppearance}>{row.statusLabel}</Lozenge>
-          : <span style={{ color: T.subtlest }}>—</span>,
     },
   ], []);
 
@@ -518,7 +423,7 @@ export default function StrataCommandCenterPage() {
     {
       key: 'attestations',
       label: 'Pending attestations',
-      value: attestationsQ.data ? pendingAttestations.length : '—',
+      value: needsAttentionQ.data ? pendingAttestations.length : '—',
       caption: activePeriod ? `KPI actuals in ${activePeriod.name}` : 'No active period',
       captionTone: pendingAttestations.length > 0 ? 'warning' : 'neutral',
       onClick: () => navigate(Routes.strata.data()),
@@ -658,7 +563,7 @@ export default function StrataCommandCenterPage() {
             <StrataPanel
               title="Needs attention"
               icon={<AlertTriangle size={16} />}
-              count={attentionRows.length}
+              count={needsAttentionQ.isLoading ? null : attentionRows.length}
               noPadding={attentionRows.length > 0}
               testId="strata-cc-needs-attention"
             >
@@ -667,12 +572,14 @@ export default function StrataCommandCenterPage() {
                   <PanelError error={attentionError} />
                 </div>
               ) : null}
-              {attentionRows.length === 0 ? (
+              {needsAttentionQ.isLoading ? (
+                <div aria-hidden style={{ height: 96, borderRadius: 8, background: T.neutral, margin: 16 }} />
+              ) : attentionRows.length === 0 ? (
                 !attentionError ? (
                   <EmptyState
                     size="compact"
                     header="Nothing needs attention — all queues clear."
-                    description="Exceptions, open decisions, actions, attestations and advisories land here."
+                    description="Pending attestations and validations, blocked dependencies, overdue actions and gates, broken assumptions, missing actuals and upload rejections land here."
                   />
                 ) : null
               ) : (

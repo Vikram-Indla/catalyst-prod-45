@@ -17,15 +17,18 @@ import { Routes } from '@/lib/routes';
 import {
   AlertTriangle, CalendarClock, CheckCircle2, Copy, Database, MoveRight, Network, Upload,
 } from '@/lib/atlaskit-icons';
-import { kpiApi } from '@/modules/strata/domain';
+import { kpiApi, lineageApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useInvalidateStrata, useRunDetail, useStrataContext, useUploadRuns,
+  useDataSources, useInvalidateStrata, useRunDetail, useStrataContext, useStrataRoles, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataDecisionModal, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   StrataDataSource, StrataKpiActual, StrataStagingRow, StrataUploadRun, StrataValidationResult,
 } from '@/modules/strata/types';
+
+/** UI affordance gating only — DB RPC guards enforce the real rules (mirrors StrataUploadWizardPage). */
+const INGEST_ROLES = ['data_steward', 'kpi_owner', 'strategy_office', 'strata_admin'] as const;
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
 const SOURCE_STATUS: Record<StrataDataSource['status'], LozengeAppearance> = {
@@ -323,6 +326,28 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
   }, [actualsQ.data, runId]);
   const [attestTarget, setAttestTarget] = useState<{ actual: StrataKpiActual; rowNumber: number } | null>(null);
 
+  // Pipeline actions (validate/promote) — role-gated affordance; RPCs enforce the real guard.
+  const rolesQ = useStrataRoles();
+  const hasIngestRole = (rolesQ.data ?? []).some((r) => (INGEST_ROLES as readonly string[]).includes(r));
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+
+  /** Runs a pipeline RPC; server failure text surfaces verbatim — never swallowed. */
+  const runPipelineAction = async (fn: () => Promise<string>) => {
+    setActionBusy(true);
+    setActionError(null);
+    setActionSuccess(null);
+    try {
+      setActionSuccess(await fn());
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setActionBusy(false);
+      invalidate();
+    }
+  };
+
   if (detail.isLoading) {
     return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="large" /></div>;
   }
@@ -491,7 +516,49 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
             <CatalystTag text={`Template v${run.template_version}`} />
           ) : null}
           <span style={captionStyle}>Started {fmtDateTime(run.started_at)}</span>
+          {hasIngestRole && run.status === 'staging' ? (
+            <Button
+              appearance="primary"
+              spacing="compact"
+              isDisabled={actionBusy}
+              onClick={() => runPipelineAction(async () => {
+                const res = await lineageApi.validateRun(run.id);
+                return `Validation ${labelize(res.status)}: ${res.row_count_valid} valid, ${res.row_count_rejected} rejected.`;
+              })}
+              testId="strata-validate-run"
+            >
+              {actionBusy ? 'Validating…' : 'Validate run'}
+            </Button>
+          ) : null}
+          {hasIngestRole && run.status === 'completed' ? (
+            <Button
+              appearance="primary"
+              spacing="compact"
+              isDisabled={actionBusy}
+              onClick={() => runPipelineAction(async () => {
+                const res = await lineageApi.promoteRun(run.id);
+                return `${res.promoted} actual${res.promoted === 1 ? '' : 's'} written (pending attestation), ${res.skipped} skipped.`;
+              })}
+              testId="strata-promote-run"
+            >
+              {actionBusy ? 'Promoting…' : 'Promote to canonical actuals'}
+            </Button>
+          ) : null}
         </div>
+        {actionSuccess ? (
+          <div style={{ marginTop: 8 }}>
+            <SectionMessage appearance="success" title="Pipeline action complete">
+              <p>{actionSuccess}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+        {actionError ? (
+          <div style={{ marginTop: 8 }}>
+            <SectionMessage appearance="error" title="Pipeline action failed">
+              <p style={{ whiteSpace: 'pre-wrap' }}>{actionError}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginTop: 8 }}>
           <SegmentedCounts raw={run.row_count_raw} valid={run.row_count_valid} rejected={run.row_count_rejected} />
           {run.file_hash ? (

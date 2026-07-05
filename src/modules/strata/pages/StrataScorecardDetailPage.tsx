@@ -128,14 +128,15 @@ export default function StrataScorecardDetailPage() {
     return null;
   };
 
-  /** Line ⓘ → evidence page; carries the line's KPI slug as ?line= context. */
+  /** Line ⓘ → evidence. KPI lines open the KPI evidence page (full chain);
+   *  other line types fall back to the scorecard evidence dossier. */
   const openLineEvidence = (line: StrataScorecardLine) => {
-    if (!instance?.slug) return;
-    const kpiSlug = line.kpi_id ? kpiById.get(line.kpi_id)?.slug ?? null : null;
-    navigate(
-      Routes.strata.scorecardEvidence(instance.slug)
-      + (kpiSlug ? `?line=${encodeURIComponent(kpiSlug)}` : ''),
-    );
+    const kpiSlug = line.ref_type === 'kpi' && line.kpi_id ? kpiById.get(line.kpi_id)?.slug ?? null : null;
+    if (kpiSlug) {
+      navigate(Routes.strata.kpiEvidence(kpiSlug));
+      return;
+    }
+    if (instance?.slug) navigate(Routes.strata.scorecardEvidence(instance.slug));
   };
 
   const recalculate = async () => {

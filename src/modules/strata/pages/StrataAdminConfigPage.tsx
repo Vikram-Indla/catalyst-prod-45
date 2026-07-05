@@ -22,13 +22,14 @@ import {
   BarChart3, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
   MoveRight, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
-import { configApi } from '@/modules/strata/domain';
+import { configApi, governanceApi } from '@/modules/strata/domain';
 import {
   useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
-  usePerspectives, useScorecardModels, useStrataAudit, useStrataRoles, useThresholdSchemes,
-  useUploadTemplates, useValueCategories, useWorkflowConfigs,
+  usePerspectives, useProfileNames, useRoleAssignments, useScorecardModels, useStrataAudit,
+  useStrataRoles, useThresholdSchemes, useUploadTemplates, useValueCategories, useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataRole, StrataScorecardModel,
@@ -533,36 +534,172 @@ const ROLE_COLUMNS: Column<RoleRow>[] = [
   },
 ];
 
-function RolesSection() {
+/** strata_role_assignments row (domain returns untyped rows). */
+interface RoleAssignmentRow {
+  id: string;
+  user_id: string;
+  role: StrataRole;
+  scope_type: string;
+  scope_entity_id: string | null;
+  granted_by: string | null;
+  granted_at: string;
+}
+
+const ASSIGNABLE_ROLES: Array<{ value: string; label: string }> =
+  ROLE_DOCS.map((r) => ({ value: r.role, label: labelize(r.role) }));
+
+function RolesSection({ onError }: { onError: OnError }) {
   const roles = useStrataRoles();
   const mine = roles.data ?? [];
-  const roleRows: RoleRow[] = ROLE_DOCS.map((r) => ({ ...r, assigned: mine.includes(r.role) }));
+  const assignmentsQ = useRoleAssignments();
+  const profilesQ = useProfileNames();
+  const invalidate = useInvalidateStrata();
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  // UI affordance gating only — the RPCs also authorise platform admins
+  // server-side, even without a strata_admin assignment row.
+  const isStrataAdmin = mine.includes('strata_admin');
+  const assignments = (assignmentsQ.data ?? []) as RoleAssignmentRow[];
+  const profileName = (id: string | null): string | null =>
+    id ? profilesQ.data?.get(id)?.name ?? null : null;
+
+  const revoke = async (assignmentId: string) => {
+    setBusyId(assignmentId);
+    onError(null);
+    try {
+      await governanceApi.revokeRole(assignmentId);
+      invalidate();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const assignmentColumns: Column<RoleAssignmentRow>[] = [
+    {
+      id: 'user', label: 'User', flex: true,
+      cell: ({ row }) => {
+        const name = profileName(row.user_id);
+        return name ? <span style={bodyStyle}>{name}</span> : <span style={{ color: T.subtlest }}>—</span>;
+      },
+    },
+    {
+      id: 'role', label: 'Role', width: 18,
+      cell: ({ row }) => <StatusLozenge status={row.role} label={labelize(row.role)} appearance="default" />,
+    },
+    {
+      id: 'scope', label: 'Scope', width: 12,
+      cell: ({ row }) => <span style={metaStyle}>{labelize(row.scope_type)}</span>,
+    },
+    {
+      id: 'granted', label: 'Granted', width: 13,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.granted_at)}</span>,
+    },
+    {
+      id: 'granted-by', label: 'Granted by', width: 15,
+      cell: ({ row }) => {
+        const name = profileName(row.granted_by);
+        return name ? <span style={metaStyle}>{name}</span> : <span style={{ color: T.subtlest }}>—</span>;
+      },
+    },
+    ...(isStrataAdmin ? [{
+      id: 'revoke', label: '', width: 10, align: 'end' as const,
+      cell: ({ row }: { row: RoleAssignmentRow }) => (
+        <Button
+          spacing="compact"
+          appearance="subtle"
+          isDisabled={busyId === row.id}
+          onClick={() => void revoke(row.id)}
+          testId={`strata-admin-revoke-${row.id}`}
+        >
+          Revoke
+        </Button>
+      ),
+    }] : []),
+  ];
+
   return (
-    <StrataPanel title="Roles" icon={<Users size={16} />} count={ROLE_DOCS.length} noPadding testId="strata-admin-roles">
-      <div style={{ padding: '12px 16px 0' }}>
-        <p style={captionStyle}>
-          Segregation of duties: creators cannot approve their own records; submitters cannot validate
-          their own actuals — enforced in the database.
-        </p>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
-          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>Your roles:</span>
-          {roles.isLoading
-            ? <Spinner size="small" />
-            : mine.length > 0
-              ? mine.map((r) => <CatalystTag key={r} text={labelize(r)} />)
-              : <span style={metaStyle}>—</span>}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <StrataPanel
+        title="Role assignments"
+        icon={<Users size={16} />}
+        count={assignments.length}
+        noPadding
+        testId="strata-admin-role-assignments"
+        actions={isStrataAdmin ? (
+          <Button
+            appearance="primary"
+            spacing="compact"
+            onClick={() => setAssignOpen(true)}
+            testId="strata-admin-assign-role"
+          >
+            Assign role
+          </Button>
+        ) : undefined}
+      >
+        <SectionState query={assignmentsQ} empty={assignments.length === 0} emptyLabel="No role assignments">
+          <JiraTable<RoleAssignmentRow>
+            columns={assignmentColumns}
+            data={assignments}
+            getRowId={(r) => r.id}
+            showRowCount={false}
+            ariaLabel="STRATA role assignments"
+          />
+        </SectionState>
+      </StrataPanel>
+
+      <StrataPanel title="Roles" icon={<Users size={16} />} count={ROLE_DOCS.length} noPadding testId="strata-admin-roles">
+        <div style={{ padding: '12px 16px 0' }}>
+          <p style={captionStyle}>
+            Segregation of duties: creators cannot approve their own records; submitters cannot validate
+            their own actuals — enforced in the database.
+          </p>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>Your roles:</span>
+            {roles.isLoading
+              ? <Spinner size="small" />
+              : mine.length > 0
+                ? mine.map((r) => <CatalystTag key={r} text={labelize(r)} />)
+                : <span style={metaStyle}>—</span>}
+          </div>
         </div>
-      </div>
-      <JiraTable<RoleRow>
-        columns={ROLE_COLUMNS}
-        data={roleRows}
-        getRowId={(r) => r.role}
-        showRowCount={false}
-        ariaLabel="STRATA roles"
-      />
-    </StrataPanel>
+        <JiraTable<RoleRow>
+          columns={ROLE_COLUMNS}
+          data={roleRows(mine)}
+          getRowId={(r) => r.role}
+          showRowCount={false}
+          ariaLabel="STRATA roles"
+        />
+      </StrataPanel>
+
+      {isStrataAdmin ? (
+        <StrataFormModal
+          open={assignOpen}
+          onClose={() => setAssignOpen(false)}
+          title="Assign role"
+          description="Grants a STRATA persona role at global scope. Segregation of duties is enforced in the database."
+          fields={[
+            { key: 'user_id', label: 'User', kind: 'user', required: true },
+            { key: 'role', label: 'Role', kind: 'select', required: true, options: ASSIGNABLE_ROLES },
+            { key: 'scope', label: 'Scope', kind: 'text', isDisabled: true, helper: 'Fixed for this release' },
+          ]}
+          initial={{ scope: 'global' }}
+          submitLabel="Assign role"
+          onSubmit={async (v) => {
+            await governanceApi.assignRole(v.user_id as string, v.role as StrataRole, 'global');
+            invalidate();
+          }}
+          testId="strata-admin-assign-role-modal"
+        />
+      ) : null}
+    </div>
   );
 }
+
+const roleRows = (mine: StrataRole[]): RoleRow[] =>
+  ROLE_DOCS.map((r) => ({ ...r, assigned: mine.includes(r.role) }));
 
 const CR_STATUS: Record<StrataChangeRequest['status'], LozengeAppearance> = {
   approved: 'success', rejected: 'removed', pending: 'moved', withdrawn: 'default',
@@ -572,6 +709,7 @@ interface AuditEventRow {
   id: string;
   entity_table: string | null;
   action: string | null;
+  actor_id: string | null;
   created_at: string;
 }
 
@@ -600,30 +738,39 @@ const CR_COLUMNS: Column<StrataChangeRequest>[] = [
   },
 ];
 
-const AUDIT_COLUMNS: Column<AuditEventRow>[] = [
-  {
-    id: 'entity', label: 'Entity', width: 26,
-    cell: ({ row }) => (row.entity_table
-      ? <span style={{ ...codeStyle, color: T.text }}>{row.entity_table}</span>
-      : <span style={{ color: T.subtlest }}>—</span>),
-  },
-  {
-    id: 'action', label: 'Action', flex: true,
-    cell: ({ row }) => (row.action
-      ? <span style={bodyStyle}>{labelize(row.action)}</span>
-      : <span style={{ color: T.subtlest }}>—</span>),
-  },
-  {
-    id: 'at', label: 'At', width: 20,
-    cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(row.created_at)}</span>,
-  },
-];
-
 function ChangeLogSection() {
   const crs = useChangeRequests();
   const audit = useStrataAudit();
+  const profilesQ = useProfileNames();
   const crList = crs.data ?? [];
   const auditList = ((audit.data ?? []) as AuditEventRow[]).slice(0, 20);
+
+  // Actor column resolves actor_id → profile name (dash when null/unknown).
+  const auditColumns: Column<AuditEventRow>[] = [
+    {
+      id: 'entity', label: 'Entity', width: 24,
+      cell: ({ row }) => (row.entity_table
+        ? <span style={{ ...codeStyle, color: T.text }}>{row.entity_table}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
+    },
+    {
+      id: 'action', label: 'Action', flex: true,
+      cell: ({ row }) => (row.action
+        ? <span style={bodyStyle}>{labelize(row.action)}</span>
+        : <span style={{ color: T.subtlest }}>—</span>),
+    },
+    {
+      id: 'actor', label: 'Actor', width: 18,
+      cell: ({ row }) => {
+        const name = row.actor_id ? profilesQ.data?.get(row.actor_id)?.name ?? null : null;
+        return name ? <span style={metaStyle}>{name}</span> : <span style={{ color: T.subtlest }}>—</span>;
+      },
+    },
+    {
+      id: 'at', label: 'At', width: 18,
+      cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(row.created_at)}</span>,
+    },
+  ];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <StrataPanel title="Change requests" icon={<GitBranch size={16} />} count={crList.length} noPadding testId="strata-admin-change-requests">
@@ -639,7 +786,7 @@ function ChangeLogSection() {
       <StrataPanel title="Audit trail" icon={<Clock size={16} />} count={auditList.length} noPadding testId="strata-admin-audit">
         <SectionState query={audit} empty={auditList.length === 0} emptyLabel="No audit events">
           <JiraTable<AuditEventRow>
-            columns={AUDIT_COLUMNS}
+            columns={auditColumns}
             data={auditList}
             getRowId={(ev) => ev.id}
             showRowCount={false}
@@ -666,7 +813,7 @@ const SECTIONS: Array<{
   { key: 'kpi-types', label: 'KPI types', icon: ListChecks, render: (e) => <KpiTypesSection onError={e} /> },
   { key: 'upload-templates', label: 'Upload templates', icon: Upload, render: (e) => <UploadTemplatesSection onError={e} /> },
   { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
-  { key: 'roles', label: 'Roles', icon: Users, render: () => <RolesSection /> },
+  { key: 'roles', label: 'Roles', icon: Users, render: (e) => <RolesSection onError={e} /> },
   { key: 'change-log', label: 'Change log', icon: Clock, render: () => <ChangeLogSection /> },
 ];
 

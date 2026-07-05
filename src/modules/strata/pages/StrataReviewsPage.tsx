@@ -52,6 +52,7 @@ import {
   StrataBandLozenge,
   T,
 } from '@/modules/strata/components/shared';
+import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtDate, fmtDateTime, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { StrataAction, StrataDecision, StrataPeriod, StrataSnapshot } from '@/modules/strata/types';
 
@@ -97,6 +98,16 @@ const CLOSE_STATUS_LOZENGE: Record<StrataPeriod['close_status'], { label: string
   pending_close: { label: 'Pending close', appearance: 'moved' },
   closed: { label: 'Closed', appearance: 'success' },
 };
+
+/** Roles allowed to author decisions/actions — UI affordance only; RPCs enforce for real. */
+const DECISION_AUTHOR_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
+
+const DECISION_TYPE_OPTIONS: Array<{ value: StrataDecision['decision_type']; label: string }> = [
+  { value: 'governance', label: 'Governance' },
+  { value: 'gate', label: 'Gate' },
+  { value: 'escalation', label: 'Escalation' },
+  { value: 'action_only', label: 'Action only' },
+];
 
 const bodyStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: T.text };
 const captionStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', color: T.subtlest };
@@ -335,6 +346,12 @@ export default function StrataReviewsPage() {
   const [lockOpen, setLockOpen] = useState(false);
   const [closeOpen, setCloseOpen] = useState(false);
 
+  // ── Decision/action authoring (Lane G) — RPC-only writes, errors verbatim ──
+  const [newDecisionOpen, setNewDecisionOpen] = useState(false);
+  const [actionTargetId, setActionTargetId] = useState<string | null>(null);
+  const [govError, setGovError] = useState<string | null>(null);
+  const [govBusyId, setGovBusyId] = useState<string | null>(null);
+
   // ── Client-side board-pack generation (Q7: PDF + PPTX; server engine has no channel yet) ──
   const rolesQ = useStrataRoles();
   const invalidate = useInvalidateStrata();
@@ -345,9 +362,28 @@ export default function StrataReviewsPage() {
   React.useEffect(() => { setPackError(null); setPackNote(null); }, [snapshotKey]);
 
   const canLock = !!activeCycle && !!activePeriod;
+  const canAuthor = (rolesQ.data ?? []).some((r) => DECISION_AUTHOR_ROLES.includes(r));
 
   const profileName = (id: string | null | undefined): string | null =>
     id ? profilesQ.data?.get(id)?.name ?? null : null;
+
+  /** Status transitions — server blocks e.g. closing a decision with open actions; error shown verbatim. */
+  const transition = async (
+    kind: 'decision' | 'action',
+    id: string,
+    status: StrataDecision['status'] | StrataAction['status'],
+  ) => {
+    setGovBusyId(id); setGovError(null);
+    try {
+      if (kind === 'decision') await governanceApi.updateDecision(id, { status: status as StrataDecision['status'] });
+      else await governanceApi.updateAction(id, { status: status as StrataAction['status'] });
+      invalidate();
+    } catch (e) {
+      setGovError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setGovBusyId(null);
+    }
+  };
 
   // Decisions taken on THIS snapshot only — never imply unrelated membership.
   const allDecisions = useMemo(() => decisionsQ.data ?? [], [decisionsQ.data]);
@@ -450,6 +486,17 @@ export default function StrataReviewsPage() {
       cell: ({ row }) => <CatalystTag text={labelize(row.entity_type)} />,
     },
     {
+      // Frozen payload carries entity_name for NEW snapshots; older snapshots may
+      // lack it — render a dash then (never the raw entity_id).
+      id: 'entity', label: 'Entity', width: 20,
+      cell: ({ row }) => {
+        const entityName = typeof row.payload?.entity_name === 'string' ? row.payload.entity_name : null;
+        return entityName
+          ? <span style={{ ...bodyStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{entityName}</span>
+          : <span style={{ color: T.subtlest }}>—</span>;
+      },
+    },
+    {
       id: 'metric', label: 'Metric', flex: true,
       cell: ({ row }) => {
         const payloadName = typeof row.payload?.name === 'string' ? row.payload.name : null;
@@ -517,6 +564,40 @@ export default function StrataReviewsPage() {
             <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
               {d.description ?? '—'}
             </p>
+            {canAuthor ? (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                {d.status === 'open' ? (
+                  <Button
+                    spacing="compact"
+                    isDisabled={govBusyId === d.id}
+                    onClick={() => void transition('decision', d.id, 'decided')}
+                    testId={`strata-reviews-decide-${d.decision_key}`}
+                  >
+                    Mark decided
+                  </Button>
+                ) : null}
+                {d.status === 'decided' ? (
+                  <Tooltip content="Blocked by the server while this decision still has open actions">
+                    <Button
+                      spacing="compact"
+                      isDisabled={govBusyId === d.id}
+                      onClick={() => void transition('decision', d.id, 'closed')}
+                      testId={`strata-reviews-close-decision-${d.decision_key}`}
+                    >
+                      Close decision
+                    </Button>
+                  </Tooltip>
+                ) : null}
+                <Button
+                  spacing="compact"
+                  appearance="default"
+                  onClick={() => setActionTargetId(d.id)}
+                  testId={`strata-reviews-new-action-${d.decision_key}`}
+                >
+                  New action
+                </Button>
+              </div>
+            ) : null}
             {evidenceCount > 0 ? (
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
                 {(d.evidence_refs ?? []).map((ref, i) => (
@@ -537,6 +618,21 @@ export default function StrataReviewsPage() {
                     </span>
                     {ownerName ? <span style={{ ...captionStyle, flexShrink: 0 }}>{ownerName}</span> : null}
                     {a.due_date ? <span style={{ ...captionStyle, flexShrink: 0 }}>Due {fmtDate(a.due_date)}</span> : null}
+                    {canAuthor && a.status === 'open' ? (
+                      <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'in_progress')} testId={`strata-reviews-start-${a.action_key}`}>
+                        Start
+                      </Button>
+                    ) : null}
+                    {canAuthor && a.status === 'in_progress' ? (
+                      <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'done')} testId={`strata-reviews-done-${a.action_key}`}>
+                        Done
+                      </Button>
+                    ) : null}
+                    {canAuthor && (a.status === 'open' || a.status === 'in_progress') ? (
+                      <Button spacing="compact" appearance="subtle" isDisabled={govBusyId === a.id} onClick={() => void transition('action', a.id, 'cancelled')} testId={`strata-reviews-cancel-${a.action_key}`}>
+                        Cancel
+                      </Button>
+                    ) : null}
                     <StatusLozenge status={a.status} label={labelize(a.status)} appearance={ACTION_LOZENGE[a.status] ?? 'default'} />
                   </div>
                 );
@@ -707,7 +803,28 @@ export default function StrataReviewsPage() {
                     )}
                   </StrataPanel>
 
-                  <StrataPanel title="Decisions" icon={<FileBarChart size={16} />} count={snapshotDecisions.length} testId="strata-reviews-decisions">
+                  {govError ? (
+                    <SectionMessage appearance="error" title="Governance action rejected">
+                      <p style={{ whiteSpace: 'pre-wrap' }}>{govError}</p>
+                    </SectionMessage>
+                  ) : null}
+
+                  <StrataPanel
+                    title="Decisions"
+                    icon={<FileBarChart size={16} />}
+                    count={snapshotDecisions.length}
+                    testId="strata-reviews-decisions"
+                    actions={canAuthor ? (
+                      <Button
+                        appearance="primary"
+                        spacing="compact"
+                        onClick={() => setNewDecisionOpen(true)}
+                        testId="strata-reviews-new-decision"
+                      >
+                        New decision
+                      </Button>
+                    ) : undefined}
+                  >
                     {snapshotDecisions.length === 0 ? (
                       <EmptyState size="compact" header="No decisions recorded against this snapshot" description="Decisions made on this snapshot's evidence will appear here." />
                     ) : (
@@ -836,6 +953,73 @@ export default function StrataReviewsPage() {
       {activePeriod ? (
         <ClosePeriodModal open={closeOpen} onClose={() => setCloseOpen(false)} period={activePeriod} />
       ) : null}
+
+      {/* ── New decision (Lane G) — server assigns DEC-xxxx; RPC errors render in-modal ── */}
+      {canAuthor ? (
+        <StrataFormModal
+          open={newDecisionOpen}
+          onClose={() => setNewDecisionOpen(false)}
+          title="New decision"
+          description={isDetail && selected
+            ? <>Recorded against snapshot <strong style={{ color: T.text }}>{selected.snapshot_key}</strong>. The decision key is assigned by the server.</>
+            : 'The decision key is assigned by the server.'}
+          fields={[
+            { key: 'title', label: 'Title', kind: 'text', required: true },
+            { key: 'decision_type', label: 'Type', kind: 'select', required: true, options: DECISION_TYPE_OPTIONS },
+            { key: 'forum', label: 'Forum', kind: 'text', placeholder: 'e.g. Quarterly business review' },
+            { key: 'description', label: 'Description', kind: 'textarea' },
+            { key: 'owner_id', label: 'Owner', kind: 'user' },
+            { key: 'due_date', label: 'Due date', kind: 'date' },
+          ]}
+          initial={{ decision_type: 'governance' }}
+          submitLabel="Create decision"
+          onSubmit={async (v) => {
+            await governanceApi.createDecision({
+              title: (v.title as string).trim(),
+              decisionType: v.decision_type as StrataDecision['decision_type'],
+              forum: (v.forum as string | null) || undefined,
+              description: (v.description as string | null) || undefined,
+              ownerId: (v.owner_id as string | null) || undefined,
+              dueDate: (v.due_date as string | null) || undefined,
+              snapshotId: isDetail && selected ? selected.id : undefined,
+            });
+            invalidate();
+          }}
+          testId="strata-reviews-new-decision-modal"
+        />
+      ) : null}
+
+      {/* ── New action on a decision — server assigns ACT-xxxx ── */}
+      {canAuthor && actionTargetId ? (() => {
+        const target = allDecisions.find((d) => d.id === actionTargetId);
+        if (!target) return null;
+        return (
+          <StrataFormModal
+            open
+            onClose={() => setActionTargetId(null)}
+            title={`New action — ${target.decision_key}`}
+            description={<>Follow-up action for <strong style={{ color: T.text }}>{target.title}</strong>. The action key is assigned by the server.</>}
+            fields={[
+              { key: 'title', label: 'Title', kind: 'text', required: true },
+              { key: 'owner_id', label: 'Owner', kind: 'user' },
+              { key: 'due_date', label: 'Due date', kind: 'date' },
+              { key: 'note', label: 'Note', kind: 'textarea' },
+            ]}
+            submitLabel="Create action"
+            onSubmit={async (v) => {
+              await governanceApi.createAction({
+                decisionId: target.id,
+                title: (v.title as string).trim(),
+                ownerId: (v.owner_id as string | null) || undefined,
+                dueDate: (v.due_date as string | null) || undefined,
+                note: (v.note as string | null) || undefined,
+              });
+              invalidate();
+            }}
+            testId="strata-reviews-new-action-modal"
+          />
+        );
+      })() : null}
     </StrataPageShell>
   );
 }

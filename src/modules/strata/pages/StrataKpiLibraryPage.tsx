@@ -12,21 +12,44 @@ import {
   EmptyState, Lozenge, ProgressBar, SectionMessage, Spinner, Textfield, Tooltip,
 } from '@/components/ads';
 import {
-  Activity, ArrowDown, ArrowUp, CheckCircle2, ChevronDown, ChevronRight, Scale, Target,
+  Activity, ArrowDown, ArrowUp, CheckCircle2, ChevronDown, ChevronRight, Plus, Scale, Target,
 } from '@/lib/atlaskit-icons';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrategyElements,
+  useDataSources, useInvalidateStrata, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrataRoles, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataFormModal } from '@/modules/strata/components/authoring';
 import { fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { GovernedStatus, StrataKeyResult, StrataKpi, StrataOkr } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 
 const STALE = 30_000;
+
+/** UI affordance gating only — server RPCs enforce the real role rules (SoD etc.). */
+const CREATE_ROLES = ['strategy_office', 'kpi_owner', 'strata_admin'] as const;
+
+const DIRECTION_OPTIONS = [
+  { value: 'higher_better', label: 'Higher is better' },
+  { value: 'lower_better', label: 'Lower is better' },
+  { value: 'band', label: 'Band' },
+  { value: 'manual', label: 'Manual' },
+];
+const FREQUENCY_OPTIONS = [
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'quarterly', label: 'Quarterly' },
+  { value: 'half_yearly', label: 'Half-yearly' },
+  { value: 'yearly', label: 'Yearly' },
+];
+const ENTRY_METHOD_OPTIONS = [
+  { value: 'upload', label: 'Upload' },
+  { value: 'manual', label: 'Manual' },
+  { value: 'connector', label: 'Connector' },
+];
 
 /** Shape returned by strata_calc_kpi_achievement — rendered verbatim, never recomputed. */
 interface KpiAchievementPayload {
@@ -244,11 +267,12 @@ function KeyResultsList({ okrId }: { okrId: string }) {
 }
 
 /** Accordion row — canonical chrome: chevron icon, hover bg, structured header (S-117). */
-function OkrRow({ okr, objectiveName, isOpen, onToggle }: {
+function OkrRow({ okr, objectiveName, isOpen, onToggle, onAddKeyResult }: {
   okr: StrataOkr;
   objectiveName: string | null;
   isOpen: boolean;
   onToggle: () => void;
+  onAddKeyResult?: () => void;
 }) {
   const [hover, setHover] = useState(false);
   const status = OKR_STATUS_LOZENGE[okr.status];
@@ -292,6 +316,19 @@ function OkrRow({ okr, objectiveName, isOpen, onToggle }: {
       {isOpen ? (
         <div style={{ padding: '0 8px 12px 32px' }}>
           <KeyResultsList okrId={okr.id} />
+          {onAddKeyResult ? (
+            <div style={{ marginTop: 8 }}>
+              <Button
+                appearance="default"
+                spacing="compact"
+                iconBefore={<Plus size={14} />}
+                onClick={onAddKeyResult}
+                testId={`strata-add-kr-${okr.id}`}
+              >
+                Add key result
+              </Button>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -302,7 +339,14 @@ function OkrPanel() {
   const { activeCycle } = useStrataContext();
   const okrsQ = useOkrs();
   const elementsQ = useStrategyElements(activeCycle?.id);
+  const kpisQ = useKpis();
+  const rolesQ = useStrataRoles();
+  const invalidate = useInvalidateStrata();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [newOkrOpen, setNewOkrOpen] = useState(false);
+  const [krOkr, setKrOkr] = useState<StrataOkr | null>(null);
+
+  const canAuthor = (rolesQ.data ?? []).some((r) => (CREATE_ROLES as readonly string[]).includes(r));
 
   const elementNameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -320,7 +364,23 @@ function OkrPanel() {
   const okrs = okrsQ.data ?? [];
 
   return (
-    <StrataPanel title="OKRs" icon={<Target size={16} />} count={okrs.length} testId="strata-okr-panel">
+    <StrataPanel
+      title="OKRs"
+      icon={<Target size={16} />}
+      count={okrs.length}
+      testId="strata-okr-panel"
+      actions={canAuthor ? (
+        <Button
+          appearance="default"
+          spacing="compact"
+          iconBefore={<Plus size={14} />}
+          onClick={() => setNewOkrOpen(true)}
+          testId="strata-new-okr"
+        >
+          New OKR
+        </Button>
+      ) : undefined}
+    >
       {okrsQ.isLoading ? (
         <Spinner size="medium" aria-label="Loading OKRs" />
       ) : okrsQ.isError ? (
@@ -338,10 +398,76 @@ function OkrPanel() {
               objectiveName={okr.objective_element_id ? (elementNameById.get(okr.objective_element_id) ?? null) : null}
               isOpen={expanded.has(okr.id)}
               onToggle={() => toggle(okr.id)}
+              onAddKeyResult={canAuthor ? () => setKrOkr(okr) : undefined}
             />
           ))}
         </div>
       )}
+
+      {/* New OKR — server RPC validates; errors render in-modal */}
+      <StrataFormModal
+        open={newOkrOpen}
+        onClose={() => setNewOkrOpen(false)}
+        title="New OKR"
+        description="Creates a draft OKR in the active cycle."
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true, placeholder: 'OKR objective statement' },
+          { key: 'ownerId', label: 'Owner', kind: 'user' },
+          {
+            key: 'objectiveElementId', label: 'Objective element', kind: 'select',
+            options: (elementsQ.data ?? []).map((e) => ({ value: e.id, label: e.name })),
+            helper: 'Optional link to a strategy objective',
+          },
+        ]}
+        submitLabel="Create OKR"
+        onSubmit={async (v) => {
+          await kpiApi.createOkr({
+            name: String(v.name),
+            cycleId: activeCycle?.id,
+            objectiveElementId: v.objectiveElementId ? String(v.objectiveElementId) : undefined,
+            ownerId: v.ownerId ? String(v.ownerId) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-new-okr-modal"
+      />
+
+      {/* Add key result — server RPC validates; errors render in-modal */}
+      <StrataFormModal
+        open={krOkr !== null}
+        onClose={() => setKrOkr(null)}
+        title={krOkr ? `Add key result · ${krOkr.name}` : 'Add key result'}
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true, placeholder: 'Measurable key result' },
+          {
+            key: 'kpiId', label: 'Linked KPI', kind: 'select',
+            options: (kpisQ.data ?? []).map((k) => ({ value: k.id, label: k.name })),
+            helper: 'Optional governed KPI backing this key result',
+          },
+          { key: 'unit', label: 'Unit', kind: 'text', placeholder: 'e.g. %, days, count' },
+          { key: 'baseline', label: 'Baseline', kind: 'number' },
+          { key: 'target', label: 'Target', kind: 'number' },
+          { key: 'currentValue', label: 'Current value', kind: 'number' },
+          { key: 'direction', label: 'Direction', kind: 'select', options: DIRECTION_OPTIONS },
+        ]}
+        initial={{ direction: 'higher_better' }}
+        submitLabel="Add key result"
+        onSubmit={async (v) => {
+          if (!krOkr) return;
+          await kpiApi.createKeyResult({
+            okrId: krOkr.id,
+            name: String(v.name),
+            kpiId: v.kpiId ? String(v.kpiId) : undefined,
+            unit: v.unit ? String(v.unit) : undefined,
+            baseline: v.baseline != null ? Number(v.baseline) : undefined,
+            target: v.target != null ? Number(v.target) : undefined,
+            currentValue: v.currentValue != null ? Number(v.currentValue) : undefined,
+            direction: v.direction ? String(v.direction) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-add-kr-modal"
+      />
     </StrataPanel>
   );
 }
@@ -361,10 +487,15 @@ export default function StrataKpiLibraryPage() {
   const kpisQ = useKpis();
   const dataSourcesQ = useDataSources();
   const profilesQ = useProfileNames();
+  const rolesQ = useStrataRoles();
+  const invalidate = useInvalidateStrata();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<GovernedStatus | 'all'>('all');
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
+  const [newKpiOpen, setNewKpiOpen] = useState(false);
+
+  const canAuthor = (rolesQ.data ?? []).some((r) => (CREATE_ROLES as readonly string[]).includes(r));
 
   const dataSourceNameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -492,6 +623,17 @@ export default function StrataKpiLibraryPage() {
                     onClick: () => setStatusFilter(o.value),
                   }))}
                 />
+                {canAuthor ? (
+                  <Button
+                    appearance="primary"
+                    spacing="compact"
+                    iconBefore={<Plus size={14} />}
+                    onClick={() => setNewKpiOpen(true)}
+                    testId="strata-new-kpi"
+                  >
+                    New KPI
+                  </Button>
+                ) : null}
               </>
             }
           >
@@ -520,6 +662,34 @@ export default function StrataKpiLibraryPage() {
           <OkrPanel />
         </div>
       )}
+
+      {/* New KPI — draft governed entry; approval is a separate step */}
+      <StrataFormModal
+        open={newKpiOpen}
+        onClose={() => setNewKpiOpen(false)}
+        title="New KPI"
+        description="Creates a draft KPI in the governed dictionary. Approval is a separate governed step."
+        fields={[
+          { key: 'name', label: 'Name', kind: 'text', required: true, placeholder: 'KPI name' },
+          { key: 'unit', label: 'Unit', kind: 'text', placeholder: 'e.g. %, days, count' },
+          { key: 'direction', label: 'Direction', kind: 'select', options: DIRECTION_OPTIONS },
+          { key: 'frequency', label: 'Frequency', kind: 'select', options: FREQUENCY_OPTIONS },
+          { key: 'entryMethod', label: 'Entry method', kind: 'select', options: ENTRY_METHOD_OPTIONS },
+        ]}
+        initial={{ direction: 'higher_better', frequency: 'quarterly', entryMethod: 'upload' }}
+        submitLabel="Create KPI"
+        onSubmit={async (v) => {
+          await kpiApi.createKpi({
+            name: String(v.name),
+            unit: v.unit ? String(v.unit) : undefined,
+            direction: v.direction ? String(v.direction) : undefined,
+            frequency: v.frequency ? String(v.frequency) : undefined,
+            entryMethod: v.entryMethod ? String(v.entryMethod) : undefined,
+          });
+          invalidate();
+        }}
+        testId="strata-new-kpi-modal"
+      />
     </StrataPageShell>
   );
 }

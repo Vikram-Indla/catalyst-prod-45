@@ -27,6 +27,13 @@ No prod. No drawers. No hand-rolled UI. ADS tokens only. No hard-coded perspecti
 categories/workflows. Project Card source-agnostic. Seed data never claimed as proof.
 
 ## Log
-- 04:xx Read both controlling docs in full. Start sequence run (main, clean, no stashes).
-- 04:xx Spawned discovery agents: frontend inventory (routes/API/RPC wiring/UI patterns), DB inventory (tables/RPCs/audit/lineage/RLS/gaps).
-- 04:xx Created branch feat/CAT-STRATA-RECOVERY-20260705; task board 1–10 with lane dependencies.
+- Read both controlling docs in full. Start sequence run (main, clean, no stashes).
+- Spawned discovery agents: frontend inventory (routes/API/RPC wiring/UI patterns), DB inventory (tables/RPCs/audit/lineage/RLS/gaps).
+- Created branch feat/CAT-STRATA-RECOVERY-20260705; task board 1–10 with lane dependencies.
+- Found staging migration-ledger drift: local 140000/140100 unapplied; 29 remote-only versions from other features (NOT repaired — out of scope). Applied 140000 (validate/promote) + 140100 (create RPCs) to staging via hook-verified `supabase db query --linked`, ledger rows recorded at exact file versions. Verified functions live.
+- Wrote 13_RECOVERY_IMPLEMENTATION_MAP.md (Phase 0 exit gate: inventory matches ledger).
+- Authored + applied migration 20260705190000_strata_authoring_write_paths.sql: 51 write RPCs + strata_entity_name/exists helpers + needs-attention rule engine + KPI evidence chain + hardened strata_promote_element (aggregated missing-prereq errors incl. value hypothesis + gate schedule) + strata_lock_snapshot with frozen entity names + gate_instances subject_type += 'element'. All 55 functions verified on staging; ledger row recorded.
+- Extended domain layer (strategyApi/kpiApi/executionApi/valueApi/lineageApi/governanceApi) with every write; new hooks useNeedsAttention/useExecutionLinks/useRoleAssignments/useKpiEvidenceChain; new shared StrataFormModal (components/authoring.tsx — ads primitives + @atlaskit/textarea + DatePicker; server errors verbatim). tsc 183 = baseline, 0 strata. Commit 7daaeed.
+- Fanned out 6 parallel lane agents (A strategy room, B KPI/actuals/upload, C+D execution, E portfolio/VMO, F command center/evidence, G reviews/admin) on disjoint page files; shared layer frozen.
+- Lanes A, B, F, G returned clean (tsc 0 strata, banned-color 0; promote reachability fixed; validate/promote wired with row-level errors; needs-attention rule feed live; decisions/actions/roles/audit-actor/entity-names shipped).
+- Prepared Lane H: rebuild-proof script (PostgREST product-API only, SoD via 2 users, negative tests). Test-user signup rate-limited on staging SMTP; auth fixture writes blocked by policy — retry public signup after window.
