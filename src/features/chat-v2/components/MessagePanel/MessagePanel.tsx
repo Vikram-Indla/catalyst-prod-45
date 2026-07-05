@@ -27,6 +27,7 @@ import { ScheduledEditBanner } from '../DraftsAndSent/ScheduledEditBanner';
 import { ComposerScheduledBanner } from '../DraftsAndSent/ComposerScheduledBanner';
 import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserStatus } from '@/hooks/chat/useUserStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useActiveHuddleIds, useHuddleActions } from '@/hooks/chat/useHuddleData';
@@ -65,6 +66,7 @@ interface MessagePanelProps {
 
 export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, unreadSince, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled, onSeeAllScheduled }: MessagePanelProps) {
   const { user } = useAuth();
+  const { setStatus, clearStatus } = useUserStatus(user?.id ?? null);
   const activeHuddleIds = useActiveHuddleIds();
   const { startOrJoin } = useHuddleActions();
   const onStartHuddle = async () => {
@@ -638,6 +640,20 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
             label: '/huddle',
             hint: 'Start an audio huddle in this conversation',
             run: onStartHuddle,
+          },
+          {
+            id: 'away',
+            kind: 'action',
+            label: '/away',
+            hint: 'Set your status to Away',
+            run: () => setStatus('🟡', 'Away'),
+          },
+          {
+            id: 'active',
+            kind: 'action',
+            label: '/active',
+            hint: 'Clear your status back to Active',
+            run: clearStatus,
           },
         ]}
         attachments={staged.attachments}

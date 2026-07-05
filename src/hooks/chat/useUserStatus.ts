@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { useSupabase } from './useSupabase';
+import { supabase } from '@/integrations/supabase/client';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface UserStatus {
@@ -23,7 +23,7 @@ export interface UserStatus {
 }
 
 export function useUserStatus(userId?: string | null) {
-  const client = useSupabase();
+  const client = supabase;
   const [status, setStatusState] = useState<UserStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
