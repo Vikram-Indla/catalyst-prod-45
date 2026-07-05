@@ -502,27 +502,24 @@ export default function CatalystViewTestCase({
   });
 
   // P1-S10 + L005 (Phase C): real ph_issues picker (id-backed) for the types
-  // the requirement_type CHECK maps cleanly to. The DB CHECK on
-  // tm_requirement_links.requirement_type only accepts
-  //   story | epic | feature | business_request | external
-  // (migration 20260121133047 / bootstrap_full_schema). So Story/Epic/Feature
-  // and Business Request map to their own requirement_type. Task and
-  // Production Incident have NO valid requirement_type value — inserting
-  // 'task'/'incident' would fail the CHECK — so the picker still SEARCHES and
-  // renders them (matching the coverage matrix), but their link is stored via
-  // the 'external' path (external_key + external_title) rather than the
-  // id-backed path. Widening the CHECK to native task/incident types is a
-  // migration owned by another agent (out of scope for this UI slice).
+  // the requirement_type CHECK accepts. The DB CHECK on
+  // tm_requirement_links.requirement_type accepts
+  //   story | epic | feature | business_request | task | incident | external
+  // (task added by migration 20260705021435; defect/incident already present).
+  // Every picker type now maps to its own native requirement_type and is stored
+  // id-backed. Anything unmapped still falls through to the 'external' write
+  // path (never fabricate 'story' for an unknown type).
   const ISSUE_TYPE_TO_REQUIREMENT_TYPE: Record<string, string> = {
     Story: 'story',
     Epic: 'epic',
     Feature: 'feature',
     'Business Request': 'business_request',
+    Task: 'task',
+    'Production Incident': 'incident',
   };
 
-  // Types the picker offers. Story/Epic/Feature/Business Request are stored
-  // id-backed (requirement_type per the map above); Task + Production Incident
-  // fall through to the 'external' write path (see handleAddLink).
+  // Types the picker offers — all stored id-backed via their native
+  // requirement_type per the map above (see handleAddLink).
   const PICKER_ISSUE_TYPES = ['Story', 'Epic', 'Feature', 'Task', 'Business Request', 'Production Incident'];
 
   const loadIssueOptions = useCallback(async (input: string) => {
@@ -555,11 +552,10 @@ export default function CatalystViewTestCase({
     if (!usingIssue && !linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
     setLinkForm(f => ({ ...f, saving: true }));
     try {
-      // L005: only Story/Epic/Feature/Business Request have a valid
-      // requirement_type (CHECK-constrained) and can be stored id-backed.
-      // A picked Task or Production Incident has no mapping → store it via
-      // the 'external' path so the CHECK never rejects the insert (never
-      // fabricate 'story' for a Task, which the old `?? 'story'` did).
+      // L005: every picker type now maps to a native requirement_type and is
+      // stored id-backed (Task→task, Production Incident→incident added
+      // 20260705021435). Only a truly unmapped type falls through to 'external'
+      // (never fabricate 'story', which the old `?? 'story'` did).
       const mappedType = usingIssue
         ? ISSUE_TYPE_TO_REQUIREMENT_TYPE[linkForm.picked!.issue_type]
         : undefined;
