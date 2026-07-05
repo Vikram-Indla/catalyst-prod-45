@@ -121,3 +121,10 @@ slice, stated in-UI). Caught+fixed live: @atlaskit/progress-tracker not installe
 tsc 183 baseline. Feature folder recovered from wiki-branch commit 9ee841b4f (had been swept there) and is
 now versioned ON THIS BRANCH. Remaining backlog (backend/own Plan Lock): upload validation/promote RPC,
 Jira adapter, board-pack + AI engines, create flows, SoD grants, PR #322, dark-mode full sweep.
+
+### Final closure sweep (2026-07-05): dark-mode verification of new surfaces COMPLETE (Command Center
+workbench + upload wizard captured via data-color-mode toggle — flawless token flip, attribute restored);
+PR #322 disposition analysis posted as PR comment (recommend close-as-superseded or rebase — owner's call);
+PR #323 open with board packs + migration artifacts. Session-reachable backlog = EMPTY. Owner-gated:
+PR #323 merge click, staging credential (migrations+SoD grants apply via runbook), Jira/AI service
+credentials, PR #322 decision.
