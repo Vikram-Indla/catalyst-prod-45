@@ -1,0 +1,17 @@
+/**
+ * renderPersonOrDash — zero-assumption identity resolution.
+ *
+ * Per CLAUDE.md "ZERO-ASSUMPTION DATA RENDERING": when a person's identity
+ * cannot be resolved, render nothing (dash / empty / anonymous state) —
+ * never a fabricated placeholder like "Unknown" or "Unknown User" styled
+ * as if it were a real name.
+ *
+ * A real resolvable identifier (full_name, else email) is not fabrication,
+ * so that last-resort chain is preserved. Only the final literal-string
+ * fallback is banned.
+ */
+export function renderPersonOrDash(
+  profile: { full_name?: string | null; email?: string | null } | null | undefined,
+): string | null {
+  return profile?.full_name || profile?.email || null;
+}
