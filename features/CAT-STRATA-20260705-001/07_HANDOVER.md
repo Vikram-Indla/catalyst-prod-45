@@ -1,12 +1,17 @@
 # CAT-STRATA-20260705-001 — Handover
 
-> State handover for next session. **Checkpoint: 2026-07-05, session 003 (D-012 lift shipped — PR #321 open).**
+> State handover for next session. **Checkpoint: 2026-07-05, session 003 — STRATA ON MAIN @ 3cf792749.**
 
 ## Feature Work ID
 CAT-STRATA-20260705-001
 
 ## Status
-PHASE 3 + D-012 executive design lift **COMMITTED (db38e46cd), PUSHED, PR OPEN**: https://github.com/Vikram-Indla/catalyst-prod-45/pull/321 (carries a4e81a8b8 + db38e46cd). 247-item register fully addressed; all gates green.
+PHASE 3 + D-012 lift + D-013 entrypoint wiring **MERGED TO MAIN @ 3cf792749** (core a4e81a8b8 → lift db38e46cd →
+entrypoint 2c3f8c15f → merge w/ main's wiki-restore preserved + CRE duplicate-block dedupe, amended into 3cf7927).
+Route to main: PR #321 was merged early by owner with a "keep main layout" resolution that reverted the nav wiring;
+this session re-merged origin/main into the branch, restored the STRATA wiring (HubSwitcher/SidebarBase), fixed a
+merge-duplicated isCREGovernedType block that boot-crashed the app, verified /strata + /wiki live, and pushed main.
+DRIFT-004 (cwd-reset commit on the wiki branch, fully recovered, zero loss) is in 08_DRIFT_LOG.
 
 ## Branch / HEAD
 - Worktree: `.claude/worktrees/strata-20260705`
@@ -37,11 +42,15 @@ audit:ads:gate all categories = baseline · banned-color grep on module = 0. Vit
 - Deferred slices unchanged: upload wizard, Jira adapter, board packs, AI advisory service, es_* cleanup (DRIFT-003).
 
 ## Next exact actions (ordered)
-1. PR #321 review/merge (owner). Prod migration apply remains a separate owner-approved step after merge.
-2. Second-approver strata_role_assignments for SoD flows; then follow-up slices per TRACEABILITY_MATRIX
-   (upload wizard, Jira adapter, board packs, AI advisory, es_* cleanup DRIFT-003).
-3. ads DropdownMenu wrapper fix is running as its own session (task_b3bb3b50); after it lands, StrataChipMenu
-   can optionally migrate back to the wrapper.
+1. **PROD migration apply (owner-gated, now urgent):** main serves prod Supabase by default and STRATA tables
+   exist only on staging — prod users on /strata see handled query errors until the 7 strata_ migrations + flag
+   are applied to prod (lmqwtldpfacrrlvdnmld) via the staging-first sign-off.
+2. PR #322 (StrataChipMenu → ads DropdownMenu wrapper migration): needs light/dark anchoring screenshots on the
+   4 chip surfaces or owner waiver, AND likely a rebase — main moved (3cf792749 touches shared.tsx).
+3. Second-approver strata_role_assignments for SoD flows.
+4. Evidence debt: empty/loading/error/responsive PNG variant sets per surface.
+5. Follow-up slices per TRACEABILITY_MATRIX: upload wizard, Jira→ProjectCard adapter, board packs (PDF+PPTX),
+   AI advisory service, es_* cleanup (DRIFT-003 — destructive, owner sign-off).
 
 ## RED FLAGS
 None open. (The dropdown mis-anchoring regression found during verification was fixed at source in-session, not patched over.)
