@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Lozenge } from '@/components/ads';
-import { PageHeader } from '@/components/layout/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { Routes } from '@/lib/routes';
 
@@ -65,54 +64,63 @@ export default function WikiHomePage() {
   };
 
   return (
-    <div style={{ padding: 'var(--ds-space-300)', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1120, margin: '0 auto', padding: '48px 40px 96px' }}>
       <style>{`
-        .wiki-workspace-card:hover {
-          border-color: var(--ds-border-bold) !important;
-          box-shadow: var(--ds-shadow-raised);
+        .wiki-ws-card {
+          position: relative;
+          display: flex; gap: 16px; align-items: flex-start;
+          padding: 16px;
+          border: 1px solid var(--ds-border);
+          border-radius: 12px;
+          background: var(--ds-surface);
+          cursor: pointer;
+          transition: transform 140ms cubic-bezier(.2,.7,.3,1), box-shadow 140ms ease, border-color 140ms ease;
         }
-        .wiki-workspace-card:focus-visible {
-          outline: 2px solid var(--ds-border-focused);
-          outline-offset: 1px;
+        .wiki-ws-card:hover { transform: translateY(-3px); box-shadow: var(--ds-shadow-overlay); border-color: var(--ds-border-bold); }
+        .wiki-ws-card:focus-visible { outline: 2px solid var(--ds-border-focused); outline-offset: 2px; }
+        .wiki-ws-glyph {
+          width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--ds-background-neutral);
+        }
+        .wiki-home-search { position: relative; max-width: 460px; }
+        .wiki-home-search svg {
+          position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%);
+          width: 16px; height: 16px; color: var(--ds-icon-subtle); pointer-events: none;
         }
       `}</style>
-      <PageHeader
-        title="Wiki"
-        subtitle="Documentation workspaces for every project and product"
-      />
 
-      <div style={{ maxWidth: 420, margin: '16px 0 24px' }}>
-        <div style={{ position: 'relative' }}>
-          <Search
-            style={{
-              position: 'absolute',
-              insetInlineStart: 10,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 16,
-              height: 16,
-              color: 'var(--ds-icon-subtle)',
-            }}
-          />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Find a workspace"
-            style={{ paddingInlineStart: 34 }}
-            aria-label="Find a workspace"
-          />
-        </div>
+      {/* Premium hero — neutral Notion-scale title (not the olive PageHeader) */}
+      <div style={{ marginBottom: 24 }}>
+        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), Notion-scale hub title */}
+        <h1 style={{ font: 'var(--ds-font-heading-xxlarge)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--ds-text)', margin: 0 }}>
+          Wiki
+        </h1>
+        <p style={{ margin: '6px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-large)' }}>
+          Documentation workspaces for every project and product.
+        </p>
+      </div>
+
+      <div className="wiki-home-search" style={{ marginBottom: 24 }}>
+        <Search />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Find a workspace"
+          style={{ paddingInlineStart: 38 }}
+          aria-label="Find a workspace"
+        />
       </div>
 
       {isLoading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} style={{ height: 110, borderRadius: 8 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} style={{ height: 96, borderRadius: 12 }} />
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <CardContent style={{ padding: 32, textAlign: 'center' }}>
+          <CardContent style={{ padding: 40, textAlign: 'center' }}>
             <FolderOpen style={{ width: 28, height: 28, color: 'var(--ds-icon-subtle)', margin: '0 auto 8px' }} />
             <p style={{ color: 'var(--ds-text)', margin: 0, font: 'var(--ds-font-body)' }}>
               {search ? 'No workspaces match your search' : 'No workspaces yet'}
@@ -123,9 +131,9 @@ export default function WikiHomePage() {
           </CardContent>
         </Card>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
           {filtered.map((w) => (
-            <Card
+            <div
               key={w.id}
               role="button"
               tabIndex={0}
@@ -133,64 +141,47 @@ export default function WikiHomePage() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') openWorkspace(w);
               }}
-              className="wiki-workspace-card"
-              style={{ cursor: 'pointer', transition: 'border-color 120ms ease, box-shadow 120ms ease' }}
+              className="wiki-ws-card"
             >
-              <CardContent style={{ padding: 16, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <div
-                  aria-hidden
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 6,
-                    background: 'var(--ds-background-neutral)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  {w.icon ? (
-                    <span style={{ font: 'var(--ds-font-heading-small)' }}>{w.icon}</span>
-                  ) : (
-                    <FileText style={{ width: 18, height: 18, color: 'var(--ds-icon-subtle)' }} />
+              <div className="wiki-ws-glyph" aria-hidden>
+                {w.icon ? (
+                  <span style={{ font: 'var(--ds-font-heading-medium)' }}>{w.icon}</span>
+                ) : (
+                  <FileText style={{ width: 20, height: 20, color: 'var(--ds-icon-subtle)' }} />
+                )}
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                  <span
+                    style={{
+                      font: 'var(--ds-font-heading-xsmall)',
+                      color: 'var(--ds-text)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {w.name}
+                  </span>
+                  {w.container_type && CONTAINER_LABEL[w.container_type] && (
+                    <Lozenge appearance="default">{CONTAINER_LABEL[w.container_type]}</Lozenge>
                   )}
                 </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span
-                      style={{
-                        font: 'var(--ds-font-heading-xsmall)',
-                        color: 'var(--ds-text)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {w.name}
-                    </span>
-                    {w.container_type && CONTAINER_LABEL[w.container_type] && (
-                      <Lozenge appearance="default">{CONTAINER_LABEL[w.container_type]}</Lozenge>
-                    )}
-                  </div>
-                  {w.description ? (
-                    <p
-                      style={{
-                        margin: '4px 0 0',
-                        color: 'var(--ds-text-subtle)',
-                        font: 'var(--ds-font-body-small)',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {w.description}
-                    </p>
-                  ) : null}
-                </div>
-              </CardContent>
-            </Card>
+                <p
+                  style={{
+                    margin: 0,
+                    color: 'var(--ds-text-subtle)',
+                    font: 'var(--ds-font-body-small)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {w.description || `${CONTAINER_LABEL[w.container_type ?? ''] ?? 'Workspace'} documentation`}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
       )}
