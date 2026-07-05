@@ -677,7 +677,26 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         <DropdownMenu
           aria-label="Page actions"
           placement="bottom-end"
-          trigger="Actions"
+          trigger={() => (
+            <button
+              type="button"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '4px 10px',
+                border: '1px solid var(--ds-border)',
+                borderRadius: 6,
+                background: 'var(--ds-surface)',
+                color: 'var(--ds-text)',
+                font: 'var(--ds-font-body-small)',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              Actions ▾
+            </button>
+          )}
           shouldRenderToParent={false}
           groups={[
             {
