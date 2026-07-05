@@ -3,25 +3,28 @@
  * Routes: /strata/data and /strata/data/runs/:runKey.
  * UI renders DB/RPC values only — no business logic computed here.
  */
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
-  Button, CatalystTag, EmptyState, Heading, IconButton, SectionMessage, Spinner, Tooltip,
+  Button, CatalystTag, EmptyState, IconButton, SectionMessage, Spinner, Tooltip,
 } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { Routes } from '@/lib/routes';
 import {
-  AlertTriangle, CalendarClock, CheckCircle2, ChevronLeft, Copy, Database, MoveRight, Network, Upload,
+  AlertTriangle, CalendarClock, CheckCircle2, Copy, Database, MoveRight, Network, Upload,
 } from '@/lib/atlaskit-icons';
-import { useDataSources, useRunDetail, useUploadRuns } from '@/modules/strata/hooks/useStrata';
-import { StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import { kpiApi } from '@/modules/strata/domain';
+import {
+  useDataSources, useInvalidateStrata, useRunDetail, useStrataContext, useUploadRuns,
+} from '@/modules/strata/hooks/useStrata';
+import { StrataDecisionModal, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
-  StrataDataSource, StrataStagingRow, StrataUploadRun, StrataValidationResult,
+  StrataDataSource, StrataKpiActual, StrataStagingRow, StrataUploadRun, StrataValidationResult,
 } from '@/modules/strata/types';
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
@@ -235,7 +238,7 @@ function RunsPanel() {
       id: 'run', label: 'Run', width: 13, sortable: true,
       accessor: (r) => r.run_key,
       cell: ({ row: r }) => (
-        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.brandText, whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', fontWeight: 600, color: T.brandText, whiteSpace: 'nowrap' }}>
           {r.run_key}
         </span>
       ),
@@ -244,7 +247,10 @@ function RunsPanel() {
       id: 'file', label: 'File / channel', flex: true,
       accessor: (r) => r.file_name ?? r.channel,
       cell: ({ row: r }) => (
-        <span style={{ ...bodyStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+        <span style={{
+          ...bodyStyle, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block',
+        }}>
           {r.file_name ?? labelize(r.channel)}
         </span>
       ),
@@ -292,6 +298,30 @@ type RunDetailQuery = ReturnType<typeof useRunDetail>;
 
 function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetailQuery }) {
   const navigate = useNavigate();
+  const { activePeriod } = useStrataContext();
+  const invalidate = useInvalidateStrata();
+  const runId = detail.data?.run.id ?? null;
+
+  // Attestation applies to strata_kpi_actuals (not staging rows). There is no
+  // by-run domain API, so actuals are fetched for the governed ACTIVE period
+  // and matched to this run via upload_run_id + staging_row_id. Actuals this
+  // run wrote into other periods are not attestable from this view.
+  const actualsQ = useQuery({
+    queryKey: ['strata', 'kpi-actuals-period', activePeriod?.id],
+    queryFn: () => kpiApi.actualsForPeriod(activePeriod!.id),
+    enabled: !!activePeriod && !!runId,
+    staleTime: 30_000,
+  });
+  const pendingActualByStagingId = useMemo(() => {
+    const m = new Map<string, StrataKpiActual>();
+    ((actualsQ.data ?? []) as StrataKpiActual[]).forEach((a) => {
+      if (runId && a.upload_run_id === runId && a.validation_status === 'pending' && a.staging_row_id) {
+        m.set(a.staging_row_id, a);
+      }
+    });
+    return m;
+  }, [actualsQ.data, runId]);
+  const [attestTarget, setAttestTarget] = useState<{ actual: StrataKpiActual; rowNumber: number } | null>(null);
 
   if (detail.isLoading) {
     return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="large" /></div>;
@@ -382,6 +412,25 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
         />
       ),
     },
+    // Attest action — only when this run has pending KPI actuals to govern.
+    ...(pendingActualByStagingId.size > 0
+      ? [{
+          id: 'attest', label: 'Attestation', width: 11,
+          cell: ({ row: r }) => {
+            const actual = pendingActualByStagingId.get(r.id);
+            if (!actual) return <span style={{ color: T.subtlest }}>—</span>;
+            return (
+              <Button
+                spacing="compact"
+                onClick={() => setAttestTarget({ actual, rowNumber: r.row_number })}
+                testId={`strata-attest-row-${r.row_number}`}
+              >
+                Attest
+              </Button>
+            );
+          },
+        } satisfies Column<StrataStagingRow>]
+      : []),
   ];
 
   const errorColumns: Column<StrataValidationResult>[] = [
@@ -433,15 +482,9 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="strata-run-detail">
-      {/* Back link + run header */}
+      {/* Run meta — breadcrumb + shell title carry the run key; no back row */}
       <div>
-        <div style={{ marginBottom: 4 }}>
-          <Button appearance="subtle" spacing="compact" iconBefore={<ChevronLeft size={14} />} onClick={() => navigate(Routes.strata.data())}>
-            Data pipeline
-          </Button>
-        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <Heading as="h2" size="medium">{run.run_key}</Heading>
           <StatusLozenge status={run.status} label={labelize(run.status)} appearance={runStatusAppearance(run.status)} />
           <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{run.file_name ?? labelize(run.channel)}</span>
           {run.template_version != null ? (
@@ -526,6 +569,30 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
           />
         )}
       </StrataPanel>
+
+      {/* Governed attestation verdict — RPC-only; SoD errors render in-modal */}
+      <StrataDecisionModal
+        open={attestTarget !== null}
+        onClose={() => setAttestTarget(null)}
+        title={attestTarget ? `Attest row ${attestTarget.rowNumber}` : 'Attest'}
+        description="Records a governed verdict on the KPI actual written by this run. Segregation of duties is enforced in the database."
+        options={[
+          { value: 'validated', label: 'Validate' },
+          { value: 'rejected', label: 'Reject', appearance: 'danger' },
+          { value: 'quarantined', label: 'Quarantine' },
+        ]}
+        confirmLabel="Record verdict"
+        onConfirm={async (verdict, note) => {
+          if (!attestTarget) return;
+          await kpiApi.attestActual(
+            attestTarget.actual.id,
+            verdict as 'validated' | 'rejected' | 'quarantined',
+            note || undefined,
+          );
+          invalidate();
+        }}
+        testId="strata-attest-modal"
+      />
     </div>
   );
 }
@@ -537,19 +604,21 @@ export default function StrataDataPipelinePage() {
   const detail = useRunDetail(runKey);
 
   return (
-    <PageContainer variant="wide">
-      <StrataPageChrome
-        icon={<Database size={20} />}
-        title="Data Pipeline"
-        description="Upload, validation and lineage — every number traces to a run."
-        actions={
-          <Tooltip content="Upload wizard ships in the next slice">
-            <Button appearance="primary" iconBefore={<Upload size={14} />} isDisabled>
-              Upload data
-            </Button>
-          </Tooltip>
-        }
-      />
+    <StrataPageShell
+      trail={runKey ? [
+        { text: 'Data pipeline', href: Routes.strata.data() },
+        { text: runKey },
+      ] : undefined}
+      docTitle={runKey ?? undefined}
+      headerActions={
+        <Tooltip content="Upload wizard ships in the next slice">
+          <Button appearance="primary" iconBefore={<Upload size={14} />} isDisabled>
+            Upload data
+          </Button>
+        </Tooltip>
+      }
+      testId="strata-data-pipeline-chrome"
+    >
       <PipelineStepper run={runKey ? detail.data?.run ?? null : null} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {runKey ? (
@@ -561,6 +630,6 @@ export default function StrataDataPipelinePage() {
           </>
         )}
       </div>
-    </PageContainer>
+    </StrataPageShell>
   );
 }

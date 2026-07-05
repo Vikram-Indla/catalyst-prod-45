@@ -17,25 +17,24 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { Routes } from '@/lib/routes';
 import {
-  CheckCircle2, ChevronDown, FileBarChart, Gem, Info, ListChecks, ShieldCheck, Wallet,
+  CheckCircle2, FileBarChart, Gem, Info, ListChecks, ShieldCheck, Wallet,
 } from '@/lib/atlaskit-icons';
 import { valueApi } from '@/modules/strata/domain';
 import { StrataChipMenu,
-  StrataBandBar, StrataPageChrome, StrataPanel, StrataStatStrip, T, useEvidenceDrawer,
+  StrataBandBar, StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
 import {
   fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, fmtUnit, labelize,
 } from '@/modules/strata/components/format';
 import {
   useAssumptions, useBenefitRealization, useBenefits, useBenefitValues, useCalcValues,
-  useGateInstances, useGateModels, usePortfolios, useProfileNames, useStrataContext,
-  useValueAtRisk, useValueCategories,
+  useGateInstances, useGateModels, useInvalidateStrata, usePortfolios, useProfileNames,
+  useStrataContext, useValueAtRisk, useValueCategories,
 } from '@/modules/strata/hooks/useStrata';
 import type {
-  StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateModelStage,
+  StrataAssumption, StrataBenefit, StrataBenefitValue, StrataGateInstance, StrataGateModelStage,
 } from '@/modules/strata/types';
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
@@ -147,6 +146,13 @@ interface ProfileRow {
 function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; isFirst: boolean }) {
   const navigate = useNavigate();
   const { periods } = useStrataContext();
+  const invalidate = useInvalidateStrata();
+  /** Governance verdict modal — decide gate / validate benefit value. */
+  const [decision, setDecision] = useState<
+    | { kind: 'gate'; gate: StrataGateInstance; stage: StrataGateModelStage }
+    | { kind: 'validate-value'; id: string; label: string }
+    | null
+  >(null);
   const valuesQ = useBenefitValues(benefit.id);
   const assumptionsQ = useAssumptions(benefit.id);
   const gatesQ = useGateInstances();
@@ -202,6 +208,16 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
                 label={labelize(v.validation_status)}
                 appearance={VALIDATION_STATUS[v.validation_status] ?? 'default'}
               />
+            ) : null}
+            {v.validation_status === 'pending' ? (
+              <Button
+                appearance="default"
+                spacing="compact"
+                onClick={() => setDecision({ kind: 'validate-value', id: v.id, label: `${labelize(kind)} · ${row.periodName}` })}
+                testId={`strata-validate-value-${v.id}`}
+              >
+                Validate
+              </Button>
             ) : null}
           </span>
         );
@@ -373,13 +389,18 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
                     ) : null}
                   </div>
                   {isOpen && stage && stage.decision_options.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                         {stage.decision_options.map((opt) => <CatalystTag key={opt} text={labelize(opt)} />)}
                       </div>
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
-                        Decisions are made in review forums.
-                      </span>
+                      <Button
+                        appearance="primary"
+                        spacing="compact"
+                        onClick={() => setDecision({ kind: 'gate', gate, stage })}
+                        testId={`strata-gate-decide-${gate.id}`}
+                      >
+                        Decide
+                      </Button>
                     </div>
                   ) : null}
                 </div>
@@ -388,6 +409,45 @@ function BenefitDetailSection({ benefit, isFirst }: { benefit: StrataBenefit; is
           </div>
         )}
       </StrataPanel>
+
+      {/* Governance verdict modals — verdicts are governed per-stage config;
+          the RPC rejects anything outside stage.decision_options + enforces SoD. */}
+      <StrataDecisionModal
+        open={decision?.kind === 'gate'}
+        onClose={() => setDecision(null)}
+        title={`Decide gate · ${decision?.kind === 'gate' ? decision.stage.name : ''}`}
+        description="The verdict options come from the governed gate model. The subject owner cannot decide their own gate."
+        options={decision?.kind === 'gate'
+          ? decision.stage.decision_options.map((opt) => ({
+              value: opt,
+              label: labelize(opt),
+              appearance: opt === 'stop' || opt === 'reject' ? 'danger' as const : undefined,
+            }))
+          : []}
+        confirmLabel="Record decision"
+        onConfirm={async (verdict, note) => {
+          if (decision?.kind !== 'gate') return;
+          await valueApi.decideGate(decision.gate.id, verdict, note || undefined);
+          invalidate();
+        }}
+        testId="strata-gate-decide-modal"
+      />
+      <StrataDecisionModal
+        open={decision?.kind === 'validate-value'}
+        onClose={() => setDecision(null)}
+        title={`Validate value · ${decision?.kind === 'validate-value' ? decision.label : ''}`}
+        description="Realized values require independent validation — the submitter cannot validate their own value."
+        options={[
+          { value: 'validated', label: 'Validate' },
+          { value: 'rejected', label: 'Reject', appearance: 'danger' },
+        ]}
+        onConfirm={async (verdict, note) => {
+          if (decision?.kind !== 'validate-value') return;
+          await valueApi.validateBenefitValue(decision.id, verdict as 'validated' | 'rejected', note || undefined);
+          invalidate();
+        }}
+        testId="strata-validate-value-modal"
+      />
     </div>
   );
 }
@@ -408,7 +468,6 @@ export default function StrataPortfolioVmoPage() {
   const varQ = useValueAtRisk(portfolio?.id);
   const calcValuesQ = useCalcValues(portfolio ? 'portfolio' : undefined, portfolio?.id);
   const profilesQ = useProfileNames();
-  const evidence = useEvidenceDrawer();
 
   const benefits = portfolio ? (benefitsQ.data ?? []) : [];
   const categories = categoriesQ.data ?? [];
@@ -500,15 +559,19 @@ export default function StrataPortfolioVmoPage() {
     />
   ) : null;
 
-  return (
-    <PageContainer variant="wide">
-      <StrataPageChrome
-        icon={<Wallet size={20} />}
-        title="Portfolio / VMO"
-        description={portfolio?.name}
-        actions={portfolioSwitcher}
-      />
+  // Benefit deep-link (/strata/portfolio/benefits/:slug) gets an entity trail;
+  // the portfolio index renders without one.
+  const trailBenefit = slug ? benefits.find((b) => b.slug === slug) ?? null : null;
 
+  return (
+    <StrataPageShell
+      trail={trailBenefit
+        ? [{ text: 'Portfolio & VMO', href: Routes.strata.portfolio() }, { text: trailBenefit.name }]
+        : undefined}
+      docTitle={trailBenefit ? trailBenefit.name : 'Portfolio / VMO'}
+      headerActions={portfolioSwitcher}
+      testId="strata-portfolio-chrome"
+    >
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
           <Spinner size="large" aria-label="Loading portfolio" />
@@ -546,11 +609,14 @@ export default function StrataPortfolioVmoPage() {
                 bandKey: varQ.data?.status_key,
                 caption: varQ.isLoading ? 'Loading…' : (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                    <Info size={12} /> Server-calculated · View evidence
+                    <Info size={12} /> {portfolio.slug ? 'Server-calculated · View evidence' : 'Server-calculated'}
                   </span>
                 ),
                 captionTone: varQ.isLoading ? 'neutral' : 'danger',
-                onClick: () => evidence.open('Value at Risk', calcValuesQ.data ?? []),
+                // Evidence page needs a slug route — never navigate to /null/
+                onClick: portfolio.slug
+                  ? () => navigate(Routes.strata.portfolioEvidence(portfolio.slug!))
+                  : undefined,
                 testId: 'strata-stat-var',
               },
               {
@@ -608,10 +674,8 @@ export default function StrataPortfolioVmoPage() {
               isFirst={selectedBenefit.id === (benefits[0]?.id ?? null)}
             />
           ) : null}
-
-          {evidence.drawer}
         </>
       )}
-    </PageContainer>
+    </StrataPageShell>
   );
 }

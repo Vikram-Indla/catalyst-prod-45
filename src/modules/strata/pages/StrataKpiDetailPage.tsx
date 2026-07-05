@@ -15,19 +15,18 @@ import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
 import {
-  Activity, ChevronRight, Database, GitBranch, Info, Target, Users,
+  Activity, Database, GitBranch, Info, Users,
 } from '@/lib/atlaskit-icons';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useCalcValues, useKpiAchievement, useKpiBySlug, useKpiDetail, useProfileNames, useStrataContext, useUploadRuns,
+  useInvalidateStrata, useKpiAchievement, useKpiBySlug, useKpiDetail, useProfileNames, useStrataContext, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataPageChrome, StrataPanel, StrataStatStrip, T, useEvidenceDrawer,
+  StrataDecisionModal, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
 import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import { StrataGovernedStatusLozenge } from '@/modules/strata/pages/StrataKpiLibraryPage';
@@ -124,11 +123,17 @@ export default function StrataKpiDetailPage() {
   const kpi = kpiQ.data ?? null;
   const detailQ = useKpiDetail(kpi?.id);
   const achievementQ = useKpiAchievement(kpi?.id, activePeriod?.id);
-  const calcValuesQ = useCalcValues('kpi', kpi?.id);
   const uploadRunsQ = useUploadRuns();
   const profilesQ = useProfileNames();
-  const evidence = useEvidenceDrawer();
+  const invalidate = useInvalidateStrata();
   const [showTrendData, setShowTrendData] = useState(false);
+  /** Governance verdict modal — one at a time (approve KPI / approve formula / attest actual). */
+  const [decision, setDecision] = useState<
+    | { kind: 'approve-kpi' }
+    | { kind: 'approve-formula'; id: string; label: string }
+    | { kind: 'attest'; id: string; label: string }
+    | null
+  >(null);
 
   const commentaryQ = useQuery({
     queryKey: ['strata', 'commentary', 'kpi', kpi?.id],
@@ -232,36 +237,55 @@ export default function StrataKpiDetailPage() {
       id: 'validated_at', label: 'Validated at', width: 16,
       cell: ({ row }) => (row.validated_at ? <span style={{ color: T.subtle }}>{fmtDateTime(row.validated_at)}</span> : <Dash />),
     },
+    {
+      id: 'validation', label: 'Validation', width: 16,
+      cell: ({ row }) => (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <ValidationLozenge status={row.validation_status} />
+          {row.validation_status === 'pending' ? (
+            <Button
+              appearance="default"
+              spacing="compact"
+              onClick={() => setDecision({ kind: 'attest', id: row.id, label: periodById.get(row.period_id)?.name ?? '—' })}
+              testId={`strata-attest-${row.id}`}
+            >
+              Attest
+            </Button>
+          ) : null}
+        </span>
+      ),
+    },
   ], [periodById, runKeyById, navigate, kpi?.unit]);
 
   // ── Loading / error / not-found states ────────────────────────────────────
+  const stateTrail = [{ text: 'KPI library', href: Routes.strata.kpis() }];
   if (kpiQ.isLoading) {
     return (
-      <PageContainer variant="wide">
+      <StrataPageShell trail={stateTrail} testId="strata-kpi-detail-chrome">
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
           <Spinner size="large" aria-label="Loading KPI" />
         </div>
-      </PageContainer>
+      </StrataPageShell>
     );
   }
   if (kpiQ.isError) {
     return (
-      <PageContainer variant="wide">
+      <StrataPageShell trail={stateTrail} testId="strata-kpi-detail-chrome">
         <SectionMessage appearance="error" title="Failed to load KPI">
           <p>{(kpiQ.error as Error)?.message ?? 'Unknown error'}</p>
         </SectionMessage>
-      </PageContainer>
+      </StrataPageShell>
     );
   }
   if (!kpi) {
     return (
-      <PageContainer variant="wide">
+      <StrataPageShell trail={stateTrail} testId="strata-kpi-detail-chrome">
         <EmptyState
           header="KPI not found"
           description={`No KPI exists with slug "${slug ?? ''}".`}
           primaryAction={<Button appearance="primary" onClick={() => navigate(Routes.strata.kpis())}>Back to KPI library</Button>}
         />
-      </PageContainer>
+      </StrataPageShell>
     );
   }
 
@@ -277,40 +301,42 @@ export default function StrataKpiDetailPage() {
   ].filter(Boolean).join(' ');
 
   return (
-    <PageContainer variant="wide">
-      {/* (a) breadcrumb-like subtle back row (S-151) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
-        <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.kpis())}>
-          KPI library
-        </Button>
-        <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)' }}><ChevronRight size={12} /></span>
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{kpi.name}</span>
-      </div>
-
-      <StrataPageChrome
-        icon={<Target size={20} />}
-        title={kpi.name}
-        description={kpi.description ?? undefined}
-        testId="strata-kpi-detail-chrome"
-        actions={
-          <Button
-            appearance="default"
-            iconBefore={<Info size={14} />}
-            onClick={() => evidence.open(kpi.name, calcValuesQ.data ?? [])}
-            isDisabled={calcValuesQ.isLoading}
-          >
-            Evidence
-          </Button>
-        }
-        extra={
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-            <StrataGovernedStatusLozenge status={kpi.status} />
-            {kpi.unit ? <CatalystTag text={kpi.unit} /> : null}
-            <CatalystTag text={DIRECTION_LABEL[kpi.direction] ?? labelize(kpi.direction)} />
-            {kpi.frequency ? <CatalystTag text={labelize(kpi.frequency)} /> : null}
-          </span>
-        }
-      />
+    <StrataPageShell
+      trail={[{ text: 'KPI library', href: Routes.strata.kpis() }, { text: kpi.name }]}
+      docTitle={kpi.name}
+      testId="strata-kpi-detail-chrome"
+      headerActions={
+        <>
+          {kpi.slug ? (
+            <Button
+              appearance="default"
+              iconBefore={<Info size={14} />}
+              onClick={() => navigate(Routes.strata.kpiEvidence(kpi.slug!))}
+              testId="strata-kpi-evidence"
+            >
+              Evidence
+            </Button>
+          ) : null}
+          {kpi.status === 'pending_approval' ? (
+            <Button
+              appearance="primary"
+              onClick={() => setDecision({ kind: 'approve-kpi' })}
+              testId="strata-kpi-approve"
+            >
+              Approve KPI
+            </Button>
+          ) : null}
+        </>
+      }
+      extra={
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+          <StrataGovernedStatusLozenge status={kpi.status} />
+          {kpi.unit ? <CatalystTag text={kpi.unit} /> : null}
+          <CatalystTag text={DIRECTION_LABEL[kpi.direction] ?? labelize(kpi.direction)} />
+          {kpi.frequency ? <CatalystTag text={labelize(kpi.frequency)} /> : null}
+        </span>
+      }
+    >
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* (b) hero — achievement ring + trend spark FIRST (S-147, S-150) */}
@@ -434,6 +460,16 @@ export default function StrataKpiDetailPage() {
                     <Lozenge appearance="inprogress" isBold>{`v${f.version}`}</Lozenge>
                     <CatalystTag text={labelize(f.formula_type)} />
                     <StrataGovernedStatusLozenge status={f.status} />
+                    {f.status === 'pending_approval' ? (
+                      <Button
+                        appearance="default"
+                        spacing="compact"
+                        onClick={() => setDecision({ kind: 'approve-formula', id: f.id, label: `v${f.version}` })}
+                        testId={`strata-formula-approve-${f.id}`}
+                      >
+                        Approve
+                      </Button>
+                    ) : null}
                     <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, marginLeft: 'auto' }}>
                       Effective from {fmtDate(f.effective_from)} · Approved {fmtDate(f.approved_at)}
                     </span>
@@ -513,7 +549,51 @@ export default function StrataKpiDetailPage() {
         </StrataPanel>
       </div>
 
-      {evidence.drawer}
-    </PageContainer>
+      {/* Governance verdict modals — RPC-enforced SoD; errors render in-modal */}
+      <StrataDecisionModal
+        open={decision?.kind === 'approve-kpi'}
+        onClose={() => setDecision(null)}
+        title="Approve KPI"
+        description={`Approve “${kpi.name}” for governed use. Segregation of duties is enforced by the server.`}
+        options={[{ value: 'approved', label: 'Approve' }]}
+        confirmLabel="Approve"
+        onConfirm={async (_verdict, note) => {
+          await kpiApi.approveKpi(kpi.id, note || undefined);
+          invalidate();
+        }}
+        testId="strata-kpi-approve-modal"
+      />
+      <StrataDecisionModal
+        open={decision?.kind === 'approve-formula'}
+        onClose={() => setDecision(null)}
+        title={`Approve formula ${decision?.kind === 'approve-formula' ? decision.label : ''}`}
+        description="Approving activates this formula version for the calc engine."
+        options={[{ value: 'approved', label: 'Approve' }]}
+        confirmLabel="Approve"
+        onConfirm={async (_verdict, note) => {
+          if (decision?.kind !== 'approve-formula') return;
+          await kpiApi.approveFormulaVersion(decision.id, note || undefined);
+          invalidate();
+        }}
+        testId="strata-formula-approve-modal"
+      />
+      <StrataDecisionModal
+        open={decision?.kind === 'attest'}
+        onClose={() => setDecision(null)}
+        title={`Attest actual · ${decision?.kind === 'attest' ? decision.label : ''}`}
+        description="Validation verdicts are recorded with full audit lineage. The submitter cannot attest their own value."
+        options={[
+          { value: 'validated', label: 'Validate' },
+          { value: 'rejected', label: 'Reject', appearance: 'danger' },
+          { value: 'quarantined', label: 'Quarantine' },
+        ]}
+        onConfirm={async (verdict, note) => {
+          if (decision?.kind !== 'attest') return;
+          await kpiApi.attestActual(decision.id, verdict as 'validated' | 'rejected' | 'quarantined', note || undefined);
+          invalidate();
+        }}
+        testId="strata-attest-modal"
+      />
+    </StrataPageShell>
   );
 }

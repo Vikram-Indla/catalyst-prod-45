@@ -4,6 +4,7 @@
  * and renders data-state labels from these hooks — no local business math.
  */
 import React, { createContext, useContext, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -28,7 +29,11 @@ interface StrataContextValue {
 
 const StrataContext = createContext<StrataContextValue | null>(null);
 
+/** URL-safe period token ("Q2 FY2026" → "q2-fy2026") — bookmarkable context. */
+const periodToken = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 export function StrataProvider({ children }: { children: React.ReactNode }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [cycleOverride, setCycleOverride] = useState<string | null>(null);
   const [periodOverride, setPeriodOverride] = useState<string | null>(null);
 
@@ -78,12 +83,34 @@ export function StrataProvider({ children }: { children: React.ReactNode }) {
     );
   }, [periods, periodOverride, instancesQ.data]);
 
+  // ?period= makes the governed context bookmarkable (route-first canon).
+  // Invalid/absent token → default logic above (zero-assumption).
+  React.useEffect(() => {
+    const token = searchParams.get('period');
+    if (!token || periodOverride || periods.length === 0) return;
+    const match = periods.find((p) => periodToken(p.name) === token);
+    if (match) setPeriodOverride(match.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [periods, searchParams]);
+
+  const setActivePeriodId = React.useCallback((id: string) => {
+    setPeriodOverride(id);
+    const p = periods.find((x) => x.id === id);
+    if (p) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('period', periodToken(p.name));
+        return next;
+      }, { replace: true });
+    }
+  }, [periods, setSearchParams]);
+
   const value = useMemo<StrataContextValue>(() => ({
     cycles, periods, activeCycle, activePeriod,
     setActiveCycleId: setCycleOverride,
-    setActivePeriodId: setPeriodOverride,
+    setActivePeriodId,
     isLoading: cyclesQ.isLoading || periodsQ.isLoading,
-  }), [cycles, periods, activeCycle, activePeriod, cyclesQ.isLoading, periodsQ.isLoading]);
+  }), [cycles, periods, activeCycle, activePeriod, setActivePeriodId, cyclesQ.isLoading, periodsQ.isLoading]);
 
   return <StrataContext.Provider value={value}>{children}</StrataContext.Provider>;
 }
@@ -262,6 +289,43 @@ export const useDependencies = () =>
   useQuery({ queryKey: ['strata', 'dependencies'], queryFn: executionApi.dependencies, staleTime: STALE });
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────
+export const usePortfolioBySlug = (slug?: string) =>
+  useQuery({
+    queryKey: ['strata', 'portfolio', slug],
+    queryFn: () => valueApi.portfolioBySlug(slug!),
+    enabled: !!slug,
+    staleTime: STALE,
+  });
+
+/** Enterprise score per period across the cycle — server-calculated history only. */
+export function useEnterpriseScoreTrend(cycleId?: string) {
+  const instancesQ = useScorecardInstances(cycleId);
+  const instances = instancesQ.data ?? [];
+  const ids = instances.map((i) => i.id);
+  return useQuery({
+    queryKey: ['strata', 'enterprise-trend', cycleId, ids.join(',')],
+    queryFn: async () => {
+      const values = await lineageApi.calcValuesForEntities('scorecard_instance', ids);
+      // newest first — keep the latest 'score' row per instance
+      const latestByInstance = new Map<string, (typeof values)[number]>();
+      values.forEach((v) => {
+        if (v.metric_key !== 'score') return;
+        if (!latestByInstance.has(v.entity_id)) latestByInstance.set(v.entity_id, v);
+      });
+      return instances
+        .map((inst) => {
+          const v = latestByInstance.get(inst.id);
+          return v && v.value != null
+            ? { instanceId: inst.id, periodId: inst.period_id, score: Number(v.value), statusKey: v.status_key ?? null, slug: inst.slug ?? null }
+            : null;
+        })
+        .filter((p): p is NonNullable<typeof p> => p != null);
+    },
+    enabled: ids.length > 0,
+    staleTime: STALE,
+  });
+}
+
 export const usePortfolios = () =>
   useQuery({ queryKey: ['strata', 'portfolios'], queryFn: valueApi.portfolios, staleTime: STALE });
 export const useBenefits = (portfolioId?: string) =>

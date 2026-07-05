@@ -10,17 +10,16 @@ import {
   Button, CatalystTag, EmptyState, IconButton,
   Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner,
 } from '@/components/ads';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { Routes } from '@/lib/routes';
 import {
-  ChevronDown, ChevronRight, Flag, Gem, GitBranch, Layers, MoveRight, Network, Target, X,
+  ChevronDown, ChevronRight, Flag, Gem, GitBranch, MoveRight, Network, Target, X,
 } from '@/lib/atlaskit-icons';
 import {
   useElementKpis, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
   usePlayCharters, useProfileNames, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi } from '@/modules/strata/domain';
-import { StrataChipMenu, StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import type { StrataMenuOption } from '@/modules/strata/components/shared';
 import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import type { StrataStrategyElement } from '@/modules/strata/types';
@@ -202,7 +201,7 @@ export default function StrataStrategyRoomPage() {
           <TypeChip type={el.element_type} />
           <span
             style={{
-              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text,
+              fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', fontWeight: 600, color: T.text,
               flex: '1 1 auto', minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}
           >
@@ -283,20 +282,60 @@ export default function StrataStrategyRoomPage() {
     </span>
   );
 
+  const showData = !isLoading && !elementsQ.isError && !!activeCycle && elements.length > 0;
+
+  const filters = (
+    <>
+      {filterControl(
+        'Type',
+        typeFilter,
+        typeFilter ? labelize(typeFilter) : null,
+        () => setTypeFilter(null),
+        [
+          { key: 'all', label: 'All', isSelected: typeFilter === null, onClick: () => setTypeFilter(null) },
+          ...distinctTypes.map((t) => ({
+            key: t, label: labelize(t), isSelected: typeFilter === t, onClick: () => setTypeFilter(t),
+          })),
+        ],
+      )}
+      {filterControl(
+        'Status',
+        statusFilter,
+        statusFilter ? labelize(statusFilter) : null,
+        () => setStatusFilter(null),
+        [
+          { key: 'all', label: 'All', isSelected: statusFilter === null, onClick: () => setStatusFilter(null) },
+          ...distinctStatuses.map((s) => ({
+            key: s, label: labelize(s), isSelected: statusFilter === s, onClick: () => setStatusFilter(s),
+          })),
+        ],
+      )}
+      {filterControl(
+        'Perspective',
+        perspectiveFilter,
+        perspectiveFilter ? perspectiveName(perspectiveFilter) : null,
+        () => setPerspectiveFilter(null),
+        [
+          { key: 'all', label: 'All', isSelected: perspectiveFilter === null, onClick: () => setPerspectiveFilter(null) },
+          ...perspectives.map((p) => ({
+            key: p.id, label: p.name, isSelected: perspectiveFilter === p.id, onClick: () => setPerspectiveFilter(p.id),
+          })),
+        ],
+      )}
+    </>
+  );
+
   return (
-    <PageContainer variant="wide">
+    <StrataPageShell
+      headerActions={
+        <Button appearance="primary" onClick={() => navigate(Routes.strata.strategyMap())}>
+          Open Strategy Map
+        </Button>
+      }
+      toolbarActions={showData ? filters : undefined}
+      testId="strata-strategy-room-chrome"
+    >
       <style>{TREE_CSS}</style>
-      <StrataPageChrome
-        icon={<Layers size={20} />}
-        title="Strategy Room"
-        description="Strategy hierarchy, KPI coverage and cause & effect for the active cycle"
-        actions={
-          <Button appearance="primary" onClick={() => navigate(Routes.strata.strategyMap())}>
-            Open Strategy Map
-          </Button>
-        }
-        testId="strata-strategy-room-chrome"
-      />
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
@@ -316,46 +355,6 @@ export default function StrataStrategyRoomPage() {
         />
       ) : (
         <>
-          {/* Toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-            {filterControl(
-              'Type',
-              typeFilter,
-              typeFilter ? labelize(typeFilter) : null,
-              () => setTypeFilter(null),
-              [
-                { key: 'all', label: 'All', isSelected: typeFilter === null, onClick: () => setTypeFilter(null) },
-                ...distinctTypes.map((t) => ({
-                  key: t, label: labelize(t), isSelected: typeFilter === t, onClick: () => setTypeFilter(t),
-                })),
-              ],
-            )}
-            {filterControl(
-              'Status',
-              statusFilter,
-              statusFilter ? labelize(statusFilter) : null,
-              () => setStatusFilter(null),
-              [
-                { key: 'all', label: 'All', isSelected: statusFilter === null, onClick: () => setStatusFilter(null) },
-                ...distinctStatuses.map((s) => ({
-                  key: s, label: labelize(s), isSelected: statusFilter === s, onClick: () => setStatusFilter(s),
-                })),
-              ],
-            )}
-            {filterControl(
-              'Perspective',
-              perspectiveFilter,
-              perspectiveFilter ? perspectiveName(perspectiveFilter) : null,
-              () => setPerspectiveFilter(null),
-              [
-                { key: 'all', label: 'All', isSelected: perspectiveFilter === null, onClick: () => setPerspectiveFilter(null) },
-                ...perspectives.map((p) => ({
-                  key: p.id, label: p.name, isSelected: perspectiveFilter === p.id, onClick: () => setPerspectiveFilter(p.id),
-                })),
-              ],
-            )}
-          </div>
-
           {promoteError ? (
             <div style={{ marginBottom: 16 }}>
               <SectionMessage appearance="error" title="Promotion blocked">
@@ -508,6 +507,6 @@ export default function StrataStrategyRoomPage() {
           </Modal>
         </>
       )}
-    </PageContainer>
+    </StrataPageShell>
   );
 }

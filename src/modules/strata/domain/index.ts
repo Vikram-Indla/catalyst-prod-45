@@ -217,6 +217,8 @@ export const executionApi = {
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────
 export const valueApi = {
+  portfolioBySlug: (slug: string): Promise<StrataPortfolio | null> =>
+    run(typedQuery('strata_portfolios').select('*').eq('slug', slug).maybeSingle()),
   portfolios: (): Promise<StrataPortfolio[]> =>
     run(typedQuery('strata_portfolios').select('*').order('name')),
   memberships: (portfolioId: string) =>
@@ -251,6 +253,18 @@ export const valueApi = {
 
 // ── Lineage ──────────────────────────────────────────────────────────────────
 export const lineageApi = {
+  /** Batched calc-value history for many entities (one .in() query). */
+  calcValuesForEntities: (entityType: string, entityIds: string[]): Promise<StrataCalculatedValue[]> =>
+    entityIds.length === 0
+      ? Promise.resolve([])
+      : run(
+          typedQuery('strata_calculated_values')
+            .select('*')
+            .eq('entity_type', entityType)
+            .in('entity_id', entityIds)
+            .order('calculated_at', { ascending: false })
+            .limit(500),
+        ),
   dataSources: (): Promise<StrataDataSource[]> =>
     run(typedQuery('strata_data_sources').select('*').order('name')),
   uploadRuns: (): Promise<StrataUploadRun[]> =>

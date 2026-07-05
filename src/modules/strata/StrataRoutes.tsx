@@ -20,6 +20,7 @@ const PortfolioVmoPage = lazy(() => import('./pages/StrataPortfolioVmoPage'));
 const DataPipelinePage = lazy(() => import('./pages/StrataDataPipelinePage'));
 const ReviewsPage = lazy(() => import('./pages/StrataReviewsPage'));
 const AdminConfigPage = lazy(() => import('./pages/StrataAdminConfigPage'));
+const EvidencePage = lazy(() => import('./pages/StrataEvidencePage'));
 
 const S = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
@@ -38,12 +39,15 @@ export function StrataRoutesShell() {
         <Route path="strategy/map" element={<S><StrategyMapPage /></S>} />
         <Route path="scorecards" element={<S><ScorecardsPage /></S>} />
         <Route path="scorecards/:slug" element={<S><ScorecardDetailPage /></S>} />
+        <Route path="scorecards/:slug/evidence" element={<S><EvidencePage /></S>} />
         <Route path="kpis" element={<S><KpiLibraryPage /></S>} />
         <Route path="kpis/:slug" element={<S><KpiDetailPage /></S>} />
+        <Route path="kpis/:slug/evidence" element={<S><EvidencePage /></S>} />
         <Route path="execution" element={<S><ExecutionPage /></S>} />
         <Route path="execution/:slug" element={<S><ExecutionPage /></S>} />
         <Route path="portfolio" element={<S><PortfolioVmoPage /></S>} />
         <Route path="portfolio/benefits/:slug" element={<S><PortfolioVmoPage /></S>} />
+        <Route path="portfolio/:slug/evidence" element={<S><EvidencePage /></S>} />
         <Route path="data" element={<S><DataPipelinePage /></S>} />
         <Route path="data/runs/:runKey" element={<S><DataPipelinePage /></S>} />
         <Route path="reviews" element={<S><ReviewsPage /></S>} />

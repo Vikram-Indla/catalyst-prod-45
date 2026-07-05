@@ -14,18 +14,18 @@ import type { Connection, Edge, Node } from '@xyflow/react';
 // ads-scanner:ignore-next-line — @xyflow canvas library stylesheet, third-party requirement (no ADS equivalent, probed 2026-07-05)
 import '@xyflow/react/dist/style.css';
 import {
-  Button, DropdownItem, DropdownItemGroup, DropdownMenu, CatalystDrawer, EmptyState,
+  Button, DropdownItem, DropdownItemGroup, DropdownMenu, EmptyState,
   Heading, IconButton, Lozenge, SectionMessage, Spinner,
 } from '@/components/ads';
-import { PageContainer } from '@/components/shared/PageContainer';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Routes } from '@/lib/routes';
-import { Flag, Gem, Map as MapIcon, Target, X } from '@/lib/atlaskit-icons';
+import { Flag, Gem, Target, X } from '@/lib/atlaskit-icons';
 import {
   useElementKpis, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
   usePlayCharters, useProfileNames, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi } from '@/modules/strata/domain';
-import { StrataPageChrome, T } from '@/modules/strata/components/shared';
+import { StrataPageShell, T } from '@/modules/strata/components/shared';
 import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import type { StrataStrategyElement } from '@/modules/strata/types';
 
@@ -309,19 +309,13 @@ export default function StrataStrategyMapPage() {
   const isLoading = contextLoading || elementsQ.isLoading || edgesQ.isLoading;
 
   return (
-    <PageContainer variant="wide">
+    <StrataPageShell
+      trail={[{ text: 'Strategy room', href: Routes.strata.strategy() }, { text: 'Map' }]}
+      title="Strategy Map"
+      docTitle="Strategy Map"
+      testId="strata-strategy-map-chrome"
+    >
       <style>{FLOW_CSS}</style>
-      <StrataPageChrome
-        icon={<MapIcon size={20} />}
-        title="Strategy Map"
-        description="Cause & effect canvas across themes, plays and objectives in the active cycle"
-        actions={
-          <Button appearance="subtle" onClick={() => navigate(Routes.strata.strategy())}>
-            Back to Strategy Room
-          </Button>
-        }
-        testId="strata-strategy-map-chrome"
-      />
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
@@ -420,14 +414,19 @@ export default function StrataStrategyMapPage() {
             </DropdownMenu>
           </div>
 
-          {/* Canvas */}
+          {/* Canvas + docked inspector split.
+              Height offset re-derived for StrataPageShell chrome: breadcrumb header
+              (~52) + shell title row (~40) + context toolbar block (~65) + filters
+              row (~40) + legend (~36) + page bottom padding (~24) ≈ 260. */}
+          <div style={{ height: 'calc(100vh - 260px)', minHeight: 480 }}>
+          <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel id="strata-map-canvas-panel" order={1} defaultSize={74} minSize={40}>
           <div
             data-testid="strata-map-canvas"
             className="strata-flow"
             style={{
               position: 'relative',
-              height: 'calc(100vh - 240px)',
-              minHeight: 480,
+              height: '100%',
               background: T.sunken,
               border: `1px solid ${T.border}`,
               borderRadius: 8,
@@ -462,59 +461,23 @@ export default function StrataStrategyMapPage() {
               </div>
             ) : null}
           </div>
+          </ResizablePanel>
 
-          {/* Legend */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
-            {legendPerspectives.map((p) => (
-              <span
-                key={p.id}
+          {/* Inspector — docked resizable panel; renders only with a selection
+              (no selection = canvas full width, no empty dock) */}
+          {selected ? (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel id="strata-map-inspector-panel" order={2} defaultSize={26} minSize={22}>
+              <div
+                data-testid="strata-map-inspector"
+                role="complementary"
+                aria-label={`Inspector: ${selected.name}`}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap',
+                  height: '100%', overflowY: 'auto', marginLeft: 8, padding: 16,
+                  background: T.raised, border: `1px solid ${T.border}`, borderRadius: 8,
                 }}
               >
-                <span aria-hidden style={{
-                  width: 10, height: 10, borderRadius: 2, flexShrink: 0,
-                  background: perspectiveTone.get(p.id) ?? T.border,
-                }} />
-                {p.name}
-              </span>
-            ))}
-            {legendPerspectives.length > 0 && relationshipTypes.length > 0 ? (
-              <span aria-hidden style={{ alignSelf: 'stretch', borderLeft: `1px solid ${T.border}` }} />
-            ) : null}
-            {relationshipTypes.length > 0
-              ? relationshipTypes.map((t) => (
-                <span
-                  key={t}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                    fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap',
-                  }}
-                >
-                  <EdgeSwatch />
-                  {labelize(t)}
-                </span>
-              ))
-              : <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>No relationship links yet</span>}
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap',
-            }}>
-              <EdgeSwatch dashed />
-              Strong links animate (confidence 85%+)
-            </span>
-          </div>
-
-          {/* Inspector */}
-          <CatalystDrawer
-            isOpen={selected !== null}
-            onClose={() => setSelectedId(null)}
-            width="medium"
-            label={selected ? `Inspector: ${selected.name}` : 'Inspector'}
-          >
-            {selected ? (
-              <div data-testid="strata-map-inspector" style={{ padding: '0 24px 24px 0' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, minWidth: 0 }}>
                     {SelectedIcon ? (
@@ -627,10 +590,56 @@ export default function StrataStrategyMapPage() {
                   ))
                 )}
               </div>
-            ) : <div />}
-          </CatalystDrawer>
+              </ResizablePanel>
+            </>
+          ) : null}
+          </ResizablePanelGroup>
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
+            {legendPerspectives.map((p) => (
+              <span
+                key={p.id}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap',
+                }}
+              >
+                <span aria-hidden style={{
+                  width: 10, height: 10, borderRadius: 2, flexShrink: 0,
+                  background: perspectiveTone.get(p.id) ?? T.border,
+                }} />
+                {p.name}
+              </span>
+            ))}
+            {legendPerspectives.length > 0 && relationshipTypes.length > 0 ? (
+              <span aria-hidden style={{ alignSelf: 'stretch', borderLeft: `1px solid ${T.border}` }} />
+            ) : null}
+            {relationshipTypes.length > 0
+              ? relationshipTypes.map((t) => (
+                <span
+                  key={t}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap',
+                  }}
+                >
+                  <EdgeSwatch />
+                  {labelize(t)}
+                </span>
+              ))
+              : <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>No relationship links yet</span>}
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap',
+            }}>
+              <EdgeSwatch dashed />
+              Strong links animate (confidence 85%+)
+            </span>
+          </div>
         </>
       )}
-    </PageContainer>
+    </StrataPageShell>
   );
 }

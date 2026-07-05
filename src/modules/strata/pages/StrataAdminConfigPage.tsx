@@ -17,11 +17,10 @@ import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { Routes } from '@/lib/routes';
 import {
   BarChart3, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
-  MoveRight, Scale, Settings2, ShieldCheck, Upload, Users,
+  MoveRight, Scale, ShieldCheck, Upload, Users,
 } from '@/lib/atlaskit-icons';
 import { configApi } from '@/modules/strata/domain';
 import {
@@ -29,7 +28,7 @@ import {
   usePerspectives, useScorecardModels, useStrataAudit, useStrataRoles, useThresholdSchemes,
   useUploadTemplates, useValueCategories, useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataRole, StrataScorecardModel,
@@ -517,7 +516,7 @@ const ROLE_COLUMNS: Column<RoleRow>[] = [
     id: 'role', label: 'Role', width: 24,
     cell: ({ row }) => (
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-        <span style={{ ...bodyStyle, fontWeight: 500 }}>{labelize(row.role)}</span>
+        <span style={{ ...bodyStyle, fontWeight: 500, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>{labelize(row.role)}</span>
         <span style={codeStyle}>{row.role}</span>
       </span>
     ),
@@ -678,14 +677,19 @@ export default function StrataAdminConfigPage() {
 
   const idx = SECTIONS.findIndex((s) => s.key === section);
   const selected = idx >= 0 ? idx : 0;
+  // Deep-linked section (/strata/admin/:section) is a detail sub-view — the
+  // breadcrumb carries "Administration / <Section>"; bare /strata/admin is index.
+  const sectionEntry = section && idx >= 0 ? SECTIONS[idx] : null;
 
   return (
-    <PageContainer variant="wide">
-      <StrataPageChrome
-        icon={<Settings2 size={20} />}
-        title="Configuration Engine"
-        description="Versioned, approved and audited configuration."
-      />
+    <StrataPageShell
+      trail={sectionEntry ? [
+        { text: 'Administration', href: Routes.strata.admin() },
+        { text: sectionEntry.label },
+      ] : undefined}
+      docTitle={sectionEntry ? `${sectionEntry.label} · Administration` : undefined}
+      testId="strata-admin-chrome"
+    >
       <Tabs
         id="strata-admin-tabs"
         selected={selected}
@@ -719,6 +723,6 @@ export default function StrataAdminConfigPage() {
           </TabPanel>
         ))}
       </Tabs>
-    </PageContainer>
+    </StrataPageShell>
   );
 }
