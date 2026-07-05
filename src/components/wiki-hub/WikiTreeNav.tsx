@@ -6,7 +6,6 @@
  */
 import { useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft } from '@/lib/atlaskit-icons';
 import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
@@ -92,39 +91,35 @@ export function WikiTreeNav() {
 
   return (
     <div style={{ padding: '4px 8px 0' }}>
-      <button
-        type="button"
-        onClick={() => navigate(Routes.wiki.root())}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-          border: 'none',
-          background: 'transparent',
-          color: 'var(--ds-text-subtle)',
-          font: 'var(--ds-font-body-small)',
-          cursor: 'pointer',
-          padding: '4px 6px',
-          borderRadius: 6,
-        }}
-      >
-        <ChevronLeft style={{ width: 14, height: 14 }} /> All workspaces
-      </button>
-
+      {/* "All workspaces" back-link removed (Vikram 2026-07-06) — the
+          workspace NAME is the way back to the hub home instead. */}
       {wsLoading || !workspace ? (
         <div style={{ padding: '6px' }}>
           <Skeleton style={{ height: 18, width: 140, borderRadius: 4 }} />
         </div>
       ) : (
         <div style={{ padding: '6px 6px 8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => navigate(Routes.wiki.root())}
+            title="Back to all workspaces"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              border: 'none',
+              background: 'transparent',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+          >
             {workspace.icon ? (
               <span aria-hidden style={{ font: 'var(--ds-font-heading-small)' }}>{workspace.icon}</span>
             ) : null}
             <span style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
               {workspace.name}
             </span>
-          </div>
+          </button>
           <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
             {CONTAINER_LABEL[workspace.container_type] ?? 'Workspace'}
           </p>

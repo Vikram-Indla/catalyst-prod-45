@@ -15,7 +15,7 @@ import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
 import { useWikiWorkspaces, useWorkspaceContainerMeta } from '@/hooks/useWiki';
 import { Routes } from '@/lib/routes';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { getProductAvatarUrl } from '@/components/icons';
+import { getProductAvatarUrl, HUB_ICON_REGISTRY } from '@/components/icons';
 
 interface WikiSidebarProps {
   expanded: boolean;
@@ -35,8 +35,15 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
 
   const config: SidebarConfig = useMemo(() => {
     if (inWorkspace) {
-      // Minimal config — the tree is injected as children below.
-      return { badge: 'DX', label: 'Docex', sections: [] };
+      // Minimal config — the tree is injected as children below. The hub's
+      // canonical icon replaces the text badge (Vikram 2026-07-06: no
+      // duplicate "Docex" labels; the pretty hub icon belongs here).
+      return {
+        badge: 'DX',
+        label: 'Docex',
+        badgeHubIconUrl: HUB_ICON_REGISTRY.docex,
+        sections: [],
+      };
     }
 
     const byType = (type: string) => (workspaces ?? []).filter((w) => w.container_type === type);
@@ -74,6 +81,7 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
     return {
       badge: 'DX',
       label: 'Docex',
+      badgeHubIconUrl: HUB_ICON_REGISTRY.docex,
       sections: [
         {
           title: 'Docex',

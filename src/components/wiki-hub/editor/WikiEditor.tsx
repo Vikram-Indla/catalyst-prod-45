@@ -16,7 +16,7 @@
  * The `@` suggestion menu searches wiki pages in the current workspace and
  * catalyst_issues work items, inserting the matching inline chip.
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { BlockNoteView } from '@blocknote/mantine';
 import {
   SuggestionMenuController,
@@ -107,7 +107,11 @@ export default function WikiEditor({
     [initialContent, collab],
   );
 
-  useMemo(() => {
+  // useEffect, NOT useMemo: onReady triggers parent setState — calling it
+  // during render throws "Cannot update a component while rendering" and
+  // can corrupt other render-phase state applications (live-debugged
+  // 2026-07-06 alongside the Actions-popover positioning failure).
+  useEffect(() => {
     if (editor && onReady) onReady(editor as unknown as BlockNoteEditor);
   }, [editor, onReady]);
 

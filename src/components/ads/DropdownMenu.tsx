@@ -41,6 +41,14 @@ export interface DropdownMenuProps {
   /** Advanced — direct JSX composition. Use groups first. */
   children?: ReactNode;
   placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
+  /**
+   * Default true (renders into the trigger's parent). Set FALSE when the
+   * trigger lives inside a `position: sticky` ancestor — popper's transform
+   * never applies there and the menu paints at viewport (0,0) (live-debugged
+   * 2026-07-06 on the Docex page header). Portaling to body positions
+   * correctly regardless of the ancestor chain.
+   */
+  shouldRenderToParent?: boolean;
   /** Minimum width of the menu. */
   minWidth?: number;
   isLoading?: boolean;
@@ -53,6 +61,7 @@ export function DropdownMenu({
   groups,
   children,
   placement = 'bottom-start',
+  shouldRenderToParent = true,
   minWidth,
   isLoading,
   testId,
@@ -69,7 +78,7 @@ export function DropdownMenu({
           : trigger
       }
       placement={placement}
-      shouldRenderToParent
+      shouldRenderToParent={shouldRenderToParent}
       spacing="compact"
       isLoading={isLoading}
       testId={testId}

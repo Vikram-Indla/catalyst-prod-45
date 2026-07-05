@@ -20,11 +20,14 @@ import {
   useToggleFavorite,
   useSaveVersion,
   useDuplicatePage,
+  useWorkspaceContainerMeta,
   WIKI_CONFLICT,
   type WikiPage,
   type WikiPageSummary,
   type WikiWorkspace,
 } from '@/hooks/useWiki';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { getProductAvatarUrl } from '@/components/icons';
 import { WikiEditorBoundary } from './editor/WikiEditorBoundary';
 import { DocexVersionHistory } from './DocexVersionHistory';
 import { blocksToText } from './editor/blocksToText';
@@ -98,6 +101,35 @@ export interface WikiPageSurfaceProps {
   page: WikiPage;
   /** Flat tree summaries — used to build ancestor breadcrumbs. */
   treePages: WikiPageSummary[];
+}
+
+/** The workspace crumb's canonical project/product icon — the SAME
+ *  resolution ContextSwitcher/the sidebar use, so the trail matches
+ *  Project Hub exactly (Vikram 2026-07-06 breadcrumb feedback). */
+function WorkspaceCrumbIcon({ workspace }: { workspace: WikiWorkspace }) {
+  const { data: meta } = useWorkspaceContainerMeta();
+  if (workspace.container_type === 'project' && workspace.container_id) {
+    return (
+      <ProjectIcon
+        size="xsmall"
+        projectKey={meta?.projectKeyById.get(workspace.container_id)}
+        name={workspace.name}
+      />
+    );
+  }
+  if (workspace.container_type === 'product' && workspace.container_id) {
+    const product = meta?.productById.get(workspace.container_id);
+    return (
+      <ProjectIcon
+        size="xsmall"
+        projectKey={product?.code}
+        avatarUrl={product?.code ? getProductAvatarUrl(product.code) : undefined}
+        color={product?.color}
+        name={workspace.name}
+      />
+    );
+  }
+  return null;
 }
 
 export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceProps) {
@@ -447,9 +479,16 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       chain.unshift(cur);
       cur = cur.parent_id ? byId.get(cur.parent_id) : undefined;
     }
+    // Canonical trail (Vikram 2026-07-06): no "Docex" prefix — the hub is
+    // already the context; the workspace crumb carries its CANONICAL
+    // project/product icon (same resolution as Project Hub / the sidebar).
     return [
-      { key: 'docex', text: 'Docex', href: Routes.docex.root() },
-      { key: workspace.id, text: workspace.name, href: Routes.wiki.workspace(workspace.slug) },
+      {
+        key: workspace.id,
+        text: workspace.name,
+        href: Routes.wiki.workspace(workspace.slug),
+        iconBefore: <WorkspaceCrumbIcon workspace={workspace} />,
+      },
       ...chain.map((c) => ({
         key: c.id,
         text: c.title || 'Untitled',
@@ -639,6 +678,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           aria-label="Page actions"
           placement="bottom-end"
           trigger="Actions"
+          shouldRenderToParent={false}
           groups={[
             {
               key: 'export',
@@ -677,7 +717,9 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         className="wiki-cover wiki-no-print"
         style={{
           position: 'relative',
-          height: page.cover_url ? 200 : 96,
+          // No cover = no dead band above the title: the page starts at the
+          // top of the viewport (Vikram 2026-07-06 — title was mid-screen).
+          height: page.cover_url ? 200 : 0,
           marginTop: 8,
           ...(page.cover_url
             ? { backgroundImage: `url(${page.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
@@ -689,7 +731,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           style={{
             position: 'absolute',
             bottom: 10,
-            insetInlineEnd: 'max(40px, calc((100% - 820px) / 2))',
+            insetInlineEnd: 40,
             display: 'flex',
             gap: 8,
           }}
@@ -710,7 +752,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             style={{
               position: 'absolute',
               bottom: 44,
-              insetInlineEnd: 'max(40px, calc((100% - 820px) / 2))',
+              insetInlineEnd: 40,
               zIndex: 20,
               padding: 12,
               borderRadius: 10,
@@ -747,7 +789,10 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
 
       <div
         ref={columnRef}
-        style={{ maxWidth: fullWidth ? 'none' : 820, width: '100%', margin: '0 auto', padding: '0 40px 96px' }}
+        // LEFT-aligned (margin 0, not auto-centered): Catalyst pages use the
+        // viewport like the rest of the app, not a floating island
+        // (Vikram 2026-07-06 — "go page width", title top-left).
+        style={{ maxWidth: fullWidth ? 'none' : 980, width: '100%', margin: 0, padding: '0 40px 96px' }}
       >
         {/* Hover action bar (Notion) — appears above the title */}
         <div
