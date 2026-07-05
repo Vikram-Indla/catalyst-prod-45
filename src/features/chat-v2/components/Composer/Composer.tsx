@@ -5,6 +5,8 @@ import { ComposerFooter, type VoiceMode } from './ComposerFooter';
 import { NotificationBanner } from '../MessagePanel/NotificationBanner';
 import { EmojiPicker } from '../EmojiPicker/EmojiPicker';
 import { MentionPicker, type MentionEntry } from '../MentionPicker/MentionPicker';
+import { SlashCommandPicker } from '../SlashCommandPicker/SlashCommandPicker';
+import type { SlashCommand } from '../SlashCommandPicker/commands';
 import { ComposerAttachmentChip, type StagedAttachment } from '../Attachments/ComposerAttachmentChip';
 import { htmlToMarkdown } from '../../lib/markdown';
 import { replaceEmojiShortcodes } from '../../lib/emojiShortcodes';
@@ -38,6 +40,9 @@ interface ComposerProps {
    *  surface. Use when a banner (e.g. scheduled-edit) is visually
    *  attached to the composer. */
   bannerAttached?: boolean;
+  /** Host-injected slash-command actions (real wired handlers only, e.g.
+   *  /huddle → start huddle). Built-in text commands are always available. */
+  slashActions?: SlashCommand[];
 }
 
 export function Composer({
@@ -54,6 +59,7 @@ export function Composer({
   initialDraft,
   onDraftChange,
   bannerAttached = false,
+  slashActions,
 }: ComposerProps) {
   const editorRef = useRef<ComposerEditorHandle>(null);
   const editorRootRef = useRef<HTMLDivElement | null>(null);
@@ -77,6 +83,7 @@ export function Composer({
   const [emojiOpen, setEmojiOpen] = useState(false);
   const emojiBtnRef = useRef<HTMLDivElement>(null);
   const [mentionState, setMentionState] = useState<{ query: string; anchorRect: DOMRect } | null>(null);
+  const [slashState, setSlashState] = useState<{ query: string; anchorRect: DOMRect } | null>(null);
   const hasDoneAttachment = attachments.some(a => a.status === 'done');
   const canSend = !isUploading && (value.trim().length > 0 || hasDoneAttachment);
 
@@ -189,6 +196,19 @@ export function Composer({
     requestAnimationFrame(() => editorRef.current?.focus());
   };
 
+  const handlePickSlash = (command: SlashCommand) => {
+    setSlashState(null);
+    if (command.kind === 'insert') {
+      // Swap the "/cmd" the user typed for the glyph, ready to send.
+      editorRef.current?.replaceAll(command.text);
+      requestAnimationFrame(() => editorRef.current?.focus());
+    } else {
+      // Action command: clear the "/cmd" and fire the real handler.
+      editorRef.current?.clear();
+      command.run();
+    }
+  };
+
   return (
     <div
       style={{
@@ -235,6 +255,7 @@ export function Composer({
           onSubmit={submit}
           placeholder={placeholder}
           onMentionTrigger={setMentionState}
+          onSlashTrigger={setSlashState}
         />
         {attachments.some(a => a.status === 'error') && (
           <div
@@ -324,6 +345,15 @@ export function Composer({
           anchorRect={mentionState.anchorRect}
           onPick={handlePickMention}
           onClose={() => setMentionState(null)}
+        />
+      )}
+      {slashState && (
+        <SlashCommandPicker
+          query={slashState.query}
+          anchorRect={slashState.anchorRect}
+          actions={slashActions}
+          onPick={handlePickSlash}
+          onClose={() => setSlashState(null)}
         />
       )}
     </div>

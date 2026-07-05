@@ -631,6 +631,15 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         key={composerKey}
         placeholder={placeholder}
         conversationId={conversation.id}
+        slashActions={[
+          {
+            id: 'huddle',
+            kind: 'action',
+            label: '/huddle',
+            hint: 'Start an audio huddle in this conversation',
+            run: onStartHuddle,
+          },
+        ]}
         attachments={staged.attachments}
         onAttachFiles={files => staged.addFiles(files)}
         onRemoveAttachment={id => staged.removeAttachment(id)}
