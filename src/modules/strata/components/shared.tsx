@@ -14,9 +14,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Button, CatalystDrawer, Heading, Lozenge,
+  Button, CatalystDrawer, DropdownMenu, Heading, Lozenge,
 } from '@/components/ads';
-import { Check, ChevronDown } from '@/lib/atlaskit-icons';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
 import { fmtDateTime, fmtScore, labelize } from './format';
 import type { DataState, StrataCalculatedValue, ThresholdBand } from '../types';
@@ -151,39 +151,16 @@ export function StrataTrendSpark({
 }
 
 // ── Chip menu ────────────────────────────────────────────────────────────────
-// ads DropdownMenu's custom-trigger path drops triggerRef (mis-anchors) and
-// @atlaskit/popup renders empty portals in this codebase (documented in
-// AllProjectsTable.tsx) — so this follows the repo-proven pattern there:
-// fixed-position menu computed from the trigger rect + click-outside.
+// Canonical ads DropdownMenu wrapper: its custom-trigger path now attaches
+// Atlaskit's triggerRef to the anchor span (fixed 2026-07-05), so the chip
+// anchors correctly and Atlaskit owns the overlay, keyboard nav, and the
+// selected-item checkmark. Same trigger idiom as WorkstreamsManagerPage.
 export interface StrataMenuOption {
   key: string;
   label: React.ReactNode;
   isSelected?: boolean;
   onClick?: () => void;
 }
-
-function ChipMenuItem({ option, onPick }: { option: StrataMenuOption; onPick: () => void }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={() => { option.onClick?.(); onPick(); }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        display: 'flex', width: '100%', alignItems: 'center', gap: 8, padding: '8px 12px',
-        borderRadius: 4, border: 'none', cursor: 'pointer', font: 'inherit', textAlign: 'left',
-        fontSize: 'var(--ds-font-size-200)', color: T.text,
-        background: option.isSelected ? T.selected : hover ? T.sunken : 'transparent',
-      }}
-    >
-      <span style={{ flex: 1, whiteSpace: 'nowrap' }}>{option.label}</span>
-      {option.isSelected ? <Check size={12} /> : null}
-    </button>
-  );
-}
-
-const CHIP_MENU_WIDTH = 220;
 
 export function StrataChipMenu({
   label, value, active, options, testId, 'aria-label': ariaLabel,
@@ -195,83 +172,41 @@ export function StrataChipMenu({
   testId?: string;
   'aria-label'?: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-
-  const recompute = React.useCallback(() => {
-    const el = triggerRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    let left = r.left;
-    if (left + CHIP_MENU_WIDTH > window.innerWidth - 8) {
-      left = Math.max(8, r.right - CHIP_MENU_WIDTH);
-    }
-    setPos({ top: r.bottom + 4, left });
-  }, []);
-
-  React.useEffect(() => {
-    if (!open) { setPos(null); return; }
-    recompute();
-    const onDown = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (triggerRef.current?.contains(t) || menuRef.current?.contains(t)) return;
-      setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    window.addEventListener('scroll', recompute, true);
-    window.addEventListener('resize', recompute);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-      window.removeEventListener('scroll', recompute, true);
-      window.removeEventListener('resize', recompute);
-    };
-  }, [open, recompute]);
-
   return (
-    <>
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        data-testid={testId}
-        aria-label={ariaLabel}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8, height: 28, padding: '0 12px',
-          borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', font: 'inherit',
-          border: `1px solid ${active ? 'var(--ds-border-focused)' : T.border}`,
-          background: active ? T.selected : T.raised,
-          fontSize: 'var(--ds-font-size-100)', color: T.subtle,
-        }}
-      >
-        {label}
-        <strong style={{ color: T.text, fontWeight: 600 }}>{value}</strong>
-        <ChevronDown size={12} />
-      </button>
-      {open && pos ? (
-        <div
-          ref={menuRef}
-          role="menu"
-          style={{
-            position: 'fixed', top: pos.top, left: pos.left, zIndex: 1000,
-            minWidth: 180, maxWidth: CHIP_MENU_WIDTH, maxHeight: 320, overflowY: 'auto',
-            padding: 4, borderRadius: 8,
-            background: 'var(--ds-surface-overlay)', border: `1px solid ${T.border}`,
-            boxShadow: 'var(--ds-shadow-overlay)',
-          }}
-        >
-          {options.map((o) => (
-            <ChipMenuItem key={o.key} option={o} onPick={() => setOpen(false)} />
-          ))}
-        </div>
-      ) : null}
-    </>
+    <DropdownMenu
+      aria-label={ariaLabel}
+      testId={testId}
+      minWidth={180}
+      trigger={({ isSelected }) => {
+        const highlighted = active || isSelected;
+        return (
+          <button
+            type="button"
+            aria-label={ariaLabel}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8, height: 28, padding: '0 12px',
+              borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', font: 'inherit',
+              border: `1px solid ${highlighted ? 'var(--ds-border-focused)' : T.border}`,
+              background: highlighted ? T.selected : T.raised,
+              fontSize: 'var(--ds-font-size-100)', color: T.subtle,
+            }}
+          >
+            {label}
+            <strong style={{ color: T.text, fontWeight: 600 }}>{value}</strong>
+            <ChevronDown size={12} />
+          </button>
+        );
+      }}
+      groups={[{
+        key: 'options',
+        items: options.map((o) => ({
+          key: o.key,
+          label: o.label,
+          isSelected: o.isSelected,
+          onClick: o.onClick,
+        })),
+      }]}
+    />
   );
 }
 
