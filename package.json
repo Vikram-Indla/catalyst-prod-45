@@ -103,6 +103,8 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "3.9.0",
+    "@mantine/core": "8.3.11",
+    "@mantine/hooks": "8.3.11",
     "@popperjs/core": "2.11.8",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -254,6 +256,8 @@
     "vitest": "^4.0.18"
   },
   "overrides": {
+    "@mantine/core": "8.3.11",
+    "@mantine/hooks": "8.3.11",
     "relay-runtime": "20.1.1",
     "@atlaskit/visually-hidden": "3.0.5",
     "@atlaskit/editor-plugins": "13.0.120",
