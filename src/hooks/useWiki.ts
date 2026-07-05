@@ -406,3 +406,225 @@ export function useUnlinkPageFromWorkItem() {
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// Search, recents, favorites, versions (Pass D — CAT-DOCS-NOTION-20260704-001)
+// ---------------------------------------------------------------------------
+
+export interface DocexSearchHit extends WikiPageSummary {
+  content_text: string | null;
+}
+
+/** Full-text search over every page the user can see. Runs the tsvector
+ *  websearch and a title-ilike in parallel (the ilike lane covers Arabic and
+ *  partial words the `simple` FTS config misses), merged unique. */
+export function useDocexSearch(query: string) {
+  const q = query.trim();
+  return useQuery({
+    queryKey: ['wiki', 'search', q],
+    enabled: q.length >= 2,
+    queryFn: async (): Promise<DocexSearchHit[]> => {
+      const cols = `${PAGE_SUMMARY_COLS}, content_text`;
+      const [fts, ilike] = await Promise.all([
+        db
+          .from('kb_documents')
+          .select(cols)
+          .eq('is_template', false)
+          .textSearch('search_vector', q, { type: 'websearch', config: 'simple' })
+          .limit(20),
+        db
+          .from('kb_documents')
+          .select(cols)
+          .eq('is_template', false)
+          .or(`title.ilike.%${q}%,content_text.ilike.%${q}%`)
+          .order('updated_at', { ascending: false })
+          .limit(20),
+      ]);
+      const seen = new Set<string>();
+      const merged: DocexSearchHit[] = [];
+      for (const row of [...(fts.data ?? []), ...(ilike.data ?? [])]) {
+        if (!seen.has(row.id)) {
+          seen.add(row.id);
+          merged.push(row as DocexSearchHit);
+        }
+      }
+      return merged.slice(0, 25);
+    },
+  });
+}
+
+/** Most recently edited pages across all visible workspaces (home rail). */
+export function useDocexRecents(limit = 10) {
+  return useQuery({
+    queryKey: ['wiki', 'recents', limit],
+    queryFn: async (): Promise<WikiPageSummary[]> => {
+      const { data, error } = await db
+        .from('kb_documents')
+        .select(PAGE_SUMMARY_COLS)
+        .eq('is_template', false)
+        .order('updated_at', { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return (data ?? []) as WikiPageSummary[];
+    },
+  });
+}
+
+export interface DocexFavorite {
+  id: string;
+  document_id: string;
+  page: WikiPageSummary | null;
+}
+
+/** The current user's starred pages (home rail + page-chrome star state). */
+export function useDocexFavorites() {
+  return useQuery({
+    queryKey: ['wiki', 'favorites'],
+    queryFn: async (): Promise<DocexFavorite[]> => {
+      const { data: auth } = await supabase.auth.getUser();
+      const uid = auth?.user?.id;
+      if (!uid) return [];
+      const { data, error } = await db
+        .from('kb_document_favorites')
+        .select('id, document_id')
+        .eq('user_id', uid)
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      const favs = (data ?? []) as { id: string; document_id: string }[];
+      if (!favs.length) return [];
+      const { data: pages } = await db
+        .from('kb_documents')
+        .select(PAGE_SUMMARY_COLS)
+        .in('id', favs.map((f) => f.document_id));
+      const byId = new Map((pages ?? []).map((p: WikiPageSummary) => [p.id, p]));
+      return favs.map((f) => ({ ...f, page: (byId.get(f.document_id) as WikiPageSummary) ?? null }));
+    },
+  });
+}
+
+export function useToggleFavorite() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ documentId, favoriteId }: { documentId: string; favoriteId?: string }) => {
+      if (favoriteId) {
+        const { error } = await db.from('kb_document_favorites').delete().eq('id', favoriteId);
+        if (error) throw error;
+        return;
+      }
+      const { data: auth } = await supabase.auth.getUser();
+      const { error } = await db
+        .from('kb_document_favorites')
+        .insert({ document_id: documentId, user_id: auth?.user?.id ?? null });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['wiki', 'favorites'] }),
+    onError: () => catalystToast.error('Could not update favorites'),
+  });
+}
+
+export interface DocexVersion {
+  id: string;
+  document_id: string;
+  version_number: number;
+  title: string | null;
+  content: unknown;
+  change_summary: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export function useDocexVersions(documentId: string) {
+  return useQuery({
+    queryKey: ['wiki', 'versions', documentId],
+    enabled: !!documentId,
+    queryFn: async (): Promise<DocexVersion[]> => {
+      const { data, error } = await db
+        .from('kb_document_versions')
+        .select('id, document_id, version_number, title, content, change_summary, created_by, created_at')
+        .eq('document_id', documentId)
+        .order('version_number', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []) as DocexVersion[];
+    },
+  });
+}
+
+/** Snapshot the given state as the next version row. */
+export function useSaveVersion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      documentId: string;
+      title: string;
+      content: unknown;
+      contentText: string;
+      changeSummary?: string;
+    }) => {
+      const { data: last } = await db
+        .from('kb_document_versions')
+        .select('version_number')
+        .eq('document_id', input.documentId)
+        .order('version_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const { data: auth } = await supabase.auth.getUser();
+      const { error } = await db.from('kb_document_versions').insert({
+        document_id: input.documentId,
+        version_number: ((last?.version_number as number | undefined) ?? 0) + 1,
+        title: input.title,
+        content: input.content,
+        content_text: input.contentText,
+        change_summary: input.changeSummary ?? null,
+        created_by: auth?.user?.id ?? null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_d, { documentId }) =>
+      qc.invalidateQueries({ queryKey: ['wiki', 'versions', documentId] }),
+  });
+}
+
+/** Duplicate a page (content copy, "Copy of" title, sibling position; the
+ *  DB slug trigger derives + dedupes the new slug). Returns the new page. */
+export function useDuplicatePage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { page: WikiPage }): Promise<WikiPage> => {
+      const { page } = input;
+      const { data: auth } = await supabase.auth.getUser();
+      const { data: siblings } = await db
+        .from('kb_documents')
+        .select('position')
+        .eq('space_id', page.space_id)
+        .order('position', { ascending: false })
+        .limit(1);
+      const nextPos = ((siblings?.[0]?.position as number | undefined) ?? 0) + 1;
+      const { data, error } = await db
+        .from('kb_documents')
+        .insert({
+          space_id: page.space_id,
+          title: `Copy of ${page.title || 'Untitled'}`,
+          parent_id: page.parent_id,
+          position: nextPos,
+          content: page.content ?? [],
+          content_text: (page as { content_text?: string }).content_text ?? null,
+          content_format: page.content_format,
+          icon: page.icon,
+          cover_url: page.cover_url,
+          created_by: auth?.user?.id ?? null,
+          updated_by: auth?.user?.id ?? null,
+        })
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as WikiPage;
+    },
+    onSuccess: (created) => {
+      qc.invalidateQueries({ queryKey: ['wiki', 'tree', created.space_id] });
+    },
+    onError: (e) =>
+      catalystToast.error('Could not duplicate the page', e instanceof Error ? e.message : undefined),
+  });
+}

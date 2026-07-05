@@ -219,6 +219,7 @@ export const knowledgeHubRoutes = {
 
 export const docexRoutes = {
   root: () => '/docex',
+  search: () => '/docex/search',
   workspace: (workspaceSlug: string) => `/docex/${workspaceSlug}`,
   page: (workspaceSlug: string, pageSlug: string) => `/docex/${workspaceSlug}/${pageSlug}`,
 };

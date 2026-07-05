@@ -8,7 +8,7 @@ export interface WikiPathParts {
   pageSlug?: string;
 }
 
-const RESERVED = new Set(['_sandbox']);
+const RESERVED = new Set(['_sandbox', 'search']);
 
 export function parseWikiPath(pathname: string): WikiPathParts {
   const m = pathname.match(/^\/docex\/([^/?#]+)(?:\/([^/?#]+))?/);

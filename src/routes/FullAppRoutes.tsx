@@ -349,6 +349,7 @@ const LegacyDocumentRedirect = lazy(() =>
   import("../pages/wiki/LegacyKnowledgeHubRedirect").then(m => ({ default: m.LegacyDocumentRedirect })));
 
 const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
+const DocexSearchPage = lazy(() => import("../pages/wiki/DocexSearchPage"));
 const WikiWorkspacePage = lazy(() => import("../pages/wiki/WikiWorkspacePage"));
 // DEV-only ternary keeps the sandbox chunk out of the production bundle
 // (the route below is also DEV-gated, but a bare lazy() would still ship it).
@@ -818,6 +819,7 @@ export default function FullAppRoutes() {
             Renamed from /wiki 2026-07-05: /wiki belongs to the restored
             knowledge-base hub on main. */}
         <Route path="/docex" element={<S><WikiHomePage /></S>} />
+        <Route path="/docex/search" element={<S><DocexSearchPage /></S>} />
         {import.meta.env.DEV && (
           <Route path="/docex/_sandbox" element={<S><WikiSandboxPage /></S>} />
         )}

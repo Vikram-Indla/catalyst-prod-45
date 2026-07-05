@@ -8,6 +8,7 @@
  */
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Block, BlockNoteEditor } from '@blocknote/core';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,18 +16,23 @@ import { ImageIcon, Smile as SmileIcon } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
   useUpdateWikiPage,
+  useDocexFavorites,
+  useToggleFavorite,
+  useSaveVersion,
+  useDuplicatePage,
   WIKI_CONFLICT,
   type WikiPage,
   type WikiPageSummary,
   type WikiWorkspace,
 } from '@/hooks/useWiki';
 import { WikiEditorBoundary } from './editor/WikiEditorBoundary';
+import { DocexVersionHistory } from './DocexVersionHistory';
 import { blocksToText } from './editor/blocksToText';
 import { clearDraft, getDraft, saveDraft } from './editor/localDraft';
 import { attachMarqueeSelection } from './editor/marqueeSelection';
 import { syncMentionLinks } from './editor/syncMentionLinks';
 import { BacklinksPanel } from './BacklinksPanel';
-import { DropdownMenu } from '@/components/ads';
+import { DropdownMenu, Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
 import { uploadWikiFile } from './editor/wikiUpload';
@@ -92,6 +98,15 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   const navigate = useNavigate();
   const updatePage = useUpdateWikiPage();
 
+  // ---- Favorites / publish / versions / duplicate (Pass D) ----
+  const { data: favorites } = useDocexFavorites();
+  const toggleFavorite = useToggleFavorite();
+  const myFavorite = (favorites ?? []).find((f) => f.document_id === page.id);
+  const saveVersion = useSaveVersion();
+  const duplicatePage = useDuplicatePage();
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const lastSnapshotAt = useRef(0);
+
   // ---- Title (seamless, Notion-style) ----
   const [title, setTitle] = useState(page.title);
   useEffect(() => setTitle(page.title), [page.id, page.title]);
@@ -138,6 +153,19 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           if (nextUpdatedAt) serverUpdatedAt.current = nextUpdatedAt;
           setSaveFailed(false);
           clearDraft(page.id);
+          // History trail: at most one automatic snapshot per 10 minutes of
+          // active editing (manual "Save version now" is always available).
+          const now = Date.now();
+          if (now - lastSnapshotAt.current > 10 * 60_000) {
+            lastSnapshotAt.current = now;
+            saveVersion.mutate({
+              documentId: page.id,
+              title: page.title,
+              content: doc,
+              contentText: blocksToText(doc),
+              changeSummary: 'Autosnapshot',
+            });
+          }
         },
         onError: (e) => {
           if (e instanceof Error && e.message === WIKI_CONFLICT) {
@@ -160,7 +188,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     void syncMentionLinks(page.id, doc).catch((e) =>
       console.warn('[wiki] mention link sync failed', e),
     );
-  }, [page.id, page.space_id, updatePage]);
+  }, [page.id, page.space_id, page.title, updatePage, saveVersion]);
 
   // Conflict resolution: overwrite keeps mine (unguarded save); reload takes theirs.
   const resolveConflict = useCallback(
@@ -317,6 +345,42 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     [flush, page.title, currentBlocks],
   );
 
+  // ---- Publish / duplicate / manual snapshot (Pass D) ----
+  const qc = useQueryClient();
+  const togglePublish = useCallback(() => {
+    updatePage.mutate(
+      {
+        id: page.id,
+        spaceId: page.space_id,
+        patch: { published_at: page.published_at ? null : new Date().toISOString() },
+      },
+      { onSuccess: () => qc.invalidateQueries({ queryKey: ['wiki', 'page'] }) },
+    );
+  }, [page.id, page.space_id, page.published_at, updatePage, qc]);
+
+  const duplicateNow = useCallback(() => {
+    flush();
+    duplicatePage.mutate(
+      { page },
+      { onSuccess: (created) => navigate(Routes.docex.page(workspace.slug, created.slug)) },
+    );
+  }, [flush, duplicatePage, page, navigate, workspace.slug]);
+
+  const snapshotNow = useCallback(
+    (summary?: string) => {
+      const doc = currentBlocks();
+      saveVersion.mutate({
+        documentId: page.id,
+        title: page.title,
+        content: doc,
+        contentText: blocksToText(doc),
+        changeSummary: summary,
+      });
+      lastSnapshotAt.current = Date.now();
+    },
+    [currentBlocks, page.id, page.title, saveVersion],
+  );
+
   // ---- Icon picker (emoji) ----
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
   const [iconDraft, setIconDraft] = useState('');
@@ -385,10 +449,35 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         <WikiPresence pageId={page.id} />
         <GenerateStoriesFromPage pageId={page.id} title={page.title} getBlocks={currentBlocks} />
         <WikiTranslateBar title={page.title} getBlocks={currentBlocks} />
+        <button
+          type="button"
+          className="wiki-chip-btn wiki-no-print"
+          aria-label={myFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          aria-pressed={!!myFavorite}
+          onClick={() =>
+            toggleFavorite.mutate({ documentId: page.id, favoriteId: myFavorite?.id })
+          }
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '4px 8px',
+            border: '1px solid var(--ds-border)',
+            borderRadius: 6,
+            background: 'var(--ds-surface)',
+            color: myFavorite ? 'var(--ds-icon-warning)' : 'var(--ds-icon-subtle)',
+            cursor: 'pointer',
+            font: 'var(--ds-font-body-small)',
+          }}
+        >
+          {myFavorite ? '★' : '☆'}
+        </button>
+        <Lozenge appearance={page.published_at ? 'success' : 'default'}>
+          {page.published_at ? 'Published' : 'Draft'}
+        </Lozenge>
         <DropdownMenu
           aria-label="Page actions"
           placement="bottom-end"
-          trigger="Export"
+          trigger="Actions"
           groups={[
             {
               key: 'export',
@@ -397,6 +486,20 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 { key: 'md', label: 'Markdown (.md)', onClick: () => runExport('md') },
                 { key: 'html', label: 'HTML (.html)', onClick: () => runExport('html') },
                 { key: 'pdf', label: 'Print or save as PDF', onClick: () => runExport('print') },
+              ],
+            },
+            {
+              key: 'page',
+              title: 'Page',
+              items: [
+                {
+                  key: 'publish',
+                  label: page.published_at ? 'Revert to draft' : 'Publish',
+                  onClick: () => togglePublish(),
+                },
+                { key: 'duplicate', label: 'Duplicate', onClick: () => duplicateNow() },
+                { key: 'history', label: 'Version history', onClick: () => setHistoryOpen(true) },
+                { key: 'save-version', label: 'Save version now', onClick: () => snapshotNow('Manual save point') },
               ],
             },
           ]}
@@ -827,6 +930,13 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
           </Suspense>
         </div>
       </div>
+
+      <DocexVersionHistory
+        page={page}
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        getBlocks={currentBlocks}
+      />
     </article>
   );
 }

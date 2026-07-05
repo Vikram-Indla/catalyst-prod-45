@@ -8,7 +8,7 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Home, Building2 } from '@/lib/atlaskit-icons';
+import { Home, Building2, Search } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { WikiTreeNav } from '@/components/wiki-hub/WikiTreeNav';
 import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
@@ -77,7 +77,10 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
       sections: [
         {
           title: 'Docex',
-          items: [{ id: 'home', title: 'Home', path: Routes.docex.root(), icon: Home, exact: true }],
+          items: [
+            { id: 'home', title: 'Home', path: Routes.docex.root(), icon: Home, exact: true },
+            { id: 'search', title: 'Search', path: Routes.docex.search(), icon: Search, exact: true },
+          ],
         },
         ...(byType('project').length
           ? [{ title: 'Project workspaces', items: byType('project').map(item) }]

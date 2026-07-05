@@ -16,7 +16,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { Routes } from '@/lib/routes';
-import { useWorkspaceContainerMeta } from '@/hooks/useWiki';
+import {
+  useWorkspaceContainerMeta,
+  useDocexRecents,
+  useDocexFavorites,
+  type WikiPageSummary,
+} from '@/hooks/useWiki';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { getProductAvatarUrl } from '@/components/icons';
 
@@ -117,6 +122,8 @@ export default function WikiHomePage() {
         />
       </div>
 
+      {!search && <HomeRails workspaces={workspaces ?? []} />}
+
       {isLoading ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
           {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -213,6 +220,77 @@ export default function WikiHomePage() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Recents + Favorites rails (Pass D #1-2) — compact page rows above the
+ *  workspace grid; each rail renders only when it has content. */
+function HomeRails({ workspaces }: { workspaces: WikiWorkspaceRow[] }) {
+  const navigate = useNavigate();
+  const { data: recents } = useDocexRecents(8);
+  const { data: favorites } = useDocexFavorites();
+
+  const wsById = useMemo(() => new Map(workspaces.map((w) => [w.id, w])), [workspaces]);
+
+  const openPage = (p: WikiPageSummary) => {
+    const ws = wsById.get(p.space_id);
+    if (ws?.slug) navigate(Routes.docex.page(ws.slug, p.slug));
+  };
+
+  const rail = (title: string, pages: WikiPageSummary[]) =>
+    pages.length > 0 && (
+      <section style={{ marginBottom: 20 }}>
+        <h2
+          style={{
+            font: 'var(--ds-font-heading-xsmall)',
+            color: 'var(--ds-text-subtle)',
+            margin: '0 0 8px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+          }}
+        >
+          {title}
+        </h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {pages.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => openPage(p)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 12px',
+                borderRadius: 8,
+                border: '1px solid var(--ds-border)',
+                background: 'var(--ds-surface)',
+                color: 'var(--ds-text)',
+                font: 'var(--ds-font-body)',
+                cursor: 'pointer',
+                maxWidth: 260,
+              }}
+            >
+              <span aria-hidden>{p.icon || '📄'}</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {p.title || 'Untitled'}
+              </span>
+              <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
+                {wsById.get(p.space_id)?.name ?? ''}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+    );
+
+  const favPages = (favorites ?? []).map((f) => f.page).filter(Boolean) as WikiPageSummary[];
+
+  return (
+    <div style={{ marginBottom: 8 }}>
+      {rail('Favorites', favPages)}
+      {rail('Recently edited', recents ?? [])}
     </div>
   );
 }
