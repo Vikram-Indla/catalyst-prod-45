@@ -23,8 +23,9 @@ import EditIcon from '@atlaskit/icon/core/edit';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ChildIssuesIcon from '@atlaskit/icon/core/child-issues';
+import BranchIcon from '@atlaskit/icon/core/branch';
 import { catalystToast } from '@/lib/catalystToast';
-import { emitCreateChild, emitCreateChildWorkItem, emitLinkWorkItem, emitAddAttachment, emitAddWebLink, emitAddDesign } from './quickActionsBus';
+import { emitCreateChild, emitCreateChildWorkItem, emitLinkWorkItem, emitAddDependency, emitAddAttachment, emitAddWebLink, emitAddDesign } from './quickActionsBus';
 import { getAllowedChildTypes, SUBTASK_FAMILY_CANONICAL_TYPES } from '../parent-rules';
 
 interface CatalystQuickActionsProps {
@@ -35,6 +36,7 @@ interface CatalystQuickActionsProps {
   onCreateChild?: () => void;
   onCreateChildWorkItem?: () => void;
   onLinkItem?: () => void;
+  onAddDependency?: () => void;
   onAddAttachment?: () => void;
   onAddWebLink?: () => void;
   onAddDesign?: () => void;
@@ -65,6 +67,7 @@ export function CatalystQuickActions({
   onCreateChild,
   onCreateChildWorkItem,
   onLinkItem,
+  onAddDependency,
   onAddAttachment,
   onAddWebLink,
   onAddDesign,
@@ -85,6 +88,11 @@ export function CatalystQuickActions({
   const canHaveChildWorkItems = itemType
     ? allowedChildren.some((t) => !subtaskFamilyLower.has(t.toLowerCase()))
     : false;
+  // Dependencies are ph_issues-backed only (Epic/Feature/Story/Task). Hidden
+  // on subtasks and on non-ph_issues types (e.g. Business Request) which use
+  // a separate store. When itemType is omitted (legacy call sites), hide it.
+  const DEP_TYPES = new Set(['epic', 'feature', 'story', 'task']);
+  const canHaveDependencies = itemType ? DEP_TYPES.has(itemType.toLowerCase()) : false;
   const [showMenu, setShowMenu] = useState(false);
   const [search, setSearch] = useState('');
   const [isHovered, setIsHovered] = useState(false);
@@ -170,6 +178,14 @@ export function CatalystQuickActions({
       if (onLinkItem) onLinkItem();
       else emitLinkWorkItem();
     } },
+    canHaveDependencies
+      ? { id: 'dependency', icon: <BranchIcon label="" color={textColor} />, label: 'Add Dependency', section: 'primary', action: () => {
+          setShowMenu(false); setSearch('');
+          // Caller override wins; else notify the mounted DependenciesSection.
+          if (onAddDependency) onAddDependency();
+          else emitAddDependency();
+        } }
+      : null,
     { id: 'attachment', icon: <AttachmentIcon size="small" primaryColor={textColor} />, label: 'Add attachment', section: 'secondary', action: () => {
       setShowMenu(false); setSearch('');
       // Caller-supplied override wins; otherwise notify any mounted

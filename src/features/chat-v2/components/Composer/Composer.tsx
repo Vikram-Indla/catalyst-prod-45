@@ -210,11 +210,12 @@ export function Composer({
       <div
         ref={editorRootRef}
         onPaste={handlePaste}
+        className="cv2-composer-shell"
         style={{
-          border: '1px solid var(--cv2-bg-composer-border)',
+          border: '1px solid var(--cv2-border-strong)',
           borderRadius: bannerAttached
-            ? `0 0 var(--cv2-radius-md) var(--cv2-radius-md)`
-            : 'var(--cv2-radius-md)',
+            ? `0 0 var(--cv2-radius-lg) var(--cv2-radius-lg)`
+            : 'var(--cv2-radius-lg)',
           borderTopWidth: bannerAttached ? 0 : 1,
           background: 'var(--cv2-bg-composer)',
           display: 'flex',

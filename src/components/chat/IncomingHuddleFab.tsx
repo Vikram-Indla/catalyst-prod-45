@@ -13,17 +13,26 @@
 import React from 'react';
 import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import { useIncomingHuddle } from '@/hooks/chat/useIncomingHuddle';
+import { useMissedCalls } from '@/hooks/chat/useMissedCalls';
+import { useHuddleActions } from '@/hooks/chat/useHuddleData';
 import { startRing, stopRing } from '@/lib/chat/huddle/ringtone';
 import { useDraggableFab } from './dock/useDraggableFab';
 import { DockCallRing } from './dock/DockCallRing';
+import { MissedCallsList } from './MissedCallsList';
+import type { ChatConversation } from '@/types/chat';
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import './dock/dock.css';
 
 export function IncomingHuddleFab() {
   const { incoming, snoozedCall, accept, decline, snooze } = useIncomingHuddle();
+  const { missed, dismiss, dismissAll } = useMissedCalls();
+  const { startOrJoin } = useHuddleActions();
   const ringing = !!incoming;
   const snoozed = !!snoozedCall;
   const callActive = ringing || snoozed;
+  // Avatar ONLY while actively ringing; once snoozed we show the snooze mark.
+  const callerAvatarUrl = ringing ? (incoming?.callerAvatarUrl ?? null) : null;
+  const callerName = incoming?.callerName ?? 'Someone';
 
   const { pos, isDragging, isSnapping, didMove, handlers } = useDraggableFab();
   const [ringHovered, setRingHovered] = React.useState(false);
@@ -77,53 +86,104 @@ export function IncomingHuddleFab() {
     };
   }, [ringing, ringHovered]);
 
-  if (!callActive) return null;
+  const fanOpen = ringHovered;
 
-  const fanOpen = callActive && ringHovered;
+  // RINGING — full vibrating FAB (caller avatar) with decline/snooze/accept on
+  // hover. Hides the ChatDock launcher (ChatDock does that while `ringing`).
+  if (ringing) {
+    return (
+      <>
+        <button
+          type="button"
+          className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${!fanOpen ? ' cc-fab--ringing' : ''}`}
+          style={{ top: pos.y, left: pos.x }}
+          onClick={() => { if (didMove.current) return; /* actions live in the hover fan */ }}
+          onPointerDown={handlers.onPointerDown}
+          onPointerMove={handlers.onPointerMove}
+          onPointerUp={handlers.onPointerUp}
+          onMouseEnter={openRing}
+          onMouseLeave={closeRing}
+          aria-label={`Incoming call from ${callerName}. Hover to answer.`}
+          title={`Incoming call from ${callerName}`}
+        >
+          <span className="cc-wake-disc" ref={discRef}>
+            <span className="cc-fab__ring" ref={pulseRef} aria-hidden />
+            {callerAvatarUrl ? (
+              <img src={callerAvatarUrl} alt={callerName}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (
+              <CatyPulseIcon size={28} />
+            )}
+          </span>
+        </button>
+        <DockCallRing
+          centerX={pos.x + 38.5}
+          centerY={pos.y + 38.5}
+          open={fanOpen}
+          variant="ringing"
+          onOpen={openRing}
+          onClose={closeRing}
+          onDecline={() => { setRingHovered(false); decline(); }}
+          onSnooze={() => { setRingHovered(false); snooze(); }}
+          onAccept={() => { setRingHovered(false); accept(); }}
+        />
+      </>
+    );
+  }
 
-  return (
-    <>
-      <button
-        type="button"
-        className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${ringing && !fanOpen ? ' cc-fab--ringing' : ''}${snoozed ? ' cc-fab--snoozed' : ''}`}
-        style={{ top: pos.y, left: pos.x }}
-        onClick={() => { /* actions live in the hover fan; click is a no-op (drag only) */ if (didMove.current) return; }}
-        onPointerDown={handlers.onPointerDown}
-        onPointerMove={handlers.onPointerMove}
-        onPointerUp={handlers.onPointerUp}
-        onMouseEnter={openRing}
-        onMouseLeave={closeRing}
-        aria-label={snoozed
-          ? `Snoozed call from ${snoozedCall?.callerName ?? 'someone'}. Hover to answer.`
-          : `Incoming call from ${incoming?.callerName ?? 'someone'}. Hover to answer.`}
-        title={snoozed ? `Snoozed call from ${snoozedCall?.callerName ?? 'someone'}` : `Incoming call from ${incoming?.callerName ?? 'someone'}`}
-      >
-        <span className="cc-wake-disc" ref={discRef}>
-          {ringing && <span className="cc-fab__ring" ref={pulseRef} aria-hidden />}
-          {snoozed && (
-            <span className="cc-fab__snooze-badge" aria-hidden title="Snoozed call">
+  // SNOOZED — the normal Caty FAB (disc + pulse mark) with a snooze clock badge.
+  // Clicking the FAB opens the chat dock; hovering ONLY the badge opens the
+  // missed-calls list.
+  if (snoozed) {
+    return (
+      <>
+        <button
+          type="button"
+          className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''} cc-fab--snoozed`}
+          style={{ top: pos.y, left: pos.x }}
+          onClick={() => { if (!didMove.current) window.dispatchEvent(new CustomEvent('catalyst:open-chat-dock')); }}
+          onPointerDown={handlers.onPointerDown}
+          onPointerMove={handlers.onPointerMove}
+          onPointerUp={handlers.onPointerUp}
+          aria-label={`Snoozed call from ${snoozedCall?.callerName ?? 'someone'}. Open messages.`}
+          title="Open messages"
+        >
+          <span className="cc-wake-disc">
+            <CatyPulseIcon size={28} />
+            {/* Hovering ONLY this badge opens missed calls (not the whole FAB). */}
+            <span
+              className="cc-fab__snooze-badge"
+              title="Snoozed call — missed calls"
+              onMouseEnter={openRing}
+              onMouseLeave={closeRing}
+              style={{ cursor: 'pointer' }}
+            >
               <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="13" r="8" />
                 <path d="M12 9v4l2.5 2M9 2h6M10 5.5 8 3" />
               </svg>
             </span>
-          )}
-          <CatyPulseIcon size={28} />
-        </span>
-      </button>
-      <DockCallRing
-        centerX={pos.x + 38.5}
-        centerY={pos.y + 38.5}
-        open={fanOpen}
-        variant={ringing ? 'ringing' : 'snoozed'}
-        onOpen={openRing}
-        onClose={closeRing}
-        onDecline={() => { setRingHovered(false); decline(); }}
-        onSnooze={() => { setRingHovered(false); snooze(); }}
-        onAccept={() => { setRingHovered(false); accept(); }}
-      />
-    </>
-  );
+          </span>
+        </button>
+        <MissedCallsList
+          centerX={pos.x + 38.5}
+          centerY={pos.y + 38.5}
+          open={fanOpen}
+          missed={missed}
+          onOpen={openRing}
+          onClose={closeRing}
+          onCallBack={(conversationId, name) => {
+            setRingHovered(false);
+            void startOrJoin({ id: conversationId, title: name } as ChatConversation);
+          }}
+          onDismiss={dismiss}
+          onDismissAll={dismissAll}
+        />
+      </>
+    );
+  }
+
+  return null;
 }
 
 export default IncomingHuddleFab;

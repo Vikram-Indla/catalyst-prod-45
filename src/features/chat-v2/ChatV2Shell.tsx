@@ -54,6 +54,7 @@ import type { SummarizePreset } from './components/Summarize/SummarizeMenu';
 import { useRecentSearches } from './hooks/useRecentSearches';
 import { useActivityFeed, type ActivityItem } from './hooks/useActivityFeed';
 import { useResizableSplit } from './hooks/useResizableSplit';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { useChatTheme } from './hooks/useChatTheme';
 import { installActivityHoverTracker } from './lib/activityHoverTracker';
 import './tokens.css';
@@ -531,12 +532,38 @@ function ChatV2Inner() {
 
   // Layout — nav rail + (resizable) sidebar + splitter + main panel + (optional thread/search/summary column).
   // Sidebar holds Sidebar / ActivityPanel / LaterPanel based on active view.
-  const gridTemplateColumns = showRightColumn
-    ? `${navRailW}px ${sidebarWidth}px 5px 1fr minmax(360px, 420px)`
-    : `${navRailW}px ${sidebarWidth}px 5px 1fr`;
-  const gridTemplateAreas = showRightColumn
-    ? '"navrail sidebar splitter panel thread"'
-    : '"navrail sidebar splitter panel"';
+  //
+  // Narrow (<1024px) — Slack-class single-column stacking: exactly ONE content
+  // column renders next to the nav rail. Priority: right column (thread /
+  // search / summary) → main panel (a detail is selected) → sidebar list.
+  // The splitter never renders when narrow. Desktop (>=1024px) is untouched.
+  const isNarrow = useMediaQuery('(max-width: 1023px)');
+  // "Something is selected" per view — determines list vs detail on narrow.
+  const narrowHasDetail =
+    inDraftsMode ||
+    showNewMessagePanel ||
+    (inActivityMode
+      ? !!(selectedActivityId && activeConversation)
+      : inLaterMode
+        ? !!(selectedLaterId && activeConversation)
+        : !!activeConversationId);
+  const narrowShowsRight = isNarrow && showRightColumn;
+  const narrowShowsPanel = isNarrow && !narrowShowsRight && narrowHasDetail;
+  const narrowShowsSidebar = isNarrow && !narrowShowsRight && !narrowShowsPanel;
+  const gridTemplateColumns = isNarrow
+    ? `${navRailW}px 1fr`
+    : showRightColumn
+      ? `${navRailW}px ${sidebarWidth}px 5px 1fr minmax(360px, 420px)`
+      : `${navRailW}px ${sidebarWidth}px 5px 1fr`;
+  const gridTemplateAreas = isNarrow
+    ? narrowShowsRight
+      ? '"navrail thread"'
+      : narrowShowsPanel
+        ? '"navrail panel"'
+        : '"navrail sidebar"'
+    : showRightColumn
+      ? '"navrail sidebar splitter panel thread"'
+      : '"navrail sidebar splitter panel"';
 
   const handleSelectSearchHit = (hit: { id: string; conversationId: string; parentId?: string | null }) => {
     setActiveConversationId(hit.conversationId);
@@ -648,7 +675,12 @@ function ChatV2Inner() {
           />
         );
       }
-      return <EmptyPanel />;
+      return (
+        <EmptyPanel
+          onNewMessage={handleOpenNewMessagePanel}
+          onNewChannel={() => setShowCreateChannelModal(true)}
+        />
+      );
     }
     if (inLaterMode) {
       if (selectedLaterId && activeConversation) {
@@ -682,7 +714,12 @@ function ChatV2Inner() {
           />
         );
       }
-      return <EmptyPanel />;
+      return (
+        <EmptyPanel
+          onNewMessage={handleOpenNewMessagePanel}
+          onNewChannel={() => setShowCreateChannelModal(true)}
+        />
+      );
     }
     if (showNewMessagePanel) {
       return (
@@ -721,7 +758,12 @@ function ChatV2Inner() {
         />
       );
     }
-    return <EmptyPanel />;
+    return (
+      <EmptyPanel
+        onNewMessage={handleOpenNewMessagePanel}
+        onNewChannel={() => setShowCreateChannelModal(true)}
+      />
+    );
   };
 
   // Right column content. Priority: Search → Summary → Thread (non-wide-mode).
@@ -851,10 +893,12 @@ function ChatV2Inner() {
           unreadActivity={unreadActivity}
           collapsed={navRailCollapsed}
         />
-        {renderSidebarSlot()}
-        <SidebarSplitter onMouseDown={startSidebarResize} isResizing={sidebarResizing} />
-        {renderMainPanel()}
-        {renderRightColumn()}
+        {(!isNarrow || narrowShowsSidebar) && renderSidebarSlot()}
+        {!isNarrow && (
+          <SidebarSplitter onMouseDown={startSidebarResize} isResizing={sidebarResizing} />
+        )}
+        {(!isNarrow || narrowShowsPanel) && renderMainPanel()}
+        {(!isNarrow || narrowShowsRight) && renderRightColumn()}
         <MinimizeButton onClick={handleMinimize} />
       </div>
     </>

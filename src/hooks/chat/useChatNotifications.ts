@@ -31,7 +31,7 @@ export function useChatNotifications() {
   const addToast = useCallback(
     (type: ToastType, title: string, description?: string, autoDismissMs?: number) => {
       const id = `toast-${Date.now()}-${Math.random()}`;
-      const toast: Toast = { id, type, title, description, autoDissmisMs: autoDismissMs };
+      const toast: Toast = { id, type, title, description, autoDismissMs };
 
       setToasts((prev) => [...prev, toast]);
 

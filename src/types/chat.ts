@@ -21,6 +21,8 @@ export interface ChatConversation {
   /** The viewer's last_read_at at fetch time. Drives the "New messages"
    *  unread divider — captured before mark-read-on-open resets it. */
   lastReadAt?: string | null;
+  /** Viewer's per-conversation notification preference (default 'all'). */
+  notificationPref?: 'all' | 'mentions' | 'none';
   /** Number of other members in a group DM. Only populated for kind === 'group_dm'. */
   memberCount?: number;
   /** Avatar URLs of OTHER members. Populated for `dm` and `group_dm` kinds. */

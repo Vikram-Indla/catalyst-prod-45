@@ -5,9 +5,8 @@ interface SidebarHeaderProps {
   title: string;
   unreadsOnly: boolean;
   onToggleUnreadsOnly: (v: boolean) => void;
-  /** Kept on the type for callsite compatibility but no longer wired —
-   *  the inline "compose" pencil was removed at user request. The rail
-   *  footer's "Create new" still covers new-conversation creation. */
+  /** Opens the new-conversation flow via the circular compose button on the
+   *  far right. Optional — when absent at a call site, the button is hidden. */
   onNewConversation?: () => void;
   onTitleClick?: () => void;
 }
@@ -16,6 +15,7 @@ export function SidebarHeader({
   title,
   unreadsOnly,
   onToggleUnreadsOnly,
+  onNewConversation,
   onTitleClick,
 }: SidebarHeaderProps) {
   return (
@@ -55,8 +55,57 @@ export function SidebarHeader({
       </button>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
         <UnreadsToggle value={unreadsOnly} onChange={onToggleUnreadsOnly} />
+        {onNewConversation && <ComposeButton onClick={onNewConversation} />}
       </div>
     </div>
+  );
+}
+
+function ComposeButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="New message"
+      title="New message"
+      style={{
+        width: 28,
+        height: 28,
+        flex: '0 0 auto',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--ds-background-brand-bold)',
+        color: 'var(--ds-text-inverse)',
+        border: 'none',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        padding: 0,
+        transition: 'background var(--cv2-transition-fast)',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.background =
+          'var(--ds-background-brand-bold-hovered)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.background =
+          'var(--ds-background-brand-bold)';
+      }}
+    >
+      <svg
+        width={14}
+        height={14}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+      </svg>
+    </button>
   );
 }
 

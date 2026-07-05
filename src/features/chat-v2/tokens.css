@@ -73,8 +73,11 @@ body[data-cv2-theme="dark"] {
   /* Rail removed 2026-06-18 — sidebar now mounts at the Catalyst shell
      position with ADS neutral tokens. --cv2-bg-rail kept as an alias to
      --cv2-bg-sidebar so any orphaned reference still resolves. */
-  --cv2-bg-rail: var(--ds-surface);
-  --cv2-bg-sidebar: var(--ds-surface);
+  /* Column layering (2026-07-05): rail + sidebar sit one elevation DOWN
+     from the message panel — the Slack depth cue the flat all-surface
+     palette was missing. Panel stays --ds-surface so content pops. */
+  --cv2-bg-rail: var(--ds-surface-sunken);
+  --cv2-bg-sidebar: var(--ds-surface-sunken);
   --cv2-bg-panel: var(--ds-surface);
   --cv2-bg-row-hover: var(--ds-background-neutral-subtle-hovered);
   --cv2-bg-row-active: var(--ds-background-selected);
@@ -117,10 +120,9 @@ body[data-cv2-theme="dark"] {
 /* ── Light theme ──────────────────────────────────────────────────── */
 .cv2-chat-shell[data-cv2-theme="light"],
 body[data-cv2-theme="light"] {
-  /* Rail removed 2026-06-18 — sidebar now mounts at the Catalyst shell
-     position with ADS neutral tokens (matches the / screen sidebar). */
-  --cv2-bg-rail: var(--ds-surface);
-  --cv2-bg-sidebar: var(--ds-surface);
+  /* Column layering — see dark block. */
+  --cv2-bg-rail: var(--ds-surface-sunken);
+  --cv2-bg-sidebar: var(--ds-surface-sunken);
   --cv2-bg-panel: var(--ds-surface);
   --cv2-bg-row-hover: var(--ds-background-neutral-subtle-hovered);
   --cv2-bg-row-active: var(--ds-background-selected);
@@ -289,4 +291,18 @@ body[data-cv2-theme="light"] {
 @keyframes cv2-summary-caret {
   0%, 50% { opacity: 0.65; }
   51%, 100% { opacity: 0; }
+}
+
+/* ── Composer elevation (2026-07-05) ──────────────────────────────────
+   Focus ring on the composer's outer bordered container. Applied via
+   className="cv2-composer-shell" in Composer.tsx; visual-only, no
+   behavior change. */
+.cv2-composer-shell:focus-within {
+  border-color: var(--ds-border-focused) !important;
+  box-shadow: 0 0 0 1px var(--ds-border-focused);
+}
+
+/* EmptyPanel hero — primary CTA hover (inline styles can't express :hover). */
+.cv2-empty-primary-btn:hover {
+  background: var(--ds-background-brand-bold-hovered) !important;
 }

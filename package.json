@@ -31,6 +31,7 @@
     "test:visual:webkit": "playwright test --config=playwright.ads.config.ts --project=visual-webkit",
     "test:visual:update": "playwright test --config=playwright.ads.config.ts --project=visual --update-snapshots",
     "test:a11y": "playwright test --config=playwright.ads.config.ts --project=a11y",
+    "test:e2e:chat": "playwright test --config=playwright.chat.config.ts",
     "scan:components": "tsx scripts/scan-components.ts",
     "scan:ads-violations": "tsx scripts/scan-ads-violations.ts",
     "storybook": "storybook dev -p 6006",

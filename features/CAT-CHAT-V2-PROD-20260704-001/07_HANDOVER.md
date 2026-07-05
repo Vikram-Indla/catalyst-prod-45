@@ -75,3 +75,40 @@ churn, portals included via body[data-cv2-theme]. Live-measured: body/sender/sid
 Remap lines carry ads-scanner ignore annotations (deliberate chat-scope scale).
 NOTE: shared checkout carries another session's untracked src/pages/testhub-lab/ WIP — it broke
 the dev overlay transiently and adds +3 to ads-audit-gate; not ours, bypass documented.
+
+## Session 004 — Slack-inventory wave (2026-07-05, commit 042f7f84b)
+- Seen receipts (DM/group DM): computeSeenCaption helper + caption under my last message;
+  live-proven (absent pre-read → "Seen" after last_read_at bump). A notch past Slack.
+- Blockquotes end-to-end + ROOT-FIX of the contentEditable lost-first-newline serializer bug
+  (block-boundary-aware join in htmlToMarkdown.walk) — fences and quotes both benefit.
+- Header bell → Slack-style notification menu (All/Mentions/Nothing + Mute) wired to
+  chat_set_notification_pref RPC; pref surfaced via useConversations. DB round-trip proven.
+- Mobile <1024px slice: single-content-column grid branching via new useMediaQuery; desktop
+  byte-identical. Runtime proof blocked (test Chrome window pinned at 1680px — maximized);
+  verified by tsc + branch-table review.
+- Legacy suites resurrected (jest.*→vi.*; they NEVER ran — collection error since commit
+  b5d40232a). 11 hidden failures repaired honestly; exposed 2 REAL bugs, both fixed:
+  hasMention email false-positive (pushed on every email in a body) and the autoDissmisMs
+  typo (Toast.autoDismissMs always undefined).
+- Chat suites now 98/98 with 0 failed SUITES — always verify vitest at suite level via
+  --reporter=json; the default reporter (and rtk compression) hides collection errors.
+- Shared-checkout hazard ongoing: another session's untracked src/pages/testhub-lab/ WIP
+  adds +57 to ads-audit-gate and intermittently breaks the dev overlay. Not ours.
+
+## Session 005 — 40x visual craft + dock (2026-07-05, commits 3a18f8097 / a207b7e3b / 07cb756e9)
+Vikram: "look is terrible, boost UI/UX 40x every aspect, best in industry, no regression."
+- tokens.css column layering: rail+sidebar → --ds-surface-sunken, panel stays --ds-surface
+  (the Slack depth cue the flat all-surface palette lacked).
+- Sidebar rows = rounded inset pills (8px inset + 6px radius), active = filled pill + 700 +
+  3px accent bar (huddle success bar wins, never double). Section headers 26px + rotating
+  chevron + hover-reveal "+" (real handlers only). 28px brand compose button in header.
+- EmptyPanel rebuilt into a hero (96px twin-bubble glyph, title/copy, New message + New
+  channel wired to real handlers, ⌘K hint). Composer elevated (8px radius, bold border,
+  :focus-within ring). Header member facepile (≤3 avatars + count, channels/group only,
+  zero-assumption). Reaction pills hover-lift + who-reacted title. Nav rail re-tokenised
+  (was leaking dead --cp-* vars).
+- CATY dock (separate v1 surface, own dock.css) got the pill-row craft + legible section
+  headers, CSS-only. Dock has 7 PRE-EXISTING broken tests (missing AuthProvider wrapper +
+  stale splitPinnedFavourites) — confirmed identical on clean HEAD, flagged as its own task.
+- Regression sweep: Home/DMs/Activity/channel/DM all clean live, light mode. tsc clean;
+  chat suites 98/98 0-failed-suites; vite build exit 0. ads +56 = foreign testhub-lab only.

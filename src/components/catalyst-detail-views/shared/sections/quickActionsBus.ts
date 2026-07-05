@@ -23,6 +23,7 @@ const linkWorkItemSubs = new Set<Handler>();
 const addAttachmentSubs = new Set<Handler>();
 const addWebLinkSubs = new Set<Handler>();
 const addDesignSubs = new Set<Handler>();
+const addDependencySubs = new Set<Handler>();
 
 /** "Create subtask" — subtask-family scope. Wired to SubtasksPanel. */
 export function emitCreateChild(): void {
@@ -67,6 +68,22 @@ export function useLinkWorkItemListener(handler: Handler): void {
     linkWorkItemSubs.add(handler);
     return () => {
       linkWorkItemSubs.delete(handler);
+    };
+  }, [handler]);
+}
+
+// Mirror channel for "Add Dependency" — listened to by DependenciesSection.
+// Opens the add-dependency dialog. Writes go to ph_issue_dependencies, the
+// same table the project timeline reads, so the timeline reflects new edges.
+export function emitAddDependency(): void {
+  addDependencySubs.forEach((h) => h());
+}
+
+export function useAddDependencyListener(handler: Handler): void {
+  useEffect(() => {
+    addDependencySubs.add(handler);
+    return () => {
+      addDependencySubs.delete(handler);
     };
   }, [handler]);
 }

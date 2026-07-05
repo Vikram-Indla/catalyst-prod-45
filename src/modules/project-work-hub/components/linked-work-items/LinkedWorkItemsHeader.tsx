@@ -23,6 +23,11 @@ export interface LinkedWorkItemsHeaderProps {
   onAdd?: () => void;
   canAdd?: boolean;
   bodyId: string;
+  /** Section title. Defaults to "Linked work items"; the Dependencies section
+   *  reuses this exact header with title="Dependencies". */
+  title?: string;
+  /** Add-action label + aria/title. Defaults to "Add linked work item". */
+  addLabel?: string;
 }
 
 export function LinkedWorkItemsHeader({
@@ -32,6 +37,8 @@ export function LinkedWorkItemsHeader({
   onAdd,
   canAdd = true,
   bodyId,
+  title = 'Linked work items',
+  addLabel = 'Add linked work item',
 }: LinkedWorkItemsHeaderProps) {
   return (
     <div className="lwi-header">
@@ -55,28 +62,27 @@ export function LinkedWorkItemsHeader({
           onClick={onToggle}
           style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text)', cursor: 'pointer' }}
         >
-          Linked work items
+          {title}
         </h2>
         {count > 0 && (
-          <span className="lwi-header__count" aria-label={`${count} linked`}>
+          <span className="lwi-header__count" aria-label={`${count} ${title.toLowerCase()}`}>
             {count}
           </span>
         )}
       </div>
-      {/* Show the inline header "+ Add linked work item" button only when
-          there ARE existing links. For the empty state the gray "Add linked
-          work item" link is rendered BELOW the header by LinkedWorkItems
-          (matching the SubtasksPanel "Add subtask" pattern). */}
+      {/* Show the inline header "+ Add …" button only when there ARE existing
+          items. For the empty state the gray add link is rendered BELOW the
+          header by the section (matching the SubtasksPanel "Add subtask" pattern). */}
       {expanded && count > 0 && canAdd && onAdd && (
         <button
           type="button"
           className="lwi-header__add"
           onClick={onAdd}
-          aria-label="Add linked work item"
-          title="Add linked work item"
+          aria-label={addLabel}
+          title={addLabel}
         >
           <AddIcon size="small" label="" primaryColor="var(--ds-icon)" />
-          <span>Add linked work item</span>
+          <span>{addLabel}</span>
         </button>
       )}
     </div>

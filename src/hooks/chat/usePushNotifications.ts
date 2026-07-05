@@ -60,8 +60,10 @@ export function usePushNotifications(options?: PushNotificationOptions) {
    */
   const hasMention = useCallback((text: string): boolean => {
     if (!text) return false;
-    // Simple pattern: @word where word is alphanumeric
-    return /@[\w]+/.test(text);
+    // @word at start or after whitespace/punctuation. The boundary check
+    // blocks email false-positives: "user@example.com" must NOT read as a
+    // mention of @example (it used to — any email in a body fired a push).
+    return /(^|[\s(>[{'"“])@[\w]+/.test(text);
   }, []);
 
   /**

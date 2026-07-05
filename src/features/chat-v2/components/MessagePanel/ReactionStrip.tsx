@@ -60,7 +60,8 @@ function ReactionPill({ reaction, onClick }: { reaction: ChatReaction; onClick: 
       type="button"
       onClick={onClick}
       aria-pressed={reaction.reactedByMe}
-      aria-label={`${reaction.emoji} ${reaction.count}`}
+      aria-label={`${reaction.emoji} ${reaction.count}${reaction.reactedByMe ? ', including you' : ''}`}
+      title={reaction.reactedByMe ? 'You reacted — click to remove' : 'Click to react'}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -79,7 +80,21 @@ function ReactionPill({ reaction, onClick }: { reaction: ChatReaction; onClick: 
         font: 'var(--ds-font-body-small)',
         fontWeight: 600,
         cursor: 'pointer',
-        transition: 'background var(--cv2-transition-fast)',
+        // Subtle lift on hover — the Slack micro-delight. transform is
+        // GPU-composited so it never reflows the message row.
+        transition: 'background var(--cv2-transition-fast), transform var(--cv2-transition-fast), border-color var(--cv2-transition-fast)',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
+        if (!reaction.reactedByMe) {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--cv2-border-strong)';
+        }
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+        if (!reaction.reactedByMe) {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--cv2-border)';
+        }
       }}
     >
       <span aria-hidden="true" style={{ font: 'var(--ds-font-body)', lineHeight: 1 }}>

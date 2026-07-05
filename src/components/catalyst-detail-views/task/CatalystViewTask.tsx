@@ -18,6 +18,7 @@ import {
 } from '../shared/sections';
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
@@ -116,6 +117,10 @@ export default function CatalystViewTask({
 
       <LinkedWorkItemsSection
         issueId={itemId}
+        issueKey={issue?.issue_key ?? ''}
+        projectKey={issue?.project_key || projectKey}
+      />
+      <DependenciesSection
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />

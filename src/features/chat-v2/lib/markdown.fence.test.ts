@@ -71,4 +71,11 @@ describe('htmlToMarkdown pre roundtrip', () => {
     const md = htmlToMarkdown('<div>use <code>npm ci</code> here</div>');
     expect(md).toBe('use `npm ci` here');
   });
+
+  it('preserves the newline between a bare first line and following <div> lines (contentEditable shape)', () => {
+    // execCommand insertText keeps line 1 as a text node and wraps the rest
+    // in <div>s — the join must not glue line 1 onto line 2.
+    const md = htmlToMarkdown('&gt; first quote line<div>&gt; second quote line</div><div>after</div>');
+    expect(md).toBe('> first quote line\n> second quote line\nafter');
+  });
 });

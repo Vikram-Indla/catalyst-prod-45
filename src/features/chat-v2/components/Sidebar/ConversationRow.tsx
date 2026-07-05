@@ -63,14 +63,20 @@ export function ConversationRow({
         alignItems: 'center',
         gap: 8,
         width: '100%',
-        padding: '4px 16px',
+        padding: '4px 8px',
         background: isActive ? 'var(--cv2-bg-row-active)' : 'transparent',
         border: 'none',
+        borderRadius: 'var(--cv2-radius-md)',
         textAlign: 'left',
         cursor: 'pointer',
         transition: 'background var(--cv2-transition-fast)',
         position: 'relative',
-        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' } : null),
+        // Huddle bar (success) wins over the active accent bar — never both.
+        ...(hasHuddle
+          ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' }
+          : isActive
+          ? { boxShadow: 'inset 3px 0 0 0 var(--cv2-accent)' }
+          : null),
       }}
       onMouseEnter={e => {
         if (!isActive) {
@@ -88,7 +94,7 @@ export function ConversationRow({
         style={{
           fontFamily: 'var(--cv2-font)',
           fontSize: 'var(--cv2-fs-row-name)',
-          fontWeight: hasUnread ? 700 : 500,
+          fontWeight: hasUnread || isActive ? 700 : 500,
           color: isMuted ? 'var(--cv2-text-muted)' : 'var(--cv2-text-strong)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
