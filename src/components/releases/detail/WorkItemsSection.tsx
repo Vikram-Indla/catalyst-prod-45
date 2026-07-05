@@ -443,6 +443,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             || q.queryKey[0] === 'ph_release_contributors'),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success('Removed from version.');
@@ -1170,6 +1171,7 @@ function WorkItemRow({
             || q.queryKey[0] === 'ph_release_contributors'),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success('Work item moved.');

@@ -37,6 +37,9 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess, confi
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
+      // Legacy 'projecthub' key too — release list still reads via useWHReleases,
+      // not the entity-hub queryKeyPrefix, so both must invalidate (see RCA 2026-07-06).
+      queryClient.invalidateQueries({ queryKey: ['projecthub'] });
       queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
       onSuccess?.();
       onClose();
