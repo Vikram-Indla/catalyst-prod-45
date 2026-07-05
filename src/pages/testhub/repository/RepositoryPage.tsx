@@ -48,6 +48,7 @@ import { useCaseCoverage } from '@/hooks/test-management/useCaseCoverage';
 import type { CoverageVerdict, CaseRunStatus } from '@/hooks/test-management/useCaseCoverage';
 import { AddToCycleSetSheet } from './AddToCycleSetSheet';
 import type { LinkTarget } from './AddToCycleSetSheet';
+import { useCaseStatusConfig } from '@/hooks/test-management/useCaseStatusConfig';
 // D4 (2026-06-27) — view/edit a case via the canonical CatalystViewBase shell
 // (entityKind='test_case'). Router wires query params to detail panel.
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
@@ -516,14 +517,24 @@ function FolderTreeView({
 
 // ── Status / Priority cells ───────────────────────────────────────────────────
 
-function CaseStatusPill({ status }: { status: CaseStatus }) {
+// Maps the UI status vocabulary (DRAFT/REVIEW/APPROVED/DEPRECATED) back to the
+// tm_case_status enum key used by tm_case_status_config (S6b).
+const UI_STATUS_TO_KEY: Record<string, string> = {
+  DRAFT: 'draft', REVIEW: 'ready', APPROVED: 'approved', DEPRECATED: 'deprecated',
+  draft: 'draft', ready: 'ready', approved: 'approved', deprecated: 'deprecated',
+};
+
+function CaseStatusPill({ status, override }: {
+  status: CaseStatus;
+  // S6b: when the project has a saved workflow, the label + ADS category come
+  // from tm_case_status_config; otherwise this is undefined and the hardcoded
+  // canonical map below is used verbatim (unconfigured = unchanged behaviour).
+  override?: { label: string; appearance: 'success' | 'removed' | 'inprogress' | 'default' };
+}) {
+  if (override) return <Lozenge appearance={override.appearance}>{override.label}</Lozenge>;
   // D032: useTestCases normalises the tm_case_status enum to the UI vocabulary
-  // DRAFT/REVIEW/APPROVED/DEPRECATED, so rows arrive uppercase. REVIEW keeps the
-  // canonical 'Review' label (matches CatalystViewTestCase). A lowercase branch
-  // is kept for any caller that passes raw enum values, so the pill never falls
-  // through to a raw string. @atlaskit/lozenge owns its dark-mode-correct colour
-  // via `appearance` — no hardcoded pastel (D070). REVIEW moves from 'moved' (a
-  // pale-purple pastel that is low-contrast in dark mode) to 'inprogress'.
+  // DRAFT/REVIEW/APPROVED/DEPRECATED, so rows arrive uppercase. @atlaskit/lozenge
+  // owns its dark-mode-correct colour via `appearance` — no hardcoded pastel.
   const map: Record<string, { appearance: 'success' | 'moved' | 'removed' | 'inprogress' | 'default'; label: string }> = {
     DRAFT:      { appearance: 'default',    label: 'Draft' },
     REVIEW:     { appearance: 'inprogress', label: 'Review' },
@@ -682,6 +693,17 @@ export default function RepositoryPage() {
   const createCase = useCreateTestCase({ silent: true });
   // S2: real project-hub traceability (ph_issues links + latest run) per case.
   const { data: coverageMap } = useCaseCoverage(projectId);
+  // S6b: per-project status workflow — drives the status pill label + category
+  // when configured. Falls back to the canonical hardcoded pill otherwise.
+  const { data: statusCfg } = useCaseStatusConfig(projectId);
+  const statusOverride = useMemo(() => {
+    if (!statusCfg?.isCustom) return undefined;
+    const byKey = new Map(statusCfg.config.map(c => [c.status_key, c]));
+    return (uiStatus: string) => {
+      const c = byKey.get(UI_STATUS_TO_KEY[uiStatus] ?? '');
+      return c ? { label: c.display_label, appearance: c.category } : undefined;
+    };
+  }, [statusCfg]);
   // S3: inline quick-create footer state.
   const [footerCreateActive, setFooterCreateActive] = useState(false);
   const [inlineSubmitting, setInlineSubmitting] = useState(false);
@@ -822,7 +844,7 @@ export default function RepositoryPage() {
       id: 'status',
       label: 'Status',
       width: 12,
-      cell: ({ row }) => <CaseStatusPill status={row.status} />,
+      cell: ({ row }) => <CaseStatusPill status={row.status} override={statusOverride?.(row.status)} />,
     },
     {
       id: 'priority',
@@ -831,7 +853,7 @@ export default function RepositoryPage() {
       cell: ({ row }) => {
         if (row.priority_ref) {
           return (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)', fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text-subtle)' }}>
               <span style={{
                 width: 8, height: 8, borderRadius: '50%',
                 background: row.priority_ref.color ?? 'var(--ds-background-neutral)',
@@ -1103,7 +1125,7 @@ export default function RepositoryPage() {
                     border: '1px solid var(--ds-border)',
                     borderRadius: 6, fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)',
                     fontWeight: 500, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 6,
+                    display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)',
                   }}
                 >
                   <Edit2 size={14} />
@@ -1117,7 +1139,7 @@ export default function RepositoryPage() {
                     color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 6,
                     fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)',
                     fontWeight: 600, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 6,
+                    display: 'flex', alignItems: 'center', gap: 'var(--ds-space-075)',
                   }}
                 >
                   <Plus size={16} />
