@@ -40,6 +40,12 @@ import { catalystToast } from '@/lib/catalystToast';
 import { WikiTranslateBar } from './WikiTranslateBar';
 import { GenerateStoriesFromPage } from './GenerateStoriesFromPage';
 import { WikiPresence } from './WikiPresence';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import * as Y from 'yjs';
+import { SupabaseYjsProvider, collabColor } from './editor/SupabaseYjsProvider';
+import { u8ToPgHex, pgHexToU8 } from './editor/ydocBytea';
+import { seedYdocFromContent } from './editor/seedYdoc';
 
 const WikiEditor = lazy(() => import('./editor/WikiEditor'));
 const AtlaskitRenderer = lazy(() => import('@/components/shared/AtlaskitRenderer'));
@@ -128,6 +134,77 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     });
   }, [page.id]);
 
+  // ---- Real-time co-editing (CAT-DOCEX-DB-COEDIT-20260705-001 C2/C3) ----
+  // One Yjs provider per open page, keyed by page id. Construction opens a
+  // real Realtime subscription (a side effect) — MUST live in useEffect, not
+  // useMemo (C1 root cause: Strict Mode double-invokes memo factories,
+  // orphaning a duplicate subscription with no cleanup hook to catch it).
+  const [collabProvider, setCollabProvider] = useState<SupabaseYjsProvider | null>(null);
+  const [peerCount, setPeerCount] = useState(1);
+  const peerCountRef = useRef(1);
+  useEffect(() => {
+    peerCountRef.current = peerCount;
+  }, [peerCount]);
+  const { user: authUser } = useAuth();
+
+  useEffect(() => {
+    if (page.content_format !== 'blocknote') {
+      setCollabProvider(null);
+      return;
+    }
+    let cancelled = false;
+    const p = new SupabaseYjsProvider(page.id);
+    const onAwareness = () => setPeerCount(Math.max(1, p.awareness.getStates().size));
+    p.awareness.on('change', onAwareness);
+
+    // Hydration MUST read the database directly, not the `page` prop: React
+    // Query can serve a stale cached snapshot on first render while a
+    // fresher fetch resolves in the background, and this effect (correctly
+    // scoped to [page.id, page.content_format] so autosaves don't re-trigger
+    // it) only ever runs once per page — if it captured a stale, pre-edit
+    // ydoc_state/content, the real persisted content would never surface
+    // (reproduced live: content_text/ydoc_state were correct in the DB, but
+    // hydration silently used an older, empty snapshot).
+    const seedReady = (async () => {
+      const { data } = await (
+        supabase as unknown as { from: (t: string) => any }
+      )
+        .from('kb_documents')
+        .select('content, ydoc_state')
+        .eq('id', page.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const hydrated = pgHexToU8(data?.ydoc_state as string | null);
+      if (hydrated && hydrated.length > 2) {
+        Y.applyUpdate(p.doc, hydrated, 'hydrate');
+      } else {
+        // First-ever collab session for this page: the fragment starts
+        // blank. Seed it from the pre-Yjs jsonb content BEFORE the real
+        // editor attaches, or the existing content silently vanishes
+        // (reproduced live — a page's own words disappeared this way).
+        await seedYdocFromContent(p.fragment, (data?.content as Block[]) ?? []);
+      }
+    })();
+
+    void seedReady.then(() => {
+      if (!cancelled) setCollabProvider(p);
+    });
+
+    return () => {
+      cancelled = true;
+      p.awareness.off('change', onAwareness);
+      p.destroy();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page.id, page.content_format]);
+
+  const collab = useMemo(() => {
+    if (!collabProvider) return undefined;
+    const meta = (authUser?.user_metadata ?? {}) as { full_name?: string; name?: string };
+    const name = meta.full_name || meta.name || authUser?.email || 'Anonymous';
+    return { provider: collabProvider, user: { name, color: collabColor(authUser?.id ?? 'anon') } };
+  }, [collabProvider, authUser]);
+
   // ---- Title (seamless, Notion-style) ----
   const [title, setTitle] = useState(page.title);
   useEffect(() => setTitle(page.title), [page.id, page.title]);
@@ -153,6 +230,45 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   const [saveFailed, setSaveFailed] = useState(false);
   const [conflictDoc, setConflictDoc] = useState<Block[] | null>(null);
 
+  // Periodic ydoc_state checkpoint (independent of the content-projection
+  // autosave) so a collab session survives everyone leaving. Must update
+  // serverUpdatedAt the same way flush() does — otherwise a checkpoint moves
+  // the server's updated_at behind flush()'s back and the NEXT solo content
+  // save false-fires the conflict banner against itself.
+  useEffect(() => {
+    if (!collabProvider) return;
+    const doc = collabProvider.doc;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const checkpoint = () => {
+      const state = Y.encodeStateAsUpdate(doc);
+      if (state.length <= 2) return; // empty doc — nothing to persist yet
+      updatePage.mutate(
+        { id: page.id, spaceId: page.space_id, patch: { ydoc_state: u8ToPgHex(state) } },
+        { onSuccess: (nextUpdatedAt) => {
+            if (nextUpdatedAt) serverUpdatedAt.current = nextUpdatedAt;
+          } },
+      );
+    };
+    // Debounced on every doc change (not just a 60s tick/unmount) — a real
+    // tab close aborts in-flight requests, so waiting for unmount to fire
+    // the FIRST checkpoint is not reliable enough for a page's only copy.
+    const onDocUpdate = (_update: Uint8Array, origin: unknown) => {
+      if (origin === 'hydrate') return; // hydration itself needs no re-save
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(checkpoint, 4000);
+    };
+    doc.on('update', onDocUpdate);
+    const interval = setInterval(checkpoint, 60_000);
+    return () => {
+      doc.off('update', onDocUpdate);
+      clearInterval(interval);
+      if (debounceTimer) clearTimeout(debounceTimer);
+      checkpoint();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collabProvider, page.id, page.space_id]);
+
   const flush = useCallback(() => {
     if (saveTimer.current) {
       clearTimeout(saveTimer.current);
@@ -166,7 +282,10 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         id: page.id,
         spaceId: page.space_id,
         patch: { content: doc, content_text: blocksToText(doc), content_format: 'blocknote' },
-        guardUpdatedAt: serverUpdatedAt.current,
+        // With a co-editor present, Yjs's CRDT already resolved any merge —
+        // the updated_at guard would otherwise false-positive as two
+        // collaborators' 1.5s autosaves race each other's timestamp.
+        guardUpdatedAt: peerCountRef.current > 1 ? undefined : serverUpdatedAt.current,
       },
       {
         // Confirmed on the server — the local journal entry is now redundant.
@@ -966,6 +1085,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                   workspaceId={workspace.id}
                   workspaceSlug={workspace.slug}
                   uploadFile={uploadWikiFile}
+                  collab={collab}
                 />
               </WikiEditorBoundary>
             </div>
