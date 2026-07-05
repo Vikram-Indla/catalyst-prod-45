@@ -201,7 +201,9 @@ const BrowsePage = lazy(() => import("../pages/BrowsePage"));
 const DependencyMapsPage = lazy(() => import("../pages/reports/DependencyMapsPage"));
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
-const StrategyRoom = lazy(() => import("../modules-dormant/strategy/StrategyRoom"));
+// CAT-STRATA-20260705-001 (D-009/Q2): dormant StrategyRoom decommissioned;
+// the strategy surface is now STRATA at /strata.
+const StrataRoutesShell = lazy(() => import("../modules/strata/StrataRoutes"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
@@ -590,11 +592,10 @@ export default function FullAppRoutes() {
         <Route path="/search" element={<S><SearchPage /></S>} />
 
         {/* ═══ StrategyHub ═══ */}
-        <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/executive-brief" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/*" element={<Navigate to="/strategyhub" replace />} />
+        {/* CAT-STRATA-20260705-001: STRATA replaces StrategyHub. Legacy
+            /strategyhub and /strategy-room redirects live in App.tsx OUTSIDE
+            CatalystShell (Navigate inside FullAppRoutes is swallowed). */}
+        <Route path="/strata/*" element={<MG k="strategyhub" t="STRATA"><S><StrataRoutesShell /></S></MG>} />
 
         <Route path="/portfolio/:portfolioKey/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />

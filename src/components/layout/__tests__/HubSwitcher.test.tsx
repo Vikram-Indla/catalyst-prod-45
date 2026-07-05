@@ -127,7 +127,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
         .map((el) => [labelOf(el), el.getAttribute('href')]),
     );
     expect(hrefByLabel.Home).toBe('/for-you');
-    expect(hrefByLabel.Strategy).toBe('/strategyhub');
+    expect(hrefByLabel.STRATA).toBe('/strata');
     expect(hrefByLabel.Ideation).toBe('/ideation/backlog');
     expect(hrefByLabel.Product).toBe('/product-hub');
     expect(hrefByLabel.Project).toBe('/project-hub');
@@ -181,7 +181,7 @@ describe('HubSwitcher v2 — search-to-filter', () => {
       target: { value: '  STR  ' },
     });
     const matches = screen.getAllByRole('link').map((el) => labelOf(el));
-    expect(matches).toEqual(['Strategy']);
+    expect(matches).toEqual(['STRATA']);
   });
 
   it('hides empty sections when the filter excludes all their hubs', () => {
@@ -218,7 +218,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
 
   it.each([
     ['1', '/for-you'],
-    ['2', '/strategyhub'],
+    ['2', '/strata'],
     ['3', '/ideation/backlog'],
     ['4', '/product-hub'],
     ['5', '/project-hub'],

@@ -15,15 +15,21 @@ export interface RouteConfig {
  * Key: route path (use exact paths, dynamic params use :param syntax)
  */
 export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
-  // Strategy Hub routes
-  '/strategyhub': { section: '', pageTitle: 'Strategy Room' },
-  '/strategyhub/themes': { section: '', pageTitle: 'Strategic Themes' },
-  '/strategyhub/goals': { section: '', pageTitle: 'Goals & Key Results' },
-  '/strategyhub/investment': { section: '', pageTitle: 'Investment Allocation' },
-  '/strategyhub/snapshots': { section: '', pageTitle: 'Snapshots' },
-  '/strategyhub/ai-insights': { section: '', pageTitle: 'AI Insights' },
-  '/strategyhub/team-alignment': { section: '', pageTitle: 'Team Alignment' },
-  '/strategyhub/settings': { section: '', pageTitle: 'Settings' },
+  // STRATA routes (CAT-STRATA-20260705-001 — replaces Strategy Hub)
+  '/strata': { section: '', pageTitle: 'STRATA Command Center' },
+  '/strata/strategy': { section: '', pageTitle: 'Strategy Room' },
+  '/strata/strategy/map': { section: '', pageTitle: 'Strategy Map' },
+  '/strata/scorecards': { section: '', pageTitle: 'Scorecards' },
+  '/strata/scorecards/:slug': { section: '', pageTitle: 'Scorecard' },
+  '/strata/kpis': { section: '', pageTitle: 'KPI & OKR Library' },
+  '/strata/kpis/:slug': { section: '', pageTitle: 'KPI Detail' },
+  '/strata/execution': { section: '', pageTitle: 'Execution Linkage' },
+  '/strata/portfolio': { section: '', pageTitle: 'Portfolio & Value Realization' },
+  '/strata/data': { section: '', pageTitle: 'Data Pipeline & Lineage' },
+  '/strata/data/runs/:runKey': { section: '', pageTitle: 'Upload Run' },
+  '/strata/reviews': { section: '', pageTitle: 'Reviews & Decisions' },
+  '/strata/reviews/:snapshotKey': { section: '', pageTitle: 'Snapshot' },
+  '/strata/admin': { section: '', pageTitle: 'STRATA Configuration' },
   '/planhub/capacity': { section: '', pageTitle: 'Capacity Planner' },
   '/planhub/budget-planner': { section: '', pageTitle: 'Budget Planner' },
   '/enterprise/work-tree': { section: '', pageTitle: 'Work Tree' },
