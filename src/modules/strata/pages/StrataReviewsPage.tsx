@@ -40,8 +40,11 @@ import {
   useBoardPacks,
   useProfileNames,
   useStrataAudit,
+  useStrataRoles,
   useInvalidateStrata,
 } from '@/modules/strata/hooks/useStrata';
+import { generateBoardPackPdf, generateBoardPackPptx } from '@/modules/strata/lib/boardPack';
+import type { BoardPackData } from '@/modules/strata/lib/boardPack';
 import {
   StrataPageShell,
   StrataPanel,
@@ -311,7 +314,7 @@ function ClosePeriodModal({ open, onClose, period }: {
 export default function StrataReviewsPage() {
   const navigate = useNavigate();
   const { snapshotKey } = useParams<{ snapshotKey?: string }>();
-  const { periods, activeCycle, activePeriod } = useStrataContext();
+  const { cycles, periods, activeCycle, activePeriod } = useStrataContext();
 
   const snapshotsQ = useSnapshots();
   const snapshots = useMemo(() => snapshotsQ.data ?? [], [snapshotsQ.data]);
@@ -331,6 +334,15 @@ export default function StrataReviewsPage() {
   const [expandedDecisionId, setExpandedDecisionId] = useState<string | null>(null);
   const [lockOpen, setLockOpen] = useState(false);
   const [closeOpen, setCloseOpen] = useState(false);
+
+  // ── Client-side board-pack generation (Q7: PDF + PPTX; server engine has no channel yet) ──
+  const rolesQ = useStrataRoles();
+  const invalidate = useInvalidateStrata();
+  const [packBusy, setPackBusy] = useState<'pdf' | 'pptx' | null>(null);
+  const [packError, setPackError] = useState<string | null>(null);
+  const [packNote, setPackNote] = useState<string | null>(null);
+  // Pack messages describe ONE snapshot's generation — never carry them across a switch.
+  React.useEffect(() => { setPackError(null); setPackNote(null); }, [snapshotKey]);
 
   const canLock = !!activeCycle && !!activePeriod;
 
@@ -367,6 +379,64 @@ export default function StrataReviewsPage() {
 
   const configCount = selected?.config_versions ? Object.keys(selected.config_versions).length : 0;
   const runCount = selected?.data_run_ids?.length ?? 0;
+
+  /**
+   * Build + download the executive pack from the LOADED cockpit data (no refetch,
+   * no recalculation — every value is the frozen payload as rendered on screen).
+   * If a pending pack row exists for this format AND the user holds strategy_office
+   * (the only role RLS lets UPDATE strata_board_packs), reconcile it to 'ready';
+   * otherwise leave the row untouched and say so — never fake server generation.
+   */
+  const generatePack = async (format: 'pdf' | 'pptx') => {
+    if (!selected) return;
+    setPackBusy(format); setPackError(null); setPackNote(null);
+    try {
+      const data: BoardPackData = {
+        snapshot: selected,
+        cycleName: cycles.find((c) => c.id === selected.cycle_id)?.name ?? null,
+        periodName: selected.period_id ? periodName(selected.period_id) : null,
+        evidenceGroups: evidenceGroups.map(([entityType, count]): [string, number] => [labelize(entityType), count]),
+        runCount,
+        evidence: items.map((row) => {
+          const payloadName = typeof row.payload?.name === 'string' ? row.payload.name : null;
+          const metricKey = typeof row.payload?.metric_key === 'string' ? row.payload.metric_key : null;
+          const rawValue = row.payload?.value;
+          const unit = typeof row.payload?.unit === 'string' ? row.payload.unit : null;
+          const statusKey = typeof row.payload?.status_key === 'string' ? row.payload.status_key : null;
+          return {
+            entityType: labelize(row.entity_type),
+            metric: payloadName ?? (metricKey ? labelize(metricKey) : '—'),
+            value: (typeof rawValue === 'number' || typeof rawValue === 'string') ? fmtUnit(rawValue, unit) : '—',
+            band: statusKey ? labelize(statusKey) : '—',
+          };
+        }),
+        decisions: snapshotDecisions,
+        openActions: snapshotDecisions
+          .flatMap((d) => actionsByDecision.get(d.id) ?? [])
+          .filter((a) => a.status === 'open' || a.status === 'in_progress')
+          .map((a) => ({ action: a, ownerName: profileName(a.owner_id) })),
+      };
+      const filename = format === 'pdf' ? await generateBoardPackPdf(data) : await generateBoardPackPptx(data);
+
+      const pending = (boardPacksQ.data ?? []).find((bp) => bp.format === format && bp.status === 'pending');
+      const canReconcile = (rolesQ.data ?? []).includes('strategy_office');
+      if (pending && canReconcile) {
+        try {
+          await governanceApi.markBoardPackReady(pending.id);
+          invalidate();
+          setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot; the pending pack record was marked ready.`);
+        } catch {
+          setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot. The pack record could not be updated and was left untouched.`);
+        }
+      } else {
+        setPackNote(`${filename} downloaded — generated locally in your browser from the frozen snapshot data.`);
+      }
+    } catch (e) {
+      setPackError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPackBusy(null);
+    }
+  };
 
   // Rail failure blanks the page; detail-column failures stay in the detail column.
   const railError = snapshotsQ.error as Error | null;
@@ -656,7 +726,52 @@ export default function StrataReviewsPage() {
                   ) : null}
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                    <StrataPanel title="Board packs" icon={<FileBarChart size={16} />} count={(boardPacksQ.data ?? []).length} testId="strata-reviews-board-packs">
+                    <StrataPanel
+                      title="Board packs"
+                      icon={<FileBarChart size={16} />}
+                      count={(boardPacksQ.data ?? []).length}
+                      testId="strata-reviews-board-packs"
+                      actions={
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <Tooltip content="Builds the executive PDF in your browser from this snapshot's frozen data">
+                            <Button
+                              appearance="primary"
+                              spacing="compact"
+                              onClick={() => generatePack('pdf')}
+                              isDisabled={packBusy !== null}
+                              testId="strata-reviews-generate-pack-pdf"
+                            >
+                              {packBusy === 'pdf' ? 'Generating…' : 'Generate board pack (PDF)'}
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Builds the executive PPTX in your browser from this snapshot's frozen data">
+                            <Button
+                              appearance="default"
+                              spacing="compact"
+                              onClick={() => generatePack('pptx')}
+                              isDisabled={packBusy !== null}
+                              testId="strata-reviews-generate-pack-pptx"
+                            >
+                              {packBusy === 'pptx' ? 'Generating…' : 'PPTX'}
+                            </Button>
+                          </Tooltip>
+                        </div>
+                      }
+                    >
+                      {packError ? (
+                        <div style={{ marginBottom: 8 }}>
+                          <SectionMessage appearance="error" title="Board pack generation failed">
+                            <p>{packError}</p>
+                          </SectionMessage>
+                        </div>
+                      ) : null}
+                      {packNote ? (
+                        <div style={{ marginBottom: 8 }}>
+                          <SectionMessage appearance="success" title="Board pack generated locally">
+                            <p>{packNote}</p>
+                          </SectionMessage>
+                        </div>
+                      ) : null}
                       {(boardPacksQ.data ?? []).length === 0 ? (
                         <EmptyState size="compact" header="No board packs" description="Generated board packs for this snapshot appear here." />
                       ) : (
