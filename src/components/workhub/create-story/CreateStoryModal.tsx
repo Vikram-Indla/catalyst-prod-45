@@ -105,6 +105,7 @@ import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
 // ── Test Case (Repository) work type → tm_test_cases (TestHub) ────────────────
 import { useCreateTestCase } from '@/hooks/test-management/useTestCases';
+import { StepEditor, type StepInput } from '@/pages/testhub/repository/StepEditor';
 import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 import type { DefectSeverity } from '@/types/test-management';
 // CRE chokepoint (Grids A + D): module-scoped catalogues are filtered through
@@ -640,6 +641,7 @@ export function CreateStoryModal({
   const [testCasePreconditions, setTestCasePreconditions] = useState('');
   const [testCasePriorityId, setTestCasePriorityId] = useState<string>('');
   const [testCaseFolderId, setTestCaseFolderId] = useState<string>(initialFolderId ?? '');
+  const [testCaseSteps, setTestCaseSteps] = useState<StepInput[]>([]);
   // Resolve the canonical project to its tm_projects mirror so the folder +
   // priority pickers query the same project the case will be written under.
   const canonicalTmProject = useMemo(
@@ -694,6 +696,7 @@ export function CreateStoryModal({
     setTestCasePreconditions('');
     setTestCasePriorityId('');
     setTestCaseFolderId('');
+    setTestCaseSteps([]);
   }, []);
   // Pre-select the folder when opened with one (from RepositoryPage).
   useEffect(() => {
@@ -1071,6 +1074,8 @@ export function CreateStoryModal({
           priority_id: testCasePriorityId || undefined,
           folder_id: testCaseFolderId || undefined,
           assigned_to: form.assigneeId || undefined,
+          // Only persist steps the author actually filled in (drop empty rows).
+          steps: testCaseSteps.filter((s) => s.action.trim() || s.expected_result.trim()),
         });
         flag.success(`${created.key} created`);
         onSuccess?.(created.key);
@@ -1659,6 +1664,10 @@ export function CreateStoryModal({
                         isSearchable
                       />
                     )}
+                  </Field>
+
+                  <Field name="steps" label="Test steps">
+                    {() => <StepEditor steps={testCaseSteps} onChange={setTestCaseSteps} />}
                   </Field>
                 </>
               )}

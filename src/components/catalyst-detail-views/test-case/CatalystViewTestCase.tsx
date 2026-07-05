@@ -38,7 +38,8 @@ import {
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
-import { TmCommentsSection } from '@/components/testhub/TmCommentsSection';
+import { TestCaseStepsEditor } from './TestCaseStepsEditor';
+import { TmActivitySection } from './TmActivitySection';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -354,47 +355,12 @@ export default function CatalystViewTestCase({
     [priorities],
   );
 
-  /* ── Steps read-only render. ── */
+  /* ── Steps: persistence-backed editor (P0 — was read-only). ── */
   const steps = testCase?.steps ?? [];
 
-  const stepsPanel = (
-    <div style={{ padding: '8px 16px' }}>
-      {steps.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No steps.</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {steps.map((s: any, i: number) => (
-            <div key={s.id ?? i} style={{
-              border: '1px solid var(--ds-border)',
-              borderRadius: 6,
-              padding: 12,
-              background: 'var(--ds-surface-raised)',
-            }}>
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
-                Step {s.step_number ?? i + 1}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 'var(--ds-font-size-300)' }}>
-                <div>
-                  <div style={miniLabel}>Action</div>
-                  <div style={{ color: 'var(--ds-text)' }}>{s.action || '—'}</div>
-                </div>
-                <div>
-                  <div style={miniLabel}>Expected result</div>
-                  <div style={{ color: 'var(--ds-text)' }}>{s.expected_result || '—'}</div>
-                </div>
-              </div>
-              {s.test_data ? (
-                <div style={{ marginTop: 8 }}>
-                  <div style={miniLabel}>Test data</div>
-                  <div style={{ color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)' }}>{s.test_data}</div>
-                </div>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  const stepsPanel = itemId ? (
+    <TestCaseStepsEditor testCaseId={itemId} steps={steps as any} />
+  ) : null;
 
   /* ── Versions read-only render. [MM6] useTestCaseVersions authoritative. ── */
   const versionsPanel = (
@@ -734,20 +700,10 @@ export default function CatalystViewTestCase({
     </div>
   );
 
-  /* ── Comments tab body (G14 COL-001). ── */
-  const { data: commentCount = 0 } = useQuery({
-    queryKey: ['tm-comments-count', 'test_case', itemId],
-    enabled: !!itemId,
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('tm_comments').select('id', { count: 'exact', head: true })
-        .eq('entity_type', 'test_case').eq('entity_id', itemId!);
-      return count ?? 0;
-    },
-  });
-  const commentsPanel = (
+  /* ── Activity tab body: canonical ActivityPanel (comments + audit history). ── */
+  const activityPanel = (
     <div style={{ padding: '8px 16px' }}>
-      <TmCommentsSection entityType="test_case" entityId={itemId} />
+      <TmActivitySection entityType="test_case" entityId={itemId} />
     </div>
   );
 
@@ -812,13 +768,13 @@ export default function CatalystViewTestCase({
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
               <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
               <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
-              <Tab>Comments{commentCount ? ` (${commentCount})` : ''}</Tab>
+              <Tab>Activity</Tab>
             </TabList>
             <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
             <TabPanel>{versionsPanel}</TabPanel>
             <TabPanel>{requirementsPanel}</TabPanel>
-            <TabPanel>{commentsPanel}</TabPanel>
+            <TabPanel>{activityPanel}</TabPanel>
           </Tabs>
         </div>
       </>
@@ -929,11 +885,3 @@ export default function CatalystViewTestCase({
   );
 }
 
-const miniLabel: React.CSSProperties = {
-  fontSize: 'var(--ds-font-size-100)',
-  fontWeight: 600,
-  color: 'var(--ds-text-subtlest)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: 0,
-};
