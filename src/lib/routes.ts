@@ -240,6 +240,8 @@ export const strataRoutes = {
   portfolioEvidence: (slug: string) => `/strata/portfolio/${slug}/evidence`,
   benefit: (benefitSlug: string) => `/strata/portfolio/benefits/${benefitSlug}`,
   data: () => '/strata/data',
+  // Governed upload wizard (static slug-safe path — no params)
+  upload: () => '/strata/data/upload',
   // runKey is the display key e.g. "RUN-1001" — no UUID in URL
   run: (runKey: string) => `/strata/data/runs/${runKey}`,
   reviews: () => '/strata/reviews',

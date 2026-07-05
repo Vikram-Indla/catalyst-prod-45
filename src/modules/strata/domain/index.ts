@@ -277,6 +277,53 @@ export const lineageApi = {
     run(typedQuery('strata_validation_results').select('*').eq('upload_run_id', uploadRunId)),
   lineageForEntity: (entityTable: string, entityId: string) =>
     run(typedQuery('strata_lineage_records').select('*').eq('entity_table', entityTable).eq('entity_id', entityId)),
+  /**
+   * Governed ingest adapter (upload wizard). There is NO strata_ingest_* RPC
+   * yet — RLS permits the run initiator (data_steward / kpi_owner /
+   * strategy_office) to insert runs + staging rows directly, so this is the
+   * honest client write path: create run → stage raw rows (validation_status
+   * 'pending') → mark the run 'staging'. Validation/attestation/canonical
+   * write stay server-side (strata_attest_actual + future validation RPC).
+   */
+  createUploadRun: (input: {
+    data_source_id: string | null;
+    template_id: string | null;
+    template_version: number | null;
+    channel: StrataUploadRun['channel'];
+    file_name: string | null;
+    file_hash: string | null;
+    row_count_raw: number;
+  }): Promise<StrataUploadRun> =>
+    run(typedQuery('strata_upload_runs').insert(input).select('*').single()),
+  insertStagingRows: async (
+    uploadRunId: string,
+    rows: Array<{ row_number: number; raw: Record<string, unknown>; target_entity: string | null }>,
+  ): Promise<number> => {
+    const BATCH = 500;
+    let inserted = 0;
+    for (let i = 0; i < rows.length; i += BATCH) {
+      const batch = rows.slice(i, i + BATCH).map((r) => ({
+        upload_run_id: uploadRunId,
+        row_number: r.row_number,
+        raw: r.raw,
+        target_entity: r.target_entity,
+        validation_status: 'pending',
+      }));
+      const out: Array<{ id: string }> = await run(
+        typedQuery('strata_staging_rows').insert(batch).select('id'),
+      );
+      inserted += out.length;
+    }
+    return inserted;
+  },
+  markRunStaged: (runId: string, rowCountRaw: number): Promise<StrataUploadRun> =>
+    run(
+      typedQuery('strata_upload_runs')
+        .update({ status: 'staging', row_count_raw: rowCountRaw })
+        .eq('id', runId)
+        .select('*')
+        .single(),
+    ),
   /** Latest calculated values (provenance included) for an entity. */
   calcValues: (entityType: string, entityId: string, limit = 20): Promise<StrataCalculatedValue[]> =>
     run(typedQuery('strata_calculated_values').select('*')

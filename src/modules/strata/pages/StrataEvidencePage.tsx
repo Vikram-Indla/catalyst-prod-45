@@ -120,6 +120,7 @@ export default function StrataEvidencePage() {
   return (
     <StrataPageShell
       trail={trail}
+      title={entity ? `${entity.name} — Evidence` : 'Evidence'}
       docTitle={entity ? `${entity.name} — Evidence` : undefined}
       testId="strata-evidence-page"
     >

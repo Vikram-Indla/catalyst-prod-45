@@ -600,6 +600,7 @@ function RunDetailSection({ runKey, detail }: { runKey: string; detail: RunDetai
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataDataPipelinePage() {
   const { runKey } = useParams<{ runKey?: string }>();
+  const navigate = useNavigate();
   // Lifted to page level so the pipeline stepper reflects the viewed run's state.
   const detail = useRunDetail(runKey);
 
@@ -611,11 +612,14 @@ export default function StrataDataPipelinePage() {
       ] : undefined}
       docTitle={runKey ?? undefined}
       headerActions={
-        <Tooltip content="Upload wizard ships in the next slice">
-          <Button appearance="primary" iconBefore={<Upload size={14} />} isDisabled>
-            Upload data
-          </Button>
-        </Tooltip>
+        <Button
+          appearance="primary"
+          iconBefore={<Upload size={14} />}
+          onClick={() => navigate(Routes.strata.upload())}
+          testId="strata-upload-data-cta"
+        >
+          Upload data
+        </Button>
       }
       testId="strata-data-pipeline-chrome"
     >
