@@ -207,7 +207,7 @@ export function useKanbanData(
   );
 
   /* ── PROJECT meta ─────────────────────────────────────────────────────── */
-  const { data: projMeta } = useQuery({
+  const { data: projMeta, isLoading: projMetaLoading } = useQuery({
     queryKey: ['kb-project-meta', key],
     queryFn: async () => {
       if (!key) return null;
@@ -220,7 +220,7 @@ export function useKanbanData(
   });
 
   /* ── PRODUCT meta ─────────────────────────────────────────────────────── */
-  const { data: productMeta } = useQuery({
+  const { data: productMeta, isLoading: productMetaLoading } = useQuery({
     queryKey: ['kb-product-meta', key],
     queryFn: async () => {
       if (!key) return null;
@@ -769,8 +769,15 @@ export function useKanbanData(
     boardConfig,
     boards: (isProduct || isIncident || isTasks || isRelease || isTest) ? [] : boards,
     issues,
+    /* 2026-07-06 RCA fix — product mode's issues query is `enabled: !!productId`,
+       so it resolves isLoading=false immediately (never fetches) when the key
+       doesn't match a real product, before productMeta itself has settled.
+       Fold the meta query's own loading state in so callers can't observe a
+       false "not found" flash while existence is still being checked. Project
+       mode gets the same treatment for symmetry/future-proofing even though
+       its issues query isn't gated on projMeta today. */
     isLoading: isProduct
-      ? productLoading
+      ? (productMetaLoading || productLoading)
       : isIncident
         ? incidentLoading
         : isTasks
@@ -779,7 +786,7 @@ export function useKanbanData(
             ? releaseLoading
             : isTest
               ? testLoading
-              : projectLoading,
+              : (projMetaLoading || projectLoading),
     /* Primary issues-query failure for the active mode. Surfaced so the page
        can render a real error state instead of an empty board — a failed
        query with `?? []` defaults is otherwise indistinguishable from a

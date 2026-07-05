@@ -607,6 +607,20 @@ useEffect(() => {
     );
   }
 
+  // 2026-07-06 RCA fix — project/product modes resolve `key` straight off the
+  // URL segment with no existence check, so an arbitrary/typo'd key rendered
+  // a fully empty "ghost project" shell (sidebar + zeroed widgets) instead of
+  // a not-found state. incident/test modes always synthesize a fixed row and
+  // are unaffected. Matches the guard already used by ProjectBoardManagerPage
+  // and NativeFeatureBacklogPage.
+  if (!isLoading && !isIncident && !isTest && !project) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32, color: 'var(--ds-text-subtlest)' }}>
+        {isProduct ? 'Product not found' : 'Project not found'}
+      </div>
+    );
+  }
+
   return (
     <>
     <AtlaskitPageShell

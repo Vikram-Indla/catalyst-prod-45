@@ -455,6 +455,20 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     if (issueKey) useGlobalSearchStore.getState().openDetail({ id: issueKey });
   }, [idToKey, mode, navigate]);
 
+  // 2026-07-06 RCA fix — project/product modes take the :key straight off the
+  // URL with no existence check, so a nonexistent key rendered a full board
+  // shell (header + toolbar + empty-board state) indistinguishable from a
+  // real board with zero issues. incident/release/test/tasks modes use a
+  // fixed keyOverride sentinel, not a user-controlled param, so they're not
+  // exposed to this. Matches the guard in ProjectDashboardPage.tsx.
+  if ((mode === 'project' || mode === 'product') && !isLoading && !projectId) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: 32, color: 'var(--ds-text-subtlest)' }}>
+        {mode === 'product' ? 'Product not found' : 'Project not found'}
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', 'var(--ds-surface)') }}>
       {/* Header — canonical ProjectPageHeader (mirrors FilterPreviewPage pattern) */}
