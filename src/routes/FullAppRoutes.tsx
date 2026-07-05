@@ -350,6 +350,7 @@ const LegacyDocumentRedirect = lazy(() =>
 
 const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
 const DocexSearchPage = lazy(() => import("../pages/wiki/DocexSearchPage"));
+const DocexDatabasePage = lazy(() => import("../pages/wiki/DocexDatabasePage"));
 const WikiWorkspacePage = lazy(() => import("../pages/wiki/WikiWorkspacePage"));
 // DEV-only ternary keeps the sandbox chunk out of the production bundle
 // (the route below is also DEV-gated, but a bare lazy() would still ship it).
@@ -824,6 +825,7 @@ export default function FullAppRoutes() {
           <Route path="/docex/_sandbox" element={<S><WikiSandboxPage /></S>} />
         )}
         <Route path="/docex/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/docex/:workspaceSlug/db/:dbSlug" element={<S><DocexDatabasePage /></S>} />
         <Route path="/docex/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />

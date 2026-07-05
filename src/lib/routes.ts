@@ -222,6 +222,7 @@ export const docexRoutes = {
   search: () => '/docex/search',
   workspace: (workspaceSlug: string) => `/docex/${workspaceSlug}`,
   page: (workspaceSlug: string, pageSlug: string) => `/docex/${workspaceSlug}/${pageSlug}`,
+  database: (workspaceSlug: string, dbSlug: string) => `/docex/${workspaceSlug}/db/${dbSlug}`,
 };
 
 /** @deprecated alias — callsites migrating to Routes.docex */

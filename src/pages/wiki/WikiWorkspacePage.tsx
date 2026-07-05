@@ -19,6 +19,7 @@ import {
   useWikiPageTree,
   useWikiWorkspaceBySlug,
 } from '@/hooks/useWiki';
+import { useCreateDocexDatabase, useDocexDatabases } from '@/hooks/useDocexDatabase';
 
 const CONTAINER_LABEL: Record<string, string> = {
   project: 'Project workspace',
@@ -35,6 +36,16 @@ export default function WikiWorkspacePage() {
   const { data: page, isLoading: pageLoading } = useWikiPageBySlug(workspace?.id, pageSlug);
 
   const createPage = useCreateWikiPage();
+  const { data: databases } = useDocexDatabases(workspace?.id);
+  const createDatabase = useCreateDocexDatabase();
+
+  const handleCreateDatabase = useCallback(() => {
+    if (!workspace) return;
+    createDatabase.mutate(
+      { spaceId: workspace.id, name: 'New database' },
+      { onSuccess: (created) => navigate(Routes.docex.database(workspace.slug, created.slug)) },
+    );
+  }, [workspace, createDatabase, navigate]);
 
   const handleCreate = useCallback(
     (parentId: string | null) => {
@@ -201,6 +212,50 @@ export default function WikiWorkspacePage() {
               </p>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Databases (CAT-DOCEX-DB-COEDIT-20260705-001 D2) */}
+      <div style={{ marginTop: 40 }}>
+        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
+        <h2 style={{ font: 'var(--ds-font-heading-small)', color: 'var(--ds-text)', margin: '0 0 4px' }}>
+          Databases
+        </h2>
+        <p style={{ margin: '0 0 20px', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
+          Structured tables with views — track anything alongside your pages.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(248px, 1fr))', gap: 16 }}>
+          {(databases ?? []).map((d) => (
+            <button
+              key={d.id}
+              type="button"
+              className="wiki-tpl"
+              onClick={() => navigate(Routes.docex.database(workspace.slug, d.slug))}
+            >
+              <span className="wiki-tpl__glyph" aria-hidden>
+                <span style={{ font: 'var(--ds-font-heading-medium)' }}>{d.icon ?? '📊'}</span>
+              </span>
+              {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
+              <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
+                {d.name}
+              </h3>
+              <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+                Database
+              </p>
+            </button>
+          ))}
+          <button type="button" className="wiki-tpl" onClick={handleCreateDatabase}>
+            <span className="wiki-tpl__glyph" aria-hidden>
+              <span style={{ font: 'var(--ds-font-heading-medium)' }}>➕</span>
+            </span>
+            {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
+            <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
+              New database
+            </h3>
+            <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+              Table, board, list, gallery, calendar
+            </p>
+          </button>
         </div>
       </div>
     </div>
