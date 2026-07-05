@@ -427,11 +427,13 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
           {message.authorName}
         </div>
         <div
+          dir="auto"
           style={{
             font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text)',
             wordBreak: 'break-word',
             whiteSpace: 'pre-wrap',
+            unicodeBidi: 'plaintext',
           }}
           dangerouslySetInnerHTML={{ __html: renderMarkdownInline(message.bodyText) }}
         />

@@ -9,11 +9,46 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { chatRealtime } from '@/lib/chat/ChatRealtimeManager';
 import { resolveAvatarUrl } from '@/lib/avatars';
-import type { ChatMessage } from '@/types/chat';
+import type { ChatMessage, ChatReaction } from '@/types/chat';
 
 const db = supabase as unknown as { from: (table: string) => any };
 
-async function fetchThread(conversationId: string, parentId: string): Promise<ChatMessage[]> {
+interface ReactionRow {
+  message_id: string;
+  emoji: string;
+  user_id: string;
+}
+
+// Mirrors useMessages.ts's aggregateReactions — not exported from there to
+// avoid coupling the two hooks; the shape is small enough to keep local.
+function aggregateReactions(rows: ReactionRow[], myId: string | null): Map<string, ChatReaction[]> {
+  const byMessage = new Map<string, Map<string, { count: number; mine: boolean }>>();
+  for (const r of rows) {
+    let emojis = byMessage.get(r.message_id);
+    if (!emojis) {
+      emojis = new Map();
+      byMessage.set(r.message_id, emojis);
+    }
+    const e = emojis.get(r.emoji) ?? { count: 0, mine: false };
+    e.count += 1;
+    if (myId && r.user_id === myId) e.mine = true;
+    emojis.set(r.emoji, e);
+  }
+  const out = new Map<string, ChatReaction[]>();
+  byMessage.forEach((emojis, messageId) => {
+    out.set(
+      messageId,
+      Array.from(emojis.entries()).map(([emoji, v]) => ({
+        emoji,
+        count: v.count,
+        reactedByMe: v.mine,
+      })),
+    );
+  });
+  return out;
+}
+
+async function fetchThread(conversationId: string, parentId: string, myId: string | null): Promise<ChatMessage[]> {
   const { data: msgs, error } = await db
     .from('chat_messages')
     .select('id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at')
@@ -22,6 +57,16 @@ async function fetchThread(conversationId: string, parentId: string): Promise<Ch
     .is('deleted_at', null)
     .order('created_at', { ascending: true });
   if (error || !msgs) return [];
+
+  const ids = (msgs as Array<{ id: string }>).map((m) => m.id);
+  let reactionsByMessage = new Map<string, ChatReaction[]>();
+  if (ids.length > 0) {
+    const { data: reactions } = await db
+      .from('chat_message_reactions')
+      .select('message_id, emoji, user_id')
+      .in('message_id', ids);
+    if (reactions) reactionsByMessage = aggregateReactions(reactions as ReactionRow[], myId);
+  }
 
   const authorIds = Array.from(new Set((msgs as Array<{ author_id: string }>).map((m) => m.author_id).filter(Boolean)));
   let authorMap = new Map<string, { name: string; avatar: string | null }>();
@@ -50,7 +95,7 @@ async function fetchThread(conversationId: string, parentId: string): Promise<Ch
     createdAt: m.created_at,
     editedAt: m.edited_at,
     deletedAt: m.deleted_at,
-    reactions: [],
+    reactions: reactionsByMessage.get(m.id) ?? [],
     replyCount: 0,
     lastReplyAt: null,
     isAlsoInChannel: false,
@@ -61,10 +106,11 @@ export function useThreadMessages(conversationId: string | null, parentId: strin
   const { user } = useAuth();
   const qc = useQueryClient();
 
+  const myId = user?.id ?? null;
   const query = useQuery({
     queryKey: ['chat', 'thread', conversationId, parentId],
     enabled: !!conversationId && !!parentId,
-    queryFn: () => fetchThread(conversationId!, parentId!),
+    queryFn: () => fetchThread(conversationId!, parentId!, myId),
   });
 
   // Realtime: refresh the thread when any message in the conversation changes so
