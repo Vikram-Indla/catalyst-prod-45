@@ -125,10 +125,10 @@
   unicode-bidi: plaintext;
 }
 
-/* Empty-block placeholder ("Enter text or type / …") — legible but quiet */
-.bn-inline-content[data-is-empty-and-focused]::before,
-.bn-inline-content[class*='isEmpty']::before,
-.bn-editor [data-placeholder]::before {
+/* Empty-block placeholder ("Enter text or type / …") — BlockNote renders it
+   via ::after on the decorated block-content (live-verified); keep it quiet. */
+.bn-block-content[data-is-empty-and-focused]::after,
+.bn-block-content[data-is-only-empty-block]::after {
   color: var(--ds-text-subtlest);
 }
 

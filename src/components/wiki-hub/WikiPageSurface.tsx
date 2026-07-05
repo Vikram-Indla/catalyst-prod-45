@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Block, BlockNoteEditor } from '@blocknote/core';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ImageIcon, Smile as SmileIcon } from '@/lib/atlaskit-icons';
+import { ImageIcon, Smile as SmileIcon, Star, StarOff } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
   useUpdateWikiPage,
@@ -106,6 +106,27 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
   const duplicatePage = useDuplicatePage();
   const [historyOpen, setHistoryOpen] = useState(false);
   const lastSnapshotAt = useRef(0);
+
+  // Reading-width preference (Notion's full-width toggle), remembered per page.
+  const [fullWidth, setFullWidth] = useState(false);
+  useEffect(() => {
+    try {
+      setFullWidth(localStorage.getItem(`docex.fullwidth.${page.id}`) === '1');
+    } catch {
+      setFullWidth(false);
+    }
+  }, [page.id]);
+  const toggleFullWidth = useCallback(() => {
+    setFullWidth((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(`docex.fullwidth.${page.id}`, next ? '1' : '0');
+      } catch {
+        /* private mode */
+      }
+      return next;
+    });
+  }, [page.id]);
 
   // ---- Title (seamless, Notion-style) ----
   const [title, setTitle] = useState(page.title);
@@ -437,7 +458,17 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       `}</style>
       <div
         className="wiki-no-print"
-        style={{ padding: '12px 40px 0', display: 'flex', alignItems: 'center', gap: 12 }}
+        style={{
+          // Notion keeps navigation context visible while reading (Q2)
+          position: 'sticky',
+          top: 0,
+          zIndex: 20,
+          background: 'var(--ds-surface)',
+          padding: '12px 40px 8px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <Breadcrumbs
@@ -446,6 +477,13 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             aria-label="Page location"
           />
         </div>
+        <span
+          role="status"
+          aria-live="polite"
+          style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}
+        >
+          {conflictDoc ? '' : saveFailed ? 'Not saved' : updatePage.isPending ? 'Saving…' : 'Saved'}
+        </span>
         <WikiPresence pageId={page.id} />
         <GenerateStoriesFromPage pageId={page.id} title={page.title} getBlocks={currentBlocks} />
         <WikiTranslateBar title={page.title} getBlocks={currentBlocks} />
@@ -469,7 +507,11 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             font: 'var(--ds-font-body-small)',
           }}
         >
-          {myFavorite ? '★' : '☆'}
+          {myFavorite ? (
+            <Star style={{ width: 16, height: 16 }} />
+          ) : (
+            <StarOff style={{ width: 16, height: 16 }} />
+          )}
         </button>
         <Lozenge appearance={page.published_at ? 'success' : 'default'}>
           {page.published_at ? 'Published' : 'Draft'}
@@ -498,6 +540,11 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                   onClick: () => togglePublish(),
                 },
                 { key: 'duplicate', label: 'Duplicate', onClick: () => duplicateNow() },
+                {
+                  key: 'width',
+                  label: fullWidth ? 'Standard width' : 'Full width',
+                  onClick: () => toggleFullWidth(),
+                },
                 { key: 'history', label: 'Version history', onClick: () => setHistoryOpen(true) },
                 { key: 'save-version', label: 'Save version now', onClick: () => snapshotNow('Manual save point') },
               ],
@@ -579,7 +626,10 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         )}
       </div>
 
-      <div ref={columnRef} style={{ maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 40px 96px' }}>
+      <div
+        ref={columnRef}
+        style={{ maxWidth: fullWidth ? 'none' : 820, width: '100%', margin: '0 auto', padding: '0 40px 96px' }}
+      >
         {/* Hover action bar (Notion) — appears above the title */}
         <div
           className="wiki-titlebar wiki-no-print"
