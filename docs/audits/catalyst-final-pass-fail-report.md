@@ -1,57 +1,61 @@
-# Final Pass/Fail Report — Slice 1
+# Final Pass/Fail Report
 
 Feature Work ID: `CAT-AUDIT-REMEDIATION-20260705-001`
 
 ## 1. Executive summary
-Loaded and reconciled all 4 audit deliverables (1000 findings, 274 inventory rows, 548 route rows). Only 6 of 1000 findings are P0. Slice 1 fixed the 4 Test Hub P0s with code changes, verified via `tsc --noEmit` (0 errors project-wide) and live Chrome MCP browser verification against the running dev server. The remaining 994 P1 findings (73% of them mechanical UI_STANDARDIZATION) and the 2 Incident Hub P0s are staged in the closure ledger as `Deferred` with explicit wave assignments — nothing dropped, nothing falsely marked closed.
+Loaded and reconciled all 4 audit deliverables (1000 findings, 274 inventory rows, 548 route rows). Only 6 of 1000 findings are P0 — **all 6 now closed** (4 fixed in Slice 1, 2 more this wave: 1 fixed, 1 found already-fixed on `main`). A follow-up pass investigated the ~229 non-Test-Hub, non-mechanical P1s and found the audit's `BROKEN_DEAD_END`/`LEGACY_ROUTE_AMBIGUITY`/`OBSERVABILITY_GAP` categories are heavily false-positive-laden (keyword-substring matches on comments, test files, and markdown docs) — 122 confirmed and invalidated with evidence, 2 real fixes landed, 2 flagged for a product decision. 870 P1s remain `Deferred`, mostly the 730 mechanical `UI_STANDARDIZATION` findings (real ADS-token debt, batched separately) plus unreviewed real-code candidates.
 
 ## 2. Module-by-module fix summary
-| Module | P0 fixed | P1 fixed | Status |
-|---|---|---|---|
-| Test Hub | 4/4 | 0/166 | P0s closed this slice; P1 batch pending |
-| Release Hub | n/a (0 P0) | 0/150 | Not started |
-| Incident Hub | 0/2 | 0/148 | Not started (P0s need handover re-verification first) |
-| STRATA/Strategy | n/a (0 P0) | 0/150 | Not started |
-| Chat | n/a (0 P0) | 0/160 | Not started |
-| Project Hub | n/a (0 P0) | 0/120 | Not started |
-| Product Hub | n/a (0 P0) | 0/80 | Not started |
-| Tasks/Plan | n/a (0 P0) | 0/20 | Not started |
+| Module | P0 fixed | P1 status |
+|---|---|---|
+| Test Hub | 4/4 | 166 P1s deferred (excluded from this wave per user instruction) |
+| Release Hub | n/a (0 P0) | 2 flagged (Needs Product Decision), 148 deferred |
+| Incident Hub | 2/2 | 1 fixed, 1 invalidated (stale audit source), 148 deferred |
+| STRATA/Strategy | n/a (0 P0) | 1 fixed, 149 deferred |
+| Chat | n/a (0 P0) | 160 deferred |
+| Project Hub | n/a (0 P0) | 120 deferred |
+| Product Hub | n/a (0 P0) | 80 deferred |
+| Tasks/Plan | n/a (0 P0) | 1 fixed, 19 deferred |
 
 ## 3. Full finding closure ledger
-See `docs/audits/catalyst-finding-closure-ledger.csv` — 1000 rows, all findings accounted for.
+See `docs/audits/catalyst-finding-closure-ledger.csv` — 1000 rows, all findings accounted for. Current status breakdown: **Fixed: 6, Invalid: 122, Needs Product Decision: 2, Deferred: 870.**
 
 ## 4. P0 closure rate
-4/6 = **67%** closed this slice (CAT-0001, CAT-0002, CAT-0004, CAT-0005). 2 remain open (CAT-0009, CAT-0012 — Incident Hub, gated on handover re-verification, staged for Slice 3).
+**6/6 = 100%.** CAT-0001/0002/0004/0005 (Test Hub, Slice 1) + CAT-0009 (Incident Hub, this wave) fixed with code; CAT-0012 (Incident Hub) found already fixed on `main` by commit `d4721f501`, predating this audit's source handover doc.
 
 ## 5. P1 closure rate
-0/994 = **0%** this slice (by design — Slice 1 scope was P0-only per Plan Lock).
+2/994 = **~0.2%** fixed with code (CAT-0981, CAT-0016), 122/994 = **12%** invalidated with proof, 2/994 flagged for product decision. 870 remain deferred — 730 of them the mechanical UI_STANDARDIZATION batch (intentionally out of this wave's scope), the rest not yet individually verified real-vs-noise.
 
 ## 6. Findings fixed by code
-- CAT-0005: `src/pages/testhub/cycles/CyclesPage.tsx` — Create Cycle button gated on ≥1 selected test case.
-- CAT-0001/CAT-0002 (visibility remediation): `src/components/catalyst-detail-views/defect/CatalystViewTmDefect.tsx` — "Not linked to a test case" now renders when lineage is absent, instead of nothing.
-- CAT-0004: addressed via the same visibility fix (no code change to the quick-create path itself — see mental-model report for reasoning).
+- CAT-0005: `CyclesPage.tsx` — Create Cycle gated on ≥1 selected test case.
+- CAT-0001/CAT-0002/CAT-0004 (shared fix): `CatalystViewTmDefect.tsx` — visible "Not linked to a test case" state.
+- CAT-0009: `useIncidentHub.ts` + `CatalystViewIncident.tsx` — live SLA breach badge on incident detail.
+- CAT-0981: `FullAppRoutes.tsx` + deleted `pages/Tasks.tsx` — dead stub redirected to real Tasks module.
+- CAT-0016: `StrataRoutes.tsx` — wildcard route no longer masks broken deep links.
 
 ## 7. Findings invalidated with proof
-None this slice. All 6 P0s were confirmed still live in `main` before fixing (spot-checked against current code, not assumed from the audit text).
+- **CAT-0012**: already fixed on `main` (commit `d4721f501`), confirmed via `git log` + reading `CommitteeQueueDrawer.tsx`.
+- **122 findings** (18 `.md`-sourced, 104 comment/test-string matches): confirmed via direct evidence inspection that the scanner matched a category keyword ("legacy", "placeholder", "silent", "no-op") inside a comment, test assertion, or handover doc — not in live application behavior. Methodology and specific examples in `catalyst-mental-model-remediation-report.md`.
 
 ## 8. Findings requiring product decision
-- CAT-0004's literal recommended fix ("Remove quick-create for QA Bugs or open a guided defect-from-evidence flow") was not implemented as-is — standalone backlog defect creation is treated as a legitimate pattern per repo conventions (memory: "Defect creation = canonical QA Bug modal"). If Vikram wants quick-create removed entirely, that's a product decision, not assumed here.
-- CAT-0009/CAT-0012 (Incident Hub P0s): whether the cited handover gap (`CAT-INCIDENT-GOVERNANCE-20260703-001/07_HANDOVER.md`) is still current needs Vikram/repo-history confirmation before Slice 3 acts on it.
+- **CAT-0014/CAT-0015** (Release Hub): duplicate `ReleaseDetailPage` implementations on two route shapes (`:releaseSlug` vs legacy `:releaseId`). Real duplication, but retiring the UUID route risks breaking old bookmarks/links — needs Vikram's call on whether any are still live.
+- CAT-0004's literal recommended fix (removing quick-create entirely) was not applied — standalone backlog defect creation is treated as legitimate; only the visibility gap was closed.
 
 ## 9. Findings requiring runtime-only verification
-None outstanding for the 4 fixed P0s — both were live-verified via Chrome MCP this slice (see `catalyst-runtime-proof-report.md`). All 994 deferred P1s will need runtime verification in their respective future slices, particularly the 62 `BROKEN_DEAD_END` findings.
+All fixes this wave were live-verified via Chrome MCP against the running dev server (localhost:8080) — no outstanding runtime-only items for what's closed. The 870 deferred findings will each need this when their wave comes up.
 
 ## 10. Screenshots and route proof
-Live Chrome MCP verification performed against `localhost:8080/testhub/cycles` (Create Cycle gating) and `localhost:8080/testhub/defects/RVDF-001` / `RVDF-004` (lineage visibility) — observed in-session, not archived to disk this slice.
+Live Chrome MCP checks this wave: `/incident-hub/view/BAU-4507` (SLA badge), `/items/tasks` (redirect to Tasks Overview), `/strata/nonexistent-page-xyz` (not-found message) + `/strata/scorecards` (regression check, unaffected). Observed in-session, not archived to disk.
 
 ## 11. Regression test evidence
-`npx tsc --noEmit -p .` — 0 errors project-wide, run after both fixes landed. No existing test suite run this slice (no Test Hub-specific unit/e2e tests were identified as in-scope for these two components within the 2-hour slice; flagged as a gap, not silently skipped).
+`npx tsc --noEmit -p .` — 0 errors project-wide after every fix this wave. No automated test suite additions.
 
 ## 12. Remaining risks
-- 994 P1 findings remain open, including 730 mechanical UI_STANDARDIZATION findings across every module — real ADS-token debt per CLAUDE.md's hard-stop color law, not yet remediated.
-- 2 Incident Hub P0s remain open, contingent on re-verifying a separate feature's handover doc.
-- No automated test coverage added for the two Slice 1 fixes (manual + browser verification only).
-- Full mental-model rebuilds (Release readiness gates, Incident triage/SLA/RCA, Strategy scorecard, Chat collaboration surface) not started — these are multi-slice programs per `catalyst-remediation-plan.md`.
+- 870 P1s still open; 730 are real ADS-token debt (mechanical, batched separately per `catalyst-uiux-standardization-report.md`).
+- ~100 non-mechanical findings outside the ones already sampled haven't been individually confirmed real-vs-noise yet — the 12% invalidation rate found so far suggests more of the "remaining real code" bucket may also be false positives, but each needs its own check before being marked either way.
+- CAT-0014/CAT-0015 route duplication left unresolved pending Vikram's decision.
+- Full mental-model rebuilds (Release readiness gates, Incident RCA, Strategy scorecard, Chat collaboration) not started.
+- A second, concurrent session was actively editing Test Hub files (`RepositoryPage.tsx`, `useCaseCoverage.ts`) and the shared `audit-baseline.json` during this wave — worked around by staging only this session's own files, per CLAUDE.md's concurrent-session rule. Their in-progress changes are untouched and uncommitted by this session.
 
 ## 13. Recommended next remediation wave
-**Slice 2 = Release Hub** (150 P1s, no P0s) per the /goal-mandated order, OR **Slice 2 = Test Hub P1 batch** (166 remaining Test Hub findings, mostly UI_STANDARDIZATION) to fully close the module before moving on — recommend the latter for a cleaner module-by-module closure story, but the /goal-specified order is Release Hub next. Awaiting sign-off on which to prioritize before proceeding.
+Continue the functional-gap-first approach on the remaining ~100 unreviewed real-code candidates in Release Hub/Chat/Project Hub/Product Hub, applying the same real-vs-noise triage before any fix. The 730-item UI_STANDARDIZATION mechanical sweep is a separate, lower-risk batch job (lint-driven, `npm run audit:ads` / `lint:colors` gated) best run as its own pass once the functional gaps are exhausted.
