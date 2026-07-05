@@ -247,6 +247,12 @@ export default function CycleDetailPage() {
             <div style={{ display: 'flex', gap: 'var(--ds-space-100)', alignItems: 'center' }}>
               <Button
                 appearance="default"
+                onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.key ?? cycle.id}/runs`)}
+              >
+                Run results
+              </Button>
+              <Button
+                appearance="default"
                 onClick={() => {
                   const sprintName = (cycle as any)?.sprint?.name ?? '';
                   const headers = ['Key', 'Title', 'Status', 'Assignee', 'Sprint'];
