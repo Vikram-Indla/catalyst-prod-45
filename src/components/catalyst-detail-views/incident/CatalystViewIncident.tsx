@@ -19,6 +19,10 @@ import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/cata
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { KeyDetailsFieldRow } from '../shared/sections';
 import { useQueryClient } from '@tanstack/react-query';
+import { useIncidentSlaByPhIssueId } from '@/hooks/useIncidentHub';
+import { SlaBadge } from '@/components/incidents/badges/IncidentBadges';
+import { getIncidentSlaBadgeStatus } from '@/utils/incidentSla';
+import type { IncidentStatus } from '@/types/incident';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
@@ -32,6 +36,8 @@ export default function CatalystViewIncident({
 }: CatalystViewBaseProps) {
 
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
+  const { data: gov } = useIncidentSlaByPhIssueId(issue?.id);
+  const slaStatus = gov ? getIncidentSlaBadgeStatus(gov.sla_records?.[0] ?? null, gov.status as IncidentStatus) : null;
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -71,12 +77,20 @@ export default function CatalystViewIncident({
         issue={issue ?? null} itemId={itemId} itemType="incident"
         projectKey={projectKey} onOpenItem={onOpenItem} showParent={false}
         extraRows={
-          <KeyDetailsFieldRow label="Severity" alignBlock="center">
-            <CatalystSeverityField
-              issue={issue ?? null}
-              onUpdate={() => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })}
-            />
-          </KeyDetailsFieldRow>
+          <>
+            <KeyDetailsFieldRow label="Severity" alignBlock="center">
+              <CatalystSeverityField
+                issue={issue ?? null}
+                onUpdate={() => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })}
+              />
+            </KeyDetailsFieldRow>
+            {/* CAT-0009: live SLA breach status, previously only visible in the list table. */}
+            {slaStatus && (
+              <KeyDetailsFieldRow label="SLA" alignBlock="center">
+                <SlaBadge status={slaStatus} />
+              </KeyDetailsFieldRow>
+            )}
+          </>
         }
         afterBody={<Description issue={issue ?? null} />}
       />

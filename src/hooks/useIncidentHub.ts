@@ -269,6 +269,27 @@ export function useCommitteeQueueView() {
   });
 }
 
+// ── Single-incident governance (SLA live-breach status for the detail view) ──
+// CAT-0009: SLA breach data was computed correctly in the DB but not surfaced
+// on the incident detail view — only the list table read it. Zero-assumption:
+// returns null (render nothing) when the incident has no governance-extension
+// row yet, rather than fabricating an "on track" default.
+export function useIncidentSlaByPhIssueId(phIssueId: string | undefined) {
+  return useQuery({
+    queryKey: ['incident-sla-by-ph-issue', phIssueId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('incidents')
+        .select('status, sla_records(response_due_at, response_met_at, response_breached, resolution_due_at, resolution_met_at, resolution_breached)')
+        .eq('ph_issue_id', phIssueId!)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { status: string; sla_records: IncidentSlaRecord[] | null } | null;
+    },
+    enabled: !!phIssueId,
+  });
+}
+
 // ── Stats aggregation ──
 export function useIncidentStats() {
   const { data: incidents } = useIncidentListView();
