@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { useAuth } from '@/hooks/useAuth';
 import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget } from './insertTextIntoTarget';
@@ -32,9 +33,16 @@ const VOICE_FN_URL = `${SUPABASE_URL}/functions/v1/voice-transcribe`;
 
 export function VoiceFlowProvider({ children }: Props) {
   const { isModuleEnabled } = useFeatureFlags();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  // CatyFlow is a signed-in feature ONLY: the login page (and every other
+  // public surface) must never show the mic. Every dictation lane needs the
+  // user's JWT anyway, so signed-out dictation could never work. While auth
+  // state is still resolving we stay OFF (public-safe default).
   const featureEnabled =
     import.meta.env.VITE_VOICE_DICTATION_ENABLED === 'true' &&
-    isModuleEnabled('voice_dictation');
+    isModuleEnabled('voice_dictation') &&
+    !authLoading &&
+    isAuthenticated;
 
   // One-time migration: remove stale localStorage language key that caused
   // Urdu/Arabic/Hindi sessions to bypass Groq and use native SpeechRecognition.
