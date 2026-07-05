@@ -1,15 +1,43 @@
 /**
  * WikiSidebar — /wiki hub sidebar (CAT-DOCS-NOTION-20260704-001).
  *
- * The Wiki is a library of workspaces (one per project, per product,
- * plus Organization). This sidebar lists them grouped by container type;
- * the page tree itself lives inside the workspace surface.
+ * Single Notion-style sidebar (no double panel):
+ *  - at /wiki (home): the workspace directory grouped by container type.
+ *  - inside a workspace (/wiki/:slug…): the workspace's live page tree,
+ *    rendered as SidebarBase children via WikiTreeNav.
  */
-import { useMemo } from 'react';
-import { Home, Layers, Package, Building2 } from '@/lib/atlaskit-icons';
+import { useMemo, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Home, Building2 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
+import { WikiTreeNav } from '@/components/wiki-hub/WikiTreeNav';
+import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
 import { useWikiWorkspaces } from '@/hooks/useWiki';
 import { Routes } from '@/lib/routes';
+import { supabase } from '@/integrations/supabase/client';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { getProductAvatarUrl } from '@/components/icons';
+
+// Container key/color lookup — same rows ContextSwitcher's ItemRow reads, so a
+// workspace's icon here is IDENTICAL to its icon on Project Hub / Product Hub
+// (canonical-icon rule: entity visuals come from the entity's own data, never
+// a shared per-container-type glyph).
+function useWorkspaceContainerMeta() {
+  return useQuery({
+    queryKey: ['wiki', 'workspace-container-meta'],
+    queryFn: async () => {
+      const [{ data: projects }, { data: products }] = await Promise.all([
+        supabase.from('projects').select('id, project_key'),
+        supabase.from('products').select('id, code, color'),
+      ]);
+      const projectKeyById = new Map((projects ?? []).map((p) => [p.id, p.project_key]));
+      const productById = new Map((products ?? []).map((p) => [p.id, { code: p.code, color: p.color }]));
+      return { projectKeyById, productById };
+    },
+    staleTime: 5 * 60_000,
+  });
+}
 
 interface WikiSidebarProps {
   expanded: boolean;
@@ -18,16 +46,50 @@ interface WikiSidebarProps {
 }
 
 export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps) {
+  // The sidebar renders as a sibling of the routed <Outlet/>, so useParams
+  // can't see :workspaceSlug — parse the pathname instead.
+  const { pathname } = useLocation();
+  const { workspaceSlug } = parseWikiPath(pathname);
   const { data: workspaces } = useWikiWorkspaces();
+  const { data: containerMeta } = useWorkspaceContainerMeta();
+
+  const inWorkspace = !!workspaceSlug;
 
   const config: SidebarConfig = useMemo(() => {
+    if (inWorkspace) {
+      // Minimal config — the tree is injected as children below.
+      return { badge: 'WK', label: 'Wiki', sections: [] };
+    }
+
     const byType = (type: string) => (workspaces ?? []).filter((w) => w.container_type === type);
-    const item = (w: { id: string; name: string; slug: string }, icon: typeof Layers) => ({
-      id: w.id,
-      title: w.name,
-      path: Routes.wiki.workspace(w.slug),
-      icon,
-    });
+
+    // Per-entity canonical icon — SAME resolution ContextSwitcher's ItemRow
+    // uses, so a project/product's Wiki-sidebar icon matches its Project Hub /
+    // Product Hub icon exactly instead of one shared per-container-type glyph.
+    const item = (w: { id: string; name: string; slug: string; container_type: string; container_id: string | null }) => {
+      let iconNode: ReactNode = <Building2 style={{ width: 20, height: 20, color: 'var(--ds-icon)' }} />;
+      if (w.container_type === 'project' && w.container_id) {
+        const projectKey = containerMeta?.projectKeyById.get(w.container_id);
+        iconNode = <ProjectIcon size="small" projectKey={projectKey} name={w.name} />;
+      } else if (w.container_type === 'product' && w.container_id) {
+        const product = containerMeta?.productById.get(w.container_id);
+        iconNode = (
+          <ProjectIcon
+            size="small"
+            projectKey={product?.code}
+            avatarUrl={product?.code ? getProductAvatarUrl(product.code) : undefined}
+            color={product?.color}
+            name={w.name}
+          />
+        );
+      }
+      return {
+        id: w.id,
+        title: w.name,
+        path: Routes.wiki.workspace(w.slug),
+        iconNode,
+      };
+    };
 
     return {
       badge: 'WK',
@@ -38,24 +100,21 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
           items: [{ id: 'home', title: 'Home', path: Routes.wiki.root(), icon: Home, exact: true }],
         },
         ...(byType('project').length
-          ? [{ title: 'Project workspaces', items: byType('project').map((w) => item(w, Layers)) }]
+          ? [{ title: 'Project workspaces', items: byType('project').map(item) }]
           : []),
         ...(byType('product').length
-          ? [{ title: 'Product workspaces', items: byType('product').map((w) => item(w, Package)) }]
+          ? [{ title: 'Product workspaces', items: byType('product').map(item) }]
           : []),
         ...(byType('organization').length
-          ? [{ title: 'Organization', items: byType('organization').map((w) => item(w, Building2)) }]
+          ? [{ title: 'Organization', items: byType('organization').map(item) }]
           : []),
       ],
     };
-  }, [workspaces]);
+  }, [inWorkspace, workspaces, containerMeta]);
 
   return (
-    <SidebarBase
-      config={config}
-      expanded={expanded}
-      onToggle={onToggle}
-      className={className}
-    />
+    <SidebarBase config={config} expanded={expanded} onToggle={onToggle} className={className}>
+      {inWorkspace ? <WikiTreeNav /> : null}
+    </SidebarBase>
   );
 }

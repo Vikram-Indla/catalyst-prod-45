@@ -1,25 +1,23 @@
 /**
- * WikiWorkspacePage — a workspace's page tree + the open page
- * (routes /wiki/:workspaceSlug and /wiki/:workspaceSlug/:pageSlug).
- * Confluence layout: tree panel left, page surface right.
+ * WikiWorkspacePage — the open page, OR (when no page is selected) a
+ * premium workspace overview (CAT-DOCS-NOTION-20260704-001).
+ *
+ * Single-sidebar layout: the page tree lives in the Wiki hub sidebar
+ * (WikiTreeNav), so this surface is full-width content only — no second
+ * panel. Matches Notion: one nav rail, one document canvas.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FolderOpen, ChevronLeft } from '@/lib/atlaskit-icons';
+import { FolderOpen } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PageTree, type PageTreeMove } from '@/components/wiki-hub/PageTree';
 import WikiPageSurface from '@/components/wiki-hub/WikiPageSurface';
-import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import { Routes } from '@/lib/routes';
 import { WIKI_TEMPLATES, type WikiTemplate } from '@/components/wiki-hub/templates';
 import {
   useCreateWikiPage,
-  useDeleteWikiPage,
-  useMoveWikiPage,
   useWikiPageBySlug,
   useWikiPageTree,
   useWikiWorkspaceBySlug,
-  type WikiPageSummary,
 } from '@/hooks/useWiki';
 
 const CONTAINER_LABEL: Record<string, string> = {
@@ -33,32 +31,17 @@ export default function WikiWorkspacePage() {
   const navigate = useNavigate();
 
   const { data: workspace, isLoading: wsLoading } = useWikiWorkspaceBySlug(workspaceSlug);
-  const { data: treePages, isLoading: treeLoading } = useWikiPageTree(workspace?.id);
+  const { data: treePages } = useWikiPageTree(workspace?.id);
   const { data: page, isLoading: pageLoading } = useWikiPageBySlug(workspace?.id, pageSlug);
 
   const createPage = useCreateWikiPage();
-  const movePage = useMoveWikiPage();
-  const deletePage = useDeleteWikiPage();
-  const [deleteTarget, setDeleteTarget] = useState<WikiPageSummary | null>(null);
-
-  const handleSelect = useCallback(
-    (p: WikiPageSummary) => {
-      if (!workspace) return;
-      navigate(Routes.wiki.page(workspace.slug, p.slug));
-    },
-    [navigate, workspace],
-  );
 
   const handleCreate = useCallback(
     (parentId: string | null) => {
       if (!workspace) return;
       createPage.mutate(
         { spaceId: workspace.id, title: 'Untitled', parentId },
-        {
-          onSuccess: (created) => {
-            navigate(Routes.wiki.page(workspace.slug, created.slug));
-          },
-        },
+        { onSuccess: (created) => navigate(Routes.wiki.page(workspace.slug, created.slug)) },
       );
     },
     [createPage, navigate, workspace],
@@ -76,230 +59,149 @@ export default function WikiWorkspacePage() {
           icon: template.icon,
           templateKey: template.key,
         },
-        {
-          onSuccess: (created) => navigate(Routes.wiki.page(workspace.slug, created.slug)),
-        },
+        { onSuccess: (created) => navigate(Routes.wiki.page(workspace.slug, created.slug)) },
       );
     },
     [createPage, navigate, workspace],
   );
 
-  const handleMove = useCallback(
-    (move: PageTreeMove) => {
-      if (!workspace) return;
-      movePage.mutate({
-        id: move.id,
-        spaceId: workspace.id,
-        newParentId: move.newParentId,
-        newPosition: move.newPosition,
-      });
-    },
-    [movePage, workspace],
-  );
-
-  const selectedId = useMemo(
-    () => (page ? page.id : null),
-    [page],
-  );
-
   if (wsLoading) {
     return (
-      <div style={{ padding: 24 }}>
-        <Skeleton style={{ height: 32, width: 280, borderRadius: 6, marginBottom: 16 }} />
-        <Skeleton style={{ height: 400, borderRadius: 8 }} />
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '64px 40px' }}>
+        <Skeleton style={{ height: 40, width: 320, borderRadius: 8, marginBottom: 16 }} />
+        <Skeleton style={{ height: 320, borderRadius: 12 }} />
       </div>
     );
   }
 
   if (!workspace) {
     return (
-      <div style={{ padding: 48, textAlign: 'center' }}>
-        <FolderOpen style={{ width: 28, height: 28, color: 'var(--ds-icon-subtle)', margin: '0 auto 8px' }} />
+      <div style={{ padding: 64, textAlign: 'center' }}>
+        <FolderOpen style={{ width: 32, height: 32, color: 'var(--ds-icon-subtle)', margin: '0 auto 10px' }} />
         <p style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body)', margin: 0 }}>Workspace not found</p>
       </div>
     );
   }
 
-  const confirmDelete = () => {
-    if (!deleteTarget || !workspace) return;
-    const wasOpen = page?.id === deleteTarget.id;
-    deletePage.mutate(
-      { id: deleteTarget.id, spaceId: workspace.id },
-      {
-        onSuccess: () => {
-          setDeleteTarget(null);
-          if (wasOpen) navigate(Routes.wiki.workspace(workspace.slug));
-        },
-      },
+  // ── Open page ──────────────────────────────────────────────────────
+  if (pageSlug) {
+    if (pageLoading) {
+      return (
+        <div style={{ maxWidth: 760, margin: '0 auto', padding: '56px 40px' }}>
+          <Skeleton style={{ height: 44, width: 380, borderRadius: 8, marginBottom: 24 }} />
+          <Skeleton style={{ height: 22, width: '90%', borderRadius: 6, marginBottom: 10 }} />
+          <Skeleton style={{ height: 22, width: '80%', borderRadius: 6, marginBottom: 10 }} />
+          <Skeleton style={{ height: 22, width: '85%', borderRadius: 6 }} />
+        </div>
+      );
+    }
+    if (page) {
+      return <WikiPageSurface workspace={workspace} page={page} treePages={treePages ?? []} />;
+    }
+    return (
+      <div style={{ padding: 64, textAlign: 'center' }}>
+        <p style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body)', margin: 0 }}>Page not found</p>
+      </div>
     );
-  };
+  }
+
+  // ── Workspace overview (no page selected) ──────────────────────────
+  const heroTemplates = [
+    { key: '__blank', name: 'Blank page', description: 'Start from a clean canvas', icon: '📄', onClick: () => handleCreate(null) },
+    ...WIKI_TEMPLATES.map((t) => ({
+      key: t.key,
+      name: t.name,
+      description: t.description,
+      icon: t.icon,
+      onClick: () => handleCreateFromTemplate(t),
+    })),
+  ];
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 56px)', alignItems: 'stretch' }}>
-      <aside
-        aria-label={`${workspace.name} pages`}
-        style={{
-          width: 268,
-          flex: '0 0 268px',
-          borderInlineEnd: '1px solid var(--ds-border)',
-          padding: '16px 10px',
-          background: 'var(--ds-surface)',
-          overflowY: 'auto',
-        }}
-      >
-        <div style={{ padding: '0 6px 12px' }}>
-          <button
-            type="button"
-            onClick={() => navigate(Routes.wiki.root())}
-            aria-label="All workspaces"
-            title="All workspaces"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--ds-text-subtle)',
-              font: 'var(--ds-font-body-small)',
-              cursor: 'pointer',
-              padding: '2px 0',
-              marginBottom: 4,
-            }}
-          >
-            <ChevronLeft style={{ width: 13, height: 13 }} /> All workspaces
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {workspace.icon ? (
-              <span aria-hidden style={{ font: 'var(--ds-font-heading-small)' }}>{workspace.icon}</span>
-            ) : null}
-            <span style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
-              {workspace.name}
-            </span>
-          </div>
-          <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
+    <div style={{ maxWidth: 900, margin: '0 auto', padding: '56px 40px 96px' }}>
+      <style>{`
+        .wiki-tpl {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          text-align: start;
+          padding: 16px 16px 20px;
+          border: 1px solid var(--ds-border);
+          border-radius: 12px;
+          background: var(--ds-surface);
+          cursor: pointer;
+          transition: transform 140ms cubic-bezier(.2,.7,.3,1), box-shadow 140ms ease, border-color 140ms ease;
+        }
+        .wiki-tpl:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--ds-shadow-overlay);
+          border-color: var(--ds-border-bold);
+        }
+        .wiki-tpl:focus-visible { outline: 2px solid var(--ds-border-focused); outline-offset: 2px; }
+        .wiki-tpl__glyph {
+          width: 40px; height: 40px; border-radius: 10px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--ds-background-neutral); margin-bottom: 12px;
+        }
+      `}</style>
+
+      {/* Hero */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 6 }}>
+        <div
+          aria-hidden
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 14,
+            background: 'var(--ds-background-neutral)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            font: 'var(--ds-font-heading-large)',
+            flexShrink: 0,
+          }}
+        >
+          {workspace.icon ?? '📚'}
+        </div>
+        <div>
+          {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
+          <h1 style={{ font: 'var(--ds-font-heading-xlarge)', color: 'var(--ds-text)', margin: 0 }}>
+            {workspace.name}
+          </h1>
+          <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
             {CONTAINER_LABEL[workspace.container_type] ?? 'Workspace'}
+            {workspace.description ? ` · ${workspace.description}` : ''}
           </p>
         </div>
-        {treeLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 6px' }}>
-            {[0, 1, 2, 3].map((i) => (
-              <Skeleton key={i} style={{ height: 24, borderRadius: 4 }} />
-            ))}
-          </div>
-        ) : (
-          <PageTree
-            pages={treePages ?? []}
-            selectedId={selectedId}
-            onSelect={handleSelect}
-            onMove={handleMove}
-            onCreateChild={handleCreate}
-            onDelete={setDeleteTarget}
-            emptyHint="No pages yet — create the first one."
-          />
-        )}
-      </aside>
+      </div>
 
-      <main style={{ flex: 1, minWidth: 0, background: 'var(--ds-surface)' }}>
-        {pageSlug ? (
-          pageLoading ? (
-            <div style={{ maxWidth: 860, margin: '0 auto', padding: 40 }}>
-              <Skeleton style={{ height: 40, width: 360, borderRadius: 6, marginBottom: 20 }} />
-              <Skeleton style={{ height: 300, borderRadius: 8 }} />
-            </div>
-          ) : page ? (
-            <WikiPageSurface workspace={workspace} page={page} treePages={treePages ?? []} />
-          ) : (
-            <div style={{ padding: 48, textAlign: 'center' }}>
-              <p style={{ color: 'var(--ds-text)', font: 'var(--ds-font-body)', margin: 0 }}>Page not found</p>
-            </div>
-          )
-        ) : (
-          <div style={{ maxWidth: 860, margin: '0 auto', padding: 40 }}>
-            {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
-            <h1 style={{ font: 'var(--ds-font-heading-large)', color: 'var(--ds-text)', margin: '0 0 6px' }}>
-              {workspace.name}
-            </h1>
-            <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', margin: '0 0 24px' }}>
-              {workspace.description || 'Select a page from the tree, or create one.'}
-            </p>
-
-            <style>{`
-              .wiki-template-card:hover {
-                border-color: var(--ds-border-bold) !important;
-                background: var(--ds-background-neutral-subtle) !important;
-              }
-              .wiki-template-card:focus-visible {
-                outline: 2px solid var(--ds-border-focused);
-                outline-offset: 1px;
-              }
-            `}</style>
-            {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
-            <h2 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text-subtle)', margin: '0 0 10px' }}>
-              Start writing
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 12 }}>
-              <button
-                type="button"
-                onClick={() => handleCreate(null)}
-                className="wiki-template-card"
-                style={{
-                  textAlign: 'start',
-                  padding: '14px 16px',
-                  border: '1px solid var(--ds-border)',
-                  borderRadius: 8,
-                  background: 'var(--ds-surface)',
-                  cursor: 'pointer',
-                  transition: 'border-color 120ms ease, background 120ms ease',
-                }}
-              >
-                <span aria-hidden style={{ font: 'var(--ds-font-heading-medium)' }}>📄</span>
-                <p style={{ margin: '6px 0 2px', font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
-                  Blank page
-                </p>
-                <p style={{ margin: 0, color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
-                  Start from nothing
-                </p>
-              </button>
-              {WIKI_TEMPLATES.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  onClick={() => handleCreateFromTemplate(t)}
-                  className="wiki-template-card"
-                  style={{
-                    textAlign: 'start',
-                    padding: '14px 16px',
-                    border: '1px solid var(--ds-border)',
-                    borderRadius: 8,
-                    background: 'var(--ds-surface)',
-                    cursor: 'pointer',
-                    transition: 'border-color 120ms ease, background 120ms ease',
-                  }}
-                >
-                  <span aria-hidden style={{ font: 'var(--ds-font-heading-medium)' }}>{t.icon}</span>
-                  <p style={{ margin: '6px 0 2px', font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)' }}>
-                    {t.name}
-                  </p>
-                  <p style={{ margin: 0, color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
-                    {t.description}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </main>
-
-      <DangerConfirmModal
-        isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={confirmDelete}
-        title={`Delete "${deleteTarget?.title || 'Untitled'}"?`}
-        description="You're about to permanently delete this page, its comments and work-item links. This is irreversible."
-        hint="Child pages are not deleted — they move to the top level of this workspace."
-        skipPhraseGate
-        isLoading={deletePage.isPending}
-      />
+      {/* Start writing */}
+      <div style={{ marginTop: 40 }}>
+        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
+        <h2 style={{ font: 'var(--ds-font-heading-small)', color: 'var(--ds-text)', margin: '0 0 4px' }}>
+          Start writing
+        </h2>
+        <p style={{ margin: '0 0 20px', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
+          Create a page from a template, or start from a blank canvas.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(248px, 1fr))', gap: 16 }}>
+          {heroTemplates.map((t) => (
+            <button key={t.key} type="button" onClick={t.onClick} className="wiki-tpl">
+              <span className="wiki-tpl__glyph" aria-hidden>
+                <span style={{ font: 'var(--ds-font-heading-medium)' }}>{t.icon}</span>
+              </span>
+              {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), not split fontSize/fontWeight */}
+              <h3 style={{ font: 'var(--ds-font-heading-xsmall)', color: 'var(--ds-text)', margin: 0 }}>
+                {t.name}
+              </h3>
+              <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-small)' }}>
+                {t.description}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

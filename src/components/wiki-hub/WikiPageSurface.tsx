@@ -11,6 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import type { Block, BlockNoteEditor } from '@blocknote/core';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageIcon, Smile as SmileIcon } from '@/lib/atlaskit-icons';
 import { Routes } from '@/lib/routes';
 import {
   useUpdateWikiPage,
@@ -38,6 +39,19 @@ const DocumentComments = lazy(() =>
 );
 
 const AUTOSAVE_MS = 1500;
+
+/** One-click cover gradients, all built from ADS accent-subtle tokens
+ *  (no literal colors — the color gate stays green). */
+const WIKI_COVERS = [
+  'linear-gradient(135deg, var(--ds-background-accent-blue-subtlest), var(--ds-background-accent-purple-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-teal-subtlest), var(--ds-background-accent-green-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-magenta-subtlest), var(--ds-background-accent-red-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-orange-subtlest), var(--ds-background-accent-yellow-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-purple-subtlest), var(--ds-background-accent-magenta-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-green-subtlest), var(--ds-background-accent-teal-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-gray-subtlest), var(--ds-background-accent-blue-subtlest))',
+  'linear-gradient(135deg, var(--ds-background-accent-red-subtlest), var(--ds-background-accent-orange-subtlest))',
+];
 
 /** Notion-style relative edit time. */
 function relativeTime(iso: string): string {
@@ -254,8 +268,48 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
     [page.id, page.space_id, updatePage],
   );
 
+  // ---- Cover (Notion-style gradient covers or a URL) ----
+  const [coverPickerOpen, setCoverPickerOpen] = useState(false);
+  const commitCover = useCallback(
+    (value: string | null) => {
+      updatePage.mutate({ id: page.id, spaceId: page.space_id, patch: { cover_url: value } });
+      setCoverPickerOpen(false);
+    },
+    [page.id, page.space_id, updatePage],
+  );
+  const addRandomEmojiIcon = useCallback(() => {
+    const set = ['📄', '📝', '📘', '📗', '📙', '🗂️', '📌', '🧭', '💡', '🚀', '⚙️', '🎯'];
+    commitIcon(set[Math.floor((page.id.charCodeAt(0) + page.id.length) % set.length)]);
+  }, [commitIcon, page.id]);
+
   return (
-    <article className="wiki-print-root" style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
+    <article className="wiki-print-root wiki-page" style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .wiki-page .wiki-chip-btn {
+          display: inline-flex; align-items: center; gap: 4px;
+          padding: 4px 10px; border-radius: 6px;
+          border: 1px solid var(--ds-border);
+          background: var(--ds-surface-raised);
+          color: var(--ds-text-subtle); font: var(--ds-font-body-small);
+          cursor: pointer; box-shadow: var(--ds-shadow-raised);
+          transition: background 120ms ease;
+        }
+        .wiki-page .wiki-chip-btn:hover { background: var(--ds-background-neutral-subtle); }
+        .wiki-page .wiki-cover__actions { opacity: 0; transition: opacity 140ms ease; }
+        .wiki-page .wiki-cover:hover .wiki-cover__actions { opacity: 1; }
+        .wiki-page .wiki-hover-action {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 4px 8px; border-radius: 6px; border: none; background: transparent;
+          color: var(--ds-text-subtlest); font: var(--ds-font-body-small);
+          cursor: pointer; opacity: 0; transition: opacity 140ms ease, background 120ms ease;
+        }
+        .wiki-page .wiki-titlebar:hover .wiki-hover-action,
+        .wiki-page:hover .wiki-hover-action { opacity: 1; }
+        .wiki-page .wiki-hover-action:hover { background: var(--ds-background-neutral-subtle); color: var(--ds-text-subtle); }
+        .wiki-page .wiki-icon-btn { transition: transform 120ms ease; }
+        .wiki-page .wiki-icon-btn:hover { transform: scale(1.04); }
+        .wiki-page .wiki-title-input::placeholder { color: var(--ds-text-subtlest); }
+      `}</style>
       <div
         className="wiki-no-print"
         style={{ padding: '12px 40px 0', display: 'flex', alignItems: 'center', gap: 12 }}
@@ -288,51 +342,130 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         />
       </div>
 
-      {page.cover_url ? (
+      {/* ── Cover zone ── */}
+      <div
+        className="wiki-cover wiki-no-print"
+        style={{
+          position: 'relative',
+          height: page.cover_url ? 200 : 96,
+          marginTop: 8,
+          ...(page.cover_url
+            ? { backgroundImage: `url(${page.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : { background: 'transparent' }),
+        }}
+      >
         <div
-          aria-hidden
+          className="wiki-cover__actions"
           style={{
-            height: 160,
-            margin: '12px 0 0',
-            backgroundImage: `url(${page.cover_url})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            position: 'absolute',
+            bottom: 10,
+            insetInlineEnd: 'max(40px, calc((100% - 820px) / 2))',
+            display: 'flex',
+            gap: 8,
           }}
-        />
-      ) : null}
+        >
+          <button type="button" className="wiki-chip-btn" onClick={() => setCoverPickerOpen((v) => !v)}>
+            <ImageIcon style={{ width: 13, height: 13 }} /> {page.cover_url ? 'Change cover' : 'Add cover'}
+          </button>
+          {page.cover_url && (
+            <button type="button" className="wiki-chip-btn" onClick={() => commitCover(null)}>
+              Remove
+            </button>
+          )}
+        </div>
+        {coverPickerOpen && (
+          <div
+            role="dialog"
+            aria-label="Page cover"
+            style={{
+              position: 'absolute',
+              bottom: 44,
+              insetInlineEnd: 'max(40px, calc((100% - 820px) / 2))',
+              zIndex: 20,
+              padding: 12,
+              borderRadius: 10,
+              border: '1px solid var(--ds-border)',
+              background: 'var(--ds-surface-raised)',
+              boxShadow: 'var(--ds-shadow-overlay)',
+              width: 300,
+            }}
+          >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
+              {WIKI_COVERS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-label="Choose cover"
+                  onClick={() => commitCover(c)}
+                  style={{ height: 40, borderRadius: 6, border: '1px solid var(--ds-border)', background: c, cursor: 'pointer' }}
+                />
+              ))}
+            </div>
+            <Input
+              placeholder="…or paste an image URL"
+              aria-label="Cover image URL"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const v = (e.target as HTMLInputElement).value.trim();
+                  if (v) commitCover(v);
+                }
+              }}
+            />
+          </div>
+        )}
+      </div>
 
-      <div ref={columnRef} style={{ maxWidth: 860, width: '100%', margin: '0 auto', padding: '0 40px 80px' }}>
+      <div ref={columnRef} style={{ maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 40px 96px' }}>
+        {/* Hover action bar (Notion) — appears above the title */}
+        <div
+          className="wiki-titlebar wiki-no-print"
+          style={{ display: 'flex', gap: 8, minHeight: 26, marginTop: page.cover_url ? 14 : 4, marginBottom: 2 }}
+        >
+          {!page.icon && (
+            <button type="button" className="wiki-hover-action" onClick={addRandomEmojiIcon}>
+              <SmileIcon style={{ width: 15, height: 15 }} /> Add icon
+            </button>
+          )}
+          {!page.cover_url && (
+            <button type="button" className="wiki-hover-action" onClick={() => setCoverPickerOpen(true)}>
+              <ImageIcon style={{ width: 15, height: 15 }} /> Add cover
+            </button>
+          )}
+        </div>
+
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            marginTop: page.cover_url ? -24 : 28,
+            marginTop: page.cover_url ? -60 : 0,
+            marginBottom: 4,
             position: 'relative',
           }}
         >
-          <button
-            type="button"
-            aria-label={page.icon ? 'Change page icon' : 'Add page icon'}
-            onClick={() => {
-              setIconDraft(page.icon ?? '');
-              setIconPickerOpen((v) => !v);
-            }}
-            className="wiki-no-print"
-            style={{
-              border: 'none',
-              background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
-              borderRadius: 8,
-              padding: page.cover_url ? 6 : 0,
-              cursor: 'pointer',
-              fontSize: page.icon ? 34 : undefined,
-              lineHeight: 1,
-              color: 'var(--ds-text-subtlest)',
-              font: page.icon ? undefined : 'var(--ds-font-body-small)',
-            }}
-          >
-            {page.icon ?? 'Add icon'}
-          </button>
+          {page.icon ? (
+            <button
+              type="button"
+              aria-label="Change page icon"
+              onClick={() => {
+                setIconDraft(page.icon ?? '');
+                setIconPickerOpen((v) => !v);
+              }}
+              className="wiki-no-print wiki-icon-btn"
+              style={{
+                border: 'none',
+                background: page.cover_url ? 'var(--ds-surface)' : 'transparent',
+                borderRadius: 14,
+                padding: page.cover_url ? 6 : 0,
+                cursor: 'pointer',
+                fontSize: 64,
+                lineHeight: 1,
+                boxShadow: page.cover_url ? 'var(--ds-shadow-overlay)' : 'none',
+              }}
+            >
+              {page.icon}
+            </button>
+          ) : null}
           {iconPickerOpen && (
             <div
               role="dialog"
@@ -400,6 +533,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
         </div>
 
         <input
+          className="wiki-title-input"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={commitTitle}
@@ -415,14 +549,18 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
             outline: 'none',
             background: 'transparent',
             color: 'var(--ds-text)',
-            font: 'var(--ds-font-heading-xlarge)',
+            /* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), Notion-scale page title */
+            font: 'var(--ds-font-heading-xxlarge)',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
             padding: 0,
-            margin: '10px 0 4px',
+            margin: '2px 0 6px',
           }}
         />
 
         <p
-          style={{ margin: '0 0 10px', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}
+          className="wiki-no-print"
+          style={{ margin: '0 0 20px', color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}
           title={new Date(page.updated_at).toLocaleString()}
         >
           Edited {relativeTime(page.updated_at)}
