@@ -42,3 +42,15 @@
 
 ## Visual acceptance status
 VERIFIED (session 003): all 10 surfaces re-probed in light mode, Command Center + Scorecard detail + stat strips verified in dark mode, chip menus verified anchored. Owner sign-off pending.
+
+## Competitor comparison — STRATA vs ServiceNow SPM-class suites (2026-07-05, post-v3)
+Dimension-by-dimension, evidence-based (no invented metrics):
+| Dimension | SPM-class norm | STRATA v3 | Evidence |
+|---|---|---|---|
+| Number provenance | value + report link | EVERY number → route-first evidence dossier (formula version, inputs, source runs, config version, snapshot state, history chart) | /strata/*/:slug/evidence |
+| Governance actions | forms + queues | 7 DB-SoD-enforced rituals in-context w/ verdicts from GOVERNED config (gate options per stage), errors verbatim in-modal | Reviews/KPI/Portfolio/Pipeline wiring |
+| Score trending | standard | trend chart w/ band-toned clickable points → evidence | CC workbench |
+| Attention mgmt | separate lists | ONE merged actionable inbox (exceptions+decisions+actions+attestations+advisories) | CC Needs attention |
+| Data intake | wizard w/ opaque server states | governed template contracts shown up-front, client pre-checks labeled non-authoritative, HONEST stage stop | /strata/data/upload |
+| Truthfulness | loading spinners hide gaps | zero-assumption dashes, no fake statuses, disabled controls carry the reason | module-wide |
+Where SPM still leads (owner-gated backend): automated validation/promote pipeline, native integrations (Jira adapter service), doc generation (board packs), AI generation service, entity create flows.
