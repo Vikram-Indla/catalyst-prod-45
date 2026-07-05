@@ -224,6 +224,18 @@ export function useCreateWikiPage() {
         .limit(1);
       const nextPos = siblings?.length ? (siblings[0].position ?? 0) + 1 : 0;
 
+      // A page is born with a real Yjs snapshot, not ydoc_state=null. Without
+      // this, the FIRST collaborative session had to seed the shared
+      // fragment lazily per-client — if two+ people cold-open a brand-new
+      // page at the same instant, each independently seeds an "empty
+      // paragraph" into the still-unsynced fragment, and the CRDT merge
+      // keeps only one, silently discarding whichever peer's first
+      // keystrokes landed in the paragraph that lost the race (reproduced
+      // live with a 5-tab load test). Only the CREATING client ever runs
+      // this — page creation can't race with itself.
+      const { createInitialYdocState } = await import('@/components/wiki-hub/editor/seedYdoc');
+      const ydocState = await createInitialYdocState((input.content as never) ?? []);
+
       const { data, error } = await db
         .from('kb_documents')
         .insert({
@@ -233,6 +245,7 @@ export function useCreateWikiPage() {
           position: nextPos,
           content: input.content ?? [],
           content_format: 'blocknote',
+          ydoc_state: ydocState,
           icon: input.icon ?? null,
           template_key: input.templateKey ?? null,
           created_by: auth?.user?.id ?? null,
