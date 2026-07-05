@@ -360,6 +360,19 @@ export const governanceApi = {
     run(typedQuery('strata_actions').select('*').order('due_date')),
   boardPacks: (snapshotId: string): Promise<StrataBoardPack[]> =>
     run(typedQuery('strata_board_packs').select('*').eq('snapshot_id', snapshotId)),
+  /**
+   * Reconcile a pending pack row after client-side generation. RLS
+   * (strata_board_packs_write, 20260705100400) permits this UPDATE only for
+   * strategy_office — callers must gate on the role and never fake on failure.
+   */
+  markBoardPackReady: (packId: string): Promise<StrataBoardPack> =>
+    run(
+      typedQuery('strata_board_packs')
+        .update({ status: 'ready', generated_at: new Date().toISOString() })
+        .eq('id', packId)
+        .select('*')
+        .single(),
+    ),
   aiOutputs: (): Promise<StrataAiOutput[]> =>
     run(typedQuery('strata_ai_outputs').select('*').order('generated_at', { ascending: false })),
 };
