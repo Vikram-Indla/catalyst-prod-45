@@ -138,7 +138,10 @@ serve(async (req) => {
     const sb = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: userData, error: userErr } = await sb.auth.getUser();
+    // getUser() ignores global headers — the JWT must be passed explicitly,
+    // otherwise every valid user gets 401 (live-probed 2026-07-05).
+    const jwt = authHeader.replace(/^Bearer\s+/i, "");
+    const { data: userData, error: userErr } = await sb.auth.getUser(jwt);
     if (userErr || !userData?.user) return json({ error: "unauthorized" }, 401);
 
     const body = await req.json();

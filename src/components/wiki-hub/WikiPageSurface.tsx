@@ -27,6 +27,7 @@ import { BacklinksPanel } from './BacklinksPanel';
 import { DropdownMenu } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { exportPageHtml, exportPageMarkdown, printPage } from './editor/exportPage';
+import { uploadWikiFile } from './editor/wikiUpload';
 import { catalystToast } from '@/lib/catalystToast';
 import { WikiTranslateBar } from './WikiTranslateBar';
 import { GenerateStoriesFromPage } from './GenerateStoriesFromPage';
@@ -681,6 +682,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
                 dictationStyle="brd-page"
                 workspaceId={workspace.id}
                 workspaceSlug={workspace.slug}
+                uploadFile={uploadWikiFile}
               />
             </div>
           </Suspense>

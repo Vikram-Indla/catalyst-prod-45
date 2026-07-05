@@ -8,9 +8,21 @@
  * and the raw transcript commits instead, so dictation never feels slow.
  */
 import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 
 /** Hard latency budget for the cleanup round-trip (Wispr's published bar). */
 const CLEANUP_DEADLINE_MS = 2500;
+
+/** A hard lane failure (401/503, not a timeout) is surfaced ONCE per page
+ *  load — silent degradation to raw transcripts hid a real outage for days. */
+let laneFailureToasted = false;
+function toastLaneFailureOnce() {
+  if (laneFailureToasted) return;
+  laneFailureToasted = true;
+  catalystToast.warning(
+    'Dictation cleanup is unavailable right now — inserting the raw transcript.',
+  );
+}
 
 /** Utterances shorter than this many words skip cleanup entirely. */
 const MIN_WORDS = 4;
@@ -78,7 +90,10 @@ export async function cleanupTranscript(
         dictionary: opts?.dictionary ?? [],
       },
     });
-    if (error) return null;
+    if (error) {
+      toastLaneFailureOnce();
+      return null;
+    }
     const cleaned = (data as { cleaned?: string; provider?: string } | null)?.cleaned;
     if (!cleaned || !cleaned.trim()) return null;
     return { cleaned: cleaned.trim(), provider: (data as { provider?: string })?.provider ?? 'unknown' };

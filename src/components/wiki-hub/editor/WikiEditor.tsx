@@ -95,13 +95,15 @@ export default function WikiEditor({
     async (query: string): Promise<DefaultReactSuggestionItem[]> => {
       const q = query.trim();
 
+      // ph_issues is the app's issue spine (catalyst_issues is empty on
+      // staging — live-probed 2026-07-05). Column is `summary`, not title.
       let issuesQuery = db
-        .from('catalyst_issues')
-        .select('id, issue_key, title, issue_type')
+        .from('ph_issues')
+        .select('id, issue_key, summary, issue_type')
         .limit(6);
       issuesQuery = q
-        ? issuesQuery.or(`issue_key.ilike.${q}%,title.ilike.%${q}%`)
-        : issuesQuery.order('updated_at', { ascending: false });
+        ? issuesQuery.or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`)
+        : issuesQuery.order('jira_updated_at', { ascending: false, nullsFirst: false });
 
       const [pagesRes, issuesRes] = await Promise.all([
         workspaceId
@@ -141,9 +143,9 @@ export default function WikiEditor({
       );
 
       const issueItems: DefaultReactSuggestionItem[] = (issuesRes.data ?? []).map(
-        (r: { id: string; issue_key: string; title: string | null; issue_type: string | null }) => ({
+        (r: { id: string; issue_key: string; summary: string | null; issue_type: string | null }) => ({
           title: r.issue_key,
-          subtext: r.title ?? undefined,
+          subtext: r.summary ?? undefined,
           group: 'Work items',
           onItemClick: () => {
             editor.insertInlineContent([
@@ -153,7 +155,7 @@ export default function WikiEditor({
                   entityType: toEntityType(r.issue_type),
                   entityId: r.id,
                   label: r.issue_key,
-                  title: r.title ?? '',
+                  title: r.summary ?? '',
                 },
               },
               ' ',

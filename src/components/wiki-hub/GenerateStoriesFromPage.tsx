@@ -35,12 +35,15 @@ export function GenerateStoriesFromPage({ pageId, title, getBlocks }: GenerateSt
     queryKey: ['wiki', 'epic-key', epicLinks[0]?.entity_id],
     enabled: epicLinks.length === 1 && !!epicLinks[0]?.entity_id,
     queryFn: async () => {
+      // ph_issues is the app's issue spine (catalyst_issues is empty on
+      // staging — live-probed 2026-07-05). Column is `summary`, not title.
       const { data } = await db
-        .from('catalyst_issues')
-        .select('id, issue_key, title')
+        .from('ph_issues')
+        .select('id, issue_key, summary')
         .eq('id', epicLinks[0].entity_id)
         .maybeSingle();
-      return (data as { id: string; issue_key: string; title: string | null } | null) ?? null;
+      const row = data as { id: string; issue_key: string; summary: string | null } | null;
+      return row ? { id: row.id, issue_key: row.issue_key, title: row.summary } : null;
     },
   });
 
