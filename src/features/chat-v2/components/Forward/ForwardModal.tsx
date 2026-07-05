@@ -357,7 +357,7 @@ function Chip({ recipient, onRemove }: { recipient: ForwardRecipient; onRemove: 
         height: 24, padding: '0 6px',
         background: 'var(--cv2-bg-row-active)',
         color: 'var(--cv2-text-strong)',
-        borderRadius: 4,
+        borderRadius: 'var(--cv2-radius-sm)',
         font: 'var(--ds-font-body-small)',
       }}
     >
