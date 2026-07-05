@@ -12,6 +12,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent,
 } from 'react';
 import {
   draggable,
@@ -387,8 +388,35 @@ export function PageTree({ pages, selectedId, onSelect, onMove, onCreateChild, o
       return next;
     });
 
+  // WAI-ARIA tree keyboard pattern: Up/Down traverse VISIBLE rows in DOM
+  // order, Home/End jump to the extremes. (Right/Left expand/collapse are
+  // handled per-row.) DOM-order query keeps this correct under any
+  // expansion state without threading a flat index through the recursion.
+  const handleTreeKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+    const root = e.currentTarget;
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[role="treeitem"]'));
+    const current = items.indexOf(document.activeElement as HTMLElement);
+    if (current < 0 && e.key !== 'Home' && e.key !== 'End') return;
+    e.preventDefault();
+    const next =
+      e.key === 'ArrowDown'
+        ? items[current + 1]
+        : e.key === 'ArrowUp'
+          ? items[current - 1]
+          : e.key === 'Home'
+            ? items[0]
+            : items[items.length - 1];
+    next?.focus();
+  };
+
   return (
-    <div role="tree" aria-label="Pages" style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <div
+      role="tree"
+      aria-label="Pages"
+      onKeyDown={handleTreeKeyDown}
+      style={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+    >
       <style>{`
         .wiki-tree-row .wiki-tree-add { visibility: hidden; }
         .wiki-tree-row:hover .wiki-tree-add { visibility: visible; }
