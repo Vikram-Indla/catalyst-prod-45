@@ -213,7 +213,7 @@ export function StartNode(_: NodeProps) {
       justifyContent: 'center',
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
-      color: 'var(--ds-border)',
+      color: 'var(--ds-text-inverse)',
     }}>
       Start
       <Handle
