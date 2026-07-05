@@ -24,7 +24,7 @@ import Spinner from '@atlaskit/spinner';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ReleasePredictorCard } from '@/components/releasehub/ReleasePredictorCard';
-import { ReleasePeekPanel } from '@/components/releasehub/ReleasePeekPanel';
+import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ads/Modal';
 
 const T = {
   surface: 'var(--ds-surface)',
@@ -56,7 +56,8 @@ const RISK_DOT: Record<PredictionRisk, string> = {
 };
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-type Peek = { kind: 'release' | 'sprint'; id: string; label: string };
+// Sprint-only prediction preview (releases open full-page detail; no side panels — D-001).
+type Peek = { id: string; label: string };
 
 function Chip({ ev, onClick, pred }: { ev: CalendarEvent; onClick: () => void; pred?: Prediction }) {
   const showPred = ev.lane === 'release' && pred && pred.risk !== 'no_data';
@@ -118,7 +119,8 @@ export default function ReleaseCalendarPage() {
   };
   const onChipClick = (ev: CalendarEvent) => {
     const uuid = relUuid(ev);
-    if (uuid) setPeek({ kind: 'release', id: uuid, label: ev.label });
+    // Release chip → full-page release detail (no drawer/peek — D-001).
+    if (uuid) navigate(`/release-hub/${uuid}`);
     else if (ev.link) navigate(ev.link);
   };
 
@@ -202,7 +204,7 @@ export default function ReleaseCalendarPage() {
         {weeksOf(m).map((week, wi) => (
           <React.Fragment key={wi}>
             {sprintsForWeek(week).map((b) => (
-              <SprintBandRow key={`${b.name}-${wi}`} band={b} pred={predictions?.get(`sprint:${b.name}`)} onClick={() => setPeek({ kind: 'sprint', id: b.name, label: b.name })} />
+              <SprintBandRow key={`${b.name}-${wi}`} band={b} pred={predictions?.get(`sprint:${b.name}`)} onClick={() => setPeek({ id: b.name, label: b.name })} />
             ))}
             {week.map((day) => renderDayCell(day, m, compact))}
           </React.Fragment>
@@ -262,20 +264,20 @@ export default function ReleaseCalendarPage() {
         </div>
       )}
 
-      {peek && peek.kind === 'release' && (
-        <ReleasePeekPanel id={peek.id} label={peek.label} prediction={predictions?.get(`release:${peek.id}`) ?? null} onClose={() => setPeek(null)} />
-      )}
-      {peek && peek.kind === 'sprint' && (
-        <div onClick={() => setPeek(null)} style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket, rgba(9,30,66,0.36))', zIndex: 400, display: 'flex', justifyContent: 'flex-end' }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: 440, maxWidth: '92vw', height: '100%', background: T.surface, borderLeft: `1px solid ${T.border}`, padding: 16, overflowY: 'auto', boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.18))' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, flex: 1 }}>{peek.label}</span>
-              <button onClick={() => setPeek(null)} aria-label="Close" style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-500)', color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
-            </div>
-            <ReleasePredictorCard kind="sprint" id={peek.id} label={peek.label} prediction={predictions?.get(`sprint:${peek.id}`) ?? null} />
-          </div>
-        </div>
-      )}
+      {/* Sprint prediction preview — centered modal (no side drawer — D-001). */}
+      <Modal isOpen={!!peek} onClose={() => setPeek(null)} width="medium" aria-label={peek ? `${peek.label} prediction` : 'Sprint prediction'}>
+        {peek && (
+          <>
+            <ModalHeader><ModalTitle>{peek.label}</ModalTitle></ModalHeader>
+            <ModalBody>
+              <ReleasePredictorCard kind="sprint" id={peek.id} label={peek.label} prediction={predictions?.get(`sprint:${peek.id}`) ?? null} />
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setPeek(null)}>Close</Button>
+            </ModalFooter>
+          </>
+        )}
+      </Modal>
     </div>
   );
 }

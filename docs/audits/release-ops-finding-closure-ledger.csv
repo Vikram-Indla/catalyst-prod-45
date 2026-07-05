@@ -1,0 +1,12 @@
+finding_id,phase,category,finding,decision,status,evidence,closed_date
+RO-P0-01,P0,drawer,ChgDrawer.tsx banned side drawer (dead code),D-001 no drawers,CLOSED,deleted; 0 live importers verified,2026-07-06
+RO-P0-02,P0,drawer,ReleaseDrawer.tsx banned side drawer (dead code),D-001 no drawers,CLOSED,deleted; 0 live importers verified,2026-07-06
+RO-P0-03,P0,drawer,ReleasePeekPanel.tsx banned right drawer (live in calendar),D-001 no drawers,CLOSED,deleted; calendar rewired to full-page nav,2026-07-06
+RO-P0-04,P0,drawer,ReleaseCalendarPage sprint peek = right side-panel + 2x bare rgba(),D-001 no drawers + color law,CLOSED,replaced with ads/Modal preview; rgba removed,2026-07-06
+RO-P0-05,P0,route,Release chip opened peek drawer instead of full page,D-001 no drawers,CLOSED,onChipClick navigate(/release-hub/:id); verified live,2026-07-06
+RO-P0-06,P0,breadcrumb,Release detail breadcrumb,D-002 mirror Project module,CLOSED,ProjectPageHeader trail back to /releases-management; verified live,2026-07-06
+RO-P0-07,P0,breadcrumb,Change detail breadcrumb,D-002 mirror Project module,CLOSED,ProjectPageHeader trail back to /release-hub/changes; code-verified,2026-07-06
+RO-P0-08,P0,breadcrumb,L1 lists (releases/changes/calendar) breadcrumb,D-002 mirror Project module,CLOSED,ProjectPageHeader hubType=release no trail; verified live,2026-07-06
+RO-P0-09,P0,route,Change detail canonical route slug posture,D-004 :changeSlug,DEFERRED,rh_changes has no slug column; migration-safe; no fake slug; route stays :changeId,2026-07-06
+RO-P0-10,P0,build,npm run build acceptance gate,acceptance,CLOSED,build PASS 1m07s + tsc clean,2026-07-06
+RO-P0-11,P0,evidence,Change-detail + sprint-modal live screenshots,acceptance,OPEN,staging seed gap (0 changes / no sprint bands); code-verified only,
