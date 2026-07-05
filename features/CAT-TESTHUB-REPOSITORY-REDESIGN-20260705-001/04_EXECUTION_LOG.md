@@ -61,7 +61,19 @@ New file: `src/pages/testhub/plans/TestPlansPage.tsx`; route in `FullAppRoutes.t
 - Probed cyij: `tm_test_plans` exists (2 rows) with `plan_key` display key — **navigable by `:key`, no slug migration needed** (Grid F compliant, zero DDL). Canonical `JiraTable` list: key, name (`makeSummaryCell`), status Lozenge, progress track (from `*_count`), timeline. Create-plan modal (ADS). EmptyState CTA.
 - Gates: tsc 0 · colours 0 · ADS PASS · CRE PASS.
 
-### S6b — Configurable status-workflow editor: DEFERRED (needs its own migration slice)
+### 2026-07-06 · Session 001 · S6b — Configurable status-workflow editor: BUILT
+
+Additive, zero-regression approach (no core-enum change):
+- Migration `supabase/migrations/20260705211105_tm_case_status_config.sql` — new per-project `tm_case_status_config` (status_key, display_label, category CHECK, sort_order, allowed_next[]) with RLS mirroring `tm_case_priorities` (`tm_user_has_access`) + updated_at trigger. Applied to cyij staging via apply_migration; ledger version 20260705211105 recorded; committed file matches 1:1.
+- Hook `src/hooks/test-management/useCaseStatusConfig.ts` — reads config, falls back to canonical DEFAULTS when a project has no rows (so behaviour is unchanged where unconfigured); `useSaveCaseStatusConfig` upserts.
+- Admin page `src/pages/admin/test/TestCaseWorkflowPage.tsx` (route `/admin/test/case-workflow`) — live lifecycle preview + 4 editable rows (label, ADS category, reorder, allowed transitions), Save / Reset. Canonical PageHeader/Breadcrumbs/Lozenge/Select/Textfield; ADS tokens only.
+- The tm_case_status enum (draft/ready/approved/deprecated) is untouched — this is a presentation/governance layer, so no live status write path changed.
+- Verified live on localhost:8080: editor renders, Save persisted 4 rows to cyij `tm_case_status_config` (round-trip confirmed via SQL).
+- Gates: tsc 0 · colours 0 · ADS PASS · CRE PASS.
+
+Note (not mine): a pre-existing Vite HMR overlay fires from `src/routes/ProgramRoutesShell.tsx` importing `../pages/Tasks` (missing) — unrelated file, my tsc is clean; flagged for the owning session.
+
+### S6b — (superseded — now BUILT above)
 
 Probed cyij: no `tm_case_statuses` table — the Draft→Review→Approved→Deprecated lifecycle is a code-level enum used app-wide. Making it configurable requires a new table + a migration that rewires a **core status enum across many surfaces** — exactly the "migration touches shared tables → stop, produce data-audit SQL first" stop condition, and the kind of change RULE_TABLE H3 calls "a separate, larger Plan Lock." Not rushed headless. Left as the single remaining piece; recommend a dedicated `activate feature` slice with a data-audit + regression pass.
 

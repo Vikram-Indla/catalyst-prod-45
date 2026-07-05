@@ -155,6 +155,7 @@ const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDe
 const TestAdminPrioritiesPage   = lazy(() => import("../pages/admin/test/TestPrioritiesPage"));
 const TestAdminCaseTypesPage    = lazy(() => import("../pages/admin/test/TestCaseTypesPage"));
 const TestAdminCaseStatusesPage = lazy(() => import("../pages/admin/test/TestCaseStatusesPage"));
+const TestAdminCaseWorkflowPage = lazy(() => import("../pages/admin/test/TestCaseWorkflowPage"));
 const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPermissionsPage"));
 
 // RBAC Admin — mock-safe mode (schema not yet deployed)
@@ -1000,6 +1001,7 @@ export default function FullAppRoutes() {
           <Route path="test/priorities"    element={<S><TestAdminPrioritiesPage /></S>} />
           <Route path="test/case-types"    element={<S><TestAdminCaseTypesPage /></S>} />
           <Route path="test/case-statuses" element={<S><TestAdminCaseStatusesPage /></S>} />
+          <Route path="test/case-workflow" element={<S><TestAdminCaseWorkflowPage /></S>} />
           {/* P1-S16: "Run statuses" removed -- managed a disconnected legacy
               test_run_statuses table (0 rows, 0 readers anywhere else) with
               zero bearing on the real tm_execution_status enum that drives
