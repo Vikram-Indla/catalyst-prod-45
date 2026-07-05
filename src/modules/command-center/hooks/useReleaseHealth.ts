@@ -36,58 +36,71 @@ export function useReleaseHealth(limit: number = 5) {
 
       if (error) throw error;
 
-      // Fetch test run statistics for each release
-      const releaseHealthData: ReleaseHealthData[] = await Promise.all(
-        (releases || []).map(async (release: any) => {
-          // Get test cycles for this release - cast to any to avoid deep type instantiation
-          const cyclesResult = await (supabase
-            .from('tm_test_cycles')
-            .select('id') as any)
-            .eq('release_id', release.id);
-          const cycles = cyclesResult.data as { id: string }[] | null;
+      const releaseList = releases || [];
+      const releaseIds = releaseList.map((r: any) => r.id);
 
-          const cycleIds = cycles?.map(c => c.id) || [];
+      // Batch: all test cycles for all releases in one query (no per-release N+1)
+      const cycleToRelease = new Map<string, string>();
+      const allCycleIds: string[] = [];
+      if (releaseIds.length > 0) {
+        const cyclesResult = await (supabase
+          .from('tm_test_cycles')
+          .select('id, release_id') as any)
+          .in('release_id', releaseIds);
+        const cycles = cyclesResult.data as { id: string; release_id: string }[] | null;
+        for (const c of cycles || []) {
+          cycleToRelease.set(c.id, c.release_id);
+          allCycleIds.push(c.id);
+        }
+      }
 
-          let passed = 0, failed = 0, blocked = 0, notRun = 0;
+      // Batch: all test runs for all cycles in one query, tallied per release
+      const tallies = new Map<string, { passed: number; failed: number; blocked: number; notRun: number }>();
+      const bump = (releaseId: string | undefined, key: 'passed' | 'failed' | 'blocked' | 'notRun') => {
+        if (!releaseId) return;
+        const t = tallies.get(releaseId) || { passed: 0, failed: 0, blocked: 0, notRun: 0 };
+        t[key] += 1;
+        tallies.set(releaseId, t);
+      };
+      if (allCycleIds.length > 0) {
+        const runsResult = await (supabase
+          .from('tm_test_runs')
+          .select('status, cycle_id') as any)
+          .in('cycle_id', allCycleIds);
+        const runs = runsResult.data as { status: string; cycle_id: string }[] | null;
+        for (const r of runs || []) {
+          const releaseId = cycleToRelease.get(r.cycle_id);
+          if (r.status === 'passed') bump(releaseId, 'passed');
+          else if (r.status === 'failed') bump(releaseId, 'failed');
+          else if (r.status === 'blocked') bump(releaseId, 'blocked');
+          else if (r.status === 'not_run' || !r.status) bump(releaseId, 'notRun');
+        }
+      }
 
-          if (cycleIds.length > 0) {
-            // Get test run statistics - cast to any to avoid deep type instantiation
-            const runsResult = await (supabase
-              .from('tm_test_runs')
-              .select('status') as any)
-              .in('cycle_id', cycleIds);
-            const runs = runsResult.data as { status: string }[] | null;
+      const releaseHealthData: ReleaseHealthData[] = releaseList.map((release: any) => {
+        const t = tallies.get(release.id) || { passed: 0, failed: 0, blocked: 0, notRun: 0 };
+        const { passed, failed, blocked, notRun } = t;
+        const total = passed + failed + blocked + notRun;
+        const executed = passed + failed + blocked;
+        const passRate = executed > 0 ? Math.round((passed / executed) * 100) : 0;
 
-            if (runs) {
-              passed = runs.filter(r => r.status === 'passed').length;
-              failed = runs.filter(r => r.status === 'failed').length;
-              blocked = runs.filter(r => r.status === 'blocked').length;
-              notRun = runs.filter(r => r.status === 'not_run' || !r.status).length;
-            }
-          }
-
-          const total = passed + failed + blocked + notRun;
-          const executed = passed + failed + blocked;
-          const passRate = executed > 0 ? Math.round((passed / executed) * 100) : 0;
-
-          return {
-            id: release.id,
-            name: release.name,
-            version: release.version || 'v1.0',
-            product: (release.project as any)?.name || 'Unknown',
-            sprint: `Sprint ${format(new Date(), 'yy.w')}`,
-            dueDate: release.target_date || '',
-            healthScore: passRate,
-            healthStatus: calculateHealthStatus(passRate),
-            passed,
-            failed,
-            blocked,
-            notRun,
-            total,
-            passRate,
-          };
-        })
-      );
+        return {
+          id: release.id,
+          name: release.name,
+          version: release.version || 'v1.0',
+          product: (release.project as any)?.name || 'Unknown',
+          sprint: `Sprint ${format(new Date(), 'yy.w')}`,
+          dueDate: release.target_date || '',
+          healthScore: passRate,
+          healthStatus: calculateHealthStatus(passRate),
+          passed,
+          failed,
+          blocked,
+          notRun,
+          total,
+          passRate,
+        };
+      });
 
       return releaseHealthData;
     },

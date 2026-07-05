@@ -133,6 +133,51 @@ export function useWorkItemRanking(workItemType: string, queryKey: string[]) {
   }, [workItemType]);
 
   /**
+   * Batch-fetch rankings for many work items in one query (avoids N+1).
+   * Returns a Map<work_item_id, rank>; items with no ranking are absent.
+   */
+  const fetchRankings = useCallback(async (
+    workItemIds: string[],
+    context: RankingContext
+  ): Promise<Map<string, number>> => {
+    const result = new Map<string, number>();
+    if (workItemIds.length === 0) return result;
+    try {
+      let query = supabase
+        .from('work_item_rankings')
+        .select('work_item_id, rank')
+        .in('work_item_id', workItemIds)
+        .eq('work_item_type', workItemType)
+        .eq('context_type', context.type);
+
+      if (context.contextId) {
+        query = query.eq('context_id', context.contextId);
+      } else {
+        query = query.is('context_id', null);
+      }
+
+      if (context.piId) {
+        query = query.eq('pi_id', context.piId);
+      } else {
+        query = query.is('pi_id', null);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.error('Error fetching rankings:', error);
+        return result;
+      }
+      for (const row of data || []) {
+        if (row.rank != null) result.set(row.work_item_id, row.rank);
+      }
+      return result;
+    } catch (err) {
+      console.error('Error in fetchRankings:', err);
+      return result;
+    }
+  }, [workItemType]);
+
+  /**
    * Update ranking mutation
    */
   const updateRankingMutation = useMutation({
@@ -362,6 +407,7 @@ export function useWorkItemRanking(workItemType: string, queryKey: string[]) {
   return {
     detectRankingContext,
     fetchRanking,
+    fetchRankings,
     updateRanking: updateRankingMutation.mutate,
     batchUpdateRankings,
     pullRankFromParent,

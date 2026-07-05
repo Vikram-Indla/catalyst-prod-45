@@ -36,19 +36,21 @@ export function StoriesListView({
   context,
   isFilterActive = false
 }: StoriesListViewProps) {
-  const { batchUpdateRankings, fetchRanking, isRanking } = useWorkItemRanking('story', ['all-stories']);
+  const { batchUpdateRankings, fetchRankings, isRanking } = useWorkItemRanking('story', ['all-stories']);
   const [storiesWithRanks, setStoriesWithRanks] = useState<Array<StoryWithRelations & { displayRank: number | null }>>([]);
 
-  // Fetch rankings for all stories in current context
+  // Fetch rankings for all stories in current context — single batched query (no N+1)
   useEffect(() => {
+    let cancelled = false;
     const loadRankings = async () => {
-      const withRanks = await Promise.all(
-        stories.map(async (story) => {
-          const rank = await fetchRanking(story.id, context);
-          return { ...story, displayRank: rank };
-        })
-      );
-      
+      const rankMap = await fetchRankings(stories.map((s) => s.id), context);
+      if (cancelled) return;
+
+      const withRanks = stories.map((story) => ({
+        ...story,
+        displayRank: rankMap.get(story.id) || null,
+      }));
+
       // Sort by rank if available, otherwise preserve order
       const sorted = withRanks.sort((a, b) => {
         if (a.displayRank === null && b.displayRank === null) return 0;
@@ -56,12 +58,13 @@ export function StoriesListView({
         if (b.displayRank === null) return -1;
         return a.displayRank - b.displayRank;
       });
-      
+
       setStoriesWithRanks(sorted);
     };
 
     loadRankings();
-  }, [stories, context, fetchRanking]);
+    return () => { cancelled = true; };
+  }, [stories, context, fetchRankings]);
 
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination || isFilterActive) return;
