@@ -1,12 +1,17 @@
 /**
- * seenReceipts — pure "Seen" caption computation for Chat v2 DMs.
+ * seenReceipts — pure read-receipt caption computation for Chat v2.
  *
- * WhatsApp-style read receipts, Slack-class restraint:
- *  - Only `dm` and `group_dm` conversations (channels never show receipts).
- *  - Caption attaches to the viewer's LAST own message in the list.
- *  - dm        → "Seen" once the other member's last_read_at >= createdAt.
- *  - group_dm  → "Seen by N" where N = OTHER members who read it (hidden at 0).
- *  - Zero-assumption law: no "Delivered" fabrication — unseen renders nothing.
+ * WhatsApp-style receipts, Slack-class restraint:
+ *  - Caption attaches ONLY to the viewer's LAST own message — never to
+ *    other people's messages, and never per-message down the list. So a
+ *    channel shows at most one receipt (on your own latest post), which
+ *    keeps it from becoming the creepy per-message read tracker Slack
+ *    deliberately avoids.
+ *  - dm                     → "Seen" once the other member read it.
+ *  - group_dm               → "Seen by N" (N = OTHER members who read it).
+ *  - channel/custom_channel → "Read by N" (same math; different verb).
+ *  - Hidden entirely at N = 0. Zero-assumption law: no "Delivered"
+ *    fabrication — unseen renders nothing.
  */
 import type { ChatConversationKind } from '@/types/chat';
 
@@ -35,7 +40,9 @@ export function computeSeenCaption(
   myId: string | null | undefined,
   kind: ChatConversationKind,
 ): SeenCaption | null {
-  if (kind !== 'dm' && kind !== 'group_dm') return null;
+  // Ticket threads have no meaningful "read by" audience — skip. All other
+  // kinds (dm, group_dm, channel, custom_channel) show a receipt.
+  if (kind === 'ticket') return null;
   if (!myId) return null;
 
   // Last own real message (skip event rows and soft-deleted messages).
@@ -61,8 +68,11 @@ export function computeSeenCaption(
   }).length;
 
   if (seenCount === 0) return null;
-  return {
-    messageId: target.id,
-    text: kind === 'dm' ? 'Seen' : `Seen by ${seenCount}`,
-  };
+  const text =
+    kind === 'dm'
+      ? 'Seen'
+      : kind === 'group_dm'
+        ? `Seen by ${seenCount}`
+        : `Read by ${seenCount}`;
+  return { messageId: target.id, text };
 }

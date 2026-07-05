@@ -30,9 +30,13 @@ const CODE_BLOCK_STYLE = [
 ].join(';');
 
 // Slack-style blockquote. Tokens only — no bare colors (COLOR LAW).
+// Logical properties so the accent bar sits on the leading edge in BOTH
+// directions: left for LTR (English) messages, right for RTL (Arabic) — the
+// message carries dir="auto", so each blockquote follows its own text.
 const QUOTE_STYLE = [
-  'border-left:4px solid var(--cv2-border-strong)',
-  'padding:0 var(--ds-space-150)',
+  'border-inline-start:4px solid var(--cv2-border-strong)',
+  'padding-block:0',
+  'padding-inline:var(--ds-space-150)',
   'margin:var(--ds-space-050) 0',
   'color:var(--cv2-text)',
 ].join(';');

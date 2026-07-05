@@ -17,6 +17,7 @@ import {
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
+import { TestCoveragePanel } from '../story/TestCoveragePanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -110,6 +111,11 @@ export default function CatalystViewFeature({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
+      {/* Test coverage (CAT-TESTHUB-REBUILD Phase C · L001) — rolls up
+          coverage across the feature's child stories. */}
+      {issue?.issue_key && (
+        <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="feature" />
+      )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps

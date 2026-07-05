@@ -37,6 +37,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
+import { TestCoveragePanel } from './TestCoveragePanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
   AttachmentsSection,
@@ -208,6 +209,13 @@ export default function CatalystViewStory({
           projectKey={issue.project_key || projectKey || ''}
           projectName={issue.project_name ?? undefined}
         />
+      )}
+
+      {/* Test coverage / Trace-From (CAT-TESTHUB-REBUILD Phase C · L001).
+          Mirrors the incident/defect mount so opening a Story surfaces its
+          linked test cases + run status directly. */}
+      {issue?.issue_key && (
+        <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="story" />
       )}
 
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />

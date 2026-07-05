@@ -120,6 +120,9 @@ export const testHubRoutes = {
   cycles: () => '/testhub/cycles',
   cycle: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}`,
   cycleExecute: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}/execute`,
+  // Retrospective, read-only detail of a cycle's completed run(s)
+  // (CAT-TESTHUB-REBUILD Phase 3b). cycleSlug is the cycle_key (e.g. "CY-001").
+  cycleRuns: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}/runs`,
   sets: () => '/testhub/sets',
   set: (setSlug: string) => `/testhub/sets/${setSlug}`,
   reports: () => '/testhub/reports',

@@ -172,6 +172,7 @@ const TestHubFilterPreviewPage = lazy(() => import("../pages/testhub/FilterPrevi
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
+const TestHubCycleRunDetailPage = lazy(() => import("../pages/testhub/cycles/CycleRunDetailPage"));
 const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
@@ -675,9 +676,11 @@ export default function FullAppRoutes() {
         <Route path="/testhub/cycles" element={<MG k="testhub" t="Test Hub"><S><TestHubCyclesPage /></S></MG>} />
         <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
         <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey/runs" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleRunDetailPage /></S></MG>} />
         {/* Legacy routes without projectKey — backward compat */}
         <Route path="/testhub/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
         <Route path="/testhub/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
+        <Route path="/testhub/cycles/:cycleKey/runs" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleRunDetailPage /></S></MG>} />
         <Route path="/testhub/timeline" element={<MG k="testhub" t="Test Hub"><S><TestHubTimelinePage /></S></MG>} />
         <Route path="/testhub/dependencies" element={<MG k="testhub" t="Test Hub"><S><TestHubDependenciesPage /></S></MG>} />
         <Route path="/testhub/sets" element={<MG k="testhub" t="Test Hub"><S><TestHubSetsPage /></S></MG>} />

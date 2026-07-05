@@ -23,6 +23,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Textfield from '@atlaskit/textfield';
 import Select, { AsyncSelect } from '@atlaskit/select';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -37,7 +38,9 @@ import {
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
-import { TmCommentsSection } from '@/components/testhub/TmCommentsSection';
+import { TestCaseStepsEditor } from './TestCaseStepsEditor';
+import { TmActivitySection } from './TmActivitySection';
+import { TestCaseAttachments } from './TestCaseAttachments';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -353,47 +356,12 @@ export default function CatalystViewTestCase({
     [priorities],
   );
 
-  /* ── Steps read-only render. ── */
+  /* ── Steps: persistence-backed editor (P0 — was read-only). ── */
   const steps = testCase?.steps ?? [];
 
-  const stepsPanel = (
-    <div style={{ padding: '8px 16px' }}>
-      {steps.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No steps.</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {steps.map((s: any, i: number) => (
-            <div key={s.id ?? i} style={{
-              border: '1px solid var(--ds-border)',
-              borderRadius: 6,
-              padding: 12,
-              background: 'var(--ds-surface-raised)',
-            }}>
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
-                Step {s.step_number ?? i + 1}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 'var(--ds-font-size-300)' }}>
-                <div>
-                  <div style={miniLabel}>Action</div>
-                  <div style={{ color: 'var(--ds-text)' }}>{s.action || '—'}</div>
-                </div>
-                <div>
-                  <div style={miniLabel}>Expected result</div>
-                  <div style={{ color: 'var(--ds-text)' }}>{s.expected_result || '—'}</div>
-                </div>
-              </div>
-              {s.test_data ? (
-                <div style={{ marginTop: 8 }}>
-                  <div style={miniLabel}>Test data</div>
-                  <div style={{ color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)' }}>{s.test_data}</div>
-                </div>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  const stepsPanel = itemId ? (
+    <TestCaseStepsEditor testCaseId={itemId} steps={steps as any} />
+  ) : null;
 
   /* ── Versions read-only render. [MM6] useTestCaseVersions authoritative. ── */
   const versionsPanel = (
@@ -490,6 +458,26 @@ export default function CatalystViewTestCase({
     enabled: !!itemId,
   });
 
+  /* ── Attachments tab — tm_attachments (entity_type='test_case'). Count feeds
+       the tab label; the panel owns list/upload/delete. ── */
+  const { data: attachmentCount = 0 } = useQuery({
+    queryKey: ['tm-attachments-count', itemId],
+    enabled: !!itemId,
+    staleTime: 30_000,
+    queryFn: async (): Promise<number> => {
+      if (!itemId) return 0;
+      const { count, error } = await supabase
+        .from('tm_attachments')
+        .select('id', { count: 'exact', head: true })
+        .eq('entity_type', 'test_case')
+        .eq('entity_id', itemId);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const attachmentsPanel = <TestCaseAttachments testCaseId={itemId} />;
+
   const [linkForm, setLinkForm] = useState({
     open: false,
     mode: 'issue' as 'issue' | 'external',
@@ -500,15 +488,26 @@ export default function CatalystViewTestCase({
     saving: false,
   });
 
-  // P1-S10: real ph_issues picker (id-backed) for the 3 types the
-  // requirement_type CHECK maps cleanly to. Defect/incident/other types stay
-  // on the free-text external path until E4 widens the CHECK (P2 — see
-  // Plan Lock Forbidden note on this slice).
+  // P1-S10 + L005 (Phase C): real ph_issues picker (id-backed) for the types
+  // the requirement_type CHECK accepts. The DB CHECK on
+  // tm_requirement_links.requirement_type accepts
+  //   story | epic | feature | business_request | task | incident | external
+  // (task added by migration 20260705021435; defect/incident already present).
+  // Every picker type now maps to its own native requirement_type and is stored
+  // id-backed. Anything unmapped still falls through to the 'external' write
+  // path (never fabricate 'story' for an unknown type).
   const ISSUE_TYPE_TO_REQUIREMENT_TYPE: Record<string, string> = {
     Story: 'story',
     Epic: 'epic',
     Feature: 'feature',
+    'Business Request': 'business_request',
+    Task: 'task',
+    'Production Incident': 'incident',
   };
+
+  // Types the picker offers — all stored id-backed via their native
+  // requirement_type per the map above (see handleAddLink).
+  const PICKER_ISSUE_TYPES = ['Story', 'Epic', 'Feature', 'Task', 'Business Request', 'Production Incident'];
 
   const loadIssueOptions = useCallback(async (input: string) => {
     // Repo-wide search, no project_key scope — matches LinkToolbar.tsx's
@@ -520,7 +519,7 @@ export default function CatalystViewTestCase({
     let query = supabase
       .from('ph_issues')
       .select('id, issue_key, summary, issue_type')
-      .in('issue_type', ['Story', 'Epic', 'Feature'])
+      .in('issue_type', PICKER_ISSUE_TYPES)
       .is('jira_removed_at', null)
       .limit(10);
     query = q ? query.or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`) : query.order('jira_updated_at', { ascending: false });
@@ -540,10 +539,26 @@ export default function CatalystViewTestCase({
     if (!usingIssue && !linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
     setLinkForm(f => ({ ...f, saving: true }));
     try {
-      const { error } = await supabase.rpc('tm_link_requirement', usingIssue ? {
+      // L005: every picker type now maps to a native requirement_type and is
+      // stored id-backed (Task→task, Production Incident→incident added
+      // 20260705021435). Only a truly unmapped type falls through to 'external'
+      // (never fabricate 'story', which the old `?? 'story'` did).
+      const mappedType = usingIssue
+        ? ISSUE_TYPE_TO_REQUIREMENT_TYPE[linkForm.picked!.issue_type]
+        : undefined;
+      const idBacked = usingIssue && !!mappedType;
+      const { error } = await supabase.rpc('tm_link_requirement', idBacked ? {
         p_case_id: itemId,
-        p_requirement_type: ISSUE_TYPE_TO_REQUIREMENT_TYPE[linkForm.picked!.issue_type] ?? 'story',
+        p_requirement_type: mappedType!,
         p_requirement_id: linkForm.picked!.id,
+        p_external_key: linkForm.picked!.issue_key,
+        p_external_title: linkForm.picked!.summary,
+        p_link_type: linkForm.linkType,
+      } : usingIssue ? {
+        // Picked issue of an unmapped type (Task / Production Incident):
+        // preserve its key + title on the external path.
+        p_case_id: itemId,
+        p_requirement_type: 'external',
         p_external_key: linkForm.picked!.issue_key,
         p_external_title: linkForm.picked!.summary,
         p_link_type: linkForm.linkType,
@@ -625,16 +640,25 @@ export default function CatalystViewTestCase({
           </div>
           {linkForm.mode === 'issue' ? (
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>STORY / EPIC / FEATURE</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>STORY / EPIC / FEATURE / TASK / BUSINESS REQUEST / PRODUCTION INCIDENT</div>
               <AsyncSelect
                 inputId="tc-req-issue-picker"
                 aria-label="Search issues"
                 cacheOptions
                 defaultOptions
                 loadOptions={loadIssueOptions}
-                value={linkForm.picked ? { value: linkForm.picked.id, label: `${linkForm.picked.issue_key} ${linkForm.picked.summary}` } : null}
+                value={linkForm.picked ? { value: linkForm.picked.id, label: `${linkForm.picked.issue_key} ${linkForm.picked.summary}`, issue_key: linkForm.picked.issue_key, summary: linkForm.picked.summary, issue_type: linkForm.picked.issue_type } : null}
                 onChange={(opt: any) => setLinkForm(f => ({ ...f, picked: opt ? { id: opt.value, issue_key: opt.issue_key, summary: opt.summary, issue_type: opt.issue_type } : null }))}
                 placeholder="Search by key or title…"
+                formatOptionLabel={(opt: any) => (
+                  opt?.issue_type ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                      <JiraIssueTypeIcon issueType={opt.issue_type} size={16} />
+                      <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{opt.issue_key}</span>
+                      <span style={{ color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.summary}</span>
+                    </span>
+                  ) : (opt?.label ?? '')
+                )}
               />
             </div>
           ) : (
@@ -697,20 +721,10 @@ export default function CatalystViewTestCase({
     </div>
   );
 
-  /* ── Comments tab body (G14 COL-001). ── */
-  const { data: commentCount = 0 } = useQuery({
-    queryKey: ['tm-comments-count', 'test_case', itemId],
-    enabled: !!itemId,
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('tm_comments').select('id', { count: 'exact', head: true })
-        .eq('entity_type', 'test_case').eq('entity_id', itemId!);
-      return count ?? 0;
-    },
-  });
-  const commentsPanel = (
+  /* ── Activity tab body: canonical ActivityPanel (comments + audit history). ── */
+  const activityPanel = (
     <div style={{ padding: '8px 16px' }}>
-      <TmCommentsSection entityType="test_case" entityId={itemId} />
+      <TmActivitySection entityType="test_case" entityId={itemId} />
     </div>
   );
 
@@ -775,19 +789,21 @@ export default function CatalystViewTestCase({
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
               <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
               <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
-              <Tab>Comments{commentCount ? ` (${commentCount})` : ''}</Tab>
+              <Tab>Attachments{attachmentCount ? ` (${attachmentCount})` : ''}</Tab>
+              <Tab>Activity</Tab>
             </TabList>
             <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
             <TabPanel>{versionsPanel}</TabPanel>
             <TabPanel>{requirementsPanel}</TabPanel>
-            <TabPanel>{commentsPanel}</TabPanel>
+            <TabPanel>{attachmentsPanel}</TabPanel>
+            <TabPanel>{activityPanel}</TabPanel>
           </Tabs>
         </div>
       </>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, steps.length, versions.length, reqLinks.length, handleTitleChange]);
+  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, attachmentsPanel, attachmentCount, steps.length, versions.length, reqLinks.length, handleTitleChange]);
 
   /* ── rightContent: canonical sidebar. ── */
   const rightContent = useMemo(() => {
@@ -892,11 +908,3 @@ export default function CatalystViewTestCase({
   );
 }
 
-const miniLabel: React.CSSProperties = {
-  fontSize: 'var(--ds-font-size-100)',
-  fontWeight: 600,
-  color: 'var(--ds-text-subtlest)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: 0,
-};

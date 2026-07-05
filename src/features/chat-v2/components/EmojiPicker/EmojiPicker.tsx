@@ -257,7 +257,7 @@ function EmojiGroup({
               justifyContent: 'center',
               background: 'transparent',
               border: 'none',
-              borderRadius: 4,
+              borderRadius: 'var(--cv2-radius-sm)',
               font: 'var(--ds-font-heading-medium)',
               lineHeight: 1,
               cursor: 'pointer',

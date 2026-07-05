@@ -141,7 +141,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             gap: 0,
             background: 'var(--cv2-bg-toolbar)',
             border: '1px solid var(--cv2-border-strong)',
-            borderRadius: 8,
+            borderRadius: 'var(--cv2-radius-lg)',
             padding: '4px 6px',
             boxShadow: 'var(--cv2-shadow-modal)',
             zIndex: 2,
@@ -218,7 +218,7 @@ function Avatar({ name }: { name: string }) {
         alt=""
         width={36}
         height={36}
-        style={{ borderRadius: 6, objectFit: 'cover', flexShrink: 0 }}
+        style={{ borderRadius: 'var(--cv2-radius-md)', objectFit: 'cover', flexShrink: 0 }}
       />
     );
   }
@@ -228,7 +228,7 @@ function Avatar({ name }: { name: string }) {
       style={{
         width: 36,
         height: 36,
-        borderRadius: 6,
+        borderRadius: 'var(--cv2-radius-md)',
         background: 'var(--cv2-bg-row-hover)',
         color: 'var(--cv2-text)',
         display: 'flex',

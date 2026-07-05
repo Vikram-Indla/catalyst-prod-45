@@ -394,7 +394,7 @@ function MessageRow({
           width: '100%',
           padding: '8px 12px',
           background: 'var(--cv2-bg-row-hover)',
-          borderRadius: 8,
+          borderRadius: 'var(--cv2-radius-lg)',
           display: 'flex',
           gap: 8,
           border: 'none',
@@ -454,7 +454,7 @@ function ScopeRow({
             padding: '0px 8px',
             background: 'var(--cv2-bg-row-active)',
             color: 'var(--cv2-text-link)',
-            borderRadius: 4,
+            borderRadius: 'var(--cv2-radius-sm)',
             font: 'var(--ds-font-body-small)',
             fontWeight: 600,
             maxWidth: 360,
@@ -500,7 +500,7 @@ function EnterChip() {
         background: 'transparent',
         color: 'var(--cv2-text-strong)',
         border: '1px solid var(--cv2-border-strong)',
-        borderRadius: 4,
+        borderRadius: 'var(--cv2-radius-sm)',
         font: 'var(--ds-font-body-small)',
         fontWeight: 600,
       }}
@@ -571,7 +571,7 @@ function iconBtnStyle(): React.CSSProperties {
     background: 'transparent',
     color: 'var(--cv2-text-subtle)',
     border: 'none',
-    borderRadius: 4,
+    borderRadius: 'var(--cv2-radius-sm)',
     cursor: 'pointer',
   };
 }

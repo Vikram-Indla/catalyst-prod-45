@@ -6,7 +6,7 @@ import Button from '@atlaskit/button/standard-button';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useExecutionSteps } from '@/hooks/test-management/useTestSteps';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
@@ -136,8 +136,7 @@ export default function ExecutionPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId } = useTestHubProject();
 
   const { data: scopeItems = [], isLoading, isError: isScopeError, error: scopeError, refetch: refetchScope } = useCycleScope(cycleId);
 

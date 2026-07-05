@@ -394,12 +394,12 @@ function InlineCreateCardComponent({
         const { data, error: insErr } = await (supabase as any)
           .from('tm_test_cases')
           .insert(insertRow)
-          .select('id, key, title')
+          .select('id, case_key, title')
           .single();
         if (insErr) throw insErr;
         const createdIssue: CreatedIssue = {
           issueId: (data as any)?.id ?? '',
-          issueKey: (data as any)?.key ?? (data as any)?.id ?? '',
+          issueKey: (data as any)?.case_key ?? (data as any)?.id ?? '',
           issueType: 'Test Case',
           summary: summary.trim(),
           status: status || 'DRAFT',

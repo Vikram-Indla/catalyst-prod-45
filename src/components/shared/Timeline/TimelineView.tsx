@@ -154,6 +154,7 @@ export default function TimelineView(props: TimelineViewProps) {
     enableCreateEpicRow = true,
     enableEmptyRowAdd = true,
     enableDetailPanel = true,
+    enableInlineEmptyOverlay = true,
     createTopLevelConfig = { label: "Create epic", iconType: "Epic" },
     childTypesOverride,
     childrenOnlyOnGroupRows = false,
@@ -3349,7 +3350,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     );
                   })}
 
-                {!hasAnyDates && !emptyOverlayDismissed && (
+                {enableInlineEmptyOverlay && !hasAnyDates && !emptyOverlayDismissed && (
                   <InlineEmptyOverlay
                     projectKey={hubLabel}
                     onDismiss={() => setEmptyOverlayDismissed(true)}

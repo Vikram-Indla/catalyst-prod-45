@@ -34,6 +34,18 @@ export type IssueMeta = Record<
     parent_key?: string | null;
     /** Project key (for the "Space" filter). */
     project_key?: string | null;
+    /**
+     * Human-readable key shown in the card title slot when the node id is not a
+     * readable issue key (e.g. Test Hub cycles keyed by UUID). When absent, the
+     * card falls back to the node key (issue-key hubs render unchanged).
+     */
+    displayKey?: string | null;
+    /**
+     * Explicit navigation target for the card title link. When absent, the card
+     * falls back to `/browse/<key>` (issue-key hubs render unchanged). Set this
+     * when the node has no `/browse/<key>` route (e.g. Test Hub cycle detail).
+     */
+    href?: string | null;
   }
 >;
 

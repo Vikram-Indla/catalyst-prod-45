@@ -1,6 +1,10 @@
 /**
  * AI-Powered Test Case Generation Dialog
- * Uses Lovable AI to generate comprehensive test cases from natural language prompts
+ *
+ * Free-prompt entry point to the `ai-generate-test-artefacts` edge function.
+ * Surfaces the model's REAL output per case — test_type + type rationale,
+ * coverage area, covers[] traceability, and a duplicate flag — plus the
+ * suite-level coverage gaps the model reported.
  */
 
 import { useState, useCallback } from 'react';
@@ -14,10 +18,6 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
-  Settings2,
-  Zap,
-  Shield,
-  TrendingUp,
 } from '@/lib/atlaskit-icons';
 import {
   Dialog,
@@ -28,26 +28,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lozenge } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
-import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
 import { useAIGeneration, type GeneratedTestCase, type GenerationResult } from '@/hooks/test-management/useAIGeneration';
@@ -55,6 +40,8 @@ import { useAIGeneration, type GeneratedTestCase, type GenerationResult } from '
 interface AIGenerateTestCasesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Optional Catalyst project id, forwarded to the edge fn for attribution. */
+  projectId?: string;
   onTestCasesGenerated?: (testCases: GeneratedTestCase[]) => void;
 }
 
@@ -65,28 +52,13 @@ const EXAMPLE_PROMPTS = [
   'Create security tests for a payment processing module',
 ];
 
-const TEST_TYPE_OPTIONS = [
-  { value: 'all', label: 'All Types', icon: Sparkles },
-  { value: 'functional', label: 'Functional', icon: CheckCircle2 },
-  { value: 'api', label: 'API', icon: Zap },
-  { value: 'security', label: 'Security', icon: Shield },
-  { value: 'performance', label: 'Performance', icon: TrendingUp },
-];
-
 export function AIGenerateTestCasesDialog({
   open,
   onOpenChange,
+  projectId,
   onTestCasesGenerated,
 }: AIGenerateTestCasesDialogProps) {
   const [prompt, setPrompt] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [featureName, setFeatureName] = useState('');
-  const [testType, setTestType] = useState('all');
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [includeEdgeCases, setIncludeEdgeCases] = useState(true);
-  const [includeNegativeTests, setIncludeNegativeTests] = useState(true);
-  const [includePerformance, setIncludePerformance] = useState(false);
-  const [includeSecurity, setIncludeSecurity] = useState(false);
   const [generationResult, setGenerationResult] = useState<GenerationResult | null>(null);
   const [selectedTestCases, setSelectedTestCases] = useState<Set<number>>(new Set());
   const [expandedTestCase, setExpandedTestCase] = useState<number | null>(null);
@@ -99,22 +71,14 @@ export function AIGenerateTestCasesDialog({
       return;
     }
 
-    const result = await generateTestCases(prompt, {
-      projectName: projectName || 'Project',
-      featureName: featureName || undefined,
-      testType,
-      includeEdgeCases,
-      includeNegativeTests,
-      includePerformance,
-      includeSecurity,
-    });
+    const result = await generateTestCases(prompt, { projectId });
 
     if (result) {
       setGenerationResult(result);
       setSelectedTestCases(new Set(result.testCases.map((_, i) => i)));
       catalystToast.success(`Generated ${result.testCases.length} test cases`);
     }
-  }, [prompt, projectName, featureName, testType, includeEdgeCases, includeNegativeTests, includePerformance, includeSecurity, generateTestCases]);
+  }, [prompt, projectId, generateTestCases]);
 
   const handleSelectTestCase = (index: number) => {
     const newSelected = new Set(selectedTestCases);
@@ -148,14 +112,6 @@ export function AIGenerateTestCasesDialog({
 
   const resetForm = () => {
     setPrompt('');
-    setProjectName('');
-    setFeatureName('');
-    setTestType('all');
-    setShowAdvanced(false);
-    setIncludeEdgeCases(true);
-    setIncludeNegativeTests(true);
-    setIncludePerformance(false);
-    setIncludeSecurity(false);
     setGenerationResult(null);
     setSelectedTestCases(new Set());
     setExpandedTestCase(null);
@@ -228,96 +184,10 @@ export function AIGenerateTestCasesDialog({
                   className="min-h-[120px] resize-none"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Be specific about the feature, expected behaviors, and any edge cases you want covered
+                  Be specific about the feature, expected behaviors, and any edge cases you want covered.
+                  The model chooses each case's type and coverage area from your description.
                 </p>
               </div>
-
-              {/* Quick Options */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="projectName">Project Name (optional)</Label>
-                  <Input
-                    id="projectName"
-                    placeholder="My Project"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="featureName">Feature Name (optional)</Label>
-                  <Input
-                    id="featureName"
-                    placeholder="User Authentication"
-                    value={featureName}
-                    onChange={(e) => setFeatureName(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Test Type */}
-              <div className="space-y-2">
-                <Label>Test Type Focus</Label>
-                <Select value={testType} onValueChange={setTestType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TEST_TYPE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        <div className="flex items-center gap-2">
-                          <opt.icon className="w-4 h-4" />
-                          {opt.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Advanced Options */}
-              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" className="w-full justify-between">
-                    <span className="flex items-center gap-2">
-                      <Settings2 className="w-4 h-4" />
-                      Advanced Options
-                    </span>
-                    {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-4 pt-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-0.5">
-                        <Label className="text-sm">Edge Cases</Label>
-                        <p className="text-xs text-muted-foreground">Include boundary and edge scenarios</p>
-                      </div>
-                      <Switch checked={includeEdgeCases} onCheckedChange={setIncludeEdgeCases} />
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-0.5">
-                        <Label className="text-sm">Negative Tests</Label>
-                        <p className="text-xs text-muted-foreground">Include error and failure scenarios</p>
-                      </div>
-                      <Switch checked={includeNegativeTests} onCheckedChange={setIncludeNegativeTests} />
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-0.5">
-                        <Label className="text-sm">Performance Tests</Label>
-                        <p className="text-xs text-muted-foreground">Include load and stress scenarios</p>
-                      </div>
-                      <Switch checked={includePerformance} onCheckedChange={setIncludePerformance} />
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-0.5">
-                        <Label className="text-sm">Security Tests</Label>
-                        <p className="text-xs text-muted-foreground">Include security validation scenarios</p>
-                      </div>
-                      <Switch checked={includeSecurity} onCheckedChange={setIncludeSecurity} />
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
 
               {/* Generate Button */}
               <div className="flex justify-end gap-3 pt-4">
@@ -368,11 +238,15 @@ export function AIGenerateTestCasesDialog({
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3"
+                  className="p-4 rounded-lg flex items-start gap-3"
+                  style={{
+                    background: 'var(--ds-background-danger)',
+                    border: '1px solid var(--ds-border-danger)',
+                  }}
                 >
-                  <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
+                  <AlertCircle className="w-5 h-5 shrink-0" style={{ color: 'var(--ds-icon-danger)' }} />
                   <div>
-                    <p className="font-medium text-destructive">Generation Failed</p>
+                    <p className="font-medium" style={{ color: 'var(--ds-text-danger)' }}>Generation Failed</p>
                     <p className="text-sm text-muted-foreground">{error}</p>
                   </div>
                 </motion.div>
@@ -411,14 +285,28 @@ export function AIGenerateTestCasesDialog({
                 </div>
               </div>
 
-              {/* Metadata */}
-              {generationResult.metadata && (
-                <div className="flex flex-wrap gap-2 shrink-0">
-                  {generationResult.metadata.coverageAreas?.map((area, i) => (
-                    <Lozenge key={i} appearance="default">
-                      {area}
-                    </Lozenge>
-                  ))}
+              {/* Coverage gaps — behaviours the model could not cover. Renders
+                  only when the model reported gaps (zero-assumption: silent
+                  when there are none). */}
+              {generationResult.metadata.gaps.length > 0 && (
+                <div
+                  className="p-3 rounded-lg shrink-0"
+                  style={{
+                    background: 'var(--ds-background-warning)',
+                    border: '1px solid var(--ds-border)',
+                  }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <AlertCircle className="w-4 h-4" style={{ color: 'var(--ds-icon-warning)' }} />
+                    <span className="text-sm font-medium" style={{ color: 'var(--ds-text-warning)' }}>
+                      Coverage gaps ({generationResult.metadata.gaps.length})
+                    </span>
+                  </div>
+                  <ul className="text-sm text-muted-foreground space-y-1 pl-1">
+                    {generationResult.metadata.gaps.map((gap, i) => (
+                      <li key={i}>• {gap}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
@@ -451,14 +339,27 @@ export function AIGenerateTestCasesDialog({
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-medium truncate">{tc.title}</span>
                             <Lozenge appearance={getPriorityAppearance(tc.priority)}>
                               {tc.priority}
                             </Lozenge>
-                            <Lozenge appearance="default">
+                            {/* Real per-case type from the model. */}
+                            <Lozenge appearance="new">
                               {tc.testType}
                             </Lozenge>
+                            {/* Coverage area, when the model assigned one. */}
+                            {tc.coverageArea && (
+                              <Lozenge appearance="default">
+                                {tc.coverageArea}
+                              </Lozenge>
+                            )}
+                            {/* Probable-duplicate flag. */}
+                            {tc.similarToExisting && (
+                              <Lozenge appearance="moved">
+                                possible duplicate
+                              </Lozenge>
+                            )}
                           </div>
                           <p className="text-sm text-muted-foreground truncate mt-0.5">
                             {tc.summary}
@@ -496,6 +397,20 @@ export function AIGenerateTestCasesDialog({
                             className="border-t bg-muted/30"
                           >
                             <div className="p-4 space-y-4">
+                              {/* Traceability — the source anchors this case covers. */}
+                              {tc.covers.length > 0 && (
+                                <div>
+                                  <h4 className="text-sm font-medium mb-2">Covers</h4>
+                                  <div className="flex flex-wrap gap-1">
+                                    {tc.covers.map((anchor, i) => (
+                                      <Lozenge key={i} appearance="inprogress">
+                                        {anchor}
+                                      </Lozenge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
                               {/* Preconditions */}
                               {tc.preconditions?.length > 0 && (
                                 <div>
@@ -539,18 +454,7 @@ export function AIGenerateTestCasesDialog({
                                 </div>
                               </div>
 
-                              {/* Tags */}
-                              {tc.tags?.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {tc.tags.map((tag, i) => (
-                                    <Lozenge key={i} appearance="default">
-                                      {tag}
-                                    </Lozenge>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* AI Reasoning */}
+                              {/* AI Reasoning — real priority/type rationales. */}
                               {(tc.priorityReason || tc.typeReason) && (
                                 <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
                                   <div className="flex items-center gap-1 mb-1">

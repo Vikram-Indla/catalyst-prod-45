@@ -113,11 +113,16 @@ describe('computeSeenCaption', () => {
     expect(out).toEqual({ messageId: 'm2', text: 'Seen' });
   });
 
-  it('returns null for channel kinds', () => {
+  it('channel / custom_channel show "Read by N"; ticket shows nothing', () => {
     const readAll = [member(ME, null), member(OTHER, '2026-07-04T11:00:00Z')];
-    expect(computeSeenCaption(dmMessages, readAll, ME, 'channel')).toBeNull();
-    expect(computeSeenCaption(dmMessages, readAll, ME, 'custom_channel')).toBeNull();
+    expect(computeSeenCaption(dmMessages, readAll, ME, 'channel')).toEqual({ messageId: 'm2', text: 'Read by 1' });
+    expect(computeSeenCaption(dmMessages, readAll, ME, 'custom_channel')).toEqual({ messageId: 'm2', text: 'Read by 1' });
     expect(computeSeenCaption(dmMessages, readAll, ME, 'ticket')).toBeNull();
+  });
+
+  it('channel: hidden when nobody else has read it', () => {
+    const noneRead = [member(ME, '2026-07-04T12:00:00Z'), member(OTHER, null)];
+    expect(computeSeenCaption(dmMessages, noneRead, ME, 'channel')).toBeNull();
   });
 
   it('returns null without a current user or with empty messages', () => {

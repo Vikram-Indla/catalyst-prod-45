@@ -14,6 +14,7 @@ import type { ClonePatch } from '../shared/ConfirmCloneDialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
+import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import {
   CatalystTitleEditor, CatalystQuickActions, Description, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
@@ -48,6 +49,13 @@ export default function CatalystViewDefect({
   const navigate = useNavigate();
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = issue?.priority ? PRIORITY_STYLES[issue.priority] ?? null : null;
+  // L004 (Phase C): resolve the defect's REAL parent issue_type from
+  // ph_issues instead of the previous hard-coded parentType="Epic". Defects
+  // parent to Story / Epic / Feature (parentSource="story_epic_feature"), so
+  // "Epic" was a zero-assumption violation. Absent from the map → parent
+  // unsynced → render no icon (silence beats a fabricated default).
+  const parentTypeMap = useParentIssueTypes([issue?.parent_key]);
+  const resolvedParentType = issue?.parent_key ? parentTypeMap.get(issue.parent_key) ?? null : null;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
@@ -190,7 +198,7 @@ export default function CatalystViewDefect({
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Bug'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
-      parentKey={issue?.parent_key} parentType="Epic"
+      parentKey={issue?.parent_key} parentType={resolvedParentType}
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       /* Canonical Add-parent (Catalyst rule): Defect → Story / Epic / Feature parent. */
       parentSource="story_epic_feature"

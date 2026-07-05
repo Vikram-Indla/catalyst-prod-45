@@ -17,18 +17,30 @@ import {
 } from '@/hooks/test-management/useTestCycles';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { useCreateDefect } from '@/hooks/test-management/useDefects';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import Textarea from '@atlaskit/textarea';
 import Textfield from '@atlaskit/textfield';
-import { Play, CheckCircle, Plus, Trash2 } from '@/lib/atlaskit-icons';
+import Tooltip from '@atlaskit/tooltip';
+import Button from '@atlaskit/button/standard-button';
+import { IconButton } from '@atlaskit/button/new';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
+import BugIcon from '@atlaskit/icon/core/bug';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import AttachmentIcon from '@atlaskit/icon/core/attachment';
+import CloseIcon from '@atlaskit/icon/core/close';
+import DeleteIcon from '@atlaskit/icon/core/delete';
+import { Play, CheckCircle, Plus } from '@/lib/atlaskit-icons';
 import { TMCycleScope, RunStatus } from '@/types/test-management';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
+
+const TAB_ORDER = ['scope', 'planning'] as const;
 
 export default function CycleDetailPage() {
   const { cycleKey, id: legacyId, projectKey = 'BAU' } = useParams<{ cycleKey?: string; id?: string; projectKey?: string }>();
@@ -38,8 +50,7 @@ export default function CycleDetailPage() {
   const cycleId = cycleRecord?.id ?? (cycleParam && /^[0-9a-f-]{36}$/.test(cycleParam) ? cycleParam : undefined);
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId } = useTestHubProject();
 
   const { data: cycle, isLoading: cycleLoading } = useTestCycle(cycleId);
   const { data: scopeItems = [], isLoading: scopeLoading } = useCycleScope(cycleId);
@@ -100,9 +111,9 @@ export default function CycleDetailPage() {
       width: 11,
       cell: ({ row }) => (
         <div style={{ display: 'flex', gap: 4 }}>
-          {['🐛', '📝', '📎'].map((emoji, idx) => (
-            <PanelButton key={idx} emoji={emoji} />
-          ))}
+          <PanelButton row={row} cycleId={cycleId ?? ''} panelType="defect" />
+          <PanelButton row={row} cycleId={cycleId ?? ''} panelType="comments" />
+          <PanelButton row={row} cycleId={cycleId ?? ''} panelType="evidence" />
         </div>
       ),
     },
@@ -111,13 +122,15 @@ export default function CycleDetailPage() {
       label: '',
       width: 6,
       cell: ({ row }) => (
-        <button
-          onClick={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [row.id] })}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', padding: 4 }}
-          title="Remove from scope"
-        >
-          <Trash2 size={13} />
-        </button>
+        <Tooltip content="Remove from scope">
+          <IconButton
+            icon={DeleteIcon}
+            label="Remove from scope"
+            appearance="subtle"
+            spacing="compact"
+            onClick={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [row.id] })}
+          />
+        </Tooltip>
       ),
     },
   ];
@@ -222,15 +235,24 @@ export default function CycleDetailPage() {
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
-      <div style={{ marginBottom: 24 }}>
+    // D025: was maxWidth 1200 which clipped the scope table's Due Date / Actions
+    // columns on wider viewports. Fluid width now; the table manages its own layout.
+    <div style={{ padding: 'var(--ds-space-300)', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--ds-font-family-body)' }}>
+      <div style={{ marginBottom: 'var(--ds-space-300)' }}>
         <ProjectPageHeader
           hubType="test"
           trail={[{ text: 'Cycles', href: `/testhub/${projectKey}/cycles` }]}
           title={cycle.name}
           actions={
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <button
+            <div style={{ display: 'flex', gap: 'var(--ds-space-100)', alignItems: 'center' }}>
+              <Button
+                appearance="default"
+                onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.key ?? cycle.id}/runs`)}
+              >
+                Run results
+              </Button>
+              <Button
+                appearance="default"
                 onClick={() => {
                   const sprintName = (cycle as any)?.sprint?.name ?? '';
                   const headers = ['Key', 'Title', 'Status', 'Assignee', 'Sprint'];
@@ -248,75 +270,36 @@ export default function CycleDetailPage() {
                   a.href = url; a.download = `cycle-${cycle.name}-report.csv`; a.click();
                   URL.revokeObjectURL(url);
                 }}
-                style={{
-                  padding: '4px 12px', background: 'none', border: '1px solid var(--ds-border)',
-                  borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
-                }}
               >
                 Export CSV
-              </button>
+              </Button>
               {cycle.status === 'PLANNED' && (
-                <button
+                <Button
+                  appearance="primary"
+                  iconBefore={<Play size={13} />}
+                  isDisabled={startCycle.isPending}
                   onClick={() => startCycle.mutate({ id: cycle.id, project_id: cycle.project_id })}
-                  disabled={startCycle.isPending}
-                  style={{
-                    padding: '8px 16px',
-                    background: 'var(--ds-background-brand-bold)',
-                    color: 'var(--ds-text-inverse)',
-                    border: 'none',
-                    borderRadius: 4,
-                    cursor: startCycle.isPending ? 'not-allowed' : 'pointer',
-                    fontSize: 'var(--ds-font-size-300)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    opacity: startCycle.isPending ? 0.7 : 1,
-                  }}
                 >
-                  <Play size={13} />
                   {startCycle.isPending ? 'Starting...' : 'Start cycle'}
-                </button>
+                </Button>
               )}
               {cycle.status === 'IN_PROGRESS' && (
                 <>
-                  <button
+                  <Button
+                    appearance="primary"
+                    iconBefore={<Play size={13} />}
                     onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}/execute`)}
-                    style={{
-                      padding: '8px 16px',
-                      background: 'var(--ds-background-brand-bold)',
-                      color: 'var(--ds-text-inverse)',
-                      border: 'none',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      fontSize: 'var(--ds-font-size-300)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
                   >
-                    <Play size={13} />
                     Execute
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    appearance="default"
+                    iconBefore={<CheckCircle size={13} />}
+                    isDisabled={completeCycle.isPending}
                     onClick={() => completeCycle.mutate({ id: cycle.id, project_id: cycle.project_id })}
-                    disabled={completeCycle.isPending}
-                    style={{
-                      padding: '8px 16px',
-                      background: 'none',
-                      border: '1px solid var(--ds-border)',
-                      borderRadius: 4,
-                      cursor: completeCycle.isPending ? 'not-allowed' : 'pointer',
-                      fontSize: 'var(--ds-font-size-300)',
-                      color: 'var(--ds-text)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      opacity: completeCycle.isPending ? 0.7 : 1,
-                    }}
                   >
-                    <CheckCircle size={13} />
                     {completeCycle.isPending ? 'Completing...' : 'Complete'}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -325,7 +308,7 @@ export default function CycleDetailPage() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ marginBottom: 'var(--ds-space-300)', display: 'flex', alignItems: 'center', gap: 'var(--ds-space-150)' }}>
         <div style={{
           flex: 1,
           maxWidth: 320,
@@ -350,26 +333,17 @@ export default function CycleDetailPage() {
       </div>
 
       {/* Tab bar */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border)', marginBottom: 16 }}>
-        {(['scope', 'planning'] as const).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              padding: '8px 16px',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === tab ? '2px solid var(--ds-link)' : '2px solid transparent',
-              marginBottom: -2,
-              cursor: 'pointer',
-              fontSize: 'var(--ds-font-size-400)',
-              fontWeight: activeTab === tab ? 600 : 400,
-              color: activeTab === tab ? 'var(--ds-link)' : 'var(--ds-text-subtle)',
-            }}
-          >
-            {tab === 'scope' ? 'Scope' : 'Planning'}
-          </button>
-        ))}
+      <div style={{ marginBottom: 'var(--ds-space-200)' }}>
+        <Tabs
+          id="cycle-detail-tabs"
+          selected={TAB_ORDER.indexOf(activeTab)}
+          onChange={(index) => setActiveTab(TAB_ORDER[index])}
+        >
+          <TabList>
+            <Tab>Scope</Tab>
+            <Tab>Planning</Tab>
+          </TabList>
+        </Tabs>
       </div>
 
       {activeTab === 'planning' && (
@@ -384,30 +358,19 @@ export default function CycleDetailPage() {
       {activeTab === 'scope' && (<>
 
       {/* Scope section header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--ds-space-150)' }}>
         <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', margin: 0 }}>
           {statusFilter === 'ALL'
             ? `Scope (${scopeItems.length} ${scopeItems.length === 1 ? 'case' : 'cases'})`
             : `Scope (${filteredItems.length} of ${scopeItems.length})`}
         </h2>
-        <button
+        <Button
+          appearance="default"
+          iconBefore={<Plus size={13} />}
           onClick={() => setShowAddCases(true)}
-          style={{
-            padding: '4px 12px',
-            background: 'none',
-            border: '1px solid var(--ds-border)',
-            borderRadius: 4,
-            cursor: 'pointer',
-            fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-          }}
         >
-          <Plus size={13} />
           Add cases
-        </button>
+        </Button>
       </div>
 
       {/* Bulk action bar */}
@@ -415,20 +378,21 @@ export default function CycleDetailPage() {
         <div style={{
           background: 'var(--ds-background-selected)',
           border: '1px solid var(--ds-border-selected)',
-          borderRadius: 6, padding: '8px 16px', marginBottom: 8,
-          display: 'flex', alignItems: 'center', gap: 12, fontSize: 'var(--ds-font-size-300)',
+          borderRadius: 6, padding: 'var(--ds-space-100) var(--ds-space-200)', marginBottom: 'var(--ds-space-100)',
+          display: 'flex', alignItems: 'center', gap: 'var(--ds-space-150)', fontSize: 'var(--ds-font-size-300)',
           color: 'var(--ds-text)',
         }}>
           <span style={{ fontWeight: 500 }}>{selectedIds.size} case{selectedIds.size > 1 ? 's' : ''} selected</span>
-          <button
+          <Button
+            appearance="default"
+            spacing="compact"
             onClick={() => {
               removeCases.mutate({ cycle_id: cycleId!, scope_ids: Array.from(selectedIds) });
               setSelectedIds(new Set());
             }}
-            style={{ background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}
           >
             Remove from scope
-          </button>
+          </Button>
           <DropdownMenu trigger="Change status ▾" triggerType="button">
             <DropdownItemGroup>
               {(['PASSED', 'FAILED', 'BLOCKED', 'SKIPPED'] as RunStatus[]).map(s => (
@@ -448,34 +412,31 @@ export default function CycleDetailPage() {
               ))}
             </DropdownItemGroup>
           </DropdownMenu>
-          <button
-            onClick={() => setSelectedIds(new Set())}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', marginLeft: 'auto' }}
-          >
-            ✕ Clear
-          </button>
+          <div style={{ marginLeft: 'auto' }}>
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              iconBefore={<CloseIcon label="" size="small" />}
+              onClick={() => setSelectedIds(new Set())}
+            >
+              Clear
+            </Button>
+          </div>
         </div>
       )}
 
       {/* Status filter pills */}
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 'var(--ds-space-050)', flexWrap: 'wrap', marginBottom: 'var(--ds-space-150)' }}>
         {STATUS_PILLS.map(pill => (
-          <button
+          <Button
             key={pill.value}
+            spacing="compact"
+            appearance={statusFilter === pill.value ? 'primary' : 'default'}
+            isSelected={statusFilter === pill.value}
             onClick={() => setStatusFilter(pill.value)}
-            style={{
-              padding: '4px 12px',
-              borderRadius: 16,
-              cursor: 'pointer',
-              fontSize: 'var(--ds-font-size-300)',
-              fontWeight: 500,
-              border: statusFilter === pill.value ? 'none' : '1px solid var(--ds-border)',
-              background: statusFilter === pill.value ? 'var(--ds-background-brand-bold)' : 'none',
-              color: statusFilter === pill.value ? 'var(--ds-text-inverse)' : 'var(--ds-text-subtle)',
-            }}
           >
             {pill.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -516,32 +477,42 @@ export default function CycleDetailPage() {
   );
 }
 
-type ScopePanel = 'defect' | 'comments' | 'evidence' | null;
+type ScopePanel = 'defect' | 'comments' | 'evidence';
 
-function PanelButton({ emoji }: { emoji: string }) {
-  const [panel, setPanel] = useState<ScopePanel>(null);
+// D024: replaced raw emoji glyph buttons with @atlaskit IconButton + Tooltip,
+// and wired the (previously dead) side panels so each action actually opens.
+const PANEL_META: Record<ScopePanel, { label: string; icon: React.ComponentType<{ label: string }> }> = {
+  defect:   { label: 'Log defect', icon: BugIcon },
+  comments: { label: 'Comments',   icon: CommentIcon },
+  evidence: { label: 'Evidence',   icon: AttachmentIcon },
+};
 
-  const labelMap: Record<string, { label: string; panelType: ScopePanel }> = {
-    '🐛': { label: 'Log defect', panelType: 'defect' },
-    '📝': { label: 'Comments', panelType: 'comments' },
-    '📎': { label: 'Evidence', panelType: 'evidence' },
-  };
-
-  const { label, panelType } = labelMap[emoji] || { label: '', panelType: null };
+function PanelButton({ row, cycleId, panelType }: { row: TMCycleScope; cycleId: string; panelType: ScopePanel }) {
+  const [open, setOpen] = useState(false);
+  const { label, icon } = PANEL_META[panelType];
 
   return (
-    <button
-      onClick={() => setPanel(prev => prev === panelType ? null : panelType)}
-      title={label}
-      style={{
-        background: panel ? 'var(--ds-background-selected)' : 'none',
-        border: '1px solid var(--ds-border)',
-        borderRadius: 4, cursor: 'pointer', padding: '0px 6px',
-        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
-      }}
-    >
-      {emoji}
-    </button>
+    <>
+      <Tooltip content={label}>
+        <IconButton
+          icon={icon}
+          label={label}
+          appearance="subtle"
+          spacing="compact"
+          isSelected={open}
+          onClick={() => setOpen(true)}
+        />
+      </Tooltip>
+      {open && panelType === 'defect' && (
+        <DefectPanel item={row} cycleId={cycleId} onClose={() => setOpen(false)} />
+      )}
+      {open && panelType === 'comments' && (
+        <CommentsPanel item={row} onClose={() => setOpen(false)} />
+      )}
+      {open && panelType === 'evidence' && (
+        <EvidencePanel item={row} onClose={() => setOpen(false)} />
+      )}
+    </>
   );
 }
 
@@ -663,17 +634,17 @@ function RightPanel({ title, subtitle, onClose, children }: {
       }}>
         {/* Header */}
         <div style={{
-          padding: '16px 20px', borderBottom: '1px solid var(--ds-border)',
+          padding: 'var(--ds-space-200)', borderBottom: '1px solid var(--ds-border)',
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
         }}>
           <div>
             <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)', color: 'var(--ds-text)' }}>{title}</div>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>{subtitle}</div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)', color: 'var(--ds-text-subtle)', padding: '0 4px' }}>✕</button>
+          <IconButton icon={CloseIcon} label="Close" appearance="subtle" spacing="compact" onClick={onClose} />
         </div>
         {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--ds-space-200)' }}>
           {children}
         </div>
       </div>
@@ -783,13 +754,13 @@ function DefectPanel({ item, cycleId, onClose }: { item: TMCycleScope; cycleId: 
           )}
 
           {/* New defect form */}
-          <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 8 }}>Log new defect</div>
-            <div style={{ marginBottom: 8 }}>
+          <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 'var(--ds-space-200)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 'var(--ds-space-100)' }}>Log new defect</div>
+            <div style={{ marginBottom: 'var(--ds-space-100)' }}>
               <label style={labelStyle}>Title</label>
               <Textfield value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} placeholder="Describe the defect…" />
             </div>
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 'var(--ds-space-150)' }}>
               <label style={labelStyle}>Severity</label>
               <Select
                 value={{ label: severity.charAt(0).toUpperCase() + severity.slice(1), value: severity }}
@@ -802,18 +773,13 @@ function DefectPanel({ item, cycleId, onClose }: { item: TMCycleScope; cycleId: 
                 onChange={(opt) => opt && setSeverity(opt.value as typeof severity)}
               />
             </div>
-            <button
+            <Button
+              appearance="primary"
+              isDisabled={!title.trim() || saving}
               onClick={handleFile}
-              disabled={!title.trim() || saving}
-              style={{
-                padding: '8px 16px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
-                cursor: (!title.trim() || saving) ? 'not-allowed' : 'pointer',
-                fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: saving ? 0.7 : 1,
-              }}
             >
               {saving ? 'Saving…' : 'File defect'}
-            </button>
+            </Button>
           </div>
         </>
       )}
@@ -895,25 +861,22 @@ function CommentThreadBlock({ entityType, entityId, label }: { entityType: strin
           ))}
         </div>
       )}
-      <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
+      <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 'var(--ds-space-200)' }}>
         <Textarea
           value={text}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
           placeholder="Add a comment…"
           minimumRows={3}
         />
-        <button
-          onClick={handlePost}
-          disabled={!text.trim() || posting}
-          style={{
-            marginTop: 8, padding: '8px 12px', borderRadius: 4, border: 'none',
-            background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
-            cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
-            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
-          }}
-        >
-          {posting ? 'Posting…' : 'Post comment'}
-        </button>
+        <div style={{ marginTop: 'var(--ds-space-100)' }}>
+          <Button
+            appearance="primary"
+            isDisabled={!text.trim() || posting}
+            onClick={handlePost}
+          >
+            {posting ? 'Posting…' : 'Post comment'}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -996,7 +959,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
               border: '1px solid var(--ds-border)', color: 'var(--ds-text)',
               background: uploading ? 'var(--ds-background-neutral)' : 'var(--ds-surface)',
             }}>
-              {uploading ? <Spinner size="small" /> : '📎'}
+              {uploading ? <Spinner size="small" /> : <AttachmentIcon label="" />}
               {uploading ? 'Uploading…' : 'Attach file'}
               <input type="file" style={{ display: 'none' }} disabled={uploading} onChange={handleUpload} />
             </label>
@@ -1114,116 +1077,77 @@ function AddCasesModal({
   };
 
   return (
-    <>
-      <div
-        onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket)', zIndex: 300 }}
-      />
-      <div style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 620,
-        maxHeight: '80vh',
-        background: 'var(--ds-surface-overlay)',
-        borderRadius: 8,
-        boxShadow: 'var(--ds-shadow-overlay)',
-        zIndex: 301,
-        display: 'flex',
-        flexDirection: 'column',
-        fontFamily: 'var(--ds-font-family-body)',
-      }}>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border)' }}>
-          <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)' }}>
-            Add cases to scope
-          </h2>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
-          {available.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
-              No cases available to add
-            </p>
-          ) : (
-            available.map(c => {
-              const versions = versionsByCase[c.id] ?? [];
-              const latestVer = versions[0];
-              const versionOptions = [
-                { label: latestVer ? `Latest (v${latestVer})` : 'Latest', value: null as number | null },
-                ...versions.map(v => ({ label: `v${v}`, value: v })),
-              ];
-              const isSelected = selected.has(c.id);
-              return (
-                <div
-                  key={c.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '8px 0',
-                    borderBottom: '1px solid var(--ds-border)',
-                  }}
-                >
-                  <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} style={{ flexShrink: 0 }} />
-                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0 }}>
-                    {c.key}
-                  </span>
-                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {c.title}
-                  </span>
-                  {isSelected && versions.length > 1 && (
-                    <div style={{ minWidth: 130, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-                      <Select
-                        menuPosition="fixed"
-                        value={versionOptions.find(o => o.value === (lockedVersions[c.id] ?? null)) ?? versionOptions[0]}
-                        options={versionOptions}
-                        onChange={opt => setLockedVersions(prev => ({ ...prev, [c.id]: opt?.value ?? null }))}
-                        menuPortalTarget={document.body}
-                        styles={portalSelectStyles}
-                      />
-                    </div>
-                  )}
-                  {isSelected && versions.length <= 1 && latestVer && (
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flexShrink: 0 }}>v{latestVer}</span>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-          <button
-            onClick={onClose}
-            style={{
-              padding: '8px 16px', background: 'none',
-              border: '1px solid var(--ds-border)', borderRadius: 4,
-              cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAdd}
-            disabled={selected.size === 0 || addCases.isPending}
-            style={{
-              padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold)',
-              color: 'var(--ds-text-inverse)',
-              border: 'none', borderRadius: 4,
-              cursor: selected.size === 0 || addCases.isPending ? 'not-allowed' : 'pointer',
-              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
-              opacity: selected.size === 0 ? 0.7 : 1,
-            }}
-          >
-            {addCases.isPending
-              ? 'Adding...'
-              : selected.size > 0
-                ? `Add ${selected.size} case${selected.size > 1 ? 's' : ''}`
-                : 'Add cases'}
-          </button>
-        </div>
-      </div>
-    </>
+    <ModalDialog onClose={onClose} width="large">
+      <ModalHeader>
+        <ModalTitle>Add cases to scope</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        {available.length === 0 ? (
+          <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
+            No cases available to add
+          </p>
+        ) : (
+          available.map(c => {
+            const versions = versionsByCase[c.id] ?? [];
+            const latestVer = versions[0];
+            const versionOptions = [
+              { label: latestVer ? `Latest (v${latestVer})` : 'Latest', value: null as number | null },
+              ...versions.map(v => ({ label: `v${v}`, value: v })),
+            ];
+            const isSelected = selected.has(c.id);
+            return (
+              <div
+                key={c.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--ds-space-100)',
+                  padding: 'var(--ds-space-100) 0',
+                  borderBottom: '1px solid var(--ds-border)',
+                }}
+              >
+                <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0 }}>
+                  {c.key}
+                </span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {c.title}
+                </span>
+                {isSelected && versions.length > 1 && (
+                  <div style={{ minWidth: 130, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                    <Select
+                      menuPosition="fixed"
+                      value={versionOptions.find(o => o.value === (lockedVersions[c.id] ?? null)) ?? versionOptions[0]}
+                      options={versionOptions}
+                      onChange={opt => setLockedVersions(prev => ({ ...prev, [c.id]: opt?.value ?? null }))}
+                      menuPortalTarget={document.body}
+                      styles={portalSelectStyles}
+                    />
+                  </div>
+                )}
+                {isSelected && versions.length <= 1 && latestVer && (
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flexShrink: 0 }}>v{latestVer}</span>
+                )}
+              </div>
+            );
+          })
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button
+          appearance="primary"
+          isDisabled={selected.size === 0 || addCases.isPending}
+          onClick={handleAdd}
+        >
+          {addCases.isPending
+            ? 'Adding...'
+            : selected.size > 0
+              ? `Add ${selected.size} case${selected.size > 1 ? 's' : ''}`
+              : 'Add cases'}
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 

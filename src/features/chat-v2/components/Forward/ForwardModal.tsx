@@ -357,7 +357,7 @@ function Chip({ recipient, onRemove }: { recipient: ForwardRecipient; onRemove: 
         height: 24, padding: '0 6px',
         background: 'var(--cv2-bg-row-active)',
         color: 'var(--cv2-text-strong)',
-        borderRadius: 4,
+        borderRadius: 'var(--cv2-radius-sm)',
         font: 'var(--ds-font-body-small)',
       }}
     >
@@ -427,11 +427,13 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
           {message.authorName}
         </div>
         <div
+          dir="auto"
           style={{
             font: 'var(--ds-font-body-small)',
             color: 'var(--cv2-text)',
             wordBreak: 'break-word',
             whiteSpace: 'pre-wrap',
+            unicodeBidi: 'plaintext',
           }}
           dangerouslySetInnerHTML={{ __html: renderMarkdownInline(message.bodyText) }}
         />

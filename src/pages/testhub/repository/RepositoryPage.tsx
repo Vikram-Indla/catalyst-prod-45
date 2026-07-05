@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { WorkItemTypeIcon } from '@/components/icons';
 import {
   useFolderTree,
@@ -40,9 +40,14 @@ import {
   Edit2,
 } from '@/lib/atlaskit-icons';
 import type { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@/types/test-management';
+import { formatTestKey } from '@/lib/test-management/formatTestKey';
 // D4 (2026-06-27) — view/edit a case via the canonical CatalystViewBase shell
 // (entityKind='test_case'). Router wires query params to detail panel.
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
+// Phase C, Wave 2 — "+ Create case" opens the canonical CreateStoryModal
+// (defaultWorkType='Test Case' → tm_test_cases), unifying all TestHub CREATE
+// flows through the single canonical modal.
+import { CreateStoryModal } from '@/components/workhub/create-story/CreateStoryModal';
 
 // ── Folder modal (ADS modal-dialog) ──────────────────────────────────────────
 
@@ -505,11 +510,23 @@ function FolderTreeView({
 // ── Status / Priority cells ───────────────────────────────────────────────────
 
 function CaseStatusPill({ status }: { status: CaseStatus }) {
-  const map: Record<CaseStatus, { appearance: 'success' | 'moved' | 'removed' | 'inprogress' | 'default'; label: string }> = {
-    APPROVED:   { appearance: 'success',  label: 'Approved' },
-    REVIEW:     { appearance: 'moved',    label: 'Review' },
-    DEPRECATED: { appearance: 'removed',  label: 'Deprecated' },
-    DRAFT:      { appearance: 'default',  label: 'Draft' },
+  // D032: useTestCases normalises the tm_case_status enum to the UI vocabulary
+  // DRAFT/REVIEW/APPROVED/DEPRECATED, so rows arrive uppercase. REVIEW keeps the
+  // canonical 'Review' label (matches CatalystViewTestCase). A lowercase branch
+  // is kept for any caller that passes raw enum values, so the pill never falls
+  // through to a raw string. @atlaskit/lozenge owns its dark-mode-correct colour
+  // via `appearance` — no hardcoded pastel (D070). REVIEW moves from 'moved' (a
+  // pale-purple pastel that is low-contrast in dark mode) to 'inprogress'.
+  const map: Record<string, { appearance: 'success' | 'moved' | 'removed' | 'inprogress' | 'default'; label: string }> = {
+    DRAFT:      { appearance: 'default',    label: 'Draft' },
+    REVIEW:     { appearance: 'inprogress', label: 'Review' },
+    APPROVED:   { appearance: 'success',    label: 'Approved' },
+    DEPRECATED: { appearance: 'removed',    label: 'Deprecated' },
+    // raw tm_case_status enum aliases (lowercase)
+    draft:      { appearance: 'default',    label: 'Draft' },
+    ready:      { appearance: 'inprogress', label: 'Review' },
+    approved:   { appearance: 'success',    label: 'Approved' },
+    deprecated: { appearance: 'removed',    label: 'Deprecated' },
   };
   const cfg = map[status] ?? { appearance: 'default' as const, label: status };
   return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
@@ -567,13 +584,12 @@ const primaryBtnStyle = (disabled: boolean): React.CSSProperties => ({
 
 export default function RepositoryPage() {
   const { projectKey = 'TESTHUB' } = useParams<{ projectKey: string }>();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId, project } = useTestHubProject();
 
   const [selectedFolderId, setSelectedFolderId] = useState<string | null | 'unfiled'>(null);
   const [search, setSearch] = useState('');
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [editingCase, setEditingCase] = useState<TMTestCase | null>(null);
+  // Phase C, Wave 2 — canonical CreateStoryModal (Test Case type) for new cases.
+  const [createOpen, setCreateOpen] = useState(false);
   // D4: row-click opens the case in the canonical detail panel (not CaseDrawer).
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
@@ -694,7 +710,7 @@ export default function RepositoryPage() {
             color: 'var(--ds-text-subtlest)',
             fontSize: 'var(--ds-font-size-200)',
           }}>
-            {row.key ?? '—'}
+            {formatTestKey(row.key) ?? '—'}
           </span>
         </span>
       ),
@@ -881,7 +897,7 @@ export default function RepositoryPage() {
                 {selectMode ? 'Cancel' : 'Select'}
               </button>
               <button
-                onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
+                onClick={() => setCreateOpen(true)}
                 style={{
                   padding: '4px 12px',
                   background: 'var(--ds-background-brand-bold)',
@@ -997,6 +1013,18 @@ export default function RepositoryPage() {
         open={aiDialogOpen}
         onOpenChange={setAIDialogOpen}
         onTestCasesGenerated={handleAIGeneratedTestCases}
+      />
+
+      {/* Phase C, Wave 2 — canonical create flow. Opens on 'Test Case' with the
+          currently-selected repository folder pre-filled. The modal resolves
+          the canonical project to its tm_projects mirror internally. */}
+      <CreateStoryModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        projectKey={project?.key ?? undefined}
+        defaultWorkType="Test Case"
+        initialFolderId={activeFolderId}
+        onSuccess={() => setCreateOpen(false)}
       />
     </>
   );

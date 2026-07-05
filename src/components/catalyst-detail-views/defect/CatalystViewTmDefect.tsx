@@ -26,7 +26,7 @@ import {
   Description,
   CatalystSidebarDetails,
 } from '../shared/sections';
-import { useDefectByKey, useDefectHistory } from '@/hooks/test-management/useDefects';
+import { useDefectByKey, useDefectHistory, useDefectSourceCase } from '@/hooks/test-management/useDefects';
 import { Routes } from '@/lib/routes';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -108,6 +108,9 @@ export default function CatalystViewTmDefect({
   const queryClient = useQueryClient();
   const { data: defect, isLoading } = useDefectByKey(isOpen ? itemId : undefined);
   const { data: history = [] } = useDefectHistory(isOpen ? defect?.id : undefined);
+  // D043: originating test case (tm_defects.source_test_case_id). Null when the
+  // defect wasn't raised from a test — render nothing then (zero-assumption).
+  const { data: sourceCase } = useDefectSourceCase((defect as any)?.source_test_case_id ?? null);
 
   const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['tm-defect-by-key', itemId] });
@@ -183,6 +186,18 @@ export default function CatalystViewTmDefect({
             {defect?.raw_severity ? (
               <KeyDetailsFieldRow label="Severity">
                 <span style={{ color: 'var(--ds-text)', textTransform: 'capitalize' }}>{defect.raw_severity}</span>
+              </KeyDetailsFieldRow>
+            ) : null}
+            {/* D043: originating test case. Read-only — test cases have no
+                standalone URL route (they open in-panel on Repository), so a
+                clickable link would target a page that can't focus this case.
+                Rendered only when the source case resolves. */}
+            {sourceCase?.case_key ? (
+              <KeyDetailsFieldRow label="Raised from test case">
+                <span style={{ color: 'var(--ds-text)' }}>
+                  <span style={{ fontWeight: 600 }}>{sourceCase.case_key}</span>
+                  {sourceCase.title ? <span style={{ color: 'var(--ds-text-subtle)' }}>{` — ${sourceCase.title}`}</span> : null}
+                </span>
               </KeyDetailsFieldRow>
             ) : null}
           </>
