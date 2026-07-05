@@ -6,7 +6,7 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
-import { ENABLE_AI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
+import { ENABLE_AI, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
 import { ModuleGuard } from '../components/guards/ModuleGuard';
@@ -341,13 +341,20 @@ const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
 const TeamComingSoon = lazy(() => import("../pages/team/ComingSoon"));
 const UnauthorizedPage = lazy(() => import("../pages/UnauthorizedPage"));
-const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubDocumentPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
-const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
-const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("../pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
+// Knowledge Hub absorbed into the Wiki hub (CAT-DOCS-NOTION-20260704-001):
+// legacy UUID URLs resolve to canonical /wiki slug routes.
+const LegacySpaceRedirect = lazy(() =>
+  import("../pages/wiki/LegacyKnowledgeHubRedirect").then(m => ({ default: m.LegacySpaceRedirect })));
+const LegacyDocumentRedirect = lazy(() =>
+  import("../pages/wiki/LegacyKnowledgeHubRedirect").then(m => ({ default: m.LegacyDocumentRedirect })));
 
 const WikiHomePage = lazy(() => import("../pages/wiki/WikiHomePage"));
 const WikiWorkspacePage = lazy(() => import("../pages/wiki/WikiWorkspacePage"));
-const WikiSandboxPage = lazy(() => import("../pages/wiki/WikiSandboxPage"));
+// DEV-only ternary keeps the sandbox chunk out of the production bundle
+// (the route below is also DEV-gated, but a bare lazy() would still ship it).
+const WikiSandboxPage = import.meta.env.DEV
+  ? lazy(() => import("../pages/wiki/WikiSandboxPage"))
+  : () => null;
 
 const IncidentDetail = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentDetail })));
 const IncidentsDashboard = lazy(() => import("../pages/release").then(m => ({ default: m.IncidentsDashboard })));
@@ -911,9 +918,10 @@ export default function FullAppRoutes() {
 
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
-        <Route path="/knowledge-hub" element={<S><KnowledgeHubPage /></S>} />
-        <Route path="/knowledge-hub/spaces/:spaceId" element={<S><KnowledgeHubSpacePage /></S>} />
-        <Route path="/knowledge-hub/documents/:documentId" element={<S><KnowledgeHubDocumentPage /></S>} />
+        {/* Knowledge Hub absorbed into Wiki — legacy UUID URLs redirect to slug routes */}
+        <Route path="/knowledge-hub" element={<Navigate to="/wiki" replace />} />
+        <Route path="/knowledge-hub/spaces/:spaceId" element={<S><LegacySpaceRedirect /></S>} />
+        <Route path="/knowledge-hub/documents/:documentId" element={<S><LegacyDocumentRedirect /></S>} />
 
         <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
         <Route path="/release/incidents" element={<S><IncidentRoomList /></S>} />
