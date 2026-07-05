@@ -89,6 +89,41 @@ export function useWikiWorkspaces() {
   });
 }
 
+// Container key/color lookup — same rows ContextSwitcher's ItemRow reads, so a
+// workspace's icon on any Wiki surface (sidebar directory, home grid) is
+// IDENTICAL to its icon on Project Hub / Product Hub (canonical-icon rule:
+// entity visuals come from the entity's own data, never a shared
+// per-container-type glyph).
+export interface WorkspaceContainerMeta {
+  projectKeyById: Map<string, string>;
+  productById: Map<string, { code: string; color: string | null }>;
+}
+
+export function useWorkspaceContainerMeta() {
+  return useQuery({
+    queryKey: ['wiki', 'workspace-container-meta'],
+    queryFn: async (): Promise<WorkspaceContainerMeta> => {
+      const [{ data: projects }, { data: products }] = await Promise.all([
+        // v_project_list — same source ContextSwitcher's project switcher reads
+        // (the raw `projects` table is RLS-restricted for direct client reads).
+        supabase.from('v_project_list').select('id, project_key'),
+        supabase.from('products').select('id, code, color'),
+      ]);
+      const projectKeyById = new Map(
+        ((projects ?? []) as Array<{ id: string; project_key: string }>).map((p) => [p.id, p.project_key]),
+      );
+      const productById = new Map(
+        ((products ?? []) as Array<{ id: string; code: string; color: string | null }>).map((p) => [
+          p.id,
+          { code: p.code, color: p.color },
+        ]),
+      );
+      return { projectKeyById, productById };
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
 export function useWikiWorkspaceBySlug(slugOrId: string | undefined | null) {
   return useQuery({
     queryKey: ['wiki', 'workspace', slugOrId],

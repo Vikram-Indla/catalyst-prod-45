@@ -9,19 +9,23 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Search, FolderOpen, FileText } from '@/lib/atlaskit-icons';
+import { Search, FolderOpen } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { Routes } from '@/lib/routes';
+import { useWorkspaceContainerMeta } from '@/hooks/useWiki';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { getProductAvatarUrl } from '@/components/icons';
 
 interface WikiWorkspaceRow {
   id: string;
   name: string;
   description: string | null;
   project_id: string | null;
+  container_id?: string | null;
   slug?: string | null;
   container_type?: string | null;
   icon?: string | null;
@@ -37,6 +41,7 @@ const CONTAINER_LABEL: Record<string, string> = {
 export default function WikiHomePage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const { data: containerMeta } = useWorkspaceContainerMeta();
 
   const { data: workspaces, isLoading } = useQuery({
     queryKey: ['wiki-workspaces'],
@@ -143,13 +148,36 @@ export default function WikiHomePage() {
               }}
               className="wiki-ws-card"
             >
-              <div className="wiki-ws-glyph" aria-hidden>
-                {w.icon ? (
+              {/* Per-entity canonical icon — same resolution ContextSwitcher's
+                  ItemRow uses, so a card here matches its Project Hub / Product
+                  Hub icon exactly instead of one shared FileText glyph. */}
+              {w.icon ? (
+                <div className="wiki-ws-glyph" aria-hidden>
                   <span style={{ font: 'var(--ds-font-heading-medium)' }}>{w.icon}</span>
-                ) : (
-                  <FileText style={{ width: 20, height: 20, color: 'var(--ds-icon-subtle)' }} />
-                )}
-              </div>
+                </div>
+              ) : w.container_type === 'project' && w.container_id ? (
+                <ProjectIcon
+                  size="large"
+                  projectKey={containerMeta?.projectKeyById.get(w.container_id)}
+                  name={w.name}
+                />
+              ) : w.container_type === 'product' && w.container_id ? (
+                <ProjectIcon
+                  size="large"
+                  projectKey={containerMeta?.productById.get(w.container_id)?.code}
+                  avatarUrl={
+                    containerMeta?.productById.get(w.container_id)?.code
+                      ? getProductAvatarUrl(containerMeta.productById.get(w.container_id)!.code)
+                      : undefined
+                  }
+                  color={containerMeta?.productById.get(w.container_id)?.color}
+                  name={w.name}
+                />
+              ) : (
+                <div className="wiki-ws-glyph" aria-hidden>
+                  <FolderOpen style={{ width: 20, height: 20, color: 'var(--ds-icon-subtle)' }} />
+                </div>
+              )}
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                   <span

@@ -8,36 +8,14 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { Home, Building2 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { WikiTreeNav } from '@/components/wiki-hub/WikiTreeNav';
 import { parseWikiPath } from '@/components/wiki-hub/wikiPath';
-import { useWikiWorkspaces } from '@/hooks/useWiki';
+import { useWikiWorkspaces, useWorkspaceContainerMeta } from '@/hooks/useWiki';
 import { Routes } from '@/lib/routes';
-import { supabase } from '@/integrations/supabase/client';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { getProductAvatarUrl } from '@/components/icons';
-
-// Container key/color lookup — same rows ContextSwitcher's ItemRow reads, so a
-// workspace's icon here is IDENTICAL to its icon on Project Hub / Product Hub
-// (canonical-icon rule: entity visuals come from the entity's own data, never
-// a shared per-container-type glyph).
-function useWorkspaceContainerMeta() {
-  return useQuery({
-    queryKey: ['wiki', 'workspace-container-meta'],
-    queryFn: async () => {
-      const [{ data: projects }, { data: products }] = await Promise.all([
-        supabase.from('projects').select('id, project_key'),
-        supabase.from('products').select('id, code, color'),
-      ]);
-      const projectKeyById = new Map((projects ?? []).map((p) => [p.id, p.project_key]));
-      const productById = new Map((products ?? []).map((p) => [p.id, { code: p.code, color: p.color }]));
-      return { projectKeyById, productById };
-    },
-    staleTime: 5 * 60_000,
-  });
-}
 
 interface WikiSidebarProps {
   expanded: boolean;
@@ -67,7 +45,9 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
     // uses, so a project/product's Wiki-sidebar icon matches its Project Hub /
     // Product Hub icon exactly instead of one shared per-container-type glyph.
     const item = (w: { id: string; name: string; slug: string; container_type: string; container_id: string | null }) => {
-      let iconNode: ReactNode = <Building2 style={{ width: 20, height: 20, color: 'var(--ds-icon)' }} />;
+      let iconNode: ReactNode = (
+        <Building2 className="h-[20px] w-[20px]" style={{ color: 'var(--ds-icon)' }} />
+      );
       if (w.container_type === 'project' && w.container_id) {
         const projectKey = containerMeta?.projectKeyById.get(w.container_id);
         iconNode = <ProjectIcon size="small" projectKey={projectKey} name={w.name} />;
