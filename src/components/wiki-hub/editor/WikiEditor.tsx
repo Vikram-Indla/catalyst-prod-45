@@ -29,6 +29,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { wikiSchema } from './wikiSchema';
 import { wikiPasteHandler } from './pasteNormalizer';
+import type { SupabaseYjsProvider } from './SupabaseYjsProvider';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
 import './blocknote-ads.css';
@@ -58,6 +59,12 @@ export interface WikiEditorProps {
   workspaceId?: string;
   /** Used to build hrefs for inserted page-link chips. */
   workspaceSlug?: string;
+  /** Real-time co-editing (C1): when set, Yjs owns the document —
+   *  initialContent is ignored and remote cursors render natively. */
+  collab?: {
+    provider: SupabaseYjsProvider;
+    user: { name: string; color: string };
+  };
 }
 
 export default function WikiEditor({
@@ -69,21 +76,35 @@ export default function WikiEditor({
   uploadFile,
   workspaceId,
   workspaceSlug,
+  collab,
 }: WikiEditorProps) {
   const { resolvedTheme } = useThemeMode();
 
   const editor = useCreateBlockNote(
     {
       schema: wikiSchema,
+      // In collab mode Yjs owns the document; seeding initialContent would
+      // duplicate blocks on every join.
       initialContent:
-        initialContent && initialContent.length > 0 ? (initialContent as never) : undefined,
+        !collab && initialContent && initialContent.length > 0
+          ? (initialContent as never)
+          : undefined,
       uploadFile,
       // GDocs/Word paste lands as semantic HTML (bold/italic/lists survive);
       // everything else keeps the default markdown-priority behavior.
       pasteHandler: wikiPasteHandler as never,
+      ...(collab
+        ? {
+            collaboration: {
+              fragment: collab.provider.fragment,
+              user: collab.user,
+              provider: { awareness: collab.provider.awareness },
+            },
+          }
+        : {}),
     },
     // Re-create only when switching documents, never on theme changes.
-    [initialContent],
+    [initialContent, collab],
   );
 
   useMemo(() => {
