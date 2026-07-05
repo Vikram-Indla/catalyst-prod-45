@@ -265,7 +265,6 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 // Plan Hub module — DEPRECATED 2026-06-25
 // All planhub routes removed; modules-dormant/planhub remains in codebase for historical reference.
 
-const Tasks = lazy(() => import("../pages/Tasks"));
 const Impediments = lazy(() => import("../pages/Impediments"));
 const ReleaseVehicles = lazy(() => import("../pages/ReleaseVehicles"));
 const SuccessCriteria = lazy(() => import("../pages/SuccessCriteria"));
@@ -850,7 +849,10 @@ export default function FullAppRoutes() {
         <Route path="/items/epics/:epicId/responsibility-matrix" element={<S><EpicResponsibilityMatrix /></S>} />
         <Route path="/items/epics/:epicId/planning" element={<S><EpicPlanningPage /></S>} />
         <Route path="/items/epics/estimation" element={<S><EpicEstimationPage /></S>} />
-        <Route path="/items/tasks" element={<S><Tasks /></S>} />
+        {/* CAT-0981: was a dead-end "Coming Soon" stub, orphaned (no nav links
+            in). Redirect to the real Tasks module, same as /tasks, /taskhub,
+            /planner. */}
+        <Route path="/items/tasks" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/items/impediments" element={<S><Impediments /></S>} />
         <Route path="/items/release-vehicles" element={<S><ReleaseVehicles /></S>} />
         <Route path="/items/success-criteria" element={<S><SuccessCriteria /></S>} />

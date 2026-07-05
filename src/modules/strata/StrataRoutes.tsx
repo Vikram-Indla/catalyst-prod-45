@@ -4,7 +4,7 @@
  * All redirects OUT of /strata live in App.tsx, outside the shell.
  */
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { StrataProvider } from './hooks/useStrata';
 
@@ -22,6 +22,23 @@ const UploadWizardPage = lazy(() => import('./pages/StrataUploadWizardPage'));
 const ReviewsPage = lazy(() => import('./pages/StrataReviewsPage'));
 const AdminConfigPage = lazy(() => import('./pages/StrataAdminConfigPage'));
 const EvidencePage = lazy(() => import('./pages/StrataEvidencePage'));
+
+// CAT-0016: the wildcard route used to silently render CommandCenterPage for
+// ANY unmatched /strata/* path, masking stale/broken deep links (e.g. a
+// renamed scorecard slug looked identical to the real dashboard). Surface the
+// mismatch instead of hiding it.
+function StrataNotFound() {
+  const location = useLocation();
+  return (
+    <div style={{ padding: 32, color: 'var(--ds-text-subtle)' }}>
+      <p style={{ color: 'var(--ds-text)', fontWeight: 600, marginBottom: 8 }}>
+        This Strategy Hub page doesn't exist
+      </p>
+      <p style={{ marginBottom: 16 }}>No route matches <code>{location.pathname}</code>.</p>
+      <Link to="/strata" style={{ color: 'var(--ds-text-brand)' }}>Back to Strategy Hub</Link>
+    </div>
+  );
+}
 
 const S = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
@@ -56,7 +73,7 @@ export function StrataRoutesShell() {
         <Route path="reviews/:snapshotKey" element={<S><ReviewsPage /></S>} />
         <Route path="admin" element={<S><AdminConfigPage /></S>} />
         <Route path="admin/:section" element={<S><AdminConfigPage /></S>} />
-        <Route path="*" element={<S><CommandCenterPage /></S>} />
+        <Route path="*" element={<S><StrataNotFound /></S>} />
       </Routes>
     </StrataProvider>
   );
