@@ -921,14 +921,14 @@ export function useUploadAttachment() {
       const fileName = `${input.entity_type}/${input.entity_id}/${Date.now()}_${input.file.name}`;
       
       const { error: uploadError } = await supabase.storage
-        .from('tm-attachments')
+        .from('testhub-attachments')
         .upload(fileName, input.file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('tm-attachments')
+        .from('testhub-attachments')
         .getPublicUrl(fileName);
 
       // Create attachment record
@@ -989,7 +989,7 @@ export function useDeleteAttachment() {
       const storagePath = pathParts.slice(-3).join('/'); // Get last 3 parts
       
       const { error: storageError } = await supabase.storage
-        .from('tm-attachments')
+        .from('testhub-attachments')
         .remove([storagePath]);
 
       if (storageError) throw storageError;
