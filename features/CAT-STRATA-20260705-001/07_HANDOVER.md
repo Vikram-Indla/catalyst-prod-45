@@ -30,7 +30,7 @@ Implementation Spec (owner-supplied 2026-07-05); implementation map at
 
 ## DB state (STAGING cyijbdeuehohvhnsywig ONLY — prod untouched)
 Applied + ledger-recorded: 20260705140000, 20260705140100, 20260705190000,
-20260706093000, 20260706101000. Ledger rows match committed files 1:1.
+20260706093000, 20260706101000, 20260706120000, 20260706130000 (es_* drops). Ledger rows match committed files 1:1.
 Proof dataset (FY2027 Recovery Proof + "(proof)"-suffixed entities) remains
 on staging as authored evidence; safe to delete by name filter.
 Validator roles for khan.jahanara granted via strata_assign_role (audited).
@@ -54,8 +54,13 @@ banned-color grep on touched files = 0. Vitest still broken on Node 20 → CI.
   false): correct, but worth a UI caption.
 - needs-attention benefit rows drill to portfolio index (no per-benefit
   deep-link resolution); snapshot links go to reviews index.
-- Deferred per ledger Phase 9: live Jira connector, ERP/BI, AI advisory
-  service, board-pack source extension, es_* cleanup (DRIFT-003).
+- DONE in follow-up commits a1767ae/6fbb078 (owner items 5,7,8,9,10,11,12):
+  Jira connector (strata_sync_jira, live-verified JIRA-SYNC-1000), AI advisory
+  edge function strata-advisory (deployed ACTIVE; full run needs a logged-in
+  user), board-pack entity names + provenance appendix, es_* decommission
+  (migration 20260706130000 + 48 files deleted, DRIFT-003 closed), clear_*
+  flags (migration 20260706120000) + UI, my-roles persist exclusion, benefit/
+  snapshot deep links. Still deferred: ERP/BI connectors only.
 
 ## Next exact actions
 1. Owner review/merge of the recovery branch PR.
