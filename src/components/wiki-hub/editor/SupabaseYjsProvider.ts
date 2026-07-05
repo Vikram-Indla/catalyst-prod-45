@@ -1,12 +1,16 @@
 /**
  * SupabaseYjsProvider — Yjs transport over Supabase Realtime broadcast
- * (CAT-DOCEX-DB-COEDIT-20260705-001 C1). No relay server: clients exchange
- * binary Y.Doc updates (base64) on channel `docex-collab:{key}`; awareness
- * (cursors/selection) piggybacks on the same channel. On join, a `y-hello`
- * carrying the local state vector lets existing peers reply with exactly
- * the missing diff, so late joiners converge without a server snapshot.
+ * (CAT-DOCEX-DB-COEDIT-20260705-001 C1/C4). No relay server: clients
+ * exchange binary Y.Doc updates (base64) on channel `docex-collab:{key}`;
+ * awareness (cursors/selection) piggybacks on the same channel. On join, a
+ * `y-hello` carrying the local state vector lets existing peers reply with
+ * exactly the missing diff, so late joiners converge without a server
+ * snapshot. y-indexeddb gives the doc a local, durable log — edits made
+ * offline (or before the DB hydration read resolves) survive a reload/tab
+ * crash, and rejoin naturally resyncs via the same y-hello handshake.
  */
 import * as Y from 'yjs';
+import { IndexeddbPersistence } from 'y-indexeddb';
 import {
   Awareness,
   applyAwarenessUpdate,
@@ -32,12 +36,19 @@ export class SupabaseYjsProvider {
   readonly doc: Y.Doc;
   readonly awareness: Awareness;
   private channel: ReturnType<typeof supabase.channel>;
+  private readonly local: IndexeddbPersistence;
   private connected = false;
   private destroyed = false;
 
   constructor(collabKey: string) {
     this.doc = new Y.Doc();
     this.awareness = new Awareness(this.doc);
+    // Local durability first: edits made while offline, or in the window
+    // before the DB hydration read resolves, are never lost to a reload or
+    // tab crash. Applying an already-known op again is a no-op under Yjs's
+    // CRDT semantics, so layering this under the DB-authoritative hydration
+    // in WikiPageSurface is safe either order.
+    this.local = new IndexeddbPersistence(`docex-collab:${collabKey}`, this.doc);
     this.channel = supabase.channel(`docex-collab:${collabKey}`);
 
     // Remote → local
@@ -73,13 +84,23 @@ export class SupabaseYjsProvider {
     });
 
     this.channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED' && !this.destroyed) {
+      if (this.destroyed) return;
+      if (status === 'SUBSCRIBED') {
         this.connected = true;
+        // Reconnect (network drop, tab background-throttled, etc.) rejoins
+        // the SAME handshake a fresh join uses: announce our state vector so
+        // any peer who kept editing while we were gone can send the diff.
         void this.channel.send({
           type: 'broadcast',
           event: 'y-hello',
           payload: { sv: u8ToB64(Y.encodeStateVector(this.doc)) },
         });
+      } else {
+        // CLOSED / TIMED_OUT / CHANNEL_ERROR: stop attempting sends until a
+        // fresh SUBSCRIBED arrives. Local edits keep flowing into the
+        // Yjs doc (and y-indexeddb) — nothing is lost, just not broadcast
+        // until reconnected.
+        this.connected = false;
       }
     });
   }
@@ -93,6 +114,7 @@ export class SupabaseYjsProvider {
     this.destroyed = true;
     removeAwarenessStates(this.awareness, [this.doc.clientID], 'destroy');
     void this.channel.unsubscribe();
+    void this.local.destroy();
     this.doc.destroy();
   }
 }
