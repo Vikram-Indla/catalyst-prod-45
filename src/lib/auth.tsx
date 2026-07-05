@@ -106,6 +106,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (err) {
         console.error('Session check error:', err);
+        // getSession() is local-only, so a TIMEOUT means the supabase-js auth
+        // lock is wedged — a persisted token whose refresh hangs (e.g. revoked
+        // refresh token) blocks getSession AND signInWithPassword forever:
+        // the logon form hangs. Drop the corpse so the next load starts clean
+        // (debugged live 2026-07-06).
+        if (err instanceof Error && err.message === 'getSession timeout') {
+          try {
+            localStorage.removeItem('catalyst-auth-token');
+            console.warn('[auth] cleared wedged persisted session after getSession timeout');
+          } catch {
+            /* storage unavailable */
+          }
+        }
         safeFinalize(null, null);
       } finally {
         window.clearTimeout(initTimeout);
