@@ -885,7 +885,7 @@
 
 .cc-sum-panel__skip {
   margin-left: auto;
-  padding: 3px 12px;
+  padding: 4px 12px;
   background: transparent;
   border: 1px solid var(--ds-border);
   border-radius: 3px;
@@ -922,7 +922,7 @@
 }
 
 .cc-sum-panel__empty {
-  padding: 28px 16px;
+  padding: 24px 16px;
   text-align: center;
   color: var(--ds-text-subtlest);
   font-size: 13px;
@@ -937,7 +937,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 12px;
+  padding: 12px 12px;
   border-bottom: 1px solid var(--ds-border);
 }
 .cc-sum-skel__bar {
