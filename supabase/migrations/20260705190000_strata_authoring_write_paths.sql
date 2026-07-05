@@ -549,25 +549,25 @@ BEGIN
   IF el.status = 'active' THEN RAISE EXCEPTION 'element is already active'; END IF;
   IF el.status = 'retired' THEN RAISE EXCEPTION 'retired elements cannot be promoted'; END IF;
 
-  IF el.owner_id IS NULL THEN missing := missing || 'accountable owner'; END IF;
+  IF el.owner_id IS NULL THEN missing := array_append(missing, 'accountable owner'); END IF;
 
   IF el.element_type = 'play' THEN
     SELECT * INTO charter FROM public.strata_play_charters WHERE element_id = p_element;
     IF charter IS NULL THEN
-      missing := missing || 'charter';
-      missing := missing || 'value hypothesis (charter value thesis)';
-      missing := missing || 'gate schedule';
+      missing := array_append(missing, 'charter');
+      missing := array_append(missing, 'value hypothesis (charter value thesis)');
+      missing := array_append(missing, 'gate schedule');
     ELSE
-      IF charter.hypothesis IS NULL OR btrim(charter.hypothesis) = '' THEN missing := missing || 'charter hypothesis'; END IF;
-      IF charter.scope IS NULL OR btrim(charter.scope) = '' THEN missing := missing || 'charter scope'; END IF;
-      IF charter.value_thesis IS NULL OR btrim(charter.value_thesis) = '' THEN missing := missing || 'value hypothesis (charter value thesis)'; END IF;
-      IF charter.owner_id IS NULL THEN missing := missing || 'charter owner'; END IF;
+      IF charter.hypothesis IS NULL OR btrim(charter.hypothesis) = '' THEN missing := array_append(missing, 'charter hypothesis'); END IF;
+      IF charter.scope IS NULL OR btrim(charter.scope) = '' THEN missing := array_append(missing, 'charter scope'); END IF;
+      IF charter.value_thesis IS NULL OR btrim(charter.value_thesis) = '' THEN missing := array_append(missing, 'value hypothesis (charter value thesis)'); END IF;
+      IF charter.owner_id IS NULL THEN missing := array_append(missing, 'charter owner'); END IF;
       SELECT count(*) INTO gate_count FROM public.strata_gate_instances
        WHERE subject_type = 'element' AND subject_id = p_element;
-      IF gate_count = 0 THEN missing := missing || 'gate schedule'; END IF;
+      IF gate_count = 0 THEN missing := array_append(missing, 'gate schedule'); END IF;
     END IF;
     SELECT count(*) INTO kpi_count FROM public.strata_element_kpis WHERE element_id = p_element;
-    IF kpi_count = 0 THEN missing := missing || 'linked KPI set (at least one KPI)'; END IF;
+    IF kpi_count = 0 THEN missing := array_append(missing, 'linked KPI set (at least one KPI)'); END IF;
   END IF;
 
   IF array_length(missing, 1) > 0 THEN
