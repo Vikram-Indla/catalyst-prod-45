@@ -16,7 +16,6 @@ const Themes = lazy(() => import("../pages/Themes"));
 const Initiatives = lazy(() => import("../pages/Initiatives"));
 const Features = lazy(() => import("../pages/Features"));
 const Stories = lazy(() => import("../pages/Stories"));
-const Tasks = lazy(() => import("../pages/Tasks"));
 const DependenciesPage = lazy(() => import("../pages/work/Dependencies"));
 const RisksGridPage = lazy(() => import("../pages/risks/RisksGridPage"));
 const Impediments = lazy(() => import("../pages/Impediments"));
@@ -48,7 +47,6 @@ export function PortfolioRoutes() {
       <Route path="initiatives" element={<S><Initiatives /></S>} />
       <Route path="features" element={<S><Features /></S>} />
       <Route path="stories" element={<S><Stories /></S>} />
-      <Route path="tasks" element={<S><Tasks /></S>} />
       <Route path="dependencies" element={<S><DependenciesPage /></S>} />
       <Route path="risks" element={<S><RisksGridPage /></S>} />
       <Route path="impediments" element={<S><Impediments /></S>} />
