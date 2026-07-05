@@ -32,6 +32,9 @@ import Textfield from '@atlaskit/textfield';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { catalystToast } from '@/lib/catalystToast';
+import { useNavigate } from 'react-router-dom';
+import { ConfirmCloneDialog, type ClonePatch } from '@/components/catalyst-detail-views/shared/ConfirmCloneDialog';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
 import type { Dependency, IssueMeta, Hierarchy } from './types';
 
 // Lift the edge-label layer above the card nodes so the "blocks" pills are
@@ -143,12 +146,16 @@ function FrameNode({ data }: { data: any }) {
  *    @atlaskit/dropdown-menu / Popper would land at (0,0); CLAUDE.md 2026-06-13). */
 type RelatedItem = { key: string; label: string; type: string | null; edgeId: string; direction: 'outgoing' | 'incoming' };
 
-function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [], onHighlightRelated }: {
+function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [], onHighlightRelated, onConvertToSubtask, onClone, onMoveIssue }: {
   onAddDependency?: () => void;
   onLocate?: () => void;
   onFilterByItem?: () => void;
   relatedItems?: RelatedItem[];
   onHighlightRelated?: (key: string, edgeId: string) => void;
+  /* Detail-panel-parity actions (project hub only — routes are project-scoped). */
+  onConvertToSubtask?: () => void;
+  onClone?: () => void;
+  onMoveIssue?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [subOpen, setSubOpen] = useState(false);
@@ -347,6 +354,12 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                 ) : null}
               </div>
               {item('Locate work item in timeline', { onClick: onLocate })}
+              {(onConvertToSubtask || onClone || onMoveIssue) && (
+                <div style={{ height: 1, background: 'var(--ds-border)', margin: '8px 0' }} />
+              )}
+              {onConvertToSubtask && item('Convert to Subtask', { onClick: onConvertToSubtask })}
+              {onClone && item('Clone', { onClick: onClone })}
+              {onMoveIssue && item('Move', { onClick: onMoveIssue })}
             </div>,
             document.body,
           )
@@ -412,6 +425,9 @@ function WorkItemNode({ data }: { data: any }) {
           onFilterByItem={data.onFilterByItem}
           relatedItems={data.relatedItems}
           onHighlightRelated={data.onHighlightRelated}
+          onConvertToSubtask={data.onConvertToSubtask}
+          onClone={data.onClone}
+          onMoveIssue={data.onMoveIssue}
         />
       </div>
       {m.summary ? (
@@ -981,12 +997,24 @@ interface DependenciesDiagramProps {
   hierarchy?: Hierarchy;
   /** All projects from the project module — for the "Project" filter. */
   projects?: Array<{ project_key: string; name: string | null; color?: string | null; avatar_url?: string | null; icon?: string | null }>;
+  /** Hub the canvas is mounted in. Convert/Clone/Move card actions are wired
+   *  only for 'project' (their routes are project-hub scoped). */
+  hubType?: string;
 }
 
 type RollUpLevel = 'none' | 'Business Request' | 'Epic' | 'Feature' | 'Story';
 
-function DiagramInner({ projectKey, projectName, projectColor, dependencies, issueMeta = {}, hierarchy = {}, projects = [], onAddClick, onChanged, onDeleteDependency, getTimelineHref, focusKey }: DependenciesDiagramProps) {
+function DiagramInner({ projectKey, projectName, projectColor, dependencies, issueMeta = {}, hierarchy = {}, projects = [], onAddClick, onChanged, onDeleteDependency, getTimelineHref, focusKey, hubType }: DependenciesDiagramProps) {
   const { setCenter, setViewport, getViewport, zoomIn, zoomOut } = useReactFlow();
+  const navigate = useNavigate();
+  // Convert/Clone/Move parity actions (project hub only). Clone opens the
+  // canonical ConfirmCloneDialog; Convert/Move navigate to project-hub routes.
+  const isProjectHub = hubType === 'project';
+  const [cloneTarget, setCloneTarget] = useState<{ key: string; summary: string | null; issueType: string | null } | null>(null);
+  const handleClone = useCallback((patch?: ClonePatch) => {
+    if (!cloneTarget) return;
+    void cloneWorkItemWithFlags({ sourceKey: cloneTarget.key, sourceType: cloneTarget.issueType, projectKey, patch });
+  }, [cloneTarget, projectKey]);
   const handleDeleteDep = useCallback(
     async (depId: number | string) => {
       try {
@@ -1173,9 +1201,13 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         // connecting wire + the picked target card's border. NOT the source card,
         // NOT other neighbours. (Vikram 2026-06-25)
         onHighlightRelated: (key: string, edgeId: string) => { setSelectedNodeId(null); setSelectedEdgeId(edgeId); setHighlightCardId(key); },
+        // Detail-panel-parity actions — project hub only (routes are project-scoped).
+        onConvertToSubtask: isProjectHub ? () => navigate(`/project-hub/${projectKey}/issue/${k}/convert-to-subtask`) : undefined,
+        onClone: isProjectHub ? () => setCloneTarget({ key: k, summary: meta?.summary ?? null, issueType: meta?.issue_type ?? null }) : undefined,
+        onMoveIssue: isProjectHub ? () => navigate(`/project-hub/${projectKey}/issue/${k}/move`) : undefined,
       };
     },
-    [issueMeta, hierarchy, onAddClick, projectKey, filteredDeps, setWorkItem, setSelectedEdgeId, setSelectedNodeId, setHighlightCardId, getTimelineHref],
+    [issueMeta, hierarchy, onAddClick, projectKey, filteredDeps, setWorkItem, setSelectedEdgeId, setSelectedNodeId, setHighlightCardId, getTimelineHref, isProjectHub, navigate],
   );
 
   /* Keyboard shortcuts (Jira parity): arrows pan, +/- zoom. Active while the
@@ -1520,6 +1552,15 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         />
       </div>
       {sel ? <RelationshipPopup sel={sel} onUnlink={handleDeleteDep} onClose={() => setSel(null)} /> : null}
+      {cloneTarget && (
+        <ConfirmCloneDialog
+          isOpen
+          onClose={() => setCloneTarget(null)}
+          issueKey={cloneTarget.key}
+          issueSummary={cloneTarget.summary ?? undefined}
+          onConfirm={handleClone}
+        />
+      )}
     </div>
   );
 }

@@ -104,6 +104,7 @@ export default function DependenciesView({
             projectKey={scopeKey}
             projectName={scopeName ?? scopeKey}
             projectColor={scopeColor ?? null}
+            hubType={hubType}
             dependencies={dependencies}
             issueMeta={issueMeta}
             hierarchy={hierarchy}
