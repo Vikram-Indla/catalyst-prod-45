@@ -50,7 +50,7 @@ export const HUBS: Hub[] = [
   { id: 'incident', label: 'Incident Hub', path: '/incident-hub', tileColor: 'red', glyph: renderIcon(WarningIcon, 'IncidentHub') },
   { id: 'task', label: 'Tasks', path: '/tasks/overview', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'Tasks') },
   { id: 'plan', label: 'Plan Hub', path: '/planhub', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'PlanHub') },
-  { id: 'wiki', label: 'Wiki Hub', path: '/wiki', tileColor: 'lime', glyph: renderIcon(BookIcon, 'WikiHub') },
+  { id: 'docex', label: 'Docex', path: '/docex', tileColor: 'lime', glyph: renderIcon(BookIcon, 'Docex') },
 ];
 
 const routeAliases: Record<string, string[]> = {
@@ -62,7 +62,7 @@ const routeAliases: Record<string, string[]> = {
   incident: ['/incident', '/incident-hub'],
   task: ['/task', '/tasks', '/priorities'],
   plan: ['/plan', '/planhub'],
-  wiki: ['/wiki'],
+  docex: ['/docex'],
 };
 
 export function getActiveHub(pathname: string): Hub | null {

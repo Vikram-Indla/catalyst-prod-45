@@ -110,7 +110,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const expected = [
       'home', 'strategy', 'ideation', 'product', 'project',
-      'release', 'test', 'incident', 'task', 'plan', 'wiki',
+      'release', 'test', 'incident', 'task', 'plan', 'docex',
     ];
     for (const key of expected) {
       const tile = container.querySelector(`[data-hub-tile="${key}"]`);
@@ -136,7 +136,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(hrefByLabel.Incident).toBe('/incident-hub');
     expect(hrefByLabel.Task).toBe('/tasks/overview');
     expect(hrefByLabel.Plan).toBe('/planhub');
-    expect(hrefByLabel.Wiki).toBe('/wiki');
+    expect(hrefByLabel.Docex).toBe('/docex');
   });
 
   it('marks the active row via aria-current="page" using pathname.startsWith', () => {
@@ -188,7 +188,7 @@ describe('HubSwitcher v2 — search-to-filter', () => {
     renderAt('/for-you');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     fireEvent.change(screen.getByPlaceholderText(/search hubs/i), {
-      target: { value: 'wiki' },
+      target: { value: 'docex' },
     });
     expect(screen.queryByText(/^discover$/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^build & ship$/i)).not.toBeInTheDocument();
@@ -227,7 +227,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     ['8', '/incident-hub'],
     ['9', '/tasks/overview'],
     ['0', '/planhub'],
-    ['-', '/wiki'],
+    ['-', '/docex'],
   ])('Cmd+%s fires without error', (key, _expectedPath) => {
     renderAt('/for-you');
     expect(() => fireEvent.keyDown(document, { key, metaKey: true })).not.toThrow();

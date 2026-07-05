@@ -99,7 +99,7 @@ export default function WikiHomePage() {
       <div style={{ marginBottom: 24 }}>
         {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), Notion-scale hub title */}
         <h1 style={{ font: 'var(--ds-font-heading-xxlarge)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--ds-text)', margin: 0 }}>
-          Wiki
+          Docex
         </h1>
         <p style={{ margin: '6px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-large)' }}>
           Documentation workspaces for every project and product.

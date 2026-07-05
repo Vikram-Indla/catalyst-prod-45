@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'admin' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki' | 'incidenthub' | 'chat';
+export type WorkspaceType = 'home' | 'admin' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'docex' | 'incidenthub' | 'chat';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -78,9 +78,9 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
     return 'planhub';
   }
   
-  // Wiki routes
-  if (pathname.startsWith('/wiki')) {
-    return 'wiki';
+  // Docex routes
+  if (pathname.startsWith('/docex')) {
+    return 'docex';
   }
   
   // Enterprise tier routes
@@ -157,8 +157,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'ProjectHub';
     case 'planhub':
       return 'PlanHub';
-    case 'wiki':
-      return 'Wiki';
+    case 'docex':
+      return 'Docex';
     case 'admin':
       return '';
     default:

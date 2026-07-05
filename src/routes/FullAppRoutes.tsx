@@ -814,13 +814,15 @@ export default function FullAppRoutes() {
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
         <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
-        {/* Wiki — Catalyst Pages (CAT-DOCS-NOTION-20260704-001) */}
-        <Route path="/wiki" element={<S><WikiHomePage /></S>} />
+        {/* Docex — Catalyst Pages (CAT-DOCS-NOTION-20260704-001).
+            Renamed from /wiki 2026-07-05: /wiki belongs to the restored
+            knowledge-base hub on main. */}
+        <Route path="/docex" element={<S><WikiHomePage /></S>} />
         {import.meta.env.DEV && (
-          <Route path="/wiki/_sandbox" element={<S><WikiSandboxPage /></S>} />
+          <Route path="/docex/_sandbox" element={<S><WikiSandboxPage /></S>} />
         )}
-        <Route path="/wiki/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
-        <Route path="/wiki/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/docex/:workspaceSlug" element={<S><WikiWorkspacePage /></S>} />
+        <Route path="/docex/:workspaceSlug/:pageSlug" element={<S><WikiWorkspacePage /></S>} />
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />
@@ -919,7 +921,7 @@ export default function FullAppRoutes() {
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
         {/* Knowledge Hub absorbed into Wiki — legacy UUID URLs redirect to slug routes */}
-        <Route path="/knowledge-hub" element={<Navigate to="/wiki" replace />} />
+        <Route path="/knowledge-hub" element={<Navigate to="/docex" replace />} />
         <Route path="/knowledge-hub/spaces/:spaceId" element={<S><LegacySpaceRedirect /></S>} />
         <Route path="/knowledge-hub/documents/:documentId" element={<S><LegacyDocumentRedirect /></S>} />
 

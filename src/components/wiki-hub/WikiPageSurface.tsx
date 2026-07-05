@@ -225,7 +225,7 @@ export function WikiPageSurface({ workspace, page, treePages }: WikiPageSurfaceP
       cur = cur.parent_id ? byId.get(cur.parent_id) : undefined;
     }
     return [
-      { key: 'wiki', text: 'Wiki', href: Routes.wiki.root() },
+      { key: 'docex', text: 'Docex', href: Routes.docex.root() },
       { key: workspace.id, text: workspace.name, href: Routes.wiki.workspace(workspace.slug) },
       ...chain.map((c) => ({
         key: c.id,

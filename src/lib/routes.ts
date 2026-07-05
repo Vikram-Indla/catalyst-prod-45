@@ -211,15 +211,20 @@ export const knowledgeHubRoutes = {
 };
 
 // ---------------------------------------------------------------------------
-// Wiki — Catalyst Pages (CAT-DOCS-NOTION-20260704-001)
+// Docex — Catalyst Pages (CAT-DOCS-NOTION-20260704-001)
 // Workspaces per project/product/organization; pages addressed by slug.
+// Renamed from /wiki 2026-07-05 (Vikram): /wiki belongs to the restored
+// knowledge-base hub on main; Docex is the Notion-grade document hub.
 // ---------------------------------------------------------------------------
 
-export const wikiRoutes = {
-  root: () => '/wiki',
-  workspace: (workspaceSlug: string) => `/wiki/${workspaceSlug}`,
-  page: (workspaceSlug: string, pageSlug: string) => `/wiki/${workspaceSlug}/${pageSlug}`,
+export const docexRoutes = {
+  root: () => '/docex',
+  workspace: (workspaceSlug: string) => `/docex/${workspaceSlug}`,
+  page: (workspaceSlug: string, pageSlug: string) => `/docex/${workspaceSlug}/${pageSlug}`,
 };
+
+/** @deprecated alias — callsites migrating to Routes.docex */
+export const wikiRoutes = docexRoutes;
 
 // ---------------------------------------------------------------------------
 // Work items / Browse
@@ -259,6 +264,8 @@ export const Routes = {
   portfolio: portfolioRoutes,
   tasks: tasksRoutes,
   knowledgeHub: knowledgeHubRoutes,
+  docex: docexRoutes,
+  /** @deprecated alias for docex */
   wiki: wikiRoutes,
   browse: browseRoutes,
   admin: adminRoutes,

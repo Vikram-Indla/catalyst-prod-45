@@ -371,7 +371,7 @@ export function pickStockAvatarForKey(projectKey: string): StockAvatarId {
 
 export type HubKey =
   | 'home' | 'strategy' | 'ideation' | 'product' | 'project'
-  | 'release' | 'test' | 'incident' | 'task' | 'plan' | 'wiki';
+  | 'release' | 'test' | 'incident' | 'task' | 'plan' | 'wiki' | 'docex';
 
 export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   home:     hubHomeUrl,
@@ -385,6 +385,8 @@ export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   task:     hubTaskUrl,
   plan:     hubPlanUrl,
   wiki:     hubWikiUrl,
+  // Docex reuses the wiki glyph until a dedicated asset lands (rename 2026-07-05)
+  docex:    hubWikiUrl,
 };
 
 export const HUB_ICON_OUTLINE_REGISTRY: Record<HubKey, string> = {
@@ -399,6 +401,7 @@ export const HUB_ICON_OUTLINE_REGISTRY: Record<HubKey, string> = {
   task:     hubTasksOutlineUrl,
   plan:     hubPlanOutlineUrl,
   wiki:     hubWikiOutlineUrl,
+  docex:    hubWikiOutlineUrl,
 };
 
 // ═══════════════════════════════════════════════════════════════════════

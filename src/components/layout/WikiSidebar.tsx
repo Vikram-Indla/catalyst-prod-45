@@ -36,7 +36,7 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
   const config: SidebarConfig = useMemo(() => {
     if (inWorkspace) {
       // Minimal config — the tree is injected as children below.
-      return { badge: 'WK', label: 'Wiki', sections: [] };
+      return { badge: 'DX', label: 'Docex', sections: [] };
     }
 
     const byType = (type: string) => (workspaces ?? []).filter((w) => w.container_type === type);
@@ -72,12 +72,12 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
     };
 
     return {
-      badge: 'WK',
-      label: 'Wiki',
+      badge: 'DX',
+      label: 'Docex',
       sections: [
         {
-          title: 'Wiki',
-          items: [{ id: 'home', title: 'Home', path: Routes.wiki.root(), icon: Home, exact: true }],
+          title: 'Docex',
+          items: [{ id: 'home', title: 'Home', path: Routes.docex.root(), icon: Home, exact: true }],
         },
         ...(byType('project').length
           ? [{ title: 'Project workspaces', items: byType('project').map(item) }]

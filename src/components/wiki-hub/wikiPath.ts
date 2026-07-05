@@ -11,7 +11,7 @@ export interface WikiPathParts {
 const RESERVED = new Set(['_sandbox']);
 
 export function parseWikiPath(pathname: string): WikiPathParts {
-  const m = pathname.match(/^\/wiki\/([^/?#]+)(?:\/([^/?#]+))?/);
+  const m = pathname.match(/^\/docex\/([^/?#]+)(?:\/([^/?#]+))?/);
   if (!m) return {};
   const workspaceSlug = decodeURIComponent(m[1]);
   if (RESERVED.has(workspaceSlug)) return {};
