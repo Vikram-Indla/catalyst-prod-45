@@ -28,3 +28,15 @@ ads delta zero (the standing +N is another session's testhub-lab WIP).
 - Full UI-string i18n: deliberately NOT machine-translated (would fabricate Arabic). RTL
   layout done; localized copy needs a real translation source.
 - Huddle >4: awaiting SFU whitelist decision.
+
+## Decision — huddle SFU (2026-07-05)
+Vikram: stay at 4-person mesh cap for now (free-model cost decision). SFU whitelist
+request CLOSED, not approved. All 4 originally-requested items now resolved:
+slash commands ✅, channel read receipts ✅, RTL mirroring ✅, huddle>4 decided-no.
+
+## Bonus fix same day (752047355)
+Found + fixed a build-breaking bug already on main from another session (6b115f6ca):
+useUserStatus.ts imported a nonexistent useSupabase() hook — crashed every /chat
+load. Fixed import to the standard supabase singleton; repaired matching staging
+RPC drift (user_status_upsert/clear never applied). Wired /away + /active slash
+commands on top. Live round-trip verified both directions.

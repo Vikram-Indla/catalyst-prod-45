@@ -1,7 +1,8 @@
 # Dependency whitelist request — Huddle beyond 4 participants (SFU)
 
-**Status:** BLOCKED on approval. Not built. Requires a new external dependency +
-running infrastructure, which trips the CLAUDE.md "DEPENDENCY WHITELIST RULE".
+**Status: DECIDED — 2026-07-05, Vikram.** Stay on the 4-person mesh cap. No SFU,
+no new dependency, no recurring infra bill for now (free-tier cost decision). This
+request is CLOSED. Re-open if huddle size becomes a real product need.
 
 ## Why the cap exists (not a bug)
 The current huddle is a **full peer-to-peer mesh** (`src/lib/chat/huddle/HuddleMesh.ts`):
