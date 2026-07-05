@@ -36,11 +36,22 @@ export default function WikiSandboxPage() {
   const { user } = useAuth();
   const collabOn = params.get('collab') === '1';
 
-  const provider = useMemo(
-    () => (collabOn ? new SupabaseYjsProvider('sandbox') : null),
-    [collabOn],
-  );
-  useEffect(() => () => provider?.destroy(), [provider]);
+  // Provider construction opens a real Realtime subscription — a SIDE
+  // EFFECT, so it must live in useEffect, not useMemo. useMemo has no
+  // cleanup hook: React 18 Strict Mode double-invokes memo factories in
+  // dev, which silently created two live subscriptions to the same
+  // channel topic (Supabase's client closes the older one, orphaning it —
+  // this is exactly the class of bug Strict Mode exists to catch).
+  const [provider, setProvider] = useState<SupabaseYjsProvider | null>(null);
+  useEffect(() => {
+    if (!collabOn) {
+      setProvider(null);
+      return;
+    }
+    const p = new SupabaseYjsProvider('sandbox');
+    setProvider(p);
+    return () => p.destroy();
+  }, [collabOn]);
 
   const collab = useMemo(() => {
     if (!provider) return undefined;
@@ -51,10 +62,7 @@ export default function WikiSandboxPage() {
 
   return (
     <div style={{ padding: 'var(--ds-space-300, 24px)', maxWidth: 900, margin: '0 auto' }}>
-      <PageHeader
-        title="Wiki editor sandbox"
-        subtitle={collabOn ? 'CO-EDITING MODE — open this URL in a second tab' : 'Development-only probe surface'}
-      />
+      <PageHeader title={collabOn ? 'Wiki editor sandbox — CO-EDITING MODE' : 'Wiki editor sandbox'} />
       <div style={{ margin: '8px 0 16px', display: 'flex', gap: 8 }}>
         <button data-testid="seed-1500" onClick={() => setSeed(seedBlocks(1500))}>
           Seed 1,500 blocks
