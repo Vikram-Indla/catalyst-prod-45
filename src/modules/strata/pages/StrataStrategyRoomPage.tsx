@@ -163,7 +163,7 @@ function KpiLinksModal({
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="medium" testId="strata-kpi-links-modal">
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-kpi-links-modal">
       <ModalHeader><ModalTitle>KPI links — {element.name}</ModalTitle></ModalHeader>
       <ModalBody>
         {links.length === 0 ? (
@@ -290,7 +290,7 @@ function GateScheduleModal({
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="medium" testId="strata-schedule-gate-modal">
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-schedule-gate-modal">
       <ModalHeader><ModalTitle>Schedule gate — {element.name}</ModalTitle></ModalHeader>
       <ModalBody>
         <div style={{ display: 'grid', gap: 12 }}>

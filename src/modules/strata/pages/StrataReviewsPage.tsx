@@ -207,7 +207,7 @@ function LockSnapshotModal({ open, onClose, cycleId, periodId, periodName }: {
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="small" testId="strata-reviews-lock-modal">
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="small" testId="strata-reviews-lock-modal">
       <ModalHeader><ModalTitle>Lock snapshot</ModalTitle></ModalHeader>
       <ModalBody>
         <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
@@ -275,7 +275,7 @@ function ClosePeriodModal({ open, onClose, period }: {
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="small" testId="strata-reviews-close-modal">
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="small" testId="strata-reviews-close-modal">
       <ModalHeader><ModalTitle>Close period</ModalTitle></ModalHeader>
       <ModalBody>
         <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>

@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedRpc } from '@/integrations/supabase/client';
 import {
   configApi, executionApi, governanceApi, kpiApi, lineageApi, scorecardApi, strategyApi, valueApi,
 } from '../domain';
@@ -128,7 +128,16 @@ export function useStrataRoles() {
     queryFn: async (): Promise<StrataRole[]> => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return [];
-      return configApi.myRoles(auth.user.id);
+      const roles = await configApi.myRoles(auth.user.id);
+      // Mirror the server's strata_is_admin(): platform admins/owners hold
+      // every STRATA permission even without a strata_role_assignments row —
+      // without this, authoring affordances hide from the very users the DB
+      // would authorize (recovery session 004 fix).
+      if (!roles.includes('strata_admin')) {
+        const { data: isAdmin } = await typedRpc('strata_is_admin', {});
+        if (isAdmin === true) roles.push('strata_admin');
+      }
+      return roles;
     },
     staleTime: 5 * 60_000,
   });

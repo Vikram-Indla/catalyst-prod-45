@@ -220,7 +220,7 @@ export function StrataFormModal({
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width={width} testId={testId}>
+    <Modal isOpen onClose={busy ? () => {} : onClose} width={width} testId={testId}>
       <ModalHeader><ModalTitle>{title}</ModalTitle></ModalHeader>
       <ModalBody>
         {description ? (

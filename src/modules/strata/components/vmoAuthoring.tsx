@@ -110,7 +110,7 @@ export function StrataScheduleGateModal({
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="medium" testId="strata-schedule-gate-modal">
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-schedule-gate-modal">
       <ModalHeader><ModalTitle>Schedule gate</ModalTitle></ModalHeader>
       <ModalBody>
         <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
@@ -245,7 +245,7 @@ function AddMemberModal({
   };
 
   return (
-    <Modal onClose={busy ? () => {} : onClose} width="medium" testId="strata-add-member-modal">
+    <Modal isOpen onClose={busy ? () => {} : onClose} width="medium" testId="strata-add-member-modal">
       <ModalHeader><ModalTitle>Add portfolio member</ModalTitle></ModalHeader>
       <ModalBody>
         <div style={{ display: 'grid', gap: 12 }}>
