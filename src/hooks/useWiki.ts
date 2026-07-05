@@ -47,6 +47,10 @@ export interface WikiPage extends WikiPageSummary {
   updated_by: string | null;
   created_at: string;
   published_at: string | null;
+  /** Yjs document state (CAT-DOCEX-DB-COEDIT-20260705-001 C3). PostgREST
+   *  returns/accepts bytea as a Postgres hex-escape string ("\\x...") — see
+   *  editor/ydocBytea.ts for the Uint8Array<->hex conversion. */
+  ydoc_state: string | null;
 }
 
 export type WikiEntityType =
@@ -184,6 +188,15 @@ export function useWikiPageBySlug(
       if (error) throw error;
       return (data as WikiPage) ?? null;
     },
+    // A slug can be REASSIGNED to a brand-new row (delete a page, create
+    // another with the same auto-derived title/slug within the app's
+    // global 15-min staleTime + localStorage-persisted cache) — this query
+    // MUST NOT serve a stale (workspaceId, slug) → id binding, or every
+    // subsequent mutate() silently writes to a phantom, already-deleted
+    // row while the visible page's real edits are never persisted
+    // (reproduced live 2026-07-06: PATCH returned 200 with zero rows
+    // matched, and the actual open page kept its content forever null).
+    staleTime: 0,
   });
 }
 
@@ -244,7 +257,7 @@ export interface UpdateWikiPageInput {
   id: string;
   spaceId: string;
   patch: Partial<
-    Pick<WikiPage, 'title' | 'icon' | 'cover_url' | 'published_at'>
+    Pick<WikiPage, 'title' | 'icon' | 'cover_url' | 'published_at' | 'ydoc_state'>
   > & { content?: unknown; content_text?: string; content_format?: 'blocknote' };
   /** Optimistic-concurrency guard: only write if the row's updated_at still
    *  matches this value. A mismatch (someone else saved) throws WIKI_CONFLICT
