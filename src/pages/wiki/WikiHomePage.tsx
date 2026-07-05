@@ -1,296 +1,307 @@
 /**
- * WikiHomePage — global Wiki home (CAT-DOCS-NOTION-20260704-001).
- *
- * The Wiki is a library of workspaces: one per project, one per product,
- * plus a single Organization workspace. A page lives in exactly one
- * workspace; this surface is the aggregated directory over everything
- * the user can see.
+ * WikiHomePage — the Docex DOCUMENT HUB (CAT-DOCEX-DB-COEDIT-20260705-001
+ * V1, Vikram 2026-07-06). The landing is a document manager, not a
+ * workspace card grid: All/My tabs, search, workspace + status filters,
+ * sort, and the canonical JiraTable listing every page the user can see.
+ * Workspace navigation lives in the hub sidebar.
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Search, FolderOpen } from '@/lib/atlaskit-icons';
+import { Search } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Lozenge } from '@/components/ads';
+import { DropdownMenu, Lozenge } from '@/components/ads';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable/types';
 import { supabase } from '@/integrations/supabase/client';
 import { Routes } from '@/lib/routes';
-import {
-  useWorkspaceContainerMeta,
-  useDocexRecents,
-  useDocexFavorites,
-  type WikiPageSummary,
-} from '@/hooks/useWiki';
-import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { getProductAvatarUrl } from '@/components/icons';
+import { useAuth } from '@/hooks/useAuth';
+import { useWikiWorkspaces, useCreateWikiPage } from '@/hooks/useWiki';
 
-interface WikiWorkspaceRow {
+const db = supabase as unknown as { from: (t: string) => any };
+
+interface DocRow {
   id: string;
-  name: string;
-  description: string | null;
-  project_id: string | null;
-  container_id?: string | null;
-  slug?: string | null;
-  container_type?: string | null;
-  icon?: string | null;
-  page_count?: number;
+  space_id: string;
+  title: string;
+  slug: string;
+  icon: string | null;
+  created_by: string | null;
+  published_at: string | null;
+  updated_at: string;
 }
 
-const CONTAINER_LABEL: Record<string, string> = {
-  project: 'Project',
-  product: 'Product',
-  organization: 'Organization',
-};
+function relativeTime(iso: string): string {
+  const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(iso).toLocaleDateString();
+}
 
 export default function WikiHomePage() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  const { data: containerMeta } = useWorkspaceContainerMeta();
+  const { user } = useAuth();
+  const { data: workspaces } = useWikiWorkspaces();
+  const createPage = useCreateWikiPage();
 
-  const { data: workspaces, isLoading } = useQuery({
-    queryKey: ['wiki-workspaces'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('kb_doc_spaces')
-        .select('*')
-        .order('name');
+  const [tab, setTab] = useState<'all' | 'mine'>('all');
+  const [search, setSearch] = useState('');
+  const [wsFilter, setWsFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<'' | 'draft' | 'published'>('');
+  const [sortKey, setSortKey] = useState<string>('updated_at');
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
+
+  const { data: docs, isLoading } = useQuery({
+    queryKey: ['docex', 'all-docs'],
+    queryFn: async (): Promise<DocRow[]> => {
+      const { data, error } = await db
+        .from('kb_documents')
+        .select('id, space_id, title, slug, icon, created_by, published_at, updated_at')
+        .eq('is_template', false)
+        .order('updated_at', { ascending: false })
+        .limit(500);
       if (error) throw error;
-      return (data ?? []) as WikiWorkspaceRow[];
+      return (data ?? []) as DocRow[];
     },
   });
 
-  const filtered = useMemo(() => {
-    if (!workspaces) return [];
-    const q = search.trim().toLowerCase();
-    if (!q) return workspaces;
-    return workspaces.filter(
-      (w) => w.name.toLowerCase().includes(q) || (w.description ?? '').toLowerCase().includes(q),
-    );
-  }, [workspaces, search]);
+  const wsById = useMemo(() => new Map((workspaces ?? []).map((w) => [w.id, w])), [workspaces]);
 
-  const openWorkspace = (w: WikiWorkspaceRow) => {
-    navigate(Routes.wiki.workspace(w.slug ?? w.id));
+  const rows = useMemo(() => {
+    let list = docs ?? [];
+    if (tab === 'mine' && user?.id) list = list.filter((d) => d.created_by === user.id);
+    if (wsFilter) list = list.filter((d) => d.space_id === wsFilter);
+    if (statusFilter) {
+      list = list.filter((d) => (statusFilter === 'published' ? !!d.published_at : !d.published_at));
+    }
+    const q = search.trim().toLowerCase();
+    if (q) list = list.filter((d) => (d.title || '').toLowerCase().includes(q));
+    const dir = sortOrder === 'ASC' ? 1 : -1;
+    return [...list].sort((a, b) => {
+      if (sortKey === 'title') return (a.title || '').localeCompare(b.title || '') * dir;
+      if (sortKey === 'workspace')
+        return (wsById.get(a.space_id)?.name ?? '').localeCompare(wsById.get(b.space_id)?.name ?? '') * dir;
+      return (new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()) * dir;
+    });
+  }, [docs, tab, user?.id, wsFilter, statusFilter, search, sortKey, sortOrder, wsById]);
+
+  const openDoc = (d: DocRow) => {
+    const ws = wsById.get(d.space_id);
+    if (ws) navigate(Routes.docex.page(ws.slug, d.slug));
   };
 
+  const createIn = (spaceId: string) => {
+    const ws = wsById.get(spaceId);
+    if (!ws) return;
+    createPage.mutate(
+      { spaceId, title: 'Untitled' },
+      { onSuccess: (created) => navigate(Routes.docex.page(ws.slug, created.slug)) },
+    );
+  };
+
+  const columns: Column<DocRow>[] = useMemo(
+    () => [
+      {
+        id: 'title',
+        label: 'Doc name',
+        flex: true,
+        sortable: true,
+        cell: ({ row }) => (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <span aria-hidden>{row.icon || '📄'}</span>
+            <span
+              style={{
+                color: 'var(--ds-text)',
+                fontWeight: 500,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {row.title || 'Untitled'}
+            </span>
+          </span>
+        ),
+      },
+      {
+        id: 'workspace',
+        label: 'Workspace',
+        width: 18,
+        sortable: true,
+        cell: ({ row }) => (
+          <span style={{ color: 'var(--ds-text-subtle)' }}>{wsById.get(row.space_id)?.name ?? '—'}</span>
+        ),
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        width: 12,
+        cell: ({ row }) => (
+          <Lozenge appearance={row.published_at ? 'success' : 'default'}>
+            {row.published_at ? 'Published' : 'Draft'}
+          </Lozenge>
+        ),
+      },
+      {
+        id: 'updated_at',
+        label: 'Updated',
+        width: 12,
+        sortable: true,
+        cell: ({ row }) => <span style={{ color: 'var(--ds-text-subtle)' }}>{relativeTime(row.updated_at)}</span>,
+      },
+    ],
+    [wsById],
+  );
+
+  const tabBtn = (key: 'all' | 'mine', label: string) => (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={tab === key}
+      onClick={() => setTab(key)}
+      style={{
+        border: 'none',
+        background: tab === key ? 'var(--ds-background-selected)' : 'transparent',
+        color: tab === key ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
+        font: 'var(--ds-font-body)',
+        fontWeight: tab === key ? 600 : 400,
+        padding: '6px 12px',
+        borderRadius: 6,
+        cursor: 'pointer',
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  const selectStyle = {
+    font: 'var(--ds-font-body-small)',
+    background: 'var(--ds-surface)',
+    color: 'var(--ds-text)',
+    border: '1px solid var(--ds-border)',
+    borderRadius: 6,
+    height: 32,
+    padding: '0 8px',
+  } as const;
+
   return (
-    <div style={{ maxWidth: 1120, margin: '0 auto', padding: '48px 40px 96px' }}>
+    <div style={{ maxWidth: 1180, margin: 0, padding: '24px 40px 96px' }}>
       <style>{`
-        .wiki-ws-card {
-          position: relative;
-          display: flex; gap: 16px; align-items: flex-start;
-          padding: 16px;
-          border: 1px solid var(--ds-border);
-          border-radius: 12px;
-          background: var(--ds-surface);
-          cursor: pointer;
-          transition: transform 140ms cubic-bezier(.2,.7,.3,1), box-shadow 140ms ease, border-color 140ms ease;
-        }
-        .wiki-ws-card:hover { transform: translateY(-3px); box-shadow: var(--ds-shadow-overlay); border-color: var(--ds-border-bold); }
-        .wiki-ws-card:focus-visible { outline: 2px solid var(--ds-border-focused); outline-offset: 2px; }
-        .wiki-ws-glyph {
-          width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          background: var(--ds-background-neutral);
-        }
-        .wiki-home-search { position: relative; max-width: 460px; }
-        .wiki-home-search svg {
-          position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%);
-          width: 16px; height: 16px; color: var(--ds-icon-subtle); pointer-events: none;
-        }
+        .docex-hub-search { position: relative; width: 260px; }
+        .docex-hub-search svg { position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--ds-icon-subtle); pointer-events: none; }
+        .docex-hub-search input { padding-inline-start: 32px; height: 32px; }
       `}</style>
 
-      {/* Premium hero — neutral Notion-scale title (not the olive PageHeader) */}
-      <div style={{ marginBottom: 24 }}>
-        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:), Notion-scale hub title */}
-        <h1 style={{ font: 'var(--ds-font-heading-xxlarge)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--ds-text)', margin: 0 }}>
-          Docex
+      {/* Hub header — Notion Document Hub shape */}
+      <div style={{ marginBottom: 16 }}>
+        {/* ads-scanner:ignore-next-line — ADS heading token shorthand (font:) */}
+        <h1 style={{ font: 'var(--ds-font-heading-xlarge)', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--ds-text)', margin: 0 }}>
+          📄 Document Hub
         </h1>
-        <p style={{ margin: '6px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body-large)' }}>
-          Documentation workspaces for every project and product.
+        <p style={{ margin: '4px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
+          Create and collaborate on documents in one place.
         </p>
       </div>
 
-      <div className="wiki-home-search" style={{ marginBottom: 24 }}>
-        <Search />
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Find a workspace"
-          style={{ paddingInlineStart: 38 }}
-          aria-label="Find a workspace"
-        />
-      </div>
-
-      {!search && <HomeRails workspaces={workspaces ?? []} />}
-
-      {isLoading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} style={{ height: 96, borderRadius: 12 }} />
-          ))}
+      {/* Toolbar: tabs · search · filters · sort · New */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+        <div role="tablist" aria-label="Document scope" style={{ display: 'flex', gap: 2 }}>
+          {tabBtn('all', 'All Docs')}
+          {tabBtn('mine', 'My Docs')}
         </div>
-      ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent style={{ padding: 40, textAlign: 'center' }}>
-            <FolderOpen style={{ width: 28, height: 28, color: 'var(--ds-icon-subtle)', margin: '0 auto 8px' }} />
-            <p style={{ color: 'var(--ds-text)', margin: 0, font: 'var(--ds-font-body)' }}>
-              {search ? 'No workspaces match your search' : 'No workspaces yet'}
-            </p>
-            <p style={{ color: 'var(--ds-text-subtle)', margin: '4px 0 0', font: 'var(--ds-font-body-small)' }}>
-              Workspaces are provisioned automatically for every project and product.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
-          {filtered.map((w) => (
-            <div
-              key={w.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => openWorkspace(w)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') openWorkspace(w);
-              }}
-              className="wiki-ws-card"
-            >
-              {/* Per-entity canonical icon — same resolution ContextSwitcher's
-                  ItemRow uses, so a card here matches its Project Hub / Product
-                  Hub icon exactly instead of one shared FileText glyph. */}
-              {w.icon ? (
-                <div className="wiki-ws-glyph" aria-hidden>
-                  <span style={{ font: 'var(--ds-font-heading-medium)' }}>{w.icon}</span>
-                </div>
-              ) : w.container_type === 'project' && w.container_id ? (
-                <ProjectIcon
-                  size="large"
-                  projectKey={containerMeta?.projectKeyById.get(w.container_id)}
-                  name={w.name}
-                />
-              ) : w.container_type === 'product' && w.container_id ? (
-                <ProjectIcon
-                  size="large"
-                  projectKey={containerMeta?.productById.get(w.container_id)?.code}
-                  avatarUrl={
-                    containerMeta?.productById.get(w.container_id)?.code
-                      ? getProductAvatarUrl(containerMeta.productById.get(w.container_id)!.code)
-                      : undefined
-                  }
-                  color={containerMeta?.productById.get(w.container_id)?.color}
-                  name={w.name}
-                />
-              ) : (
-                <div className="wiki-ws-glyph" aria-hidden>
-                  <FolderOpen style={{ width: 20, height: 20, color: 'var(--ds-icon-subtle)' }} />
-                </div>
-              )}
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                  <span
-                    style={{
-                      font: 'var(--ds-font-heading-xsmall)',
-                      color: 'var(--ds-text)',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {w.name}
-                  </span>
-                  {w.container_type && CONTAINER_LABEL[w.container_type] && (
-                    <Lozenge appearance="default">{CONTAINER_LABEL[w.container_type]}</Lozenge>
-                  )}
-                </div>
-                <p
-                  style={{
-                    margin: 0,
-                    color: 'var(--ds-text-subtle)',
-                    font: 'var(--ds-font-body-small)',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {w.description || `${CONTAINER_LABEL[w.container_type ?? ''] ?? 'Workspace'} documentation`}
-                </p>
-              </div>
-            </div>
-          ))}
+        <div className="docex-hub-search">
+          <Search />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search docs" aria-label="Search docs" />
         </div>
-      )}
-    </div>
-  );
-}
-
-/** Recents + Favorites rails (Pass D #1-2) — compact page rows above the
- *  workspace grid; each rail renders only when it has content. */
-function HomeRails({ workspaces }: { workspaces: WikiWorkspaceRow[] }) {
-  const navigate = useNavigate();
-  const { data: recents } = useDocexRecents(8);
-  const { data: favorites } = useDocexFavorites();
-
-  const wsById = useMemo(() => new Map(workspaces.map((w) => [w.id, w])), [workspaces]);
-
-  const openPage = (p: WikiPageSummary) => {
-    const ws = wsById.get(p.space_id);
-    if (ws?.slug) navigate(Routes.docex.page(ws.slug, p.slug));
-  };
-
-  const rail = (title: string, pages: WikiPageSummary[]) =>
-    pages.length > 0 && (
-      <section style={{ marginBottom: 20 }}>
-        <h2
-          style={{
-            font: 'var(--ds-font-heading-xsmall)',
-            color: 'var(--ds-text-subtle)',
-            margin: '0 0 8px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-          }}
+        <select value={wsFilter} onChange={(e) => setWsFilter(e.target.value)} aria-label="Filter by workspace" style={selectStyle}>
+          <option value="">All workspaces</option>
+          {(workspaces ?? []).map((w) => (
+            <option key={w.id} value={w.id}>
+              {w.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as '' | 'draft' | 'published')}
+          aria-label="Filter by status"
+          style={selectStyle}
         >
-          {title}
-        </h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {pages.map((p) => (
+          <option value="">Any status</option>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+        </select>
+        <div style={{ flex: 1 }} />
+        <DropdownMenu
+          aria-label="Create a document"
+          placement="bottom-end"
+          shouldRenderToParent={false}
+          trigger={() => (
             <button
-              key={p.id}
               type="button"
-              onClick={() => openPage(p)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 8,
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: '1px solid var(--ds-border)',
-                background: 'var(--ds-surface)',
-                color: 'var(--ds-text)',
+                gap: 6,
+                padding: '6px 14px',
+                border: 'none',
+                borderRadius: 6,
+                background: 'var(--ds-background-brand-bold)',
+                color: 'var(--ds-text-inverse)',
                 font: 'var(--ds-font-body)',
+                fontWeight: 600,
                 cursor: 'pointer',
-                maxWidth: 260,
               }}
             >
-              <span aria-hidden>{p.icon || '📄'}</span>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {p.title || 'Untitled'}
-              </span>
-              <span style={{ color: 'var(--ds-text-subtlest)', font: 'var(--ds-font-body-small)' }}>
-                {wsById.get(p.space_id)?.name ?? ''}
-              </span>
+              New ▾
             </button>
-          ))}
-        </div>
-      </section>
-    );
+          )}
+          groups={[
+            {
+              key: 'ws',
+              title: 'Create in workspace',
+              items: (workspaces ?? []).map((w) => ({
+                key: w.id,
+                label: w.name,
+                onClick: () => createIn(w.id),
+              })),
+            },
+          ]}
+        />
+      </div>
 
-  const favPages = (favorites ?? []).map((f) => f.page).filter(Boolean) as WikiPageSummary[];
-
-  return (
-    <div style={{ marginBottom: 8 }}>
-      {rail('Favorites', favPages)}
-      {rail('Recently edited', recents ?? [])}
+      {/* Document list — canonical JiraTable */}
+      {isLoading ? (
+        <Skeleton style={{ height: 320, borderRadius: 8 }} />
+      ) : (
+        <JiraTable<DocRow>
+          columns={columns}
+          data={rows}
+          getRowId={(r) => r.id}
+          density="comfortable"
+          sortKey={sortKey}
+          sortOrder={sortOrder}
+          onSortChange={(key, order) => {
+            setSortKey(key);
+            setSortOrder(order);
+          }}
+          onRowClick={openDoc}
+          showRowCount
+          totalRowCount={rows.length}
+          emptyView={
+            <p style={{ color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)', padding: 32, margin: 0 }}>
+              {search || wsFilter || statusFilter
+                ? 'No documents match these filters.'
+                : 'No documents yet — create the first one with New.'}
+            </p>
+          }
+        />
+      )}
     </div>
   );
 }
