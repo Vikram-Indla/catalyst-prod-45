@@ -239,8 +239,6 @@ function App() {
                 <Route path="/strategyhub" element={<StrategyhubLegacyRedirect />} />
                 <Route path="/strategyhub/*" element={<StrategyhubLegacyRedirect />} />
                 <Route path="/strategy-room" element={<StrategyhubLegacyRedirect />} />
-                <Route path="/strategy" element={<StrategyhubLegacyRedirect />} />
-                <Route path="/strategy/*" element={<StrategyhubLegacyRedirect />} />
 
                 {/* Block D (2026-05-01) — canonical /product-hub root lands on
                     /product-hub/products (the workstream listing). Mounted

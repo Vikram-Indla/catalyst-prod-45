@@ -197,10 +197,6 @@ const ChatSidebar = lazyWithRetry(
     })),
   "ChatSidebar",
 );
-const WikiSidebar = lazyWithRetry(
-  () => import("./WikiSidebar").then((m) => ({ default: m.WikiSidebar })),
-  "WikiSidebar",
-);
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
@@ -544,14 +540,12 @@ function CatalystShellContent() {
   });
 
   // Check if on Wiki route
-  const isWikiRoute = location.pathname.startsWith("/wiki");
-
   // Check if on IncidentHub route
   const isIncidentHubRoute = location.pathname.startsWith("/incident-hub");
   const isTestHubRoute = location.pathname.startsWith("/testhub");
 
   // Decision A (Apr 2026): Jira blue canvas (var(--ds-background-selected)) + white panel on all
-  // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
+  // hub routes. /for-you, Home, Admin are intentionally excluded.
   const isHubSurfaceRoute =
     location.pathname.startsWith("/strata") ||
     location.pathname.startsWith("/strategyhub") ||
@@ -685,11 +679,6 @@ function CatalystShellContent() {
     // Full-screen issue view: show ProjectHub sidebar forced-collapsed
     if (isIssueFullPageRoute) {
       return <ProjectHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
-    }
-
-    // Wiki sidebar
-    if (isWikiRoute) {
-      return <WikiSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so

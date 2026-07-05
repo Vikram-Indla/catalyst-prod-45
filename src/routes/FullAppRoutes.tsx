@@ -186,7 +186,9 @@ const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHub
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
 
 // Wiki module — RESTORED 2026-07-05 (CAT-WIKI-RESTORE-20260705-001).
-// Pages live in src/modules-dormant/wiki/; backend (tables/RPCs/kb-query) intact.
+// Routes re-added, but frontend pages remain deleted in git.
+// Backend (tables/RPCs/kb-query) intact. Uncomment when files are restored.
+/*
 const WikiHomePage = lazy(() => import("../modules-dormant/wiki/WikiHomePage"));
 const WikiSearchPage = lazy(() => import("../modules-dormant/wiki/WikiSearchPage"));
 const WikiArticlePage = lazy(() => import("../modules-dormant/wiki/WikiArticlePage"));
@@ -199,6 +201,7 @@ const WikiSubscriptionsPage = lazy(() => import("../modules-dormant/wiki/WikiSub
 const WikiVerificationPage = lazy(() => import("../modules-dormant/wiki/WikiVerificationPage"));
 const WikiAnalyticsPage = lazy(() => import("../modules-dormant/wiki/WikiAnalyticsPage"));
 const WikiTemplatesPage = lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage"));
+*/
 
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
@@ -807,8 +810,9 @@ export default function FullAppRoutes() {
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
         <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
-        {/* Wiki restored 2026-07-05 — CAT-WIKI-RESTORE-20260705-001. Static paths rank
-            above the /wiki/:pageSlug catch-all in React Router v6. */}
+        {/* Wiki routes commented 2026-07-05 — files deleted, imports fail.
+            CAT-WIKI-RESTORE-20260705-001 added routes back but no frontend files.
+            Uncomment when wiki pages are restored.
         <Route path="/wiki" element={<MG k="wiki" t="Wiki"><S><WikiHomePage /></S></MG>} />
         <Route path="/wiki/search" element={<MG k="wiki" t="Wiki"><S><WikiSearchPage /></S></MG>} />
         <Route path="/wiki/articles" element={<MG k="wiki" t="Wiki"><S><WikiAllArticlesPage /></S></MG>} />
@@ -819,11 +823,11 @@ export default function FullAppRoutes() {
         <Route path="/wiki/verification" element={<MG k="wiki" t="Wiki"><S><WikiVerificationPage /></S></MG>} />
         <Route path="/wiki/analytics" element={<MG k="wiki" t="Wiki"><S><WikiAnalyticsPage /></S></MG>} />
         <Route path="/wiki/templates" element={<MG k="wiki" t="Wiki"><S><WikiTemplatesPage /></S></MG>} />
-        {/* No dedicated domains index page exists; browse a domain via its category view. */}
         <Route path="/wiki/domains" element={<Navigate to="/wiki" replace />} />
         <Route path="/wiki/domains/:slug" element={<MG k="wiki" t="Wiki"><S><WikiCategoryPage /></S></MG>} />
         <Route path="/wiki/category/:slug" element={<MG k="wiki" t="Wiki"><S><WikiCategoryPage /></S></MG>} />
         <Route path="/wiki/:pageSlug" element={<MG k="wiki" t="Wiki"><S><WikiArticlePage /></S></MG>} />
+        */}
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />

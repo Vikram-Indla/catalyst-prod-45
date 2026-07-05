@@ -59,8 +59,6 @@ interface HubEntry {
   shortcut: string;
   /** admin_nav_modules.module_key used for role-based visibility (useModuleAccess). Mirrors MobileNavigationMenu HUB_ITEMS. */
   moduleKey: string;
-  /** Extra search terms — lets "strategy" find STRATA etc. */
-  aliases?: string[];
 }
 
 interface DeprecatedHubEntry extends HubEntry {
@@ -70,10 +68,7 @@ interface DeprecatedHubEntry extends HubEntry {
 
 const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
-  // CAT-STRATA-20260705-001: Strategy revived as STRATA at /strata (un-deprecated).
-  // The Strategy hub-switcher row is THE entry point to STRATA (⌘2); legacy
-  // /strategyhub and /strategy redirect there (App.tsx, outside the shell).
-  { key: 'strategy', label: 'STRATA',   href: '/strata',                     section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise', aliases: ['strategy', 'scorecard', 'okr'] },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'gray',    shortcut: '3', moduleKey: 'product', deprecated: true },
   { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4', moduleKey: 'product' },
   { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5', moduleKey: 'workhub' },
@@ -82,7 +77,7 @@ const HUBS: DeprecatedHubEntry[] = [
   { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8', moduleKey: 'operations' },
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
   { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner', deprecated: true },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'lime',    shortcut: '-', moduleKey: 'wiki' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'lime',    shortcut: '-', moduleKey: 'wiki', deprecated: true },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -192,9 +187,7 @@ export function HubSwitcher() {
 
   const normalisedQuery = query.trim().toLowerCase();
   const matches = (hub: HubEntry) =>
-    !normalisedQuery ||
-    hub.label.toLowerCase().includes(normalisedQuery) ||
-    (hub.aliases ?? []).some((a) => a.includes(normalisedQuery));
+    !normalisedQuery || hub.label.toLowerCase().includes(normalisedQuery);
 
   // Show ALL hubs (subject only to the search filter) — the full module
   // catalogue is always visible; inaccessible hubs render grayed-out below.

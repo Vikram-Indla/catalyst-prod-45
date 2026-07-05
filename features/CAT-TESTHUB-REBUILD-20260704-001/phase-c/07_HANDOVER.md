@@ -24,9 +24,14 @@ New edge fn `supabase/functions/ai-generate-test-artefacts/index.ts` — **Claud
 ### 5. "Sprints read from project module sprints section, driven by field sprint/iteration"
 Canonical = `ph_jira_sprints` (30 live). Story sprint reads `ph_issues.sprint_release` JSONB name-join (L006). Cycle picker reads ph_jira_sprints only. `iterations` = empty SAFe model, never wired.
 
+## Landed to origin/main
+- `798da180e` — Phase C main (45 files).
+- `c2f1b1128` — D059 dependency titles + native task/incident requirement links (4 files).
+- AI edge fn `ai-generate-test-artefacts` DEPLOYED to cyij (ACTIVE v2). Only ANTHROPIC_API_KEY secret remains.
+
 ## Deferred (need a decision / out of safe scope)
 - **D005** command-center "pulse" overlap = actually the global Caty **ChatDock FAB** (`src/components/chat/dock/useDraggableFab.ts`) with a stale `localStorage['catalyst-fab-position']`. Owned by the chat-v2 subsystem (another session's dirty files) — NOT edited. Fix: clamp/validate persisted FAB position on load.
-- **D059** dependency card shows raw cycle UUID as title — lives in shared `DependenciesDiagram.tsx` (used by all hubs). Needs a per-adapter `displayKey` on the diagram contract; global edit would regress other hubs.
+- **D059** — DONE (c2f1b1128). Per-adapter `displayKey`/`href` on the shared diagram contract; issue hubs never set the fields so they hit the unchanged fallback. Live-verified.
 - **requirement_type CHECK** (`tm_requirement_links`) — DONE 2026-07-05. Migration `20260705021435_tm_req_links_allow_task.sql` added 'task' on cyij ('defect'/'incident' were already present). Picker still writes Task via 'external' path — making it write native 'task' is trivial follow-up polish.
 - **Key padding at DB level**: `tm_next_entity_key` (4-digit) vs `generate_defect_key` (3-digit) disagree for NEW keys. Display normalized via `formatTestKey.ts`; stored data NOT rewritten; RPC/trigger reconciliation is a migration decision.
 
