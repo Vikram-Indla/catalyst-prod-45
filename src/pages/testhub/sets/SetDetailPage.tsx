@@ -6,7 +6,7 @@ import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Trash2 } from '@/lib/atlaskit-icons';
@@ -373,8 +373,9 @@ export default function SetDetailPage() {
   const { setKey: routeSetKey, projectKey = 'BAU' } = useParams<{ setKey: string; projectKey: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId, project } = useTestHubProject();
+  // D023: cycle detail route requires the REAL project key, not the 'BAU' literal.
+  const cycleRouteKey = project?.key ?? projectKey;
 
   const [activeTab, setActiveTab] = useState<'cases' | 'cycles'>('cases');
   const [showAddCases, setShowAddCases] = useState(false);
@@ -533,7 +534,7 @@ export default function SetDetailPage() {
         <>
           {row.tm_test_cycles?.id && (
             <button
-              onClick={() => navigate(`/testhub/${projectKey}/cycles/${row.tm_test_cycles?.id}`)}
+              onClick={() => navigate(`/testhub/${cycleRouteKey}/cycles/${row.tm_test_cycles?.id}`)}
               style={{
                 background: 'none',
                 border: 'none',
@@ -675,7 +676,15 @@ export default function SetDetailPage() {
       <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <SummaryCard label="Total cases" value={String(setCases.length)} />
         <SummaryCard label="Active cycles" value={String(cycleSets.length)} />
-        <SummaryCard label="Set type" value={setTypeLabel} />
+        {/* D036: set type as a Lozenge, not a giant H1-stat number. */}
+        <SummaryCard
+          label="Set type"
+          node={
+            <Lozenge appearance={set.set_type === 'smoke' ? 'new' : set.set_type === 'regression' ? 'inprogress' : 'default'}>
+              {setTypeLabel}
+            </Lozenge>
+          }
+        />
       </div>
 
       {/* Tabs */}
@@ -773,7 +782,7 @@ export default function SetDetailPage() {
 
 // ── Helper components ─────────────────────────────────────────────────────────
 
-function SummaryCard({ label, value }: { label: string; value: string }) {
+function SummaryCard({ label, value, node }: { label: string; value?: string; node?: React.ReactNode }) {
   return (
     <div style={{
       padding: '16px 20px',
@@ -782,8 +791,18 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
       background: 'var(--ds-surface)',
       minWidth: 140,
     }}>
-      <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 4 }}>
-        {value}
+      <div style={{
+        // Numeric stats stay large; a node (e.g. a Lozenge) renders at its own
+        // intrinsic size so it doesn't read as an oversized H1 metric.
+        fontSize: node ? undefined : 'var(--ds-font-size-800)',
+        fontWeight: node ? undefined : 600,
+        color: 'var(--ds-text)',
+        marginBottom: 4,
+        minHeight: 32,
+        display: 'flex',
+        alignItems: 'center',
+      }}>
+        {node ?? value}
       </div>
       <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
         {label}

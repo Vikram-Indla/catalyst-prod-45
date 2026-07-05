@@ -328,10 +328,44 @@ export function useDefectByKey(defectKey: string | undefined) {
 
       // Raw enum values alongside the (lossy for 'reopened') mapped TMDefect --
       // the detail view's status/severity controls write the real db enum,
-      // not statusFromDb's re-labeled display value.
-      return { ...mapDbRowToTMDefect(data), raw_status: data.status, raw_severity: data.severity } as TMDefect & { raw_status: string; raw_severity: string };
+      // not statusFromDb's re-labeled display value. source_* ids (D043) carry
+      // the originating test case / run so the detail view can link back; null
+      // when the defect wasn't raised from a test.
+      return {
+        ...mapDbRowToTMDefect(data),
+        raw_status: data.status,
+        raw_severity: data.severity,
+        source_test_case_id: data.source_test_case_id ?? null,
+        source_test_run_id: data.source_test_run_id ?? null,
+      } as TMDefect & {
+        raw_status: string;
+        raw_severity: string;
+        source_test_case_id: string | null;
+        source_test_run_id: string | null;
+      };
     },
     enabled: !!defectKey,
+  });
+}
+
+// D043 (CAT-TESTHUB-REBUILD-20260704-001): the originating test case a defect
+// was raised from (tm_defects.source_test_case_id). Zero-assumption: returns
+// null when the defect has no source case, so the detail view renders nothing
+// rather than a fabricated link.
+export function useDefectSourceCase(caseId: string | null | undefined) {
+  return useQuery({
+    queryKey: ['tm-defect-source-case', caseId],
+    queryFn: async (): Promise<{ id: string; case_key: string | null; title: string | null } | null> => {
+      if (!caseId) return null;
+      const { data, error } = await supabase
+        .from('tm_test_cases')
+        .select('id, case_key, title')
+        .eq('id', caseId)
+        .maybeSingle();
+      if (error) throw error;
+      return data ?? null;
+    },
+    enabled: !!caseId,
   });
 }
 

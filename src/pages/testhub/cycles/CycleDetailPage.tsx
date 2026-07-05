@@ -17,11 +17,16 @@ import {
 } from '@/hooks/test-management/useTestCycles';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { useCreateDefect } from '@/hooks/test-management/useDefects';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import Textarea from '@atlaskit/textarea';
 import Textfield from '@atlaskit/textfield';
+import Tooltip from '@atlaskit/tooltip';
+import { IconButton } from '@atlaskit/button/new';
+import BugIcon from '@atlaskit/icon/core/bug';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import AttachmentIcon from '@atlaskit/icon/core/attachment';
 import { Play, CheckCircle, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { TMCycleScope, RunStatus } from '@/types/test-management';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
@@ -38,8 +43,7 @@ export default function CycleDetailPage() {
   const cycleId = cycleRecord?.id ?? (cycleParam && /^[0-9a-f-]{36}$/.test(cycleParam) ? cycleParam : undefined);
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: projects = [] } = useProjects();
-  const projectId = projects[0]?.id;
+  const { projectId } = useTestHubProject();
 
   const { data: cycle, isLoading: cycleLoading } = useTestCycle(cycleId);
   const { data: scopeItems = [], isLoading: scopeLoading } = useCycleScope(cycleId);
@@ -100,9 +104,9 @@ export default function CycleDetailPage() {
       width: 11,
       cell: ({ row }) => (
         <div style={{ display: 'flex', gap: 4 }}>
-          {['🐛', '📝', '📎'].map((emoji, idx) => (
-            <PanelButton key={idx} emoji={emoji} />
-          ))}
+          <PanelButton row={row} cycleId={cycleId ?? ''} panelType="defect" />
+          <PanelButton row={row} cycleId={cycleId ?? ''} panelType="comments" />
+          <PanelButton row={row} cycleId={cycleId ?? ''} panelType="evidence" />
         </div>
       ),
     },
@@ -222,7 +226,9 @@ export default function CycleDetailPage() {
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
+    // D025: was maxWidth 1200 which clipped the scope table's Due Date / Actions
+    // columns on wider viewports. Fluid width now; the table manages its own layout.
+    <div style={{ padding: 'var(--ds-space-300)', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
           hubType="test"
@@ -516,32 +522,42 @@ export default function CycleDetailPage() {
   );
 }
 
-type ScopePanel = 'defect' | 'comments' | 'evidence' | null;
+type ScopePanel = 'defect' | 'comments' | 'evidence';
 
-function PanelButton({ emoji }: { emoji: string }) {
-  const [panel, setPanel] = useState<ScopePanel>(null);
+// D024: replaced raw emoji glyph buttons with @atlaskit IconButton + Tooltip,
+// and wired the (previously dead) side panels so each action actually opens.
+const PANEL_META: Record<ScopePanel, { label: string; icon: React.ComponentType<{ label: string }> }> = {
+  defect:   { label: 'Log defect', icon: BugIcon },
+  comments: { label: 'Comments',   icon: CommentIcon },
+  evidence: { label: 'Evidence',   icon: AttachmentIcon },
+};
 
-  const labelMap: Record<string, { label: string; panelType: ScopePanel }> = {
-    '🐛': { label: 'Log defect', panelType: 'defect' },
-    '📝': { label: 'Comments', panelType: 'comments' },
-    '📎': { label: 'Evidence', panelType: 'evidence' },
-  };
-
-  const { label, panelType } = labelMap[emoji] || { label: '', panelType: null };
+function PanelButton({ row, cycleId, panelType }: { row: TMCycleScope; cycleId: string; panelType: ScopePanel }) {
+  const [open, setOpen] = useState(false);
+  const { label, icon } = PANEL_META[panelType];
 
   return (
-    <button
-      onClick={() => setPanel(prev => prev === panelType ? null : panelType)}
-      title={label}
-      style={{
-        background: panel ? 'var(--ds-background-selected)' : 'none',
-        border: '1px solid var(--ds-border)',
-        borderRadius: 4, cursor: 'pointer', padding: '0px 6px',
-        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
-      }}
-    >
-      {emoji}
-    </button>
+    <>
+      <Tooltip content={label}>
+        <IconButton
+          icon={icon}
+          label={label}
+          appearance="subtle"
+          spacing="compact"
+          isSelected={open}
+          onClick={() => setOpen(true)}
+        />
+      </Tooltip>
+      {open && panelType === 'defect' && (
+        <DefectPanel item={row} cycleId={cycleId} onClose={() => setOpen(false)} />
+      )}
+      {open && panelType === 'comments' && (
+        <CommentsPanel item={row} onClose={() => setOpen(false)} />
+      )}
+      {open && panelType === 'evidence' && (
+        <EvidencePanel item={row} onClose={() => setOpen(false)} />
+      )}
+    </>
   );
 }
 
@@ -996,7 +1012,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
               border: '1px solid var(--ds-border)', color: 'var(--ds-text)',
               background: uploading ? 'var(--ds-background-neutral)' : 'var(--ds-surface)',
             }}>
-              {uploading ? <Spinner size="small" /> : '📎'}
+              {uploading ? <Spinner size="small" /> : <AttachmentIcon label="" />}
               {uploading ? 'Uploading…' : 'Attach file'}
               <input type="file" style={{ display: 'none' }} disabled={uploading} onChange={handleUpload} />
             </label>

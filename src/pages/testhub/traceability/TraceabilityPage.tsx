@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
+import EmptyState from '@atlaskit/empty-state';
+import Button from '@atlaskit/button/standard-button';
 import DynamicTable from '@atlaskit/dynamic-table';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -21,13 +24,39 @@ interface ReqLink {
   case_key: string | null;
   case_title: string | null;
   exec_status: string | null;
+  // Live work-item metadata, joined from ph_issues on issue_key = external_key
+  // (L002 / D045-046: was dead snapshot text; now real type + status + key link).
+  issue_type: string | null;
+  issue_status_category: string | null;
+  issue_summary: string | null;
 }
 
 interface ReqGroup {
   reqKey: string;
   displayKey: string;
   displayTitle: string;
+  issueType: string | null;
+  issueStatusCategory: string | null;
   links: ReqLink[];
+}
+
+// ─── Work-item status helpers (ph_issues.status_category) ──────────────────────
+
+function statusCategoryAppearance(cat: string | null): 'default' | 'inprogress' | 'success' {
+  if (!cat) return 'default';
+  const c = cat.toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'indeterminate' || c === 'in progress' || c === 'in_progress') return 'inprogress';
+  return 'default';
+}
+
+function statusCategoryLabel(cat: string | null): string {
+  if (!cat) return '';
+  const c = cat.toLowerCase();
+  if (c === 'done') return 'Done';
+  if (c === 'indeterminate' || c === 'in progress' || c === 'in_progress') return 'In progress';
+  if (c === 'new' || c === 'to do' || c === 'todo') return 'To do';
+  return cat.charAt(0).toUpperCase() + cat.slice(1);
 }
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
@@ -94,18 +123,44 @@ function useTraceability(projectId: string | undefined) {
         if (c.latest_run_status) latestByCase.set(c.test_case_id, c.latest_run_status);
       }
 
-      return projectLinks.map((l: any) => ({
-        id: l.id,
-        requirement_type: l.requirement_type,
-        requirement_id: l.requirement_id,
-        external_key: l.external_key,
-        external_title: l.external_title,
-        link_type: l.link_type,
-        test_case_id: l.test_case_id,
-        case_key: l.test_case?.case_key ?? null,
-        case_title: l.test_case?.title ?? null,
-        exec_status: latestByCase.get(l.test_case_id) ?? null,
-      }));
+      // L002 / D045-046: resolve live work-item metadata by joining ph_issues on
+      // issue_key = external_key. The snapshot columns (external_title) are frozen
+      // at link time; ph_issues carries the current type / status / summary.
+      const extKeys = [...new Set(projectLinks.map((l: any) => l.external_key).filter(Boolean))] as string[];
+      const issueByKey = new Map<string, { issue_type: string | null; status_category: string | null; summary: string | null }>();
+      if (extKeys.length > 0) {
+        const { data: issues, error: issuesError } = await supabase
+          .from('ph_issues')
+          .select('issue_key, issue_type, status_category, summary')
+          .in('issue_key', extKeys);
+        if (issuesError) throw issuesError;
+        for (const i of (issues ?? [])) {
+          issueByKey.set(i.issue_key, {
+            issue_type: i.issue_type ?? null,
+            status_category: i.status_category ?? null,
+            summary: i.summary ?? null,
+          });
+        }
+      }
+
+      return projectLinks.map((l: any) => {
+        const live = l.external_key ? issueByKey.get(l.external_key) : undefined;
+        return {
+          id: l.id,
+          requirement_type: l.requirement_type,
+          requirement_id: l.requirement_id,
+          external_key: l.external_key,
+          external_title: l.external_title,
+          link_type: l.link_type,
+          test_case_id: l.test_case_id,
+          case_key: l.test_case?.case_key ?? null,
+          case_title: l.test_case?.title ?? null,
+          exec_status: latestByCase.get(l.test_case_id) ?? null,
+          issue_type: live?.issue_type ?? null,
+          issue_status_category: live?.status_category ?? null,
+          issue_summary: live?.summary ?? null,
+        };
+      });
     },
     enabled: !!projectId,
   });
@@ -115,10 +170,11 @@ function useTraceability(projectId: string | undefined) {
 
 export default function TraceabilityPage() {
   const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
-  const { data: projects = [], isLoading: projLoading } = useProjects();
-  // Resolve the route's project; fall back to first project only when the
-  // route key matches nothing (legacy no-key URL).
-  const projectId = (projects.find((p: any) => p.key === projectKey) ?? projects[0])?.id;
+  const { projectId: defaultId, projects, isLoading: projLoading } = useTestHubProject();
+  // Resolve the route's project; fall back to the resolver default (real
+  // active Test Space) only when the route key matches nothing (legacy no-key URL).
+  const projectId =
+    (projectKey ? projects.find((p: any) => p.key === projectKey)?.id : undefined) ?? defaultId;
 
   const { data: links = [], isLoading: linksLoading } = useTraceability(projectId);
   const isLoading = projLoading || linksLoading;
@@ -133,7 +189,10 @@ export default function TraceabilityPage() {
         map.set(key, {
           reqKey: key,
           displayKey: l.external_key ?? l.requirement_type,
-          displayTitle: l.external_title ?? `${l.requirement_type} (internal)`,
+          // Prefer the live ph_issues summary over the frozen snapshot title.
+          displayTitle: l.issue_summary ?? l.external_title ?? `${l.requirement_type} (internal)`,
+          issueType: l.issue_type,
+          issueStatusCategory: l.issue_status_category,
           links: [],
         });
       }
@@ -166,14 +225,37 @@ export default function TraceabilityPage() {
         {
           key: 'requirement',
           content: (
-            <div>
-              {g.displayKey && g.displayKey !== g.displayTitle && (
-                <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 0 }}>
-                  {g.displayKey}
-                </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              {g.issueType && (
+                <span style={{ flexShrink: 0, display: 'inline-flex' }}>
+                  <JiraIssueTypeIcon type={g.issueType} size={16} />
+                </span>
               )}
-              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }} title={g.displayTitle}>
-                {g.displayTitle}
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  {g.displayKey && g.displayKey !== g.displayTitle && (
+                    g.reqKey.startsWith('ext:') || g.issueType ? (
+                      <Link
+                        to={`/browse/${g.displayKey}`}
+                        style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, textDecoration: 'none' }}
+                      >
+                        {g.displayKey}
+                      </Link>
+                    ) : (
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtle)', fontWeight: 500 }}>
+                        {g.displayKey}
+                      </span>
+                    )
+                  )}
+                  {g.issueStatusCategory && (
+                    <Lozenge appearance={statusCategoryAppearance(g.issueStatusCategory)}>
+                      {statusCategoryLabel(g.issueStatusCategory)}
+                    </Lozenge>
+                  )}
+                </div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220 }} title={g.displayTitle}>
+                  {g.displayTitle}
+                </div>
               </div>
             </div>
           ),
@@ -229,19 +311,21 @@ export default function TraceabilityPage() {
               </div>
             )}
 
-            <DynamicTable
-              head={head}
-              rows={rows}
-              isLoading={false}
-              emptyView={
-                <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--ds-text-subtlest)' }}>
-                  <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
-                  <div style={{ fontSize: 'var(--ds-font-size-400)' }}>
-                    Open a test case → Requirements tab → Link requirement to start tracking coverage.
-                  </div>
-                </div>
-              }
-            />
+            {groups.length === 0 ? (
+              // D045-046: no header row when empty — a real EmptyState with a CTA
+              // to the Repository, where a case's Requirements tab links work items.
+              <EmptyState
+                header="No requirements linked"
+                description="Link work items to test cases to build a coverage matrix. Open a test case in the Repository, then use its Requirements tab to link from a work item."
+                primaryAction={
+                  <Button appearance="primary" href={`/testhub/${projectKey}/repository`}>
+                    Go to Repository
+                  </Button>
+                }
+              />
+            ) : (
+              <DynamicTable head={head} rows={rows} isLoading={false} />
+            )}
           </>
         )}
       </div>

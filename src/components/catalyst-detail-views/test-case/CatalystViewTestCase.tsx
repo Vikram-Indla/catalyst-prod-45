@@ -23,6 +23,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Textfield from '@atlaskit/textfield';
 import Select, { AsyncSelect } from '@atlaskit/select';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -500,15 +501,29 @@ export default function CatalystViewTestCase({
     saving: false,
   });
 
-  // P1-S10: real ph_issues picker (id-backed) for the 3 types the
-  // requirement_type CHECK maps cleanly to. Defect/incident/other types stay
-  // on the free-text external path until E4 widens the CHECK (P2 — see
-  // Plan Lock Forbidden note on this slice).
+  // P1-S10 + L005 (Phase C): real ph_issues picker (id-backed) for the types
+  // the requirement_type CHECK maps cleanly to. The DB CHECK on
+  // tm_requirement_links.requirement_type only accepts
+  //   story | epic | feature | business_request | external
+  // (migration 20260121133047 / bootstrap_full_schema). So Story/Epic/Feature
+  // and Business Request map to their own requirement_type. Task and
+  // Production Incident have NO valid requirement_type value — inserting
+  // 'task'/'incident' would fail the CHECK — so the picker still SEARCHES and
+  // renders them (matching the coverage matrix), but their link is stored via
+  // the 'external' path (external_key + external_title) rather than the
+  // id-backed path. Widening the CHECK to native task/incident types is a
+  // migration owned by another agent (out of scope for this UI slice).
   const ISSUE_TYPE_TO_REQUIREMENT_TYPE: Record<string, string> = {
     Story: 'story',
     Epic: 'epic',
     Feature: 'feature',
+    'Business Request': 'business_request',
   };
+
+  // Types the picker offers. Story/Epic/Feature/Business Request are stored
+  // id-backed (requirement_type per the map above); Task + Production Incident
+  // fall through to the 'external' write path (see handleAddLink).
+  const PICKER_ISSUE_TYPES = ['Story', 'Epic', 'Feature', 'Task', 'Business Request', 'Production Incident'];
 
   const loadIssueOptions = useCallback(async (input: string) => {
     // Repo-wide search, no project_key scope — matches LinkToolbar.tsx's
@@ -520,7 +535,7 @@ export default function CatalystViewTestCase({
     let query = supabase
       .from('ph_issues')
       .select('id, issue_key, summary, issue_type')
-      .in('issue_type', ['Story', 'Epic', 'Feature'])
+      .in('issue_type', PICKER_ISSUE_TYPES)
       .is('jira_removed_at', null)
       .limit(10);
     query = q ? query.or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`) : query.order('jira_updated_at', { ascending: false });
@@ -540,10 +555,27 @@ export default function CatalystViewTestCase({
     if (!usingIssue && !linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
     setLinkForm(f => ({ ...f, saving: true }));
     try {
-      const { error } = await supabase.rpc('tm_link_requirement', usingIssue ? {
+      // L005: only Story/Epic/Feature/Business Request have a valid
+      // requirement_type (CHECK-constrained) and can be stored id-backed.
+      // A picked Task or Production Incident has no mapping → store it via
+      // the 'external' path so the CHECK never rejects the insert (never
+      // fabricate 'story' for a Task, which the old `?? 'story'` did).
+      const mappedType = usingIssue
+        ? ISSUE_TYPE_TO_REQUIREMENT_TYPE[linkForm.picked!.issue_type]
+        : undefined;
+      const idBacked = usingIssue && !!mappedType;
+      const { error } = await supabase.rpc('tm_link_requirement', idBacked ? {
         p_case_id: itemId,
-        p_requirement_type: ISSUE_TYPE_TO_REQUIREMENT_TYPE[linkForm.picked!.issue_type] ?? 'story',
+        p_requirement_type: mappedType!,
         p_requirement_id: linkForm.picked!.id,
+        p_external_key: linkForm.picked!.issue_key,
+        p_external_title: linkForm.picked!.summary,
+        p_link_type: linkForm.linkType,
+      } : usingIssue ? {
+        // Picked issue of an unmapped type (Task / Production Incident):
+        // preserve its key + title on the external path.
+        p_case_id: itemId,
+        p_requirement_type: 'external',
         p_external_key: linkForm.picked!.issue_key,
         p_external_title: linkForm.picked!.summary,
         p_link_type: linkForm.linkType,
@@ -625,16 +657,25 @@ export default function CatalystViewTestCase({
           </div>
           {linkForm.mode === 'issue' ? (
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>STORY / EPIC / FEATURE</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>STORY / EPIC / FEATURE / TASK / BUSINESS REQUEST / PRODUCTION INCIDENT</div>
               <AsyncSelect
                 inputId="tc-req-issue-picker"
                 aria-label="Search issues"
                 cacheOptions
                 defaultOptions
                 loadOptions={loadIssueOptions}
-                value={linkForm.picked ? { value: linkForm.picked.id, label: `${linkForm.picked.issue_key} ${linkForm.picked.summary}` } : null}
+                value={linkForm.picked ? { value: linkForm.picked.id, label: `${linkForm.picked.issue_key} ${linkForm.picked.summary}`, issue_key: linkForm.picked.issue_key, summary: linkForm.picked.summary, issue_type: linkForm.picked.issue_type } : null}
                 onChange={(opt: any) => setLinkForm(f => ({ ...f, picked: opt ? { id: opt.value, issue_key: opt.issue_key, summary: opt.summary, issue_type: opt.issue_type } : null }))}
                 placeholder="Search by key or title…"
+                formatOptionLabel={(opt: any) => (
+                  opt?.issue_type ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                      <JiraIssueTypeIcon issueType={opt.issue_type} size={16} />
+                      <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{opt.issue_key}</span>
+                      <span style={{ color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.summary}</span>
+                    </span>
+                  ) : (opt?.label ?? '')
+                )}
               />
             </div>
           ) : (

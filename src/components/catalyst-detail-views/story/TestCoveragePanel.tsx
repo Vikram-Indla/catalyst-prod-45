@@ -20,12 +20,18 @@ import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
 import { supabase } from '@/integrations/supabase/client';
 
-type CoverageMode = 'story' | 'defect' | 'incident';
+type CoverageMode = 'story' | 'defect' | 'incident' | 'feature' | 'epic';
+
+/** Modes that roll coverage up from child stories (Feature / Epic have no
+ *  direct requirement links of their own in the common flow — the tests are
+ *  linked to the child stories). */
+const ROLLUP_MODES: ReadonlySet<CoverageMode> = new Set<CoverageMode>(['feature', 'epic']);
 
 interface TestCoveragePanelProps {
   issueKey: string;
   statusCategory?: string | null;
-  /** Tunes labels + flags. 'incident' surfaces a regression-coverage gap (B5 G-M7). */
+  /** Tunes labels + flags. 'incident' surfaces a regression-coverage gap (B5 G-M7).
+   *  'feature'/'epic' roll coverage up across child stories (parent_key). */
   mode?: CoverageMode;
 }
 
@@ -57,15 +63,47 @@ function runAppearance(s: string): ThemeAppearance {
   }
 }
 
-function useStoryTestCoverage(issueKey: string) {
+function useStoryTestCoverage(issueKey: string, mode: CoverageMode) {
+  const rollup = ROLLUP_MODES.has(mode);
   return useQuery({
-    queryKey: ['story-test-coverage', issueKey],
+    queryKey: ['story-test-coverage', issueKey, rollup ? 'rollup' : 'direct'],
     enabled: !!issueKey,
     queryFn: async (): Promise<CoverageData> => {
+      // For Feature/Epic, coverage rolls up from child stories: the
+      // requirement links live on the children (external_key = child key),
+      // not on the Feature/Epic itself. Resolve the child keys first, then
+      // widen the requirement-link lookup to that set. Direct modes
+      // (story/defect/incident) look up the single issue key.
+      // TODO(CAT-TESTHUB-REBUILD Phase C · L001): this rolls up ONE level of
+      // parent_key children. For Feature→Story that is exactly the story set.
+      // For an Epic whose direct children are Features (Epic→Feature→Story),
+      // this captures the Features (usually unlinked) but not their
+      // grandchild stories — a two-level recursive rollup (or a keys-under
+      // RPC) is needed for full Epic coverage. Epics that parent Stories
+      // directly are covered correctly today.
+      let linkKeys: string[] = [issueKey];
+      if (rollup) {
+        const { data: children } = await supabase
+          .from('ph_issues')
+          .select('issue_key')
+          .eq('parent_key', issueKey)
+          .is('jira_removed_at', null);
+        const childKeys = Array.from(
+          new Set(((children ?? []) as Array<{ issue_key: string | null }>)
+            .map((c) => c.issue_key)
+            .filter((k): k is string => !!k)),
+        );
+        // Roll up ONLY child-story coverage. If a Feature/Epic has no
+        // children yet, there is nothing to cover — render "Not covered"
+        // rather than fabricating a self-link that does not exist.
+        linkKeys = childKeys;
+      }
+      if (linkKeys.length === 0) return { covered: false, cases: [], defectCount: 0 };
+
       const { data: links } = await supabase
         .from('tm_requirement_links')
         .select('test_case_id')
-        .eq('external_key', issueKey);
+        .in('external_key', linkKeys);
       const caseIds = Array.from(new Set((links ?? []).map((l: { test_case_id: string }) => l.test_case_id)));
       if (caseIds.length === 0) return { covered: false, cases: [], defectCount: 0 };
 
@@ -102,11 +140,24 @@ function useStoryTestCoverage(issueKey: string) {
 }
 
 export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: TestCoveragePanelProps) {
-  const { data, isLoading } = useStoryTestCoverage(issueKey);
+  const { data, isLoading } = useStoryTestCoverage(issueKey, mode);
   const [expanded, setExpanded] = useState(true);
 
-  const heading = mode === 'incident' ? 'Regression coverage' : 'Test cases';
-  const noun = mode === 'incident' ? 'this incident' : mode === 'defect' ? 'this defect' : 'this story';
+  const rollup = ROLLUP_MODES.has(mode);
+  const heading = mode === 'incident'
+    ? 'Regression coverage'
+    : rollup
+      ? 'Test coverage'
+      : 'Test cases';
+  const noun = mode === 'incident'
+    ? 'this incident'
+    : mode === 'defect'
+      ? 'this defect'
+      : mode === 'feature'
+        ? "this feature's stories"
+        : mode === 'epic'
+          ? "this epic's stories"
+          : 'this story';
 
   if (isLoading) {
     return (

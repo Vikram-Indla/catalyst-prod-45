@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
+import { Checkbox } from '@atlaskit/checkbox';
 import { PageHeader } from '@/components/ads/PageHeader';
 import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import { catalystToast } from '@/lib/catalystToast';
@@ -20,22 +21,29 @@ interface TmPermission {
   granted: boolean;
 }
 
+// D068: keys MUST match the real permission_key values stored in tm_permissions
+// (dotted, e.g. "cases.create"). The old underscore keys ("create_test_case")
+// matched nothing in the DB, so isGranted() returned false for every cell and
+// the matrix rendered all-unchecked even for the fully-granted admin role.
 const PERMISSION_LABELS: Record<string, { label: string; description: string; group: string }> = {
-  'create_test_case':     { label: 'Create test cases',     description: 'Add new test cases to the repository',       group: 'Repository' },
-  'edit_test_case':       { label: 'Edit test cases',       description: 'Modify existing test cases and steps',        group: 'Repository' },
-  'delete_test_case':     { label: 'Delete test cases',     description: 'Permanently remove test cases',               group: 'Repository' },
-  'approve_test_case':    { label: 'Approve test cases',    description: 'Transition cases to Approved status',         group: 'Repository' },
-  'create_cycle':         { label: 'Create cycles',         description: 'Create new test execution cycles',            group: 'Cycles' },
-  'manage_cycle':         { label: 'Manage cycles',         description: 'Edit and delete test cycles',                 group: 'Cycles' },
-  'execute_tests':        { label: 'Execute tests',         description: 'Mark test run results during execution',      group: 'Execution' },
-  'create_defect':        { label: 'Create defects',        description: 'Log defects from failed test runs',           group: 'Defects' },
-  'manage_defect':        { label: 'Manage defects',        description: 'Edit and close defects',                      group: 'Defects' },
-  'view_reports':         { label: 'View reports',          description: 'Access TestHub reporting dashboards',          group: 'Reports' },
-  'export_results':       { label: 'Export results',        description: 'Export test results and reports',             group: 'Reports' },
-  'manage_settings':      { label: 'Manage settings',       description: 'Configure TestHub admin settings',            group: 'Admin' },
+  'cases.create':    { label: 'Create test cases',   description: 'Add new test cases to the repository',    group: 'Repository' },
+  'cases.read':      { label: 'View test cases',      description: 'Read test cases and steps',               group: 'Repository' },
+  'cases.update':    { label: 'Edit test cases',      description: 'Modify existing test cases and steps',    group: 'Repository' },
+  'cases.delete':    { label: 'Delete test cases',    description: 'Permanently remove test cases',           group: 'Repository' },
+  'cycles.create':   { label: 'Create cycles',        description: 'Create new test execution cycles',        group: 'Cycles' },
+  'cycles.read':     { label: 'View cycles',          description: 'Read test cycles and scope',              group: 'Cycles' },
+  'cycles.update':   { label: 'Manage cycles',        description: 'Edit test cycles and scope',              group: 'Cycles' },
+  'cycles.delete':   { label: 'Delete cycles',        description: 'Permanently remove test cycles',          group: 'Cycles' },
+  'runs.execute':    { label: 'Execute tests',        description: 'Mark test run results during execution',  group: 'Execution' },
+  'runs.read':       { label: 'View runs',            description: 'Read execution run history',              group: 'Execution' },
+  'defects.create':  { label: 'Create defects',       description: 'Log defects from failed test runs',       group: 'Defects' },
+  'defects.read':    { label: 'View defects',         description: 'Read logged defects',                     group: 'Defects' },
+  'defects.update':  { label: 'Manage defects',       description: 'Edit and close defects',                  group: 'Defects' },
+  'settings.read':   { label: 'View settings',        description: 'Read TestHub admin settings',             group: 'Admin' },
+  'settings.update': { label: 'Manage settings',      description: 'Configure TestHub admin settings',        group: 'Admin' },
 };
 
-const GROUPS = ['Repository', 'Cycles', 'Execution', 'Defects', 'Reports', 'Admin'];
+const GROUPS = ['Repository', 'Cycles', 'Execution', 'Defects', 'Admin'];
 
 export default function TestPermissionsPage() {
   const navigate = useNavigate();
@@ -166,28 +174,18 @@ export default function TestPermissionsPage() {
                             const granted = isGranted(r.id, permKey);
                             return (
                               <td key={r.id} style={{ padding: '8px 12px', textAlign: 'center' }}>
-                                <button
-                                  onClick={() => toggleMutation.mutate({ roleId: r.id, permKey, currentGranted: granted })}
-                                  disabled={toggleMutation.isPending}
-                                  aria-label={`${granted ? 'Revoke' : 'Grant'} ${meta.label} for ${r.name}`}
-                                  style={{
-                                    width: 20, height: 20, borderRadius: 4,
-                                    border: granted
-                                      ? '2px solid var(--ds-border-brand)'
-                                      : '2px solid var(--ds-border)',
-                                    background: granted ? 'var(--ds-background-brand-bold)' : 'var(--ds-surface)',
-                                    cursor: 'pointer',
-                                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                    transition: 'background 150ms, border-color 150ms',
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  {granted && (
-                                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                      <path d="M1 4L3.5 6.5L9 1" stroke="var(--ds-surface)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </button>
+                                {/* D069: canonical @atlaskit Checkbox, no hand-rolled
+                                    glyph. Wired to the saved tm_permissions state via
+                                    isGranted (D068). */}
+                                <span style={{ display: 'inline-flex', justifyContent: 'center' }}>
+                                  <Checkbox
+                                    isChecked={granted}
+                                    isDisabled={toggleMutation.isPending}
+                                    onChange={() => toggleMutation.mutate({ roleId: r.id, permKey, currentGranted: granted })}
+                                    label=""
+                                    aria-label={`${granted ? 'Revoke' : 'Grant'} ${meta.label} for ${r.name}`}
+                                  />
+                                </span>
                               </td>
                             );
                           })}
