@@ -40,6 +40,7 @@ import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-man
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import { TestCaseStepsEditor } from './TestCaseStepsEditor';
 import { TmActivitySection } from './TmActivitySection';
+import { TestCaseAttachments } from './TestCaseAttachments';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { ConfirmCloneDialog, type ClonePatch } from '../shared/ConfirmCloneDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
@@ -457,6 +458,26 @@ export default function CatalystViewTestCase({
     enabled: !!itemId,
   });
 
+  /* ── Attachments tab — tm_attachments (entity_type='test_case'). Count feeds
+       the tab label; the panel owns list/upload/delete. ── */
+  const { data: attachmentCount = 0 } = useQuery({
+    queryKey: ['tm-attachments-count', itemId],
+    enabled: !!itemId,
+    staleTime: 30_000,
+    queryFn: async (): Promise<number> => {
+      if (!itemId) return 0;
+      const { count, error } = await supabase
+        .from('tm_attachments')
+        .select('id', { count: 'exact', head: true })
+        .eq('entity_type', 'test_case')
+        .eq('entity_id', itemId);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const attachmentsPanel = <TestCaseAttachments testCaseId={itemId} />;
+
   const [linkForm, setLinkForm] = useState({
     open: false,
     mode: 'issue' as 'issue' | 'external',
@@ -768,19 +789,21 @@ export default function CatalystViewTestCase({
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
               <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
               <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
+              <Tab>Attachments{attachmentCount ? ` (${attachmentCount})` : ''}</Tab>
               <Tab>Activity</Tab>
             </TabList>
             <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
             <TabPanel>{versionsPanel}</TabPanel>
             <TabPanel>{requirementsPanel}</TabPanel>
+            <TabPanel>{attachmentsPanel}</TabPanel>
             <TabPanel>{activityPanel}</TabPanel>
           </Tabs>
         </div>
       </>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, steps.length, versions.length, reqLinks.length, handleTitleChange]);
+  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, attachmentsPanel, attachmentCount, steps.length, versions.length, reqLinks.length, handleTitleChange]);
 
   /* ── rightContent: canonical sidebar. ── */
   const rightContent = useMemo(() => {
