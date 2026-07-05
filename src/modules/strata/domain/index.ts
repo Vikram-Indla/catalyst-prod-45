@@ -217,6 +217,8 @@ export const executionApi = {
 
 // ── Value / VMO ──────────────────────────────────────────────────────────────
 export const valueApi = {
+  portfolioBySlug: (slug: string): Promise<StrataPortfolio | null> =>
+    run(typedQuery('strata_portfolios').select('*').eq('slug', slug).maybeSingle()),
   portfolios: (): Promise<StrataPortfolio[]> =>
     run(typedQuery('strata_portfolios').select('*').order('name')),
   memberships: (portfolioId: string) =>
@@ -251,6 +253,18 @@ export const valueApi = {
 
 // ── Lineage ──────────────────────────────────────────────────────────────────
 export const lineageApi = {
+  /** Batched calc-value history for many entities (one .in() query). */
+  calcValuesForEntities: (entityType: string, entityIds: string[]): Promise<StrataCalculatedValue[]> =>
+    entityIds.length === 0
+      ? Promise.resolve([])
+      : run(
+          typedQuery('strata_calculated_values')
+            .select('*')
+            .eq('entity_type', entityType)
+            .in('entity_id', entityIds)
+            .order('calculated_at', { ascending: false })
+            .limit(500),
+        ),
   dataSources: (): Promise<StrataDataSource[]> =>
     run(typedQuery('strata_data_sources').select('*').order('name')),
   uploadRuns: (): Promise<StrataUploadRun[]> =>
@@ -263,6 +277,53 @@ export const lineageApi = {
     run(typedQuery('strata_validation_results').select('*').eq('upload_run_id', uploadRunId)),
   lineageForEntity: (entityTable: string, entityId: string) =>
     run(typedQuery('strata_lineage_records').select('*').eq('entity_table', entityTable).eq('entity_id', entityId)),
+  /**
+   * Governed ingest adapter (upload wizard). There is NO strata_ingest_* RPC
+   * yet — RLS permits the run initiator (data_steward / kpi_owner /
+   * strategy_office) to insert runs + staging rows directly, so this is the
+   * honest client write path: create run → stage raw rows (validation_status
+   * 'pending') → mark the run 'staging'. Validation/attestation/canonical
+   * write stay server-side (strata_attest_actual + future validation RPC).
+   */
+  createUploadRun: (input: {
+    data_source_id: string | null;
+    template_id: string | null;
+    template_version: number | null;
+    channel: StrataUploadRun['channel'];
+    file_name: string | null;
+    file_hash: string | null;
+    row_count_raw: number;
+  }): Promise<StrataUploadRun> =>
+    run(typedQuery('strata_upload_runs').insert(input).select('*').single()),
+  insertStagingRows: async (
+    uploadRunId: string,
+    rows: Array<{ row_number: number; raw: Record<string, unknown>; target_entity: string | null }>,
+  ): Promise<number> => {
+    const BATCH = 500;
+    let inserted = 0;
+    for (let i = 0; i < rows.length; i += BATCH) {
+      const batch = rows.slice(i, i + BATCH).map((r) => ({
+        upload_run_id: uploadRunId,
+        row_number: r.row_number,
+        raw: r.raw,
+        target_entity: r.target_entity,
+        validation_status: 'pending',
+      }));
+      const out: Array<{ id: string }> = await run(
+        typedQuery('strata_staging_rows').insert(batch).select('id'),
+      );
+      inserted += out.length;
+    }
+    return inserted;
+  },
+  markRunStaged: (runId: string, rowCountRaw: number): Promise<StrataUploadRun> =>
+    run(
+      typedQuery('strata_upload_runs')
+        .update({ status: 'staging', row_count_raw: rowCountRaw })
+        .eq('id', runId)
+        .select('*')
+        .single(),
+    ),
   /** Latest calculated values (provenance included) for an entity. */
   calcValues: (entityType: string, entityId: string, limit = 20): Promise<StrataCalculatedValue[]> =>
     run(typedQuery('strata_calculated_values').select('*')
@@ -299,6 +360,19 @@ export const governanceApi = {
     run(typedQuery('strata_actions').select('*').order('due_date')),
   boardPacks: (snapshotId: string): Promise<StrataBoardPack[]> =>
     run(typedQuery('strata_board_packs').select('*').eq('snapshot_id', snapshotId)),
+  /**
+   * Reconcile a pending pack row after client-side generation. RLS
+   * (strata_board_packs_write, 20260705100400) permits this UPDATE only for
+   * strategy_office — callers must gate on the role and never fake on failure.
+   */
+  markBoardPackReady: (packId: string): Promise<StrataBoardPack> =>
+    run(
+      typedQuery('strata_board_packs')
+        .update({ status: 'ready', generated_at: new Date().toISOString() })
+        .eq('id', packId)
+        .select('*')
+        .single(),
+    ),
   aiOutputs: (): Promise<StrataAiOutput[]> =>
     run(typedQuery('strata_ai_outputs').select('*').order('generated_at', { ascending: false })),
 };

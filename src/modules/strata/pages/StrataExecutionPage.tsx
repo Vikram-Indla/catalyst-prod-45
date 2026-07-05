@@ -16,12 +16,11 @@ import {
 } from '@/components/ads';
 import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import { GitBranch, Rocket, TrendingDown, TrendingUp } from '@/lib/atlaskit-icons';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import {
-  StrataBandLozenge, StrataPageChrome, StrataPanel, StrataStatStrip, T,
+  StrataBandLozenge, StrataPageShell, StrataPanel, StrataStatStrip, T,
 } from '@/modules/strata/components/shared';
 import { fmtDate, fmtPct, fmtRatioPct, fmtSarCompact, labelize } from '@/modules/strata/components/format';
 import {
@@ -163,7 +162,11 @@ function MilestonesSubtable({ projectCardId }: { projectCardId: string }) {
   const columns = useMemo<Column<StrataMilestone>[]>(() => [
     {
       id: 'name', label: 'Milestone', flex: true,
-      cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span>,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
+          {row.name}
+        </span>
+      ),
     },
     {
       id: 'due', label: 'Due', width: 11,
@@ -372,7 +375,13 @@ export default function StrataExecutionPage() {
       id: 'requesting', label: 'Requesting', width: 15,
       cell: ({ row }) => {
         const name = resolvePartyName(row.requesting_type, row.requesting_id);
-        return name ? <span style={{ fontWeight: 600, color: T.text }}>{name}</span> : <Dash />;
+        return name
+          ? (
+            <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
+              {name}
+            </span>
+          )
+          : <Dash />;
       },
     },
     {
@@ -424,15 +433,20 @@ export default function StrataExecutionPage() {
     },
   ];
 
-  return (
-    <PageContainer variant="wide">
-      <StrataPageChrome
-        icon={<Rocket size={20} />}
-        title="Execution"
-        description="Initiatives, project cards, milestones and dependencies"
-        testId="strata-execution-chrome"
-      />
+  // Detail sub-view only when the URL slug resolves to a real initiative —
+  // fallback selection (initiatives[0]) is still the index view.
+  const trailEntity = slug && selected && selected.slug === slug ? selected : null;
 
+  return (
+    <StrataPageShell
+      trail={trailEntity ? [
+        { text: 'Execution', href: Routes.strata.execution() },
+        { text: trailEntity.name },
+      ] : undefined}
+      hideTitle={!!trailEntity}
+      docTitle={trailEntity ? trailEntity.name : undefined}
+      testId="strata-execution-chrome"
+    >
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
           <Spinner size="large" aria-label="Loading execution data" />
@@ -623,6 +637,6 @@ export default function StrataExecutionPage() {
           </div>
         </>
       )}
-    </PageContainer>
+    </StrataPageShell>
   );
 }

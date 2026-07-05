@@ -1,0 +1,942 @@
+STRATA
+Executive Product Blueprint and Enterprise Data Lineage Model
+Comprehensive architecture document - strategy execution, scorecard, portfolio and value-management operating model
+
+
+
+Figure 1 - STRATA high-level product architecture
+
+Document intent: This document replaces the earlier compressed audit output. It focuses only on the two foundational artifacts requested now: the Executive Product Blueprint and the Enterprise Data & Lineage Model. It treats Salam as a reference implementation and keeps STRATA enterprise-generic, configurable and reusable across organizations.
+Non-negotiable correction: Perspectives, objectives, KPIs, OKRs, scorecards, project cards, portfolios, value categories, gates and workflows must not be hard-coded. STRATA must be designed as a configuration-first enterprise product.
+
+Table of Contents
+1. Executive Positioning and Product Thesis
+2. Source-of-Truth Principles and Product Boundaries
+3. STRATA Product Architecture - Modules and Layers
+4. User Personas and Operating Model
+5. Configurable Strategy Model
+6. Strategy Execution Module Blueprint
+7. Balanced Scorecard and Performance Module Blueprint
+8. KPI / OKR Library Blueprint
+9. Initiative, Project Card and Execution Linkage Blueprint
+10. Portfolio, VMO and Benefit Realization Blueprint
+11. Review Cadence, Snapshots and Decision Governance
+12. Admin and Configuration Control Plane
+13. AI Advisory Layer
+14. Enterprise Data and Linkage Model
+15. Core Entity Catalogue
+16. Relationship and Cardinality Model
+17. Data Lineage Pipeline
+18. Formula, Roll-up and Score Logic
+19. Snapshot, Versioning and Audit Model
+20. Integration and Upload Architecture
+21. Physical Implementation Guidance
+22. Product Architecture Decisions
+23. STRATA Release Slicing
+24. Final Blueprint Recommendations
+
+1. Executive Positioning and Product Thesis
+STRATA is an enterprise strategy execution and value realization product. It is not a dashboard collection, not a static balanced scorecard, and not a replacement for Jira, ERP, BI or financial systems. It is the governed management layer that connects strategic intent to measurable outcomes, execution evidence, portfolio value and executive decisions.
+The product thesis is simple: executives should be able to move from an enterprise health signal to any supporting line of evidence - perspective, objective, KPI, initiative, Jira project, milestone, benefit, value gate, source upload, formula and accountable owner - without losing traceability.
+Salam provides the strongest baseline operating example: strategy themes/plays, objectives, KPIs, initiatives, Jira delivery data, portfolios, benefit realization, scorecards and executive review cadences. STRATA should use that structure as a reference implementation, not as a hard-coded tenant model.
+Configurable, not coded: enterprise structure is created through admin-governed metadata.
+Evidence-linked: every executive number has lineage, owner, source, formula and validation status.
+Executive-grade: CEO/CXO views are decision layers, not operational dashboards.
+Value-centric: initiatives and projects are not only tracked for progress; they are tracked for expected, forecast and realized value.
+Governed: scorecards, strategy maps, thresholds, gates and review snapshots must be versioned and auditable.
+The product must answer four executive questions: Are we executing the strategy? Are we achieving the intended performance outcomes? Are investments creating the value promised? What decision is required now?
+
+2. Source-of-Truth Principles and Product Boundaries
+STRATA should establish a clear enterprise boundary. It governs strategy definitions, KPI metadata, scorecard models, value realization structures, executive snapshots and decision evidence. It consumes execution and financial facts from systems of record. It does not become every system of record.
+Layer
+STRATA owns
+STRATA references / consumes
+STRATA must not become
+Strategy
+Strategy cycles, themes, objectives, perspectives, scorecard models, KPI definitions
+Corporate planning documents and approved strategy artifacts
+A document repository without live governance
+Execution
+Initiative registry, project-card summary, execution linkage and strategy attribution
+Jira projects, epics, stories, milestones, dependencies
+A detailed project-management replacement
+Performance
+KPI catalog, targets, actuals, threshold logic, scorecard rollups
+ERP/BI/manual uploads/data sources
+A full BI warehouse or finance ledger
+Value
+Portfolios, benefit register, value hypotheses, gates, realization indexes
+Finance validation, operational KPI sources, business cases
+A budgeting/ERP system
+Governance
+Snapshots, approvals, audit, workflows, review cadence
+Email/calendar/forum minutes as evidence
+An uncontrolled notes tool
+
+The boundary decision protects the product from scope explosion. It also avoids the common failure mode where a strategy tool becomes a visually attractive reporting portal without governance authority or traceable data.
+
+3. STRATA Product Architecture - Modules and Layers
+
+
+Figure 2 - Product architecture with five layers
+
+The architecture should be modular. Each module should be independently maintainable, but all modules must read from a shared canonical model. The UI may show different journeys, but the data relationships must remain one model.
+Layer
+Purpose
+Primary Modules
+Architectural rule
+Executive Experience
+Turn the model into decisions
+Command Center, CEO Scorecard, Decision Cockpit, Strategy Room, Board Pack
+Reads locked snapshots and live exception streams; does not mutate governed definitions
+Strategy and Scorecard Domain
+Define and cascade strategic intent
+Strategy Map, Strategic Plays, Objectives, Perspectives, Balanced Scorecards, KPI/OKR Library
+All hierarchy, perspective and weighting logic comes from configuration
+Execution and Value Domain
+Connect intent to work and benefits
+Initiative Registry, Project Cards, Execution Linkage, Portfolio Visibility, VMO, Value Gates
+Execution source may be Jira/manual/API, but strategy attribution is governed in STRATA
+Governance/Admin/AI
+Control configuration, review cycles, decisions and advisory
+Admin Console, Data Quality, Review Cadence, AI Insights, Audit
+AI may advise; only authorized users can approve or change configuration
+Integration/Data Foundation
+Ingest, validate, reconcile and calculate
+Excel Uploads, Connectors, Staging, Validation, Formula Engine, Snapshot Store
+Every number must carry lineage and confidence metadata
+
+
+4. User Personas and Operating Model
+
+
+Figure 3 - Operating model swimlane
+
+The operating model must separate accountability. Executives consume and decide; the strategy office configures and governs; KPI owners submit and explain; VMO/Finance validates benefits and financial truth; admins manage templates, mappings, permissions and integrations.
+Persona
+Primary goal
+Capabilities required
+Restrictions
+CEO / Board
+Understand enterprise health and make strategic decisions
+Enterprise scorecard, perspective drilldown, decision cockpit, board pack, scenario readouts
+No direct data edits; consumes locked or clearly marked live data
+CXO / Sector Head
+Understand sector contribution and accountable exceptions
+Sector scorecard, objectives, KPIs, initiatives, risks, value contribution
+Can comment/approve in scope; cannot change enterprise configuration unless role allows
+Strategy Office
+Own the strategy model and governance cadence
+Hierarchy, perspective, objective, KPI, scorecard model, review cadence, snapshots
+Must operate through versioned config and approval
+VMO Lead
+Govern benefit realization and value decisions
+Portfolio, benefit register, planned/forecast/realized value, gates, value leakage
+Cannot self-certify finance actuals unless validator role assigned
+KPI Owner
+Submit and explain KPI actuals
+KPI detail, upload/manual entry, evidence, commentary, action plan
+Cannot change formula or target without approval
+Admin / Data Steward
+Manage configuration, templates, RBAC and integration quality
+Config console, mapping, validation, data lineage, audit
+Cannot alter business meaning without governance workflow
+
+
+5. Configuration-First Product Model
+
+
+Figure 4 - Configuration engine model
+
+The earlier idea of locking perspectives was too rigid. STRATA must not lock financial/customer/internal/people perspectives as a code decision. A client may add ESG, digital, regulatory, risk, customer trust, operational excellence, national contribution or any custom perspective. The product should provide templates, not immovable constants.
+The correct architecture is a configurable taxonomy model with versioning. Perspectives are records. Scorecard models are records. A scorecard line references a perspective record. Objective, KPI, benefit and initiative classification can reference one or more configured dimensions, depending on the operating design.
+Config object
+Examples
+Must support
+Why it matters
+Perspective
+Financial, Customer, Digital, People, ESG, Regulatory, Growth
+Name, description, active flag, weight default, order, color/token, effective dates, parent perspective
+No hard-coding; supports future operating models
+Strategy Cycle
+FY2026, 2026-2030, transformation wave 1
+start/end, period granularity, snapshot rules, approval workflow
+Allows annual refresh and multi-year strategies
+Scorecard Model
+CEO, CXO, Sector, Function, Portfolio, Initiative
+perspectives, weights, rollup method, threshold scheme, owner roles
+Multiple scorecards can coexist
+KPI Formula Type
+higher better, lower better, target band, milestone, manual formula
+normalization rule, RAG thresholds, numerator/denominator, validation rules
+Standardizes scoring logic
+Value Taxonomy
+revenue, cost, efficiency, CX, capability, risk mitigation
+category hierarchy, measurement unit, validation owner, realization cadence
+Makes VMO adaptable beyond one client
+Gate Model
+Idea, approval, funding, design, go-live, realization
+criteria, evidence, thresholds, decision options
+Controls investment governance
+
+Design implication: Claude Design should present perspective management as an admin function, and every executive screen must clearly read from the selected scorecard model and period, not from fixed frontend arrays.
+
+6. Strategy Execution Module Blueprint
+The Strategy Execution module is the backbone. It defines the enterprise strategy and connects it to measurable performance and delivery. It should be designed as a hierarchy plus network: hierarchy for structure, network for cause-and-effect and contribution relationships.
+
+
+Figure 5 - Strategy to value to CEO scorecard linkage
+
+Submodule
+Purpose
+Core entities
+Key interactions
+Strategy Cycle Manager
+Create and govern annual/multi-year strategy periods
+StrategyCycle, Period, SnapshotPolicy
+Create cycle, set calendar, lock cycle version, clone prior cycle
+Strategy Hierarchy Builder
+Define themes/plays/objectives/outcomes
+StrategyElement, Objective, Theme, Play
+Drag hierarchy, assign owner, define stage, map to perspectives and scorecards
+Strategy Map Canvas
+Show cause-and-effect relationships
+MapNode, MapEdge, StrategyElement, KPI
+Add node, connect cause/effect, inspect evidence, filter by period/owner
+Strategic Plays
+Turn strategy into execution constructs
+Play, PlayCharter, KPISet, InitiativeLink
+Define hypothesis, scope, owner, KPI set, value thesis, gate schedule
+Initiative Alignment
+Link objectives to initiatives and execution
+Initiative, ProjectCard, JiraMapping
+Map initiative to play/objective/KPI/benefit/portfolio
+
+Required behavior: a strategic play without a charter, owner, KPI set, value hypothesis and stage should not be promotable into active governance. This is not a UI preference; it is a control requirement.
+
+7. Balanced Scorecard and Performance Module Blueprint
+The Balanced Scorecard module must support configurable scorecard models. The product should ship with common templates but allow the customer to create any perspective structure and rollup method. Scorecards should be period-aware, weighted, versioned and linked to evidence.
+Capability
+Description
+Configuration required
+Output
+Scorecard model builder
+Define CEO/CXO/sector/function scorecard structures
+perspectives, weights, rollup method, thresholds, period granularity
+Reusable scorecard templates
+Scorecard instance
+Instantiate model for an owner/period
+owner, entity scope, cycle, period, status, lock policy
+Live or locked scorecard
+Scorecard line
+Connect KPI/objective/benefit to scorecard
+weight, perspective, formula, target, actual source, owner
+Line score, RAG, contribution
+Drilldown
+Move from score to cause
+perspective -> KPI -> objective -> initiative -> project -> benefit/source
+Executive evidence chain
+Versioning
+Maintain history across refreshes
+effective dates, snapshot ID, config version
+Audit-ready comparison
+
+A CEO scorecard should not be limited to one static display. It must support drilldowns by perspective, sector, objective, KPI family, value portfolio and strategy play. A line item may be financially weighted or strategically weighted depending on the configured model.
+
+8. KPI / OKR Library Blueprint
+The KPI/OKR Library is the governed dictionary of performance truth. It should define each measure once and let scorecards consume it in different contexts. The same KPI may appear in an enterprise scorecard, sector scorecard, portfolio view or benefit register, but the definition should not fragment.
+Field group
+Mandatory attributes
+Notes
+Identity
+KPI ID, name, type, description, business meaning, status
+Status should include draft, under review, approved, retired
+Ownership
+accountable owner, data owner, reporter, validator, escalation owner
+Do not collapse these roles into one person unless explicitly configured
+Measurement
+unit, directionality, formula, numerator, denominator, frequency, period type
+Formula engine must support manual and computed measures
+Targets
+baseline, target, thresholds, tolerance, target type, target source
+Targets must be versioned by period and cycle
+Source and lineage
+source system, table/file/template, field mapping, load method, refresh cadence
+Every actual needs traceability
+Governance
+approval state, effective date, retired date, change request, audit log
+No silent formula or threshold changes
+
+OKRs should be modelled separately but interoperably. Objectives can belong to strategy hierarchy, and Key Results can use KPI definitions or standalone KR measurements. STRATA should not force every KPI to be an OKR or every OKR to be a scorecard KPI.
+
+9. Initiative, Project Card and Execution Linkage Blueprint
+The execution layer must respect the boundary between strategy management and project management. STRATA should have an Initiative and Project Card abstraction that surfaces the executive facts needed for strategy reviews, while Jira or another work system remains the detailed delivery system.
+Object
+Purpose
+Minimum fields
+Source
+Initiative
+Business change commitment linked to strategy
+name, sponsor, owner, objective/play, portfolio, value hypothesis, budget envelope, stage, KPIs, benefits
+STRATA or planning import
+Project Card
+Executive delivery object
+project key, PM, sector, budget, baseline dates, actual progress, execution health, stage, risk/dependency summary
+Jira/API/manual upload
+Milestone
+Progress basis and delivery evidence
+milestone name, baseline start/end, actual/forecast dates, status, progress, owner
+Jira/API/upload
+Dependency
+Cross-party execution linkage
+requesting party, serving party, dependency type, due date, status, SLA, blocker
+Jira/STRATA
+Execution link
+Traceability bridge
+source object, target object, relationship type, confidence, mapping owner
+STRATA mapping table
+
+The product should allow multiple delivery systems. Jira is a reference connector, not a structural assumption. The canonical Project Card should accept mappings from Jira, spreadsheet uploads, ERP project IDs or manual records, as long as lineage is preserved.
+
+10. Portfolio, VMO and Benefit Realization Blueprint
+The VMO layer is not simply a portfolio page. It is the value governance layer. It must connect investment decisions to planned, forecast and realized value, with baselines, assumptions, leading indicators, lagging indicators, counterfactual logic, attribution rules, validation and gates.
+VMO capability
+Purpose
+Required data objects
+Portfolio structuring
+Group initiatives/projects into strategic investment views
+Portfolio, AreaOfFocus, PortfolioMembership, PortfolioPriority
+Benefit register
+Declare and track benefits
+Benefit, BenefitCategory, BenefitBaseline, BenefitTarget, BenefitActual
+Value thesis
+Capture why value should happen
+ValueHypothesis, CausalMechanism, Assumption, Confidence
+Benefit measurement
+Track leading and lagging indicators
+LeadingIndicator, LaggingKPI, Formula, SourceMapping
+Counterfactual / attribution
+Avoid false value claims and double counting
+BAUModel, AttributionRule, SharedBenefitRule
+Value gates
+Decide continue, accelerate, rebaseline, pivot, stop
+GateModel, GateInstance, Evidence, Decision, Action
+
+The benefit record should not be a static planned-versus-realized card. It should carry lifecycle stages: identified, qualified, approved, baselined, in-flight, forecast revised, realized, finance validated and closed. Each transition should be auditable.
+
+11. Review Cadence, Snapshots and Decision Governance
+Executive trust depends on period discipline. STRATA should distinguish live operational data from locked review snapshots. A snapshot is a decision artifact: it freezes scorecard values, configuration versions, data load versions, commentary, exceptions and the decisions taken in that forum.
+Concept
+Definition
+Why it matters
+Live view
+Current data calculated from latest accepted source loads
+Useful for monitoring but not enough for board evidence
+Review snapshot
+Point-in-time frozen version of strategy, scorecards, KPIs, values and exceptions
+Creates audit trail and avoids retroactive number changes
+Decision record
+Structured record of what was decided, by whom, with evidence
+Makes governance traceable and actionable
+Action register
+Follow-up actions, owners, due dates, status
+Turns review cadence into execution discipline
+Board pack
+Exported narrative and evidence package tied to snapshot ID
+Ensures executive report can be reconciled back to system
+
+The UI should always label whether the user is seeing live data, draft data, pending-validation data or a locked snapshot. This is especially important for CEO/CXO views.
+
+12. Admin and Configuration Control Plane
+The Admin and Configuration layer is the most important implementation module. Without it, STRATA becomes a hard-coded demo. With it, STRATA becomes a reusable enterprise platform. Every strategy construct should be administered through metadata with version history and approval controls.
+Admin area
+Configurable items
+Control requirement
+Taxonomy
+perspectives, themes, objective types, KPI categories, value categories, risk types
+versioned, active/inactive, effective dates
+Scorecards
+models, weights, rollup methods, thresholds, RAG bands
+weights must validate to required totals per model
+KPI formulas
+formula templates, source mappings, directionality, units
+formula changes require approval and create new version
+Strategy cycles
+calendar, period granularity, snapshot rules, close process
+cannot close period with critical validation errors unless overridden
+Value gates
+gate stages, criteria, evidence checklist, decision options
+AI cannot close gates; human approval required
+Uploads
+template definitions, column mappings, validations, error handling
+raw file and run ID preserved for lineage
+RBAC
+roles, permissions, data scope, approval authority
+enforce separation of duties
+Integrations
+connector definitions, schedule, field mapping, health checks
+connector failure affects data confidence
+
+
+13. AI Advisory Layer
+AI should be a powerful assistant but not a governance actor. It may summarize, compare, detect anomalies, draft board narratives, suggest risks, identify stale data, explain variance and recommend questions for executives. It must not certify actuals, change formulas, change configuration, approve scorecards or close gates.
+AI use case
+Allowed behavior
+Required guardrail
+Narrative generation
+Draft executive summary from locked snapshot
+Human review before publish
+Variance explanation
+Identify likely causes from linked data and commentary
+Show evidence and confidence
+Data quality alerts
+Flag stale feeds, missing values, unusual variance
+Do not auto-correct source values
+Value leakage detection
+Compare planned vs forecast vs realized and leading indicators
+VMO/Finance confirms status
+Scenario planning
+Model effect of funding/target changes
+Scenario remains draft until approved
+Prompted Q&A
+Answer questions over governed model
+Cite source object and snapshot/config version
+
+AI outputs should carry provenance: source snapshot, entities referenced, time generated, confidence, and whether the answer used live or locked data.
+
+14. Enterprise Data and Linkage Model
+
+
+Figure 6 - Conceptual domain model and cardinality map
+
+The data model must serve traceability first. The most important test is not whether a dashboard can render. The test is whether the enterprise can trace a CEO scorecard number back to the strategic objective, KPI formula, data source, upload run, initiative, project, milestone, benefit and decision record that produced or explained it.
+The canonical model should be domain-led, not screen-led. Screens should query domain entities and relationship tables. If the implementation stores data according to screen widgets, the product will collapse when a client changes perspectives, scorecard models or value taxonomy.
+
+15. Core Entity Catalogue - Strategy and Scorecard Entities
+Entity
+Definition
+Key fields
+Relationships
+Organization / Tenant
+Customer workspace or enterprise unit
+tenant_id, name, industry, configuration profile
+owns all scoped records
+StrategyCycle
+Time-bounded strategy period
+cycle_id, name, start/end, status, active_snapshot_policy
+contains periods, strategy elements, scorecards
+Period
+Reporting interval
+period_id, cycle_id, type, start/end, close_status
+has actuals, snapshots
+Perspective
+Configurable lens of performance
+perspective_id, name, weight_default, order, parent_id, effective dates
+used by objectives, KPIs, scorecard lines
+StrategyElement
+Generic strategy node
+element_id, type, name, owner, parent_id, stage, status
+can represent theme, play, objective, outcome
+StrategyMapEdge
+Cause-effect relationship
+from_element, to_element, relationship_type, confidence
+supports strategy map canvas
+ScorecardModel
+Reusable scorecard template
+model_id, name, owner_type, rollup_method, version
+has model perspectives and line rules
+ScorecardInstance
+Scorecard for owner/period
+instance_id, model_id, owner_scope, period, status
+has scorecard lines and snapshots
+ScorecardLine
+Measure row in scorecard
+line_id, KPI/objective/benefit ref, weight, perspective, formula config
+produces score contribution
+
+
+16. Core Entity Catalogue - KPI, OKR and Performance Entities
+Entity
+Definition
+Key fields
+Relationships
+KPI
+Governed measure definition
+kpi_id, name, unit, direction, formula_type, owner, source, status
+maps to objectives, scorecards, benefits
+KPIFormulaVersion
+Versioned calculation logic
+formula_id, kpi_id, expression, variables, effective_from, approval
+used by KPIActual calculations
+KPITarget
+Target/baseline record
+kpi_id, period, baseline, target, thresholds, tolerance
+compared to actual
+KPIActual
+Submitted or ingested actual
+kpi_id, period, value, source_run, validation_status, confidence
+feeds scorecard and analytics
+Objective
+Outcome node; may be StrategyElement subtype
+objective_id, description, owner, perspective refs
+links to KPIs and initiatives
+OKR
+Objective and key-result structure
+okr_id, objective_id, owner, period, confidence
+links to key results
+KeyResult
+KR line; may use KPI or custom metric
+kr_id, okr_id, kpi_ref, baseline, target, current
+rolls up to OKR
+Commentary
+Narrative explanation
+entity_ref, period, owner, text, status
+attached to KPI, scorecard, benefit
+
+
+17. Core Entity Catalogue - Execution, Portfolio and Value Entities
+Entity
+Definition
+Key fields
+Relationships
+Initiative
+Strategic change commitment
+initiative_id, play/objective refs, sponsor, stage, business_case, value_hypothesis
+links to projects, KPIs, benefits, portfolio
+ProjectCard
+Executive project object
+project_id, source_system, source_key, PM, budget, baseline_dates, health
+maps to initiative and milestones
+Milestone
+Delivery checkpoint
+milestone_id, project_id, baseline_start/end, actual/forecast, progress, status
+rolls to project progress
+Dependency
+Cross-entity dependency
+dependency_id, requester, server, due, status, SLA, impact
+explains delivery risk
+Portfolio
+Investment grouping
+portfolio_id, name, category, owner, strategy_scope, value_target
+contains initiatives/projects/benefits
+Benefit
+Value commitment
+benefit_id, category, owner, baseline, planned, forecast, realized, validator
+links to initiatives, KPIs, portfolio
+ValueGate
+Governance checkpoint
+gate_id, initiative/project/benefit ref, stage, criteria, verdict
+creates decisions/actions
+Decision
+Recorded governance decision
+decision_id, forum, snapshot_id, decision_type, owner, due date
+links to action register
+Action
+Follow-up action
+action_id, decision_id, owner, due, status
+tracked to closure
+
+
+18. Relationship and Cardinality Model
+STRATA requires relationship tables because enterprise strategy is not always a simple tree. A KPI may support multiple objectives. An initiative may support multiple strategic plays. A benefit may contribute to a scorecard perspective and also to a portfolio value target. Hard-coded parent-child assumptions will fail.
+Relationship
+Cardinality
+Purpose
+Implementation note
+StrategyCycle -> StrategyElement
+1 to many
+Cycle contains approved hierarchy
+cloneable across cycles
+StrategyElement -> StrategyElement
+self-referential 1 to many
+Theme -> play -> objective hierarchy
+must allow configured element types
+StrategyElement <-> KPI
+many to many
+One objective can have many KPIs; KPI may serve many objectives
+relationship has weight/contribution
+KPI -> KPIActual
+1 to many
+Periodic actuals
+period + source_run unique constraint
+ScorecardModel -> Perspective
+many to many
+scorecard uses configured perspectives
+relationship has weight/order
+ScorecardLine -> KPI/Objective/Benefit
+many to one polymorphic
+scorecard line may represent different performance object types
+use typed reference
+Initiative <-> ProjectCard
+many to many
+projects may support one or more initiatives
+mapping confidence required
+Portfolio <-> Initiative
+many to many
+portfolio membership and prioritization
+membership has allocation %
+Benefit <-> Initiative
+many to many
+benefit attribution
+must prevent double counting
+Snapshot -> CalculatedValue
+1 to many
+locked evidence record
+store computed result and source versions
+
+
+19. Enterprise Data Lineage Pipeline
+
+
+Figure 7 - Source to decision lineage pipeline
+
+Lineage must be a first-class product capability. The CEO/CXO user may not see every technical detail by default, but the system must be able to expose it when challenged. The data-quality tower should not be decorative; it should be the trust layer behind every scorecard and value figure.
+Lineage step
+Data captured
+Failure handling
+Source registration
+source name, owner, system type, refresh cadence, expected fields
+source cannot feed approved KPI until registered
+Ingestion run
+run ID, file/API payload reference, timestamp, uploader/connector, raw row count
+failed run retained with error log
+Staging validation
+schema checks, missing mandatory fields, duplicate keys, period validity
+reject or quarantine rows
+Business validation
+owner attestation, validator sign-off, variance explanations
+mark pending validation or blocked
+Canonical write
+entity ID, value, period, source_run, config version
+only accepted values feed executive scorecards
+Calculation
+formula version, target version, rollup method, timestamp
+calculation result stores provenance
+Snapshot lock
+snapshot ID, period, config version, data-run versions, approver
+post-lock changes create new snapshot version
+Decision evidence
+snapshot, related objects, decision, action owner, due date
+decision record cannot lose evidence link
+
+
+20. Formula, Roll-up and Score Logic
+Formula logic should be centralized in a calculation engine. UI components should never calculate critical enterprise scores independently. Screens should request calculated outputs with provenance, not recompute weights and RAG statuses locally.
+Calculation type
+Example
+Configuration required
+Output
+KPI achievement
+Actual / Target, direction adjusted
+unit, directionality, baseline, target, threshold
+achievement %, RAG
+Banded target
+Within range is green
+min/max band, tolerance
+status and score
+Lower-is-better
+Cost, churn, defect rate
+direction lower, thresholds
+normalized score
+Weighted scorecard
+Σ(line score x weight)
+line weights, perspective weights, rollup method
+score / 100, contribution
+YTD performance
+period aggregation
+aggregation method: sum, avg, last, weighted
+YTD actual/target/variance
+Benefit realization
+cumulative realized / cumulative planned
+planned curve, actuals, validation
+realization index
+Portfolio value at risk
+planned value not yet secured or below confidence
+planned, forecast, realized, confidence, gate exposure
+value-at-risk amount
+Execution progress
+milestone weighted progress
+milestone dates, weights, actuals
+project progress and variance
+
+A calculation result should store: entity reference, period, value, score, status, formula version, input values, input source versions, run ID and confidence. This is what makes board-level numbers defensible.
+
+21. Snapshot, Versioning and Audit Model
+Versioning must apply to configuration, data, calculations and review outputs. If a KPI formula changes after a board review, the previous board pack must still reconcile to the old formula version. If a perspective is added mid-year, the system must support effective dates and scorecard model versions.
+Versioned object
+Version trigger
+Audit requirement
+Perspective
+name, hierarchy, weight, active status changes
+effective date and approval
+Scorecard model
+perspective membership, rollup method, weights, thresholds
+versioned model ID used by scorecard instances
+KPI definition
+formula, source, unit, direction, owner, thresholds
+new formula version; old actuals can be recalculated only through controlled process
+Upload template
+column schema or validation changes
+version per template and source type
+Value gate model
+criteria or thresholds change
+approval and effective period
+Snapshot
+period close or executive review
+immutable evidence bundle unless superseded
+Decision record
+decision created/updated/closed
+who, when, why, related evidence
+
+Audit must be user-visible at the right level. Executives need trust indicators and drilldown; administrators need raw lineage and change history.
+
+22. Integration and Upload Architecture
+STRATA should support manual uploads and integrations as equal ingestion channels. Manual upload is not a weakness if governed correctly. For many enterprise scorecards, Excel remains the practical bridge until source-system integration matures.
+Channel
+Use case
+Required controls
+Excel upload
+KPI actuals, targets, scorecard updates, benefit actuals, portfolio metadata
+template version, schema validation, row-level error report, raw file retention
+Jira connector
+project cards, milestones, dependencies, delivery status
+field mapping, sync frequency, hierarchy mapping, source keys, stale sync alert
+ERP connector
+financial actuals, budgets, cost, revenue, benefit validation
+finance-controlled mapping, reconciliation, period close alignment
+BI/Tableau connector
+analytical KPI actuals where BI is approved source
+semantic mapping to KPI catalog and source lineage
+Manual entry
+low-frequency qualitative or executive commentary
+role restriction, mandatory evidence, attestation
+API import
+future enterprise integrations
+contract schema, retry policy, run logs
+
+Upload templates should be generated from the KPI catalog and scorecard configuration. This avoids the error of having Excel templates drift from the governed model.
+
+23. Physical Implementation Guidance
+The physical implementation should follow a domain-driven modular architecture. Frontend modules should not own business truth. Backend services should expose domain APIs for strategy, scorecard, KPI, execution, portfolio, benefit, lineage and governance. A shared configuration service should be used by all modules.
+Package / service
+Responsibilities
+Anti-pattern to avoid
+strategy-domain
+cycles, elements, map nodes/edges, plays, objectives
+hard-coded strategy hierarchy in frontend
+scorecard-domain
+models, instances, lines, perspectives, rollups
+fixed perspective arrays in components
+kpi-domain
+KPI definitions, formulas, targets, actuals, comments
+formula logic duplicated across screens
+execution-domain
+initiatives, project cards, milestones, Jira mappings
+making Jira issue schema the product schema
+value-domain
+portfolios, benefits, gates, realization, attribution
+simple planned vs actual cards without assumptions/validation
+data-lineage
+sources, runs, staging validation, canonical writes
+showing numbers with no provenance
+governance-domain
+snapshots, decisions, actions, approvals, audit
+unversioned dashboard exports
+admin-config
+taxonomy, workflows, RBAC, templates, thresholds
+configuration hidden in code constants
+ai-advisory
+summaries, insights, anomaly detection, narrative drafts
+AI directly changing data or closing approvals
+
+
+24. Product Architecture Decisions
+Decision
+Recommendation
+Rationale
+Perspective handling
+Perspectives are configurable metadata, never hard-coded
+Enterprise strategy frameworks vary by client and year
+Salam model
+Use as reference implementation / starter template
+Keeps product generic while preserving proven structure
+Scorecard logic
+Model-driven scorecard templates and instances
+Supports CEO, CXO, sector, portfolio and initiative views
+Execution source
+Canonical Project Card abstracts Jira or other systems
+Avoids coupling product to Jira schema
+Value model
+Benefit realization is first-class, not a dashboard tile
+VMO requires baseline, target, assumptions, attribution, gates
+Data confidence
+Every measure has freshness, validation and lineage state
+Executive trust depends on defensible numbers
+AI role
+AI advises and drafts; humans validate and approve
+Governance and accountability remain human
+Snapshots
+Board/review packs must be locked evidence artifacts
+Prevents retroactive data disputes
+
+The most important architecture decision is configuration-first. If Claude Code builds fixed arrays for perspectives, fixed formulas for scorecards or fixed stage labels for gates, STRATA will fail as an enterprise product.
+
+25. STRATA Release Slicing
+The first build should not attempt every integration. It should establish the canonical model, configuration engine, scorecard/KPI data entry, manual upload, strategy linkage and VMO benefit register. Integrations should follow once the model is stable.
+Release
+Scope
+Outcome
+R0 - Foundation
+Tenant, strategy cycle, configuration engine, taxonomy, RBAC, audit shell
+Reusable platform control plane
+R1 - Strategy and Scorecard
+strategy hierarchy, perspectives, KPI library, scorecard models, actuals/targets, uploads
+Governed performance management MVP
+R2 - Execution Linkage
+initiative registry, project cards, Jira mapping abstraction, milestones, dependencies
+Strategy-to-execution traceability
+R3 - VMO and Portfolio
+portfolio visibility, benefit register, value gates, planned/forecast/realized value
+Value management capability
+R4 - Executive Decision Layer
+CEO/CXO command center, decision cockpit, review cadence, snapshots, board packs
+Executive operating layer
+R5 - Integrations and AI
+Jira/ERP/BI connectors, AI narrative, anomaly detection, scenario planning
+Automated and intelligent platform
+
+
+26. Final Blueprint Recommendations
+Build STRATA as a product platform, not as a Salam-only dashboard. Salam should be delivered through configuration and starter templates.
+Make the Admin Configuration Engine the first-class foundation before polishing executive screens.
+Treat perspectives, scorecard models, KPI formulas, value categories and gates as governed records with versioning.
+Use canonical entities for StrategyElement, KPI, ScorecardLine, Initiative, ProjectCard, Portfolio, Benefit, Snapshot and Decision.
+Ensure every executive metric has backward lineage to source, formula, target, owner, validation and snapshot.
+Separate live monitoring from locked executive review evidence.
+Design Project Card as an abstraction over Jira, not a synonym for Jira issue.
+Make VMO benefit realization more rigorous than planned-versus-realized: include baseline, assumptions, leading/lagging indicators, attribution and value gates.
+Give AI advisory power, but never approval power.
+Do not allow Claude Design or Claude Code to hard-code strategy perspectives, stage names, gates, RAG bands, value categories or KPI formulas.
+Immediate next design instruction: Claude must revise the current STRATA package around a configuration-first architecture. It should demonstrate an Admin Configuration model before finalizing executive screens, because the executive layer must be powered by configurable metadata, not static screen assumptions.
+
+Appendix A - Minimum Data Objects by Module
+Module
+Required objects
+Strategy Room
+StrategyCycle, StrategyElement, StrategyMapEdge, Objective, Play, Snapshot, Decision
+Command Center
+ScorecardInstance, ScorecardLine, KPIActual, Benefit, ValueGate, Decision, Exception
+Strategy Map
+MapNode, MapEdge, Owner, EvidenceLink, Status, ContributionWeight
+Balanced Scorecard
+ScorecardModel, Perspective, ScorecardInstance, ScorecardLine, Target, Actual, RollupResult
+KPI/OKR Library
+KPI, FormulaVersion, Target, Actual, SourceMapping, Owner, Validator, KR
+Execution Linkage
+Initiative, ProjectCard, Milestone, Dependency, ExternalSourceMap, LinkConfidence
+Portfolio Visibility
+Portfolio, PortfolioMembership, Initiative, ProjectCard, Benefit, Risk, Spend, ValueAtRisk
+VMO
+Benefit, BenefitActual, BenefitBaseline, BenefitTarget, Assumption, AttributionRule, ValueGate
+Review Cadence
+Forum, Agenda, Snapshot, Decision, Action, BoardPack, Approval
+Data Quality
+DataSource, UploadRun, ValidationResult, LineageRecord, ConfidenceScore
+Admin
+ConfigSet, Taxonomy, WorkflowRule, RBACRole, Template, ThresholdScheme, AuditEvent
+
+
+Appendix B - Required Configuration Records
+Configuration record
+Examples of fields
+PerspectiveConfig
+name, description, order, default weight, active flag, parent perspective, effective from/to
+ScorecardModelConfig
+name, owner scope, perspective set, rollup method, threshold scheme, period granularity
+KPITypeConfig
+type name, formula template, directionality, mandatory metadata, allowed units
+ThresholdScheme
+green/amber/red bands, tolerance, confidence thresholds, escalation triggers
+ValueCategoryConfig
+category hierarchy, unit, validator role, realization cadence, double-counting rules
+GateModelConfig
+stage sequence, criteria, evidence requirements, decision options, approval roles
+UploadTemplateConfig
+template name, target entity, column schema, validation rules, mapping rules
+WorkflowConfig
+state transitions, approval roles, SLA, notification/escalation
+RBACConfig
+role name, permissions, data scope, approval authority, segregation rules
+ConnectorConfig
+source system, schedule, authentication reference, field mapping, failure handling
+
+
+Appendix C - Example Generic Strategy Configuration
+The following is an example of how a non-Salam organization could configure STRATA without code change. It proves why perspectives must be configuration records.
+Organization type
+Possible perspectives
+Possible value categories
+Possible execution source
+Telecom
+Financial, Customer, Network, Digital, People, Regulatory
+Revenue, cost, efficiency, CX, risk mitigation
+Jira, ERP, BI
+Government agency
+Public value, Citizen experience, Compliance, Operations, Workforce
+Service quality, efficiency, policy outcomes, risk reduction
+PPM tool, Excel, ERP
+Bank
+Financial, Customer trust, Risk, Digital, Operations, People
+Revenue, cost, risk reduction, compliance, customer retention
+Jira, core banking BI, finance systems
+Healthcare
+Patient outcomes, Operations, Finance, Quality, Workforce
+clinical outcome, cost, efficiency, patient experience
+EHR analytics, ERP, project tool
+Industrial
+Safety, Production, Finance, Innovation, Sustainability
+cost, uptime, capacity, ESG, risk mitigation
+ERP, MES, project system
+
+
+Appendix D - Design Acceptance Criteria for Blueprint Compliance
+Criterion
+Pass condition
+Configurable perspectives
+User/admin can create/edit/retire perspectives and assign them to scorecard models
+Configurable scorecards
+CEO, CXO, sector and portfolio scorecards are created from models, not component constants
+KPI governance
+KPI cannot be approved without owner, source, formula/entry method, frequency, target and validator rule
+Project linkage
+Project Card displays source system, mapping confidence and relationship to initiative/objective/KPI/benefit
+Value rigor
+Benefit record includes baseline, target, assumptions, attribution, actuals and validation state
+Lineage visibility
+Every executive metric has drilldown to source run, formula version and validation status
+Snapshot discipline
+Review pack can be locked and reconciled later
+AI guardrail
+AI text is marked advisory and cannot change governed data
+Admin coverage
+All thresholds, stages, categories, templates and permissions are visible in configuration
+Generic product readiness
+No tenant-specific strategy terms are coded as system constants
+
+
+Appendix E - Immediate Claude Design Instructions Derived from This Blueprint
+Rename and normalize the product as STRATA while treating any current Astryx/StrategyHub naming as prototype residue.
+Add or redesign the Admin Configuration module as the control plane for perspectives, scorecard models, KPI formulas, value categories, gates, upload templates and workflows.
+Rework CEO and scorecard screens so perspectives are selected from configuration, not fixed to one hard-coded framework.
+Show lineage and confidence on every executive metric, at least as a drilldown detail.
+Redesign VMO screens around value thesis, baseline, target, assumptions, leading/lagging indicators, attribution, realization index and gate decisions.
+Keep Jira linkage as a connector/mapping model, not a product dependency.
+Ensure every screen states whether it is using live, draft, pending-validation or locked snapshot data.
+Make the product cross-client: avoid Salam-only labels in the core IA; use Salam only as demo tenant data.
+Preserve executive-grade simplicity on CEO screens while ensuring deeper drilldowns expose audit-grade evidence.
+Produce design components that Claude Code can map to domain services and reusable configuration APIs.
+
+Appendix F - Source Basis and Interpretation Guardrails
+This document is based on the provided Salam SOW, VMO Benefit Realization working-session deck, Salam POC material and STRATA HTML screen package. The Salam materials are used as a reference operating model for strategy execution, scorecards, KPI governance, Jira-linked execution, portfolio visibility, benefit realization, and data upload/integration needs. They are not treated as hard-coded product constraints.
+The SOW anchors the requirement for strategy hierarchy, OKRs/KPIs, master enterprise scorecard, balanced scorecards, dashboards, initiative-to-project/milestone linkage, portfolio visibility, benefit realization, Jira/ERP/BI integrations, data lineage and governance. The VMO deck anchors benefit realization discipline: value thesis, baseline, target, assumptions, leading/lagging indicators, source ownership, counterfactual, attribution rules, value gates, thresholds and cadence. The POC anchors scorecard, data-point-card, upload and drilldown patterns.
+The architectural interpretation made here is that STRATA must generalize those requirements into a reusable product: metadata-driven, governed, evidence-linked, modular and extensible.

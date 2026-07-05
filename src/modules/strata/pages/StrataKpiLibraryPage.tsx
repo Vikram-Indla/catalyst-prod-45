@@ -14,7 +14,6 @@ import {
 import {
   Activity, ArrowDown, ArrowUp, CheckCircle2, ChevronDown, ChevronRight, Scale, Target,
 } from '@/lib/atlaskit-icons';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
@@ -22,7 +21,7 @@ import { kpiApi } from '@/modules/strata/domain';
 import {
   useDataSources, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import { StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageShell, StrataPanel, T } from '@/modules/strata/components/shared';
 import { fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { GovernedStatus, StrataKeyResult, StrataKpi, StrataOkr } from '@/modules/strata/types';
 import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
@@ -87,7 +86,11 @@ function CellSkeleton() {
 function KpiNameLink({ row, onOpen }: { row: StrataKpi; onOpen: () => void }) {
   const [hover, setHover] = useState(false);
   if (!row.slug) {
-    return <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span>;
+    return (
+      <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
+        {row.name}
+      </span>
+    );
   }
   return (
     <button
@@ -98,6 +101,7 @@ function KpiNameLink({ row, onOpen }: { row: StrataKpi; onOpen: () => void }) {
       style={{
         background: 'none', border: 'none', padding: 0, cursor: 'pointer',
         font: 'inherit', fontWeight: 600, color: T.brandText, textAlign: 'left',
+        fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)',
         textDecoration: hover ? 'underline' : 'none',
       }}
     >
@@ -177,7 +181,11 @@ function KeyResultsList({ okrId }: { okrId: string }) {
       id: 'name',
       label: 'Key result',
       flex: true,
-      cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span>,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)' }}>
+          {row.name}
+        </span>
+      ),
     },
     {
       id: 'range',
@@ -264,7 +272,7 @@ function OkrRow({ okr, objectiveName, isOpen, onToggle }: {
         <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)', flexShrink: 0 }}>
           {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
         </span>
-        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {okr.name}
         </span>
         {objectiveName ? (
@@ -449,14 +457,7 @@ export default function StrataKpiLibraryPage() {
   const statusLabel = STATUS_FILTER_OPTIONS.find((o) => o.value === statusFilter)?.label ?? 'All statuses';
 
   return (
-    <PageContainer variant="wide">
-      <StrataPageChrome
-        icon={<Activity size={20} />}
-        title="KPI / OKR Library"
-        description="Governed KPI dictionary and OKR library"
-        testId="strata-kpi-library-chrome"
-      />
-
+    <StrataPageShell testId="strata-kpi-library-chrome">
       {kpisQ.isError ? (
         <SectionMessage appearance="error" title="Failed to load KPI library">
           <p>{(kpisQ.error as Error)?.message ?? 'Unknown error'}</p>
@@ -519,6 +520,6 @@ export default function StrataKpiLibraryPage() {
           <OkrPanel />
         </div>
       )}
-    </PageContainer>
+    </StrataPageShell>
   );
 }

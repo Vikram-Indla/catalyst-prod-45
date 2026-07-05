@@ -10,16 +10,15 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CatalystTag, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
-import { FileBarChart, PieChart, Scale } from '@/lib/atlaskit-icons';
+import { PieChart, Scale } from '@/lib/atlaskit-icons';
 import {
   useScorecardCalc, useScorecardInstances, useScorecardModels, useStrataContext,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  T, StrataBandLozenge, StrataDataStateLozenge, StrataPageChrome, StrataPanel,
+  T, StrataBandLozenge, StrataDataStateLozenge, StrataPageShell, StrataPanel,
   StrataStatStrip, type StrataStat,
 } from '@/modules/strata/components/shared';
 import { fmtScore, labelize } from '@/modules/strata/components/format';
@@ -173,7 +172,7 @@ export default function StrataScorecardsPage() {
         <span
           data-testid={`strata-instance-row-${row.id}`}
           style={{
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+            fontSize: 'var(--ds-font-size-400)', lineHeight: 'var(--ds-line-height-body)', fontWeight: 600,
             color: row.slug ? T.brandText : T.text,
             minWidth: 0, overflowWrap: 'anywhere',
           }}
@@ -216,14 +215,7 @@ export default function StrataScorecardsPage() {
   ], []);
 
   return (
-    <PageContainer variant="wide">
-      <StrataPageChrome
-        icon={<FileBarChart size={20} />}
-        title="Scorecards"
-        description="Governed scorecard models and their period instances — every score is server-calculated."
-        testId="strata-scorecards-chrome"
-      />
-
+    <StrataPageShell testId="strata-scorecards-chrome">
       {(modelsQ.isError || instancesQ.isError) ? (
         <div style={{ marginBottom: 16 }}>
           <SectionMessage appearance="error" title="Could not load scorecards">
@@ -282,6 +274,6 @@ export default function StrataScorecardsPage() {
           />
         </StrataPanel>
       </div>
-    </PageContainer>
+    </StrataPageShell>
   );
 }

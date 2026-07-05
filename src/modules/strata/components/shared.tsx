@@ -12,15 +12,15 @@
  * band labels/appearances come from governed threshold-scheme config at runtime.
  */
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  Button, CatalystDrawer, Heading, Lozenge,
+  Button, Heading, Lozenge,
+  Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Textfield,
 } from '@/components/ads';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { useBandResolver, useStrataContext } from '../hooks/useStrata';
-import { fmtDateTime, fmtScore, labelize } from './format';
-import type { DataState, StrataCalculatedValue, ThresholdBand } from '../types';
-import { Routes } from '@/lib/routes';
+import { fmtScore } from './format';
+import type { DataState, ThresholdBand } from '../types';
 
 export const T = {
   text: 'var(--ds-text)',
@@ -359,6 +359,143 @@ export function StrataPageChrome({
   );
 }
 
+/**
+ * StrataPageShell — canonical page chrome (2026-06-14 breadcrumb directive).
+ * ProjectPageHeader (hubType strata) pulled to the HubSurface panel edge with
+ * the flagship negative-margin pattern, then the governed context toolbar.
+ * Pages render inside the full panel width — no PageContainer, no max-width.
+ */
+export function StrataPageShell({
+  trail, title, hideTitle, headerActions, modelLabel, state, extra, toolbarActions, docTitle, children, testId,
+}: {
+  /** Detail-page crumb trail after "Home / STRATA"; index pages omit it. */
+  trail?: { text: string; href?: string; onClick?: () => void }[];
+  /** Override the auto-derived H2 (entity name on detail pages). */
+  title?: React.ReactNode;
+  hideTitle?: boolean;
+  headerActions?: React.ReactNode;
+  modelLabel?: string | null;
+  state?: DataState | string | null;
+  extra?: React.ReactNode;
+  toolbarActions?: React.ReactNode;
+  /** Browser-tab title (entity name — fixes slug-cased document titles). */
+  docTitle?: string;
+  children: React.ReactNode;
+  testId?: string;
+}) {
+  React.useEffect(() => {
+    if (docTitle) document.title = `${docTitle} · Catalyst`;
+  }, [docTitle]);
+  return (
+    <div data-testid={testId} style={{ minWidth: 0 }}>
+      <div style={{ margin: '-24px -24px 0' }}>
+        <ProjectPageHeader hubType="strata" trail={trail} title={title} hideTitle={hideTitle} actions={headerActions} />
+      </div>
+      <div style={{ margin: '8px 0 16px' }}>
+        <StrataContextToolbar modelLabel={modelLabel} extra={
+          <>
+            {extra}
+            {toolbarActions ? <span style={{ display: 'inline-flex', gap: 8, marginLeft: 8 }}>{toolbarActions}</span> : null}
+          </>
+        } state={state} />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Decision modal (governance verdicts — SoD errors surface HERE, never silent) ──
+export interface StrataDecisionOption {
+  value: string;
+  label: string;
+  appearance?: 'primary' | 'danger' | 'default';
+}
+
+export function StrataDecisionModal({
+  open, onClose, title, description, options, confirmLabel = 'Confirm', requireNote = false, onConfirm, testId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  description?: React.ReactNode;
+  options: StrataDecisionOption[];
+  confirmLabel?: string;
+  requireNote?: boolean;
+  /** Throws on RPC/SoD failure — error text renders in the modal. */
+  onConfirm: (verdict: string, note: string) => Promise<void>;
+  testId?: string;
+}) {
+  const [verdict, setVerdict] = useState<string>(options[0]?.value ?? '');
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  React.useEffect(() => {
+    if (open) { setVerdict(options[0]?.value ?? ''); setNote(''); setError(null); setBusy(false); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  if (!open) return null;
+  const confirm = async () => {
+    setBusy(true); setError(null);
+    try {
+      await onConfirm(verdict, note.trim());
+      onClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Modal onClose={busy ? () => {} : onClose} width="small" testId={testId}>
+      <ModalHeader><ModalTitle>{title}</ModalTitle></ModalHeader>
+      <ModalBody>
+        {description ? <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{description}</p> : null}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+          {options.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => setVerdict(o.value)}
+              style={{
+                height: 32, padding: '0 12px', borderRadius: 6, cursor: 'pointer', font: 'inherit',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                border: `1px solid ${verdict === o.value ? 'var(--ds-border-focused)' : T.border}`,
+                background: verdict === o.value ? T.selected : T.raised,
+                color: o.appearance === 'danger' ? 'var(--ds-text-danger)' : T.text,
+              }}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+        <Textfield
+          placeholder={requireNote ? 'Reason (required)' : 'Note (optional)'}
+          value={note}
+          onChange={(e) => setNote((e.target as HTMLInputElement).value)}
+          aria-label="Decision note"
+        />
+        {error ? (
+          <div style={{ marginTop: 12 }}>
+            <SectionMessage appearance="error" title="Action rejected">
+              <p>{error}</p>
+            </SectionMessage>
+          </div>
+        ) : null}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={busy}>Cancel</Button>
+        <Button
+          appearance="primary"
+          onClick={confirm}
+          isDisabled={busy || !verdict || (requireNote && note.trim().length === 0)}
+        >
+          {busy ? 'Working…' : confirmLabel}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 /** Back-compat: bare context toolbar for pages not yet on StrataPageChrome. */
 export function StrataConfigContextBar({
   modelLabel, extra, state,
@@ -553,149 +690,7 @@ export function StrataPanel({
   );
 }
 
-// ── Evidence drawer (lineage on every executive number — blueprint §19) ─────
-const isUuid = (v: unknown): v is string =>
-  typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
-const shortId = (v: string) => `${v.slice(0, 8)}…`;
-
-/** Executive-readable rendering of calc inputs: perspective rollups become rows,
- *  flat objects become key/value lines; unknown shapes fall back to JSON. */
-function EvidenceInputs({ inputs }: { inputs: Record<string, unknown> | null | undefined }) {
-  if (!inputs) return <>—</>;
-  const perspectives = (inputs as { perspectives?: unknown }).perspectives;
-  if (Array.isArray(perspectives)) {
-    return (
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {perspectives.map((p, i) => {
-          const row = p as { name?: string; score?: number; weight?: number; has_data?: boolean; status_key?: string | null };
-          return (
-            <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ minWidth: 96 }}>{row.name ?? '—'}</span>
-              <strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{row.has_data === false ? '—' : fmtScore(row.score)}</strong>
-              <span style={{ color: T.subtlest }}>w {row.weight ?? '—'}</span>
-              <StrataBandLozenge bandKey={row.status_key} />
-            </span>
-          );
-        })}
-      </span>
-    );
-  }
-  // Flatten one level of nesting (e.g. line inputs = {ref_type, weight, detail:{actual, target, …}})
-  const flat: Array<[string, unknown]> = [];
-  Object.entries(inputs).forEach(([k, v]) => {
-    if (v != null && typeof v === 'object' && !Array.isArray(v)) {
-      Object.entries(v as Record<string, unknown>).forEach(([ck, cv]) => flat.push([ck, cv]));
-    } else {
-      flat.push([k, v]);
-    }
-  });
-  if (flat.length > 0 && flat.every(([, v]) => v == null || ['string', 'number', 'boolean'].includes(typeof v))) {
-    return (
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {flat.map(([k, v], i) => (
-          <span key={`${k}-${i}`}>
-            <span style={{ color: T.subtlest }}>{labelize(k)}: </span>
-            {v == null ? '—' : isUuid(v) ? shortId(v) : String(v)}
-          </span>
-        ))}
-      </span>
-    );
-  }
-  return <>{JSON.stringify(inputs)}</>;
-}
-
-function EvidenceConfigContext({ ctx }: { ctx: Record<string, unknown> | null | undefined }) {
-  if (!ctx) return <>—</>;
-  return (
-    <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {Object.entries(ctx).map(([k, v]) => (
-        <span key={k}>
-          <span style={{ color: T.subtlest }}>{labelize(k)}: </span>
-          {v == null ? '—' : isUuid(v) ? shortId(v) : typeof v === 'object' ? JSON.stringify(v) : String(v)}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-function EvidenceRow({ k, children }: { k: string; children: React.ReactNode }) {
-  return (
-    <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
-      <span style={{ width: 140, flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{k}</span>
-      <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, minWidth: 0, overflowWrap: 'anywhere' }}>{children}</span>
-    </div>
-  );
-}
-
-export function StrataEvidenceDrawer({
-  open, onClose, title, calcValues, runKeysById,
-}: {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  calcValues: StrataCalculatedValue[];
-  /** optional map upload_run_id → run_key for linking */
-  runKeysById?: Record<string, string>;
-}) {
-  const navigate = useNavigate();
-  return (
-    <CatalystDrawer isOpen={open} onClose={onClose} width="wide" label={`Evidence: ${title}`}>
-      <div style={{ padding: '0 24px 24px 0' }}>
-        <Heading as="h2" size="medium">{title}</Heading>
-        <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '4px 0 16px' }}>
-          Every number traces to source, formula version, validation and snapshot. Nothing here is computed in the UI.
-        </p>
-        {calcValues.length === 0 ? (
-          <p style={{ color: T.subtle }}>No calculated values recorded yet.</p>
-        ) : (
-          calcValues.map((cv) => (
-            <div key={cv.id} style={{ marginBottom: 24, padding: 12, background: T.sunken, borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <strong style={{ color: T.text, fontSize: 'var(--ds-font-size-200)' }}>{labelize(cv.metric_key)}</strong>
-                <StrataBandLozenge bandKey={cv.status_key} />
-              </div>
-              <EvidenceRow k="Value / score">
-                {fmtScore(cv.value)}{cv.score != null && cv.score !== cv.value ? ` · score ${fmtScore(cv.score)}` : ''}
-              </EvidenceRow>
-              <EvidenceRow k="Formula version">{cv.formula_version ?? '—'}</EvidenceRow>
-              <EvidenceRow k="Inputs"><EvidenceInputs inputs={cv.inputs} /></EvidenceRow>
-              <EvidenceRow k="Source runs">
-                {cv.source_run_ids?.length
-                  ? cv.source_run_ids.map((rid) => {
-                      const key = runKeysById?.[rid];
-                      return key ? (
-                        <Button key={rid} appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.run(key))}>
-                          {key}
-                        </Button>
-                      ) : (<span key={rid}>{shortId(rid)} </span>);
-                    })
-                  : '—'}
-              </EvidenceRow>
-              <EvidenceRow k="Config context"><EvidenceConfigContext ctx={cv.config_context} /></EvidenceRow>
-              <EvidenceRow k="Confidence">{cv.confidence ?? '—'}</EvidenceRow>
-              <EvidenceRow k="Calculated at">{fmtDateTime(cv.calculated_at)}</EvidenceRow>
-              <EvidenceRow k="Snapshot">{cv.snapshot_id ? 'Frozen in snapshot' : 'Live (not yet snapshotted)'}</EvidenceRow>
-            </div>
-          ))
-        )}
-      </div>
-    </CatalystDrawer>
-  );
-}
-
-/** Small "ⓘ evidence" affordance for metric surfaces. */
-export function useEvidenceDrawer(runKeysById?: Record<string, string>) {
-  const [state, setState] = useState<{ title: string; values: StrataCalculatedValue[] } | null>(null);
-  return {
-    open: (title: string, values: StrataCalculatedValue[]) => setState({ title, values }),
-    drawer: (
-      <StrataEvidenceDrawer
-        open={!!state}
-        onClose={() => setState(null)}
-        title={state?.title ?? ''}
-        calcValues={state?.values ?? []}
-        runKeysById={runKeysById}
-      />
-    ),
-  };
-}
+// ── Evidence (lineage on every executive number — blueprint §19) ────────────
+// The evidence drawer became a full page: pages/StrataEvidencePage.tsx
+// (routes kpis/:slug/evidence · scorecards/:slug/evidence · portfolio/:slug/evidence).
+// Its rendering primitives live in components/evidence.tsx.

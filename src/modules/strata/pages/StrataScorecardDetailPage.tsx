@@ -15,20 +15,19 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Button, CatalystTag, EmptyState, IconButton, SectionMessage, Spinner, Tooltip,
 } from '@/components/ads';
-import { PageContainer } from '@/components/shared/PageContainer';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, RowGroup } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
-import { ChevronLeft, FileBarChart, Info, Layers } from '@/lib/atlaskit-icons';
-import { kpiApi, lineageApi, scorecardApi } from '@/modules/strata/domain';
+import { Info, Layers } from '@/lib/atlaskit-icons';
+import { kpiApi, scorecardApi } from '@/modules/strata/domain';
 import {
-  useBenefits, useCalcValues, useInvalidateStrata, useKpis, usePerspectives,
+  useBenefits, useInvalidateStrata, useKpis, usePerspectives,
   useProfileNames, useScorecardCalc, useScorecardInstanceBySlug, useScorecardLines,
   useScorecardModels, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  T, StrataBandBar, StrataBandLozenge, StrataMetricStat, StrataPageChrome,
-  StrataPanel, StrataScoreRing, useEvidenceDrawer,
+  T, StrataBandBar, StrataBandLozenge, StrataMetricStat, StrataPageShell,
+  StrataPanel, StrataScoreRing,
 } from '@/modules/strata/components/shared';
 import { fmtDateTime, fmtScore, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { StrataScorecardLine } from '@/modules/strata/types';
@@ -76,8 +75,6 @@ export default function StrataScorecardDetailPage() {
   const benefitsQ = useBenefits();
   const perspectivesQ = usePerspectives();
   const profilesQ = useProfileNames();
-  const instanceCalcValuesQ = useCalcValues(instance ? 'scorecard_instance' : undefined, instance?.id);
-  const evidence = useEvidenceDrawer();
   const invalidate = useInvalidateStrata();
   const [recalculating, setRecalculating] = useState(false);
   const [recalcError, setRecalcError] = useState<string | null>(null);
@@ -131,13 +128,14 @@ export default function StrataScorecardDetailPage() {
     return null;
   };
 
-  const openLineEvidence = async (line: StrataScorecardLine) => {
-    try {
-      const values = await lineageApi.calcValues('scorecard_line', line.id);
-      evidence.open(`Line: ${refNameFor(line) ?? line.ref_type}`, values);
-    } catch {
-      evidence.open(`Line: ${refNameFor(line) ?? line.ref_type}`, []);
-    }
+  /** Line ⓘ → evidence page; carries the line's KPI slug as ?line= context. */
+  const openLineEvidence = (line: StrataScorecardLine) => {
+    if (!instance?.slug) return;
+    const kpiSlug = line.kpi_id ? kpiById.get(line.kpi_id)?.slug ?? null : null;
+    navigate(
+      Routes.strata.scorecardEvidence(instance.slug)
+      + (kpiSlug ? `?line=${encodeURIComponent(kpiSlug)}` : ''),
+    );
   };
 
   const recalculate = async () => {
@@ -257,7 +255,7 @@ export default function StrataScorecardDetailPage() {
       label: '',
       width: 6,
       align: 'center',
-      cell: ({ row }) => (
+      cell: ({ row }) => (instance?.slug ? (
         <span onClick={(e) => e.stopPropagation()}>
           <Tooltip content="View evidence">
             <IconButton
@@ -265,15 +263,15 @@ export default function StrataScorecardDetailPage() {
               appearance="subtle"
               spacing="compact"
               aria-label="View evidence"
-              onClick={() => { void openLineEvidence(row); }}
+              onClick={() => openLineEvidence(row)}
               testId={`strata-line-evidence-${row.id}`}
             />
           </Tooltip>
         </span>
-      ),
+      ) : null),
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [calcLineById, kpiById, elementById, benefitById]);
+  ], [calcLineById, kpiById, elementById, benefitById, instance?.slug]);
 
   const lineGroups: RowGroup<StrataScorecardLine>[] = useMemo(
     () => linesByPerspective.map(({ perspectiveId, lines: groupLines }) => {
@@ -303,32 +301,33 @@ export default function StrataScorecardDetailPage() {
   );
 
   // ── Loading / error / not-found states ────────────────────────────────────
+  const stateTrail = [{ text: 'Scorecards', href: Routes.strata.scorecards() }];
   if (instanceQ.isLoading) {
     return (
-      <PageContainer variant="wide">
+      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>
-      </PageContainer>
+      </StrataPageShell>
     );
   }
   if (instanceQ.isError) {
     return (
-      <PageContainer variant="wide">
+      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
         <SectionMessage appearance="error" title="Could not load scorecard">
           <p>{(instanceQ.error as Error)?.message ?? 'Unknown error.'}</p>
         </SectionMessage>
-      </PageContainer>
+      </StrataPageShell>
     );
   }
   if (!instance) {
     return (
-      <PageContainer variant="wide">
+      <StrataPageShell trail={stateTrail} testId="strata-scorecard-chrome">
         <EmptyState
           header="Scorecard not found"
           description="No scorecard instance matches this address. It may have been renamed or removed."
           primaryAction={<Button appearance="primary" onClick={() => navigate(Routes.strata.scorecards())}>Back to scorecards</Button>}
           testId="strata-scorecard-not-found"
         />
-      </PageContainer>
+      </StrataPageShell>
     );
   }
 
@@ -337,44 +336,33 @@ export default function StrataScorecardDetailPage() {
   const profileById = profilesQ.data;
 
   return (
-    <PageContainer variant="wide">
-      {/* Back navigation */}
-      <div style={{ marginBottom: 8 }}>
-        <Button
-          appearance="subtle"
-          iconBefore={<ChevronLeft size={16} />}
-          onClick={() => navigate(Routes.strata.scorecards())}
-          testId="strata-scorecard-back"
-        >
-          Scorecards
-        </Button>
-      </div>
-
-      <StrataPageChrome
-        icon={<FileBarChart size={20} />}
-        title={instance.name}
-        description={rollup ? `${labelize(rollup)} rollup` : undefined}
-        modelLabel={model ? `${model.name} v${instance.model_version}` : null}
-        state={instance.status}
-        actions={(
-          <>
+    <StrataPageShell
+      trail={[{ text: 'Scorecards', href: Routes.strata.scorecards() }, { text: instance.name }]}
+      docTitle={instance.name}
+      modelLabel={model ? `${model.name} v${instance.model_version}` : null}
+      state={instance.status}
+      extra={rollup ? <CatalystTag text={`${labelize(rollup)} rollup`} /> : undefined}
+      headerActions={(
+        <>
+          {instance.slug ? (
             <Button
               appearance="subtle"
               iconBefore={<Info size={16} />}
-              onClick={() => evidence.open(instance.name, instanceCalcValuesQ.data ?? [])}
+              onClick={() => navigate(Routes.strata.scorecardEvidence(instance.slug!))}
               testId="strata-scorecard-evidence"
             >
               Evidence
             </Button>
-            {!isLocked ? (
-              <Button appearance="default" isDisabled={recalculating} onClick={recalculate}>
-                {recalculating ? 'Recalculating…' : 'Recalculate'}
-              </Button>
-            ) : null}
-          </>
-        )}
-        testId="strata-scorecard-chrome"
-      />
+          ) : null}
+          {!isLocked ? (
+            <Button appearance="default" isDisabled={recalculating} onClick={recalculate}>
+              {recalculating ? 'Recalculating…' : 'Recalculate'}
+            </Button>
+          ) : null}
+        </>
+      )}
+      testId="strata-scorecard-chrome"
+    >
 
       {isLocked ? (
         <div style={{ marginBottom: 16 }}>
@@ -540,8 +528,6 @@ export default function StrataScorecardDetailPage() {
           )}
         </StrataPanel>
       </div>
-
-      {evidence.drawer}
-    </PageContainer>
+    </StrataPageShell>
   );
 }
