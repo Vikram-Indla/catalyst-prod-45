@@ -223,6 +223,35 @@ export function filterCreatableTypes(
 }
 
 /**
+ * Returns true if CRE governs this type name (Grid A ownership ∪ subtask
+ * family). Types outside this set are Studio-registry custom types
+ * (ph_work_item_types) — the registry, not CRE, is authoritative for them
+ * (ph_hierarchy_parent_rules mirrors Grid B for system types only,
+ * migration 20260703130000).
+ */
+export function isCREGovernedType(typeName: string): boolean {
+  const canonical = normalizeType(typeName);
+  if (isSubtaskFamily(canonical) || SUBTASK_FAMILY.includes(canonical)) return true;
+  return Object.values(MODULE_OWNED_TYPES).some(types => types.includes(canonical));
+}
+
+/**
+ * Chokepoint filter for create-surface type catalogues (Grids A + D).
+ * Keeps a candidate type when either:
+ *   — CRE governs it and canCreateInModule() allows it in moduleCode, or
+ *   — CRE does not govern it (Studio-registry custom type — the registry
+ *     is authoritative for custom types, so CRE passes them through).
+ * Every type picker on a create surface MUST run its catalogue through
+ * this before render (enforced by scripts/cre-chokepoint-gate.cjs).
+ */
+export function filterCreatableTypes(
+  types: readonly string[],
+  moduleCode: string,
+): string[] {
+  return types.filter(t => !isCREGovernedType(t) || canCreateInModule(t, moduleCode));
+}
+
+/**
  * Returns the owning module for a type, or null if unrecognised.
  * Subtask family returns null (universal — no single owner).
  */
