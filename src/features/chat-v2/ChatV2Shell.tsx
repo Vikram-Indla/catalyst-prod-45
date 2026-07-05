@@ -56,6 +56,7 @@ import { useActivityFeed, type ActivityItem } from './hooks/useActivityFeed';
 import { useResizableSplit } from './hooks/useResizableSplit';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useChatTheme } from './hooks/useChatTheme';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { installActivityHoverTracker } from './lib/activityHoverTracker';
 import './tokens.css';
 
@@ -149,6 +150,13 @@ function ChatV2Inner() {
   const { user } = useAuth();
   const selfProfile = useSelfProfile();
   const { theme } = useChatTheme();
+  // RTL mirroring: when the user's display language is Arabic, mirror the whole
+  // chat shell. dir="rtl" flips the CSS grid named-area layout (nav rail +
+  // sidebar move to the right, panel to the left), reverses flex rows, and
+  // right-aligns text automatically. English (the default) stays dir="ltr" —
+  // byte-identical, zero regression. Per-message text already rides dir="auto".
+  const { displayLang } = useLanguage();
+  const shellDir: 'rtl' | 'ltr' = displayLang === 'ar' ? 'rtl' : 'ltr';
   const createChannelMut = useCreateChannel();
   const startDmMut = useStartDm();
   const summarizeMut = useChatSummarize();
@@ -872,6 +880,7 @@ function ChatV2Inner() {
       <div
         className="cv2-chat-shell"
         data-cv2-theme={theme}
+        dir={shellDir}
         style={{
           position: 'relative',
           display: 'grid',
