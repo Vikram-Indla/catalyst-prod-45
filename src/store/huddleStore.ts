@@ -220,11 +220,36 @@ async function finalizeHuddleSummary(
   if (!conversationId || !huddleId) return;
   const durationSeconds = startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0;
   try {
+    // Snapshot who actually joined + who started, so the event row can render
+    // PER-VIEWER: participants see "You (and X) were in the huddle", non-joiners
+    // see "You missed a huddle — {caller} was in the huddle for …".
+    const [{ data: hud }, { data: parts }] = await Promise.all([
+      db.from('chat_huddles').select('started_by').eq('id', huddleId).maybeSingle(),
+      db.from('chat_huddle_participants').select('user_id').eq('huddle_id', huddleId),
+    ]);
+    const startedBy = (hud as { started_by: string } | null)?.started_by ?? null;
+    const partIds = [...new Set(((parts ?? []) as { user_id: string }[]).map((p) => p.user_id))];
+    let participants: { id: string; name: string }[] = [];
+    let callerName = withName;
+    if (partIds.length) {
+      const { data: profs } = await db.from('profiles').select('id, full_name').in('id', partIds);
+      const nameMap = Object.fromEntries(((profs ?? []) as { id: string; full_name: string | null }[])
+        .map((p) => [p.id, p.full_name || 'Someone']));
+      participants = partIds.map((id) => ({ id, name: nameMap[id] || 'Someone' }));
+      if (startedBy && nameMap[startedBy]) callerName = nameMap[startedBy];
+    }
     await db.from('chat_messages')
       .update({
         body_text: 'A huddle happened',
         event_type: 'huddle_summary',
-        event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
+        event_meta: {
+          huddle_id: huddleId,
+          duration_seconds: durationSeconds,
+          with_name: withName,
+          started_by: startedBy,
+          caller_name: callerName,
+          participants,
+        },
       })
       .eq('conversation_id', conversationId)
       .eq('event_type', 'huddle_live')

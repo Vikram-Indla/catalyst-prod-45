@@ -247,9 +247,9 @@ export function ChatDock({
   const fabRef = React.useRef<HTMLButtonElement>(null);
 
   // Incoming/snoozed huddle → the global IncomingHuddleFab (mounted in
-  // CatalystShell) owns the vibrating ring + decline/snooze/accept fan so it
-  // works on EVERY route (incl. /chat where this dock is hidden). Here we only
-  // hide the launcher while a call is active, so the two FABs never overlap.
+  // CatalystShell) owns the FAB (it renders on EVERY route incl. /chat where
+  // this dock is hidden). Hide this launcher whenever a call is active so the
+  // two never overlap.
   const { incoming, snoozedCall } = useIncomingHuddle();
   const callActive = !!incoming || !!snoozedCall;
 
