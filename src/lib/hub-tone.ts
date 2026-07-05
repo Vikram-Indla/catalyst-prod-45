@@ -31,6 +31,7 @@ export type HubTone =
 
 const PATH_TO_TONE: Array<{ prefix: string; tone: HubTone }> = [
   { prefix: '/for-you',                tone: 'blue'    },
+  { prefix: '/strata',                 tone: 'purple'  },
   { prefix: '/strategyhub',            tone: 'purple'  },
   { prefix: '/ideation',               tone: 'orange'  },
   { prefix: '/product-hub',            tone: 'teal'    },

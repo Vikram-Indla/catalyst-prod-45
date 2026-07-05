@@ -59,6 +59,8 @@ interface HubEntry {
   shortcut: string;
   /** admin_nav_modules.module_key used for role-based visibility (useModuleAccess). Mirrors MobileNavigationMenu HUB_ITEMS. */
   moduleKey: string;
+  /** Extra search terms — lets "strategy" find STRATA etc. */
+  aliases?: string[];
 }
 
 interface DeprecatedHubEntry extends HubEntry {
@@ -69,7 +71,9 @@ interface DeprecatedHubEntry extends HubEntry {
 const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
   // CAT-STRATA-20260705-001: Strategy revived as STRATA at /strata (un-deprecated).
-  { key: 'strategy', label: 'STRATA',   href: '/strata',                     section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
+  // The Strategy hub-switcher row is THE entry point to STRATA (⌘2); legacy
+  // /strategyhub and /strategy redirect there (App.tsx, outside the shell).
+  { key: 'strategy', label: 'STRATA',   href: '/strata',                     section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise', aliases: ['strategy', 'scorecard', 'okr'] },
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'gray',    shortcut: '3', moduleKey: 'product', deprecated: true },
   { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4', moduleKey: 'product' },
   { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5', moduleKey: 'workhub' },
@@ -188,7 +192,9 @@ export function HubSwitcher() {
 
   const normalisedQuery = query.trim().toLowerCase();
   const matches = (hub: HubEntry) =>
-    !normalisedQuery || hub.label.toLowerCase().includes(normalisedQuery);
+    !normalisedQuery ||
+    hub.label.toLowerCase().includes(normalisedQuery) ||
+    (hub.aliases ?? []).some((a) => a.includes(normalisedQuery));
 
   // Show ALL hubs (subject only to the search filter) — the full module
   // catalogue is always visible; inaccessible hubs render grayed-out below.

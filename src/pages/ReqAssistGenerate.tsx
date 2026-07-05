@@ -656,7 +656,7 @@ function CatalystTopNav() {
   const navigate = useNavigate();
   const HUBS = [
     { label: 'Home', path: '/for-you' },
-    { label: 'StrategyHub', path: '/strategy' },
+    { label: 'STRATA', path: '/strata' },
     { label: 'ProductHub', path: '/producthub' },
     { label: 'ProjectHub', path: '/projecthub' },
     { label: 'ReleaseHub', path: '/releases' },

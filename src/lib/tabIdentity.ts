@@ -13,6 +13,7 @@ export function deriveHubFromPath(pathname: string): string | undefined {
     ['/producthub', 'ProductHub'],
     ['/product', 'ProductHub'],
     ['/wiki', 'WikiHub'],
+    ['/strata', 'STRATA'],
     ['/strategy', 'StrategyHub'],
     ['/release', 'ReleaseHub'],
     ['/priorities', 'Tasks'],

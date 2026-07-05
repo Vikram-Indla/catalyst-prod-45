@@ -84,7 +84,7 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   }
   
   // Enterprise tier routes
-  if (pathname.startsWith('/enterprise') || pathname.startsWith('/strategy')) {
+  if (pathname.startsWith('/enterprise') || pathname.startsWith('/strategy') || pathname.startsWith('/strata')) {
     return 'enterprise';
   }
   

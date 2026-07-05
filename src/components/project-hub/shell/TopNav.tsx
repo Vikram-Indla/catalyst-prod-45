@@ -5,7 +5,7 @@ import { CurrentUserAvatar } from './CurrentUserAvatar';
 
 const HUB_TABS = [
   { label: 'Home', path: '/for-you' },
-  { label: 'StrategyHub', path: '/strategyhub' },
+  { label: 'STRATA', path: '/strata' },
   { label: 'ProductHub', path: '/producthub' },
   { label: 'ProjectHub', path: '/project-hub' },
   { label: 'ReleaseHub', path: '/releasehub' },
