@@ -170,8 +170,9 @@ export default function WikiWorkspacePage() {
             {workspace.name}
           </h1>
           <p style={{ margin: '2px 0 0', color: 'var(--ds-text-subtle)', font: 'var(--ds-font-body)' }}>
-            {CONTAINER_LABEL[workspace.container_type] ?? 'Workspace'}
-            {workspace.description ? ` · ${workspace.description}` : ''}
+            {workspace.description && workspace.description !== CONTAINER_LABEL[workspace.container_type]
+              ? workspace.description
+              : (CONTAINER_LABEL[workspace.container_type] ?? 'Workspace')}
           </p>
         </div>
       </div>

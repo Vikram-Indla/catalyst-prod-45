@@ -9,6 +9,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { isValidUUID } from '@/lib/utils/assertUuid';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -187,6 +188,8 @@ export function useCreateWikiPage() {
           icon: input.icon ?? null,
           template_key: input.templateKey ?? null,
           created_by: auth?.user?.id ?? null,
+          // kb_documents.updated_by is NOT NULL — set it on create too.
+          updated_by: auth?.user?.id ?? null,
         })
         .select('*')
         .single();
@@ -195,6 +198,9 @@ export function useCreateWikiPage() {
     },
     onSuccess: (page) => {
       qc.invalidateQueries({ queryKey: ['wiki', 'tree', page.space_id] });
+    },
+    onError: (e) => {
+      catalystToast.error('Could not create the page', e instanceof Error ? e.message : undefined);
     },
   });
 }
