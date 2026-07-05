@@ -81,6 +81,9 @@ export function useIncomingHuddle(): {
   incoming: IncomingHuddle | null;
   /** a live huddle the user snoozed — surfaced so they can still answer it */
   snoozedCall: IncomingHuddle | null;
+  /** true while ANY snooze is unexpired (persists the snooze FAB for the full
+   *  1h window even after the caller cancels the huddle). */
+  snoozeActive: boolean;
   accept: () => void;
   decline: () => void;
   snooze: () => void;
@@ -90,6 +93,21 @@ export function useIncomingHuddle(): {
   const userId = user?.id ?? null;
   const qc = useQueryClient();
   const instanceId = useId();
+
+  // Persistent snooze state — my unexpired huddle_snoozes rows. Drives the
+  // snooze FAB independently of whether the huddle is still live, so a snooze
+  // stays for its full 1h window even after the caller hangs up.
+  const { data: mySnoozes } = useQuery<number>({
+    queryKey: ['chat', 'huddle', 'my-snoozes', userId],
+    enabled: !!userId,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      if (!userId) return 0;
+      const { data } = await db.from('huddle_snoozes')
+        .select('huddle_id').eq('user_id', userId).gt('until_at', new Date().toISOString());
+      return ((data ?? []) as unknown[]).length;
+    },
+  });
   const activeInCall = useHuddleStore((s) => s.active?.huddleId ?? null);
   const { startOrJoin } = useHuddleActions();
 
@@ -167,7 +185,10 @@ export function useIncomingHuddle(): {
     const snoozeCh = supabase
       .channel(`huddle-snooze-rt:${instanceId}`)
       .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'huddle_snoozes', filter: `user_id=eq.${userId}` } as never,
-        () => qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] }))
+        () => {
+          qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+          qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'my-snoozes', userId] });
+        })
       .subscribe();
     return () => { supabase.removeChannel(ch); supabase.removeChannel(snoozeCh); };
   }, [userId, qc, instanceId]);
@@ -202,6 +223,10 @@ export function useIncomingHuddle(): {
   const base = !activeInCall && data ? data : null;
   const incoming = base && !base.snoozed ? base : null;
   const snoozedCall = base && base.snoozed ? base : null;
+  // Snooze FAB persists while ANY snooze is unexpired (DB) OR a local one is
+  // live — independent of the huddle, so cancelling the call doesn't reset it.
+  const localSnoozeLive = [...snoozed.values()].some((u) => u > Date.now());
+  const snoozeActive = !activeInCall && ((mySnoozes ?? 0) > 0 || localSnoozeLive);
 
   const decline = useCallback(() => {
     // A decline is just a "miss" — the per-viewer huddle_summary event row shows
@@ -221,6 +246,7 @@ export function useIncomingHuddle(): {
       );
     }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+    qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'my-snoozes', userId] });
   }, [data, qc, userId]);
 
   const unsnooze = useCallback(() => {
@@ -229,6 +255,7 @@ export function useIncomingHuddle(): {
       void db.from('huddle_snoozes').delete().eq('user_id', userId).eq('huddle_id', data.huddleId);
     }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
+    qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'my-snoozes', userId] });
   }, [data, qc, userId]);
 
   const accept = useCallback(() => {
@@ -241,5 +268,5 @@ export function useIncomingHuddle(): {
     void startOrJoin(conv);
   }, [data, startOrJoin]);
 
-  return { incoming, snoozedCall, accept, decline, snooze, unsnooze };
+  return { incoming, snoozedCall, snoozeActive, accept, decline, snooze, unsnooze };
 }

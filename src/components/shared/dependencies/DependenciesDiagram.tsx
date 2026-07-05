@@ -1093,7 +1093,10 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
 
   /* Apply link-type + project/sprint/release/work-item filters, then roll-up remap. */
   const filteredDeps = useMemo(() => {
-    let result = linkType === 'all' ? dependencies : dependencies.filter((d) => d.dependency_type === linkType);
+    // Link type does NOT reduce the set (every row is a canonical 'blocks', so
+    // there's no separate 'is_blocked_by' subset). It flips the VIEW PERSPECTIVE
+    // instead — handled in the edges memo (arrows + label). Set stays full here.
+    let result = dependencies;
 
     if (projectFilter !== 'all' || sprint !== 'all' || release !== 'all') {
       // keep an edge if EITHER endpoint matches (cross-boundary deps stay visible)
@@ -1117,7 +1120,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
       result = rolled;
     }
     return result;
-  }, [dependencies, linkType, projectFilter, sprint, release, workItem, rollUp, matchesCardFilters, resolveAncestor]);
+  }, [dependencies, projectFilter, sprint, release, workItem, rollUp, matchesCardFilters, resolveAncestor]);
 
   const uniqueIssues = useMemo(() => {
     const keys = new Set<string>();
@@ -1266,33 +1269,45 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
     () =>
       filteredDeps.map((dep) => {
         const id = `dep-${dep.id}`;
+        // Canonical "blocker blocks dependent" (rows are stored 'blocks', but
+        // handle 'is_blocked_by' too).
+        const isBlockedByRow = dep.dependency_type === 'is_blocked_by';
+        const blockerKey = isBlockedByRow ? dep.target_issue_key : dep.source_issue_key;
+        const dependentKey = isBlockedByRow ? dep.source_issue_key : dep.target_issue_key;
+        // Perspective toggle from the "Issue link type" dropdown:
+        //  - 'blocks' / 'all' → arrow blocker → dependent, label "blocks"
+        //  - 'is_blocked_by'  → arrow dependent → blocker (flipped), "is blocked by"
+        const isBlockedView = linkType === 'is_blocked_by';
+        const src = isBlockedView ? dependentKey : blockerKey;
+        const tgt = isBlockedView ? blockerKey : dependentKey;
+        const label = isBlockedView ? 'is blocked by' : 'blocks';
         // Active (blue) when: hovered, selected (clicked), OR connected to the
         // clicked card. Otherwise neutral grey.
         const active =
           hoveredEdgeId === id ||
           selectedEdgeId === id ||
-          (!!selectedNodeId && (dep.source_issue_key === selectedNodeId || dep.target_issue_key === selectedNodeId));
+          (!!selectedNodeId && (src === selectedNodeId || tgt === selectedNodeId));
         return {
           id,
-          source: dep.source_issue_key,
-          target: dep.target_issue_key,
+          source: src,
+          target: tgt,
           type: 'dependency',
           zIndex: active ? 2 : 1,
           // ads-scanner:ignore-next-line — SVG marker requires a concrete color, not a CSS var()
           markerEnd: { type: MarkerType.ArrowClosed, color: active ? EDGE_BLUE_HEX : EDGE_GREY_HEX, width: 18, height: 18 },
           data: {
-            label: dep.dependency_type === 'blocks' ? 'blocks' : 'is blocked by',
+            label,
             depId: dep.id,
             active,
-            sourceKey: dep.source_issue_key,
-            targetKey: dep.target_issue_key,
-            sourceMeta: issueMeta[dep.source_issue_key] ?? null,
-            targetMeta: issueMeta[dep.target_issue_key] ?? null,
+            sourceKey: src,
+            targetKey: tgt,
+            sourceMeta: issueMeta[src] ?? null,
+            targetMeta: issueMeta[tgt] ?? null,
             onSelect: onSelectEdge,
           },
         };
       }),
-    [filteredDeps, issueMeta, onSelectEdge, hoveredEdgeId, selectedEdgeId, selectedNodeId],
+    [filteredDeps, issueMeta, onSelectEdge, hoveredEdgeId, selectedEdgeId, selectedNodeId, linkType],
   );
 
   const nodeTypes = useMemo(() => ({ workItem: WorkItemNode, frame: FrameNode }), []);
