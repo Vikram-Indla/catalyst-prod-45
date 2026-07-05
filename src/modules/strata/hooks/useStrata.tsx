@@ -420,6 +420,29 @@ export const useBoardPacks = (snapshotId?: string) =>
 export const useAiOutputs = () =>
   useQuery({ queryKey: ['strata', 'ai-outputs'], queryFn: governanceApi.aiOutputs, staleTime: STALE });
 
+// ── Recovery additions (CAT-STRATA-20260705-001 session 004) ─────────────────
+/** Rule-driven Needs Attention feed (F-REP-004) — replaces seeded exceptions. */
+export const useNeedsAttention = (periodId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'needs-attention', periodId ?? 'all'],
+    queryFn: () => governanceApi.needsAttention(periodId),
+    staleTime: STALE,
+  });
+/** Generic execution links (project→objective/KPI/benefit traceability). */
+export const useExecutionLinks = () =>
+  useQuery({ queryKey: ['strata', 'execution-links'], queryFn: executionApi.executionLinks, staleTime: STALE });
+/** All role assignments (admin roles tab + SoD visibility). */
+export const useRoleAssignments = () =>
+  useQuery({ queryKey: ['strata', 'role-assignments'], queryFn: governanceApi.roleAssignments, staleTime: STALE });
+/** Full KPI evidence chain for one KPI+period (F-REP-005). */
+export const useKpiEvidenceChain = (kpiId?: string, periodId?: string) =>
+  useQuery({
+    queryKey: ['strata', 'evidence-chain', kpiId, periodId],
+    queryFn: () => kpiApi.evidenceChain(kpiId!, periodId!),
+    enabled: !!kpiId && !!periodId,
+    staleTime: STALE,
+  });
+
 export function useInvalidateStrata() {
   const qc = useQueryClient();
   return () => qc.invalidateQueries({ queryKey: ['strata'] });
