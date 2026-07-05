@@ -3,19 +3,26 @@
  * Models grid (governed config records) + instances list for the active cycle.
  * Every score/band shown here comes from useScorecardCalc (server RPC /
  * frozen snapshot) — the UI never computes rollups.
+ *
+ * D-012 executive lift (2026-07-05): page chrome, summary stat strip,
+ * canonical JiraTable for instances, icon-anchored model cards.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Badge from '@atlaskit/badge';
-import { EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
+import { CatalystTag, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
 import { PageContainer } from '@/components/shared/PageContainer';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
+import { FileBarChart, PieChart, Scale } from '@/lib/atlaskit-icons';
 import {
   useScorecardCalc, useScorecardInstances, useScorecardModels, useStrataContext,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataBandLozenge, StrataConfigContextBar, StrataDataStateLozenge, StrataPanel,
+  T, StrataBandLozenge, StrataDataStateLozenge, StrataPageChrome, StrataPanel,
+  StrataStatStrip, type StrataStat,
 } from '@/modules/strata/components/shared';
+import { fmtScore, labelize } from '@/modules/strata/components/format';
 import type { GovernedStatus, StrataScorecardInstance, StrataScorecardModel } from '@/modules/strata/types';
 
 // ── Governed-status lozenge (SYSTEM governance states — DB CHECKs) ──────────
@@ -29,16 +36,9 @@ const GOVERNED_APPEARANCE: Record<GovernedStatus, React.ComponentProps<typeof Lo
 
 function GovernedStatusLozenge({ status }: { status: GovernedStatus | string | null | undefined }) {
   if (!status) return null;
-  const appearance = GOVERNED_APPEARANCE[status as GovernedStatus];
-  if (!appearance) return <Lozenge appearance="default">{String(status).replace(/_/g, ' ')}</Lozenge>;
-  return <Lozenge appearance={appearance}>{String(status).replace(/_/g, ' ')}</Lozenge>;
+  const appearance = GOVERNED_APPEARANCE[status as GovernedStatus] ?? 'default';
+  return <Lozenge appearance={appearance}>{labelize(String(status))}</Lozenge>;
 }
-
-const chipStyle: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 4,
-  background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
-  fontSize: 12, fontWeight: 500,
-};
 
 // ── Model card ───────────────────────────────────────────────────────────────
 function ModelCard({ model }: { model: StrataScorecardModel }) {
@@ -46,24 +46,39 @@ function ModelCard({ model }: { model: StrataScorecardModel }) {
     <div
       data-testid={`strata-model-card-${model.id}`}
       style={{
-        background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)',
+        background: T.raised, border: `1px solid ${T.border}`,
         borderRadius: 8, padding: 16, minWidth: 0,
         display: 'flex', flexDirection: 'column', gap: 8,
         boxShadow: 'var(--ds-shadow-raised)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text)', minWidth: 0, overflowWrap: 'anywhere' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+        <span aria-hidden style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 28, height: 28, borderRadius: 6, background: T.selected, color: T.brandText, flexShrink: 0,
+        }}>
+          <Scale size={16} />
+        </span>
+        <span style={{
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text,
+          minWidth: 0, overflowWrap: 'anywhere', flex: '1 1 auto',
+        }}>
           {model.name}
         </span>
-        <span style={{ flexShrink: 0 }}><Badge appearance="default">{`v${model.version}`}</Badge></span>
+        <span style={{ flexShrink: 0 }}><CatalystTag text={`v${model.version}`} /></span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <GovernedStatusLozenge status={model.status} />
-        {model.owner_scope_type ? <span style={chipStyle}>{model.owner_scope_type}</span> : null}
+        {model.owner_scope_type ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            {labelize(model.owner_scope_type)}
+          </span>
+        ) : null}
       </div>
-      <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
-        Rollup: {model.rollup_method ?? '—'} · Granularity: {model.period_granularity ?? '—'}
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+        Rollup: {model.rollup_method ? labelize(model.rollup_method) : '—'}
+        {' · '}
+        Granularity: {model.period_granularity ? labelize(model.period_granularity) : '—'}
       </div>
     </div>
   );
@@ -73,78 +88,141 @@ function ModelCard({ model }: { model: StrataScorecardModel }) {
 function ScoreCell({ instance }: { instance: StrataScorecardInstance }) {
   const calc = useScorecardCalc(instance);
   if (calc.isLoading) {
-    return <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 12 }}>…</span>;
+    return <Spinner size="small" />;
   }
   if (calc.isError || !calc.data || !calc.data.has_data) {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ color: 'var(--ds-text)', fontWeight: 600 }}>—</span>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)' }}>no data</span>
+        <span style={{ color: T.text, fontWeight: 600 }}>—</span>
+        <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>No data</span>
       </span>
     );
   }
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <span style={{ color: 'var(--ds-text)', fontWeight: 600 }}>{calc.data.score}</span>
+      <span style={{
+        color: T.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums',
+        fontSize: 'var(--ds-font-size-200)',
+      }}>
+        {fmtScore(calc.data.score)}
+      </span>
       <StrataBandLozenge bandKey={calc.data.status_key} />
     </span>
   );
 }
 
-// ── Instance row ─────────────────────────────────────────────────────────────
-function InstanceRow({
-  instance, periodName, modelName,
-}: { instance: StrataScorecardInstance; periodName: string | null; modelName: string | null }) {
-  const navigate = useNavigate();
-  const clickable = !!instance.slug;
-  const open = () => { if (instance.slug) navigate(Routes.strata.scorecard(instance.slug)); };
-  return (
-    <div
-      role={clickable ? 'button' : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      onClick={open}
-      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } } : undefined}
-      data-testid={`strata-instance-row-${instance.id}`}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(180px, 2fr) minmax(100px, 1fr) minmax(140px, 1.5fr) 140px minmax(140px, 1fr)',
-        alignItems: 'center', gap: 12, padding: '8px 12px',
-        borderBottom: '1px solid var(--ds-border)',
-        cursor: clickable ? 'pointer' : 'default',
-        background: 'var(--ds-surface-raised)',
-      }}
-    >
-      <span style={{ fontSize: 14, fontWeight: 600, color: clickable ? 'var(--ds-text-brand)' : 'var(--ds-text)', minWidth: 0, overflowWrap: 'anywhere' }}>
-        {instance.name}
-      </span>
-      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>{periodName ?? '—'}</span>
-      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)', minWidth: 0, overflowWrap: 'anywhere' }}>{modelName ?? '—'}</span>
-      <span><StrataDataStateLozenge state={instance.status} /></span>
-      <span style={{ textAlign: 'right' }}><ScoreCell instance={instance} /></span>
-    </div>
-  );
+// ── Instance table row model ─────────────────────────────────────────────────
+interface InstanceRowData extends StrataScorecardInstance {
+  periodName: string | null;
+  modelName: string | null;
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function StrataScorecardsPage() {
+  const navigate = useNavigate();
   const { periods, activeCycle } = useStrataContext();
   const modelsQ = useScorecardModels();
   const instancesQ = useScorecardInstances(activeCycle?.id);
 
   const models = modelsQ.data ?? [];
   const instances = instancesQ.data ?? [];
-  const modelNameById = new Map(models.map((m) => [m.id, m.name]));
-  const periodNameById = new Map(periods.map((p) => [p.id, p.name]));
+  const modelNameById = useMemo(() => new Map(models.map((m) => [m.id, m.name])), [models]);
+  const periodNameById = useMemo(() => new Map(periods.map((p) => [p.id, p.name])), [periods]);
 
-  const headerCell: React.CSSProperties = {
-    fontSize: 11, fontWeight: 700,
-    color: 'var(--ds-text-subtlest)',
-  };
+  const rows: InstanceRowData[] = useMemo(
+    () => instances.map((i) => ({
+      ...i,
+      periodName: i.period_id ? periodNameById.get(i.period_id) ?? null : null,
+      modelName: modelNameById.get(i.model_id) ?? null,
+    })),
+    [instances, periodNameById, modelNameById],
+  );
+
+  // ── Summary strip — counts from already-loaded config queries only ────────
+  const summaryReady = !modelsQ.isLoading && !instancesQ.isLoading && !modelsQ.isError && !instancesQ.isError;
+  const summaryStats: StrataStat[] = [
+    {
+      key: 'models-approved',
+      label: 'Models approved',
+      value: models.filter((m) => m.status === 'approved').length,
+      caption: 'Governed scorecard models in force',
+      testId: 'strata-scorecards-stat-models',
+    },
+    {
+      key: 'instances-live',
+      label: 'Instances live',
+      value: instances.filter((i) => i.status === 'live').length,
+      caption: activeCycle ? `In ${activeCycle.name}` : 'No active cycle',
+      testId: 'strata-scorecards-stat-live',
+    },
+    {
+      key: 'instances-locked',
+      label: 'Locked',
+      value: instances.filter((i) => i.status === 'locked').length,
+      caption: 'Frozen in snapshots',
+      testId: 'strata-scorecards-stat-locked',
+    },
+  ];
+
+  const columns: Column<InstanceRowData>[] = useMemo(() => [
+    {
+      id: 'name',
+      label: 'Name',
+      flex: true,
+      cell: ({ row }) => (
+        <span
+          data-testid={`strata-instance-row-${row.id}`}
+          style={{
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+            color: row.slug ? T.brandText : T.text,
+            minWidth: 0, overflowWrap: 'anywhere',
+          }}
+        >
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      id: 'period',
+      label: 'Period',
+      width: 12,
+      cell: ({ row }) => (
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>{row.periodName ?? '—'}</span>
+      ),
+    },
+    {
+      id: 'model',
+      label: 'Model',
+      width: 18,
+      cell: ({ row }) => (
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, minWidth: 0, overflowWrap: 'anywhere' }}>
+          {row.modelName ?? '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'state',
+      label: 'State',
+      width: 14,
+      cell: ({ row }) => <StrataDataStateLozenge state={row.status} />,
+    },
+    {
+      id: 'score',
+      label: 'Latest score',
+      width: 16,
+      align: 'end',
+      cell: ({ row }) => <ScoreCell instance={row} />,
+    },
+  ], []);
 
   return (
     <PageContainer variant="wide">
-      <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>Scorecards</h1>
-      <StrataConfigContextBar />
+      <StrataPageChrome
+        icon={<FileBarChart size={20} />}
+        title="Scorecards"
+        description="Governed scorecard models and their period instances — every score is server-calculated."
+        testId="strata-scorecards-chrome"
+      />
 
       {(modelsQ.isError || instancesQ.isError) ? (
         <div style={{ marginBottom: 16 }}>
@@ -154,8 +232,15 @@ export default function StrataScorecardsPage() {
         </div>
       ) : null}
 
+      {summaryReady ? <StrataStatStrip items={summaryStats} testId="strata-scorecards-summary" /> : null}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <StrataPanel title="Models" testId="strata-scorecard-models-panel">
+        <StrataPanel
+          title="Models"
+          icon={<Scale size={16} />}
+          count={modelsQ.isLoading ? null : models.length}
+          testId="strata-scorecard-models-panel"
+        >
           {modelsQ.isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
           ) : models.length === 0 ? (
@@ -172,41 +257,29 @@ export default function StrataScorecardsPage() {
           )}
         </StrataPanel>
 
-        <StrataPanel title="Instances" testId="strata-scorecard-instances-panel">
-          {instancesQ.isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
-          ) : instances.length === 0 ? (
-            <EmptyState
-              size="compact"
-              header="No scorecard instances"
-              description="No scorecard instances exist for the selected cycle yet."
-              testId="strata-instances-empty"
-            />
-          ) : (
-            <div>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'minmax(180px, 2fr) minmax(100px, 1fr) minmax(140px, 1.5fr) 140px minmax(140px, 1fr)',
-                  gap: 12, padding: '8px 12px', borderBottom: '2px solid var(--ds-border)',
-                }}
-              >
-                <span style={headerCell}>Name</span>
-                <span style={headerCell}>Period</span>
-                <span style={headerCell}>Model</span>
-                <span style={headerCell}>State</span>
-                <span style={{ ...headerCell, textAlign: 'right' }}>Latest score</span>
-              </div>
-              {instances.map((i) => (
-                <InstanceRow
-                  key={i.id}
-                  instance={i}
-                  periodName={i.period_id ? periodNameById.get(i.period_id) ?? null : null}
-                  modelName={modelNameById.get(i.model_id) ?? null}
-                />
-              ))}
-            </div>
-          )}
+        <StrataPanel
+          title="Instances"
+          icon={<PieChart size={16} />}
+          count={instancesQ.isLoading ? null : instances.length}
+          noPadding
+          testId="strata-scorecard-instances-panel"
+        >
+          <JiraTable<InstanceRowData>
+            columns={columns}
+            data={rows}
+            getRowId={(row) => row.id}
+            onRowClick={(row) => { if (row.slug) navigate(Routes.strata.scorecard(row.slug)); }}
+            isLoading={instancesQ.isLoading}
+            emptyView={(
+              <EmptyState
+                size="compact"
+                header="No scorecard instances"
+                description="No scorecard instances exist for the selected cycle yet."
+                testId="strata-instances-empty"
+              />
+            )}
+            ariaLabel="Scorecard instances"
+          />
         </StrataPanel>
       </div>
     </PageContainer>

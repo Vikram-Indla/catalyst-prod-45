@@ -6,16 +6,23 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { Button, EmptyState, Lozenge, SectionMessage } from '@/components/ads';
+import {
+  Button, CatalystTag, EmptyState, IconButton,
+  Lozenge, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, SectionMessage, Spinner,
+} from '@/components/ads';
 import { PageContainer } from '@/components/shared/PageContainer';
 import { Routes } from '@/lib/routes';
 import {
+  ChevronDown, ChevronRight, Flag, Gem, GitBranch, Layers, MoveRight, Network, Target, X,
+} from '@/lib/atlaskit-icons';
+import {
   useElementKpis, useInvalidateStrata, useKpis, useMapEdges, usePerspectives,
-  usePlayCharters, useStrataContext, useStrategyElements,
+  usePlayCharters, useProfileNames, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import { strategyApi } from '@/modules/strata/domain';
-import { StrataConfigContextBar, StrataPanel } from '@/modules/strata/components/shared';
+import { StrataChipMenu, StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import type { StrataMenuOption } from '@/modules/strata/components/shared';
+import { fmtRatioPct, labelize } from '@/modules/strata/components/format';
 import type { StrataStrategyElement } from '@/modules/strata/types';
 
 type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
@@ -29,15 +36,40 @@ const STATUS_APPEARANCE: Record<StrataStrategyElement['status'], LozengeAppearan
   retired: 'removed',
 };
 
-const sentenceCase = (s: string): string =>
-  s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ') : s;
-
-const typeChipStyle: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', flexShrink: 0,
-  padding: '4px 8px', borderRadius: 4,
-  background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
-  fontSize: 11, fontWeight: 600,
+/** Per-type visual identity — element types are SYSTEM values (DB CHECK). */
+const TYPE_META: Record<string, { icon: React.ComponentType<{ size?: number }>; bg: string; fg: string }> = {
+  theme: { icon: Gem, bg: 'var(--ds-background-selected)', fg: 'var(--ds-text-brand)' },
+  play: { icon: Flag, bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)' },
+  objective: { icon: Target, bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)' },
 };
+
+function TypeChip({ type }: { type: string }) {
+  const meta = TYPE_META[type];
+  const Icon = meta?.icon;
+  return (
+    <span
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0,
+        padding: '4px 8px', borderRadius: 4,
+        background: meta?.bg ?? T.neutral, color: meta?.fg ?? T.subtle,
+        fontSize: 'var(--ds-font-size-050)', fontWeight: 600, whiteSpace: 'nowrap',
+      }}
+    >
+      {Icon ? <Icon size={13} /> : null}
+      {labelize(type)}
+    </span>
+  );
+}
+
+/** Hover states need real :hover — inline styles cannot express them. Tokens only. */
+const TREE_CSS = `
+.strata-tree-row { transition: background 80ms ease; }
+.strata-tree-row:hover { background: var(--ds-surface-sunken); }
+.strata-row-actions { opacity: 0; transition: opacity 80ms ease; }
+.strata-tree-row:hover .strata-row-actions,
+.strata-tree-row:focus-within .strata-row-actions { opacity: 1; }
+`;
+
 
 export default function StrataStrategyRoomPage() {
   const navigate = useNavigate();
@@ -48,6 +80,7 @@ export default function StrataStrategyRoomPage() {
   const elementKpisQ = useElementKpis();
   const kpisQ = useKpis();
   const perspectivesQ = usePerspectives();
+  const profilesQ = useProfileNames();
   const invalidate = useInvalidateStrata();
 
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
@@ -55,6 +88,8 @@ export default function StrataStrategyRoomPage() {
   const [perspectiveFilter, setPerspectiveFilter] = useState<string | null>(null);
   const [promoteError, setPromoteError] = useState<string | null>(null);
   const [promotingId, setPromotingId] = useState<string | null>(null);
+  const [promoteTarget, setPromoteTarget] = useState<StrataStrategyElement | null>(null);
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const elements = useMemo(() => elementsQ.data ?? [], [elementsQ.data]);
   const perspectives = perspectivesQ.data ?? [];
@@ -62,12 +97,15 @@ export default function StrataStrategyRoomPage() {
   const elementKpis = elementKpisQ.data ?? [];
   const kpis = kpisQ.data ?? [];
   const edges = edgesQ.data ?? [];
+  const profiles = profilesQ.data;
 
   const elementById = useMemo(() => new Map(elements.map((e) => [e.id, e])), [elements]);
   const charterByElement = useMemo(() => new Map(charters.map((c) => [c.element_id, c])), [charters]);
   const kpiById = useMemo(() => new Map(kpis.map((k) => [k.id, k])), [kpis]);
   const perspectiveName = (id: string | null): string =>
     (id ? perspectives.find((p) => p.id === id)?.name : null) ?? '—';
+  const ownerName = (ownerId: string | null): string =>
+    (ownerId ? profiles?.get(ownerId)?.name : null) ?? '—';
 
   const distinctTypes = useMemo(
     () => Array.from(new Set(elements.map((e) => e.element_type))),
@@ -79,7 +117,7 @@ export default function StrataStrategyRoomPage() {
   );
 
   // Filtered flat set; children of hidden parents surface as roots.
-  const { roots, childrenOf } = useMemo(() => {
+  const { roots, childrenOf, filteredCount } = useMemo(() => {
     const filtered = elements.filter((el) =>
       (typeFilter === null || el.element_type === typeFilter) &&
       (statusFilter === null || el.status === statusFilter) &&
@@ -99,8 +137,16 @@ export default function StrataStrategyRoomPage() {
     const byOrder = (a: StrataStrategyElement, b: StrataStrategyElement) => a.order_index - b.order_index;
     rootList.sort(byOrder);
     children.forEach((list) => list.sort(byOrder));
-    return { roots: rootList, childrenOf: children };
+    return { roots: rootList, childrenOf: children, filteredCount: filtered.length };
   }, [elements, typeFilter, statusFilter, perspectiveFilter]);
+
+  const toggleCollapsed = (id: string) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
 
   const handlePromote = async (elementId: string) => {
     setPromoteError(null);
@@ -108,8 +154,10 @@ export default function StrataStrategyRoomPage() {
     try {
       await strategyApi.promoteElement(elementId);
       invalidate();
+      setPromoteTarget(null);
     } catch (e) {
       setPromoteError(e instanceof Error ? e.message : String(e));
+      setPromoteTarget(null);
     } finally {
       setPromotingId(null);
     }
@@ -118,44 +166,76 @@ export default function StrataStrategyRoomPage() {
   const renderNode = (el: StrataStrategyElement, depth: number): React.ReactNode => {
     const charter = el.element_type === 'play' ? charterByElement.get(el.id) : undefined;
     const charterComplete = !!(charter && charter.hypothesis && charter.value_thesis && charter.owner_id);
+    const kids = childrenOf.get(el.id) ?? [];
+    const isCollapsed = collapsed.has(el.id);
     return (
       <React.Fragment key={el.id}>
         <div
           data-testid={`strata-element-row-${el.id}`}
+          className="strata-tree-row"
           style={{
-            display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-            padding: '8px 8px', paddingLeft: 8 + depth * 24,
-            borderBottom: '1px solid var(--ds-border)',
+            display: 'flex', alignItems: 'center', gap: 10,
+            minHeight: 36, padding: '4px 12px',
+            borderBottom: `1px solid ${T.border}`,
           }}
         >
-          <span style={typeChipStyle}>{sentenceCase(el.element_type)}</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text)', flex: '1 1 auto', minWidth: 120 }}>
+          {/* Depth rails */}
+          {Array.from({ length: depth }).map((_, i) => (
+            <span
+              key={i}
+              aria-hidden
+              style={{ alignSelf: 'stretch', width: 20, flexShrink: 0, borderLeft: `1px solid ${T.border}` }}
+            />
+          ))}
+          {/* Expand affordance */}
+          {kids.length > 0 ? (
+            <IconButton
+              icon={isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+              appearance="subtle"
+              spacing="compact"
+              aria-label={isCollapsed ? `Expand ${el.name}` : `Collapse ${el.name}`}
+              onClick={() => toggleCollapsed(el.id)}
+            />
+          ) : (
+            <span aria-hidden style={{ width: 24, flexShrink: 0 }} />
+          )}
+          <TypeChip type={el.element_type} />
+          <span
+            style={{
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text,
+              flex: '1 1 auto', minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}
+          >
             {el.name}
           </span>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>{el.stage ? sentenceCase(el.stage) : '—'}</span>
-          <Lozenge appearance={STATUS_APPEARANCE[el.status] ?? 'default'}>{sentenceCase(el.status)}</Lozenge>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }} title={el.owner_id ?? undefined}>
-            {el.owner_id ? `${el.owner_id.slice(0, 8)}…` : '—'}
+          {el.stage ? (
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>
+              <span style={{ fontWeight: 600 }}>Stage</span> {labelize(el.stage)}
+            </span>
+          ) : null}
+          <Lozenge appearance={STATUS_APPEARANCE[el.status] ?? 'default'}>{labelize(el.status)}</Lozenge>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
+            {ownerName(el.owner_id)}
           </span>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>{perspectiveName(el.perspective_id)}</span>
-          {el.element_type === 'play' ? (
-            <>
-              <Lozenge appearance={charterComplete ? 'success' : 'moved'}>
-                {charterComplete ? 'Charter complete' : 'Charter incomplete'}
-              </Lozenge>
-              {el.status !== 'active' ? (
-                <Button
-                  spacing="compact"
-                  isLoading={promotingId === el.id}
-                  onClick={() => handlePromote(el.id)}
-                >
-                  Promote
-                </Button>
-              ) : null}
-            </>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, whiteSpace: 'nowrap' }}>
+            {perspectiveName(el.perspective_id)}
+          </span>
+          {el.element_type === 'play' && !charterComplete ? (
+            <Lozenge appearance="moved">Charter incomplete</Lozenge>
+          ) : null}
+          {el.element_type === 'play' && el.status !== 'active' ? (
+            <span className="strata-row-actions">
+              <Button
+                spacing="compact"
+                isLoading={promotingId === el.id}
+                onClick={() => setPromoteTarget(el)}
+              >
+                Promote
+              </Button>
+            </span>
           ) : null}
         </div>
-        {(childrenOf.get(el.id) ?? []).map((child) => renderNode(child, depth + 1))}
+        {!isCollapsed ? kids.map((child) => renderNode(child, depth + 1)) : null}
       </React.Fragment>
     );
   };
@@ -175,15 +255,53 @@ export default function StrataStrategyRoomPage() {
   }, [elementKpis]);
 
   const isLoading = contextLoading || elementsQ.isLoading;
-  const filterTriggerLabel = (prefix: string, value: string | null) => `${prefix}: ${value ?? 'All'}`;
+
+  const filterControl = (
+    label: string,
+    value: string | null,
+    display: string | null,
+    onClear: () => void,
+    options: StrataMenuOption[],
+  ) => (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+      <StrataChipMenu
+        label={label}
+        value={display ?? 'All'}
+        active={value !== null}
+        options={options}
+        aria-label={`Filter by ${label.toLowerCase()}`}
+      />
+      {value !== null ? (
+        <IconButton
+          icon={<X size={14} />}
+          appearance="subtle"
+          spacing="compact"
+          aria-label={`Clear ${label.toLowerCase()} filter`}
+          onClick={onClear}
+        />
+      ) : null}
+    </span>
+  );
 
   return (
     <PageContainer variant="wide">
-      <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>Strategy Room</h1>
-      <StrataConfigContextBar />
+      <style>{TREE_CSS}</style>
+      <StrataPageChrome
+        icon={<Layers size={20} />}
+        title="Strategy Room"
+        description="Strategy hierarchy, KPI coverage and cause & effect for the active cycle"
+        actions={
+          <Button appearance="primary" onClick={() => navigate(Routes.strata.strategyMap())}>
+            Open Strategy Map
+          </Button>
+        }
+        testId="strata-strategy-room-chrome"
+      />
 
       {isLoading ? (
-        <div style={{ padding: 32, color: 'var(--ds-text-subtle)' }}>Loading strategy…</div>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
+          <Spinner size="large" aria-label="Loading strategy" />
+        </div>
       ) : elementsQ.isError ? (
         <SectionMessage appearance="error" title="Could not load strategy elements">
           <p>{elementsQ.error instanceof Error ? elementsQ.error.message : 'Unknown error'}</p>
@@ -191,50 +309,51 @@ export default function StrataStrategyRoomPage() {
       ) : !activeCycle || elements.length === 0 ? (
         <EmptyState
           header="No strategy elements yet"
-          description="This cycle has no themes, plays or objectives. Elements appear here once the strategy office drafts them."
+          description="This cycle has no themes, plays or objectives. Draft the strategy structure in STRATA Configuration, then elements appear here."
+          primaryAction={
+            <Button onClick={() => navigate(Routes.strata.admin())}>Open Configuration</Button>
+          }
         />
       ) : (
         <>
           {/* Toolbar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-            <DropdownMenu trigger={filterTriggerLabel('Type', typeFilter ? sentenceCase(typeFilter) : null)} shouldRenderToParent>
-              <DropdownItemGroup>
-                <DropdownItem isSelected={typeFilter === null} onClick={() => setTypeFilter(null)}>All</DropdownItem>
-                {distinctTypes.map((t) => (
-                  <DropdownItem key={t} isSelected={typeFilter === t} onClick={() => setTypeFilter(t)}>
-                    {sentenceCase(t)}
-                  </DropdownItem>
-                ))}
-              </DropdownItemGroup>
-            </DropdownMenu>
-            <DropdownMenu trigger={filterTriggerLabel('Status', statusFilter ? sentenceCase(statusFilter) : null)} shouldRenderToParent>
-              <DropdownItemGroup>
-                <DropdownItem isSelected={statusFilter === null} onClick={() => setStatusFilter(null)}>All</DropdownItem>
-                {distinctStatuses.map((s) => (
-                  <DropdownItem key={s} isSelected={statusFilter === s} onClick={() => setStatusFilter(s)}>
-                    {sentenceCase(s)}
-                  </DropdownItem>
-                ))}
-              </DropdownItemGroup>
-            </DropdownMenu>
-            <DropdownMenu
-              trigger={filterTriggerLabel('Perspective', perspectiveFilter ? perspectiveName(perspectiveFilter) : null)}
-              shouldRenderToParent
-            >
-              <DropdownItemGroup>
-                <DropdownItem isSelected={perspectiveFilter === null} onClick={() => setPerspectiveFilter(null)}>All</DropdownItem>
-                {perspectives.map((p) => (
-                  <DropdownItem key={p.id} isSelected={perspectiveFilter === p.id} onClick={() => setPerspectiveFilter(p.id)}>
-                    {p.name}
-                  </DropdownItem>
-                ))}
-              </DropdownItemGroup>
-            </DropdownMenu>
-            <div style={{ marginLeft: 'auto' }}>
-              <Button appearance="primary" onClick={() => navigate(Routes.strata.strategyMap())}>
-                Open Strategy Map
-              </Button>
-            </div>
+            {filterControl(
+              'Type',
+              typeFilter,
+              typeFilter ? labelize(typeFilter) : null,
+              () => setTypeFilter(null),
+              [
+                { key: 'all', label: 'All', isSelected: typeFilter === null, onClick: () => setTypeFilter(null) },
+                ...distinctTypes.map((t) => ({
+                  key: t, label: labelize(t), isSelected: typeFilter === t, onClick: () => setTypeFilter(t),
+                })),
+              ],
+            )}
+            {filterControl(
+              'Status',
+              statusFilter,
+              statusFilter ? labelize(statusFilter) : null,
+              () => setStatusFilter(null),
+              [
+                { key: 'all', label: 'All', isSelected: statusFilter === null, onClick: () => setStatusFilter(null) },
+                ...distinctStatuses.map((s) => ({
+                  key: s, label: labelize(s), isSelected: statusFilter === s, onClick: () => setStatusFilter(s),
+                })),
+              ],
+            )}
+            {filterControl(
+              'Perspective',
+              perspectiveFilter,
+              perspectiveFilter ? perspectiveName(perspectiveFilter) : null,
+              () => setPerspectiveFilter(null),
+              [
+                { key: 'all', label: 'All', isSelected: perspectiveFilter === null, onClick: () => setPerspectiveFilter(null) },
+                ...perspectives.map((p) => ({
+                  key: p.id, label: p.name, isSelected: perspectiveFilter === p.id, onClick: () => setPerspectiveFilter(p.id),
+                })),
+              ],
+            )}
           </div>
 
           {promoteError ? (
@@ -247,9 +366,17 @@ export default function StrataStrategyRoomPage() {
 
           {/* Hierarchy */}
           <div style={{ marginBottom: 16 }}>
-            <StrataPanel title="Strategy hierarchy" testId="strata-hierarchy-panel">
+            <StrataPanel
+              title="Strategy hierarchy"
+              icon={<GitBranch size={16} />}
+              count={filteredCount}
+              testId="strata-hierarchy-panel"
+              noPadding
+            >
               {roots.length === 0 ? (
-                <EmptyState size="compact" header="No elements match the filters" description="Clear a filter to see the hierarchy." />
+                <div style={{ padding: 16 }}>
+                  <EmptyState size="compact" header="No elements match the filters" description="Clear a filter to see the hierarchy." />
+                </div>
               ) : (
                 <div>{roots.map((el) => renderNode(el, 0))}</div>
               )}
@@ -258,7 +385,12 @@ export default function StrataStrategyRoomPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 16 }}>
             {/* KPI coverage */}
-            <StrataPanel title="KPI coverage" testId="strata-kpi-coverage-panel">
+            <StrataPanel
+              title="KPI coverage"
+              icon={<Target size={16} />}
+              count={objectives.length}
+              testId="strata-kpi-coverage-panel"
+            >
               {objectives.length === 0 ? (
                 <EmptyState size="compact" header="No objectives in this cycle" />
               ) : (
@@ -269,10 +401,13 @@ export default function StrataStrategyRoomPage() {
                       key={obj.id}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-                        padding: '8px 0', borderBottom: '1px solid var(--ds-border)',
+                        padding: '8px 0', borderBottom: `1px solid ${T.border}`,
                       }}
                     >
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text)', flex: '1 1 auto', minWidth: 140 }}>
+                      <span style={{
+                        fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text,
+                        flex: '1 1 auto', minWidth: 140,
+                      }}>
                         {obj.name}
                       </span>
                       {linkedKpiIds.length === 0 ? (
@@ -280,11 +415,11 @@ export default function StrataStrategyRoomPage() {
                       ) : (
                         linkedKpiIds.map((kpiId) => {
                           const kpi = kpiById.get(kpiId);
-                          if (!kpi) return <span key={kpiId} style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>—</span>;
+                          if (!kpi) return <span key={kpiId} style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>—</span>;
                           return (
                             <Button
                               key={kpiId}
-                              appearance="subtle"
+                              appearance="link"
                               spacing="compact"
                               isDisabled={!kpi.slug}
                               onClick={() => { if (kpi.slug) navigate(Routes.strata.kpi(kpi.slug)); }}
@@ -302,18 +437,9 @@ export default function StrataStrategyRoomPage() {
 
             {/* Cause & effect */}
             <StrataPanel
-              title={
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate(Routes.strata.strategyMap())}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(Routes.strata.strategyMap()); } }}
-                  style={{ cursor: 'pointer' }}
-                  title="Open the strategy map"
-                >
-                  Cause &amp; effect ({edges.length})
-                </span>
-              }
+              title="Cause & effect"
+              icon={<Network size={16} />}
+              count={edges.length}
               actions={
                 <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.strategyMap())}>
                   Open map
@@ -332,15 +458,16 @@ export default function StrataStrategyRoomPage() {
                       key={edge.id}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-                        padding: '8px 0', borderBottom: '1px solid var(--ds-border)', fontSize: 13,
+                        padding: '8px 0', borderBottom: `1px solid ${T.border}`,
+                        fontSize: 'var(--ds-font-size-200)',
                       }}
                     >
-                      <span style={{ color: 'var(--ds-text)', fontWeight: 600 }}>{from?.name ?? '—'}</span>
-                      <span style={{ color: 'var(--ds-text-subtlest)' }}>→</span>
-                      <span style={{ color: 'var(--ds-text)', fontWeight: 600 }}>{to?.name ?? '—'}</span>
-                      <span style={typeChipStyle}>{sentenceCase(edge.relationship_type)}</span>
-                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginLeft: 'auto' }}>
-                        {edge.confidence != null ? `confidence ${edge.confidence}` : '—'}
+                      <span style={{ color: T.text, fontWeight: 600 }}>{from?.name ?? '—'}</span>
+                      <span aria-hidden style={{ display: 'inline-flex', color: T.subtlest }}><MoveRight size={14} /></span>
+                      <span style={{ color: T.text, fontWeight: 600 }}>{to?.name ?? '—'}</span>
+                      <CatalystTag text={labelize(edge.relationship_type)} />
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+                        {edge.confidence != null ? `Confidence ${fmtRatioPct(edge.confidence)}` : '—'}
                       </span>
                     </div>
                   );
@@ -348,6 +475,37 @@ export default function StrataStrategyRoomPage() {
               )}
             </StrataPanel>
           </div>
+
+          {/* Promote confirmation */}
+          <Modal
+            isOpen={promoteTarget !== null}
+            onClose={() => { if (!promotingId) setPromoteTarget(null); }}
+            width="small"
+          >
+            <ModalHeader>
+              <ModalTitle>Promote play</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
+                Promote <strong>{promoteTarget?.name ?? '—'}</strong> to active?
+              </p>
+              <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+                Promotion is enforced server-side and is blocked if charter or gate requirements are not met.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" isDisabled={!!promotingId} onClick={() => setPromoteTarget(null)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isLoading={promotingId !== null && promotingId === promoteTarget?.id}
+                onClick={() => { if (promoteTarget) handlePromote(promoteTarget.id); }}
+              >
+                Promote
+              </Button>
+            </ModalFooter>
+          </Modal>
         </>
       )}
     </PageContainer>

@@ -8,62 +8,69 @@
  */
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Badge from '@atlaskit/badge';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import { Button, EmptyState, Lozenge, SectionMessage, Spinner } from '@/components/ads';
+import {
+  Button, CatalystInlineCode, CatalystTag, EmptyState, Modal, ModalBody, ModalFooter,
+  ModalHeader, ModalTitle, SectionMessage, Spinner, Textfield,
+} from '@/components/ads';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
+import { StatusLozenge } from '@/components/shared/StatusLozenge';
+import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { PageContainer } from '@/components/shared/PageContainer';
 import { Routes } from '@/lib/routes';
+import {
+  BarChart3, CheckCircle2, Clock, Gem, GitBranch, Layers, ListChecks,
+  MoveRight, Scale, Settings2, ShieldCheck, Upload, Users,
+} from '@/lib/atlaskit-icons';
 import { configApi } from '@/modules/strata/domain';
 import {
   useChangeRequests, useGateModels, useInvalidateStrata, useKpiTypes, useModelPerspectives,
   usePerspectives, useScorecardModels, useStrataAudit, useStrataRoles, useThresholdSchemes,
   useUploadTemplates, useValueCategories, useWorkflowConfigs,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataConfigContextBar, StrataPanel } from '@/modules/strata/components/shared';
+import { StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import { fmtDate, fmtDateTime, labelize } from '@/modules/strata/components/format';
 import type {
   GovernedEnvelope, GovernedStatus, StrataChangeRequest, StrataRole, StrataScorecardModel,
 } from '@/modules/strata/types';
 
-type LozengeAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 type OnError = (msg: string | null) => void;
 
 // ── Shared bits ──────────────────────────────────────────────────────────────
-const chipStyle: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center',
-  padding: '4px 8px', borderRadius: 4,
-  background: 'var(--ds-background-neutral)', color: 'var(--ds-text)',
-  fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
+const captionStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '0 0 12px' };
+const metaStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', color: T.subtle };
+const bodyStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: T.text };
+const codeStyle: React.CSSProperties = {
+  fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)', color: T.subtlest,
 };
-
-const codeChipStyle: React.CSSProperties = {
-  ...chipStyle, fontFamily: 'var(--ds-font-family-code, monospace)', fontWeight: 500,
-};
-
-const captionStyle: React.CSSProperties = { fontSize: 12, color: 'var(--ds-text-subtlest)', margin: '0 0 12px' };
-const metaStyle: React.CSSProperties = { fontSize: 12, color: 'var(--ds-text-subtle)' };
 
 const GOV_LOZENGE: Record<GovernedStatus, LozengeAppearance> = {
   approved: 'success', draft: 'default', pending_approval: 'moved', retired: 'removed', superseded: 'removed',
 };
 
-function GovStatusLozenge({ status }: { status: GovernedStatus }) {
-  return <Lozenge appearance={GOV_LOZENGE[status] ?? 'default'}>{status.replace(/_/g, ' ')}</Lozenge>;
-}
+/** Governed directionality → executive-readable label (not naive labelize). */
+const DIRECTIONALITY_LABEL: Record<string, string> = {
+  higher_better: 'Higher is better',
+  lower_better: 'Lower is better',
+  band: 'Band',
+  manual: 'Manual',
+};
 
-function fmtDate(value: string | null | undefined): string {
-  return value ? new Date(value).toLocaleDateString() : '—';
+function GovStatusLozenge({ status }: { status: GovernedStatus }) {
+  return <StatusLozenge status={status} label={labelize(status)} appearance={GOV_LOZENGE[status] ?? 'default'} />;
 }
 
 /** The governance envelope — shown prominently on every governed record. */
 function GovEnvelope({ r }: { r: GovernedEnvelope }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-      <Badge>{`v${r.version}`}</Badge>
+      <CatalystTag text={`v${r.version}`} />
       <GovStatusLozenge status={r.status} />
       <span style={metaStyle}>Effective {fmtDate(r.effective_from)}</span>
-      <span style={metaStyle}>{r.approved_at ? `Approved ${fmtDate(r.approved_at)}` : '—'}</span>
+      {r.approved_at ? <span style={metaStyle}>Approved {fmtDate(r.approved_at)}</span> : null}
       {r.change_reason ? (
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>{r.change_reason}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{r.change_reason}</span>
       ) : null}
     </div>
   );
@@ -78,6 +85,8 @@ function GovActions({ table, record, isScorecardModel, onError }: {
 }) {
   const invalidate = useInvalidateStrata();
   const [busy, setBusy] = useState(false);
+  const [retireOpen, setRetireOpen] = useState(false);
+  const [retireReason, setRetireReason] = useState('');
   const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     onError(null);
@@ -101,7 +110,8 @@ function GovActions({ table, record, isScorecardModel, onError }: {
     return (
       <Button
         spacing="compact"
-        appearance="primary"
+        appearance="default"
+        iconBefore={<CheckCircle2 size={14} />}
         isDisabled={busy}
         onClick={() => void act(() =>
           isScorecardModel ? configApi.approveScorecardModel(record.id) : configApi.approveRecord(table, record.id))}
@@ -112,17 +122,41 @@ function GovActions({ table, record, isScorecardModel, onError }: {
   }
   if (record.status === 'approved') {
     return (
-      <Button
-        spacing="compact"
-        isDisabled={busy}
-        onClick={() => {
-          const reason = window.prompt('Retirement reason');
-          if (reason == null) return;
-          void act(() => configApi.retireRecord(table, record.id, reason || undefined));
-        }}
-      >
-        Retire
-      </Button>
+      <>
+        <Button spacing="compact" isDisabled={busy} onClick={() => { setRetireReason(''); setRetireOpen(true); }}>
+          Retire
+        </Button>
+        <Modal isOpen={retireOpen} onClose={() => setRetireOpen(false)} width="small">
+          <ModalHeader>
+            <ModalTitle>Retire record</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
+              Retiring is a governed lifecycle change — the reason is recorded in the audit trail.
+            </p>
+            <Textfield
+              value={retireReason}
+              onChange={(e) => setRetireReason(e.target.value)}
+              placeholder="Retirement reason"
+              aria-label="Retirement reason"
+              autoFocus
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setRetireOpen(false)}>Cancel</Button>
+            <Button
+              appearance="warning"
+              isDisabled={busy}
+              onClick={() => {
+                setRetireOpen(false);
+                void act(() => configApi.retireRecord(table, record.id, retireReason || undefined));
+              }}
+            >
+              Retire record
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </>
     );
   }
   return null;
@@ -140,36 +174,18 @@ function GovRecordCard({ name, table, record, isScorecardModel, onError, childre
   return (
     <div
       style={{
-        border: '1px solid var(--ds-border)', borderRadius: 8, padding: 12,
-        background: 'var(--ds-surface)', display: 'flex', flexDirection: 'column', gap: 8,
+        border: `1px solid ${T.border}`, borderRadius: 8, padding: 12,
+        background: T.raised, boxShadow: 'var(--ds-shadow-raised)',
+        display: 'flex', flexDirection: 'column', gap: 8,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
-        <strong style={{ fontSize: 13, color: 'var(--ds-text)' }}>{name}</strong>
+        <strong style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{name}</strong>
         <GovActions table={table} record={record} isScorecardModel={isScorecardModel} onError={onError} />
       </div>
       <GovEnvelope r={record} />
       {children}
     </div>
-  );
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return (
-    <th style={{
-      textAlign: 'left', padding: '8px 12px 8px 0', fontSize: 11, fontWeight: 700,
-      color: 'var(--ds-text-subtle)',
-      borderBottom: '2px solid var(--ds-border)', whiteSpace: 'nowrap',
-    }}>{children}</th>
-  );
-}
-
-function Td({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return (
-    <td style={{
-      padding: '8px 12px 8px 0', fontSize: 13, color: 'var(--ds-text)',
-      borderBottom: '1px solid var(--ds-border)', verticalAlign: 'top', ...style,
-    }}>{children}</td>
   );
 }
 
@@ -201,9 +217,9 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
   const list = q.data ?? [];
   const nameById = new Map(list.map((p) => [p.id, p.name]));
   return (
-    <StrataPanel title="Perspectives" testId="strata-admin-perspectives">
+    <StrataPanel title="Perspectives" icon={<Layers size={16} />} count={list.length} testId="strata-admin-perspectives">
       <p style={captionStyle}>
-        Perspectives are governed records — never constants. Weights live on scorecard models.
+        Perspectives are versioned, approved records.
       </p>
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -212,7 +228,7 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <span style={metaStyle}>Order {p.order_index}</span>
                 <span style={metaStyle}>Default weight {p.default_weight ?? '—'}</span>
-                <span style={metaStyle}>Parent {p.parent_id ? nameById.get(p.parent_id) ?? '—' : '—'}</span>
+                {p.parent_id ? <span style={metaStyle}>Parent {nameById.get(p.parent_id) ?? '—'}</span> : null}
               </div>
             </GovRecordCard>
           ))}
@@ -222,34 +238,49 @@ function PerspectivesSection({ onError }: { onError: OnError }) {
   );
 }
 
+/** Categorical segment tones — semantic token cycle, index-stable per model. */
+const SEGMENT_TONES = [
+  'var(--ds-text-brand)',
+  'var(--ds-text-success)',
+  'var(--ds-text-information)',
+  'var(--ds-text-warning)',
+  'var(--ds-text-danger)',
+  'var(--ds-text-subtlest)',
+];
+
 function ModelWeights({ model }: { model: StrataScorecardModel }) {
   const mp = useModelPerspectives(model.id);
   const perspectives = usePerspectives();
   if (mp.isLoading) return <Spinner size="small" />;
   if (mp.isError) {
-    return <span style={{ fontSize: 12, color: 'var(--ds-text-danger)' }}>Failed to load weights</span>;
+    return <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)' }}>Failed to load weights</span>;
   }
   const rows = mp.data ?? [];
   if (rows.length === 0) {
-    return <span style={metaStyle}>No perspective weights configured — —</span>;
+    return <span style={metaStyle}>No perspective weights configured.</span>;
   }
   const nameById = new Map((perspectives.data ?? []).map((p) => [p.id, p.name]));
   // Display of config integrity (sum shown to the admin) — not business logic.
   const sum = rows.reduce((acc, r) => acc + r.weight, 0);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {rows.map((r) => (
-          <span key={r.id} style={chipStyle}>
-            {nameById.get(r.perspective_id) ?? '—'} · {r.weight}
-          </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {/* Proportional stacked weight bar */}
+      <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: T.neutral, maxWidth: 420 }} aria-hidden>
+        {rows.map((r, i) => (
+          <span key={r.id} style={{ flex: r.weight, background: SEGMENT_TONES[i % SEGMENT_TONES.length] }} />
         ))}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={metaStyle}>Σ = {sum}</span>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+        {rows.map((r, i) => (
+          <span key={r.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: SEGMENT_TONES[i % SEGMENT_TONES.length], flexShrink: 0 }} />
+            {nameById.get(r.perspective_id) ?? '—'}
+            <strong style={{ color: T.text, fontVariantNumeric: 'tabular-nums' }}>{r.weight}%</strong>
+          </span>
+        ))}
         {sum === 100
-          ? <Lozenge appearance="success">Weights valid</Lozenge>
-          : <Lozenge appearance="removed">Weights ≠ 100</Lozenge>}
+          ? <StatusLozenge status="valid" label="Weights valid" appearance="success" />
+          : <StatusLozenge status="invalid" label="Weights must total 100" appearance="removed" />}
       </div>
     </div>
   );
@@ -259,15 +290,15 @@ function ScorecardModelsSection({ onError }: { onError: OnError }) {
   const q = useScorecardModels();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="Scorecard models" testId="strata-admin-scorecard-models">
+    <StrataPanel title="Scorecard models" icon={<Scale size={16} />} count={list.length} testId="strata-admin-scorecard-models">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((m) => (
             <GovRecordCard key={m.id} name={m.name} table="strata_scorecard_models" record={m} isScorecardModel onError={onError}>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <span style={metaStyle}>Scope {m.owner_scope_type}</span>
-                <span style={metaStyle}>Rollup {m.rollup_method}</span>
-                <span style={metaStyle}>Granularity {m.period_granularity}</span>
+                <span style={metaStyle}>Scope {labelize(m.owner_scope_type)}</span>
+                <span style={metaStyle}>Rollup {labelize(m.rollup_method)}</span>
+                <span style={metaStyle}>Granularity {labelize(m.period_granularity)}</span>
               </div>
               <ModelWeights model={m} />
             </GovRecordCard>
@@ -282,7 +313,7 @@ function ThresholdsSection({ onError }: { onError: OnError }) {
   const q = useThresholdSchemes();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="Threshold schemes" testId="strata-admin-thresholds">
+    <StrataPanel title="Threshold schemes" icon={<BarChart3 size={16} />} count={list.length} testId="strata-admin-thresholds">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((s) => (
@@ -290,7 +321,7 @@ function ThresholdsSection({ onError }: { onError: OnError }) {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                 {(s.bands ?? []).map((b) => (
                   <span key={b.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                    <Lozenge appearance={(b.appearance as LozengeAppearance) ?? 'default'}>{b.label}</Lozenge>
+                    <StatusLozenge status={b.key} label={b.label} appearance={(b.appearance as LozengeAppearance) ?? 'default'} />
                     <span style={metaStyle}>min {b.min_score}</span>
                   </span>
                 ))}
@@ -311,15 +342,15 @@ function ValueTaxonomySection({ onError }: { onError: OnError }) {
   const q = useValueCategories();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="Value taxonomy" testId="strata-admin-value-taxonomy">
+    <StrataPanel title="Value taxonomy" icon={<Gem size={16} />} count={list.length} testId="strata-admin-value-taxonomy">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((c) => (
             <GovRecordCard key={c.id} name={c.name} table="strata_value_categories" record={c} onError={onError}>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={metaStyle}>Unit {c.measurement_unit ?? '—'}</span>
-                {c.validator_role ? <span style={chipStyle}>{c.validator_role}</span> : <span style={metaStyle}>Validator —</span>}
-                <span style={metaStyle}>Cadence {c.realization_cadence ?? '—'}</span>
+                {c.validator_role ? <CatalystTag text={labelize(c.validator_role)} /> : null}
+                <span style={metaStyle}>Cadence {c.realization_cadence ? labelize(c.realization_cadence) : '—'}</span>
               </div>
             </GovRecordCard>
           ))}
@@ -333,7 +364,7 @@ function GatesSection({ onError }: { onError: OnError }) {
   const q = useGateModels();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="Gate models" testId="strata-admin-gates">
+    <StrataPanel title="Gate models" icon={<ShieldCheck size={16} />} count={list.length} testId="strata-admin-gates">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((g) => (
@@ -341,12 +372,12 @@ function GatesSection({ onError }: { onError: OnError }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {(g.stages ?? []).map((st) => (
                   <div key={st.id} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text }}>
                       {st.order_index}. {st.name}
                     </span>
                     <span style={metaStyle}>{(st.criteria ?? []).length} criteria</span>
-                    {(st.decision_options ?? []).map((d) => <span key={d} style={chipStyle}>{d}</span>)}
-                    {(st.approval_roles ?? []).map((r) => <span key={r} style={codeChipStyle}>{r}</span>)}
+                    {(st.decision_options ?? []).map((d) => <CatalystTag key={d} text={labelize(d)} />)}
+                    {(st.approval_roles ?? []).map((r) => <CatalystTag key={r} text={labelize(r)} color="grey" />)}
                   </div>
                 ))}
                 {(g.stages ?? []).length === 0 ? <span style={metaStyle}>No stages configured</span> : null}
@@ -363,14 +394,14 @@ function KpiTypesSection({ onError }: { onError: OnError }) {
   const q = useKpiTypes();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="KPI types" testId="strata-admin-kpi-types">
+    <StrataPanel title="KPI types" icon={<ListChecks size={16} />} count={list.length} testId="strata-admin-kpi-types">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((k) => (
             <GovRecordCard key={k.id} name={k.name} table="strata_kpi_type_configs" record={k} onError={onError}>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={codeChipStyle}>{k.formula_template}</span>
-                <span style={metaStyle}>Direction {k.directionality.replace(/_/g, ' ')}</span>
+                <CatalystInlineCode>{k.formula_template}</CatalystInlineCode>
+                <span style={metaStyle}>{DIRECTIONALITY_LABEL[k.directionality] ?? labelize(k.directionality)}</span>
               </div>
             </GovRecordCard>
           ))}
@@ -380,36 +411,53 @@ function KpiTypesSection({ onError }: { onError: OnError }) {
   );
 }
 
+interface TemplateColumnRow { column: string; label: string; type: string; required?: boolean }
+
+const TEMPLATE_COLUMNS: Column<TemplateColumnRow>[] = [
+  {
+    id: 'column', label: 'Column', width: 24,
+    cell: ({ row }) => <span style={{ ...codeStyle, color: T.text }}>{row.column}</span>,
+  },
+  {
+    id: 'label', label: 'Label', flex: true,
+    cell: ({ row }) => <span style={bodyStyle}>{row.label}</span>,
+  },
+  {
+    id: 'type', label: 'Type', width: 16,
+    cell: ({ row }) => <CatalystTag text={labelize(row.type)} />,
+  },
+  {
+    id: 'required', label: 'Required', width: 14,
+    cell: ({ row }) => (
+      <span style={row.required ? { ...bodyStyle, fontWeight: 600 } : { fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>
+        {row.required ? 'Required' : 'Optional'}
+      </span>
+    ),
+  },
+];
+
 function UploadTemplatesSection({ onError }: { onError: OnError }) {
   const q = useUploadTemplates();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="Upload templates" testId="strata-admin-upload-templates">
+    <StrataPanel title="Upload templates" icon={<Upload size={16} />} count={list.length} testId="strata-admin-upload-templates">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((t) => (
             <GovRecordCard key={t.id} name={t.name} table="strata_upload_templates" record={t} onError={onError}>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <span style={metaStyle}>Target entity {t.target_entity}</span>
+                <span style={metaStyle}>Target entity {labelize(t.target_entity)}</span>
                 <span style={metaStyle}>{(t.validation_rules ?? []).length} validation rules</span>
               </div>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr><Th>Column</Th><Th>Label</Th><Th>Type</Th><Th>Required</Th></tr>
-                  </thead>
-                  <tbody>
-                    {(t.column_schema ?? []).map((c) => (
-                      <tr key={c.column}>
-                        <Td style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12 }}>{c.column}</Td>
-                        <Td>{c.label}</Td>
-                        <Td>{c.type}</Td>
-                        <Td>{c.required ? 'Required' : '—'}</Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {(t.column_schema ?? []).length > 0 ? (
+                <JiraTable<TemplateColumnRow>
+                  columns={TEMPLATE_COLUMNS}
+                  data={t.column_schema ?? []}
+                  getRowId={(c) => c.column}
+                  showRowCount={false}
+                  ariaLabel={`Column schema for ${t.name}`}
+                />
+              ) : null}
             </GovRecordCard>
           ))}
         </div>
@@ -422,21 +470,29 @@ function WorkflowsSection({ onError }: { onError: OnError }) {
   const q = useWorkflowConfigs();
   const list = q.data ?? [];
   return (
-    <StrataPanel title="Workflows" testId="strata-admin-workflows">
+    <StrataPanel title="Workflows" icon={<GitBranch size={16} />} count={list.length} testId="strata-admin-workflows">
       <SectionState query={q} empty={list.length === 0}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((w) => (
             <GovRecordCard key={w.id} name={w.name} table="strata_workflow_configs" record={w} onError={onError}>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={metaStyle}>Entity {w.entity_type}</span>
-                {(w.states ?? []).map((s) => <span key={s.key} style={chipStyle}>{s.label}</span>)}
-                <span style={metaStyle}>{(w.transitions ?? []).length} transitions</span>
+                <span style={metaStyle}>Entity {labelize(w.entity_type)}</span>
+                {(w.states ?? []).map((s) => <CatalystTag key={s.key} text={s.label} />)}
               </div>
-              <p style={{ ...captionStyle, margin: 0 }}>
-                {(w.transitions ?? [])
-                  .map((t) => `${t.from} → ${t.to}${t.roles?.length ? ` (${t.roles.join(', ')})` : ''}`)
-                  .join(' · ') || '—'}
-              </p>
+              {(w.transitions ?? []).length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {(w.transitions ?? []).map((t, i) => (
+                    <div key={`${t.from}-${t.to}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: `1px solid ${T.border}` }}>
+                      <span style={bodyStyle}>{labelize(t.from)}</span>
+                      <span aria-hidden style={{ display: 'inline-flex', color: T.subtlest }}><MoveRight size={14} /></span>
+                      <span style={bodyStyle}>{labelize(t.to)}</span>
+                      {(t.roles ?? []).map((r) => <CatalystTag key={r} text={labelize(r)} color="grey" />)}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <span style={metaStyle}>No transitions configured</span>
+              )}
             </GovRecordCard>
           ))}
         </div>
@@ -454,49 +510,64 @@ const ROLE_DOCS: Array<{ role: StrataRole; purpose: string }> = [
   { role: 'data_steward', purpose: 'Registers data sources, runs uploads, owns data quality and lineage.' },
 ];
 
+interface RoleRow { role: StrataRole; purpose: string; assigned: boolean }
+
+const ROLE_COLUMNS: Column<RoleRow>[] = [
+  {
+    id: 'role', label: 'Role', width: 24,
+    cell: ({ row }) => (
+      <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+        <span style={{ ...bodyStyle, fontWeight: 500 }}>{labelize(row.role)}</span>
+        <span style={codeStyle}>{row.role}</span>
+      </span>
+    ),
+  },
+  {
+    id: 'purpose', label: 'Purpose', flex: true,
+    cell: ({ row }) => <span style={bodyStyle}>{row.purpose}</span>,
+  },
+  {
+    id: 'assigned', label: 'Assigned to you', width: 16,
+    cell: ({ row }) => (row.assigned
+      ? <StatusLozenge status="yes" label="Yes" appearance="success" />
+      : <span style={{ color: T.subtlest }}>—</span>),
+  },
+];
+
 function RolesSection() {
   const roles = useStrataRoles();
   const mine = roles.data ?? [];
+  const roleRows: RoleRow[] = ROLE_DOCS.map((r) => ({ ...r, assigned: mine.includes(r.role) }));
   return (
-    <StrataPanel title="Roles" testId="strata-admin-roles">
-      <p style={captionStyle}>
-        Segregation of duties: creators cannot approve their own records; submitters cannot validate
-        their own actuals — enforced in the database.
-      </p>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>Your roles:</span>
-        {roles.isLoading
-          ? <Spinner size="small" />
-          : mine.length > 0
-            ? mine.map((r) => <span key={r} style={codeChipStyle}>{r}</span>)
-            : <span style={metaStyle}>—</span>}
+    <StrataPanel title="Roles" icon={<Users size={16} />} count={ROLE_DOCS.length} noPadding testId="strata-admin-roles">
+      <div style={{ padding: '12px 16px 0' }}>
+        <p style={captionStyle}>
+          Segregation of duties: creators cannot approve their own records; submitters cannot validate
+          their own actuals — enforced in the database.
+        </p>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>Your roles:</span>
+          {roles.isLoading
+            ? <Spinner size="small" />
+            : mine.length > 0
+              ? mine.map((r) => <CatalystTag key={r} text={labelize(r)} />)
+              : <span style={metaStyle}>—</span>}
+        </div>
       </div>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr><Th>Role</Th><Th>Purpose</Th><Th>Assigned to you</Th></tr>
-          </thead>
-          <tbody>
-            {ROLE_DOCS.map((r) => (
-              <tr key={r.role}>
-                <Td style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12 }}>{r.role}</Td>
-                <Td>{r.purpose}</Td>
-                <Td>{mine.includes(r.role) ? <Lozenge appearance="success">Yes</Lozenge> : '—'}</Td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <JiraTable<RoleRow>
+        columns={ROLE_COLUMNS}
+        data={roleRows}
+        getRowId={(r) => r.role}
+        showRowCount={false}
+        ariaLabel="STRATA roles"
+      />
     </StrataPanel>
   );
 }
 
-function crStatusLozenge(status: StrataChangeRequest['status']) {
-  const map: Record<StrataChangeRequest['status'], LozengeAppearance> = {
-    approved: 'success', rejected: 'removed', pending: 'moved', withdrawn: 'default',
-  };
-  return <Lozenge appearance={map[status] ?? 'default'}>{status}</Lozenge>;
-}
+const CR_STATUS: Record<StrataChangeRequest['status'], LozengeAppearance> = {
+  approved: 'success', rejected: 'removed', pending: 'moved', withdrawn: 'default',
+};
 
 interface AuditEventRow {
   id: string;
@@ -505,6 +576,50 @@ interface AuditEventRow {
   created_at: string;
 }
 
+const CR_COLUMNS: Column<StrataChangeRequest>[] = [
+  {
+    id: 'entity', label: 'Entity', width: 22,
+    cell: ({ row }) => <span style={{ ...codeStyle, color: T.text }}>{row.entity_table}</span>,
+  },
+  {
+    id: 'change', label: 'Change', width: 14,
+    cell: ({ row }) => <CatalystTag text={labelize(row.change_type)} />,
+  },
+  {
+    id: 'requested', label: 'Requested', width: 15,
+    cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.requested_at)}</span>,
+  },
+  {
+    id: 'status', label: 'Status', width: 13,
+    cell: ({ row }) => <StatusLozenge status={row.status} label={labelize(row.status)} appearance={CR_STATUS[row.status] ?? 'default'} />,
+  },
+  {
+    id: 'decided', label: 'Decided', flex: true,
+    cell: ({ row }) => (row.decided_at
+      ? <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDate(row.decided_at)}</span>
+      : <span style={{ color: T.subtlest }}>—</span>),
+  },
+];
+
+const AUDIT_COLUMNS: Column<AuditEventRow>[] = [
+  {
+    id: 'entity', label: 'Entity', width: 26,
+    cell: ({ row }) => (row.entity_table
+      ? <span style={{ ...codeStyle, color: T.text }}>{row.entity_table}</span>
+      : <span style={{ color: T.subtlest }}>—</span>),
+  },
+  {
+    id: 'action', label: 'Action', flex: true,
+    cell: ({ row }) => (row.action
+      ? <span style={bodyStyle}>{labelize(row.action)}</span>
+      : <span style={{ color: T.subtlest }}>—</span>),
+  },
+  {
+    id: 'at', label: 'At', width: 20,
+    cell: ({ row }) => <span style={{ ...bodyStyle, fontVariantNumeric: 'tabular-nums' }}>{fmtDateTime(row.created_at)}</span>,
+  },
+];
+
 function ChangeLogSection() {
   const crs = useChangeRequests();
   const audit = useStrataAudit();
@@ -512,46 +627,25 @@ function ChangeLogSection() {
   const auditList = ((audit.data ?? []) as AuditEventRow[]).slice(0, 20);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <StrataPanel title="Change requests" testId="strata-admin-change-requests">
+      <StrataPanel title="Change requests" icon={<GitBranch size={16} />} count={crList.length} noPadding testId="strata-admin-change-requests">
         <SectionState query={crs} empty={crList.length === 0} emptyLabel="No change requests">
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr><Th>Entity</Th><Th>Change</Th><Th>Requested</Th><Th>Status</Th><Th>Decided</Th></tr>
-              </thead>
-              <tbody>
-                {crList.map((cr) => (
-                  <tr key={cr.id}>
-                    <Td style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12 }}>{cr.entity_table}</Td>
-                    <Td>{cr.change_type}</Td>
-                    <Td>{fmtDate(cr.requested_at)}</Td>
-                    <Td>{crStatusLozenge(cr.status)}</Td>
-                    <Td>{cr.decided_by ? `Decided ${fmtDate(cr.decided_at)}` : '—'}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <JiraTable<StrataChangeRequest>
+            columns={CR_COLUMNS}
+            data={crList}
+            getRowId={(cr) => cr.id}
+            ariaLabel="Change requests"
+          />
         </SectionState>
       </StrataPanel>
-      <StrataPanel title="Audit trail (last 20 events)" testId="strata-admin-audit">
+      <StrataPanel title="Audit trail" icon={<Clock size={16} />} count={auditList.length} noPadding testId="strata-admin-audit">
         <SectionState query={audit} empty={auditList.length === 0} emptyLabel="No audit events">
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr><Th>Entity</Th><Th>Action</Th><Th>At</Th></tr>
-              </thead>
-              <tbody>
-                {auditList.map((ev) => (
-                  <tr key={ev.id}>
-                    <Td style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12 }}>{ev.entity_table ?? '—'}</Td>
-                    <Td>{ev.action ?? '—'}</Td>
-                    <Td>{ev.created_at ? new Date(ev.created_at).toLocaleString() : '—'}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <JiraTable<AuditEventRow>
+            columns={AUDIT_COLUMNS}
+            data={auditList}
+            getRowId={(ev) => ev.id}
+            showRowCount={false}
+            ariaLabel="Audit trail — last 20 events"
+          />
         </SectionState>
       </StrataPanel>
     </div>
@@ -559,17 +653,22 @@ function ChangeLogSection() {
 }
 
 // ── Section registry + page ──────────────────────────────────────────────────
-const SECTIONS: Array<{ key: string; label: string; render: (onError: OnError) => React.ReactNode }> = [
-  { key: 'perspectives', label: 'Perspectives', render: (e) => <PerspectivesSection onError={e} /> },
-  { key: 'scorecard-models', label: 'Scorecard models', render: (e) => <ScorecardModelsSection onError={e} /> },
-  { key: 'thresholds', label: 'Thresholds', render: (e) => <ThresholdsSection onError={e} /> },
-  { key: 'value-taxonomy', label: 'Value taxonomy', render: (e) => <ValueTaxonomySection onError={e} /> },
-  { key: 'gates', label: 'Gates', render: (e) => <GatesSection onError={e} /> },
-  { key: 'kpi-types', label: 'KPI types', render: (e) => <KpiTypesSection onError={e} /> },
-  { key: 'upload-templates', label: 'Upload templates', render: (e) => <UploadTemplatesSection onError={e} /> },
-  { key: 'workflows', label: 'Workflows', render: (e) => <WorkflowsSection onError={e} /> },
-  { key: 'roles', label: 'Roles', render: () => <RolesSection /> },
-  { key: 'change-log', label: 'Change log', render: () => <ChangeLogSection /> },
+const SECTIONS: Array<{
+  key: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+  render: (onError: OnError) => React.ReactNode;
+}> = [
+  { key: 'perspectives', label: 'Perspectives', icon: Layers, render: (e) => <PerspectivesSection onError={e} /> },
+  { key: 'scorecard-models', label: 'Scorecard models', icon: Scale, render: (e) => <ScorecardModelsSection onError={e} /> },
+  { key: 'thresholds', label: 'Thresholds', icon: BarChart3, render: (e) => <ThresholdsSection onError={e} /> },
+  { key: 'value-taxonomy', label: 'Value taxonomy', icon: Gem, render: (e) => <ValueTaxonomySection onError={e} /> },
+  { key: 'gates', label: 'Gates', icon: ShieldCheck, render: (e) => <GatesSection onError={e} /> },
+  { key: 'kpi-types', label: 'KPI types', icon: ListChecks, render: (e) => <KpiTypesSection onError={e} /> },
+  { key: 'upload-templates', label: 'Upload templates', icon: Upload, render: (e) => <UploadTemplatesSection onError={e} /> },
+  { key: 'workflows', label: 'Workflows', icon: GitBranch, render: (e) => <WorkflowsSection onError={e} /> },
+  { key: 'roles', label: 'Roles', icon: Users, render: () => <RolesSection /> },
+  { key: 'change-log', label: 'Change log', icon: Clock, render: () => <ChangeLogSection /> },
 ];
 
 export default function StrataAdminConfigPage() {
@@ -582,32 +681,41 @@ export default function StrataAdminConfigPage() {
 
   return (
     <PageContainer variant="wide">
-      <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 4px' }}>
-        Configuration Engine
-      </h1>
-      <p style={{ ...captionStyle, margin: '0 0 8px' }}>
-        Configuration Engine — versioned metadata + governance control. Every change is versioned,
-        approved and audited.
-      </p>
-      <StrataConfigContextBar />
-      {actionError ? (
-        <div style={{ marginBottom: 16 }}>
-          <SectionMessage appearance="error" title="Governance action rejected by the database">
-            <p>{actionError}</p>
-          </SectionMessage>
-        </div>
-      ) : null}
+      <StrataPageChrome
+        icon={<Settings2 size={20} />}
+        title="Configuration Engine"
+        description="Versioned, approved and audited configuration."
+      />
       <Tabs
         id="strata-admin-tabs"
         selected={selected}
-        onChange={(i) => navigate(Routes.strata.adminSection(SECTIONS[i].key))}
+        onChange={(i) => { setActionError(null); navigate(Routes.strata.adminSection(SECTIONS[i].key)); }}
       >
         <TabList>
-          {SECTIONS.map((s) => <Tab key={s.key}>{s.label}</Tab>)}
+          {SECTIONS.map((s) => {
+            const Icon = s.icon;
+            return (
+              <Tab key={s.key}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <Icon size={14} />
+                  {s.label}
+                </span>
+              </Tab>
+            );
+          })}
         </TabList>
         {SECTIONS.map((s) => (
           <TabPanel key={s.key}>
-            <div style={{ width: '100%', paddingTop: 16 }}>{s.render(setActionError)}</div>
+            <div style={{ width: '100%', paddingTop: 16 }}>
+              {actionError ? (
+                <div style={{ marginBottom: 16 }}>
+                  <SectionMessage appearance="error" title="Governance action rejected by the database">
+                    <p>{actionError}</p>
+                  </SectionMessage>
+                </div>
+              ) : null}
+              {s.render(setActionError)}
+            </div>
           </TabPanel>
         ))}
       </Tabs>

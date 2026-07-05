@@ -113,13 +113,21 @@ export const scorecardApi = {
    */
   calcResult: async (instance: StrataScorecardInstance): Promise<ScorecardCalcResult | null> => {
     if (instance.status === 'locked' && instance.locked_snapshot_id) {
-      const items: Array<{ payload: Record<string, unknown> }> = await run(
-        typedQuery('strata_snapshot_items')
-          .select('payload')
-          .eq('snapshot_id', instance.locked_snapshot_id)
-          .eq('entity_type', 'scorecard_instance')
-          .eq('entity_id', instance.id),
-      );
+      const [items, lineItems] = await Promise.all([
+        run(
+          typedQuery('strata_snapshot_items')
+            .select('payload')
+            .eq('snapshot_id', instance.locked_snapshot_id)
+            .eq('entity_type', 'scorecard_instance')
+            .eq('entity_id', instance.id),
+        ) as Promise<Array<{ payload: Record<string, unknown> }>>,
+        run(
+          typedQuery('strata_snapshot_items')
+            .select('entity_id, payload')
+            .eq('snapshot_id', instance.locked_snapshot_id)
+            .eq('entity_type', 'scorecard_line'),
+        ) as Promise<Array<{ entity_id: string; payload: Record<string, unknown> }>>,
+      ]);
       const frozen = items[0]?.payload as { inputs?: { perspectives?: unknown }; value?: number; status_key?: string } | undefined;
       if (!frozen) return null;
       return {
@@ -132,7 +140,21 @@ export const scorecardApi = {
         model_id: instance.model_id,
         model_version: instance.model_version,
         perspectives: ((frozen.inputs?.perspectives as ScorecardCalcResult['perspectives']) ?? []),
-        lines: [],
+        // Frozen per-line values: each snapshot line item is a to_jsonb(calculated_values) row
+        // whose inputs carry {ref_type, weight, detail} from the calc engine.
+        lines: lineItems.map(({ entity_id, payload }) => {
+          const inp = (payload.inputs ?? {}) as { ref_type?: string; weight?: number; detail?: Record<string, unknown> };
+          return {
+            line_id: entity_id,
+            ref_type: inp.ref_type ?? '',
+            perspective_id: '',
+            weight: inp.weight ?? 0,
+            score: Number(payload.score ?? payload.value ?? 0),
+            has_data: payload.value != null,
+            status_key: (payload.status_key as string) ?? null,
+            detail: inp.detail ?? {},
+          };
+        }),
         calculated_at: (frozen as { calculated_at?: string }).calculated_at ?? '',
       };
     }

@@ -46,19 +46,37 @@ export function StrataProvider({ children }: { children: React.ReactNode }) {
     staleTime: STALE,
   });
   const periods = periodsQ.data ?? [];
+  // Shares the query key (and cache) with useScorecardInstances — no extra fetch on scorecard pages.
+  const instancesQ = useQuery({
+    queryKey: ['strata', 'scorecard-instances', activeCycle?.id],
+    queryFn: () => scorecardApi.instances(activeCycle!.id),
+    enabled: !!activeCycle,
+    staleTime: STALE,
+  });
   const activePeriod = useMemo(() => {
     if (periodOverride) {
       const p = periods.find((x) => x.id === periodOverride);
       if (p) return p;
     }
     const today = new Date().toISOString().slice(0, 10);
+    const current =
+      periods.find((p) => p.close_status === 'open' && p.starts_on <= today && p.ends_on >= today) ?? null;
+    // Default to a period with evidence: prefer the calendar-current period only when a
+    // scorecard exists for it, otherwise the most recent period that has one — an
+    // executive should land on numbers, not an empty quarter.
+    const scoredPeriodIds = new Set((instancesQ.data ?? []).map((i) => i.period_id));
+    if (current && scoredPeriodIds.has(current.id)) return current;
+    if (scoredPeriodIds.size > 0) {
+      const scored = [...periods].sort((a, b) => (a.starts_on < b.starts_on ? 1 : -1)).find((p) => scoredPeriodIds.has(p.id));
+      if (scored) return scored;
+    }
     return (
-      periods.find((p) => p.close_status === 'open' && p.starts_on <= today && p.ends_on >= today) ??
+      current ??
       periods.filter((p) => p.close_status === 'open')[0] ??
       periods[periods.length - 1] ??
       null
     );
-  }, [periods, periodOverride]);
+  }, [periods, periodOverride, instancesQ.data]);
 
   const value = useMemo<StrataContextValue>(() => ({
     cycles, periods, activeCycle, activePeriod,
@@ -84,6 +102,26 @@ export function useStrataRoles() {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return [];
       return configApi.myRoles(auth.user.id);
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+// ── Identity: owner/actor UUID → display name (zero-assumption: unknown → null) ─
+export interface StrataProfileRef { name: string | null; avatarUrl: string | null }
+export function useProfileNames() {
+  return useQuery({
+    queryKey: ['strata', 'profile-names'],
+    queryFn: async (): Promise<Map<string, StrataProfileRef>> => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, avatar_url');
+      if (error) throw error;
+      const m = new Map<string, StrataProfileRef>();
+      (data ?? []).forEach((p) => {
+        m.set(p.id, { name: p.full_name || p.email || null, avatarUrl: p.avatar_url ?? null });
+      });
+      return m;
     },
     staleTime: 5 * 60_000,
   });

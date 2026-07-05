@@ -7,21 +7,25 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import Button from '@atlaskit/button/new';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import { EmptyState, Lozenge, SectionMessage, Spinner, Textfield } from '@/components/ads';
+import {
+  Avatar, Button, CatalystTag,
+  EmptyState, Lozenge, ProgressBar, SectionMessage, Spinner, Textfield, Tooltip,
+} from '@/components/ads';
+import {
+  Activity, ArrowDown, ArrowUp, CheckCircle2, ChevronDown, ChevronRight, Scale, Target,
+} from '@/lib/atlaskit-icons';
 import { PageContainer } from '@/components/shared/PageContainer';
-import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
-import type { Column, SortOrder } from '@/components/shared/JiraTable/types';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column, SortOrder } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useDataSources, useKpiAchievement, useKpis, useOkrs, useStrataContext, useStrategyElements,
+  useDataSources, useKpiAchievement, useKpis, useOkrs, useProfileNames, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
-import { StrataBandLozenge, StrataConfigContextBar, StrataPanel } from '@/modules/strata/components/shared';
+import { StrataBandBar, StrataBandLozenge, StrataChipMenu, StrataPageChrome, StrataPanel, T } from '@/modules/strata/components/shared';
+import { fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import type { GovernedStatus, StrataKeyResult, StrataKpi, StrataOkr } from '@/modules/strata/types';
+import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 
 const STALE = 30_000;
 
@@ -44,9 +48,9 @@ const GOVERNED_LOZENGE: Record<GovernedStatus, { label: string; appearance: Reac
 };
 
 export function StrataGovernedStatusLozenge({ status }: { status: GovernedStatus | string | null | undefined }) {
-  if (!status) return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+  if (!status) return <span style={{ color: T.subtlest }}>—</span>;
   const cfg = GOVERNED_LOZENGE[status as GovernedStatus];
-  if (!cfg) return <Lozenge appearance="default">{String(status).replace(/_/g, ' ')}</Lozenge>;
+  if (!cfg) return <Lozenge appearance="default">{labelize(String(status))}</Lozenge>;
   return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
 }
 
@@ -57,35 +61,90 @@ const DIRECTION_LABEL: Record<StrataKpi['direction'], string> = {
   manual: 'Manual',
 };
 
-function Chip({ children }: { children: React.ReactNode }) {
+const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
+
+/** Direction cell — icon + label (S-130). */
+function DirectionCell({ direction }: { direction: StrataKpi['direction'] }) {
+  const icon =
+    direction === 'higher_better' ? <ArrowUp size={14} color="var(--ds-icon-subtle)" />
+    : direction === 'lower_better' ? <ArrowDown size={14} color="var(--ds-icon-subtle)" />
+    : direction === 'band' ? <Scale size={14} color="var(--ds-icon-subtle)" />
+    : null;
   return (
-    <span
-      style={{
-        display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 4,
-        background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
-        fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
-      }}
-    >
-      {children}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: T.subtle, fontSize: 'var(--ds-font-size-100)' }}>
+      {icon}
+      {DIRECTION_LABEL[direction] ?? labelize(direction)}
     </span>
   );
 }
 
-const Dash = () => <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+/** Subtle skeleton bar shown while a per-row achievement RPC resolves (S-123). */
+function CellSkeleton() {
+  return <span aria-hidden style={{ display: 'inline-block', width: 64, height: 8, borderRadius: 4, background: T.neutral }} />;
+}
+
+/** KPI name — brand-text link with hover underline when a slug exists (S-121). */
+function KpiNameLink({ row, onOpen }: { row: StrataKpi; onOpen: () => void }) {
+  const [hover, setHover] = useState(false);
+  if (!row.slug) {
+    return <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span>;
+  }
+  return (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); onOpen(); }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+        font: 'inherit', fontWeight: 600, color: T.brandText, textAlign: 'left',
+        textDecoration: hover ? 'underline' : 'none',
+      }}
+    >
+      {row.name}
+    </button>
+  );
+}
 
 /** Per-row achievement — server-computed via strata_calc_kpi_achievement. */
 function KpiAchievementCell({ kpiId }: { kpiId: string }) {
   const { activePeriod } = useStrataContext();
   const q = useKpiAchievement(kpiId, activePeriod?.id);
   if (!activePeriod) return <Dash />;
-  if (q.isLoading) return <Spinner size="small" aria-label="Loading achievement" />;
+  if (q.isLoading) return <CellSkeleton />;
   const a = (q.data ?? null) as KpiAchievementPayload | null;
   if (q.isError || !a || a.achievement == null) return <Dash />;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontWeight: 600, color: 'var(--ds-text)' }}>{a.achievement}%</span>
-      {a.status_key ? <StrataBandLozenge bandKey={a.status_key} /> : null}
+    <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>{fmtPct(a.achievement)}</span>
+        {a.status_key ? <StrataBandLozenge bandKey={a.status_key} /> : null}
+      </span>
+      <span style={{ width: 64 }}>
+        <StrataBandBar value={a.achievement} bandKey={a.status_key} height={4} />
+      </span>
     </span>
+  );
+}
+
+/** Validator cell — resolved name, or attestation icon; never the literal "Set" (S-120). */
+function ValidatorCell({ validatorId, profiles }: { validatorId: string | null; profiles?: Map<string, StrataProfileRef> }) {
+  if (!validatorId) return <Dash />;
+  const p = profiles?.get(validatorId);
+  if (p?.name) {
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+        <Avatar size="xsmall" name={p.name} src={p.avatarUrl ?? undefined} />
+        <span style={{ color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+      </span>
+    );
+  }
+  return (
+    <Tooltip content="Validator assigned">
+      <span style={{ display: 'inline-flex' }} aria-label="Validator assigned">
+        <CheckCircle2 size={16} color="var(--ds-icon-success)" />
+      </span>
+    </Tooltip>
   );
 }
 
@@ -96,53 +155,138 @@ const OKR_STATUS_LOZENGE: Record<StrataOkr['status'], { label: string; appearanc
   closed: { label: 'Closed', appearance: 'default' },
 };
 
-/** Lazy key-result fetch — mounts only when the OKR row is expanded. */
+/** Display-only progress of current within baseline→target (mandated by S-116). */
+const krProgressFraction = (kr: StrataKeyResult): number | null => {
+  if (kr.target == null || kr.current_value == null) return null;
+  const base = kr.baseline ?? 0;
+  const span = kr.target - base;
+  if (span === 0) return null;
+  return Math.max(0, Math.min(1, (kr.current_value - base) / span));
+};
+
+/** Lazy key-result fetch — mounts only when the OKR row is expanded (S-115/S-116). */
 function KeyResultsList({ okrId }: { okrId: string }) {
   const q = useQuery({
     queryKey: ['strata', 'key-results', okrId],
     queryFn: () => kpiApi.keyResults(okrId),
     staleTime: STALE,
   });
+
+  const columns = useMemo<Column<StrataKeyResult>[]>(() => [
+    {
+      id: 'name',
+      label: 'Key result',
+      flex: true,
+      cell: ({ row }) => <span style={{ fontWeight: 600, color: T.text }}>{row.name}</span>,
+    },
+    {
+      id: 'range',
+      label: 'Baseline → target',
+      width: 18,
+      cell: ({ row }) => (
+        <span style={{ color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>
+          {fmtUnit(row.baseline, row.unit)} → {fmtUnit(row.target, row.unit)}
+        </span>
+      ),
+    },
+    {
+      id: 'current_value',
+      label: 'Current',
+      width: 12,
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
+          {fmtUnit(row.current_value, row.unit)}
+        </span>
+      ),
+    },
+    {
+      id: 'progress',
+      label: 'Progress',
+      width: 16,
+      cell: ({ row }) => {
+        const frac = krProgressFraction(row);
+        return frac == null
+          ? <Dash />
+          : <ProgressBar value={frac} aria-label={`Progress ${Math.round(frac * 100)}%`} />;
+      },
+    },
+  ], []);
+
   if (q.isLoading) return <div style={{ padding: '8px 0' }}><Spinner size="small" aria-label="Loading key results" /></div>;
   if (q.isError) {
-    return <p style={{ fontSize: 12, color: 'var(--ds-text-danger)', margin: '8px 0' }}>Failed to load key results.</p>;
+    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', margin: '8px 0' }}>Failed to load key results.</p>;
   }
   const krs = (q.data ?? []) as StrataKeyResult[];
   if (krs.length === 0) {
-    return <p style={{ fontSize: 12, color: 'var(--ds-text-subtle)', margin: '8px 0' }}>No key results recorded.</p>;
+    return <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, margin: '8px 0' }}>No key results recorded.</p>;
   }
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 8 }}>
-      <thead>
-        <tr>
-          {['Key result', 'Baseline → target', 'Current', 'Unit'].map((h) => (
-            <th
-              key={h}
-              style={{
-                textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)',
-                padding: '4px 8px', borderBottom: '1px solid var(--ds-border)',
-              }}
-            >
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {krs.map((kr) => (
-          <tr key={kr.id}>
-            <td style={{ fontSize: 13, color: 'var(--ds-text)', padding: '8px 8px', borderBottom: '1px solid var(--ds-border)' }}>{kr.name}</td>
-            <td style={{ fontSize: 13, color: 'var(--ds-text)', padding: '8px 8px', borderBottom: '1px solid var(--ds-border)' }}>
-              {kr.baseline != null ? kr.baseline : '—'} → {kr.target != null ? kr.target : '—'}
-            </td>
-            <td style={{ fontSize: 13, color: 'var(--ds-text)', padding: '8px 8px', borderBottom: '1px solid var(--ds-border)' }}>
-              {kr.current_value != null ? kr.current_value : '—'}
-            </td>
-            <td style={{ fontSize: 13, color: 'var(--ds-text-subtle)', padding: '8px 8px', borderBottom: '1px solid var(--ds-border)' }}>{kr.unit ?? '—'}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div style={{ marginTop: 8 }}>
+      <JiraTable<StrataKeyResult>
+        columns={columns}
+        data={krs}
+        getRowId={(row) => row.id}
+        density="compact"
+        showRowCount={false}
+        rowsPerPage={100}
+        ariaLabel="Key results"
+      />
+    </div>
+  );
+}
+
+/** Accordion row — canonical chrome: chevron icon, hover bg, structured header (S-117). */
+function OkrRow({ okr, objectiveName, isOpen, onToggle }: {
+  okr: StrataOkr;
+  objectiveName: string | null;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const status = OKR_STATUS_LOZENGE[okr.status];
+  const confidenceText = okr.confidence != null
+    ? `Confidence ${okr.confidence <= 1 ? fmtRatioPct(okr.confidence) : fmtPct(okr.confidence)}`
+    : null;
+  return (
+    <div style={{ borderBottom: `1px solid ${T.border}` }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+          background: hover ? T.sunken : 'none', border: 'none', padding: '12px 8px', cursor: 'pointer',
+          font: 'inherit', textAlign: 'left', color: T.text, borderRadius: 4,
+        }}
+      >
+        <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)', flexShrink: 0 }}>
+          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        </span>
+        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {okr.name}
+        </span>
+        {objectiveName ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, whiteSpace: 'nowrap' }}>
+            Objective · {objectiveName}
+          </span>
+        ) : null}
+        {confidenceText ? (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, minWidth: 110, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+            {confidenceText}
+          </span>
+        ) : null}
+        {status
+          ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
+          : <Lozenge appearance="default">{labelize(okr.status)}</Lozenge>}
+      </button>
+      {isOpen ? (
+        <div style={{ padding: '0 8px 12px 32px' }}>
+          <KeyResultsList okrId={okr.id} />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -165,57 +309,29 @@ function OkrPanel() {
       return next;
     });
 
+  const okrs = okrsQ.data ?? [];
+
   return (
-    <StrataPanel title="OKRs" testId="strata-okr-panel">
+    <StrataPanel title="OKRs" icon={<Target size={16} />} count={okrs.length} testId="strata-okr-panel">
       {okrsQ.isLoading ? (
         <Spinner size="medium" aria-label="Loading OKRs" />
       ) : okrsQ.isError ? (
         <SectionMessage appearance="error" title="Failed to load OKRs">
           <p>{(okrsQ.error as Error)?.message ?? 'Unknown error'}</p>
         </SectionMessage>
-      ) : (okrsQ.data ?? []).length === 0 ? (
+      ) : okrs.length === 0 ? (
         <EmptyState size="compact" header="No OKRs yet" description="OKRs linked to strategy objectives will appear here." />
       ) : (
         <div>
-          {(okrsQ.data ?? []).map((okr) => {
-            const isOpen = expanded.has(okr.id);
-            const status = OKR_STATUS_LOZENGE[okr.status];
-            return (
-              <div key={okr.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                <button
-                  type="button"
-                  onClick={() => toggle(okr.id)}
-                  aria-expanded={isOpen}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                    background: 'none', border: 'none', padding: '8px 4px', cursor: 'pointer',
-                    font: 'inherit', textAlign: 'left', color: 'var(--ds-text)',
-                  }}
-                >
-                  {isOpen
-                    ? <ChevronDownIcon size="small" label="" />
-                    : <ChevronRightIcon size="small" label="" />}
-                  <span style={{ fontWeight: 600, fontSize: 14, flex: 1, minWidth: 0 }}>{okr.name}</span>
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>
-                    {okr.objective_element_id
-                      ? (elementNameById.get(okr.objective_element_id) ?? '—')
-                      : '—'}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)', minWidth: 80, textAlign: 'right' }}>
-                    {okr.confidence != null ? `${okr.confidence}%` : '—'}
-                  </span>
-                  {status
-                    ? <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
-                    : <Lozenge appearance="default">{okr.status}</Lozenge>}
-                </button>
-                {isOpen ? (
-                  <div style={{ padding: '0 4px 12px 24px' }}>
-                    <KeyResultsList okrId={okr.id} />
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
+          {okrs.map((okr) => (
+            <OkrRow
+              key={okr.id}
+              okr={okr}
+              objectiveName={okr.objective_element_id ? (elementNameById.get(okr.objective_element_id) ?? null) : null}
+              isOpen={expanded.has(okr.id)}
+              onToggle={() => toggle(okr.id)}
+            />
+          ))}
         </div>
       )}
     </StrataPanel>
@@ -236,6 +352,7 @@ export default function StrataKpiLibraryPage() {
   const navigate = useNavigate();
   const kpisQ = useKpis();
   const dataSourcesQ = useDataSources();
+  const profilesQ = useProfileNames();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<GovernedStatus | 'all'>('all');
   const [sortKey, setSortKey] = useState<string>('name');
@@ -253,10 +370,12 @@ export default function StrataKpiLibraryPage() {
       (statusFilter === 'all' || k.status === statusFilter) &&
       (!term || k.name.toLowerCase().includes(term)));
     const dir = sortOrder === 'ASC' ? 1 : -1;
+    // Numeric-aware sort (S-127): compare numbers as numbers, everything else lexically.
     rows = [...rows].sort((a, b) => {
-      const av = String((a as unknown as Record<string, unknown>)[sortKey] ?? '');
-      const bv = String((b as unknown as Record<string, unknown>)[sortKey] ?? '');
-      return av.localeCompare(bv) * dir;
+      const av = (a as unknown as Record<string, unknown>)[sortKey];
+      const bv = (b as unknown as Record<string, unknown>)[sortKey];
+      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+      return String(av ?? '').localeCompare(String(bv ?? '')) * dir;
     });
     return rows;
   }, [kpisQ.data, search, statusFilter, sortKey, sortOrder]);
@@ -269,42 +388,33 @@ export default function StrataKpiLibraryPage() {
       sortable: true,
       alwaysVisible: true,
       cell: ({ row }) => (
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); if (row.slug) navigate(Routes.strata.kpi(row.slug)); }}
-          style={{
-            background: 'none', border: 'none', padding: 0, cursor: row.slug ? 'pointer' : 'default',
-            font: 'inherit', fontWeight: 600, color: 'var(--ds-text)', textAlign: 'left',
-          }}
-        >
-          {row.name}
-        </button>
+        <KpiNameLink row={row} onOpen={() => { if (row.slug) navigate(Routes.strata.kpi(row.slug)); }} />
       ),
     },
     {
       id: 'unit',
       label: 'Unit',
-      width: 8,
-      cell: ({ row }) => (row.unit ? <span style={{ color: 'var(--ds-text-subtle)' }}>{row.unit}</span> : <Dash />),
+      width: 7,
+      cell: ({ row }) => (row.unit ? <span style={{ color: T.subtle }}>{row.unit}</span> : <Dash />),
     },
     {
       id: 'direction',
       label: 'Direction',
-      width: 12,
-      cell: ({ row }) => (row.direction ? <Chip>{DIRECTION_LABEL[row.direction] ?? row.direction}</Chip> : <Dash />),
+      width: 13,
+      cell: ({ row }) => (row.direction ? <DirectionCell direction={row.direction} /> : <Dash />),
     },
     {
       id: 'frequency',
       label: 'Frequency',
       width: 9,
       sortable: true,
-      cell: ({ row }) => (row.frequency ? <span style={{ color: 'var(--ds-text-subtle)', textTransform: 'capitalize' }}>{row.frequency}</span> : <Dash />),
+      cell: ({ row }) => (row.frequency ? <span style={{ color: T.subtle }}>{labelize(row.frequency)}</span> : <Dash />),
     },
     {
       id: 'entry_method',
       label: 'Entry',
       width: 9,
-      cell: ({ row }) => (row.entry_method ? <Chip>{row.entry_method}</Chip> : <Dash />),
+      cell: ({ row }) => (row.entry_method ? <CatalystTag text={labelize(row.entry_method)} /> : <Dash />),
     },
     {
       id: 'status',
@@ -322,8 +432,8 @@ export default function StrataKpiLibraryPage() {
     {
       id: 'validator',
       label: 'Validator',
-      width: 8,
-      cell: ({ row }) => (row.validator_id ? <span style={{ color: 'var(--ds-text-subtle)' }}>Set</span> : <Dash />),
+      width: 12,
+      cell: ({ row }) => <ValidatorCell validatorId={row.validator_id} profiles={profilesQ.data} />,
     },
     {
       id: 'data_source',
@@ -331,17 +441,21 @@ export default function StrataKpiLibraryPage() {
       width: 12,
       cell: ({ row }) =>
         row.data_source_id
-          ? <span style={{ color: 'var(--ds-text-subtle)' }}>{dataSourceNameById.get(row.data_source_id) ?? '—'}</span>
+          ? <span style={{ color: T.subtle }}>{dataSourceNameById.get(row.data_source_id) ?? '—'}</span>
           : <Dash />,
     },
-  ], [navigate, dataSourceNameById]);
+  ], [navigate, dataSourceNameById, profilesQ.data]);
 
   const statusLabel = STATUS_FILTER_OPTIONS.find((o) => o.value === statusFilter)?.label ?? 'All statuses';
 
   return (
     <PageContainer variant="wide">
-      <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>KPI / OKR Library</h1>
-      <StrataConfigContextBar />
+      <StrataPageChrome
+        icon={<Activity size={20} />}
+        title="KPI / OKR Library"
+        description="Governed KPI dictionary and OKR library"
+        testId="strata-kpi-library-chrome"
+      />
 
       {kpisQ.isError ? (
         <SectionMessage appearance="error" title="Failed to load KPI library">
@@ -351,40 +465,35 @@ export default function StrataKpiLibraryPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <StrataPanel
             title="KPI dictionary"
+            icon={<Activity size={16} />}
+            count={filtered.length}
             testId="strata-kpi-library-panel"
+            noPadding
             actions={
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
-                {filtered.length} KPIs · governed dictionary
-              </span>
+              <>
+                <div style={{ width: 240 }}>
+                  <Textfield
+                    spacing="compact"
+                    placeholder="Search KPIs by name"
+                    value={search}
+                    onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
+                    aria-label="Search KPIs by name"
+                  />
+                </div>
+                <StrataChipMenu
+                  value={statusLabel}
+                  active={statusFilter !== null}
+                  aria-label="Filter KPIs by status"
+                  options={STATUS_FILTER_OPTIONS.map((o) => ({
+                    key: String(o.value),
+                    label: o.label,
+                    isSelected: o.value === statusFilter,
+                    onClick: () => setStatusFilter(o.value),
+                  }))}
+                />
+              </>
             }
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-              <div style={{ width: 260 }}>
-                <Textfield
-                  spacing="compact"
-                  placeholder="Search KPIs by name"
-                  value={search}
-                  onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
-                  aria-label="Search KPIs by name"
-                />
-              </div>
-              <DropdownMenu
-                trigger={({ triggerRef, ...props }) => (
-                  <Button {...props} ref={triggerRef} appearance="default" iconAfter={ChevronDownIcon}>
-                    {statusLabel}
-                  </Button>
-                )}
-              >
-                <DropdownItemGroup>
-                  {STATUS_FILTER_OPTIONS.map((o) => (
-                    <DropdownItem key={o.value} isSelected={o.value === statusFilter} onClick={() => setStatusFilter(o.value)}>
-                      {o.label}
-                    </DropdownItem>
-                  ))}
-                </DropdownItemGroup>
-              </DropdownMenu>
-            </div>
-
             <JiraTable<StrataKpi>
               columns={columns}
               data={filtered}

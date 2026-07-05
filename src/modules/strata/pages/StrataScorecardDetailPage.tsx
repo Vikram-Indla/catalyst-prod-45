@@ -3,30 +3,35 @@
  * Renders one scorecard instance: total score hero, perspective strip,
  * grouped lines, commentary. Every number here comes from useScorecardCalc
  * (server RPC; locked instances read the frozen snapshot) — never UI math.
+ *
+ * D-012 executive lift (2026-07-05): back navigation, page chrome with
+ * model label + header actions, score-ring hero, band-toned perspective
+ * tiles, canonical JiraTable with perspective group headers, named
+ * commentary authors.
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Button, EmptyState, SectionMessage, Spinner } from '@/components/ads';
+import {
+  Button, CatalystTag, EmptyState, IconButton, SectionMessage, Spinner, Tooltip,
+} from '@/components/ads';
 import { PageContainer } from '@/components/shared/PageContainer';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column, RowGroup } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
+import { ChevronLeft, FileBarChart, Info, Layers } from '@/lib/atlaskit-icons';
 import { kpiApi, lineageApi, scorecardApi } from '@/modules/strata/domain';
 import {
   useBenefits, useCalcValues, useInvalidateStrata, useKpis, usePerspectives,
-  useScorecardCalc, useScorecardInstanceBySlug, useScorecardLines, useScorecardModels,
-  useStrataContext, useStrategyElements,
+  useProfileNames, useScorecardCalc, useScorecardInstanceBySlug, useScorecardLines,
+  useScorecardModels, useStrataContext, useStrategyElements,
 } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataBandLozenge, StrataConfigContextBar, StrataDataStateLozenge,
-  StrataMetricStat, StrataPanel, useEvidenceDrawer,
+  T, StrataBandBar, StrataBandLozenge, StrataMetricStat, StrataPageChrome,
+  StrataPanel, StrataScoreRing, useEvidenceDrawer,
 } from '@/modules/strata/components/shared';
-import type { ScorecardCalcResult, StrataScorecardLine } from '@/modules/strata/types';
-
-const chipStyle: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 4,
-  background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
-  fontSize: 12, fontWeight: 500,
-};
+import { fmtDateTime, fmtScore, fmtUnit, labelize } from '@/modules/strata/components/format';
+import type { StrataScorecardLine } from '@/modules/strata/types';
 
 interface CommentaryRow {
   id: string;
@@ -37,67 +42,16 @@ interface CommentaryRow {
   created_at: string;
 }
 
-type CalcLine = ScorecardCalcResult['lines'][number];
-
 function asDisplay(v: unknown): string | null {
   if (typeof v === 'number' || typeof v === 'string') return String(v);
   return null;
 }
 
-// ── Line row ─────────────────────────────────────────────────────────────────
-function LineRow({
-  line, calcLine, refName, kpiSlug, onEvidence,
-}: {
-  line: StrataScorecardLine;
-  calcLine: CalcLine | null;
-  refName: string | null;
-  kpiSlug: string | null;
-  onEvidence: () => void;
-}) {
-  const navigate = useNavigate();
-  const clickable = line.ref_type === 'kpi' && !!kpiSlug;
-  const open = () => { if (kpiSlug) navigate(Routes.strata.kpi(kpiSlug)); };
-  const detail = (calcLine?.detail ?? {}) as Record<string, unknown>;
-  const actual = line.ref_type === 'kpi' ? asDisplay(detail.actual) : null;
-  const target = line.ref_type === 'kpi' ? asDisplay(detail.target) : null;
-  const hasScore = !!calcLine && calcLine.has_data;
-  return (
-    <div
-      role={clickable ? 'button' : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      onClick={clickable ? open : undefined}
-      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } } : undefined}
-      data-testid={`strata-scorecard-line-${line.id}`}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '90px minmax(180px, 2fr) 70px minmax(160px, 1.2fr) 110px 110px 40px',
-        alignItems: 'center', gap: 12, padding: '8px 12px',
-        borderBottom: '1px solid var(--ds-border)',
-        cursor: clickable ? 'pointer' : 'default',
-      }}
-    >
-      <span style={chipStyle}>{line.ref_type}</span>
-      <span style={{ fontSize: 14, fontWeight: 500, color: clickable ? 'var(--ds-text-brand)' : 'var(--ds-text)', minWidth: 0, overflowWrap: 'anywhere' }}>
-        {refName ?? '—'}
-      </span>
-      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>w {line.weight}</span>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
-        {actual != null || target != null ? <>actual {actual ?? '—'} · target {target ?? '—'}</> : '—'}
-      </span>
-      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text)', textAlign: 'right' }}>
-        {hasScore ? calcLine!.score : (
-          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
-            <span>—</span>
-            <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest)' }}>no data</span>
-          </span>
-        )}
-      </span>
-      <span><StrataBandLozenge bandKey={calcLine?.status_key} /></span>
-      <span onClick={(e) => e.stopPropagation()}>
-        <Button appearance="subtle" spacing="compact" onClick={onEvidence} aria-label="Evidence for this line">ⓘ</Button>
-      </span>
-    </div>
-  );
+/** Weight → percent for display. Line weights arrive as fractions (0.2);
+ *  perspective weights may already be percent-scale (25). Display-only. */
+function weightPct(w: number | null | undefined): number | null {
+  if (w == null || !Number.isFinite(w)) return null;
+  return w <= 1 ? w * 100 : w;
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -121,6 +75,7 @@ export default function StrataScorecardDetailPage() {
   const elementsQ = useStrategyElements(activeCycle?.id);
   const benefitsQ = useBenefits();
   const perspectivesQ = usePerspectives();
+  const profilesQ = useProfileNames();
   const instanceCalcValuesQ = useCalcValues(instance ? 'scorecard_instance' : undefined, instance?.id);
   const evidence = useEvidenceDrawer();
   const invalidate = useInvalidateStrata();
@@ -139,6 +94,10 @@ export default function StrataScorecardDetailPage() {
   const elementById = useMemo(() => new Map((elementsQ.data ?? []).map((e) => [e.id, e])), [elementsQ.data]);
   const benefitById = useMemo(() => new Map((benefitsQ.data ?? []).map((b) => [b.id, b])), [benefitsQ.data]);
   const calcLineById = useMemo(() => new Map((calc?.lines ?? []).map((l) => [l.line_id, l])), [calc?.lines]);
+  const calcPerspectiveById = useMemo(
+    () => new Map((calc?.perspectives ?? []).map((p) => [p.perspective_id, p])),
+    [calc?.perspectives],
+  );
   const perspectiveNameById = useMemo(() => {
     const m = new Map<string, string>();
     (perspectivesQ.data ?? []).forEach((p) => m.set(p.id, p.name));
@@ -195,6 +154,154 @@ export default function StrataScorecardDetailPage() {
     }
   };
 
+  // ── Lines table schema (canonical JiraTable, grouped by perspective) ──────
+  const lineColumns: Column<StrataScorecardLine>[] = useMemo(() => [
+    {
+      id: 'line',
+      label: 'Line',
+      flex: true,
+      cell: ({ row }) => {
+        const name = refNameFor(row);
+        const clickable = row.ref_type === 'kpi' && !!(row.kpi_id && kpiById.get(row.kpi_id)?.slug);
+        return (
+          <span
+            data-testid={`strata-scorecard-line-${row.id}`}
+            style={{
+              fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+              color: clickable ? T.brandText : T.text,
+              minWidth: 0, overflowWrap: 'anywhere',
+            }}
+          >
+            {name ?? '—'}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'type',
+      label: 'Type',
+      width: 10,
+      cell: ({ row }) => <CatalystTag text={labelize(row.ref_type)} />,
+    },
+    {
+      id: 'weight',
+      label: 'Weight',
+      width: 14,
+      cell: ({ row }) => {
+        const pct = weightPct(row.weight);
+        const calcLine = calcLineById.get(row.id) ?? null;
+        return (
+          <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 64 }}>
+            <StrataBandBar value={pct} bandKey={calcLine?.status_key} height={4} />
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>
+              {pct != null ? `${fmtScore(pct)}%` : '—'}
+            </span>
+          </span>
+        );
+      },
+    },
+    {
+      id: 'performance',
+      label: 'Performance',
+      width: 18,
+      cell: ({ row }) => {
+        const calcLine = calcLineById.get(row.id) ?? null;
+        const detail = (calcLine?.detail ?? {}) as Record<string, unknown>;
+        const actual = row.ref_type === 'kpi' ? asDisplay(detail.actual) : null;
+        const target = row.ref_type === 'kpi' ? asDisplay(detail.target) : null;
+        const unit = row.kpi_id ? kpiById.get(row.kpi_id)?.unit ?? null : null;
+        if (actual == null && target == null) {
+          return <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>—</span>;
+        }
+        return (
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtle, fontVariantNumeric: 'tabular-nums' }}>
+            Actual {actual != null ? fmtUnit(actual, unit) : '—'} · Target {target != null ? fmtUnit(target, unit) : '—'}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'score',
+      label: 'Score',
+      width: 10,
+      align: 'end',
+      cell: ({ row }) => {
+        const calcLine = calcLineById.get(row.id) ?? null;
+        const hasScore = !!calcLine && calcLine.has_data;
+        if (!hasScore) {
+          return (
+            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontWeight: 600, color: T.text }}>—</span>
+              <span style={{ fontSize: 'var(--ds-font-size-050)', color: T.subtlest }}>No data</span>
+            </span>
+          );
+        }
+        return (
+          <span style={{
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text,
+            fontVariantNumeric: 'tabular-nums',
+          }}>
+            {fmtScore(calcLine!.score)}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'band',
+      label: 'Band',
+      width: 12,
+      cell: ({ row }) => <StrataBandLozenge bandKey={calcLineById.get(row.id)?.status_key} />,
+    },
+    {
+      id: 'evidence',
+      label: '',
+      width: 6,
+      align: 'center',
+      cell: ({ row }) => (
+        <span onClick={(e) => e.stopPropagation()}>
+          <Tooltip content="View evidence">
+            <IconButton
+              icon={<Info size={16} />}
+              appearance="subtle"
+              spacing="compact"
+              aria-label="View evidence"
+              onClick={() => { void openLineEvidence(row); }}
+              testId={`strata-line-evidence-${row.id}`}
+            />
+          </Tooltip>
+        </span>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [calcLineById, kpiById, elementById, benefitById]);
+
+  const lineGroups: RowGroup<StrataScorecardLine>[] = useMemo(
+    () => linesByPerspective.map(({ perspectiveId, lines: groupLines }) => {
+      const p = calcPerspectiveById.get(perspectiveId);
+      return {
+        id: perspectiveId,
+        label: perspectiveNameById.get(perspectiveId) ?? '—',
+        rows: groupLines,
+        labelNode: (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <span style={{ fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {perspectiveNameById.get(perspectiveId) ?? '—'}
+            </span>
+            {p ? (
+              <>
+                <span style={{ fontWeight: 600, color: T.text, fontVariantNumeric: 'tabular-nums' }}>
+                  {p.has_data ? fmtScore(p.score) : '—'}
+                </span>
+                <StrataBandLozenge bandKey={p.has_data ? p.status_key : null} />
+              </>
+            ) : null}
+          </span>
+        ),
+      };
+    }),
+    [linesByPerspective, calcPerspectiveById, perspectiveNameById],
+  );
+
   // ── Loading / error / not-found states ────────────────────────────────────
   if (instanceQ.isLoading) {
     return (
@@ -226,39 +333,61 @@ export default function StrataScorecardDetailPage() {
   }
 
   const isLocked = instance.status === 'locked';
+  const rollup = calc?.rollup_method ?? model?.rollup_method ?? null;
+  const profileById = profilesQ.data;
 
   return (
     <PageContainer variant="wide">
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 4 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)', margin: 0 }}>{instance.name}</h1>
-        <StrataDataStateLozenge state={instance.status} />
-        {!isLocked ? (
-          <span style={{ marginLeft: 'auto' }}>
-            <Button appearance="default" isDisabled={recalculating} onClick={recalculate}>
-              {recalculating ? 'Recalculating…' : 'Recalculate'}
-            </Button>
-          </span>
-        ) : null}
+      {/* Back navigation */}
+      <div style={{ marginBottom: 8 }}>
+        <Button
+          appearance="subtle"
+          iconBefore={<ChevronLeft size={16} />}
+          onClick={() => navigate(Routes.strata.scorecards())}
+          testId="strata-scorecard-back"
+        >
+          Scorecards
+        </Button>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-        <span style={chipStyle}>
-          Model: <strong style={{ color: 'var(--ds-text)', marginLeft: 4 }}>{model ? `${model.name} v${instance.model_version}` : '—'}</strong>
-        </span>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
-          Rollup: {calc?.rollup_method ?? model?.rollup_method ?? '—'}
-        </span>
-        {isLocked ? (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>Frozen in snapshot — numbers are immutable.</span>
-            <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.reviews())}>View reviews</Button>
-          </span>
-        ) : null}
-      </div>
-      <StrataConfigContextBar
+
+      <StrataPageChrome
+        icon={<FileBarChart size={20} />}
+        title={instance.name}
+        description={rollup ? `${labelize(rollup)} rollup` : undefined}
         modelLabel={model ? `${model.name} v${instance.model_version}` : null}
         state={instance.status}
+        actions={(
+          <>
+            <Button
+              appearance="subtle"
+              iconBefore={<Info size={16} />}
+              onClick={() => evidence.open(instance.name, instanceCalcValuesQ.data ?? [])}
+              testId="strata-scorecard-evidence"
+            >
+              Evidence
+            </Button>
+            {!isLocked ? (
+              <Button appearance="default" isDisabled={recalculating} onClick={recalculate}>
+                {recalculating ? 'Recalculating…' : 'Recalculate'}
+              </Button>
+            ) : null}
+          </>
+        )}
+        testId="strata-scorecard-chrome"
       />
+
+      {isLocked ? (
+        <div style={{ marginBottom: 16 }}>
+          <SectionMessage appearance="information" title="Frozen in snapshot">
+            <p>
+              Numbers on this scorecard are immutable — they read from the governance snapshot.{' '}
+              <Button appearance="link" spacing="none" onClick={() => navigate(Routes.strata.reviews())}>
+                View reviews
+              </Button>
+            </p>
+          </SectionMessage>
+        </div>
+      ) : null}
 
       {recalcError ? (
         <div style={{ marginBottom: 16 }}>
@@ -274,44 +403,81 @@ export default function StrataScorecardDetailPage() {
       ) : null}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Hero: total score */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 1fr) auto', gap: 12, alignItems: 'start' }}>
-          <StrataMetricStat
-            label="Total score"
-            value={calcQ.isLoading ? '…' : calc && calc.has_data ? calc.score : '—'}
-            bandKey={calc?.status_key}
-            caption={
-              calc && !calc.has_data ? 'no data' :
-              calc?.calculated_at ? `Calculated ${new Date(calc.calculated_at).toLocaleString()}` : undefined
-            }
-            testId="strata-scorecard-total"
-          />
-          <Button
-            appearance="subtle"
-            onClick={() => evidence.open(instance.name, instanceCalcValuesQ.data ?? [])}
-          >
-            ⓘ Evidence
-          </Button>
+        {/* Hero: total score ring */}
+        <div
+          data-testid="strata-scorecard-total"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 16, padding: '16px 16px',
+            background: T.raised, border: `1px solid ${T.border}`, borderRadius: 8,
+            boxShadow: 'var(--ds-shadow-raised)',
+          }}
+        >
+          {calcQ.isLoading ? (
+            <div aria-hidden style={{ width: 72, height: 72, borderRadius: '50%', background: T.neutral, flexShrink: 0 }} />
+          ) : (
+            <StrataScoreRing
+              score={calc && calc.has_data ? calc.score : null}
+              bandKey={calc?.has_data ? calc.status_key : null}
+              size={72}
+              strokeWidth={7}
+              testId="strata-scorecard-total-ring"
+            />
+          )}
+          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em',
+            }}>
+              Total score
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <StrataBandLozenge bandKey={calc?.has_data ? calc.status_key : null} />
+              {calc && !calc.has_data ? (
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>No data</span>
+              ) : null}
+            </span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+              {calcQ.isLoading
+                ? 'Calculating…'
+                : calc?.calculated_at ? `Calculated ${fmtDateTime(calc.calculated_at)}` : '—'}
+            </span>
+          </div>
         </div>
 
         {/* Perspective strip */}
         {calc && calc.perspectives.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
-            {calc.perspectives.map((p) => (
-              <StrataMetricStat
-                key={p.perspective_id}
-                label={p.name}
-                value={p.has_data ? p.score : '—'}
-                bandKey={p.status_key}
-                caption={p.has_data ? `w ${p.weight}` : `w ${p.weight} · no data`}
-                testId={`strata-perspective-stat-${p.perspective_id}`}
-              />
-            ))}
+            {calc.perspectives.map((p) => {
+              const pct = weightPct(p.weight);
+              return (
+                <StrataMetricStat
+                  key={p.perspective_id}
+                  label={p.name}
+                  value={p.has_data ? fmtScore(p.score) : '—'}
+                  bandKey={p.has_data ? p.status_key : null}
+                  caption={(
+                    <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <StrataBandBar value={p.has_data ? p.score : null} bandKey={p.has_data ? p.status_key : null} height={4} />
+                      <span>
+                        {pct != null ? `Weight ${fmtScore(pct)}%` : 'Weight —'}
+                        {p.has_data ? '' : ' · No data'}
+                      </span>
+                    </span>
+                  )}
+                  testId={`strata-perspective-stat-${p.perspective_id}`}
+                />
+              );
+            })}
           </div>
         ) : null}
 
         {/* Lines */}
-        <StrataPanel title="Lines" testId="strata-scorecard-lines-panel">
+        <StrataPanel
+          title="Lines"
+          icon={<Layers size={16} />}
+          count={linesQ.isLoading ? null : lines.length}
+          noPadding={!linesQ.isLoading && lines.length > 0}
+          testId="strata-scorecard-lines-panel"
+        >
           {linesQ.isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Spinner size="medium" /></div>
           ) : lines.length === 0 ? (
@@ -322,26 +488,17 @@ export default function StrataScorecardDetailPage() {
               testId="strata-lines-empty"
             />
           ) : (
-            linesByPerspective.map(({ perspectiveId, lines: groupLines }) => (
-              <div key={perspectiveId} style={{ marginBottom: 12 }}>
-                <div style={{
-                  fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtle)',
-                  padding: '8px 12px', background: 'var(--ds-surface-sunken)', borderRadius: 4,
-                }}>
-                  {perspectiveNameById.get(perspectiveId) ?? '—'}
-                </div>
-                {groupLines.map((line) => (
-                  <LineRow
-                    key={line.id}
-                    line={line}
-                    calcLine={calcLineById.get(line.id) ?? null}
-                    refName={refNameFor(line)}
-                    kpiSlug={line.kpi_id ? kpiById.get(line.kpi_id)?.slug ?? null : null}
-                    onEvidence={() => { void openLineEvidence(line); }}
-                  />
-                ))}
-              </div>
-            ))
+            <JiraTable<StrataScorecardLine>
+              columns={lineColumns}
+              groups={lineGroups}
+              getRowId={(row) => row.id}
+              onRowClick={(row) => {
+                if (row.ref_type !== 'kpi' || !row.kpi_id) return;
+                const kpiSlug = kpiById.get(row.kpi_id)?.slug;
+                if (kpiSlug) navigate(Routes.strata.kpi(kpiSlug));
+              }}
+              ariaLabel="Scorecard lines by perspective"
+            />
           )}
         </StrataPanel>
 
@@ -354,23 +511,32 @@ export default function StrataScorecardDetailPage() {
               <p>{(commentaryQ.error as Error)?.message ?? 'Unknown error.'}</p>
             </SectionMessage>
           ) : (commentaryQ.data ?? []).length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: 0 }}>No commentary for this period.</p>
+            <EmptyState
+              size="compact"
+              header="No commentary"
+              description="No commentary has been recorded for this period."
+              testId="strata-commentary-empty"
+            />
           ) : (
-            (commentaryQ.data ?? []).map((c) => (
-              <div key={c.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--ds-border)' }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
-                    {c.author_id ?? c.created_by ?? '—'}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
-                    {c.created_at ? new Date(c.created_at).toLocaleString() : '—'}
-                  </span>
+            (commentaryQ.data ?? []).map((c) => {
+              const authorId = c.author_id ?? c.created_by ?? null;
+              const authorName = authorId ? profileById?.get(authorId)?.name ?? null : null;
+              return (
+                <div key={c.id} style={{ padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', marginBottom: 4 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.text }}>
+                      {authorName ?? '—'}
+                    </span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                      {fmtDateTime(c.created_at)}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, overflowWrap: 'anywhere' }}>
+                    {c.body ?? c.content ?? '—'}
+                  </div>
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--ds-text)', overflowWrap: 'anywhere' }}>
-                  {c.body ?? c.content ?? '—'}
-                </div>
-              </div>
-            ))
+              );
+            })
           )}
         </StrataPanel>
       </div>

@@ -1,29 +1,35 @@
 /**
  * STRATA KPI Detail — /strata/kpis/:slug (CAT-STRATA-20260705-001).
- * Full lineage view: ownership (SoD), server-computed achievement, trend,
+ * Full lineage view: server-computed achievement hero, trend, ownership (SoD),
  * governed formula versions, upload-run lineage, commentary.
  * UI never computes achievement/RAG — values come from strata_calc_kpi_achievement
  * and strata_calculated_values verbatim. Unknowns render '—'.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import Badge from '@atlaskit/badge';
-import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left';
-import { Button, Lozenge, SectionMessage, Spinner } from '@/components/ads';
+import {
+  Avatar, Button, CatalystTag, EmptyState, Lozenge, SectionMessage, Spinner,
+} from '@/components/ads';
 import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
-import { EmptyState } from '@/components/ads';
+import {
+  Activity, ChevronRight, Database, GitBranch, Info, Target, Users,
+} from '@/lib/atlaskit-icons';
 import { PageContainer } from '@/components/shared/PageContainer';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { Routes } from '@/lib/routes';
 import { kpiApi } from '@/modules/strata/domain';
 import {
-  useCalcValues, useKpiAchievement, useKpiBySlug, useKpiDetail, useStrataContext, useUploadRuns,
+  useCalcValues, useKpiAchievement, useKpiBySlug, useKpiDetail, useProfileNames, useStrataContext, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
+import type { StrataProfileRef } from '@/modules/strata/hooks/useStrata';
 import {
-  StrataBandLozenge, StrataConfigContextBar, StrataMetricStat, StrataPanel, useEvidenceDrawer,
+  StrataPageChrome, StrataPanel, StrataStatStrip, T, useEvidenceDrawer,
 } from '@/modules/strata/components/shared';
+import { fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtUnit, labelize } from '@/modules/strata/components/format';
 import { StrataGovernedStatusLozenge } from '@/modules/strata/pages/StrataKpiLibraryPage';
 import type {
   StrataKpi, StrataKpiActual, StrataKpiTarget, ValidationStatus,
@@ -62,48 +68,35 @@ const VALIDATION_LOZENGE: Record<ValidationStatus, { label: string; appearance: 
   validated: { label: 'Validated', appearance: 'success' },
   pending: { label: 'Pending', appearance: 'moved' },
   rejected: { label: 'Rejected', appearance: 'removed' },
-  quarantined: { label: 'Quarantined', appearance: 'default' },
+  quarantined: { label: 'Quarantined', appearance: 'moved' },
 };
 
 function ValidationLozenge({ status }: { status: ValidationStatus | string | null | undefined }) {
   if (!status) return <Dash />;
   const cfg = VALIDATION_LOZENGE[status as ValidationStatus];
-  if (!cfg) return <Lozenge appearance="default">{String(status)}</Lozenge>;
+  if (!cfg) return <Lozenge appearance="default">{labelize(String(status))}</Lozenge>;
   return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
 }
 
-const Dash = () => <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
 
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      style={{
-        display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 4,
-        background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
-        fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-/** Person cell: uuid first 8 chars w/ title attr — no profile join seeded; never invent names. */
-function PersonRef({ id }: { id: string | null }) {
+/** Person cell (S-132): resolved profile name + avatar, or '—'. NEVER a UUID. */
+function PersonName({ id, profiles }: { id: string | null; profiles?: Map<string, StrataProfileRef> }) {
   if (!id) return <Dash />;
+  const p = profiles?.get(id);
+  if (!p?.name) return <Dash />;
   return (
-    <span title={id} style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, color: 'var(--ds-text)' }}>
-      {id.slice(0, 8)}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <Avatar size="xsmall" name={p.name} src={p.avatarUrl ?? undefined} />
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
     </span>
   );
 }
 
-const thStyle: React.CSSProperties = {
-  textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)',
-  padding: '8px 8px', borderBottom: '2px solid var(--ds-border)', whiteSpace: 'nowrap',
-};
-const tdStyle: React.CSSProperties = {
-  fontSize: 13, color: 'var(--ds-text)', padding: '8px 8px', borderBottom: '1px solid var(--ds-border)',
+/** Confidence values arrive as ratio (0–1) or percent — normalize for display (S-136). */
+const fmtConfidence = (v: number | null | undefined): string | null => {
+  if (v == null) return null;
+  return v <= 1 ? fmtRatioPct(v) : fmtPct(v);
 };
 
 const OWNERSHIP_ROLES: Array<{ label: string; key: keyof Pick<StrataKpi,
@@ -114,6 +107,13 @@ const OWNERSHIP_ROLES: Array<{ label: string; key: keyof Pick<StrataKpi,
   { label: 'Validator', key: 'validator_id' },
   { label: 'Escalation owner', key: 'escalation_owner_id' },
 ];
+
+interface TrendRow {
+  periodId: string;
+  period: { name: string; starts_on?: string | null } | null;
+  target: StrataKpiTarget | null;
+  actual: StrataKpiActual | null;
+}
 
 export default function StrataKpiDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -126,7 +126,9 @@ export default function StrataKpiDetailPage() {
   const achievementQ = useKpiAchievement(kpi?.id, activePeriod?.id);
   const calcValuesQ = useCalcValues('kpi', kpi?.id);
   const uploadRunsQ = useUploadRuns();
+  const profilesQ = useProfileNames();
   const evidence = useEvidenceDrawer();
+  const [showTrendData, setShowTrendData] = useState(false);
 
   const commentaryQ = useQuery({
     queryKey: ['strata', 'commentary', 'kpi', kpi?.id],
@@ -144,7 +146,7 @@ export default function StrataKpiDetailPage() {
   }, [uploadRunsQ.data]);
 
   /** Trend rows: targets ⋈ actuals on period_id — raw values only, no math. */
-  const trendRows = useMemo(() => {
+  const trendRows = useMemo<TrendRow[]>(() => {
     const targets = detailQ.data?.targets ?? [];
     const actuals = detailQ.data?.actuals ?? [];
     const targetByPeriod = new Map<string, StrataKpiTarget>();
@@ -170,10 +172,67 @@ export default function StrataKpiDetailPage() {
   }, [detailQ.data?.targets, detailQ.data?.actuals, periodById]);
 
   const chartData = useMemo(() => trendRows.map((r) => ({
-    name: r.period?.name ?? r.periodId.slice(0, 8),
+    name: r.period?.name ?? '—',
     Target: r.target?.target ?? null,
     Actual: r.actual?.value ?? null,
   })), [trendRows]);
+
+  const actualSpark = useMemo(() => trendRows.map((r) => r.actual?.value ?? null), [trendRows]);
+
+  const trendColumns = useMemo<Column<TrendRow>[]>(() => [
+    { id: 'period', label: 'Period', flex: true, cell: ({ row }) => (row.period?.name ? <span style={{ color: T.text }}>{row.period.name}</span> : <Dash />) },
+    {
+      id: 'target', label: 'Target', width: 18,
+      cell: ({ row }) => (row.target ? <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(row.target.target, kpi?.unit)}</span> : <Dash />),
+    },
+    {
+      id: 'actual', label: 'Actual', width: 18,
+      cell: ({ row }) => (row.actual ? <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(row.actual.value, kpi?.unit)}</span> : <Dash />),
+    },
+    {
+      id: 'validation', label: 'Validation', width: 16,
+      cell: ({ row }) => (row.actual ? <ValidationLozenge status={row.actual.validation_status} /> : <Dash />),
+    },
+  ], [kpi?.unit]);
+
+  const lineageColumns = useMemo<Column<StrataKpiActual>[]>(() => [
+    {
+      id: 'period', label: 'Period', flex: true,
+      cell: ({ row }) => (periodById.get(row.period_id)?.name ? <span style={{ color: T.text }}>{periodById.get(row.period_id)?.name}</span> : <Dash />),
+    },
+    {
+      id: 'value', label: 'Value', width: 12,
+      cell: ({ row }) => <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmtUnit(row.value, kpi?.unit)}</span>,
+    },
+    {
+      id: 'entry_method', label: 'Entry', width: 10,
+      cell: ({ row }) => (row.entry_method ? <CatalystTag text={labelize(row.entry_method)} /> : <Dash />),
+    },
+    {
+      id: 'upload_run', label: 'Upload run', width: 16,
+      cell: ({ row }) => {
+        const runKey = row.upload_run_id ? runKeyById.get(row.upload_run_id) ?? null : null;
+        if (runKey) {
+          return (
+            <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.run(runKey))}>
+              {runKey}
+            </Button>
+          );
+        }
+        return <Dash />;
+      },
+    },
+    {
+      id: 'staging_row', label: 'Staging row', width: 12,
+      cell: ({ row }) => (row.staging_row_id
+        ? <span title={row.staging_row_id} style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{row.staging_row_id.slice(0, 8)}</span>
+        : <Dash />),
+    },
+    {
+      id: 'validated_at', label: 'Validated at', width: 16,
+      cell: ({ row }) => (row.validated_at ? <span style={{ color: T.subtle }}>{fmtDateTime(row.validated_at)}</span> : <Dash />),
+    },
+  ], [periodById, runKeyById, navigate, kpi?.unit]);
 
   // ── Loading / error / not-found states ────────────────────────────────────
   if (kpiQ.isLoading) {
@@ -211,75 +270,88 @@ export default function StrataKpiDetailPage() {
   const lineageActuals = actuals.filter((a) => a.upload_run_id);
   const manualActuals = actuals.filter((a) => a.entry_method === 'manual');
   const commentary = (commentaryQ.data ?? []) as StrataCommentaryRow[];
+  const confidenceText = fmtConfidence(achievement?.confidence);
+  const lineageFootnote = [
+    lineageActuals.length > 0 ? 'Uploaded values trace to a staging row inside their upload run.' : null,
+    manualActuals.length > 0 ? 'Manual entries carry submitter attestation.' : null,
+  ].filter(Boolean).join(' ');
 
   return (
     <PageContainer variant="wide">
-      {/* (a) header */}
-      <div style={{ marginBottom: 8 }}>
-        <Button appearance="subtle" iconBefore={<ArrowLeftIcon label="" />} onClick={() => navigate(Routes.strata.kpis())}>
+      {/* (a) breadcrumb-like subtle back row (S-151) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
+        <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.kpis())}>
           KPI library
         </Button>
+        <span aria-hidden style={{ display: 'inline-flex', color: 'var(--ds-icon-subtle)' }}><ChevronRight size={12} /></span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{kpi.name}</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 4 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)', margin: 0 }}>{kpi.name}</h1>
-        <StrataGovernedStatusLozenge status={kpi.status} />
-        {kpi.unit ? <Chip>{kpi.unit}</Chip> : null}
-        <Chip>{DIRECTION_LABEL[kpi.direction] ?? kpi.direction}</Chip>
-        {kpi.frequency ? <Chip>{kpi.frequency}</Chip> : null}
-      </div>
-      {kpi.description ? (
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: '0 0 8px', maxWidth: 720 }}>{kpi.description}</p>
-      ) : null}
-      <StrataConfigContextBar />
+
+      <StrataPageChrome
+        icon={<Target size={20} />}
+        title={kpi.name}
+        description={kpi.description ?? undefined}
+        testId="strata-kpi-detail-chrome"
+        actions={
+          <Button
+            appearance="default"
+            iconBefore={<Info size={14} />}
+            onClick={() => evidence.open(kpi.name, calcValuesQ.data ?? [])}
+            isDisabled={calcValuesQ.isLoading}
+          >
+            Evidence
+          </Button>
+        }
+        extra={
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+            <StrataGovernedStatusLozenge status={kpi.status} />
+            {kpi.unit ? <CatalystTag text={kpi.unit} /> : null}
+            <CatalystTag text={DIRECTION_LABEL[kpi.direction] ?? labelize(kpi.direction)} />
+            {kpi.frequency ? <CatalystTag text={labelize(kpi.frequency)} /> : null}
+          </span>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* (b) Ownership */}
-        <StrataPanel title="Ownership" testId="strata-kpi-ownership">
-          <div>
-            {OWNERSHIP_ROLES.map(({ label, key }) => (
-              <div key={key} style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: '1px solid var(--ds-border)' }}>
-                <span style={{ width: 160, flexShrink: 0, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{label}</span>
-                <PersonRef id={kpi[key]} />
-              </div>
-            ))}
-          </div>
-          <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: '8px 0 0' }}>
-            Roles are segregated: submitter ≠ validator enforced in the database
-          </p>
-        </StrataPanel>
+        {/* (b) hero — achievement ring + trend spark FIRST (S-147, S-150) */}
+        <StrataStatStrip
+          testId="strata-kpi-hero"
+          items={[
+            {
+              key: 'achievement',
+              label: `Achievement · ${activePeriod?.name ?? '—'}`,
+              value: achievement?.achievement != null ? fmtPct(achievement.achievement) : '—',
+              ring: { score: achievement?.achievement, bandKey: achievement?.status_key },
+              bandKey: achievement?.status_key ?? null,
+              spark: actualSpark.filter((v) => v != null).length >= 2 ? actualSpark : undefined,
+              caption:
+                achievement && (achievement.actual != null || achievement.target != null)
+                  ? `Actual ${fmtUnit(achievement.actual, kpi.unit)} · Target ${fmtUnit(achievement.target, kpi.unit)}`
+                  : 'No achievement calculated for this period',
+              testId: 'strata-kpi-achievement-stat',
+            },
+            {
+              key: 'confidence',
+              label: 'Confidence',
+              value: confidenceText ?? '—',
+              caption: 'Reported by the calc engine',
+              testId: 'strata-kpi-confidence-stat',
+            },
+          ]}
+        />
 
-        {/* (c) hero row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, alignItems: 'stretch' }}>
-          <StrataMetricStat
-            label={`Achievement · ${activePeriod?.name ?? '—'}`}
-            value={achievement?.achievement != null ? `${achievement.achievement}%` : '—'}
-            bandKey={achievement?.status_key ?? null}
-            caption={
-              achievement && (achievement.actual != null || achievement.target != null)
-                ? `actual ${achievement.actual ?? '—'} vs target ${achievement.target ?? '—'}`
-                : 'No achievement calculated for this period'
-            }
-            testId="strata-kpi-achievement-stat"
-          />
-          <StrataMetricStat
-            label="Confidence"
-            value={achievement?.confidence != null ? String(achievement.confidence) : '—'}
-            caption="Reported by the calc engine"
-            testId="strata-kpi-confidence-stat"
-          />
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Button
-              appearance="default"
-              onClick={() => evidence.open(kpi.name, calcValuesQ.data ?? [])}
-              isDisabled={calcValuesQ.isLoading}
-            >
-              ⓘ Evidence
+        {/* (c) Trend */}
+        <StrataPanel
+          title="Trend"
+          icon={<Activity size={16} />}
+          count={trendRows.length || null}
+          testId="strata-kpi-trend"
+          actions={trendRows.length > 0 ? (
+            <Button appearance="subtle" spacing="compact" onClick={() => setShowTrendData((v) => !v)}>
+              {showTrendData ? 'Hide data' : 'Show data'}
             </Button>
-          </div>
-        </div>
-
-        {/* (d) Trend */}
-        <StrataPanel title="Trend" testId="strata-kpi-trend">
+          ) : undefined}
+        >
           {detailQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading trend" />
           ) : detailQ.isError ? (
@@ -292,48 +364,64 @@ export default function StrataKpiDetailPage() {
             <>
               <div style={{ width: '100%', height: 240 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+                  <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 0, left: 8 }}>
                     <CartesianGrid stroke="var(--ds-border)" strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={{ fill: 'var(--ds-text-subtle)', fontSize: 12 }} stroke="var(--ds-border)" />
-                    <YAxis tick={{ fill: 'var(--ds-text-subtle)', fontSize: 12 }} stroke="var(--ds-border)" />
+                    <YAxis
+                      tick={{ fill: 'var(--ds-text-subtle)', fontSize: 12 }}
+                      stroke="var(--ds-border)"
+                      label={kpi.unit ? {
+                        value: kpi.unit, angle: -90, position: 'insideLeft',
+                        style: { fill: 'var(--ds-text-subtlest)', fontSize: 11 },
+                      } : undefined}
+                    />
                     <RechartsTooltip
                       contentStyle={{
                         background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)',
                         borderRadius: 4, color: 'var(--ds-text)', fontSize: 12,
                       }}
+                      formatter={(value: number | string) => fmtUnit(typeof value === 'number' ? value : Number(value), kpi.unit)}
                     />
                     <Legend wrapperStyle={{ fontSize: 12, color: 'var(--ds-text-subtle)' }} />
-                    <Line type="monotone" dataKey="Target" stroke="var(--ds-text-subtlest)" strokeDasharray="4 4" dot={{ r: 3 }} connectNulls />
+                    <Line type="monotone" dataKey="Target" stroke="var(--ds-border-bold)" strokeDasharray="4 4" strokeWidth={1.5} dot={{ r: 3 }} connectNulls />
                     <Line type="monotone" dataKey="Actual" stroke="var(--ds-text-brand)" strokeWidth={2} dot={{ r: 3 }} connectNulls />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
-                <thead>
-                  <tr>
-                    <th style={thStyle}>Period</th>
-                    <th style={thStyle}>Target</th>
-                    <th style={thStyle}>Actual</th>
-                    <th style={thStyle}>Validation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {trendRows.map((r) => (
-                    <tr key={r.periodId}>
-                      <td style={tdStyle}>{r.period?.name ?? <Dash />}</td>
-                      <td style={tdStyle}>{r.target ? r.target.target : <Dash />}</td>
-                      <td style={tdStyle}>{r.actual ? r.actual.value : <Dash />}</td>
-                      <td style={tdStyle}>{r.actual ? <ValidationLozenge status={r.actual.validation_status} /> : <Dash />}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {showTrendData ? (
+                <div style={{ marginTop: 12 }}>
+                  <JiraTable<TrendRow>
+                    columns={trendColumns}
+                    data={trendRows}
+                    getRowId={(row) => row.periodId}
+                    density="compact"
+                    showRowCount={false}
+                    rowsPerPage={100}
+                    ariaLabel="Trend data"
+                  />
+                </div>
+              ) : null}
             </>
           )}
         </StrataPanel>
 
+        {/* (d) Ownership — after the hero (S-147) */}
+        <StrataPanel title="Ownership" icon={<Users size={16} />} testId="strata-kpi-ownership">
+          <div>
+            {OWNERSHIP_ROLES.map(({ label, key }) => (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
+                <span style={{ width: 160, flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{label}</span>
+                <PersonName id={kpi[key]} profiles={profilesQ.data} />
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '8px 0 0' }}>
+            Submitter and validator are always different people.
+          </p>
+        </StrataPanel>
+
         {/* (e) Formula versions */}
-        <StrataPanel title="Formula versions" testId="strata-kpi-formulas">
+        <StrataPanel title="Formula versions" icon={<GitBranch size={16} />} count={formulas.length || null} testId="strata-kpi-formulas">
           {detailQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading formulas" />
           ) : formulas.length === 0 ? (
@@ -341,19 +429,19 @@ export default function StrataKpiDetailPage() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {formulas.map((f) => (
-                <div key={f.id} style={{ border: '1px solid var(--ds-border)', borderRadius: 8, padding: 12 }}>
+                <div key={f.id} style={{ border: `1px solid ${T.border}`, borderRadius: 8, padding: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                    <Badge appearance="primary">{`v${f.version}`}</Badge>
-                    <Chip>{f.formula_type}</Chip>
+                    <Lozenge appearance="inprogress" isBold>{`v${f.version}`}</Lozenge>
+                    <CatalystTag text={labelize(f.formula_type)} />
                     <StrataGovernedStatusLozenge status={f.status} />
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', marginLeft: 'auto' }}>
-                      Effective from {f.effective_from ?? '—'} · Approved {f.approved_at ? new Date(f.approved_at).toLocaleDateString() : '—'}
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, marginLeft: 'auto' }}>
+                      Effective from {fmtDate(f.effective_from)} · Approved {fmtDate(f.approved_at)}
                     </span>
                   </div>
                   <pre
                     style={{
-                      margin: 0, padding: '8px 12px', background: 'var(--ds-surface-sunken)', borderRadius: 4,
-                      fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, color: 'var(--ds-text)',
+                      margin: 0, padding: '8px 12px', background: T.sunken, borderRadius: 4,
+                      fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: T.text,
                       whiteSpace: 'pre-wrap', overflowWrap: 'anywhere',
                     }}
                   >
@@ -361,72 +449,43 @@ export default function StrataKpiDetailPage() {
                   </pre>
                 </div>
               ))}
-              <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: 0 }}>
-                Formula changes create new versions; no silent changes
+              <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: 0 }}>
+                Every formula change creates a new approved version.
               </p>
             </div>
           )}
         </StrataPanel>
 
         {/* (f) Lineage */}
-        <StrataPanel title="Lineage" testId="strata-kpi-lineage">
+        <StrataPanel title="Lineage" icon={<Database size={16} />} count={actuals.length || null} testId="strata-kpi-lineage" noPadding>
           {detailQ.isLoading ? (
-            <Spinner size="medium" aria-label="Loading lineage" />
+            <div style={{ padding: 16 }}><Spinner size="medium" aria-label="Loading lineage" /></div>
           ) : actuals.length === 0 ? (
-            <EmptyState size="compact" header="No actuals recorded" description="Uploaded and manual actuals with full lineage will appear here." />
+            <div style={{ padding: 16 }}>
+              <EmptyState size="compact" header="No actuals recorded" description="Uploaded and manual actuals with full lineage will appear here." />
+            </div>
           ) : (
             <>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th style={thStyle}>Period</th>
-                    <th style={thStyle}>Value</th>
-                    <th style={thStyle}>Entry</th>
-                    <th style={thStyle}>Upload run</th>
-                    <th style={thStyle}>Staging row</th>
-                    <th style={thStyle}>Validated at</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {actuals.map((a) => {
-                    const runKey = a.upload_run_id ? runKeyById.get(a.upload_run_id) ?? null : null;
-                    return (
-                      <tr key={a.id}>
-                        <td style={tdStyle}>{periodById.get(a.period_id)?.name ?? <Dash />}</td>
-                        <td style={tdStyle}>{a.value}</td>
-                        <td style={tdStyle}><Chip>{a.entry_method}</Chip></td>
-                        <td style={tdStyle}>
-                          {runKey ? (
-                            <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.run(runKey))}>
-                              {runKey}
-                            </Button>
-                          ) : a.upload_run_id ? (
-                            <span title={a.upload_run_id} style={{ color: 'var(--ds-text-subtle)' }}>{a.upload_run_id.slice(0, 8)}</span>
-                          ) : (
-                            <Dash />
-                          )}
-                        </td>
-                        <td style={tdStyle}>
-                          {a.staging_row_id
-                            ? <span title={a.staging_row_id} style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12 }}>{a.staging_row_id.slice(0, 8)}</span>
-                            : <Dash />}
-                        </td>
-                        <td style={tdStyle}>{a.validated_at ? new Date(a.validated_at).toLocaleString() : <Dash />}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: '8px 0 0' }}>
-                {lineageActuals.length > 0 ? 'Uploaded values trace to a staging row inside their upload run. ' : ''}
-                {manualActuals.length > 0 ? 'Manual entries carry submitter attestation' : ''}
-              </p>
+              <JiraTable<StrataKpiActual>
+                columns={lineageColumns}
+                data={actuals}
+                getRowId={(row) => row.id}
+                density="compact"
+                showRowCount={false}
+                rowsPerPage={100}
+                ariaLabel="Lineage"
+              />
+              {lineageFootnote ? (
+                <p style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: 0, padding: '8px 16px 12px' }}>
+                  {lineageFootnote}
+                </p>
+              ) : null}
             </>
           )}
         </StrataPanel>
 
         {/* (g) Commentary */}
-        <StrataPanel title="Commentary" testId="strata-kpi-commentary">
+        <StrataPanel title="Commentary" icon={<Info size={16} />} count={commentary.length || null} testId="strata-kpi-commentary">
           {commentaryQ.isLoading ? (
             <Spinner size="medium" aria-label="Loading commentary" />
           ) : commentaryQ.isError ? (
@@ -438,14 +497,14 @@ export default function StrataKpiDetailPage() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {commentary.map((c) => (
-                <div key={c.id} style={{ padding: '8px 12px', background: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
-                  <p style={{ fontSize: 13, color: 'var(--ds-text)', margin: 0, whiteSpace: 'pre-wrap' }}>
+                <div key={c.id} style={{ padding: '8px 12px', background: T.sunken, borderRadius: 4 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: T.text, margin: 0, whiteSpace: 'pre-wrap' }}>
                     {c.body ?? c.content ?? '—'}
                   </p>
-                  <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)' }}>
-                    {(c.author_id ?? c.created_by) ? <PersonRef id={(c.author_id ?? c.created_by) as string} /> : '—'}
-                    {' · '}
-                    {c.created_at ? new Date(c.created_at).toLocaleString() : '—'}
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-075)', color: T.subtlest, marginTop: 4 }}>
+                    <PersonName id={(c.author_id ?? c.created_by) ?? null} profiles={profilesQ.data} />
+                    <span>·</span>
+                    <span>{c.created_at ? fmtDateTime(c.created_at) : '—'}</span>
                   </span>
                 </div>
               ))}
