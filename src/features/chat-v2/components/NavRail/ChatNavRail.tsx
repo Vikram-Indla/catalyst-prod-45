@@ -163,13 +163,13 @@ function NavRow({
         border: 'none',
         textAlign: 'left',
         cursor: 'pointer',
-        fontFamily: 'var(--cp-font-body)',
+        fontFamily: 'var(--cv2-font)',
         font: 'var(--ds-font-body)',
-        fontWeight: active ? 600 : 500,
+        fontWeight: active ? 700 : 500,
         lineHeight: 1,
         letterSpacing: '0',
-        color: active ? 'var(--cp-text-link, var(--cp-primary-60))' : 'var(--cp-text-secondary)',
-        borderRadius: '4px',
+        color: active ? 'var(--cv2-accent)' : 'var(--cv2-text-muted)',
+        borderRadius: 'var(--cv2-radius-md)',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => {
@@ -188,7 +188,7 @@ function NavRow({
             top: 4,
             bottom: 4,
             width: 3,
-            background: 'var(--ds-text-brand)',
+            background: 'var(--cv2-accent)',
             borderRadius: '0 3px 3px 0',
           }}
         />

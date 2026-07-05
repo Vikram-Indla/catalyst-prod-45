@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  BellOffIcon,
   ChevronRightIcon,
   CopyLinkIcon,
   CopyTextIcon,
@@ -18,7 +17,6 @@ interface ActivityMoreMenuProps {
   onMarkUnread: () => void;
   onRemindMe: (whenIso: string) => void;
   onRemindMeCustom: () => void;
-  onTurnOffReplies: () => void;
   onCopyLink: () => void;
   onCopyMessage: () => void;
   onClose: () => void;
@@ -33,7 +31,6 @@ export function ActivityMoreMenu({
   onMarkUnread,
   onRemindMe,
   onRemindMeCustom,
-  onTurnOffReplies,
   onCopyLink,
   onCopyMessage,
   onClose,
@@ -121,11 +118,6 @@ export function ActivityMoreMenu({
         active={remindOpen}
         onClick={() => setRemindOpen(v => !v)}
         onMouseEnter={() => setRemindOpen(true)}
-      />
-      <Item
-        icon={<BellOffIcon size={16} />}
-        label="Turn off notifications for replies"
-        onClick={() => { onTurnOffReplies(); onClose(); }}
       />
       <Divider />
       <Item

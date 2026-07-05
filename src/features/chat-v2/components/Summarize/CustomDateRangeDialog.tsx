@@ -6,6 +6,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, XIcon } from '../shared/Icon';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface CustomDateRangeDialogProps {
   onClose: () => void;
@@ -51,6 +52,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
   const [hover, setHover] = useState<Date | null>(null);
   const [startInput, setStartInput] = useState<string>('');
   const [endInput, setEndInput] = useState<string>('');
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   // Sync free-text inputs <-> selected dates.
   useEffect(() => { setStartInput(start ? toISO(start) : ''); }, [start]);
@@ -115,6 +117,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
       }}
     >
       <div
+        ref={trapRef}
         role="dialog"
         aria-modal="true"
         aria-label="Summarize custom date range"

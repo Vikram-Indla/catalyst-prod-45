@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import { ArrowRight } from '@/lib/atlaskit-icons';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import type { CdsActivityItem } from '../types';
@@ -11,11 +12,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 function formatAbsoluteDate(dateStr: string): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
-  return (
-    d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) +
-    ' at ' +
-    d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
-  );
+  return formatDistanceToNow(d, { addSuffix: true });
 }
 
 function formatFieldName(field: string): string {
@@ -134,7 +131,7 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
 
           {type === 'update' && fieldChange && (
             <span style={{ fontSize: 14, color: 'var(--ds-text)', fontWeight: 400 }}>
-              changed the{' '}
+              updated the{' '}
               <span style={{ fontWeight: 600 }}>
                 {formatFieldName(fieldChange.field)}
               </span>

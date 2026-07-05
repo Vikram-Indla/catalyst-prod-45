@@ -59,6 +59,9 @@ const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/Ro
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
+const ConvertToSubtaskPageLazy = lazy(() => import("../pages/project-hub/ConvertToSubtaskPage"));
+const IssueSelectorPopupPageLazy = lazy(() => import("../pages/project-hub/convert-to-subtask/IssueSelectorPopupPage"));
+const MovePageLazy = lazy(() => import("../pages/project-hub/MovePage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
 const ReleasesPageWrapperLazy = lazy(() => import("../pages/project-hub/ReleasesPageWrapper").then(m => ({ default: m.ReleasesPageWrapper })));
@@ -169,6 +172,7 @@ const TestHubFilterPreviewPage = lazy(() => import("../pages/testhub/FilterPrevi
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
+const TestHubCycleRunDetailPage = lazy(() => import("../pages/testhub/cycles/CycleRunDetailPage"));
 const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
@@ -181,8 +185,23 @@ const TestHubDefectDetailPage = lazy(() => import("../pages/testhub/defects/Defe
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
 
-// Wiki module — DEPRECATED 2026-06-25
-// All wiki routes removed; modules-dormant/wiki remains in codebase for historical reference.
+// Wiki module — RESTORED 2026-07-05 (CAT-WIKI-RESTORE-20260705-001).
+// Routes re-added, but frontend pages remain deleted in git.
+// Backend (tables/RPCs/kb-query) intact. Uncomment when files are restored.
+/*
+const WikiHomePage = lazy(() => import("../modules-dormant/wiki/WikiHomePage"));
+const WikiSearchPage = lazy(() => import("../modules-dormant/wiki/WikiSearchPage"));
+const WikiArticlePage = lazy(() => import("../modules-dormant/wiki/WikiArticlePage"));
+const WikiCategoryPage = lazy(() => import("../modules-dormant/wiki/WikiCategoryPage"));
+const WikiAllArticlesPage = lazy(() => import("../modules-dormant/wiki/WikiAllArticlesPage"));
+const WikiWhatsNewPage = lazy(() => import("../modules-dormant/wiki/WikiWhatsNewPage"));
+const WikiLearningPathsPage = lazy(() => import("../modules-dormant/wiki/WikiLearningPathsPage"));
+const WikiLearningPathDetailPage = lazy(() => import("../modules-dormant/wiki/WikiLearningPathDetailPage"));
+const WikiSubscriptionsPage = lazy(() => import("../modules-dormant/wiki/WikiSubscriptionsPage"));
+const WikiVerificationPage = lazy(() => import("../modules-dormant/wiki/WikiVerificationPage"));
+const WikiAnalyticsPage = lazy(() => import("../modules-dormant/wiki/WikiAnalyticsPage"));
+const WikiTemplatesPage = lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage"));
+*/
 
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
@@ -198,7 +217,9 @@ const BrowsePage = lazy(() => import("../pages/BrowsePage"));
 const DependencyMapsPage = lazy(() => import("../pages/reports/DependencyMapsPage"));
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
-const StrategyRoom = lazy(() => import("../modules-dormant/strategy/StrategyRoom"));
+// CAT-STRATA-20260705-001 (D-009/Q2): dormant StrategyRoom decommissioned;
+// the strategy surface is now STRATA at /strata.
+const StrataRoutesShell = lazy(() => import("../modules/strata/StrataRoutes"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
@@ -587,11 +608,10 @@ export default function FullAppRoutes() {
         <Route path="/search" element={<S><SearchPage /></S>} />
 
         {/* ═══ StrategyHub ═══ */}
-        <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/executive-brief" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/*" element={<Navigate to="/strategyhub" replace />} />
+        {/* CAT-STRATA-20260705-001: STRATA replaces StrategyHub. Legacy
+            /strategyhub and /strategy-room redirects live in App.tsx OUTSIDE
+            CatalystShell (Navigate inside FullAppRoutes is swallowed). */}
+        <Route path="/strata/*" element={<MG k="strategyhub" t="STRATA"><S><StrataRoutesShell /></S></MG>} />
 
         <Route path="/portfolio/:portfolioKey/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
@@ -659,9 +679,11 @@ export default function FullAppRoutes() {
         <Route path="/testhub/cycles" element={<MG k="testhub" t="Test Hub"><S><TestHubCyclesPage /></S></MG>} />
         <Route path="/testhub/:projectKey/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
         <Route path="/testhub/:projectKey/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
+        <Route path="/testhub/:projectKey/cycles/:cycleKey/runs" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleRunDetailPage /></S></MG>} />
         {/* Legacy routes without projectKey — backward compat */}
         <Route path="/testhub/cycles/:cycleKey" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleDetailPage /></S></MG>} />
         <Route path="/testhub/cycles/:cycleKey/execute" element={<MG k="testhub" t="Test Hub"><S><TestHubExecutionPage /></S></MG>} />
+        <Route path="/testhub/cycles/:cycleKey/runs" element={<MG k="testhub" t="Test Hub"><S><TestHubCycleRunDetailPage /></S></MG>} />
         <Route path="/testhub/timeline" element={<MG k="testhub" t="Test Hub"><S><TestHubTimelinePage /></S></MG>} />
         <Route path="/testhub/dependencies" element={<MG k="testhub" t="Test Hub"><S><TestHubDependenciesPage /></S></MG>} />
         <Route path="/testhub/sets" element={<MG k="testhub" t="Test Hub"><S><TestHubSetsPage /></S></MG>} />
@@ -788,8 +810,24 @@ export default function FullAppRoutes() {
         {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
         <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
-        {/* Wiki deprecated 2026-06-25 — all routes removed */}
-        <Route path="/wiki*" element={<Navigate to="/for-you" replace />} />
+        {/* Wiki routes commented 2026-07-05 — files deleted, imports fail.
+            CAT-WIKI-RESTORE-20260705-001 added routes back but no frontend files.
+            Uncomment when wiki pages are restored.
+        <Route path="/wiki" element={<MG k="wiki" t="Wiki"><S><WikiHomePage /></S></MG>} />
+        <Route path="/wiki/search" element={<MG k="wiki" t="Wiki"><S><WikiSearchPage /></S></MG>} />
+        <Route path="/wiki/articles" element={<MG k="wiki" t="Wiki"><S><WikiAllArticlesPage /></S></MG>} />
+        <Route path="/wiki/whats-new" element={<MG k="wiki" t="Wiki"><S><WikiWhatsNewPage /></S></MG>} />
+        <Route path="/wiki/learning-paths" element={<MG k="wiki" t="Wiki"><S><WikiLearningPathsPage /></S></MG>} />
+        <Route path="/wiki/learning-paths/:pathId" element={<MG k="wiki" t="Wiki"><S><WikiLearningPathDetailPage /></S></MG>} />
+        <Route path="/wiki/subscriptions" element={<MG k="wiki" t="Wiki"><S><WikiSubscriptionsPage /></S></MG>} />
+        <Route path="/wiki/verification" element={<MG k="wiki" t="Wiki"><S><WikiVerificationPage /></S></MG>} />
+        <Route path="/wiki/analytics" element={<MG k="wiki" t="Wiki"><S><WikiAnalyticsPage /></S></MG>} />
+        <Route path="/wiki/templates" element={<MG k="wiki" t="Wiki"><S><WikiTemplatesPage /></S></MG>} />
+        <Route path="/wiki/domains" element={<Navigate to="/wiki" replace />} />
+        <Route path="/wiki/domains/:slug" element={<MG k="wiki" t="Wiki"><S><WikiCategoryPage /></S></MG>} />
+        <Route path="/wiki/category/:slug" element={<MG k="wiki" t="Wiki"><S><WikiCategoryPage /></S></MG>} />
+        <Route path="/wiki/:pageSlug" element={<MG k="wiki" t="Wiki"><S><WikiArticlePage /></S></MG>} />
+        */}
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />
@@ -1018,6 +1056,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/story-backlog" element={<LegacyBacklogRedirect />} />
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
+        <Route path="/project-hub/:key/issue/:issueKey/convert-to-subtask" element={<S><ConvertToSubtaskPageLazy /></S>} />
+        <Route path="/project-hub/:key/issue/:issueKey/move" element={<S><MovePageLazy /></S>} />
+        <Route path="/product-hub/requests/:requestKey/move" element={<S><MovePageLazy /></S>} />
+        <Route path="/project-hub/:key/issue-selector" element={<S><IssueSelectorPopupPageLazy /></S>} />
         <Route path="/project-hub/:key/board" element={<S><KanbanFeaturePageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardSlug/map-statuses" element={<S><MapStatusesPageLazy /></S>} />

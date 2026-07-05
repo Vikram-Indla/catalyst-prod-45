@@ -65,6 +65,7 @@ async function runSearch(query: string, scope: ChatSearchScope, max: number): Pr
     p_in_conv: inConv,
     p_has: has,
   });
+  if (error) console.warn('[chat] search RPC failed — returning empty results:', error);
   if (error || !data) return [];
   return (data as RpcRow[]).map((r) => ({
     resultType: r.result_type as ChatSearchHit['resultType'],

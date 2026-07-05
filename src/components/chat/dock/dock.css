@@ -609,12 +609,13 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 8px 16px 2px;
+  padding: 8px 16px 4px;
   font: var(--ds-font-body-small);
-  font-weight: var(--cc-fw-semibold);
+  font-weight: var(--cc-fw-bold);
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ds-text-subtlest);
+  /* Stronger than subtlest — the old value read as barely-there ghost text. */
+  color: var(--ds-text-subtle);
 }
 
 .cc-dir__section-count {
@@ -633,8 +634,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  /* Rounded inset pill — matches the chat-v2 sidebar craft (2026-07-05).
+     8px side margin + 12px inner padding keeps text start at 20px, aligned
+     with the section labels (also bumped to 20px). */
+  width: calc(100% - 16px);
+  margin-inline: 8px;
   padding: 8px 12px;
+  border-radius: 6px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -648,6 +654,7 @@
 
 .cc-dir__row--active {
   background: var(--ds-background-selected);
+  box-shadow: inset 3px 0 0 0 var(--ds-text-brand);
 }
 
 .cc-dir__row:disabled {
@@ -1117,7 +1124,7 @@
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 8px 12px 2px;
+  padding: 8px 16px 4px;
 }
 
 .cc-dir__section-toggle {
@@ -1128,17 +1135,17 @@
   background: transparent;
   border: none;
   font: var(--ds-font-body-small);
-  font-weight: var(--cc-fw-semibold);
+  font-weight: var(--cc-fw-bold);
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ds-text-subtlest);
+  color: var(--ds-text-subtle);
   cursor: pointer;
   text-align: left;
   padding: 0;
 }
 
 .cc-dir__section-toggle:hover {
-  color: var(--ds-text-subtle);
+  color: var(--ds-text);
 }
 
 .cc-dir__section-add {

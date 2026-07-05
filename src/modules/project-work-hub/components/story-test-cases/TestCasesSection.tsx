@@ -12,11 +12,13 @@
  *   section's rows are indistinguishable from testhub-created rows.
  *
  * AI generation:
- *   Add-click invokes the `ai-generate-story-test-cases` edge function with
- *   the story's summary + description + acceptance criteria. The edge fn
- *   enforces the max-10 / 100%-coverage prompt rules and returns validated
- *   JSON. Rows + steps are batch-inserted with `is_ai_generated = true` and
- *   `linked_story_key = storyKey`.
+ *   Add-click invokes the `ai-generate-test-artefacts` edge function with
+ *   `{ source: 'work_item', issue_key: storyKey }`. The edge fn assembles the
+ *   story's context server-side (summary, description/AC, child items, existing
+ *   coverage) and returns per-case test_type + coverage traceability. Rows +
+ *   steps are batch-inserted with `is_ai_generated = true` and
+ *   `linked_story_key = storyKey`. The model's per-case test_type is mapped to
+ *   the project's real `tm_case_types` id — never a fabricated default.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +40,6 @@ import './test-cases.css';
 const GENERATING_COPY = 'Generating test cases';
 
 const DEFAULT_PRIORITY_ID = '00000000-0000-0000-0001-000000000003'; // Medium
-const DEFAULT_TYPE_ID = '00000000-0000-0000-0002-000000000001'; // Functional
 
 const PRIORITY_ID_BY_NAME: Record<string, string> = {
   critical: '00000000-0000-0000-0001-000000000001',
@@ -46,6 +47,25 @@ const PRIORITY_ID_BY_NAME: Record<string, string> = {
   medium: '00000000-0000-0000-0001-000000000003',
   low: '00000000-0000-0000-0001-000000000004',
 };
+
+/** Resolve the project's `tm_case_types` id for a model-returned test_type
+ *  name (e.g. "functional", "api"). tm_case_types rows are project-scoped and
+ *  keyed by display name, so the match is case-insensitive against the rows
+ *  that actually exist for this project. Returns null when no type row matches
+ *  — zero-assumption: persist no type rather than a fabricated default. */
+async function resolveCaseTypeIdMap(
+  tmProjectId: string,
+): Promise<Map<string, string>> {
+  const { data } = await supabase
+    .from('tm_case_types')
+    .select('id, name')
+    .eq('project_id', tmProjectId);
+  const map = new Map<string, string>();
+  for (const row of (data ?? []) as { id: string; name: string }[]) {
+    if (row?.name) map.set(row.name.trim().toLowerCase(), row.id);
+  }
+  return map;
+}
 
 type CaseStatus = 'DRAFT' | 'REVIEW' | 'APPROVED' | 'DEPRECATED';
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
@@ -92,11 +112,13 @@ interface GeneratedCasePayload {
   objective: string;
   preconditions: string;
   priority: 'critical' | 'high' | 'medium' | 'low';
-  status: CaseStatus;
+  /** Model's per-case classification — mapped to a real tm_case_types id on
+   *  insert (null when the project has no matching type). Not fabricated. */
+  test_type?: string;
   steps: {
     step_number: number;
     action: string;
-    test_data?: string;
+    test_data?: string | null;
     expected_result: string;
   }[];
 }
@@ -244,16 +266,15 @@ export function TestCasesSection({
         projectName ?? projectKey,
       );
 
-      // 1. Ask the edge function for the case list. It enforces the 10-case
-      //    ceiling and the 100%-coverage prompt.
+      // 1. Ask the edge function for the case list. It assembles the story's
+      //    context server-side from `issue_key` (summary, description/AC,
+      //    child items, existing coverage) and returns per-case test_type.
       const { data, error } = await supabase.functions.invoke(
-        'ai-generate-story-test-cases',
+        'ai-generate-test-artefacts',
         {
           body: {
-            story_key: storyKey,
-            story_summary: storySummary,
-            story_description: storyDescription,
-            acceptance_criteria: acceptanceCriteria ?? '',
+            source: 'work_item',
+            issue_key: storyKey,
           },
         },
       );
@@ -263,6 +284,11 @@ export function TestCasesSection({
         ? data.test_cases
         : [];
       if (cases.length === 0) throw new Error('AI returned no test cases');
+
+      // 1a. Build the project's test_type name→id map once so each case's
+      //     model-returned test_type persists to a real tm_case_types id
+      //     (null when the project has no matching type — never fabricated).
+      const caseTypeIdByName = await resolveCaseTypeIdMap(tmProjectId);
 
       // 1b. Resolve the story's ph_issues.id once (best-effort — the reader
       //     only requires external_key, so a miss here doesn't block generation).
@@ -279,6 +305,11 @@ export function TestCasesSection({
       const insertedIds: string[] = [];
       for (const c of cases) {
         const caseKey = await nextCaseKey(tmProjectId);
+        // Map the model's per-case test_type to a real project type id.
+        // Unknown / absent type → null (zero-assumption, no fabricated default).
+        const caseTypeId = c.test_type
+          ? caseTypeIdByName.get(c.test_type.trim().toLowerCase()) ?? null
+          : null;
         const { data: inserted_row, error: caseErr } = await supabase
           .from('tm_test_cases')
           .insert({
@@ -287,9 +318,9 @@ export function TestCasesSection({
             title: c.title,
             description: c.objective || null,
             preconditions: c.preconditions || null,
-            status: statusToDb[c.status] ?? 'draft',
+            status: 'draft',
             priority_id: PRIORITY_ID_BY_NAME[c.priority] ?? DEFAULT_PRIORITY_ID,
-            case_type_id: DEFAULT_TYPE_ID,
+            case_type_id: caseTypeId,
             version: 1,
             created_by: user.id,
             assigned_to: user.id,

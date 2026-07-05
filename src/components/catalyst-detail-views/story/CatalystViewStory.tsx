@@ -14,11 +14,14 @@
  * across the Catalyst views.
  */
 import React, { useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { catalystToast } from '@/lib/catalystToast';
-import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { cloneWorkItemWithFlags } from '@/lib/cloneWorkItemWithFlags';
+import type { ClonePatch } from '../shared/ConfirmCloneDialog';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
@@ -34,6 +37,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { DependenciesSection } from '@/modules/project-work-hub/components/dependencies';
 import { TestCasesSection } from '@/modules/project-work-hub/components/story-test-cases';
+import { TestCoveragePanel } from './TestCoveragePanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
   AttachmentsSection,
@@ -53,6 +57,7 @@ export default function CatalystViewStory({
 
   const { data: issue, isLoading, isError, error, refetch } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const navigate = useNavigate();
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
@@ -60,16 +65,15 @@ export default function CatalystViewStory({
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
-  const handleClone = React.useCallback(() => {
+  const handleClone = React.useCallback((patch?: ClonePatch) => {
     if (!issue?.issue_key) return;
-    cloneIssue(issue.issue_key)
-      .then((newKey) => {
-        catalystToast.success(`Cloned as ${newKey}`, undefined, { label: 'Open', onClick: () => onOpenItem?.(newKey) });
-      })
-      .catch((e: unknown) => {
-        catalystToast.error('Clone failed', e instanceof Error ? e.message : (e as any)?.message ?? 'Unknown error');
-      });
-  }, [issue?.issue_key, onOpenItem]);
+    void cloneWorkItemWithFlags({
+      sourceKey: issue.issue_key,
+      sourceType: issue.issue_type,
+      projectKey: issue.project_key ?? projectKey,
+      patch,
+    });
+  }, [issue?.issue_key, issue?.issue_type, issue?.project_key, projectKey]);
 
   /* ── Catalyst-vs-Jira source split ─────────
      Mirrors StoryDetailModal line 291. When ph_issues row carries the
@@ -207,6 +211,13 @@ export default function CatalystViewStory({
         />
       )}
 
+      {/* Test coverage / Trace-From (CAT-TESTHUB-REBUILD Phase C · L001).
+          Mirrors the incident/defect mount so opening a Story surfaces its
+          linked test cases + run status directly. */}
+      {issue?.issue_key && (
+        <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="story" />
+      )}
+
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -260,13 +271,33 @@ export default function CatalystViewStory({
         }}
         /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
         moreMenuItems={useMemo(() => [
-          { label: 'Print', onClick: () => window.print() },
+          { label: 'Convert to Subtask', onClick: () => {
+            const pk = issue?.project_key ?? projectKey;
+            const ik = issue?.issue_key;
+            if (!pk || !ik) return;
+            onClose?.();
+            navigate(`/project-hub/${pk}/issue/${ik}/convert-to-subtask`);
+          } },
           { label: 'Clone', onClick: () => { if (!issue?.issue_key) return; setShowCloneDialog(true); } },
-          { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+          { label: 'Move', onClick: () => {
+            const pk = issue?.project_key ?? projectKey;
+            const ik = issue?.issue_key;
+            if (!pk || !ik) return;
+            onClose?.();
+            navigate(`/project-hub/${pk}/issue/${ik}/move`);
+          } },
           { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
           { label: 'Delete story', onClick: () => setShowDeleteDialog(true), danger: true },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         ], [issue?.issue_key])}
+        flagContext={issue?.id && issue?.issue_key ? {
+          issueId: issue.id,
+          issueKey: issue.issue_key,
+          isFlagged: !!(issue as any).is_flagged,
+          issueTitle: issue.summary,
+          issueType: issue.issue_type,
+          tableName: 'ph_issues',
+        } : undefined}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
         currentItemId={itemId}
@@ -290,6 +321,12 @@ export default function CatalystViewStory({
         onClose={() => setShowCloneDialog(false)}
         issueKey={issue?.issue_key}
         issueSummary={issue?.summary}
+        issueId={issue?.id}
+        projectId={projectId}
+        currentAssigneeId={issue?.assignee_account_id}
+        currentAssigneeName={issue?.assignee_display_name}
+        currentReporterId={issue?.reporter_account_id}
+        currentReporterName={issue?.reporter_display_name}
         onConfirm={handleClone}
       />
       {showMoveDialog && issue?.issue_key && (

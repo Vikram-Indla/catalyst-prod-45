@@ -19,6 +19,7 @@ import {
   MONTH_LABELS,
   WEEKDAY_LABELS,
 } from './scheduleHelpers';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ScheduleModalProps {
   onCancel: () => void;
@@ -39,6 +40,7 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
   const [time, setTime] = useState<string>('09:00');
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,6 +61,7 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Schedule message"

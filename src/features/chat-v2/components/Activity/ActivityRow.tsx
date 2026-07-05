@@ -222,6 +222,7 @@ export function ActivityRow({
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
             }}
+            dir="auto"
             dangerouslySetInnerHTML={{ __html: bodyHtml(item, selfToken) }}
           />
         </div>
@@ -389,6 +390,7 @@ function DenseRow({
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
             }}
+            dir="auto"
             dangerouslySetInnerHTML={{ __html: bodyHtml(item, selfToken) }}
           />
         </div>
@@ -506,7 +508,8 @@ function SingleLineRow({
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         }}
-        dangerouslySetInnerHTML={{ __html: bodyHtml(item, selfToken) }}
+        dir="auto"
+            dangerouslySetInnerHTML={{ __html: bodyHtml(item, selfToken) }}
       />
       <RightInfo
         item={item}

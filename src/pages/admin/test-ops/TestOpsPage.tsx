@@ -29,6 +29,13 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import {
   useTmRoles, useTmUserRoles, useAssignTmUserRole, useRemoveTmUserRole,
 } from '@/hooks/test-management/useTmUserRoles';
+import { useFlakyTestDetection } from '@/hooks/test-management/useFlakyTestDetection';
+import { useCoverageGaps } from '@/hooks/test-management/useCoverageGaps';
+import { useDefectMetrics } from '@/hooks/test-management/useDefectMetrics';
+import { useCoverageHistory, useProjects as useCoverageProjects } from '@/hooks/test-management/useCoverageHistory';
+import { useSharedSteps } from '@/hooks/test-management/useSharedSteps';
+import { useTestHubInsights } from '@/hooks/test-management/useTestHubInsights';
+import { CatyInsightCard } from '@/components/for-you/atlaskit/CatyInsightCard';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
 const CATEGORY_APPEARANCE: Record<string, LozAppearance> = { todo: 'default', in_progress: 'inprogress', done: 'success' };
@@ -310,6 +317,316 @@ function TeamRolesTab() {
   );
 }
 
+// ── C. Shared steps library ─────────────────────────────────────────────────
+// P3-F6: Reusable test step library for reducing duplication.
+function SharedStepsTab() {
+  const { data: sharedSteps = [], isLoading, isError } = useSharedSteps();
+
+  if (isLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'n', content: 'Step name' }, { key: 'p', content: 'Project' },
+    { key: 'a', content: 'Action' }, { key: 'u', content: 'Used by (cases)' } ] };
+
+  const rows = sharedSteps.map((step) => ({ key: step.id, cells: [
+    { key: 'n', content: <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{step.name}</span> },
+    { key: 'p', content: <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>{step.project_name}</span> },
+    { key: 'a', content: <span style={{ fontSize: 12, color: 'var(--ds-text)', maxWidth: 200 }}>{step.action}</span> },
+    { key: 'u', content: <Lozenge appearance={step.usage_count > 0 ? 'success' : 'default'}>{step.usage_count}</Lozenge> } ] }));
+
+  return (
+    <Panel>
+      <H>Shared Steps Library</H>
+      <Note>
+        Reusable test steps (marked <code>is_shared=true</code>) across projects.
+        Usage count shows how many test cases reference each step. High-usage steps
+        are candidates for further optimization or automation.
+      </Note>
+
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load shared steps.</p></SectionMessage>
+      ) : sharedSteps.length === 0 ? (
+        <Note>No shared steps in the library yet.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
+// ── D. Coverage history — 30-day trends ────────────────────────────────────
+// P3-F4: Tracks coverage progression over time.
+function CoverageHistoryTab() {
+  const { data: projects = [], isLoading: projectsLoading } = useCoverageProjects();
+  const [selectedProjectId, setSelectedProjectId] = React.useState<string | null>(null);
+
+  const activeProjectId = selectedProjectId ?? projects[0]?.id ?? null;
+  const { data: trend, isLoading: trendLoading, isError } = useCoverageHistory(activeProjectId ?? '', 30);
+
+  if (projectsLoading) return <Loading />;
+
+  const snapshots = trend?.snapshots ?? [];
+  const head = { cells: [
+    { key: 'd', content: 'Date' }, { key: 't', content: 'Total items' },
+    { key: 'c', content: 'Covered' }, { key: 'p', content: 'Coverage %' } ] };
+
+  const rows = snapshots.map((s) => ({ key: s.snapshot_date, cells: [
+    { key: 'd', content: new Date(s.snapshot_date).toLocaleDateString() },
+    { key: 't', content: s.total_items },
+    { key: 'c', content: <Lozenge appearance={s.coverage_pct >= 80 ? 'success' : 'moved'}>{s.covered_items}</Lozenge> },
+    { key: 'p', content: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{
+          width: 80,
+          height: 20,
+          backgroundColor: 'var(--ds-background-neutral-subtle)',
+          borderRadius: 4,
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            width: `${s.coverage_pct}%`,
+            height: '100%',
+            backgroundColor: s.coverage_pct >= 80 ? 'var(--ds-background-success)' : 'var(--ds-background-warning)',
+            transition: 'width 0.2s',
+          }} />
+        </div>
+        <span style={{ fontSize: 12, color: 'var(--ds-text)' }}>{s.coverage_pct.toFixed(1)}%</span>
+      </div>
+    ) } ] }));
+
+  return (
+    <Panel>
+      <H>Coverage History — 30-day Trend</H>
+      <Note>
+        Daily snapshots of coverage state (stories/features covered by test cases).
+        Use to track coverage velocity and identify regression in test planning.
+      </Note>
+
+      <div style={{ maxWidth: 240, marginBottom: 16 }}>
+        <Select
+          inputId="coverage-history-project-select"
+          options={projects.map((p: any) => ({ label: p.name, value: p.id }))}
+          value={activeProjectId ? { label: projects.find((p: any) => p.id === activeProjectId)?.name, value: activeProjectId } : null}
+          onChange={(opt: any) => setSelectedProjectId(opt?.value ?? null)}
+          placeholder="Select project"
+        />
+      </div>
+
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load coverage history.</p></SectionMessage>
+      ) : trendLoading ? (
+        <Loading />
+      ) : snapshots.length === 0 ? (
+        <Note>No coverage history data yet. Run backfill to populate.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
+// ── E. Defect metrics — MTTR & velocity ────────────────────────────────────
+// P3-F3: Tracks defect lifecycle + computes time-to-resolution.
+function DefectMetricsTab() {
+  const { data, isLoading, isError } = useDefectMetrics();
+
+  if (isLoading) return <Loading />;
+
+  const stats = data?.stats;
+  const defects = data?.defects ?? [];
+
+  const head = { cells: [
+    { key: 'k', content: 'Defect key' }, { key: 's', content: 'Status' },
+    { key: 'c', content: 'Created' }, { key: 'm', content: 'MTTR (hrs)' } ] };
+
+  const rows = defects
+    .filter((d) => d.closed_at) // Show only closed defects in table
+    .slice(0, 10) // Top 10 most recent
+    .map((d) => ({ key: d.id, cells: [
+      { key: 'k', content: <code style={{ color: 'var(--ds-text-brand)' }}>{d.defect_key}</code> },
+      { key: 's', content: <Lozenge appearance={d.status === 'closed' ? 'success' : 'moved'}>{d.status}</Lozenge> },
+      { key: 'c', content: new Date(d.created_at).toLocaleDateString() },
+      { key: 'm', content: d.mttr_hours ? d.mttr_hours.toFixed(1) : '—' } ] }));
+
+  const statusEntries = stats ? Object.entries(stats.by_status).map(([status, count]) => ({
+    key: status,
+    cells: [
+      { key: 's', content: <Lozenge appearance="default">{status}</Lozenge> },
+      { key: 'c', content: count },
+    ],
+  })) : [];
+
+  return (
+    <Panel>
+      <H>Defect Metrics — Lifecycle &amp; Resolution Time</H>
+      <Note>
+        Tracks defect status transitions via <code>tm_defect_status_history</code>{' '}
+        and computes MTTR (mean-time-to-resolution) from creation to closed/resolved.
+        Use to measure team velocity and QA process efficiency.
+      </Note>
+
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load defect metrics.</p></SectionMessage>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Total defects</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>{stats?.total_defects ?? 0}</div>
+            </div>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Closed</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>{stats?.closed_defects ?? 0}</div>
+            </div>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Avg MTTR</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>
+                {stats?.avg_mttr_hours ? `${stats.avg_mttr_hours.toFixed(1)}h` : '—'}
+              </div>
+            </div>
+            <div style={{ padding: 12, backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Median MTTR</div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text)' }}>
+                {stats?.median_mttr_hours ? `${stats.median_mttr_hours.toFixed(1)}h` : '—'}
+              </div>
+            </div>
+          </div>
+
+          <H style={{ marginTop: 24 }}>Recent closed defects (top 10)</H>
+          {rows.length === 0 ? (
+            <Note>No closed defects yet.</Note>
+          ) : (
+            <DynamicTable head={head} rows={rows} isFixedSize />
+          )}
+
+          <H style={{ marginTop: 24 }}>Defects by status</H>
+          <DynamicTable
+            head={{ cells: [{ key: 's', content: 'Status' }, { key: 'c', content: 'Count' }] }}
+            rows={statusEntries}
+            isFixedSize
+          />
+        </>
+      )}
+    </Panel>
+  );
+}
+
+// ── F. Coverage gaps ───────────────────────────────────────────────────────
+// P3-F2: Identifies stories/features with zero linked test cases.
+function CoverageGapsTab() {
+  const { data: gaps = [], isLoading, isError } = useCoverageGaps();
+
+  if (isLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'k', content: 'Issue key' }, { key: 't', content: 'Type' },
+    { key: 'p', content: 'Project' }, { key: 's', content: 'Summary' },
+    { key: 'l', content: 'Linked tests' } ] };
+
+  const rows = gaps.map((gap) => ({ key: gap.id, cells: [
+    { key: 'k', content: <code style={{ color: 'var(--ds-text-brand)' }}>{gap.issue_key}</code> },
+    { key: 't', content: <Lozenge appearance="default">{gap.type}</Lozenge> },
+    { key: 'p', content: gap.project_name },
+    { key: 's', content: <span style={{ color: 'var(--ds-text)', fontSize: 13 }}>{gap.summary}</span> },
+    { key: 'l', content: <Lozenge appearance="removed">0</Lozenge> } ] }));
+
+  return (
+    <Panel>
+      <H>Coverage Gaps — Uncovered Items</H>
+      <Note>
+        Stories/Features with zero linked test cases. Computed from <code>ph_issues</code>{' '}
+        left join <code>tm_requirement_links</code> — these items need QA planning before release gating.
+        Sort by project to identify high-impact coverage voids.
+      </Note>
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load coverage gaps.</p></SectionMessage>
+      ) : gaps.length === 0 ? (
+        <Note>All stories/features have at least one linked test case. Coverage complete.</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
+// ── AI Insights Panel ──────────────────────────────────────────────────────
+// P3-F7: Health metrics via CatyInsightCard pattern (coverage, efficiency, flaky trend, velocity).
+function InsightsPanel() {
+  const { data: insights, isLoading, isError, refetch } = useTestHubInsights();
+
+  if (isLoading) return null; // Spinner shown via CatyInsightCard
+  if (isError) return null; // Silent fail — insights are additive
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      {insights?.map((insight) => (
+        <CatyInsightCard
+          key={insight.type}
+          title={insight.title}
+          onRefresh={() => refetch()}
+        >
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--ds-text)' }}>
+              {insight.value}
+            </span>
+            {insight.trend && (
+              <span
+                style={{
+                  fontSize: 12,
+                  color: insight.severity === 'danger'
+                    ? 'var(--ds-text-danger)'
+                    : insight.severity === 'warning'
+                      ? 'var(--ds-text-warning)'
+                      : 'var(--ds-text-subtle)',
+                }}
+              >
+                {insight.trend}
+              </span>
+            )}
+          </div>
+        </CatyInsightCard>
+      ))}
+    </div>
+  );
+}
+
+// ── G. Flaky tests ─────────────────────────────────────────────────────────
+// P3-F1: Identifies tests failing >20% in last 7 days.
+function FlakyTestsTab() {
+  const { data: flakyTests = [], isLoading, isError } = useFlakyTestDetection();
+
+  if (isLoading) return <Loading />;
+
+  const head = { cells: [
+    { key: 'k', content: 'Case key' }, { key: 't', content: 'Title' },
+    { key: 'r', content: 'Runs (7d)' }, { key: 'f', content: 'Failed' },
+    { key: 'p', content: 'Failure rate' } ] };
+
+  const rows = flakyTests.map((test) => ({ key: test.id, cells: [
+    { key: 'k', content: <code style={{ color: 'var(--ds-text-brand)' }}>{test.case_key}</code> },
+    { key: 't', content: <span style={{ fontSize: 13, color: 'var(--ds-text)' }}>{test.title}</span> },
+    { key: 'r', content: test.total_runs },
+    { key: 'f', content: <Lozenge appearance="removed">{test.failed_runs}</Lozenge> },
+    { key: 'p', content: <Lozenge appearance="moved">{test.failure_rate}%</Lozenge> } ] }));
+
+  return (
+    <Panel>
+      <H>Flaky Test Detection</H>
+      <Note>
+        Tests with &gt;20% failure rate in the last 7 days. Computed from <code>tm_test_runs</code>{' '}
+        — sorted by highest failure rate first. Use this to identify unstable tests before release gating.
+      </Note>
+      {isError ? (
+        <SectionMessage appearance="error"><p>Couldn't load flaky tests.</p></SectionMessage>
+      ) : flakyTests.length === 0 ? (
+        <Note>No flaky tests detected in the last 7 days (all tests passing at ≥80%).</Note>
+      ) : (
+        <DynamicTable head={head} rows={rows} isFixedSize />
+      )}
+    </Panel>
+  );
+}
+
 export default function TestOpsPage() {
   return (
     <AdminGuard>
@@ -318,6 +635,7 @@ export default function TestOpsPage() {
         <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', margin: '0 0 16px' }}>
           Testing workflow control center — coverage gate, failed-test-to-defect, and Defect workflow governance.
         </p>
+        <InsightsPanel />
         <Tabs id="test-ops-tabs">
           <TabList>
             <Tab>Coverage gate</Tab>
@@ -325,12 +643,22 @@ export default function TestOpsPage() {
             <Tab>Defect workflow</Tab>
             <Tab>Guard summary</Tab>
             <Tab>Team &amp; roles</Tab>
+            <Tab>Shared steps</Tab>
+            <Tab>Coverage history</Tab>
+            <Tab>Defect metrics</Tab>
+            <Tab>Coverage gaps</Tab>
+            <Tab>Flaky tests</Tab>
           </TabList>
           <TabPanel><CoverageTab /></TabPanel>
           <TabPanel><FailedTestDefectTab /></TabPanel>
           <TabPanel><DefectWorkflowTab /></TabPanel>
           <TabPanel><GuardSummaryTab /></TabPanel>
           <TabPanel><TeamRolesTab /></TabPanel>
+          <TabPanel><SharedStepsTab /></TabPanel>
+          <TabPanel><CoverageHistoryTab /></TabPanel>
+          <TabPanel><DefectMetricsTab /></TabPanel>
+          <TabPanel><CoverageGapsTab /></TabPanel>
+          <TabPanel><FlakyTestsTab /></TabPanel>
         </Tabs>
       </div>
     </AdminGuard>

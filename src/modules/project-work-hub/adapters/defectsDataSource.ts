@@ -8,7 +8,7 @@
  */
 import { useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProjects } from '@/hooks/test-management/useProjects';
+import { useTestHubProject } from '@/hooks/test-management/useTestHubProject';
 import { useDefects, useCreateDefect, useUpdateDefect, useDeleteDefect } from '@/hooks/test-management/useDefects';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { filterCreatableTypes } from '@/lib/catalyst-rules';
@@ -83,8 +83,10 @@ const DEFECT_PATCH_MAP: Record<string, string> = {
 
 export function useDefectsSource(): BacklogDataSource | null {
   const navigate = useNavigate();
-  const { data: projects = [], isLoading: pl } = useProjects();
-  const projectId = projects[0]?.id;
+  // D038/D051: scope to the real active Test Space (resolver), never the
+  // alphabetically-first tm_projects row (the "Demo Project" seed) that
+  // useProjects()[0] returned. Resolver ranks by test-case volume.
+  const { projectId, isLoading: pl } = useTestHubProject();
   const { data: defectsData, isLoading: dl } = useDefects(projectId);
   const updateMutation = useUpdateDefect();
   const deleteMutation = useDeleteDefect();
@@ -139,7 +141,13 @@ export function useDefectsSource(): BacklogDataSource | null {
   );
 
   return useMemo((): BacklogDataSource | null => {
-    const effectiveProjectId = projectId ?? 'TESTHUB';
+    // D041: BacklogPage stars this surface via useStarredItems with
+    // room_id = productId against starred_items.room_id (a uuid column).
+    // The prior 'TESTHUB' string fallback made that a non-UUID → 400 (the
+    // console error x2 at defect detail). Hold the surface (DefectsPage shows
+    // its Spinner) until the resolver yields a real tm_projects UUID.
+    if (!projectId) return null;
+    const effectiveProjectId = projectId;
     return {
       sourceTag: BIZ_SOURCE,
       extraStories,

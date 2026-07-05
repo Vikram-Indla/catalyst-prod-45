@@ -25,8 +25,10 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
     kind,
     dmAvatarUrls,
     dmMemberNames,
+    isMuted,
   } = conversation;
-  const hasUnread = unreadCount > 0;
+  // Muted DMs never bold or badge — mute means "stop drawing my attention".
+  const hasUnread = unreadCount > 0 && !isMuted;
   const isGroup = kind === 'group_dm';
   const displayTitle = isGroup && dmMemberNames && dmMemberNames.length > 0
     ? dmMemberNames.join(', ')
@@ -44,15 +46,21 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         alignItems: 'flex-start',
         gap: 8,
         width: '100%',
-        padding: '8px 16px',
+        padding: '8px 8px',
         background: isActive ? 'var(--cv2-bg-row-active)' : 'transparent',
         border: 'none',
+        borderRadius: 'var(--cv2-radius-md)',
         textAlign: 'left',
         cursor: 'pointer',
         transition: 'background var(--cv2-transition-fast)',
         position: 'relative',
         minWidth: 0,
-        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' } : null),
+        // Huddle bar (success) wins over the active accent bar — never both.
+        ...(hasHuddle
+          ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' }
+          : isActive
+          ? { boxShadow: 'inset 3px 0 0 0 var(--cv2-accent)' }
+          : null),
       }}
       onMouseEnter={e => {
         if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';
@@ -109,6 +117,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
         </div>
         {preview && (
           <div
+            dir="auto"
             style={{
               fontFamily: 'var(--cv2-font)',
               font: 'var(--ds-font-body-small)',

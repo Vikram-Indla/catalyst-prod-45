@@ -120,6 +120,9 @@ export const testHubRoutes = {
   cycles: () => '/testhub/cycles',
   cycle: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}`,
   cycleExecute: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}/execute`,
+  // Retrospective, read-only detail of a cycle's completed run(s)
+  // (CAT-TESTHUB-REBUILD Phase 3b). cycleSlug is the cycle_key (e.g. "CY-001").
+  cycleRuns: (cycleSlug: string) => `/testhub/cycles/${cycleSlug}/runs`,
   sets: () => '/testhub/sets',
   set: (setSlug: string) => `/testhub/sets/${setSlug}`,
   reports: () => '/testhub/reports',
@@ -221,6 +224,37 @@ export const browseRoutes = {
 };
 
 // ---------------------------------------------------------------------------
+// STRATA (CAT-STRATA-20260705-001) — strategy execution & value realization
+// ---------------------------------------------------------------------------
+
+export const strataRoutes = {
+  root: () => '/strata',
+  strategy: () => '/strata/strategy',
+  strategyMap: () => '/strata/strategy/map',
+  scorecards: () => '/strata/scorecards',
+  scorecard: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}`,
+  scorecardEvidence: (instanceSlug: string) => `/strata/scorecards/${instanceSlug}/evidence`,
+  kpis: () => '/strata/kpis',
+  kpi: (kpiSlug: string) => `/strata/kpis/${kpiSlug}`,
+  kpiEvidence: (kpiSlug: string) => `/strata/kpis/${kpiSlug}/evidence`,
+  execution: () => '/strata/execution',
+  initiative: (initiativeSlug: string) => `/strata/execution/${initiativeSlug}`,
+  portfolio: () => '/strata/portfolio',
+  portfolioEvidence: (slug: string) => `/strata/portfolio/${slug}/evidence`,
+  benefit: (benefitSlug: string) => `/strata/portfolio/benefits/${benefitSlug}`,
+  data: () => '/strata/data',
+  // Governed upload wizard (static slug-safe path — no params)
+  upload: () => '/strata/data/upload',
+  // runKey is the display key e.g. "RUN-1001" — no UUID in URL
+  run: (runKey: string) => `/strata/data/runs/${runKey}`,
+  reviews: () => '/strata/reviews',
+  // snapshotKey is the display key e.g. "SNAP-1001"
+  review: (snapshotKey: string) => `/strata/reviews/${snapshotKey}`,
+  admin: () => '/strata/admin',
+  adminSection: (section: string) => `/strata/admin/${section}`,
+};
+
+// ---------------------------------------------------------------------------
 // Admin
 // ---------------------------------------------------------------------------
 
@@ -251,4 +285,5 @@ export const Routes = {
   knowledgeHub: knowledgeHubRoutes,
   browse: browseRoutes,
   admin: adminRoutes,
+  strata: strataRoutes,
 } as const;

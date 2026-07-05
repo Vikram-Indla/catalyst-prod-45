@@ -293,7 +293,10 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
       return (
         <div style={{ margin: '0px 8px 4px' }}>
           <InlineCreateCard
-            projectKey={key.toUpperCase()}
+            /* Test mode inserts into tm_test_cases.project_id (a UUID), so the
+               resolved Test Space id must flow through — not the 'TESTHUB'
+               keyOverride, which is not a valid project UUID (D057). */
+            projectKey={mode === 'test' ? (projectId ?? '') : key.toUpperCase()}
             columnId={colId}
             status={status}
             mode={mode}

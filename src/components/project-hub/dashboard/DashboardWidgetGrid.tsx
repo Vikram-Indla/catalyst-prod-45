@@ -129,8 +129,14 @@ export function useDashboardWidgetConfig(
     queryFn: async () => {
       if (!userId) return [];
       /* 2026-06-16: tasks mode has no per-user config table — return an
-         empty config set so resolveWidgets falls back to registry defaults. */
-      if (mode === 'tasks') return [];
+         empty config set so resolveWidgets falls back to registry defaults.
+         2026-07-05 (D002): test mode is persistence-skip too. The TestHub
+         dashboard is keyed by a synthetic 'TESTHUB' uuid that is NOT a
+         public.projects row; dashboard_widget_config.project_id has a hard
+         FK to public.projects(id), so any config write 500s. Rather than
+         persist a wrong-table id, render the 'test' registry at its
+         defaults every load. */
+      if (mode === 'tasks' || mode === 'test') return [];
       const { data, error } = await typedQuery('dashboard_widget_config' as any)
         .select('widget_id, visible, position, collapsed, span')
         .eq('project_id', projectId)
@@ -148,6 +154,11 @@ export function useDashboardWidgetConfig(
      widget set in this file). */
   const resolvedRegistry =
     registry ?? (mode === 'tasks' ? [] : getWidgetRegistry(mode));
+
+  // D002: test mode never persists (no public.projects row backs it), so the
+  // init/upsert paths must be inert regardless of projectId. Persistence-skip
+  // modes render the resolved registry at defaults.
+  const persistenceSkipped = mode === 'tasks' || mode === 'test';
 
   const initRef = useRef(false);
   const initMutation = useMutation({
@@ -207,7 +218,7 @@ export function useDashboardWidgetConfig(
       typeof projectId === 'string' &&
       projectId !== 'none' &&
       projectId !== 'tasks' &&
-      mode !== 'tasks' &&
+      !persistenceSkipped &&
       projectId.length > 0;
     if (
       !isLoading &&
@@ -224,7 +235,7 @@ export function useDashboardWidgetConfig(
 
   const upsertMutation = useMutation({
     mutationFn: async (updates: Partial<DashboardWidgetConfig> & { widget_id: string }) => {
-      if (!userId) return;
+      if (!userId || persistenceSkipped) return;
       const { error } = await typedQuery('dashboard_widget_config' as any).upsert(
         {
           project_id: projectId,
@@ -247,7 +258,7 @@ export function useDashboardWidgetConfig(
 
   const bulkUpsertMutation = useMutation({
     mutationFn: async (items: (Partial<DashboardWidgetConfig> & { widget_id: string })[]) => {
-      if (!userId) return;
+      if (!userId || persistenceSkipped) return;
       const rows = items.map((item) => ({
         project_id: projectId,
         user_id: userId,
@@ -380,7 +391,8 @@ export default function DashboardWidgetGrid({
       return { ...prev, [widgetId]: !base };
     });
     // Write through to the per-user config table where one exists.
-    if (mode !== 'tasks') persistedToggleCollapse?.(widgetId);
+    // tasks + test modes have no persisted config (see useDashboardWidgetConfig).
+    if (mode !== 'tasks' && mode !== 'test') persistedToggleCollapse?.(widgetId);
   };
 
   const collapseHandler = isEditing ? onToggleCollapse : liveToggleCollapse;

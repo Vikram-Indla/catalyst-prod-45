@@ -67,7 +67,7 @@ import { StatusLozengeDropdown } from '@/components/shared/StatusLozenge';
 import './create-story.css';
 
 import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 // Canonical Atlaskit flag wrapper (pure @atlaskit/flag + Atlaskit icons,
 // drop-in for catalystToast). Reset to Jira-canonical toast per audit.
@@ -103,6 +103,9 @@ import type { TaskPriority } from '@/modules/tasks/types';
 // ── Defect (QA Bug) work type → tm_defects (TestHub) ──────────────────────────
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
+// ── Test Case (Repository) work type → tm_test_cases (TestHub) ────────────────
+import { useCreateTestCase } from '@/hooks/test-management/useTestCases';
+import { StepEditor, type StepInput } from '@/pages/testhub/repository/StepEditor';
 import { useWorkItemTypes } from '@/hooks/workflow-v2/useWorkItemTypes';
 import type { DefectSeverity } from '@/types/test-management';
 // CRE chokepoint (Grids A + D): module-scoped catalogues are filtered through
@@ -173,6 +176,12 @@ export interface CreateStoryModalProps {
    * contract flow through unchanged.
    */
   defaultWorkstreamId?: string;
+  /**
+   * When opening as a Test Case (defaultWorkType='Test Case'), pre-selects this
+   * tm_folders folder. Lets RepositoryPage's "+ Create case" button open the
+   * modal already scoped to the folder the user is viewing.
+   */
+  initialFolderId?: string | null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -202,6 +211,10 @@ const WORK_TYPES = [
   'Frontend',
   'Figma',
   'Integration',
+  // TestHub-native types (project-scoped, write to tm_* tables — NOT ph_issues).
+  // 'Test Case' → tm_test_cases; 'Test Set' → tm_test_sets.
+  'Test Case',
+  'Test Set',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
@@ -229,6 +242,9 @@ export const PARENT_TYPE_RULES: Record<string, string[]> = {
   'Frontend':            ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
   'Figma':               ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
   'Integration':         ['Story', 'Task', 'QA Bug', 'Change Request', 'Production Incident'],
+  // TestHub-native — no ph_issues parent (Parent field is hidden for these).
+  'Test Case':           [],
+  'Test Set':            [],
 };
 
 // Per type → which initial status appears in the read-only Status lozenge.
@@ -266,6 +282,32 @@ const DEFECT_ENVIRONMENT_OPTIONS = [
   { value: 'Staging', label: 'Staging' },
   { value: 'Beta', label: 'Beta' },
   { value: 'Prod', label: 'Prod' },
+];
+
+// ── Test Case (tm_test_cases) — value = CaseStatus (statusToDb maps to the
+//    tm_case_status enum: draft/ready/approved/deprecated). Default DRAFT. ──
+const TEST_CASE_STATUS_OPTIONS = [
+  { value: 'DRAFT', label: 'Draft', color_category: 'todo' },
+  { value: 'REVIEW', label: 'Ready', color_category: 'in_progress' },
+  { value: 'APPROVED', label: 'Approved', color_category: 'done' },
+  { value: 'DEPRECATED', label: 'Deprecated', color_category: 'done' },
+];
+
+// ── Test Set (tm_test_sets) — set_type + membership_type mirror TestSetsPage. ──
+const TEST_SET_TYPE_OPTIONS = [
+  { value: 'smoke', label: 'Smoke' },
+  { value: 'regression', label: 'Regression' },
+  { value: 'sanity', label: 'Sanity' },
+  { value: 'integration', label: 'Integration' },
+  { value: 'e2e', label: 'End-to-End' },
+  { value: 'performance', label: 'Performance' },
+  { value: 'security', label: 'Security' },
+  { value: 'accessibility', label: 'Accessibility' },
+  { value: 'custom', label: 'Custom' },
+];
+const TEST_SET_MEMBERSHIP_OPTIONS = [
+  { value: 'static', label: 'Static' },
+  { value: 'dynamic', label: 'Smart (dynamic)' },
 ];
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
@@ -485,6 +527,7 @@ export function CreateStoryModal({
   defaultWorkstreamId,
   initialSummary,
   initialParentKey,
+  initialFolderId,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -589,6 +632,112 @@ export function CreateStoryModal({
     setDefectActualAdf(null);
   }, []);
 
+  // ── Test Case (Repository) work type — writes to tm_test_cases (TestHub) ──
+  // Project resolves canonical projects.id → tm_projects.id via resolveTmProjectId
+  // (same path defects use). Priorities load from tm_case_priorities for the
+  // resolved tm project. Steps optional (empty on create is fine).
+  const isTestCase = workType === 'Test Case';
+  const createTestCase = useCreateTestCase();
+  const [testCasePreconditions, setTestCasePreconditions] = useState('');
+  const [testCasePriorityId, setTestCasePriorityId] = useState<string>('');
+  const [testCaseFolderId, setTestCaseFolderId] = useState<string>(initialFolderId ?? '');
+  const [testCaseSteps, setTestCaseSteps] = useState<StepInput[]>([]);
+  // Resolve the canonical project to its tm_projects mirror so the folder +
+  // priority pickers query the same project the case will be written under.
+  const canonicalTmProject = useMemo(
+    () => projects.find((p) => p.id === form.projectId),
+    [projects, form.projectId],
+  );
+  const { data: tmProjectId } = useQuery({
+    queryKey: ['create-modal-tm-project', form.projectId],
+    queryFn: () =>
+      resolveTmProjectId({
+        key: (canonicalTmProject as any)?.key ?? null,
+        name: (canonicalTmProject as any)?.name ?? null,
+      }),
+    enabled: isTestCase && !!form.projectId,
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: tmCasePriorities = [] } = useQuery({
+    queryKey: ['create-modal-tm-priorities', tmProjectId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tm_case_priorities')
+        .select('id, name, sort_order')
+        .eq('project_id', tmProjectId!)
+        .order('sort_order');
+      return (data ?? []) as Array<{ id: string; name: string }>;
+    },
+    enabled: isTestCase && !!tmProjectId,
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: tmFolders = [] } = useQuery({
+    queryKey: ['create-modal-tm-folders', tmProjectId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tm_folders')
+        .select('id, name')
+        .eq('project_id', tmProjectId!)
+        .order('name');
+      return (data ?? []) as Array<{ id: string; name: string }>;
+    },
+    enabled: isTestCase && !!tmProjectId,
+    staleTime: 5 * 60 * 1000,
+  });
+  const tmPriorityOptions: IconOption[] = useMemo(
+    () => tmCasePriorities.map((p) => ({ value: p.id, label: p.name })),
+    [tmCasePriorities],
+  );
+  const tmFolderOptions: IconOption[] = useMemo(
+    () => tmFolders.map((f) => ({ value: f.id, label: f.name })),
+    [tmFolders],
+  );
+  const resetTestCaseState = useCallback(() => {
+    setTestCasePreconditions('');
+    setTestCasePriorityId('');
+    setTestCaseFolderId('');
+    setTestCaseSteps([]);
+  }, []);
+  // Pre-select the folder when opened with one (from RepositoryPage).
+  useEffect(() => {
+    if (open && isTestCase && initialFolderId && !testCaseFolderId) {
+      setTestCaseFolderId(initialFolderId);
+    }
+  }, [open, isTestCase, initialFolderId, testCaseFolderId]);
+
+  // ── Test Set work type — writes to tm_test_sets (TestHub) ──
+  const isTestSet = workType === 'Test Set';
+  const [testSetType, setTestSetType] = useState<string>('regression');
+  const [testSetMembership, setTestSetMembership] = useState<string>('static');
+  const createTestSet = useMutation({
+    mutationFn: async (input: {
+      project_id: string;
+      name: string;
+      description: string | null;
+      set_type: string;
+      membership_type: string;
+    }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase.from('tm_test_sets').insert({
+        name: input.name,
+        description: input.description,
+        set_type: input.set_type,
+        membership_type: input.membership_type,
+        project_id: input.project_id,
+        created_by: user.id,
+        owner_id: user.id,
+        is_active: true,
+        test_count: 0,
+      });
+      if (error) throw error;
+    },
+  });
+  const resetTestSetState = useCallback(() => {
+    setTestSetType('regression');
+    setTestSetMembership('static');
+  }, []);
+
   // Primary: admin/workflows (ph_workflow_* tables) — shared canonical source.
   const {
     initialStatus: phInitialStatus,
@@ -645,11 +794,19 @@ export function CreateStoryModal({
   // Canonical source: catalyst_workflow_schemes/_statuses via useWorkflowStatuses.
   // INITIAL_STATUS_BY_TYPE removed (Bucket B, 2026-05-09) — DB is the only authority.
   useEffect(() => {
-    if (isTask || isDefect) return; // task/defect default separately — see effects below
+    if (isTask || isDefect || isTestCase || isTestSet) return; // these default separately — see effects below
     if (statusesLoading) return;
     const initial = dbInitialStatus ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
-  }, [isTask, isDefect, workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isTask, isDefect, isTestCase, isTestSet, workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Test Case initial status = 'DRAFT' (tm_case_status). Set on entering the
+  // type or when the current status isn't a valid test-case status.
+  useEffect(() => {
+    if (!isTestCase) return;
+    const valid = TEST_CASE_STATUS_OPTIONS.some((o) => o.value === form.status);
+    if (!valid) updateField('status', 'DRAFT');
+  }, [isTestCase, form.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Defect initial status = 'open' (tm_defect_status). Set when entering defect
   // mode or when the current status isn't a valid defect status.
@@ -893,6 +1050,93 @@ export function CreateStoryModal({
       return;
     }
 
+    // ── Test Case (Repository) writes to tm_test_cases (not ph_issues) ────
+    if (isTestCase) {
+      if (!form.projectId) {
+        setFormError('Project is required');
+        return;
+      }
+      if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
+      try {
+        const resolvedTmProjectId =
+          tmProjectId ??
+          (await resolveTmProjectId({
+            key: (canonicalTmProject as any)?.key ?? null,
+            name: (canonicalTmProject as any)?.name ?? null,
+          }));
+        const descAdf = form.descriptionAdf ?? null;
+        const created = await createTestCase.mutateAsync({
+          project_id: resolvedTmProjectId,
+          title: form.summary.trim(),
+          objective: descAdf ? adfToPlainText(descAdf as any) : undefined,
+          preconditions: testCasePreconditions || undefined,
+          status: form.status as any, // one of TEST_CASE_STATUS_OPTIONS (CaseStatus)
+          priority_id: testCasePriorityId || undefined,
+          folder_id: testCaseFolderId || undefined,
+          assigned_to: form.assigneeId || undefined,
+          // Only persist steps the author actually filled in (drop empty rows).
+          steps: testCaseSteps.filter((s) => s.action.trim() || s.expected_result.trim()),
+        });
+        flag.success(`${created.key} created`);
+        onSuccess?.(created.key);
+        if (createAnother) {
+          reset(true);
+          resetTestCaseState();
+          setEditorKey((k) => k + 1);
+          setSubmitAttempted(false);
+        } else {
+          onClose();
+          reset();
+          resetTestCaseState();
+          setEditorKey((k) => k + 1);
+        }
+      } catch (err: any) {
+        setFormError(err?.message ?? 'Failed to create test case');
+      }
+      return;
+    }
+
+    // ── Test Set writes to tm_test_sets (not ph_issues) ───────────────────
+    if (isTestSet) {
+      if (!form.projectId) {
+        setFormError('Project is required');
+        return;
+      }
+      if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
+      try {
+        const resolvedTmProjectId =
+          tmProjectId ??
+          (await resolveTmProjectId({
+            key: (canonicalTmProject as any)?.key ?? null,
+            name: (canonicalTmProject as any)?.name ?? null,
+          }));
+        const descAdf = form.descriptionAdf ?? null;
+        await createTestSet.mutateAsync({
+          project_id: resolvedTmProjectId,
+          name: form.summary.trim(),
+          description: descAdf ? adfToPlainText(descAdf as any) : null,
+          set_type: testSetType,
+          membership_type: testSetMembership,
+        });
+        flag.success('Test set created');
+        onSuccess?.('');
+        if (createAnother) {
+          reset(true);
+          resetTestSetState();
+          setEditorKey((k) => k + 1);
+          setSubmitAttempted(false);
+        } else {
+          onClose();
+          reset();
+          resetTestSetState();
+          setEditorKey((k) => k + 1);
+        }
+      } catch (err: any) {
+        setFormError(err?.message ?? 'Failed to create test set');
+      }
+      return;
+    }
+
     if (!form.projectId && workType !== 'Business Request') {
       setFormError('Project is required');
       return;
@@ -979,6 +1223,19 @@ export function CreateStoryModal({
     taskStatuses,
     createTaskMutation,
     navigate,
+    isTestCase,
+    tmProjectId,
+    canonicalTmProject,
+    createTestCase,
+    testCasePreconditions,
+    testCasePriorityId,
+    testCaseFolderId,
+    resetTestCaseState,
+    isTestSet,
+    createTestSet,
+    testSetType,
+    testSetMembership,
+    resetTestSetState,
   ]);
 
   const handleClose = useCallback(() => {
@@ -1143,23 +1400,27 @@ export function CreateStoryModal({
                    User can override the initial status before creating.
                    statusOptions=resolvedStatusOptions passes only this
                    work-type's statuses (not the 20-item global hardcoded list). */}
+              {/* Test Set has no status concept — hide the field entirely. */}
+              {!isTestSet && (
               <Field name="status" label="Status">
                 {() => (
                   <>
                     <div style={{ display: 'block', marginTop: 4 }}>
-                      {!isTask && !isDefect && statusesLoading ? (
+                      {!isTask && !isDefect && !isTestCase && statusesLoading ? (
                         <Spinner size="small" />
                       ) : (
                         <StatusLozengeDropdown
-                          status={form.status || (isTask ? defaultTaskStatusName : isDefect ? 'open' : 'To Do')}
+                          status={form.status || (isTask ? defaultTaskStatusName : isDefect ? 'open' : isTestCase ? 'DRAFT' : 'To Do')}
                           statusCategory={
                             isDefect
                               ? (DEFECT_STATUS_OPTIONS.find((s) => s.value === form.status)?.color_category ?? null)
+                              : isTestCase
+                              ? (TEST_CASE_STATUS_OPTIONS.find((s) => s.value === form.status)?.color_category ?? null)
                               : isTask
                               ? (taskStatuses.find((s) => s.name === form.status)?.slug ?? null)
                               : (workflowStatuses.find((s) => s.value === form.status)?.color_category ?? null)
                           }
-                          statusOptions={isDefect ? DEFECT_STATUS_OPTIONS : isTask ? taskStatusOptions : resolvedStatusOptions}
+                          statusOptions={isDefect ? DEFECT_STATUS_OPTIONS : isTestCase ? TEST_CASE_STATUS_OPTIONS : isTask ? taskStatusOptions : resolvedStatusOptions}
                           onStatusChange={(newStatus) => updateField('status', newStatus)}
                           issueType={workType}
                         />
@@ -1173,6 +1434,7 @@ export function CreateStoryModal({
                   </>
                 )}
               </Field>
+              )}
 
               {/* ── Summary — required, with RTL auto-detect + CATY translate ── */}
               <Field name="summary" label="Summary" isRequired>
@@ -1206,7 +1468,8 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Parent ─────────────────────────────────────────── */}
+              {/* ── Parent — hidden for TestHub-native types (no ph_issues parent) ── */}
+              {!isTestCase && !isTestSet && (
               <Field name="parent" label="Parent">
                 {({ fieldProps: { id, isDisabled } }) => (
                   <>
@@ -1296,8 +1559,27 @@ export function CreateStoryModal({
                   </>
                 )}
               </Field>
+              )}
 
-              {/* ── Priority ───────────────────────────────────────── */}
+              {/* ── Priority — canonical for ph_issues + Test Case (from tm
+                   priorities); hidden for Test Set. ── */}
+              {isTestCase ? (
+                <Field name="priority" label="Priority">
+                  {({ fieldProps: { id, isDisabled } }) => (
+                    <Select<IconOption>
+                      id={id}
+                      isDisabled={isDisabled}
+                      inputId="cs-tc-priority"
+                      options={tmPriorityOptions}
+                      value={tmPriorityOptions.find((o) => o.value === testCasePriorityId) ?? null}
+                      onChange={(opt) => setTestCasePriorityId((opt as IconOption)?.value ?? '')}
+                      placeholder="Select priority"
+                      isClearable
+                      isSearchable={false}
+                    />
+                  )}
+                </Field>
+              ) : !isTestSet && (
               <Field name="priority" label="Priority">
                 {({ fieldProps }) => (
                   <>
@@ -1322,6 +1604,7 @@ export function CreateStoryModal({
                   </>
                 )}
               </Field>
+              )}
 
               {/* ── Description — ADF editor (Jira-parity, non-negotiable) ─── */}
               {/* appearance="comment" gives the Jira-grade primary toolbar (Tt/B/lists/etc.)
@@ -1352,6 +1635,75 @@ export function CreateStoryModal({
                   </div>
                 )}
               </Field>
+
+              {/* ── Test Case-only fields (Repository → tm_test_cases) ──── */}
+              {isTestCase && (
+                <>
+                  <Field name="preconditions" label="Preconditions">
+                    {({ fieldProps }) => (
+                      <Textfield
+                        {...(fieldProps as any)}
+                        placeholder="e.g. User is logged in"
+                        value={testCasePreconditions}
+                        onChange={(e) => setTestCasePreconditions((e.target as HTMLInputElement).value)}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="folder" label="Folder">
+                    {({ fieldProps: { id, isDisabled } }) => (
+                      <Select<IconOption>
+                        id={id}
+                        isDisabled={isDisabled}
+                        inputId="cs-tc-folder"
+                        options={tmFolderOptions}
+                        value={tmFolderOptions.find((o) => o.value === testCaseFolderId) ?? null}
+                        onChange={(opt) => setTestCaseFolderId((opt as IconOption)?.value ?? '')}
+                        placeholder="Select folder (optional)"
+                        isClearable
+                        isSearchable
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="steps" label="Test steps">
+                    {() => <StepEditor steps={testCaseSteps} onChange={setTestCaseSteps} />}
+                  </Field>
+                </>
+              )}
+
+              {/* ── Test Set-only fields (→ tm_test_sets) ──────────────── */}
+              {isTestSet && (
+                <>
+                  <Field name="setType" label="Set type">
+                    {({ fieldProps: { id, isDisabled } }) => (
+                      <Select<IconOption>
+                        id={id}
+                        isDisabled={isDisabled}
+                        inputId="cs-set-type"
+                        options={TEST_SET_TYPE_OPTIONS}
+                        value={TEST_SET_TYPE_OPTIONS.find((o) => o.value === testSetType) ?? null}
+                        onChange={(opt) => setTestSetType((opt as IconOption)?.value ?? 'regression')}
+                        isSearchable={false}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="membership" label="Membership">
+                    {({ fieldProps: { id, isDisabled } }) => (
+                      <Select<IconOption>
+                        id={id}
+                        isDisabled={isDisabled}
+                        inputId="cs-set-membership"
+                        options={TEST_SET_MEMBERSHIP_OPTIONS}
+                        value={TEST_SET_MEMBERSHIP_OPTIONS.find((o) => o.value === testSetMembership) ?? null}
+                        onChange={(opt) => setTestSetMembership((opt as IconOption)?.value ?? 'static')}
+                        isSearchable={false}
+                      />
+                    )}
+                  </Field>
+                </>
+              )}
 
               {/* ── Defect-only fields (QA Bug → tm_defects) ──────────── */}
               {isDefect && (
@@ -1459,7 +1811,7 @@ export function CreateStoryModal({
                   select. No empty-state placeholder; an empty options
                   list still shows the picker so user knows the field
                   exists. */}
-              {workType !== 'Business Request' && !isTask && (
+              {workType !== 'Business Request' && !isTask && !isTestCase && !isTestSet && (
                 <Field name="sprints" label="Sprint">
                   {({ fieldProps }) => (
                     <Select<IconOption, true>
@@ -1488,7 +1840,8 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              {/* ── Assignee + Assign to me ────────────────────────── */}
+              {/* ── Assignee + Assign to me — hidden for Test Set (no assignee) ── */}
+              {!isTestSet && (
               <Field name="assignee" label="Assignee">
                 {({ fieldProps }) => (
                   <>
@@ -1543,10 +1896,13 @@ export function CreateStoryModal({
                   </>
                 )}
               </Field>
+              )}
 
               {/* Reporter + Labels are ph_issues-only; defects set reporter from
-                  the auth user in useCreateDefect and omit labels here. */}
-              {!isDefect && (
+                  the auth user in useCreateDefect and omit labels here. Test
+                  Case/Test Set write to tm_* tables (reporter = auth user), so
+                  they omit these fields too. */}
+              {!isDefect && !isTestCase && !isTestSet && (
               <>
               {/* ── Reporter — required, current user (ADS: disabled Select) ── */}
               <Field name="reporter" label="Reporter" isRequired>
@@ -1627,7 +1983,7 @@ export function CreateStoryModal({
               </Button>
               <Button
                 appearance="primary"
-                isLoading={isDefect ? createDefect.isPending : isTask ? createTaskMutation.isPending : createMutation.isPending}
+                isLoading={isDefect ? createDefect.isPending : isTestCase ? createTestCase.isPending : isTestSet ? createTestSet.isPending : isTask ? createTaskMutation.isPending : createMutation.isPending}
                 onClick={handleSubmit}
               >
                 Create

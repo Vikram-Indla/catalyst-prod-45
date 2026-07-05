@@ -19,6 +19,7 @@ import {
   MONTH_LABELS,
   WEEKDAY_LABELS,
 } from '../Schedule/scheduleHelpers';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ReminderModalProps {
   /** When the reminder is being created against a specific message, pass the
@@ -49,6 +50,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
   const [time, setTime] = useState<string>(() => findClosestSlot(now));
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTime, setShowTime] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -67,6 +69,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Reminder"

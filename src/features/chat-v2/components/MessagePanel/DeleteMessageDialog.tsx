@@ -5,6 +5,7 @@ import { XIcon } from '../shared/Icon';
 import { formatMessageTime } from '../../lib/formatTimestamp';
 import { renderMarkdownInline } from '../../lib/markdown';
 import type { ChatMessage } from '@/types/chat';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface DeleteMessageDialogProps {
   message: ChatMessage;
@@ -13,6 +14,7 @@ interface DeleteMessageDialogProps {
 }
 
 export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMessageDialogProps) {
+  const trapRef = useFocusTrap<HTMLDivElement>();
   useEffect(() => {
     // CAT-AUDIT-0607: Enter must NOT confirm a destructive action from
     // anywhere in the dialog — only explicit activation of the focused
@@ -26,6 +28,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Delete message"

@@ -358,7 +358,14 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
 /* ── Issue card node ───────────────────────────────────────────────────── */
 function WorkItemNode({ data }: { data: any }) {
   const m = data.meta || {};
-  const label = data.label as string;
+  // Title slot: prefer an adapter-supplied readable key (e.g. Test Hub "<PROJECT>
+  // CY-001") when the node id is not itself a readable issue key; otherwise fall
+  // back to the node key so issue-key hubs render unchanged.
+  const title = (m.displayKey ?? data.label) as string;
+  // Link target: prefer an adapter-supplied href (nodes with no /browse/<key>
+  // route, e.g. Test Hub cycles → /testhub/cycles/<uuid>); otherwise fall back
+  // to /browse/<key> — identical to prior behaviour for issue-key hubs.
+  const href = (m.href ?? `/browse/${data.label}`) as string;
   const metaStyle = { fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' };
   return (
     <div
@@ -389,14 +396,14 @@ function WorkItemNode({ data }: { data: any }) {
               stopPropagation + nodrag so it never triggers node select/drag.
               (Vikram 2026-06-25) */}
           <a
-            href={`/browse/${label}`}
+            href={href}
             target="_blank"
             rel="noopener noreferrer"
             className="nodrag"
             onClick={(e) => e.stopPropagation()}
             style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: LINK, textDecoration: 'underline', cursor: 'pointer' }}
           >
-            {label}
+            {title}
           </a>
         </span>
         <CardKebab
@@ -526,17 +533,22 @@ function DependencyEdge({
 
 /* ── Relationship popup (edge click) — source / link / target + unlink ───── */
 function IssueRow({ k, meta }: { k: string; meta: any }) {
+  // Same title/link contract as the card (see WorkItemNode): adapter-supplied
+  // displayKey + href when the node id is not a readable issue key; otherwise
+  // fall back to the key and /browse/<key> (issue-key hubs render unchanged).
+  const title = (meta?.displayKey ?? k) as string;
+  const href = (meta?.href ?? `/browse/${k}`) as string;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', minWidth: 0 }}>
       {meta?.issue_type ? <JiraIssueTypeIcon type={meta.issue_type} size={16} /> : null}
       <a
-        href={`/browse/${k}`}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
         style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: LINK, textDecoration: 'underline', whiteSpace: 'nowrap', cursor: 'pointer' }}
       >
-        {k}
+        {title}
       </a>
       <span
         style={{

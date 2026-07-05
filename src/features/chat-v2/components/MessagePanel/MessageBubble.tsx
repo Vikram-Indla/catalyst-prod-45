@@ -242,6 +242,10 @@ export function MessageBubble({
           />
         ) : (
           <div
+            // dir="auto" lets Arabic/Hebrew messages lay out RTL per-message
+            // while English stays LTR — mixed-direction conversations render
+            // each message in its own natural direction.
+            dir="auto"
             style={{
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--cv2-fs-msg-body)',
@@ -250,6 +254,7 @@ export function MessageBubble({
               color: 'var(--cv2-text)',
               wordBreak: 'break-word',
               whiteSpace: 'pre-wrap',
+              unicodeBidi: 'plaintext',
             }}
             dangerouslySetInnerHTML={{ __html: renderMarkdownInline(message.bodyText, selfToken) }}
           />
@@ -309,7 +314,6 @@ export function MessageBubble({
           onCopyLink={() => onCopyLink?.(message.id)}
           onCopyMessage={() => { void navigator.clipboard?.writeText(message.bodyText); }}
           onTogglePin={() => onTogglePin?.(message.id)}
-          onAddToList={() => { /* TODO */ }}
           onDelete={() => onRequestDelete?.(message.id)}
           onClose={() => setMoreOpen(false)}
         />

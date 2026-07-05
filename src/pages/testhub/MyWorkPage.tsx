@@ -12,11 +12,19 @@ import Spinner from "@atlaskit/spinner";
 import { BacklogPage } from "@/modules/project-work-hub/pages/BacklogPage.atlaskit";
 import { useTestCasesSource } from "@/modules/project-work-hub/adapters/testCasesDataSource";
 import { ProjectPageHeader } from "@/components/layout/ProjectPageHeader";
+import { useAuth } from "@/lib/auth";
 
 export default function MyWorkPage() {
-  const adapter = useTestCasesSource();
+  // D031: My Work is *my* cases, not the whole repository. Scope the
+  // data source to the signed-in user's assigned cases. When the user has
+  // nothing assigned the canonical BacklogPage renders its honest empty
+  // state (no synthetic rows).
+  const { user, loading: authLoading } = useAuth();
+  const adapter = useTestCasesSource({ assigneeId: user?.id });
 
-  if (!adapter) {
+  // Hold the surface until the user id resolves — otherwise the adapter would
+  // momentarily run unfiltered and flash the entire repository (the D031 bug).
+  if (authLoading || !user?.id || !adapter) {
     return (
       <div
         style={{

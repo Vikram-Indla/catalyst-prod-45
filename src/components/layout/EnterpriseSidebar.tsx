@@ -1,8 +1,7 @@
 /**
- * EnterpriseSidebar — Strategy Hub sidebar using SidebarBase
- * 
- * Uses the shared SidebarBase component for consistent styling.
- * 3 sections: Strategy Hub, Intelligence, and footer Settings.
+ * EnterpriseSidebar — STRATA sidebar using SidebarBase
+ * (CAT-STRATA-20260705-001: Strategy Hub decommissioned; this sidebar now
+ * carries the STRATA IA. Uses the shared SidebarBase for consistent styling.)
  */
 
 import {
@@ -11,10 +10,10 @@ import {
   Target,
   PieChart,
   Calendar,
-  ShieldAlert,
   Sparkles,
   Users,
   Settings,
+  Database,
 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -24,45 +23,47 @@ interface EnterpriseSidebarProps {
   className?: string;
 }
 
-const enterpriseSidebarConfig: SidebarConfig = {
+const strataSidebarConfig: SidebarConfig = {
   badge: 'ST',
-  label: 'Strategy',
+  label: 'STRATA',
   sections: [
     {
-      // Design critique (2026-04-19): dropped "Strategy Hub" section label —
-      // tautological with the badge/hub name already shown above. "Strategic
-      // Themes" → "Themes" for the same reason; the hub context makes the
-      // "Strategic" prefix redundant.
       title: '',
       items: [
-        { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub', icon: LayoutDashboard, exact: true, activeMatchPaths: ['/strategyhub/executive-brief'] },
-        { id: 'themes', title: 'Themes', path: '/strategyhub/themes', icon: Layers, exact: false },
-        { id: 'goals', title: 'Goals & Key Results', path: '/strategyhub/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
-        { id: 'investment', title: 'Investment Allocation', path: '/strategyhub/investment', icon: PieChart, exact: false },
-        { id: 'snapshots', title: 'Snapshots', path: '/strategyhub/snapshots', icon: Calendar, exact: false },
+        { id: 'command-center', title: 'Command Center', path: '/strata', icon: LayoutDashboard, exact: true },
+        { id: 'strategy-room', title: 'Strategy Room', path: '/strata/strategy', icon: Layers, exact: true, activeMatchPaths: ['/strata/strategy/map'] },
+        { id: 'scorecards', title: 'Scorecards', path: '/strata/scorecards', icon: PieChart, exact: false },
+        { id: 'kpis', title: 'KPI & OKR Library', path: '/strata/kpis', icon: Target, exact: false },
       ],
     },
     {
-      title: 'Intelligence',
+      title: 'Delivery & Value',
       items: [
-        { id: 'ai-insights', title: 'AI Insights', path: '/strategyhub/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'purple' },
-        { id: 'team-alignment', title: 'Team Alignment', path: '/strategyhub/team-alignment', icon: Users, exact: false },
+        { id: 'execution', title: 'Execution', path: '/strata/execution', icon: Users, exact: false },
+        { id: 'portfolio', title: 'Portfolio & Value', path: '/strata/portfolio', icon: Sparkles, exact: false },
+      ],
+    },
+    {
+      title: 'Governance',
+      items: [
+        { id: 'data', title: 'Data & Lineage', path: '/strata/data', icon: Database, exact: false },
+        { id: 'reviews', title: 'Reviews & Decisions', path: '/strata/reviews', icon: Calendar, exact: false },
       ],
     },
   ],
   footerItem: {
-    id: 'settings',
-    title: 'Settings',
-    path: '/strategyhub/settings',
+    id: 'strata-admin',
+    title: 'Configuration',
+    path: '/strata/admin',
     icon: Settings,
-    exact: true,
+    exact: false,
   },
 };
 
 export function EnterpriseSidebar({ expanded, onToggle, className }: EnterpriseSidebarProps) {
   return (
     <SidebarBase
-      config={enterpriseSidebarConfig}
+      config={strataSidebarConfig}
       expanded={expanded}
       onToggle={onToggle}
       className={className}

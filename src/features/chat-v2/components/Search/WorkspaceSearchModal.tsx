@@ -17,6 +17,7 @@ import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { useWorkspacePeopleSearch, type PeopleHit } from '../../hooks/useWorkspacePeopleSearch';
 import { useWorkspaceSearch, type WorkspaceSearchHit } from '../../hooks/useWorkspaceSearch';
 import { formatActivityTime } from '../../lib/formatTimestamp';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface WorkspaceSearchModalProps {
   /** Placeholder text shown when the input is empty (also the workspace
@@ -51,6 +52,7 @@ export function WorkspaceSearchModal({
 }: WorkspaceSearchModalProps) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>();
   const trimmed = query.trim();
   const showResults = trimmed.length > 0;
 
@@ -71,6 +73,7 @@ export function WorkspaceSearchModal({
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Workspace search"
@@ -391,7 +394,7 @@ function MessageRow({
           width: '100%',
           padding: '8px 12px',
           background: 'var(--cv2-bg-row-hover)',
-          borderRadius: 8,
+          borderRadius: 'var(--cv2-radius-lg)',
           display: 'flex',
           gap: 8,
           border: 'none',
@@ -451,7 +454,7 @@ function ScopeRow({
             padding: '0px 8px',
             background: 'var(--cv2-bg-row-active)',
             color: 'var(--cv2-text-link)',
-            borderRadius: 4,
+            borderRadius: 'var(--cv2-radius-sm)',
             font: 'var(--ds-font-body-small)',
             fontWeight: 600,
             maxWidth: 360,
@@ -497,7 +500,7 @@ function EnterChip() {
         background: 'transparent',
         color: 'var(--cv2-text-strong)',
         border: '1px solid var(--cv2-border-strong)',
-        borderRadius: 4,
+        borderRadius: 'var(--cv2-radius-sm)',
         font: 'var(--ds-font-body-small)',
         fontWeight: 600,
       }}
@@ -568,7 +571,7 @@ function iconBtnStyle(): React.CSSProperties {
     background: 'transparent',
     color: 'var(--cv2-text-subtle)',
     border: 'none',
-    borderRadius: 4,
+    borderRadius: 'var(--cv2-radius-sm)',
     cursor: 'pointer',
   };
 }

@@ -17,6 +17,11 @@ vi.mock('@/hooks/chat/useConversations', () => ({
 vi.mock('../DockDirectory', () => ({ DockDirectory: () => <div data-testid="stub-dir" /> }));
 vi.mock('../DockConversationPane', () => ({ DockConversationPane: () => <div data-testid="stub-pane" /> }));
 vi.mock('../CatyPanel', () => ({ CatyPanel: () => <div data-testid="stub-caty" /> }));
+// ChatDock calls useIncomingHuddle → useAuth; stub it so the render needs no
+// AuthProvider (matches the useConversations mock pattern above).
+vi.mock('@/hooks/chat/useIncomingHuddle', () => ({
+  useIncomingHuddle: () => ({ incoming: null, snoozedCall: null }),
+}));
 
 import { ChatDock } from '../ChatDock';
 
@@ -25,6 +30,12 @@ const baseProps = {
   onSelect: vi.fn(),
   onClose: vi.fn(),
   onToggleCollapsed: vi.fn(),
+  // The tab bar only renders once the dock is mounted+open; without it
+  // ChatDock returns just the FAB.
+  dockMounted: true,
+  // contentReady=true reaches the full panel (open-conversation tab bar)
+  // rather than the skeleton loading branch.
+  contentReady: true,
 };
 
 describe('ChatDock bottom tabs — hover close', () => {

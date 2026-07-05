@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useThreadMessages } from '@/hooks/chat/useThreadMessages';
 import { useMessages } from '@/hooks/chat/useMessages';
+import { useChatMessageActions } from '@/hooks/chat/useChatMessageActions';
 import { MessageBubble } from '../MessagePanel/MessageBubble';
 import { Composer } from '../Composer/Composer';
 import { SummarizeIcon, XIcon } from '../shared/Icon';
@@ -28,6 +29,12 @@ interface ThreadPaneProps {
 export function ThreadPane({ conversation, parentMessageId, onClose, onSummarize, gridArea = 'thread', initialJumpMessageId }: ThreadPaneProps) {
   const { messages: allMessages, toggleReaction: toggleParentReaction } = useMessages(conversation.id);
   const { messages: replies, isLoading, sendReply } = useThreadMessages(conversation.id, parentMessageId);
+  // Replies are ordinary chat_messages rows — the same reaction RPC used for
+  // top-level messages works on reply ids too. useThreadMessages already
+  // subscribes to the reactions realtime channel and invalidates its own
+  // cache when a reply's reaction changes, so this write is picked up
+  // without any extra wiring here.
+  const { toggleReaction: toggleReplyReaction } = useChatMessageActions(conversation.id);
   const [jumpHighlightId, setJumpHighlightId] = useState<string | null>(null);
 
   const parent = useMemo(
@@ -105,9 +112,13 @@ export function ThreadPane({ conversation, parentMessageId, onClose, onSummarize
                 key={m.id}
                 message={m}
                 showHeader={showHeader}
+                hideThreadMeta
                 jumpHighlight={jumpHighlightId === m.id}
+                // Nested threads (a thread on a reply) aren't a modeled
+                // feature — single-level threading only — so this is
+                // intentionally inert rather than a stub.
                 onOpenThread={() => {}}
-                onToggleReaction={() => {}}
+                onToggleReaction={(id, emoji) => { void toggleReplyReaction(id, emoji); }}
               />
             );
           })

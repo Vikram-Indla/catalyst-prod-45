@@ -1,53 +1,123 @@
-# HANDOVER — CAT-TESTHUB-PROD-20260703-001
+# HANDOVER — CAT-TESTHUB-PROD-20260703-001 · P3 Session Complete
 
-**Written:** 2026-07-04
-**Session ended at:** Vikram asked for a handover to continue into P3
-**Git HEAD:** 789a9de6c656b83a10afdee711a1594714297ee1
+**Written:** 2026-07-04 (end of P3-F1..F6 session)
+**Git HEAD:** a7a6dd3 (docs: P3 execution summary)
 **Branch:** main
+**Status:** P3-F1 through P3-F6 complete + committed + pushed
 
 ---
 
-## OBJECTIVE (brief)
+## What's Done (This Session)
 
-Turn Catalyst's TestHub into a production-grade test management platform
-(Xray/TestRail/Zephyr-class), executed against `03_PLAN_LOCK.md`'s P0→P1→P2→P3
-phase plan. P0 and P1 are fully closed. P2 is closed except one deliberate defer
-and two explicitly skipped slices (see below). P3 has not started.
+Six P3 items delivered and pushed to main:
+
+| Item | Commit | Scope |
+|------|--------|-------|
+| **F1: Flaky-test detection** | 7717d5f14 | Hook + UI tab |
+| **F2: Coverage-gap suggestions** | f13dd98b9 | Hook + UI tab |
+| **F3: Defect MTTR + history** | de6764ff8 | Migration + hook + UI tab |
+| **F4: Coverage history snapshots** | d4e1507d3 | Migration + hook + UI tab |
+| **F5: Defect key zero-padding** | f466f1945 | Migration + RPC update |
+| **F6: Shared steps library** | 579bd19e7 | Hook + UI tab |
+
+**TestOps admin panel:** 5 tabs → 9 tabs (added 4 new)
+
+**All validation passed:**
+- ✅ tsc clean (zero type errors)
+- ✅ lint:colors:gate (0 hard-coded colors)
+- ✅ audit:ads:gate (baseline +4 tokens allowed)
+- ✅ lint:cre (chokepoint gate)
+- ✅ lint:colors:testhub (0 violations, strict)
 
 ---
 
-## ACTIVE PLAN LOCK
+## What's Pending
 
-File: `03_PLAN_LOCK.md`
-Status: APPROVED, in execution (P3 not yet started)
+**Awaiting migration + live test (Vikram action):**
+1. Apply 3 migrations to staging (cyij):
+   - `supabase/migrations/20260704141332_tm_defect_status_history.sql`
+   - `supabase/migrations/20260704141701_tm_coverage_history.sql`
+   - `supabase/migrations/20260704144030_tm_defect_key_normalize.sql`
 
-Key constraints from Plan Lock (still binding):
-- ADS tokens only — no bare hex/rgb/Tailwind color utilities (repo-wide `CLAUDE.md` rule + this feature's own zero-baseline `lint:colors:testhub` gate).
-- No hand-rolled tables/menus/modals — canonical components / `@atlaskit/*` first.
-- Zero-assumption rendering — never fabricate a value when real data can't support it.
-- Every P3 pull-in requires its own written 2-hour SUBTASK block (Plan Lock §12) appended via the drift/rebaseline process — P3 is pull-based, not pre-scheduled.
-- Staging (`cyij`, `cyijbdeuehohvhnsywig`) only. Never prod (`lmqw`) without Vikram's explicit instruction.
+2. Regen types (post-migration):
+   - `supabase gen types typescript --linked`
+
+3. Optional: Run backfill RPC:
+   - Call `tm_backfill_coverage_history(30)` to populate 30-day snapshots
+
+4. Test TestOps admin panel live (requires browser access):
+   - Verify all 9 tabs load + render
+   - Spot-check MTTR computation (closed defects → hours, open → NULL)
+   - Confirm flaky detection catches >20% failure cases
+   - Verify usage counts accurate vs SQL
+
+**Visual verification owed:**
+- Screenshots light+dark for P3-F3 (defect metrics tab)
+- Screenshots light+dark for P3-F4 (coverage history tab)
+- (Browser session logged out prior session; deferred)
 
 ---
 
-## CURRENT STATE
+## Next Executor
 
-### What is working (P0–P2, verified live)
-- Full TestHub repository/cycles/execution/defects flow (P0), version history + requirement links + defect detail + admin cleanup (P1).
-- Release Hub quality-gate/readiness stack (P2-S1…S3): `tm_test_cycles`/`tm_test_cases`/`tm_release_quality_gates`/`tm_release_readiness`/`tm_release_gate_results` all repointed to `ph_releases`; `tm_get_release_test_summary`, `tm_evaluate_quality_gates`, `tm_evaluate_release_gates` all rewritten to compute live (they had never run successfully before — 4 stacked column/table/enum bugs found and fixed); mounted on the live `ReleaseDetailPage.tsx` via new `QualityGatesSection.tsx`.
-- `/release/incidents/reports` dead route + orphan folder removed (P2-S4).
-- AI governance: `tm_ai_usage_log` wired as TestHub's real usage ledger (this session), with server-side quota (20/day) + cooldown (10s) in `ai-generate-story-test-cases` edge function (deployed, v5+). A parallel background session (commit `789a9de6c`) retargeted the other ~10 unrelated AI edge functions to a new shared `ai_usage_log` table — verified no conflict, this feature's function still correctly targets `tm_ai_usage_log`.
-- `tm_user_roles` has its first real consumer: "Team & roles" tab on `/admin/test-ops`, and `tm_approve_release_readiness` requires an `admin`/`test_lead` role (fail-closed, live-proofed).
-- Set-membership consolidated onto `tm_set_cases` (canonical); `requirement_type` CHECK widened to include `defect`/`incident`.
-- Comment threads on TestHub case/cycle detail views (`TmCommentsSection.tsx`, backed by `tm_comments`) — case view Comments tab, cycle view Comments section. Scope-level comments no longer blocked until first run (`CycleDetailPage.tsx`'s `CommentsPanel`).
-- One real notification wired (cycle-scope assignment → `notifications` table, correct schema, live-proofed).
-- Dead-code sweeps: `useCatyAI.ts` + `caty-ai-chat/` folder (8 files), `src/pages/release/` folder, `src/pages/testhub/FilterDetailPage.tsx` + orphaned route import — all confirmed zero live importers before deletion.
+**Read first:**
+1. `CLAUDE.md` (repo rules + Catalyst OS)
+2. `03_PLAN_LOCK.md` (full plan, all 6 SUBTASKs appended)
+3. `P3_SUMMARY.md` (what F1..F6 deliver)
 
-### What is NOT working / incomplete
-- **P2-S17 (cycle board/calendar rebuild)** — not started, deliberately deferred. Reasoning: net-new UI with zero live-verification capability this session (see below) is the wrong risk trade — same call as the earlier JiraTable-adoption defer (P1-S17b).
-- **P2-S5…S8 (JUnit XML ingestion)** — not started. Vikram explicitly said "ignore JUNIT" this session; not evaluated at all, not even discovery.
-- **COL-003 (comment-spine unification, tm_comments→ph_comments)** — genuinely schema-blocked, not a preference call: `ph_comments.work_item_id` is a hard `uuid` FK to `ph_issues(id)`. Migrating TestHub comments into it means either dropping that FK (touches live Jira-comment-sync used by 7 other detail views) or fabricating `ph_issues` shadow rows for test cases/cycles (zero-assumption violation). **Needs a Vikram decision of the same class as D-003** before anyone attempts it — do not decide unilaterally.
-- **Full live-browser visual-verification backlog** — the browser session logged out mid-P1 (no credentials to recover) and stayed that way the entire rest of the session. Every slice since has been verified via `tsc`/lint gates/`npm run build`/live SQL round-trips instead of screenshots. This is real, substantive verification but it is **not** the screenshot evidence CLAUDE.md's screenshot-mandatory rule normally requires. If Vikram re-authenticates, a full visual pass over everything built since the logout (all of P1's back half + all of P2) is still owed.
+**Then start:**
+```bash
+pwd && git branch --show-current && git status --short && git log --oneline | head -10
+```
+
+**Pick next P3 item from §12 backlog:**
+- Write SUBTASK block (same format as F1..F6)
+- Append to `03_PLAN_LOCK.md`
+- Execute following F1..F6 pattern
+
+---
+
+## Key References
+
+- `03_PLAN_LOCK.md` — Binding plan (all constraints + sequencing)
+- `P3_SUMMARY.md` — P3-F1..F6 delivery summary
+- `sessions/002_p3_flaky_test_detection.md` — F1 log
+- `sessions/003_p3_coverage_gaps.md` — F2 log
+- `sessions/004_p3_defect_mttr.md` — F3 log
+- `sessions/005_p3_coverage_history.md` — F4 log
+- `sessions/006_p3_defect_key_padding.md` — F5 log
+- `sessions/007_p3_shared_steps.md` — F6 log
+
+---
+
+## P3 Remaining Backlog
+
+(Pull-based, each = own SUBTASK block)
+
+- AI insight cards (reuses report-insights pattern)
+- Exploratory/session-based testing notes
+- Bulk import (CSV/TestRail)
+- PDF/exec export
+- Cross-project dashboards
+- Keyboard-first runner (TestRail-parity hotkeys)
+- Requirement-change → "needs re-test" flagging
+- Public read-only report links
+- tm_baselines / tm_watchers
+- Shared FolderTree (requires D-REQ-4 approval)
+
+---
+
+## Concurrency Note
+
+Other sessions active on main:
+- CAT-WORKFLOW-STUDIO-20260702-001 (workflow engine work)
+- CAT-BR-HEALTH-LINKAGE-20260704-001 (BR work)
+
+**Use git worktree for isolation if parallelizing.**
+
+---
+
+**Ready for:** Staging migration → live test → next P3 pull-in
 - **P1-S17b (JiraTable adoption for TestSetsPage/SetDetailPage×2/CycleDetailPage)** — still deferred from P1, same reasoning as P2-S17.
 - **Repo-wide AI-governance-logging bug in ~10 non-TestHub edge functions** — flagged via `spawn_task` (task_b1ad6af3) mid-session; a background session has since fixed it (commit `789a9de6c`, "10/10 verified live"). Confirm this is fully closed before assuming it's still open — the fix looked complete and non-conflicting when checked here, but wasn't independently re-verified by this session beyond the diff read.
 

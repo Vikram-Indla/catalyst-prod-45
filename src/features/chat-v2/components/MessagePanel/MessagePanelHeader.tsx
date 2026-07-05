@@ -12,8 +12,12 @@ import {
   SummarizeIcon,
   XIcon,
 } from '../shared/Icon';
+import { createPortal } from 'react-dom';
 import { SummarizeMenu, type SummarizePreset } from '../Summarize/SummarizeMenu';
+import { useChatSetMute, useChatSetNotificationPref } from '@/hooks/chat/useChatActions';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import type { ChatConversation } from '@/types/chat';
+import type { ConversationMember } from '@/hooks/chat/useConversationMembers';
 
 export type PanelTab = 'messages' | 'pins';
 
@@ -30,6 +34,10 @@ interface MessagePanelHeaderProps {
   onStartHuddle?: () => void;
   /** When true, tints the huddle button to indicate an active huddle. */
   huddleActive?: boolean;
+  /** Conversation roster for the member facepile (channels/group DMs). */
+  members?: ConversationMember[];
+  /** Called when the user clicks the member facepile. */
+  onOpenMembers?: () => void;
 }
 
 export function MessagePanelHeader({
@@ -42,11 +50,23 @@ export function MessagePanelHeader({
   onClose,
   onStartHuddle,
   huddleActive,
+  members = [],
+  onOpenMembers,
 }: MessagePanelHeaderProps) {
+  const showFacepile =
+    (conversation.kind === 'channel' ||
+      conversation.kind === 'custom_channel' ||
+      conversation.kind === 'group_dm') &&
+    members.length > 0;
   const isStarred = !!conversation.isStarred;
-  // Notifications toggle is local UI state — clicking the bell swaps to a
-  // muted bell icon and back. Persistence to the server can be wired later.
-  const [muted, setMuted] = useState(false);
+  // Notifications: bell opens a Slack-style menu (All / Mentions / Nothing +
+  // Mute). Pref persists via chat_set_notification_pref, mute via
+  // chat_set_mute; both hooks invalidate the conversations cache.
+  const muted = !!conversation.isMuted;
+  const pref = conversation.notificationPref ?? 'all';
+  const setMuteMut = useChatSetMute();
+  const setPrefMut = useChatSetNotificationPref();
+  const [notifAnchor, setNotifAnchor] = useState<DOMRect | null>(null);
   // Summarize menu anchored to the SummarizeIcon trigger.
   const [summarizeAnchor, setSummarizeAnchor] = useState<DOMRect | null>(null);
   const openSummarize = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -140,6 +160,51 @@ export function MessagePanelHeader({
         </button>
       </div>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        {showFacepile && (
+          <button
+            type="button"
+            aria-label={`${members.length} members — view and add people`}
+            onClick={onOpenMembers}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--ds-space-050)',
+              height: 28,
+              padding: '0 var(--ds-space-100)',
+              background: 'transparent',
+              border: '1px solid var(--cv2-border)',
+              borderRadius: 'var(--cv2-radius-md)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+          >
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}>
+              {members.slice(0, 3).map((m, i) => (
+                <span
+                  key={m.userId}
+                  style={{
+                    display: 'inline-flex',
+                    border: '2px solid var(--cv2-bg-panel)',
+                    borderRadius: '50%',
+                    marginLeft: i === 0 ? 0 : -6,
+                  }}
+                >
+                  <PresenceAvatar name={m.name} size={22} presence={null} />
+                </span>
+              ))}
+            </span>
+            <span
+              style={{
+                font: 'var(--ds-font-body-small)',
+                fontWeight: 600,
+                color: 'var(--cv2-text-muted)',
+              }}
+            >
+              {members.length}
+            </span>
+          </button>
+        )}
         {onStartHuddle && (
           <IconButton
             label={huddleActive ? 'Join huddle' : 'Start huddle'}
@@ -151,11 +216,12 @@ export function MessagePanelHeader({
           </IconButton>
         )}
         <IconButton
-          label={muted ? 'Unmute notifications' : 'Mute notifications'}
-          onClick={() => setMuted(v => !v)}
+          label="Notification preferences"
+          onClick={e => setNotifAnchor((e.currentTarget as HTMLElement).getBoundingClientRect())}
           size="md"
+          active={muted || !!notifAnchor}
         >
-          {muted ? <BellOffIcon size={16} /> : <BellIcon size={16} />}
+          {muted || pref === 'none' ? <BellOffIcon size={16} /> : <BellIcon size={16} />}
         </IconButton>
         <IconButton
           label="Summarize conversation"
@@ -205,7 +271,160 @@ export function MessagePanelHeader({
           onClose={closeSummarize}
         />
       )}
+      {notifAnchor && (
+        <NotificationMenu
+          anchorRect={notifAnchor}
+          pref={pref}
+          muted={muted}
+          onPickPref={p => {
+            setPrefMut.mutate({ convId: conversation.id, pref: p });
+            setNotifAnchor(null);
+          }}
+          onToggleMute={() => {
+            setMuteMut.mutate({ convId: conversation.id, muted: !muted });
+            setNotifAnchor(null);
+          }}
+          onClose={() => setNotifAnchor(null)}
+        />
+      )}
     </header>
+  );
+}
+
+const NOTIF_OPTIONS: Array<{ id: 'all' | 'mentions' | 'none'; label: string; hint: string }> = [
+  { id: 'all', label: 'All new messages', hint: 'Every message in this conversation' },
+  { id: 'mentions', label: 'Mentions only', hint: '@you, @here and @channel' },
+  { id: 'none', label: 'Nothing', hint: 'No notifications for this conversation' },
+];
+
+function NotificationMenu({
+  anchorRect,
+  pref,
+  muted,
+  onPickPref,
+  onToggleMute,
+  onClose,
+}: {
+  anchorRect: DOMRect;
+  pref: 'all' | 'mentions' | 'none';
+  muted: boolean;
+  onPickPref: (p: 'all' | 'mentions' | 'none') => void;
+  onToggleMute: () => void;
+  onClose: () => void;
+}) {
+  const trapRef = useFocusTrap<HTMLDivElement>();
+  React.useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!trapRef.current?.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [onClose, trapRef]);
+
+  const MENU_W = 300;
+  const left = Math.min(Math.max(12, anchorRect.right - MENU_W), window.innerWidth - MENU_W - 12);
+  const top = anchorRect.bottom + 6;
+
+  return createPortal(
+    <div
+      ref={trapRef}
+      role="menu"
+      aria-label="Notification preferences"
+      style={{
+        position: 'fixed',
+        top,
+        left,
+        width: MENU_W,
+        background: 'var(--cv2-bg-modal)',
+        border: '1px solid var(--cv2-border-strong)',
+        borderRadius: 'var(--cv2-radius-md)',
+        boxShadow: 'var(--cv2-shadow-modal)',
+        padding: 'var(--ds-space-050) 0',
+        fontFamily: 'var(--cv2-font)',
+        color: 'var(--cv2-text)',
+        zIndex: 'var(--cv2-popover-z, 1100)' as unknown as number,
+      }}
+    >
+      <div
+        style={{
+          padding: 'var(--ds-space-075) 14px var(--ds-space-050)',
+          font: 'var(--ds-font-body-small)',
+          fontWeight: 700,
+          color: 'var(--cv2-text-muted)',
+        }}
+      >
+        Notify me about…
+      </div>
+      {NOTIF_OPTIONS.map(opt => (
+        <button
+          key={opt.id}
+          type="button"
+          role="menuitemradio"
+          aria-checked={pref === opt.id}
+          onClick={() => onPickPref(opt.id)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: 'var(--ds-space-025)',
+            width: '100%',
+            padding: 'var(--ds-space-075) 14px',
+            background: 'transparent',
+            color: 'var(--cv2-text)',
+            border: 'none',
+            cursor: 'pointer',
+            textAlign: 'left',
+            fontFamily: 'inherit',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-100)', font: 'var(--ds-font-body)', fontWeight: pref === opt.id ? 700 : 400 }}>
+            <span aria-hidden="true" style={{ width: 16, display: 'inline-flex', color: 'var(--cv2-accent)' }}>
+              {pref === opt.id ? '✓' : ''}
+            </span>
+            {opt.label}
+          </span>
+          <span style={{ paddingLeft: 24, font: 'var(--ds-font-body-small)', color: 'var(--cv2-text-muted)' }}>
+            {opt.hint}
+          </span>
+        </button>
+      ))}
+      <div aria-hidden="true" style={{ height: 1, margin: 'var(--ds-space-050) 0', background: 'var(--cv2-divider)' }} />
+      <button
+        type="button"
+        role="menuitemcheckbox"
+        aria-checked={muted}
+        onClick={onToggleMute}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--ds-space-100)',
+          width: '100%',
+          padding: 'var(--ds-space-075) 14px',
+          background: 'transparent',
+          color: 'var(--cv2-text)',
+          border: 'none',
+          cursor: 'pointer',
+          textAlign: 'left',
+          fontFamily: 'inherit',
+          font: 'var(--ds-font-body)',
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+      >
+        <BellOffIcon size={16} />
+        {muted ? 'Unmute conversation' : 'Mute conversation'}
+      </button>
+    </div>,
+    document.body,
   );
 }
 

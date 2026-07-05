@@ -1,70 +1,91 @@
-import { test, expect } from '@playwright/test';
+/**
+ * chat-full-screen.spec.ts — end-to-end guard for the Catalyst Chat v2
+ * surface at /chat.
+ *
+ * Rewritten 2026-07-05 for chat-v2. The previous version targeted chat-v1
+ * DOM (`.c-sb-section__head`, `[aria-label="Conversations"]`, `.c-sb-row`)
+ * that no longer exists and was orphaned outside any playwright config's
+ * testDir, so it never ran. Selectors below match the live chat-v2 tree
+ * (ChatNavRail, Sidebar, MessageList, Composer, EmptyPanel).
+ *
+ * Run: npm run test:e2e:chat  (needs the dev server on :8080 + valid login
+ * creds in TEST_USER_EMAIL / TEST_USER_PASSWORD).
+ */
+import { test, expect, Page } from '@playwright/test';
 
-test.describe('Chat full-screen module', () => {
+async function loginIfRequired(page: Page) {
+  const onLogin = await page
+    .locator('input[type="email"], input[name="email"]')
+    .isVisible()
+    .catch(() => false);
+  if (!onLogin) return;
+  const email = process.env.TEST_USER_EMAIL;
+  const password = process.env.TEST_USER_PASSWORD;
+  test.skip(!email || !password, 'Login required but TEST_USER_EMAIL/PASSWORD not set');
+  await page.fill('input[type="email"], input[name="email"]', email!);
+  await page.fill('input[type="password"]', password!);
+  await page.click('button[type="submit"]');
+  await page.waitForLoadState('networkidle').catch(() => {});
+}
+
+test.describe('Chat v2 full-screen module', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/chat');
+    await loginIfRequired(page);
     await page.waitForLoadState('networkidle');
   });
 
-  test('sidebar renders with section headers', async ({ page }) => {
-    // Conversation sidebar must be present
-    const sidebar = page.locator('[aria-label="Conversations"]');
-    await expect(sidebar).toBeVisible();
-
-    // At least one section header should be visible
-    const sectionHeaders = sidebar.locator('.c-sb-section__head');
-    await expect(sectionHeaders.first()).toBeVisible();
+  test('nav rail renders the four chat views', async ({ page }) => {
+    const rail = page.locator('aside[aria-label="Chat navigation"]');
+    await expect(rail).toBeVisible();
+    for (const label of ['Home', 'DMs', 'Activity', 'Saved']) {
+      await expect(rail.getByRole('button', { name: new RegExp(label) })).toBeVisible();
+    }
   });
 
-  test('search input is visible and interactive', async ({ page }) => {
-    const search = page.locator('input[aria-label="Search conversations"]');
+  test('sidebar search is interactive', async ({ page }) => {
+    const search = page.getByPlaceholder('Search conversations…');
     await expect(search).toBeVisible();
-    await search.fill('test');
-    await expect(search).toHaveValue('test');
-
-    // Clear button appears after typing
-    const clearBtn = page.locator('[aria-label="Clear search"]');
-    await expect(clearBtn).toBeVisible();
-    await clearBtn.click();
-    await expect(search).toHaveValue('');
+    await search.fill('release');
+    await expect(search).toHaveValue('release');
   });
 
-  test('selecting a conversation renders the feed', async ({ page }) => {
-    const sidebar = page.locator('[aria-label="Conversations"]');
+  test('empty state shows the hero with compose actions', async ({ page }) => {
+    // No conversation selected → the EmptyPanel hero renders in the panel.
+    await expect(page.getByText('Pick up where the work left off')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'New message' })).toBeVisible();
+  });
 
-    // Click the first conversation row if one exists
-    const firstRow = sidebar.locator('.c-sb-row').first();
-    const rowCount = await firstRow.count();
-
-    if (rowCount === 0) {
-      // No conversations seeded in this environment — just verify empty state
-      const emptyState = page.locator('[aria-label="Conversation list"]');
-      await expect(emptyState).toBeVisible();
+  test('selecting a conversation renders the message log + composer', async ({ page }) => {
+    const sidebar = page.locator('aside[aria-label="Chat navigation"]');
+    await expect(sidebar).toBeVisible();
+    // First conversation row in the list sidebar (a project/channel/DM button
+    // with a timestamp). Fall back to asserting the empty state if the
+    // environment seeded no conversations.
+    const firstRow = page
+      .locator('button')
+      .filter({ hasText: /\b(AM|PM|Yesterday|Jun|Jul)\b/ })
+      .first();
+    if ((await firstRow.count()) === 0) {
+      await expect(page.getByText('Pick up where the work left off')).toBeVisible();
       return;
     }
-
     await firstRow.click();
-
-    // Feed container should become visible
-    const feed = page.locator('[aria-label="Message feed"]');
-    await expect(feed).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[role="log"][aria-label="Messages"]')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[role="textbox"][contenteditable="true"]')).toBeVisible();
   });
 
-  test('collapse/expand sidebar toggle works', async ({ page }) => {
-    const collapseBtn = page.locator('[aria-label="Collapse sidebar"]');
-    await expect(collapseBtn).toBeVisible();
-    await collapseBtn.click();
-
-    // After collapse the expand button should appear
-    const expandBtn = page.locator('[aria-label="Expand sidebar"]');
-    await expect(expandBtn).toBeVisible();
-
-    // Title disappears when collapsed
-    const title = page.locator('.c-sb-head__title');
-    await expect(title).toBeHidden();
-
-    // Expand again
-    await expandBtn.click();
-    await expect(page.locator('[aria-label="Collapse sidebar"]')).toBeVisible();
+  test('notification bell opens the preference menu', async ({ page }) => {
+    const firstRow = page
+      .locator('button')
+      .filter({ hasText: /\b(AM|PM|Yesterday|Jun|Jul)\b/ })
+      .first();
+    test.skip((await firstRow.count()) === 0, 'No conversations seeded');
+    await firstRow.click();
+    await page.getByRole('button', { name: 'Notification preferences' }).click();
+    const menu = page.getByRole('menu', { name: 'Notification preferences' });
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole('menuitemradio', { name: /All new messages/ })).toBeVisible();
+    await expect(menu.getByRole('menuitemradio', { name: /Mentions only/ })).toBeVisible();
   });
 });

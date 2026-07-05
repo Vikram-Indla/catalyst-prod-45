@@ -9,6 +9,9 @@ interface ComposerEditorProps {
   placeholder: string;
   /** Fired when caret sits inside a "@query" trigger token. null when no trigger active. */
   onMentionTrigger?: (state: { query: string; anchorRect: DOMRect } | null) => void;
+  /** Fired when the message begins with a "/command" token (Slack semantics:
+   *  slash at absolute start, no space yet). null when no trigger active. */
+  onSlashTrigger?: (state: { query: string; anchorRect: DOMRect } | null) => void;
 }
 
 export interface ComposerEditorHandle {
@@ -20,6 +23,11 @@ export interface ComposerEditorHandle {
   getHtml: () => string;
   /** Replace the current "@query" token (preceding the caret) with the given replacement text. */
   replaceMentionToken: (replacement: string) => void;
+  /** Replace the entire composer content with the given text (caret at end).
+   *  Used by slash-insert commands to swap "/cmd" for its glyph. */
+  replaceAll: (text: string) => void;
+  /** Clear the composer content entirely. Used after an action command fires. */
+  clear: () => void;
 }
 
 export type FormatAction = 'bold' | 'italic' | 'underline' | 'strike' | 'link' | 'ol' | 'ul';
@@ -40,7 +48,7 @@ const ACTION_TO_COMMAND: Record<FormatAction, string | null> = {
  * - onChange emits markdown derived from current HTML (composer converts back on send).
  */
 export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorProps>(
-  function ComposerEditor({ value, onChange, onSubmit, placeholder, onMentionTrigger }, ref) {
+  function ComposerEditor({ value, onChange, onSubmit, placeholder, onMentionTrigger, onSlashTrigger }, ref) {
     const editorRef = useRef<HTMLDivElement>(null);
     const [empty, setEmpty] = useState(true);
     const lastEmitRef = useRef('');
@@ -49,9 +57,8 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
     const savedRangeRef = useRef<Range | null>(null);
 
     const detectMentionTrigger = () => {
-      if (!onMentionTrigger) return;
-      const trigger = readMentionTrigger();
-      onMentionTrigger(trigger);
+      if (onMentionTrigger) onMentionTrigger(readMentionTrigger());
+      if (onSlashTrigger) onSlashTrigger(readSlashTrigger());
     };
 
     useEffect(() => {
@@ -143,6 +150,22 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
         replaceMentionAtCaret(editorRef.current, replacement);
         emitChange();
       },
+      replaceAll: (text: string) => {
+        const el = editorRef.current;
+        if (!el) return;
+        el.textContent = text;
+        el.focus();
+        placeCursorAtEnd(el);
+        emitChange();
+      },
+      clear: () => {
+        const el = editorRef.current;
+        if (!el) return;
+        el.innerHTML = '';
+        lastEmitRef.current = '';
+        setEmpty(true);
+        onChange('');
+      },
     }));
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -218,6 +241,7 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
           aria-multiline="true"
           contentEditable
           suppressContentEditableWarning
+          dir="auto"
           onInput={emitChange}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}
@@ -347,6 +371,34 @@ function markdownToHtmlLight(md: string): string {
 
 /** Reads the "@query" token immediately preceding the caret, if any.
  *  Returns null when the caret is not inside a mention trigger. */
+/** Slash-command trigger: fires only when the ENTIRE composer text up to the
+ *  caret is "/word" (slash at absolute start, no space yet) — Slack semantics.
+ *  Anchored to the whole editor, not just the caret's text node, so a "/" that
+ *  isn't the first character never triggers. */
+function readSlashTrigger(): { query: string; anchorRect: DOMRect } | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) return null;
+  const range = sel.getRangeAt(0);
+  const node = range.startContainer;
+  if (node.nodeType !== Node.TEXT_NODE) return null;
+  // The caret's text node must be the editor's first (and only) content node.
+  const editor = (node.parentElement)?.closest('[role="textbox"]');
+  if (!editor) return null;
+  const full = editor.textContent ?? '';
+  const caretOffset = range.startOffset;
+  // Slash must be the very first character of the whole message.
+  if (!full.startsWith('/')) return null;
+  const upToCaret = full.slice(0, /* caret is within the first text node */ caretOffset);
+  const m = /^\/(\S*)$/.exec(upToCaret);
+  if (!m || /\s/.test(m[1])) return null;
+  // Anchor the popover to the "/query" run.
+  const triggerRange = document.createRange();
+  triggerRange.setStart(node, 0);
+  triggerRange.setEnd(node, caretOffset);
+  const rect = triggerRange.getBoundingClientRect();
+  return { query: m[1], anchorRect: rect };
+}
+
 function readMentionTrigger(): { query: string; anchorRect: DOMRect } | null {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) return null;

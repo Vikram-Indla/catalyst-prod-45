@@ -13,6 +13,7 @@ import { useChatAddMember } from '@/hooks/chat/useChatActions';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkspacePeopleSearch, type PeopleHit } from '../../hooks/useWorkspacePeopleSearch';
 import { XIcon } from '../shared/Icon';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface AddPeopleModalProps {
   conversationId: string;
@@ -40,6 +41,7 @@ export function AddPeopleModal({
   const [selected, setSelected] = useState<PeopleHit[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>();
   const { hits } = useWorkspacePeopleSearch(query);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
@@ -105,6 +107,7 @@ export function AddPeopleModal({
 
   return createPortal(
     <div
+      ref={trapRef}
       role="dialog"
       aria-modal="true"
       aria-label="Add people to channel"
