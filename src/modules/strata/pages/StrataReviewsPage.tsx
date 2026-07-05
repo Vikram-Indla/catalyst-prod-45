@@ -434,6 +434,8 @@ export default function StrataReviewsPage() {
         evidenceGroups: evidenceGroups.map(([entityType, count]): [string, number] => [labelize(entityType), count]),
         runCount,
         evidence: items.map((row) => {
+          // Frozen payload carries entity_name for NEW snapshots; older ones lack it — dash then.
+          const entityName = typeof row.payload?.entity_name === 'string' ? row.payload.entity_name : null;
           const payloadName = typeof row.payload?.name === 'string' ? row.payload.name : null;
           const metricKey = typeof row.payload?.metric_key === 'string' ? row.payload.metric_key : null;
           const rawValue = row.payload?.value;
@@ -441,12 +443,13 @@ export default function StrataReviewsPage() {
           const statusKey = typeof row.payload?.status_key === 'string' ? row.payload.status_key : null;
           return {
             entityType: labelize(row.entity_type),
+            entity: entityName ?? '—',
             metric: payloadName ?? (metricKey ? labelize(metricKey) : '—'),
             value: (typeof rawValue === 'number' || typeof rawValue === 'string') ? fmtUnit(rawValue, unit) : '—',
             band: statusKey ? labelize(statusKey) : '—',
           };
         }),
-        decisions: snapshotDecisions,
+        decisions: snapshotDecisions.map((d) => ({ decision: d, ownerName: profileName(d.owner_id) })),
         openActions: snapshotDecisions
           .flatMap((d) => actionsByDecision.get(d.id) ?? [])
           .filter((a) => a.status === 'open' || a.status === 'in_progress')

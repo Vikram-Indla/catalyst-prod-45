@@ -20,7 +20,7 @@ import { Routes } from '@/lib/routes';
 import { LABEL, SMALL } from '@/components/project-hub/dashboard/dashboardTypography';
 import {
   useCalcValues, useKpiBySlug, useKpiEvidenceChain, usePerspectives, usePortfolioBySlug,
-  useProfileNames, useScorecardInstanceBySlug, useStrataContext, useUploadRuns,
+  useProfileNames, useScorecardInstanceBySlug, useSnapshots, useStrataContext, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
 import {
   StrataBandLozenge, StrataPageShell, StrataPanel, StrataScoreRing, T,
@@ -165,6 +165,12 @@ export default function StrataEvidencePage() {
     (uploadRunsQ.data ?? []).forEach((r) => m.set(r.id, r.run_key));
     return m;
   }, [uploadRunsQ.data]);
+  // Snapshot deep links: resolve snapshot_id → snapshot_key (route-first canon — no UUID URLs).
+  const snapshotsQ = useSnapshots();
+  const snapshotKeyById = useMemo(
+    () => new Map((snapshotsQ.data ?? []).map((s) => [s.id, s.snapshot_key])),
+    [snapshotsQ.data],
+  );
 
   // Hook returns newest-first (calculated_at desc).
   const values: StrataCalculatedValue[] = calcQ.data ?? [];
@@ -435,14 +441,21 @@ export default function StrataEvidencePage() {
                   <EvidenceRow k="Snapshots">
                     {chain.snapshots?.length ? (
                       <span style={chainListStyle}>
-                        {chain.snapshots.map((s) => (
-                          <ChainItem key={s.snapshot_id}>
-                            <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.reviews())}>
-                              {shortId(s.snapshot_id)}
-                            </Button>
-                            <span style={chainMetaStyle}>Frozen in governance snapshot</span>
-                          </ChainItem>
-                        ))}
+                        {chain.snapshots.map((s) => {
+                          const key = snapshotKeyById.get(s.snapshot_id) ?? null;
+                          return (
+                            <ChainItem key={s.snapshot_id}>
+                              <Button
+                                appearance="subtle"
+                                spacing="compact"
+                                onClick={() => navigate(key ? Routes.strata.review(key) : Routes.strata.reviews())}
+                              >
+                                {key ?? shortId(s.snapshot_id)}
+                              </Button>
+                              <span style={chainMetaStyle}>Frozen in governance snapshot</span>
+                            </ChainItem>
+                          );
+                        })}
                       </span>
                     ) : <ChainEmpty text="Not yet frozen in any snapshot" />}
                   </EvidenceRow>
@@ -538,7 +551,16 @@ export default function StrataEvidencePage() {
                   <EvidenceRow k="Config context"><EvidenceConfigContext ctx={cv.config_context} /></EvidenceRow>
                   <EvidenceRow k="Confidence">{fmtConfidence(cv.confidence) ?? '—'}</EvidenceRow>
                   <EvidenceRow k="Calculated at">{fmtDateTime(cv.calculated_at)}</EvidenceRow>
-                  <EvidenceRow k="Snapshot">{cv.snapshot_id ? 'Frozen in snapshot' : 'Live (not yet snapshotted)'}</EvidenceRow>
+                  <EvidenceRow k="Snapshot">
+                    {cv.snapshot_id ? (() => {
+                      const key = snapshotKeyById.get(cv.snapshot_id!) ?? null;
+                      return key ? (
+                        <Button appearance="subtle" spacing="compact" onClick={() => navigate(Routes.strata.review(key))}>
+                          {key}
+                        </Button>
+                      ) : 'Frozen in snapshot';
+                    })() : 'Live (not yet snapshotted)'}
+                  </EvidenceRow>
                 </div>
               ))
             )}

@@ -73,6 +73,10 @@ const RULE_TYPE_OPTIONS = (['shared_benefit', 'counterfactual', 'double_counting
 const PORTFOLIO_STATUS_OPTIONS = (['active', 'archived'] as const)
   .map((s) => ({ value: s, label: labelize(s) }));
 
+/** Clear-flag detection: the modal opened with a value and the user cleared the field. */
+const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
+  initial != null && (submitted == null || (typeof submitted === 'string' && submitted.trim() === ''));
+
 // ── Display-only helpers ──────────────────────────────────────────────────────
 /** Confidence arrives either as ratio (0–1) or percent — format by scale. */
 const fmtConfidence = (v: number | null | undefined): string => {
@@ -597,6 +601,9 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
             causalMechanism: (v.causalMechanism as string | null) ?? undefined,
             confidence: (v.confidence as number | null) ?? undefined,
             lifecycleStage: (v.lifecycleStage as string | null) ?? undefined,
+            // Clear affordances: the field opened with a value and the user emptied it.
+            clearOwner: wasCleared(benefit.owner_id, v.ownerId),
+            clearValidator: wasCleared(benefit.validator_id, v.validatorId),
           });
           invalidate();
         }}
@@ -652,7 +659,11 @@ function BenefitDetailSection({ benefit, isFirst, canAuthor, canAuthorValues }: 
             status: (v.status as string | null) ?? undefined,
           };
           if (author?.kind === 'edit-assumption') {
-            await valueApi.updateAssumption(author.assumption.id, patch);
+            await valueApi.updateAssumption(author.assumption.id, {
+              ...patch,
+              // Clear affordance: the owner field opened with a value and the user emptied it.
+              clearOwner: wasCleared(author.assumption.owner_id, v.ownerId),
+            });
           } else {
             await valueApi.createAssumption({ benefitId: benefit.id, ...patch, description: String(v.description) });
           }
@@ -1041,6 +1052,9 @@ export default function StrataPortfolioVmoPage() {
               ownerId: (v.ownerId as string | null) ?? undefined,
               valueTarget: v.valueTarget != null ? Number(v.valueTarget) : undefined,
               status: (v.status as 'active' | 'archived' | null) ?? undefined,
+              // Clear affordances: the field opened with a value and the user emptied it.
+              clearOwner: wasCleared(portfolio.owner_id, v.ownerId),
+              clearCategory: wasCleared(portfolio.category_id, v.categoryId),
             });
             invalidate();
           }}

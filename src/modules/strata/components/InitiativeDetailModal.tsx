@@ -39,6 +39,10 @@ const fvStr = (v: unknown): string | undefined =>
 const fvNum = (v: unknown): number | undefined =>
   typeof v === 'number' && Number.isFinite(v) ? v : undefined;
 
+/** Clear-flag detection: the modal opened with a value and the user cleared the field. */
+const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
+  initial != null && (submitted == null || (typeof submitted === 'string' && submitted.trim() === ''));
+
 const captionStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', color: T.subtlest };
 
 // Junction rows arrive untyped from the domain layer.
@@ -357,6 +361,9 @@ export function InitiativeDetailModal({ initiative, onClose }: {
           status: fvStr(v.status), sponsorId: fvStr(v.sponsorId), ownerId: fvStr(v.ownerId),
           budgetEnvelope: fvNum(v.budgetEnvelope), businessCase: fvStr(v.businessCase),
           valueHypothesis: fvStr(v.valueHypothesis),
+          // Clear affordances: the field opened with a value and the user emptied it.
+          clearSponsor: wasCleared(initiative.sponsor_id, v.sponsorId),
+          clearOwner: wasCleared(initiative.owner_id, v.ownerId),
         }))}
         testId="strata-initiative-edit-modal"
       />

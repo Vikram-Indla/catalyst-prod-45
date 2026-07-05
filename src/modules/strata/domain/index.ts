@@ -4,7 +4,7 @@
  * every score/RAG/rollup/YTD/VaR number comes from the calc-engine RPCs
  * (strata_calc_*) or from frozen snapshot payloads.
  */
-import { typedQuery, typedRpc } from '@/integrations/supabase/client';
+import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import type {
   ScorecardCalcResult, StrataAction, StrataAiOutput, StrataAssumption, StrataBenefit,
   StrataBenefitValue, StrataBoardPack, StrataCalculatedValue, StrataChangeRequest,
@@ -270,6 +270,7 @@ export const kpiApi = {
     accountableOwnerId?: string; dataOwnerId?: string; reporterId?: string;
     validatorId?: string; escalationOwnerId?: string; dataSourceId?: string;
     thresholdSchemeId?: string; kpiTypeId?: string;
+    clearValidator?: boolean; clearDataSource?: boolean; clearEscalationOwner?: boolean;
   }) =>
     run(typedRpc('strata_update_kpi', {
       p_kpi: kpiId, p_name: patch.name ?? null, p_unit: patch.unit ?? null,
@@ -280,6 +281,9 @@ export const kpiApi = {
       p_validator: patch.validatorId ?? null, p_escalation_owner: patch.escalationOwnerId ?? null,
       p_data_source: patch.dataSourceId ?? null, p_threshold_scheme: patch.thresholdSchemeId ?? null,
       p_kpi_type: patch.kpiTypeId ?? null,
+      p_clear_validator: patch.clearValidator ?? false,
+      p_clear_data_source: patch.clearDataSource ?? false,
+      p_clear_escalation_owner: patch.clearEscalationOwner ?? false,
     })),
   createFormulaVersion: (input: {
     kpiId: string; expression: string; variables?: Record<string, unknown>;
@@ -361,6 +365,9 @@ export const executionApi = {
   execProgress: (projectCardId: string, schemeId?: string) =>
     run(typedRpc('strata_calc_execution_progress', { p_project: projectCardId, p_scheme: schemeId ?? null })),
   executionLinks: () => run(typedQuery('strata_execution_links').select('*')),
+  /** Jira connector (F-GOV-010): ph_jira mirror → source-agnostic cards + milestones, with run log + lineage. */
+  syncJira: (): Promise<{ run_id: string; cards_created: number; cards_updated: number; milestones_synced: number }> =>
+    run(typedRpc('strata_sync_jira', {})),
   // ── Authoring write paths (Recovery: Lanes C + D) ─────────────────────────
   createInitiative: (input: {
     name: string; cycleId?: string; description?: string; sponsorId?: string; ownerId?: string;
@@ -376,6 +383,7 @@ export const executionApi = {
     name?: string; description?: string; sponsorId?: string; ownerId?: string;
     stage?: string; status?: string; budgetEnvelope?: number;
     businessCase?: string; valueHypothesis?: string;
+    clearSponsor?: boolean; clearOwner?: boolean;
   }) =>
     run(typedRpc('strata_update_initiative', {
       p_initiative: initiativeId, p_name: patch.name ?? null, p_description: patch.description ?? null,
@@ -383,6 +391,7 @@ export const executionApi = {
       p_stage: patch.stage ?? null, p_status: patch.status ?? null,
       p_budget_envelope: patch.budgetEnvelope ?? null,
       p_business_case: patch.businessCase ?? null, p_value_hypothesis: patch.valueHypothesis ?? null,
+      p_clear_sponsor: patch.clearSponsor ?? false, p_clear_owner: patch.clearOwner ?? false,
     })),
   archiveInitiative: (initiativeId: string, reason: string) =>
     run(typedRpc('strata_archive_initiative', { p_initiative: initiativeId, p_reason: reason })),
@@ -420,6 +429,7 @@ export const executionApi = {
     name?: string; pmId?: string; sector?: string; budget?: number;
     baselineStart?: string; baselineEnd?: string; forecastEnd?: string;
     stage?: string; executionHealth?: string; riskSummary?: string; dependencySummary?: string;
+    clearPm?: boolean; clearExecutionHealth?: boolean;
   }) =>
     run(typedRpc('strata_update_project_card', {
       p_project: projectId, p_name: patch.name ?? null, p_pm: patch.pmId ?? null,
@@ -428,6 +438,7 @@ export const executionApi = {
       p_forecast_end: patch.forecastEnd ?? null, p_stage: patch.stage ?? null,
       p_execution_health: patch.executionHealth ?? null,
       p_risk_summary: patch.riskSummary ?? null, p_dependency_summary: patch.dependencySummary ?? null,
+      p_clear_pm: patch.clearPm ?? false, p_clear_execution_health: patch.clearExecutionHealth ?? false,
     })),
   archiveProjectCard: (projectId: string, reason: string) =>
     run(typedRpc('strata_archive_project_card', { p_project: projectId, p_reason: reason })),
@@ -539,11 +550,13 @@ export const valueApi = {
   updatePortfolio: (portfolioId: string, patch: {
     name?: string; description?: string; categoryId?: string; ownerId?: string;
     valueTarget?: number; status?: 'active' | 'archived';
+    clearOwner?: boolean; clearCategory?: boolean;
   }) =>
     run(typedRpc('strata_update_portfolio', {
       p_portfolio: portfolioId, p_name: patch.name ?? null, p_description: patch.description ?? null,
       p_category: patch.categoryId ?? null, p_owner: patch.ownerId ?? null,
       p_value_target: patch.valueTarget ?? null, p_status: patch.status ?? null,
+      p_clear_owner: patch.clearOwner ?? false, p_clear_category: patch.clearCategory ?? false,
     })),
   addPortfolioMember: (portfolioId: string, memberType: 'initiative' | 'project_card', memberId: string, allocationPct?: number, priority?: number) =>
     run(typedRpc('strata_add_portfolio_member', {
@@ -562,6 +575,7 @@ export const valueApi = {
     name?: string; description?: string; ownerId?: string; validatorId?: string;
     unit?: string; categoryId?: string; portfolioId?: string; valueHypothesis?: string;
     causalMechanism?: string; confidence?: number; lifecycleStage?: string;
+    clearOwner?: boolean; clearValidator?: boolean;
   }) =>
     run(typedRpc('strata_update_benefit', {
       p_benefit: benefitId, p_name: patch.name ?? null, p_description: patch.description ?? null,
@@ -570,6 +584,7 @@ export const valueApi = {
       p_portfolio: patch.portfolioId ?? null, p_value_hypothesis: patch.valueHypothesis ?? null,
       p_causal_mechanism: patch.causalMechanism ?? null, p_confidence: patch.confidence ?? null,
       p_lifecycle_stage: patch.lifecycleStage ?? null,
+      p_clear_owner: patch.clearOwner ?? false, p_clear_validator: patch.clearValidator ?? false,
     })),
   createBenefitValue: (input: {
     benefitId: string; periodId: string; valueKind: 'baseline' | 'planned' | 'forecast' | 'realized'; value: number;
@@ -595,11 +610,12 @@ export const valueApi = {
     })),
   updateAssumption: (assumptionId: string, patch: {
     description?: string; ownerId?: string; confidence?: number; status?: string;
+    clearOwner?: boolean;
   }) =>
     run(typedRpc('strata_update_assumption', {
       p_assumption: assumptionId, p_description: patch.description ?? null,
       p_owner: patch.ownerId ?? null, p_confidence: patch.confidence ?? null,
-      p_status: patch.status ?? null,
+      p_status: patch.status ?? null, p_clear_owner: patch.clearOwner ?? false,
     })),
   createAttributionRule: (benefitId: string, ruleType: 'shared_benefit' | 'counterfactual' | 'double_counting', definition: Record<string, unknown>): Promise<string> =>
     run(typedRpc('strata_create_attribution_rule', {
@@ -792,6 +808,26 @@ export const governanceApi = {
     })),
   revokeRole: (assignmentId: string) =>
     run(typedRpc('strata_revoke_role', { p_assignment: assignmentId })),
+  /** AI advisory draft (F-GOV-009): edge function writes strata_ai_outputs pending human review. */
+  generateAdvisory: async (periodId: string): Promise<{ id: string; confidence: number; review_status: string }> => {
+    const { data, error } = await supabase.functions.invoke('strata-advisory', {
+      body: { period_id: periodId },
+    });
+    if (error) throw new Error(error.message);
+    if (data?.error) throw new Error(String(data.error));
+    return data;
+  },
+  /** Human review of an advisory (reviewer ≠ author enforced by DB CHECK). */
+  reviewAdvisory: async (advisoryId: string, verdict: 'approved' | 'rejected') => {
+    const { data: auth } = await supabase.auth.getUser();
+    return run(
+      typedQuery('strata_ai_outputs')
+        .update({ human_review_status: verdict, reviewed_by: auth.user?.id ?? null, reviewed_at: new Date().toISOString() })
+        .eq('id', advisoryId)
+        .select('id')
+        .single(),
+    );
+  },
   /** Rule-driven Needs Attention feed (F-REP-004) — no seed rows. */
   needsAttention: (periodId?: string): Promise<Array<{
     item_type: string; severity: string; entity_type: string; entity_id: string;

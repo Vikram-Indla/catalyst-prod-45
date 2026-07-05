@@ -15,9 +15,9 @@ import { StatusLozenge } from '@/components/shared/StatusLozenge';
 import type { LozengeAppearance } from '@/components/shared/StatusLozenge';
 import { Routes } from '@/lib/routes';
 import {
-  AlertTriangle, CalendarClock, CheckCircle2, Copy, Database, MoveRight, Network, Upload,
+  AlertTriangle, CalendarClock, CheckCircle2, Copy, Database, MoveRight, Network, RefreshCw, Upload,
 } from '@/lib/atlaskit-icons';
-import { kpiApi, lineageApi } from '@/modules/strata/domain';
+import { executionApi, kpiApi, lineageApi } from '@/modules/strata/domain';
 import {
   useDataSources, useInvalidateStrata, useRunDetail, useStrataContext, useStrataRoles, useUploadRuns,
 } from '@/modules/strata/hooks/useStrata';
@@ -29,6 +29,8 @@ import type {
 
 /** UI affordance gating only — DB RPC guards enforce the real rules (mirrors StrataUploadWizardPage). */
 const INGEST_ROLES = ['data_steward', 'kpi_owner', 'strategy_office', 'strata_admin'] as const;
+/** Jira connector sync (F-GOV-010) — narrower than ingest: no kpi_owner. RPC enforces the real guard. */
+const SYNC_ROLES = ['data_steward', 'strategy_office', 'strata_admin'] as const;
 
 // ── System-state appearance maps (mirror DB CHECK constraints) ───────────────
 const SOURCE_STATUS: Record<StrataDataSource['status'], LozengeAppearance> = {
@@ -235,6 +237,31 @@ function SourcesPanel() {
 function RunsPanel() {
   const runs = useUploadRuns();
   const navigate = useNavigate();
+  const rolesQ = useStrataRoles();
+  const invalidate = useInvalidateStrata();
+  const hasSyncRole = (rolesQ.data ?? []).some((r) => (SYNC_ROLES as readonly string[]).includes(r));
+  const [syncBusy, setSyncBusy] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncNote, setSyncNote] = useState<string | null>(null);
+
+  /** strata_sync_jira RPC — server failure text surfaces verbatim, never swallowed. */
+  const syncFromJira = async () => {
+    setSyncBusy(true);
+    setSyncError(null);
+    setSyncNote(null);
+    try {
+      const res = await executionApi.syncJira();
+      setSyncNote(
+        `${res.cards_created} card${res.cards_created === 1 ? '' : 's'} created, `
+        + `${res.cards_updated} updated, ${res.milestones_synced} milestone${res.milestones_synced === 1 ? '' : 's'} synced.`,
+      );
+    } catch (e) {
+      setSyncError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSyncBusy(false);
+      invalidate();
+    }
+  };
 
   const columns: Column<StrataUploadRun>[] = [
     {
@@ -277,7 +304,39 @@ function RunsPanel() {
   ];
 
   return (
-    <StrataPanel title="Upload runs" icon={<Upload size={16} />} count={runs.data?.length ?? null} noPadding testId="strata-runs-panel">
+    <StrataPanel
+      title="Upload runs"
+      icon={<Upload size={16} />}
+      count={runs.data?.length ?? null}
+      noPadding
+      testId="strata-runs-panel"
+      actions={hasSyncRole ? (
+        <Button
+          appearance="default"
+          spacing="compact"
+          iconBefore={<RefreshCw size={14} />}
+          isDisabled={syncBusy}
+          onClick={() => void syncFromJira()}
+          testId="strata-sync-jira"
+        >
+          {syncBusy ? 'Syncing…' : 'Sync from Jira'}
+        </Button>
+      ) : undefined}
+    >
+      {syncNote ? (
+        <div style={{ padding: '12px 16px 0' }}>
+          <SectionMessage appearance="success" title="Jira sync complete">
+            <p>{syncNote}</p>
+          </SectionMessage>
+        </div>
+      ) : null}
+      {syncError ? (
+        <div style={{ padding: '12px 16px 0' }}>
+          <SectionMessage appearance="error" title="Jira sync failed">
+            <p style={{ whiteSpace: 'pre-wrap' }}>{syncError}</p>
+          </SectionMessage>
+        </div>
+      ) : null}
       <PanelState
         query={runs}
         empty={(runs.data ?? []).length === 0}

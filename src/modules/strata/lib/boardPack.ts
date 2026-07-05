@@ -23,6 +23,7 @@ const loadPptxGenJS = () => import('pptxgenjs').then((m) => m.default);
 /** One frozen evidence row, pre-formatted by the page (same formatting the screen shows). */
 export interface BoardPackEvidenceRow {
   entityType: string; // labelized
+  entity: string;     // frozen payload.entity_name ('—' for older snapshots that lack it)
   metric: string;     // payload name or labelized metric key ('—' when unknown)
   value: string;      // fmtUnit output ('—' when unknown)
   band: string;       // labelized band/status key ('—' when unknown)
@@ -37,7 +38,8 @@ export interface BoardPackData {
   evidenceGroups: Array<[string, number]>;
   runCount: number;
   evidence: BoardPackEvidenceRow[];
-  decisions: StrataDecision[];
+  /** Decisions linked to this snapshot via snapshot_id, with resolved owner names. */
+  decisions: Array<{ decision: StrataDecision; ownerName: string | null }>;
   openActions: Array<{ action: StrataAction; ownerName: string | null }>;
 }
 
@@ -69,10 +71,12 @@ function summaryRows(data: BoardPackData): string[][] {
 }
 
 const decisionRows = (data: BoardPackData): string[][] =>
-  data.decisions.map((d) => [
+  data.decisions.map(({ decision: d, ownerName }) => [
     d.decision_key,
     d.title,
     labelize(d.status),
+    ownerName ?? '—',
+    d.due_date ? fmtDate(d.due_date) : '—',
     d.decided_at ? fmtDate(d.decided_at) : '—',
   ]);
 
@@ -84,6 +88,20 @@ const actionRows = (data: BoardPackData): string[][] =>
     action.due_date ? fmtDate(action.due_date) : '—',
     labelize(action.status),
   ]);
+
+/** Provenance appendix rows — strictly the LOCKED snapshot's own frozen references
+ *  (data_run_ids + config_versions); nothing is resolved from live data. */
+function provenanceRows(snapshot: StrataSnapshot): string[][] {
+  const rows: string[][] = [];
+  (snapshot.data_run_ids ?? []).forEach((runId) => rows.push(['Data run', runId]));
+  Object.entries(snapshot.config_versions ?? {}).forEach(([key, value]) => {
+    rows.push([
+      `Config · ${labelize(key)}`,
+      typeof value === 'string' || typeof value === 'number' ? String(value) : JSON.stringify(value),
+    ]);
+  });
+  return rows;
+}
 
 // ── PDF ──────────────────────────────────────────────────────────────────────
 
@@ -151,24 +169,24 @@ export async function generateBoardPackPdf(data: BoardPackData): Promise<string>
     y = emptyLine('This snapshot carries no frozen evidence records.', y);
   } else {
     autoTable(doc, {
-      head: [['Entity type', 'Metric', 'Value', 'Band']],
-      body: data.evidence.map((r) => [r.entityType, r.metric, r.value, r.band]),
+      head: [['Entity type', 'Entity', 'Metric', 'Value', 'Band']],
+      body: data.evidence.map((r) => [r.entityType, r.entity, r.metric, r.value, r.band]),
       startY: y,
       styles,
       headStyles,
-      columnStyles: { 2: { halign: 'right' } },
+      columnStyles: { 3: { halign: 'right' } },
       margin: { left: 14, right: 14 },
     });
     y = lastY(y) + 12;
   }
 
-  // ── Decisions ──
+  // ── Decisions & actions (linked to this snapshot via snapshot_id) ──
   y = sectionTitle('Decisions on this snapshot', y);
   if (data.decisions.length === 0) {
     y = emptyLine('No decisions recorded against this snapshot.', y);
   } else {
     autoTable(doc, {
-      head: [['Key', 'Title', 'Status', 'Decided']],
+      head: [['Key', 'Title', 'Status', 'Owner', 'Due', 'Decided']],
       body: decisionRows(data),
       startY: y,
       styles,
@@ -181,11 +199,28 @@ export async function generateBoardPackPdf(data: BoardPackData): Promise<string>
   // ── Open actions ──
   y = sectionTitle('Open actions', y);
   if (data.openActions.length === 0) {
-    emptyLine('No open actions on this snapshot’s decisions.', y);
+    y = emptyLine('No open actions on this snapshot’s decisions.', y);
   } else {
     autoTable(doc, {
       head: [['Key', 'Title', 'Owner', 'Due', 'Status']],
       body: actionRows(data),
+      startY: y,
+      styles,
+      headStyles,
+      margin: { left: 14, right: 14 },
+    });
+    y = lastY(y) + 12;
+  }
+
+  // ── Provenance appendix — the snapshot's frozen data_run_ids + config_versions ──
+  y = sectionTitle('Provenance appendix', y);
+  const provRows = provenanceRows(snapshot);
+  if (provRows.length === 0) {
+    emptyLine('This snapshot carries no data-run or config-version references.', y);
+  } else {
+    autoTable(doc, {
+      head: [['Kind', 'Reference']],
+      body: provRows,
       startY: y,
       styles,
       headStyles,
@@ -272,12 +307,18 @@ export async function generateBoardPackPptx(data: BoardPackData): Promise<string
   addTableSlide('Summary — frozen record counts', ['Entity type', 'Frozen records'], summaryRows(data), '');
   addTableSlide(
     'Frozen evidence',
-    ['Entity type', 'Metric', 'Value', 'Band'],
-    data.evidence.map((r) => [r.entityType, r.metric, r.value, r.band]),
+    ['Entity type', 'Entity', 'Metric', 'Value', 'Band'],
+    data.evidence.map((r) => [r.entityType, r.entity, r.metric, r.value, r.band]),
     'This snapshot carries no frozen evidence records.',
   );
-  addTableSlide('Decisions on this snapshot', ['Key', 'Title', 'Status', 'Decided'], decisionRows(data), 'No decisions recorded against this snapshot.');
+  addTableSlide('Decisions on this snapshot', ['Key', 'Title', 'Status', 'Owner', 'Due', 'Decided'], decisionRows(data), 'No decisions recorded against this snapshot.');
   addTableSlide('Open actions', ['Key', 'Title', 'Owner', 'Due', 'Status'], actionRows(data), 'No open actions on this snapshot’s decisions.');
+  addTableSlide(
+    'Provenance appendix — data runs & config versions',
+    ['Kind', 'Reference'],
+    provenanceRows(snapshot),
+    'This snapshot carries no data-run or config-version references.',
+  );
 
   const filename = packFileName(snapshot, 'pptx');
   await pptx.writeFile({ fileName: filename });

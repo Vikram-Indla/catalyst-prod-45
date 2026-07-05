@@ -15,7 +15,7 @@ import { Tooltip } from '@/components/ads';
 import { SectionMessage } from '@/components/ads/SectionMessage';
 import ExportWorkItems from '@/components/resources/ExportWorkItems';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { useIsDark } from '@/components/strategy/themes/useIsDark';
+import { useIsDark } from '@/hooks/useIsDark';
 
 /* ── Types ── */
 interface Resource {

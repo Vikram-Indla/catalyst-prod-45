@@ -49,6 +49,10 @@ const fvStr = (v: unknown): string | undefined =>
 const fvNum = (v: unknown): number | undefined =>
   typeof v === 'number' && Number.isFinite(v) ? v : undefined;
 
+/** Clear-flag detection: the modal opened with a value and the user cleared the field. */
+const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
+  initial != null && (submitted == null || (typeof submitted === 'string' && submitted.trim() === ''));
+
 /** Normalize a DB-calculated progress value (fraction or percent) to 0..1. */
 const asFraction = (v: number | null | undefined): number | null =>
   v == null ? null : Math.max(0, Math.min(1, v > 1 ? v / 100 : v));
@@ -518,6 +522,9 @@ export function ProjectDetailModal({ card, onClose }: {
           forecastEnd: fvStr(v.forecastEnd), stage: fvStr(v.stage),
           executionHealth: fvStr(v.executionHealth),
           riskSummary: fvStr(v.riskSummary), dependencySummary: fvStr(v.dependencySummary),
+          // Clear affordances: the field opened with a value and the user emptied it.
+          clearPm: wasCleared(card.pm_id, v.pmId),
+          clearExecutionHealth: wasCleared(card.execution_health, v.executionHealth),
         }))}
         testId="strata-project-edit-modal"
       />

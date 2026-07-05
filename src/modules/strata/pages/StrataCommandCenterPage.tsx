@@ -21,12 +21,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis,
 } from 'recharts';
-import { EmptyState, Lozenge, SectionMessage } from '@/components/ads';
+import { Button, CatalystTag, EmptyState, Lozenge, SectionMessage } from '@/components/ads';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { LABEL } from '@/components/project-hub/dashboard/dashboardTypography';
 import { Routes } from '@/lib/routes';
-import { AlertTriangle, PieChart, TrendingUp } from '@/lib/atlaskit-icons';
+import { AlertTriangle, PieChart, Sparkles, TrendingUp } from '@/lib/atlaskit-icons';
+import { governanceApi } from '@/modules/strata/domain';
 import {
   useStrataContext,
   useScorecardInstances,
@@ -40,6 +41,9 @@ import {
   useKpis,
   useNeedsAttention,
   useEnterpriseScoreTrend,
+  useAiOutputs,
+  useStrataRoles,
+  useInvalidateStrata,
 } from '@/modules/strata/hooks/useStrata';
 import {
   T,
@@ -52,9 +56,9 @@ import {
   type StrataStat,
 } from '@/modules/strata/components/shared';
 import {
-  fmtDate, fmtRatioPct, fmtSarCompact, fmtScore, labelize,
+  fmtDate, fmtDateTime, fmtPct, fmtRatioPct, fmtSarCompact, fmtScore, labelize,
 } from '@/modules/strata/components/format';
-import type { ScorecardCalcResult } from '@/modules/strata/types';
+import type { ScorecardCalcResult, StrataAiOutput } from '@/modules/strata/types';
 
 /** Display-only: server score → text, dash when engine reports no data. */
 function scoreText(score: number | null | undefined, hasData: boolean | undefined): string {
@@ -192,6 +196,22 @@ const SEVERITY_LOZENGE: Record<string, React.ComponentProps<typeof Lozenge>['app
   warning: 'moved',
 };
 
+// ── AI advisory (F-GOV-009: draft → human review; reviewer ≠ author is DB-enforced) ─
+/** UI affordance gating only — the edge function / DB enforce the real rules. */
+const ADVISORY_ROLES: readonly string[] = ['strategy_office', 'executive_viewer', 'vmo_validator', 'strata_admin'];
+
+const ADVISORY_REVIEW_LOZENGE: Record<StrataAiOutput['human_review_status'], React.ComponentProps<typeof Lozenge>['appearance']> = {
+  pending: 'moved',
+  approved: 'success',
+  rejected: 'removed',
+};
+
+/** Confidence arrives as ratio (0–1) or percent — format by scale (same convention as evidence). */
+const fmtAdvisoryConfidence = (v: number | null | undefined): string | null => {
+  if (v == null) return null;
+  return v <= 1 ? fmtRatioPct(v) : fmtPct(v);
+};
+
 export default function StrataCommandCenterPage() {
   const navigate = useNavigate();
   const { activeCycle, activePeriod, periods, isLoading: ctxLoading } = useStrataContext();
@@ -226,6 +246,29 @@ export default function StrataCommandCenterPage() {
   // Server-side rule engine feed — replaces the former client-composed inbox.
   const needsAttentionQ = useNeedsAttention(activePeriod?.id);
 
+  // ── AI advisory (generate + human review) ──────────────────────────────────
+  const aiOutputsQ = useAiOutputs();
+  const rolesQ = useStrataRoles();
+  const invalidate = useInvalidateStrata();
+  const canAdvise = (rolesQ.data ?? []).some((r) => ADVISORY_ROLES.includes(r));
+  /** 'generate' or the advisory id under review — one action at a time. */
+  const [advisoryBusy, setAdvisoryBusy] = useState<string | null>(null);
+  const [advisoryError, setAdvisoryError] = useState<string | null>(null);
+
+  /** Runs an advisory RPC; server rejection text (e.g. reviewer == author) surfaces verbatim. */
+  const runAdvisoryAction = async (key: string, fn: () => Promise<unknown>) => {
+    setAdvisoryBusy(key);
+    setAdvisoryError(null);
+    try {
+      await fn();
+    } catch (e) {
+      setAdvisoryError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAdvisoryBusy(null);
+      invalidate();
+    }
+  };
+
   const openDecisions = useMemo(
     () => (decisionsQ.data ?? []).filter((d) => d.status === 'open'),
     [decisionsQ.data],
@@ -246,6 +289,10 @@ export default function StrataCommandCenterPage() {
   const kpiById = useMemo(
     () => new Map((kpisQ.data ?? []).map((k) => [k.id, k])),
     [kpisQ.data],
+  );
+  const benefitById = useMemo(
+    () => new Map((benefitsQ.data ?? []).map((b) => [b.id, b])),
+    [benefitsQ.data],
   );
 
   // ── Trend points: period-named, ordered by period starts_on ───────────────
@@ -279,7 +326,11 @@ export default function StrataCommandCenterPage() {
           const slug = kpiById.get(entityId)?.slug;
           return () => navigate(slug ? Routes.strata.kpi(slug) : Routes.strata.kpis());
         }
-        case 'benefit':
+        case 'benefit': {
+          // Drill to the benefit detail via its slug; fall back to the portfolio index when unresolved.
+          const slug = benefitById.get(entityId)?.slug;
+          return () => navigate(slug ? Routes.strata.benefit(slug) : Routes.strata.portfolio());
+        }
         case 'portfolio':
           return () => navigate(Routes.strata.portfolio());
         case 'initiative':
@@ -305,7 +356,7 @@ export default function StrataCommandCenterPage() {
       due: r.due_date,
       nav: navFor(r.entity_type, r.entity_id),
     }));
-  }, [needsAttentionQ.data, kpiById, navigate]);
+  }, [needsAttentionQ.data, kpiById, benefitById, navigate]);
 
   // No silent failures: surface the failing inbox source.
   const attentionError = needsAttentionQ.error;
@@ -591,6 +642,109 @@ export default function StrataCommandCenterPage() {
                   showRowCount={false}
                   ariaLabel="Items needing attention"
                 />
+              )}
+            </StrataPanel>
+          </div>
+
+          {/* ── Row 4: AI advisory — drafts pending human review (F-GOV-009) ── */}
+          <div style={{ gridColumn: 'span 12', minWidth: 0 }}>
+            <StrataPanel
+              title="AI advisory"
+              icon={<Sparkles size={16} />}
+              count={aiOutputsQ.isLoading ? null : (aiOutputsQ.data ?? []).length}
+              testId="strata-cc-ai-advisory"
+              actions={canAdvise ? (
+                <Button
+                  appearance="default"
+                  spacing="compact"
+                  isDisabled={!activePeriod || advisoryBusy !== null}
+                  onClick={() => {
+                    if (activePeriod) void runAdvisoryAction('generate', () => governanceApi.generateAdvisory(activePeriod.id));
+                  }}
+                  testId="strata-cc-generate-advisory"
+                >
+                  {advisoryBusy === 'generate' ? 'Generating…' : 'Generate advisory'}
+                </Button>
+              ) : undefined}
+            >
+              {advisoryError ? (
+                <div style={{ marginBottom: 12 }}>
+                  <SectionMessage appearance="error" title="Advisory action rejected">
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{advisoryError}</p>
+                  </SectionMessage>
+                </div>
+              ) : null}
+              {aiOutputsQ.isError ? (
+                <PanelError error={aiOutputsQ.error} />
+              ) : aiOutputsQ.isLoading ? (
+                <div aria-hidden style={{ height: 96, borderRadius: 8, background: T.neutral }} />
+              ) : (aiOutputsQ.data ?? []).length === 0 ? (
+                <EmptyState
+                  size="compact"
+                  header="No advisories yet"
+                  description={canAdvise
+                    ? (activePeriod
+                      ? 'Generate an advisory draft for the active period — it stays pending until a different person reviews it.'
+                      : 'Select an active period to generate an advisory draft.')
+                    : 'Advisory drafts generated by the strategy office appear here after human review.'}
+                />
+              ) : (
+                (aiOutputsQ.data ?? []).map((a) => {
+                  const isPending = a.human_review_status === 'pending';
+                  const confidence = fmtAdvisoryConfidence(a.confidence);
+                  return (
+                    <div
+                      key={a.id}
+                      style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 0', borderBottom: `1px solid ${T.border}` }}
+                      data-testid={`strata-cc-advisory-${a.id}`}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <Lozenge appearance={ADVISORY_REVIEW_LOZENGE[a.human_review_status] ?? 'default'}>
+                          {isPending ? 'Pending human review' : labelize(a.human_review_status)}
+                        </Lozenge>
+                        {a.model ? <CatalystTag text={a.model} /> : null}
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
+                          {[
+                            confidence ? `Confidence ${confidence}` : null,
+                            `Generated ${fmtDateTime(a.generated_at)}`,
+                          ].filter(Boolean).join(' · ')}
+                        </span>
+                        {isPending && canAdvise ? (
+                          <span style={{ marginLeft: 'auto', display: 'inline-flex', gap: 8 }}>
+                            <Button
+                              spacing="compact"
+                              isDisabled={advisoryBusy !== null}
+                              onClick={() => void runAdvisoryAction(a.id, () => governanceApi.reviewAdvisory(a.id, 'approved'))}
+                              testId={`strata-cc-advisory-approve-${a.id}`}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              spacing="compact"
+                              appearance="subtle"
+                              isDisabled={advisoryBusy !== null}
+                              onClick={() => void runAdvisoryAction(a.id, () => governanceApi.reviewAdvisory(a.id, 'rejected'))}
+                              testId={`strata-cc-advisory-reject-${a.id}`}
+                            >
+                              Reject
+                            </Button>
+                          </span>
+                        ) : null}
+                      </div>
+                      {isPending ? (
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-warning)' }}>
+                          Advisory — pending human review. Do not act on this content until it is approved.
+                        </span>
+                      ) : null}
+                      <p style={{
+                        margin: 0, fontSize: 'var(--ds-font-size-200)', color: isPending ? T.subtle : T.text,
+                        whiteSpace: 'pre-wrap', overflowWrap: 'anywhere',
+                      }}>
+                        {a.content}
+                      </p>
+                    </div>
+                  );
+                })
               )}
             </StrataPanel>
           </div>

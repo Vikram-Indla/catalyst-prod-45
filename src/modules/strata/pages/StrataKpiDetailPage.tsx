@@ -110,6 +110,10 @@ function ValidationLozenge({ status }: { status: ValidationStatus | string | nul
 
 const Dash = () => <span style={{ color: T.subtlest }}>—</span>;
 
+/** Clear-flag detection: the modal opened with a value and the user cleared the field. */
+const wasCleared = (initial: string | null | undefined, submitted: unknown): boolean =>
+  initial != null && (submitted == null || (typeof submitted === 'string' && submitted.trim() === ''));
+
 /** Person cell (S-132): resolved profile name + avatar, or '—'. NEVER a UUID. */
 function PersonName({ id, profiles }: { id: string | null; profiles?: Map<string, StrataProfileRef> }) {
   if (!id) return <Dash />;
@@ -735,6 +739,10 @@ export default function StrataKpiDetailPage() {
             dataSourceId: v.dataSourceId ? String(v.dataSourceId) : undefined,
             thresholdSchemeId: v.thresholdSchemeId ? String(v.thresholdSchemeId) : undefined,
             kpiTypeId: v.kpiTypeId ? String(v.kpiTypeId) : undefined,
+            // Clear affordances: the field opened with a value and the user emptied it.
+            clearValidator: wasCleared(kpi.validator_id, v.validatorId),
+            clearDataSource: wasCleared(kpi.data_source_id, v.dataSourceId),
+            clearEscalationOwner: wasCleared(kpi.escalation_owner_id, v.escalationOwnerId),
           });
           invalidate();
         }}
