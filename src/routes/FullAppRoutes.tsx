@@ -174,6 +174,7 @@ const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleD
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
 const TestHubCycleRunDetailPage = lazy(() => import("../pages/testhub/cycles/CycleRunDetailPage"));
 const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
+const TestHubPlansPage = lazy(() => import("../pages/testhub/plans/TestPlansPage"));
 const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
 // Reports hub — single registry-driven surface (CAT-REPORTS-HUB-20260703-001 S1.2).
@@ -686,6 +687,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/timeline" element={<MG k="testhub" t="Test Hub"><S><TestHubTimelinePage /></S></MG>} />
         <Route path="/testhub/dependencies" element={<MG k="testhub" t="Test Hub"><S><TestHubDependenciesPage /></S></MG>} />
         <Route path="/testhub/sets" element={<MG k="testhub" t="Test Hub"><S><TestHubSetsPage /></S></MG>} />
+        <Route path="/testhub/plans" element={<MG k="testhub" t="Test Hub"><S><TestHubPlansPage /></S></MG>} />
         <Route path="/testhub/sets/:setKey" element={<MG k="testhub" t="Test Hub"><S><TestHubSetDetailPage /></S></MG>} />
         <Route path="/testhub/traceability" element={<MG k="testhub" t="Test Hub"><S><TestHubTraceabilityPage /></S></MG>} />
         <Route path="/testhub/defects" element={<MG k="testhub" t="Test Hub"><S><TestHubDefectsPage /></S></MG>} />

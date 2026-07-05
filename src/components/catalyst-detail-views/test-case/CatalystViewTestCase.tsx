@@ -21,6 +21,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
+import Lozenge from '@atlaskit/lozenge';
 import Textfield from '@atlaskit/textfield';
 import Select, { AsyncSelect } from '@atlaskit/select';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
@@ -343,9 +344,13 @@ export default function CatalystViewTestCase({
       if (error) { catalystToast.error('Failed to update assignee', error.message); return; }
       invalidate();
     },
-    // tm_test_cases has none of these — silent no-ops to satisfy the interface.
-    onReporterChange: async () => {},
-    onDueDateChange: async () => {},
+    // S4 (CAT-TESTHUB-REPOSITORY-REDESIGN-20260705-001): tm_test_cases has no
+    // reporter / due_date / sprint columns. We deliberately DO NOT supply
+    // onReporterChange or onDueDateChange — the sidebar now hides Reporter and
+    // Sprint for the 'Test Case' type, and omitting onDueDateChange means the
+    // Due date row's `|| dataSource?.onDueDateChange` gate stays false, so it no
+    // longer renders. A test case is a reusable spec, not an execution; those
+    // properties belong to the run, not the case (zero-assumption, no no-op lies).
     onLabelsChange: async () => {},
     onFixVersionsChange: async () => {},
     onComponentsChange: async () => {},
@@ -362,6 +367,66 @@ export default function CatalystViewTestCase({
   const stepsPanel = itemId ? (
     <TestCaseStepsEditor testCaseId={itemId} steps={steps as any} />
   ) : null;
+
+  /* ── S4: Runs — this case's execution across every cycle. The reusable spec
+        is executed many times; its history is the point (mental-model plane 3).
+        Reads tm_cycle_scope (per-case scope row per cycle) joined to the cycle. ── */
+  const { data: runs = [] } = useQuery({
+    queryKey: ['tm-case-runs', itemId],
+    enabled: !!itemId,
+    queryFn: async () => {
+      if (!itemId) return [];
+      const { data, error } = await supabase
+        .from('tm_cycle_scope')
+        .select('id, current_status, updated_at, tm_test_cycles(name, status)')
+        .eq('test_case_id', itemId)
+        .order('updated_at', { ascending: false });
+      if (error || !data) return [];
+      return data as unknown as Array<{
+        id: string;
+        current_status: string | null;
+        updated_at: string | null;
+        tm_test_cycles: { name: string | null; status: string | null } | null;
+      }>;
+    },
+  });
+
+  const runStatusLozenge = (s: string | null) => {
+    const map: Record<string, { appearance: 'success' | 'removed' | 'moved' | 'inprogress' | 'default'; label: string }> = {
+      passed: { appearance: 'success', label: 'Passed' },
+      failed: { appearance: 'removed', label: 'Failed' },
+      blocked: { appearance: 'moved', label: 'Blocked' },
+      in_progress: { appearance: 'inprogress', label: 'In progress' },
+      not_run: { appearance: 'default', label: 'Not run' },
+    };
+    const cfg = (s && map[s]) || { appearance: 'default' as const, label: 'Not run' };
+    return <Lozenge appearance={cfg.appearance}>{cfg.label}</Lozenge>;
+  };
+
+  const runsPanel = (
+    <div style={{ padding: 'var(--ds-space-100) var(--ds-space-200)' }}>
+      {runs.length === 0 ? (
+        <div style={{ padding: 'var(--ds-space-300)', textAlign: 'center', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>
+          This case has not been added to any test cycle yet.
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ds-space-050)' }}>
+          {runs.map(r => (
+            <div key={r.id} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: 'var(--ds-space-100) var(--ds-space-150)',
+              border: '1px solid var(--ds-border)', borderRadius: 'var(--ds-border-radius)',
+            }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 'var(--ds-line-height-body)', color: 'var(--ds-text)', fontWeight: 500 }}>
+                {r.tm_test_cycles?.name ?? 'Cycle'}
+              </span>
+              {runStatusLozenge(r.current_status)}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   /* ── Versions read-only render. [MM6] useTestCaseVersions authoritative. ── */
   const versionsPanel = (
@@ -784,18 +849,22 @@ export default function CatalystViewTestCase({
         <CatalystTitleEditor issue={pseudoIssue} onTitleChange={handleTitleChange} />
         <div style={{ padding: '0 8px' }}>
           <Tabs id="test-case-detail-tabs">
+            {/* S4: Steps lead — a test case IS its spec. Runs tab added:
+                the same case executed across every cycle (mental-model plane 3). */}
             <TabList>
-              <Tab>Details</Tab>
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
-              <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
+              <Tab>Details</Tab>
               <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
+              <Tab>Runs{runs.length ? ` (${runs.length})` : ''}</Tab>
+              <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
               <Tab>Attachments{attachmentCount ? ` (${attachmentCount})` : ''}</Tab>
               <Tab>Activity</Tab>
             </TabList>
-            <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
-            <TabPanel>{versionsPanel}</TabPanel>
+            <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{requirementsPanel}</TabPanel>
+            <TabPanel>{runsPanel}</TabPanel>
+            <TabPanel>{versionsPanel}</TabPanel>
             <TabPanel>{attachmentsPanel}</TabPanel>
             <TabPanel>{activityPanel}</TabPanel>
           </Tabs>
@@ -803,7 +872,7 @@ export default function CatalystViewTestCase({
       </>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, attachmentsPanel, attachmentCount, steps.length, versions.length, reqLinks.length, handleTitleChange]);
+  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, runsPanel, attachmentsPanel, attachmentCount, steps.length, versions.length, reqLinks.length, runs.length, handleTitleChange]);
 
   /* ── rightContent: canonical sidebar. ── */
   const rightContent = useMemo(() => {

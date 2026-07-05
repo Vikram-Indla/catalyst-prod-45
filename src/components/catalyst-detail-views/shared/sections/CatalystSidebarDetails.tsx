@@ -697,7 +697,9 @@ export function CatalystSidebarDetails({
               was based on a BAU-5419 Lane A re-probe that misread the context items.
               Vikram approved 2026-05-10.
               Feature EXCLUDED: sprintRelease NOT in Feature scheme (type 10173). */}
-          {issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request' && (
+          {/* Test Case EXCLUDED: a test case is a reusable spec, not an execution —
+              sprint/iteration belongs to the run, not the case (CAT-TESTHUB-REPOSITORY-REDESIGN-20260705-001, S4). */}
+          {issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request' && issue?.issue_type !== 'Test Case' && (
             <FieldRow label="Sprint/Iteration" alignBlock="start">
               {issue && (
                 <EditableSprintRelease
@@ -745,7 +747,10 @@ export function CatalystSidebarDetails({
           )}
 
           {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable.
-              D1: Tooltip "View profile" on hover per Jira parity. */}
+              D1: Tooltip "View profile" on hover per Jira parity.
+              Test Case EXCLUDED: tm_test_cases has no reporter column — rendering
+              it was a no-op field (CAT-TESTHUB-REPOSITORY-REDESIGN-20260705-001, S4). */}
+          {issue?.issue_type !== 'Test Case' && (
           <FieldRow label="Reporter" alignBlock="center">
             {issue && (
               <EditableReporter
@@ -758,6 +763,7 @@ export function CatalystSidebarDetails({
               />
             )}
           </FieldRow>
+          )}
 
           {/* ── Labels ──── Task + Story (jira-compare 2026-05-07 Fix J + 2026-05-10 Fix JC-3).
               Task: re-probe BAU-5538 confirmed Labels in scheme (10010).
