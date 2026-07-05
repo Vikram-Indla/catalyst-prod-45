@@ -13,7 +13,7 @@ import AkDropdownMenu, {
   DropdownItem as AkDropdownItem,
   DropdownItemGroup as AkDropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
-import { type ReactNode } from 'react';
+import { type ReactNode, type Ref } from 'react';
 
 export interface DropdownMenuItem {
   key: string;
@@ -63,8 +63,19 @@ export function DropdownMenu({
       trigger={
         typeof trigger === 'function'
           ? (triggerProps) => {
-              const isSelected = Boolean((triggerProps as { isSelected?: boolean })?.isSelected);
-              return <span {...(triggerProps as object)}>{(trigger as (p: { isSelected: boolean }) => ReactNode)({ isSelected })}</span>;
+              // triggerRef must land on the span (popper anchor); the non-DOM
+              // props must not leak onto it as attributes.
+              const { triggerRef, isSelected, testId: triggerTestId, ...domProps } =
+                (triggerProps ?? {}) as {
+                  triggerRef?: Ref<HTMLElement>;
+                  isSelected?: boolean;
+                  testId?: string;
+                } & Record<string, unknown>;
+              return (
+                <span ref={triggerRef} data-testid={triggerTestId} {...domProps}>
+                  {(trigger as (p: { isSelected: boolean }) => ReactNode)({ isSelected: Boolean(isSelected) })}
+                </span>
+              );
             }
           : trigger
       }
